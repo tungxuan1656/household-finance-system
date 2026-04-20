@@ -11,6 +11,7 @@ Maintain an immutable, queryable audit trail of important actions (member change
 ## Contents
 
 - Records should include: `id`, `household_id`, `actor_id`, `action_type`, `target_id`, `payload` (old/new), `timestamp`.
+- Critical actions to log: member changes, role changes, invites, expense edits/deletes, group configuration changes, budget adjustments.
 
 ## User Flow
 

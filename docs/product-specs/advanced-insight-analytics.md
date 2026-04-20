@@ -10,8 +10,8 @@ Provide deeper analytics beyond basic rollups: cohort analysis, trend decomposit
 
 ## Features
 
-- Trend decomposition: separate seasonal vs baseline spend.
-- Anomaly detection: flag unusual spikes in categories or payers.
+- Trend decomposition: separate seasonal vs baseline spend across categories and groups.
+- Anomaly detection: flag unusual spikes in categories, payers, or groups.
 - Cohort analysis: compare spending behavior across groups or time-based cohorts.
 - Custom reports: allow users to define and save report queries.
 

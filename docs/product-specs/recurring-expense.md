@@ -11,7 +11,7 @@ Enable users to schedule recurring expenses (monthly, weekly, custom) to automat
 ## User Flow
 
 1. User creates an expense and optionally toggles "Make recurring".
-2. User selects recurrence pattern (daily, weekly, monthly, custom), start date, optional end date, and whether to create occurrences immediately or starting next period.
+2. User selects recurrence pattern (daily, weekly, monthly, custom), start date, optional end date, source (mandatory), and optionally category, group, payer, and note.
 3. System creates scheduled recurrence rule and generates future occurrences according to rule (either pre-generated or created on-demand per schedule).
 4. User can view and manage recurring rules (edit, pause, cancel) from a Recurring tab.
 5. Generated occurrences can be edited individually without breaking the rule (option: "edit this occurrence only").

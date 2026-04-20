@@ -16,7 +16,7 @@ Use this folder for current user-facing behavior specs.
 - `expense-management.md`           # edit/delete, audit, lifecycle
 - `expense-ownership.md`            # payer vs creator
 - `expense-categorization.md`
-- `expense-grouping.md`             # optional, event-based grouping
+- `expense-grouping.md`             # event-based grouping (Core MVP)
 
 ### Household Domain
 - `household-management.md`
