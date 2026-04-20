@@ -5,10 +5,10 @@ from code alone.
 
 ## Product Core
 
-- Primary user: `[replace]`
-- Job to be done: `[replace]`
-- Main frustration to remove: `[replace]`
-- Quality bar for acceptance: `[replace]`
+- Primary user: Families/households that jointly manage shared finances (e.g., couples, multi-generation households)
+- Job to be done: Help families understand, control, and optimize shared household cash flows.
+- Main frustration to remove: Lack of shared visibility and clear ownership of transactions, causing missed budgets, duplicate payments, and confusion about who paid what.
+- Quality bar for acceptance: Fast, low-friction expense input; a single-source-of-truth household view that is understandable at a glance; budget alerts and insights that are timely and actionable (qualitative acceptance criteria).
 
 ## Product Rules
 
