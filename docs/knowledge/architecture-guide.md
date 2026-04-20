@@ -1,23 +1,33 @@
-# ARCHITECTURE.md
+# ARCHITECTURE
 
-# ARCHITECTURE.md
+## Purpose
 
-Feb 6, 2021
+Provide a concise, high-level map of the codebase that helps contributors quickly answer "where is X implemented?" and "what is the role of module Y?". This document should be short and stable — focus on concepts that rarely change.
 
-If you maintain an open-source project in the range of 10k-200k lines of code, I strongly encourage you to add an `ARCHITECTURE` document next to `README` and `CONTRIBUTING`. Before going into the details of why and how, I want to emphasize that this is not another “docs are good, write more docs” advice. I am pretty sloppy about documentation, and, e.g., I often use just “simplify” as a commit message. Nonetheless, I feel strongly about the issue, even to the point of pestering you :-)
+## Scope
 
-I have experience with both contributing to and maintaining open-source projects. One of the lessons I’ve learned is that the biggest difference between an occasional contributor and a core developer lies in the knowledge about the physical architecture of the project. Roughly, it takes 2x more time to write a patch if you are unfamiliar with the project, but it takes 10x more time to figure out _where_ you should change the code. This difference might be hard to perceive if you’ve been working with the project for a while. If I am new to a code base, I read each file as a sequence of logical chunks specified in some pseudo-random order. If I’ve made significant contributions before, the perception is quite different. I have a mental map of the code in my head, so I no longer read sequentially. Instead, I just jump to where the thing should be, and, if it is not there, I move it. One’s mental map is the source of truth.
+Keep this file at a coarse-grained level. Explain structure and boundaries, not implementation details. If deeper explanations are needed, link or reference separate design documents or inline code docs.
 
-I find the `ARCHITECTURE` file to be a low-effort high-leverage way to bridge this gap. As the name suggests, this file should describe the high-level architecture of the project. Keep it short: every recurring contributor will have to read it. Additionally, the shorter it is, the less likely it will be invalidated by some future change. This is the main rule of thumb for `ARCHITECTURE` — only specify things that are unlikely to frequently change. Don’t try to keep it synchronized with code. Instead, revisit it a couple of times a year.
+## What to include
 
-Start with a bird’s eye overview of the problem being solved. Then, specify a more-or-less detailed _codemap_. Describe coarse-grained modules and how they relate to each other. The codemap should answer “where’s the thing that does X?”. It should also answer “what does the thing that I am looking at do?”. Avoid going into details of _how_ each module works, pull this into separate documents or (better) inline documentation. A codemap is a map of a country, not an atlas of maps of its states. Use this as a chance to reflect on the project structure. Are the things you want to put near each other in the codemap adjacent when you run `tree .`?
+- **Problem summary**: One or two sentences describing the problem the project solves.
+- **Codemap**: Names and responsibilities of top-level modules or subsystems and how they relate (a mental map, not a full atlas).
+- **Key files/types**: List important file or type names to search for (avoid hard links; prefer names for symbol search).
+- **Architectural invariants**: Constraints or rules that should not be violated (for example, layering rules or ownership guidelines).
+- **Boundaries**: Clear boundaries between layers or external systems and the expected interactions across those boundaries.
+- **Cross-cutting concerns**: How the project handles logging, validation, configuration, authentication, and other global concerns.
 
-_Do_ name important files, modules, and types. Do _not_ directly link them (links go stale). Instead, encourage the reader to use symbol search to find the mentioned entities by name. This doesn’t require maintenance and will help to discover related, similarly named things.
+## Writing and maintenance guidance
 
-Explicitly call-out architectural invariants. Often, important invariants are expressed as an _absence_ of something, and it’s pretty hard to divine that from reading the code. Think about a common example from web development: nothing in the model layer specifically doesn’t depend on the views.
+- Keep it brief to reduce the chance of becoming outdated.
+- Avoid implementation details; move those to dedicated documents or inline comments.
+- Revisit and update a few times per year rather than on every code change.
+- Prefer naming important symbols for searchability rather than linking to specific files (links go stale).
 
-Point out boundaries between layers and systems as well. A boundary implicitly contains information about the implementation of the system behind it. It even constrains all _possible_ implementations. But finding a boundary by just randomly looking at the code is hard — good boundaries have measure zero.
+## Example reference
 
-After finishing the codemap, add a separate section on cross-cutting concerns.
+See the rust-analyzer architecture document for a good example: https://github.com/rust-analyzer/rust-analyzer/blob/main/docs/dev/architecture.md
 
-A good example of `ARCHITECTURE` document is this one from rust-analyzer: [architecture.md](https://github.com/rust-analyzer/rust-analyzer/blob/d7c99931d05e3723d878bea5dc26766791fa4e69/docs/dev/architecture.md).
+---
+
+[ARCHITECTURE.md](https://matklad.github.io/2021/02/06/ARCHITECTURE.md.html)
