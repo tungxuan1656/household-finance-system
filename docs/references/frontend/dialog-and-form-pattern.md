@@ -1,5 +1,8 @@
 # Dialog & Form Field Pattern
 
+Scope: this document focuses on dialog composition and field layout behavior.
+For form state/validation patterns (`useForm`, `zodResolver`, submit typing), use `form-pattern.md`.
+
 ## General Principles
 
 1. **Prefer built-in components** — `Dialog`, `Field`, `FieldGroup`, `Button`, `Input`, `Textarea`, `Select`... Only write custom UI when explicitly requested.

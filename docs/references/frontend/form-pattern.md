@@ -131,7 +131,8 @@ export function ExampleForm(): React.JSX.Element {
 
 ## 4) Implementation Rules in the Project
 
-- Schema placed near the form or separated into `*.schema.ts` if the form is large.
+- Schema placement must follow `project-folder-structure.md`.
+- Create feature-local `*.schema.ts` when project structure rules require centralized form schemas.
 - Submit type uses `z.infer<typeof formSchema>` to be 100% in sync with the schema.
 - API error responses map to `form.setError` when needed.
 - Forms with multiple sections should split into smaller components by section, but keep 1 `useForm` at the root form.

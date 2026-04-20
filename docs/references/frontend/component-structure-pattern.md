@@ -2,7 +2,7 @@
 
 ## 1) Required Rules
 
-- **Page**: declare as `const ComponentName = () => {}` and `export default ComponentName` in the page file.
+- **Page**: declare as `export const ComponentName = () => {}` in the page file.
 - **Child component**: use `export const ComponentName = () => {}`.
 - **Each child component folder** must have an `index.ts` to aggregate and re-export all components in the folder.
 
@@ -10,11 +10,9 @@
 
 ```tsx
 // pages/goals-page.tsx
-const GoalsPage = () => {
+export const GoalsPage = () => {
   return <div>Goals page</div>
 }
-
-export default GoalsPage
 ```
 
 ## 3) Child Component Template
@@ -60,7 +58,6 @@ import { GoalCard, GoalForm, GoalProgress } from '@/components/goals'
 
 ## 7) Quick Checklist for New Components
 
-- [ ] Page uses `const XPage` + `export default XPage`
 - [ ] Child component uses `export const`
 - [ ] Component folder has `index.ts` — only exports public components
 - [ ] Internal sub-components are **not** in `index.ts`

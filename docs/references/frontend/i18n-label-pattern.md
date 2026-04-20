@@ -66,24 +66,6 @@ Example:
 <Button>{t('common.actions.save')}</Button>
 ```
 
-## Calling `t()` Outside Render Context (module scope)
-
-If `t()` is called **outside** the render function (e.g.: default parameter, module-scope constant), **a comment is required** explaining the lifecycle and safety:
-
-```tsx
-// ✅ Has explanatory comment
-// NOTE: t() is called in default parameter position — evaluated on each call,
-// NOT at module-load time. Safe because locale is resolved lazily inside t().
-export const MyComponent = ({
-  label = t('common.actions.save'),
-}: Props) => { ... }
-```
-
-```ts
-// ❌ Must not use t() at module-level constant if locale may not be loaded:
-const LABEL = t('common.actions.save') // Bad — stale if locale not initialized
-```
-
 ## Locale Completeness (required)
 
 - All new keys must be added **simultaneously** to all locale files (`en.json`, etc.).
@@ -119,6 +101,5 @@ t('shifts.stats.totalDrivers', { count: totalDrivers })
 - [ ] All labels have corresponding i18n keys.
 - [ ] Keys have clear contextual nested structure (`x.y.z`).
 - [ ] All locale files (`en.json`) have synchronized keys.
-- [ ] `t()` at default param/module scope has lifecycle comment.
 - [ ] Strings with dynamic values use interpolation, no manual concatenation.
 - [ ] `i18n.ts` placed at `src/lib/i18n/index.ts`.

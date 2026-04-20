@@ -12,16 +12,13 @@
 
 ## 2) Export Convention
 
-- Page: `const XPage = () => {}` + `export default XPage`.
 - Child component: `export const X = () => {}`.
 - Hook/store helpers: named export.
 
-## 3) Type Naming
+## 3) Type Naming Source
 
-- DTO: suffix `DTO` (`UserDTO`, `GoalDTO`).
-- API input: suffix `Request`.
-- API business output: suffix `Response`.
-- Unified wrapper: `ApiResponse<T>`.
+- Type naming rules are canonical in `../shared/type-naming-pattern.md`.
+- Do not redefine DTO/Request/Response naming in other docs.
 
 ## 4) React Query Naming
 
@@ -62,9 +59,4 @@ import { A, B } from '@/stores/foo'
 
 ## 8) Project References
 
-- Page default export: [src/pages/goals-page.tsx](../../src/pages/goals-page.tsx)
-- Component named export: [src/components/stats/stats-card.tsx](../../src/components/stats/stats-card.tsx)
-- Type naming: [src/types/api.ts](../../src/types/api.ts)
-- Query key naming: [src/hooks/api/use-deeds.ts](../../src/hooks/api/use-deeds.ts)
-- Paths/constants: [src/lib/constants/index.ts](../../src/lib/constants/index.ts)
 - Mock file pattern: `src/api/<feature>.mock.ts`

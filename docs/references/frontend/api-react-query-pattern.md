@@ -134,15 +134,7 @@ useInfiniteQuery({
 })
 ```
 
-## 7) Mapping to Existing Code
-
-- HTTP client + refresh token: [src/api/client.ts](../../src/api/client.ts)
-- Endpoint registry: [src/api/endpoints.ts](../../src/api/endpoints.ts)
-- Example hook domain (query + mutation + invalidate): [src/hooks/api/use-deeds.ts](../../src/hooks/api/use-deeds.ts)
-- Example infinite query hook: [src/hooks/api/use-inner-journal.ts](../../src/hooks/api/use-inner-journal.ts)
-- Global QueryClient + cache persist: [src/main.tsx](../../src/main.tsx)
-
-## 8) Checklist When Adding a New API
+## 7) Checklist When Adding a New API
 
 - [ ] Add endpoint to `API_ENDPOINTS`
 - [ ] Create function in `api/<domain>.ts`

@@ -12,7 +12,8 @@ patterns unpredictably.
 
 ## Guardrails
 
-- Document the design system or component library in `docs/references/`.
+- Document the design system or component library in `docs/references/index.md` (`frontend/*` and
+	`shared/*`).
 - Record key user-facing states: empty, loading, success, error, retry.
 - Keep copy, keyboard behavior, and visual hierarchy consistent across flows.
 - When a UI bug is fixed, add or update the matching validation step.

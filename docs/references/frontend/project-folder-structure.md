@@ -54,7 +54,7 @@ src/
 `lib` only contains **cross-feature reusable code** (usable by 2 or more features).
 
 - `lib/constants`: app constants, config constants.
-- `lib/forms/form-schemas.ts`: single source of truth for all Zod form schemas in the app.
+- `lib/forms/*.schemas.ts`: Zod form schemas in the app.
 - `lib/i18n`: internationalization setup.
 - `lib/storages`: localStorage/sessionStorage/indexedDB wrappers.
 - `lib/utils`: pure utility functions shared across the entire app.
@@ -76,7 +76,6 @@ Do not put in `lib`:
 - `hooks/shared`: hooks shared across multiple features.
 - `hooks/<feature>`: feature-specific hooks (including react-query hooks for the feature).
 - `stores/<feature>.store.ts`: zustand store per feature, placed **directly** in `stores/`, no subfolders.
-- `lib/forms/form-schemas.ts`: **all form schemas must be here** (do not create `*.schema.ts` in feature folders).
 - `components/<feature>`: components belonging to that feature.
 - `pages/<feature>`: pages for the feature.
 - `types`: shared types or API contracts.
@@ -95,6 +94,5 @@ Do not put in `lib`:
 - [ ] `hooks` separates `shared/` and `feature*/`
 - [ ] `stores` placed outside `lib`, flat files as `stores/feature*.store.ts`
 - [ ] `lib` only contains `constants`, `forms`, `i18n`, `storages`, `utils`
-- [ ] All schemas located in `lib/forms/form-schemas.ts`; features do not create separate `*.schema.ts` files
 - [ ] `lib` is not used as a dumping ground for everything
 - [ ] Uses consistent import alias (`@/...`)
