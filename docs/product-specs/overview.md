@@ -203,19 +203,17 @@ Một công cụ:
 
 ### Đăng nhập:
 
-* Google / Firebase / Supabase (3rd-party)
+* Firebase (email/password) — MVP; future: Google / Supabase
 
 ### Flow:
 
-1. User login qua provider
-2. Frontend gửi token lên backend
+
+1. User signs up/signs in via Firebase Authentication (email/password) on the frontend.
+2. Frontend sends the Firebase ID token to the backend.
 3. Backend:
 
-   * Verify với provider
-   * Tạo:
-
-     * Access token
-     * Refresh token (internal)
+  * Verifies the Firebase ID token (e.g., Firebase Admin SDK) and maps/creates a local user record.
+  * Issues an application `access token` (short-lived) and a `refresh token` (longer-lived) for the client.
 4. Quản lý profile tại hệ thống riêng
 
 ---
@@ -225,6 +223,7 @@ Một công cụ:
 Bao gồm:
 
 * Auth (Google)
+ - Auth (Firebase email/password)
 * CRUD expense (Số tiền, Category, Nguồn tiền, Group, Payer, Creator, Visibility)
 * Cá nhân vs household
 * Household + role (admin/member)
