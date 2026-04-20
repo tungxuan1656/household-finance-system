@@ -7,6 +7,13 @@ This repository is designed for a small team to build and maintain a reliable, c
 
 ---
 
+## Tech Stack (current)
+
+- Frontend (`apps/web`): React 19, TypeScript, Vite, Tailwind CSS, shadcn UI, sonner, date-fns.
+- Backend / Edge (`apps/worker`): Cloudflare Workers, Hono, D1 (SQLite-compatible), Wrangler, `zod` for validation, `jose` for JWT/JWKS handling, `ulid` for ids.
+- Tooling & CI: `pnpm` monorepo, ESLint, Prettier, Vitest, TypeScript.
+
+
 ## Startup Workflow
 
 Before writing or changing code:
@@ -68,21 +75,32 @@ Run the following in the repo root to verify the entire codebase:
 ./init.sh
 ```
 
-This script will:
-- Install dependencies: `pnpm install`
-- Lint all packages/apps: `pnpm lint`
-- Type-check all code: `pnpm type-check`
-- Run all tests: `pnpm test` (Vitest)
-- Build all apps: `pnpm build` (Vite for frontend, Node.js for backend)
+Useful dev & verification commands:
 
-Each app/package should have its own scripts for lint, type-check, test, and build. The root scripts should run them for the whole workspace.
+```bash
+# Full workspace verification
+./init.sh
+
+# Frontend dev (Vite)
+pnpm dev:web
+
+# Worker dev (Cloudflare Wrangler)
+pnpm dev:worker
+
+# Build frontend
+pnpm build:web
+
+# Deploy worker
+pnpm deploy:worker
+```
+
+This repository uses a pnpm monorepo layout. The root `./init.sh` runs install, lint, type-check, tests, and builds. Each app/package should also expose its own `lint`, `typecheck`, `test`, and `build` scripts so they can be run individually.
 
 ---
 
 ## Directory Structure (Recommended)
-
-- /apps/backend (Cloudflare Worker, Hono, ulid)
-- /apps/frontend (React, Vite, Tailwind, shadcn, PWA)
+- /apps/worker (Cloudflare Worker, Hono, D1, wrangler)
+- /apps/web (React, Vite, Tailwind, shadcn)
 - /packages (shared libraries)
 - AGENTS.md, ARCHITECTURE.md, PRODUCT.md, feature_list.json, progress.md, init.sh, session-handoff.md
 
