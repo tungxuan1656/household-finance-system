@@ -1,0 +1,25 @@
+.agents/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# Build artifacts
+dist/
+coverage/
+
+# Environment files
+.env*
+!.env.example
+.dev.vars
+.dev.vars.*
+
+# OS/editor artifacts
+.DS_Store
+.vscode-test/
+.omx/
+.gitnexus

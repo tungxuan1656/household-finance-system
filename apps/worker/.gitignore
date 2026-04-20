@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+bun.lock
+
+# Logs and runtime output
+logs/
+*.log
+pnpm-debug.log*
+
+# Build and test artifacts
+dist/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+
+# Cloudflare/Wrangler
+.wrangler/
+.dev.vars*
+!.dev.vars.example
+
+# Environment files
+.env*
+!.env.example
+
+# Editor and OS
+.DS_Store
+.vscode-test/

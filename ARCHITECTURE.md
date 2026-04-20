@@ -5,17 +5,19 @@ to deeper documents when needed.
 
 ## System Shape
 
-- Product: `[replace with product name]`
-- Primary user workflow: `[replace with main workflow]`
-- Runtime surfaces: `[desktop / web / cli / services / workers]`
+- Product: `Household Finance Web App`
+- Primary user workflow: `quick expense capture -> household aggregation -> budget & insights`
+- Runtime surfaces: `web (frontend)` / `Cloudflare Workers (backend)` / `D1 (database)`
 - Source of truth for product behavior: `docs/product-specs/`
 
 ## Domain Map
 
 | Domain | Purpose | Primary Entry Points | Related Spec |
 |--------|---------|----------------------|--------------|
-| `[domain-a]` | `[what it owns]` | `[modules / routes / commands]` | `[spec path]` |
-| `[domain-b]` | `[what it owns]` | `[modules / routes / commands]` | `[spec path]` |
+| `expenses` | Record, validate, and store expense items | `apps/web` UI forms -> `apps/worker` routes (POST /expenses) | `docs/product-specs/expense-tracking.md` |
+| `households` | Household membership, roles, visibility | `apps/worker` routes (household CRUD, membership) -> `apps/web` views | `docs/product-specs/household-management.md` |
+| `auth` | Verify and map user identity (Firebase ID tokens -> local users) | `apps/web` (frontend auth) -> `apps/worker` (token verification via JWKS + jose) | `docs/product-specs/authentication.md` |
+| `insights` | Aggregation, budgets, basic analytics | `apps/worker` aggregation routes -> `apps/web` dashboards | `docs/product-specs/insight-analytics.md` |
 
 ## Layer Model
 
@@ -38,10 +40,10 @@ boundaries instead of reaching across layers directly.
 
 | Concern | Approved Boundary | Notes |
 |--------|-------------------|-------|
-| Logging and tracing | `[provider / utility path]` | `[structured only, no ad hoc console use]` |
-| Auth | `[provider path]` | `[token/session rules]` |
-| External APIs | `[client or provider path]` | `[rate limit / retry guidance]` |
-| Feature flags | `[flag boundary]` | `[ownership]` |
+| Logging and tracing | `packages/*/lib/log` (or `apps/*/src/lib/log`) | Structured logs only; avoid ad-hoc console use in production paths |
+| Auth | `apps/worker/src/lib/auth` | Worker verifies Firebase ID tokens using JWKS + `jose` (lightweight, Cloudflare-friendly). Do not couple UI directly to DB access. |
+| External APIs | `apps/worker/src/lib/clients` | External calls must implement retry and timeout policies. Keep clients behind adapters. |
+| Feature flags | `apps/worker/src/lib/flags` | Feature flags evaluated in backend when behavior changes are sensitive |
 
 ## Current Hot Spots
 

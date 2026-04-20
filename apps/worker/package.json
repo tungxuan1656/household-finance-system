@@ -1,0 +1,44 @@
+{
+  "name": "worker",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.12.1",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "lint": "eslint .",
+    "start": "wrangler dev",
+    "test": "vitest run",
+    "cf-typegen": "wrangler types",
+    "db:migrate:local": "wrangler d1 migrations apply fos-main --local --config ./wrangler.jsonc",
+    "db:migrate:remote": "wrangler d1 migrations apply fos-main --remote --config ./wrangler.jsonc",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.12.4",
+    "@types/node": "^25.6.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-compiler": "19.1.0-rc.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "eslint-plugin-unicorn": "^64.0.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "typescript": "^5.5.2",
+    "typescript-eslint": "^8.58.2",
+    "vitest": "~3.2.0",
+    "wrangler": "^4.83.0"
+  },
+  "dependencies": {
+    "hono": "^4.12.14",
+    "jose": "^6.2.2",
+    "ulid": "^3.0.2",
+    "web-push": "^3.6.7",
+    "zod": "^4.3.6"
+  }
+}
