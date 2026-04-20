@@ -33,7 +33,6 @@ Use this folder for current user-facing behavior specs.
 
 ### UX / System
 - `quick-add-experience.md`
-- `notification-system.md`          # basic, MVP+
 
 ---
 
@@ -46,6 +45,7 @@ Use this folder for current user-facing behavior specs.
 - `financial-health-score.md`
 - `multi-device-support.md`
 - `audit-log.md`
+- `notification-system.md`
 
 ---
 
