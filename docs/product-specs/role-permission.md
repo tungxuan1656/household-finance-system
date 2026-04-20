@@ -10,8 +10,8 @@ Define a minimal, safe permission model that maps household roles to actions, en
 
 ## Roles (MVP)
 
-- Admin: full household management (members, settings, delete/archive, export).
-- Member: create expenses, edit own expenses, view household expenses (depending on visibility), invite others if allowed.
+- Admin: full household management (members, settings, groups/events, delete/archive, export).
+- Member: create expenses, edit own expenses, view household expenses (depending on visibility), invite others if allowed, and create groups if permitted by settings.
 
 ## Permission Matrix (examples)
 
@@ -19,6 +19,7 @@ Define a minimal, safe permission model that maps household roles to actions, en
 - Edit Own Expense: Member, Admin
 - Edit Any Expense: Admin (or Member with elevated rights)
 - Delete Expense: Admin (soft-delete by Member if allowed)
+- Manage Groups: Admin, Member (if allowed in settings)
 - Manage Members: Admin
 - Change Household Settings: Admin
 - View Audit Logs: Admin

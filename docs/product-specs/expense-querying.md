@@ -13,6 +13,7 @@ Define querying and filtering semantics for expenses to support UI lists, search
 - `date_from`, `date_to` (range)
 - `period` (month, week, custom)
 - `category_id` (single or multiple)
+- `group_id` (single or multiple)
 - `payer_id`, `creator_id`
 - `visibility` (private, household) — server-enforced
 - `query` (full-text search against notes)

@@ -12,8 +12,8 @@ Provide clear household lifecycle and settings management so users can create, c
 
 1. Create household: user provides household name, default currency, optional description, and optional initial invite.
 2. After creation, user lands in the household dashboard showing recent activity, members, budgets, and quick actions.
-3. Household settings include: name, currency, timezone, default category list, and privacy defaults (private vs household default visibility).
-4. Admins can manage members (promote/demote, remove), export household data, and delete/archive the household.
+3. Household settings include: name, currency, timezone, default category list, Group/Event management, and privacy defaults (private vs household default visibility).
+4. Admins can manage members (promote/demote, remove), manage household groups, export household data, and delete/archive the household.
 5. Switch household: user with multiple households can switch active household via a quick selector; current household context is shown across UI.
 
 ## Acceptance Criteria

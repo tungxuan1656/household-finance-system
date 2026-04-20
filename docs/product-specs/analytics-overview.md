@@ -12,6 +12,7 @@ Outline the basic analytics and insights the app provides in MVP: spend summarie
 
 - Total Spend (period)
 - Category Breakdown (percent + amount)
+- Group/Event Summary (total per group)
 - Month-over-Month comparison (this month vs last month)
 - Top N categories (by spend)
 - Payer attribution (who paid most)

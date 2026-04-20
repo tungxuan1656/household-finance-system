@@ -12,9 +12,9 @@ Provide an ultra-fast, low-friction entry path for recording expenses (target: 2
 ## User Flow
 
 1. User opens quick-add via shortcut/fab/global input.
-2. UI focuses on amount input first; user types amount (support numeric keyboard on mobile).
-3. Optional lightweight fields available inline or collapsed: category, payer, date, note, visibility.
-4. Defaults: last-used category, active household, creator=payer if unset.
+2. UI focuses on amount input first; user types amount.
+3. User picks Source (mandatory - default to last used) and optionally Category, Group, Payer, Date, Note.
+4. Defaults: last-used category, last-used source, active household, creator=payer if unset.
 5. User confirms (Enter/Done); expense is created and a brief success toast appears with an "Undo" action.
 6. If offline or network failure, expense is queued locally and retried; user sees pending state in feed.
 
