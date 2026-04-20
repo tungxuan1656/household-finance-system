@@ -12,15 +12,17 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 ## User Flow
 
 1. User opens quick-add (global) or dedicated Add Expense screen.
-2. User enters amount; optionally picks category, payer, date, and note.
-3. User chooses visibility: private or household.
-4. User confirms; expense is stored and appears in the transaction list.
-5. If the user is in multiple households, prompt to choose active household.
+2. User enters amount; picks category, source (mandatory), payer, date, and note.
+3. Optionally assigns the expense to one or more Groups (Events).
+4. User chooses visibility: private or household.
+5. User confirms; expense is stored and appears in the transaction list.
+6. If the user is in multiple households, prompt to choose active household.
 
 ## Acceptance Criteria
 
-- Quick-add accepts amount and creates an expense with defaults filled.
-- Add Expense screen supports optional fields: category, payer, source, note, date.
+- Quick-add accepts amount and creates an expense with defaults filled (including default source and group if applicable).
+- Add Expense screen requires fields: amount, category, source, payer.
+- Add Expense screen supports optional fields: note, date, group assignment.
 - Visibility (private vs household) is explicit and remembered per user preference.
 - New expense appears immediately in UI and is indexed for query & analytics.
 

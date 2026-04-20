@@ -29,5 +29,5 @@ Allow users to group expenses into events/projects (e.g., "Vacation", "Tet shopp
 ---
 
 Notes:
-- Start with simple tagging model; consider advanced project flows in Phase 2.
-- Groups are optional and default-off in MVP.
+- Start with simple tagging model; integrate deeply into the primary expense creation flow.
+- Groups are a core feature for event-based tracking (Vacation, Tet, etc.) in MVP.

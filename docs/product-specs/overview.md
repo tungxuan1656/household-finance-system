@@ -146,10 +146,24 @@ Một công cụ:
 
   * Theo note
   * Theo số tiền
+  * Theo Group (Event/Project)
 
 ---
 
-### **5.7. Insight & Analytics (Mức cơ bản – đúng trọng tâm)**
+### **5.7. Nhóm chi tiêu (Grouping / Events)**
+
+#### Khái niệm:
+* Gom nhóm các khoản chi theo sự kiện (Du lịch, Đám cưới, Mua sắm Tết...)
+* Theo dõi ngân sách riêng cho từng nhóm.
+
+#### Chức năng:
+* Tạo/Sửa/Xóa Group.
+* Gán khoản chi vào một hoặc nhiều Group.
+* Xem báo cáo tổng kết theo Group.
+
+---
+
+### **5.8. Insight & Analytics (Mức cơ bản – đúng trọng tâm)**
 
 #### Bao gồm:
 
@@ -211,12 +225,13 @@ Một công cụ:
 Bao gồm:
 
 * Auth (Google)
-* CRUD expense
+* CRUD expense (Số tiền, Category, Nguồn tiền, Group, Payer, Creator, Visibility)
 * Cá nhân vs household
 * Household + role (admin/member)
 * Payer vs creator
 * Budget theo tháng
-* Basic insight (month comparison, category breakdown)
+* Grouping (Events/Projects)
+* Basic insight (month comparison, category breakdown, group summary)
 * Filter & search
 
 ---
