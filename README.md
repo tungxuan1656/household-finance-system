@@ -30,6 +30,37 @@ Core intent:
 |- AGENTS.md    # Working rules for agent and team workflow
 ```
 
+## Architecture & Harness
+
+This repository's architecture and development "harness" follow modern
+harness-engineering guidance. In particular, we adopt the five-subsystem
+approach (Instructions, State, Verification, Scope, Lifecycle) to ensure
+reproducible agent workflows, session continuity, and clear verification
+paths across features. See `docs/knowledge/harness-engineering.md` for
+additional detail and templates used in this project.
+
+Primary sources and inspirations:
+
+- OpenAI — Harness Engineering: https://openai.com/index/harness-engineering/
+- WalkingLabs — Learn Harness Engineering: https://github.com/walkinglabs/learn-harness-engineering
+
+Many thanks to the authors and maintainers of those resources for their
+guidance and examples that informed this repository's harness design.
+
+## Knowledge & Guides
+
+This repository includes a small set of concise knowledge guides used as
+reference material for agent workflows, architecture, and execution planning.
+Below are the key documents with short summaries and links into the repo.
+
+- [AI Is Forcing Us To Write Good Code](docs/knowledge/ai-is-forcing-us-to-write-good-code.md#L1): Argues that strong engineering practices (tests, types, fast automation, clear file structure) are now essential to make agent-driven development safe and productive.
+- [ARCHITECTURE (Guide)](docs/knowledge/architecture-guide.md#L1): High-level map of the codebase — what to include in a stable architecture doc, boundaries, invariants, and maintenance guidance.
+- [ExecPlan: Using PLANS.md (Codex ExecPlan)](docs/knowledge/codex-exec-plan.md#L1): A structured ExecPlan template for multi-hour tasks with observable acceptance criteria, commands, progress logs, and idempotent steps.
+- [Harness Engineering — Condensed Summary](docs/knowledge/harness-engineering.md#L1): Condensed summary of harness engineering covering the five-subsystem harness, design principles, verification, state, lifecycle, and practical artifacts.
+
+If you'd like the full text of any of these guides embedded directly into this README, tell me which one(s) and I'll paste them inlined beneath their summaries.
+
+
 ## Required reading before coding
 
 Follow this order for fastest onboarding:
