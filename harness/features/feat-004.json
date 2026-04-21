@@ -1,9 +1,9 @@
 {
   "id": "feat-004",
   "name": "Monorepo workspace & toolchain foundation",
-  "description": "Set up the pnpm workspace, shared TypeScript/ESLint/Prettier/Vitest configuration, root scripts, and init.sh so the repository can install, lint, typecheck, test, and build from one entry point.",
+  "description": "Set up the pnpm workspace, root scripts, and init.sh so the repository can install, lint, typecheck, test, and build from one entry point while app dependencies and TypeScript config stay local.",
   "dependencies": ["feat-003"],
-  "status": "pending",
-  "evidence": "",
+  "status": "done",
+  "evidence": "pnpm run lint, pnpm run typecheck, pnpm run test, pnpm run build, and ./init.sh all pass from the repo root",
   "updated_at": "2026-04-21"
 }
