@@ -16,6 +16,7 @@ In scope:
 - Shared shell-level form primitives and route guard helpers
 - UI test library setup in `apps/web/package.json`
 - Tests for route redirect, public auth routes, protected shell scaffold, and toast/theme integration
+- Updates to `harness/progress.md` and `harness/features/feat-005.json` once implementation starts
 
 Out of scope:
 - Firebase sign-in, token exchange, refresh, logout
@@ -33,10 +34,12 @@ Out of scope:
 - Reuse existing shadcn/Tailwind primitives already present in `apps/web/src/components/ui`.
 - Keep the shell responsive and accessible from the first pass.
 - Toasts must use the app’s local theme provider, not `next-themes`.
+- Accessibility checks are part of normal verification, not optional polish.
 - The plan must remain self-contained and produce observable behavior and tests.
 
 ## Progress
 
+- [ ] Run `./init.sh` and confirm the workspace starts cleanly
 - [ ] Create router and shell composition for guest/auth/onboarding states
 - [ ] Replace placeholder home screen with redirect and route groups
 - [ ] Add public auth route scaffolds for `/sign-in` and `/sign-up`
@@ -76,6 +79,8 @@ To be filled after implementation. Expected outcome is a stable frontend shell w
 
 ## Context and Orientation
 
+- Startup and verification: `./init.sh`
+- Harness state: `harness/feature_index.json`, `harness/features/feat-005.json`, `harness/progress.md`
 - Web app entry: `apps/web/src/main.tsx`
 - Current placeholder app: `apps/web/src/app.tsx`
 - Global styles and theme tokens: `apps/web/src/index.css`
@@ -88,19 +93,21 @@ To be filled after implementation. Expected outcome is a stable frontend shell w
 
 ## Plan of Work (Narrative)
 
-1. Replace the starter `App` placeholder with a router root that redirects `/` to `/sign-in`, exposes public auth routes, and branches authenticated users into a protected shell.
-2. Add route-group components for guest and signed-in states. The guest branch owns `/sign-in` and `/sign-up`; the protected branch owns the app shell and onboarding placeholder state for users who have no household yet.
-3. Create a lightweight shell layout with top-level navigation, empty states, and placeholder panels for future app sections such as dashboard, expenses, budgets, insights, and settings.
-4. Build or compose shared form primitives for the shell-level auth and onboarding screens using the existing `Field`, `Label`, `InputGroup`, `Input`, `Textarea`, `NativeSelect`, and `Empty` components.
-5. Fix `sonner` so it uses the local theme provider instead of `next-themes`, then mount the toaster at the app root.
-6. Add the UI test library and write route/shell tests that prove redirect behavior, auth route reachability, and the protected shell placeholder behavior.
-7. Polish global shell styling in `index.css` so the public auth pages and protected app shell feel intentionally different while staying within the current design system.
+1. Start with `./init.sh` so the repo-wide baseline is confirmed before editing the web shell.
+2. Replace the starter `App` placeholder with a router root that redirects `/` to `/sign-in`, exposes public auth routes, and branches authenticated users into a protected shell.
+3. Add route-group components for guest and signed-in states. The guest branch owns `/sign-in` and `/sign-up`; the protected branch owns the app shell and onboarding placeholder state for users who have no household yet.
+4. Create a lightweight shell layout with top-level navigation, empty states, and placeholder panels for future app sections such as dashboard, expenses, budgets, insights, and settings.
+5. Build or compose shared form primitives for the shell-level auth and onboarding screens using the existing `Field`, `Label`, `InputGroup`, `Input`, `Textarea`, `NativeSelect`, and `Empty` components.
+6. Fix `sonner` so it uses the local theme provider instead of `next-themes`, then mount the toaster at the app root.
+7. Add the UI test library and write route/shell tests that prove redirect behavior, auth route reachability, accessibility, and the protected shell placeholder behavior.
+8. Polish global shell styling in `index.css` so the public auth pages and protected app shell feel intentionally different while staying within the current design system.
 
 ## Concrete Steps (Commands)
 
 Run from repo root:
 
 ```bash
+./init.sh
 pnpm --filter web add react-router-dom
 pnpm --filter web add -D @testing-library/react @testing-library/user-event @testing-library/jest-dom
 pnpm --filter web test
@@ -121,6 +128,7 @@ The feature is accepted when all of the following are true:
 - Protected shell routes render a stable layout for logged-in users.
 - The onboarding placeholder is reachable for authenticated users without a household.
 - Toasts render with the local theme provider.
+- Accessibility checks cover the auth shell and protected shell routes.
 - UI tests cover the redirect and route-group behavior.
 - `pnpm --filter web typecheck`, `pnpm --filter web test`, and `pnpm --filter web build` pass.
 
@@ -132,7 +140,8 @@ The feature is accepted when all of the following are true:
 
 ## Artifacts and Notes
 
-- Add a plan note to `harness/features/feat-005.json` only if implementation work starts and evidence becomes available.
+- Update `harness/progress.md` at the end of each working session.
+- Add evidence to `harness/features/feat-005.json` and keep `harness/feature_index.json` in sync once implementation work starts.
 - Keep the route shape and auth/onboarding assumptions documented in this file so later sessions can resume from repository state alone.
 
 ## Interfaces & Dependencies
