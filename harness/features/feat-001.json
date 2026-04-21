@@ -1,9 +1,9 @@
 {
   "id": "feat-001",
   "name": "Bootstrap harness artifacts",
-  "description": "Create initial harness files required by AGENTS.md: feature_list.json and progress.md",
+  "description": "Create initial harness state artifacts and progress tracking under harness/ for agent sessions",
   "dependencies": [],
   "status": "done",
-  "evidence": "feature_list.json and progress.md created and verification passed (./init.sh) on 2026-04-21"
+  "evidence": "harness/feature_index.json and harness/progress.md created; verification passed via CI=true ./init.sh on 2026-04-21",
+  "updated_at": "2026-04-21"
 }
-

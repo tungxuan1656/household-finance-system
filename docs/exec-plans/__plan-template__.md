@@ -122,7 +122,7 @@ OK
 
 ## Suggested file templates
 
-feature_list.json (example):
+`harness/feature_index.json` (example):
 
 ```json
 {
@@ -136,6 +136,20 @@ feature_list.json (example):
       "evidence": "apps/worker/test/health.test.ts passes"
     }
   ]
+}
+```
+
+`harness/features/feat-001.json` (example):
+
+```json
+{
+  "id": "feat-001",
+  "name": "Health endpoint",
+  "description": "GET /health returns OK",
+  "dependencies": [],
+  "status": "done",
+  "evidence": "apps/worker/test/health.test.ts passes",
+  "updated_at": "2026-04-21"
 }
 ```
 

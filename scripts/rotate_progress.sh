@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Move current root progress archive (if any) into harness/progress/archive and
-# move current progress.md into harness/progress/archive with date suffix, then
-# create a short index at harness/progress.md
+# Rotate the canonical harness progress log into harness/progress/archive and
+# recreate harness/progress.md as a short index. A legacy root progress/archive
+# folder is migrated if present.
 mkdir -p harness/progress/archive
 ts=$(date -I)
 
@@ -13,7 +13,9 @@ if [ -d progress/archive ]; then
   rmdir progress/archive 2>/dev/null || true
 fi
 
-if [ -f progress.md ]; then
+if [ -f harness/progress.md ]; then
+  mv harness/progress.md harness/progress/archive/progress-${ts}.md
+elif [ -f progress.md ]; then
   mv progress.md harness/progress/archive/progress-${ts}.md
 fi
 

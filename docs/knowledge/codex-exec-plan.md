@@ -9,7 +9,7 @@ This document explains how to author, maintain, and use an ExecPlan (Execution P
 Scope
 
 - Audience: engineers and agent-based contributors working on multi-step features or refactors.
-- Repository artifacts addressed: `AGENTS.md`, `PLANS.md` (or per-feature ExecPlan files), `feature_list.json`, `progress.md`, and verification scripts like `init.sh`.
+- Repository artifacts addressed: `AGENTS.md`, `PLANS.md` (or per-feature ExecPlan files), `harness/feature_index.json`, `harness/features/*.json`, `harness/progress.md`, and verification scripts like `init.sh`.
 - Out of scope: model selection, prompt engineering, and generic architecture patterns unrelated to an ExecPlan's execution.
 
 Non-negotiable Requirements
@@ -59,7 +59,7 @@ Describe the sequence of edits and why. Keep each edit precise and minimal. Exam
 1. Create `apps/worker/src/routes/health.ts` with a GET handler that returns HTTP 200 and body `OK`.
 2. Register the route in the worker's router (`apps/worker/src/index.ts` or equivalent).
 3. Add unit/integration test `apps/worker/test/health.test.ts` asserting 200 + `OK`.
-4. Update `feature_list.json` and `progress.md` with evidence and timestamps.
+4. Update `harness/features/*.json`, `harness/feature_index.json`, and `harness/progress.md` with evidence and timestamps.
 
 Concrete Steps (Commands)
 
@@ -109,8 +109,9 @@ Artifacts and Notes
 
 Suggested file templates
 
-- `feature_list.json` — track features, ids, status, dependencies, and evidence.
-- `progress.md` — session log with timestamps, actions, and blockers.
+- `harness/feature_index.json` — track feature ids, names, and high-level status.
+- `harness/features/*.json` — track per-feature dependencies, evidence, and detail.
+- `harness/progress.md` — session log with timestamps, actions, and blockers.
 - `init.sh` — canonical repo verification script (install, typecheck, test, build).
 
 Minimal Example: Add GET /health Endpoint

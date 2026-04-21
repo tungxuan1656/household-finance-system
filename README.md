@@ -100,9 +100,10 @@ The project follows a strict execution workflow:
 
 Expected project artifacts (per `AGENTS.md`):
 
-- `feature_list.json`: feature state tracker
-- `progress.md`: session progress log
-- `session-handoff.md`: optional handoff file
+- `harness/feature_index.json`: lightweight feature state tracker
+- `harness/features/*.json`: detailed per-feature records
+- `harness/progress.md`: session progress log
+- `harness/session-handoff.md`: optional handoff file
 
 If these files are missing, create and maintain them as part of the team workflow.
 

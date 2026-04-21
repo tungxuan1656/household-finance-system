@@ -1,0 +1,11 @@
+{
+  "id": "feat-002",
+  "name": "Standardize harness contract",
+  "description": "Make harness/ the canonical state surface across repo instructions, docs, templates, and scripts",
+  "dependencies": [
+    "feat-001"
+  ],
+  "status": "done",
+  "evidence": "AGENTS.md, README.md, docs/knowledge/*, docs/exec-plans/__plan-template__.md, init.sh, scripts/rotate_progress.sh, and harness/session-handoff.md updated; ./init.sh passed on 2026-04-21",
+  "updated_at": "2026-04-21"
+}
