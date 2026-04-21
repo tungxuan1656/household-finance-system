@@ -1,0 +1,21 @@
+name: Harness Size Check
+
+on:
+  push:
+    branches: [ main, ci/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  harness-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Run harness size check
+        run: |
+          chmod +x scripts/check_harness_size.sh
+          ./scripts/check_harness_size.sh

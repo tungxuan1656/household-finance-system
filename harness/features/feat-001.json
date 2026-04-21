@@ -1,0 +1,9 @@
+{
+  "id": "feat-001",
+  "name": "Bootstrap harness artifacts",
+  "description": "Create initial harness files required by AGENTS.md: feature_list.json and progress.md",
+  "dependencies": [],
+  "status": "done",
+  "evidence": "feature_list.json and progress.md created and verification passed (./init.sh) on 2026-04-21"
+}
+
