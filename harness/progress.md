@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-04-21 — GitHub verify single-job optimization
+- Who: automation
+- Summary: Consolidated the PR verify flow into a single job so shared setup and dependency installation happen once, while still running only the affected web and/or worker checks.
+- Files changed: .github/workflows/verify-code.yml, harness/features/feat-003.json
+- Blockers: none
+- Next steps: keep adding any new truly shared config files to the shared change filter intentionally.
+
+---
+
 ## 2026-04-21 — GitHub verify scoping
 - Who: automation
 - Summary: Narrowed the PR verify workflow so web changes only run web checks, worker changes only run worker checks, and shared root workflow/package changes trigger both. Each job now installs and runs only its own workspace package scope.

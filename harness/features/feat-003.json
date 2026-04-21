@@ -6,6 +6,6 @@
     "feat-002"
   ],
   "status": "done",
-  "evidence": ".github/workflows/verify-code.yml now filters web, worker, and verify-workflow/shared root changes separately; web and worker jobs install and run only their own package scope; validation completed locally by reviewing the workflow diff and parsing the workflow YAML structure.",
+  "evidence": ".github/workflows/verify-code.yml now filters web, worker, and verify-workflow/shared root changes separately; a single verify job installs dependencies once and then runs only the affected web and/or worker checks; validation completed locally by reviewing the workflow diff and parsing the workflow YAML structure.",
   "updated_at": "2026-04-21"
 }
