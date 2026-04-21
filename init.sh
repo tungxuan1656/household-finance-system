@@ -20,10 +20,9 @@ echo "=== Type checking (web + worker) ==="
 pnpm run typecheck
 
 echo "=== Running tests (web + worker) ==="
-pnpm run test:web
-pnpm run test:worker
+pnpm run test
 
 echo "=== Building frontend ==="
-pnpm run build:web
+pnpm run build
 
 echo "=== Init complete ==="

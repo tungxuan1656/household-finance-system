@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-04-21 — Removed shared tsconfig base from feat-004
+- Who: Codex
+- Summary: Reverted the shared TypeScript base and restored app-owned compiler settings so each app keeps its own config without inheritance from a shared root file.
+- Files changed: apps/web/tsconfig.app.json, apps/web/tsconfig.node.json, apps/worker/tsconfig.json, docs/exec-plans/completed/2026-04-21-feat-004-workspace-toolchain-foundation.md, harness/features/feat-004.json
+- Blockers: None.
+- Next steps: Re-run workspace verification to confirm the app-local configs still pass from the root scripts.
+
+## 2026-04-21 — Completed feat-004 workspace/toolchain foundation
+- Who: Codex
+- Summary: Added a shared TypeScript base config, added root `test` and `build` orchestration, kept app dependencies local, and aligned `init.sh` with the canonical root scripts.
+- Files changed: package.json, init.sh, apps/web/tsconfig.json, apps/web/tsconfig.app.json, apps/web/tsconfig.node.json, apps/worker/tsconfig.json, docs/exec-plans/completed/2026-04-21-feat-004-workspace-toolchain-foundation.md, harness/feature_index.json, harness/features/feat-004.json
+- Blockers: None after rerunning verification with elevated repo-root access.
+- Next steps: Move to the next pending feature or tighten shared ESLint/Prettier/Vitest surfaces if a future feature needs them.
+
 ## 2026-04-21 — Rebalanced MVP feature breakdown
 - Who: Codex
 - Summary: Reworked the pending MVP backlog from coarse mini-epics into smaller feature-sized slices that still match the product roadmap. Split oversized areas such as auth, household, quick-add, budget, analytics, and grouping into execution-friendly features without going all the way down to subtask level.
