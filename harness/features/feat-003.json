@@ -6,6 +6,6 @@
     "feat-002"
   ],
   "status": "done",
-  "evidence": ".github/workflows/verify-code.yml now filters web, worker, and verify-workflow/shared root changes separately; a single verify job installs dependencies once and then runs only the affected web and/or worker checks; validation completed locally by reviewing the workflow diff and parsing the workflow YAML structure.",
+  "evidence": ".github/workflows/verify-code.yml now triggers only for app/shared config changes, installs all dependencies once, and runs the existing root scripts for just the affected web and/or worker checks; .github/workflows/harness-size-check.yml now path-filters to harness/script changes and skips unnecessary Node setup; validation completed locally by reviewing the workflow diff and parsing the workflow YAML structure.",
   "updated_at": "2026-04-21"
 }

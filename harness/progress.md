@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-04-21 — CI trigger and install simplification
+- Who: automation
+- Summary: Restricted verify and harness-size workflows to relevant file paths, switched verify to a single full workspace install, and used the existing root scripts for app checks.
+- Files changed: .github/workflows/verify-code.yml, .github/workflows/harness-size-check.yml, harness/features/feat-003.json
+- Blockers: none
+- Next steps: keep any new shared config files in the workflow path filters intentionally.
+
+---
+
 ## 2026-04-21 — GitHub verify single-job optimization
 - Who: automation
 - Summary: Consolidated the PR verify flow into a single job so shared setup and dependency installation happen once, while still running only the affected web and/or worker checks.
