@@ -6,7 +6,7 @@
 
 - **Five-subsystem harness:** Every reliable agent harness addresses five areas:
   1. Instructions — short, high-level routing (AGENTS.md) pointing to deeper docs.
-  2. State — persistent artifacts for continuity (e.g., `feature_list.json`, `progress.md`, `session-handoff.md`).
+  2. State — persistent artifacts for continuity (for example `harness/feature_index.json`, `harness/features/*.json`, `harness/progress.md`, `harness/session-handoff.md`).
   3. Verification — automated checks: lint, type-check, tests, build scripts, and explicit verification commands.
   4. Scope — strict task boundaries and “one feature at a time” rules to prevent scope creep.
   5. Lifecycle — init and bootstrap scripts, clean-state checks, and handoff procedures.
@@ -44,7 +44,7 @@
   - Use results to prioritize harness improvements.
 
 - **Practical artifacts**
-  - Minimal required files: short AGENTS.md, `feature_list.json`, `progress.md`, init.sh.
+  - Minimal required files: short AGENTS.md, a compact feature index plus per-feature records, a bounded progress log, and `init.sh`.
   - AGENTS.md should include startup workflow, working rules, required artifacts, definition of done, and end-of-session checklist.
   - Provide templates and scripts to generate and validate harness components.
 
