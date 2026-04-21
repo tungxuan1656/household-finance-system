@@ -1,0 +1,9 @@
+{
+  "id": "feat-010",
+  "name": "User profile & identity settings",
+  "description": "Implement the current-user profile endpoints and settings UI for display name and basic identity details, keeping the local user record aligned with authenticated session state and docs/product-specs/profile-management.md.",
+  "dependencies": ["feat-009"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

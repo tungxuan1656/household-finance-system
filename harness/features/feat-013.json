@@ -1,0 +1,9 @@
+{
+  "id": "feat-013",
+  "name": "Household invitations",
+  "description": "Implement invite creation, invite validation, and invite acceptance entry points so households can onboard new members through links or codes as defined in docs/product-specs/household-invitation.md.",
+  "dependencies": ["feat-011"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

@@ -14,6 +14,141 @@
       "id": "feat-003",
       "name": "Scope GitHub verify by changed app",
       "status": "done"
+    },
+    {
+      "id": "feat-004",
+      "name": "Monorepo workspace & toolchain foundation",
+      "status": "pending"
+    },
+    {
+      "id": "feat-005",
+      "name": "Web app shell & UI foundation",
+      "status": "pending"
+    },
+    {
+      "id": "feat-006",
+      "name": "Worker service foundation",
+      "status": "pending"
+    },
+    {
+      "id": "feat-007",
+      "name": "Database schema & local migrations",
+      "status": "pending"
+    },
+    {
+      "id": "feat-008",
+      "name": "Authentication backend session exchange",
+      "status": "pending"
+    },
+    {
+      "id": "feat-009",
+      "name": "Authentication frontend session flow",
+      "status": "pending"
+    },
+    {
+      "id": "feat-010",
+      "name": "User profile & identity settings",
+      "status": "pending"
+    },
+    {
+      "id": "feat-011",
+      "name": "Household creation & active household selection",
+      "status": "pending"
+    },
+    {
+      "id": "feat-012",
+      "name": "Household settings & archive rules",
+      "status": "pending"
+    },
+    {
+      "id": "feat-013",
+      "name": "Household invitations",
+      "status": "pending"
+    },
+    {
+      "id": "feat-014",
+      "name": "Household membership actions",
+      "status": "pending"
+    },
+    {
+      "id": "feat-015",
+      "name": "Role & permission policy enforcement",
+      "status": "pending"
+    },
+    {
+      "id": "feat-016",
+      "name": "Expense categories & input reference data",
+      "status": "pending"
+    },
+    {
+      "id": "feat-017",
+      "name": "Expense entry create flow",
+      "status": "pending"
+    },
+    {
+      "id": "feat-018",
+      "name": "Expense detail & activity feed",
+      "status": "pending"
+    },
+    {
+      "id": "feat-019",
+      "name": "Expense update, delete & restore lifecycle",
+      "status": "pending"
+    },
+    {
+      "id": "feat-020",
+      "name": "Expense visibility rules",
+      "status": "pending"
+    },
+    {
+      "id": "feat-021",
+      "name": "Expense search, filters & pagination",
+      "status": "pending"
+    },
+    {
+      "id": "feat-022",
+      "name": "Expense group management",
+      "status": "pending"
+    },
+    {
+      "id": "feat-023",
+      "name": "Expense-to-group assignment & summaries",
+      "status": "pending"
+    },
+    {
+      "id": "feat-024",
+      "name": "Quick-add expense basic flow",
+      "status": "pending"
+    },
+    {
+      "id": "feat-025",
+      "name": "Quick-add resilience & smart defaults",
+      "status": "pending"
+    },
+    {
+      "id": "feat-026",
+      "name": "Budget setup & editing",
+      "status": "pending"
+    },
+    {
+      "id": "feat-027",
+      "name": "Budget tracking & threshold status",
+      "status": "pending"
+    },
+    {
+      "id": "feat-028",
+      "name": "Analytics overview dashboard",
+      "status": "pending"
+    },
+    {
+      "id": "feat-029",
+      "name": "Analytics comparisons & breakdowns",
+      "status": "pending"
+    },
+    {
+      "id": "feat-030",
+      "name": "New user onboarding flow",
+      "status": "pending"
     }
   ]
 }

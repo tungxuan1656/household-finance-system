@@ -1,0 +1,9 @@
+{
+  "id": "feat-025",
+  "name": "Quick-add resilience & smart defaults",
+  "description": "Extend quick-add with smart defaults, undo support, and offline/pending behavior so the fast-entry flow remains reliable under real usage without bloating the initial quick-add feature.",
+  "dependencies": ["feat-024", "feat-021"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

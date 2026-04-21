@@ -1,0 +1,9 @@
+{
+  "id": "feat-023",
+  "name": "Expense-to-group assignment & summaries",
+  "description": "Add assignment of expenses to groups and provide group-level summary views, keeping the grouping workflow useful without bundling all group behavior into one oversized feature.",
+  "dependencies": ["feat-018", "feat-022"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

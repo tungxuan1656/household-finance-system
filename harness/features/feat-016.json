@@ -1,0 +1,9 @@
+{
+  "id": "feat-016",
+  "name": "Expense categories & input reference data",
+  "description": "Introduce the category, payment-source, and related reference data needed for expense entry and querying, aligned with docs/product-specs/expense-categorization.md and the expense input model in PRODUCT.md.",
+  "dependencies": ["feat-011", "feat-007"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

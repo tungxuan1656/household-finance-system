@@ -1,0 +1,9 @@
+{
+  "id": "feat-012",
+  "name": "Household settings & archive rules",
+  "description": "Add household update/settings flows and archive rules, including admin-only changes to household metadata and safe archive constraints, based on docs/product-specs/household-management.md.",
+  "dependencies": ["feat-011"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

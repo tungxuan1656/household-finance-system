@@ -1,0 +1,9 @@
+{
+  "id": "feat-026",
+  "name": "Budget setup & editing",
+  "description": "Implement monthly household budget creation and editing, including overall and optional per-category plans, following docs/product-specs/budget-management.md.",
+  "dependencies": ["feat-015", "feat-021"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

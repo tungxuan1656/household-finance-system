@@ -1,0 +1,9 @@
+{
+  "id": "feat-008",
+  "name": "Authentication backend session exchange",
+  "description": "Implement backend auth exchange, refresh, and logout endpoints that verify Firebase identity, map a local user, issue application tokens, and manage refresh-session lifecycle according to docs/product-specs/authentication.md.",
+  "dependencies": ["feat-006", "feat-007"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}
