@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-04-21 — GitHub verify scoping
+- Who: automation
+- Summary: Narrowed the PR verify workflow so web changes only run web checks, worker changes only run worker checks, and shared root workflow/package changes trigger both. Each job now installs and runs only its own workspace package scope.
+- Files changed: .github/workflows/verify-code.yml, harness/feature_index.json, harness/features/feat-003.json
+- Blockers: none
+- Next steps: run repository verification if needed; otherwise keep this workflow pattern for future CI changes.
+
+---
+
 ## 2026-04-21 — Harness contract standardization
 - Who: automation
 - Summary: Standardized the repository on `harness/` as the canonical state surface and aligned docs, scripts, and handoff workflow.

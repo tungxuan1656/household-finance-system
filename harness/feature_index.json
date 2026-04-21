@@ -9,6 +9,11 @@
       "id": "feat-002",
       "name": "Standardize harness contract",
       "status": "done"
+    },
+    {
+      "id": "feat-003",
+      "name": "Scope GitHub verify by changed app",
+      "status": "done"
     }
   ]
 }

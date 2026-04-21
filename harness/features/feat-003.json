@@ -1,0 +1,11 @@
+{
+  "id": "feat-003",
+  "name": "Scope GitHub verify by changed app",
+  "description": "Make the GitHub verify workflow run only the affected app checks and avoid installing or testing the unrelated workspace package.",
+  "dependencies": [
+    "feat-002"
+  ],
+  "status": "done",
+  "evidence": ".github/workflows/verify-code.yml now filters web, worker, and verify-workflow/shared root changes separately; web and worker jobs install and run only their own package scope; validation completed locally by reviewing the workflow diff and parsing the workflow YAML structure.",
+  "updated_at": "2026-04-21"
+}
