@@ -1,0 +1,9 @@
+{
+  "id": "feat-021",
+  "name": "Expense search, filters & pagination",
+  "description": "Implement filterable, searchable, paginated expense listing and summary endpoints plus the corresponding UI controls, based on docs/product-specs/expense-querying.md.",
+  "dependencies": ["feat-018", "feat-020"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

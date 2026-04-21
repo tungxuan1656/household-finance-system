@@ -1,0 +1,9 @@
+{
+  "id": "feat-005",
+  "name": "Web app shell & UI foundation",
+  "description": "Create the apps/web shell with routing, base layout, Tailwind/shadcn integration, shared form primitives, toast handling, and authenticated/unauthenticated page scaffolding needed for the MVP flows.",
+  "dependencies": ["feat-004"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

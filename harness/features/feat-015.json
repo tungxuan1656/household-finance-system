@@ -1,0 +1,9 @@
+{
+  "id": "feat-015",
+  "name": "Role & permission policy enforcement",
+  "description": "Define and enforce the admin/member permission matrix across household and expense actions, with server-side enforcement first and matching UI affordances from docs/product-specs/role-permission.md.",
+  "dependencies": ["feat-012", "feat-014"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

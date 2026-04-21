@@ -1,0 +1,9 @@
+{
+  "id": "feat-020",
+  "name": "Expense visibility rules",
+  "description": "Implement the private-versus-household visibility model on expenses and enforce visibility in write/read flows according to docs/product-specs/data-visibility.md.",
+  "dependencies": ["feat-017", "feat-015"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

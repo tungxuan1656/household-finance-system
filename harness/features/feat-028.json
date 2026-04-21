@@ -1,0 +1,9 @@
+{
+  "id": "feat-028",
+  "name": "Analytics overview dashboard",
+  "description": "Implement the first analytics dashboard slice with total spend, trend over time, and category-level overview visualizations based on docs/product-specs/analytics-overview.md.",
+  "dependencies": ["feat-021", "feat-027"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

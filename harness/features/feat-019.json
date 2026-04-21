@@ -1,0 +1,9 @@
+{
+  "id": "feat-019",
+  "name": "Expense update, delete & restore lifecycle",
+  "description": "Add edit, soft-delete, and restore behaviors for expenses with audit support and permission-aware UI, following docs/product-specs/expense-management.md.",
+  "dependencies": ["feat-018", "feat-015"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

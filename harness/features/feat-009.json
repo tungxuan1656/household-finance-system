@@ -1,0 +1,9 @@
+{
+  "id": "feat-009",
+  "name": "Authentication frontend session flow",
+  "description": "Build sign-up/sign-in screens, Firebase email/password integration, backend token exchange wiring, session persistence, and automatic refresh handling so users can enter the app reliably.",
+  "dependencies": ["feat-005", "feat-008"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

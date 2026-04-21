@@ -1,0 +1,9 @@
+{
+  "id": "feat-030",
+  "name": "New user onboarding flow",
+  "description": "Implement the first-run onboarding that helps a new user set a display name, create or join a household, and learn the quick-add path, based on docs/product-specs/new-user-onboarding.md.",
+  "dependencies": ["feat-009", "feat-011", "feat-013", "feat-024"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "feat-027",
+  "name": "Budget tracking & threshold status",
+  "description": "Add planned-versus-actual budget tracking, remaining budget status, and threshold warnings so budgets become actionable after setup exists.",
+  "dependencies": ["feat-026", "feat-019"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

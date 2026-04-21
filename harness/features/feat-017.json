@@ -1,0 +1,9 @@
+{
+  "id": "feat-017",
+  "name": "Expense entry create flow",
+  "description": "Implement the main expense creation path, including amount, category, source, note, timestamp, payer-versus-creator ownership, and household attachment, following docs/product-specs/expense-tracking.md and docs/product-specs/expense-ownership.md.",
+  "dependencies": ["feat-015", "feat-016"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

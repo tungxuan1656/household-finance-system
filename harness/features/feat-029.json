@@ -1,0 +1,9 @@
+{
+  "id": "feat-029",
+  "name": "Analytics comparisons & breakdowns",
+  "description": "Extend analytics with month-over-month comparison, payer attribution, and group-level breakdowns, keeping the deeper comparison layer separate from the initial dashboard slice.",
+  "dependencies": ["feat-023", "feat-028"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

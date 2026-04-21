@@ -1,0 +1,9 @@
+{
+  "id": "feat-011",
+  "name": "Household creation & active household selection",
+  "description": "Implement household creation, household listing/read, and active-household switching so a signed-in user can establish or choose the working household context described in docs/product-specs/household-management.md.",
+  "dependencies": ["feat-009", "feat-007"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

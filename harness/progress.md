@@ -1,5 +1,21 @@
 # Progress Log
 
+## 2026-04-21 — Rebalanced MVP feature breakdown
+- Who: Codex
+- Summary: Reworked the pending MVP backlog from coarse mini-epics into smaller feature-sized slices that still match the product roadmap. Split oversized areas such as auth, household, quick-add, budget, analytics, and grouping into execution-friendly features without going all the way down to subtask level.
+- Files changed: harness/feature_index.json, harness/features/feat-004.json through feat-030.json
+- Blockers: Full `./init.sh` verification could not complete in sandbox because `pnpm install` could not reach the npm registry (`ENOTFOUND`).
+- Next steps: Pick one pending feature at a time, then create a focused execution plan for that feature before implementation.
+
+## 2026-04-21 — Feature backlog decomposition (feat-004 → feat-020)
+- Who: human + Antigravity
+- Summary: Analyzed product specs (docs/product-specs/) and PRODUCT.md to break the MVP into 17 granular feature records spanning foundation, auth, household, expense domain, budget, analytics, and onboarding. All records added to harness/features/ and feature_index.json updated.
+- Files changed: harness/feature_index.json, harness/features/feat-004.json through feat-020.json
+- Blockers: none
+- Next steps: start with feat-004 (project foundation & monorepo setup), then proceed in dependency order.
+
+---
+
 ## 2026-04-21 — CI scope script trigger alignment
 - Who: automation
 - Summary: Added the CI scope helper script to the verify workflow trigger and shared-scope detection so changes to the detector itself also run verification.

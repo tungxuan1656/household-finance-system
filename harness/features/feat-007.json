@@ -1,0 +1,9 @@
+{
+  "id": "feat-007",
+  "name": "Database schema & local migrations",
+  "description": "Design the initial D1 schema and migration workflow for users, households, memberships, expenses, categories, groups, budgets, sessions, and audit records, including local seed support for development and tests.",
+  "dependencies": ["feat-006"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}

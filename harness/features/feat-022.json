@@ -1,0 +1,9 @@
+{
+  "id": "feat-022",
+  "name": "Expense group management",
+  "description": "Implement create, update, archive, and list flows for expense groups or events so households can define shared spending buckets according to docs/product-specs/expense-grouping.md.",
+  "dependencies": ["feat-015", "feat-011"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-21"
+}
