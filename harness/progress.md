@@ -1,5 +1,23 @@
 # Progress Log
 
+## 2026-04-21 — CI scope script trigger alignment
+- Who: automation
+- Summary: Added the CI scope helper script to the verify workflow trigger and shared-scope detection so changes to the detector itself also run verification.
+- Files changed: .github/workflows/verify-code.yml, scripts/detect_ci_scope.sh, harness/features/feat-003.json
+- Blockers: none
+- Next steps: keep the scope helper aligned with the lockfile importer layout.
+
+---
+
+## 2026-04-21 — Lockfile importer-aware CI scope
+- Who: automation
+- Summary: Replaced the generic shared lockfile trigger with git-diff scope detection so pnpm-lock changes can be attributed to web or worker importer sections instead of always running both.
+- Files changed: .github/workflows/verify-code.yml, scripts/detect_ci_scope.sh, harness/features/feat-003.json
+- Blockers: none
+- Next steps: keep the importer detection aligned with the pnpm lockfile format if the monorepo layout changes.
+
+---
+
 ## 2026-04-21 — CI trigger and install simplification
 - Who: automation
 - Summary: Restricted verify and harness-size workflows to relevant file paths, switched verify to a single full workspace install, and used the existing root scripts for app checks.
