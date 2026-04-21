@@ -2,7 +2,7 @@
 
 ## Purpose / Big Picture
 
-Thiết lập shell cho `apps/web` để app có một khung điều hướng và layout ổn định cho toàn bộ MVP flows. Sau thay đổi này, người dùng vào `/` sẽ được đưa đến `/sign-in`, có thể truy cập công khai tại `/sign-in` và `/sign-up`, và sau khi xác thực sẽ đi vào một shell riêng cho luồng đã đăng nhập hoặc onboarding. Shell này cũng chuẩn hóa toast, theme, form primitives, và các trạng thái empty/loading/error để các feature sau như auth, household, expense, và settings không phải tự dựng lại nền tảng UI.
+Set up a shell for `apps/web` to provide the app with a stable navigation framework and layout for all MVP flows. After this change, users accessing `/` will be taken to `/sign-in`, which is publicly accessible at `/sign-in` and `/sign-up`, and after authentication will enter a separate shell for the logged-in or onboarding flow. This shell also standardizes toast, themes, form primitives, and empty/loading/error states so that subsequent features like auth, household, expense, and settings don't have to rebuild the UI.
 
 ## Scope
 
@@ -10,7 +10,7 @@ In scope:
 - `apps/web/src/main.tsx`
 - `apps/web/src/app.tsx`
 - `apps/web/src/index.css`
-- `apps/web/src/components/theme-provider.tsx` nếu cần chỉnh cách tích hợp shell
+- Use `apps/web/src/components/theme-provider.tsx` if you need to adjust the shell integration method.
 - `apps/web/src/components/ui/sonner.tsx`
 - New route/layout files under `apps/web/src/*`
 - Shared shell-level form primitives and route guard helpers
