@@ -3,12 +3,38 @@ name: Verify code (lint, test, typecheck)
 on:
   pull_request:
     branches: [ main ]
+    paths:
+      - 'apps/web/**'
+      - 'apps/worker/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/verify-code.yml'
+      - 'scripts/detect_ci_scope.sh'
 
 jobs:
-  verify:
-    name: Verify (lint, test, typecheck)
+  prepare:
+    name: Detect changed paths
     runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.scope.outputs.web }}
+      worker: ${{ steps.scope.outputs.worker }}
+      shared: ${{ steps.scope.outputs.shared }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Detect scope
+        id: scope
+        run: bash scripts/detect_ci_scope.sh "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
+
+  verify:
+    name: Verify Changed Apps
+    needs: prepare
+    if: needs.prepare.outputs.web == 'true' || needs.prepare.outputs.worker == 'true' || needs.prepare.outputs.shared == 'true'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,13 +54,25 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: pnpm lint
+        if: needs.prepare.outputs.web == 'true' || needs.prepare.outputs.shared == 'true'
+        run: pnpm run lint:web
 
       - name: Typecheck
-        run: pnpm typecheck
+        if: needs.prepare.outputs.web == 'true' || needs.prepare.outputs.shared == 'true'
+        run: pnpm run typecheck:web
 
-      - name: test-web
-        run: pnpm test:web
+      - name: Test Web
+        if: needs.prepare.outputs.web == 'true' || needs.prepare.outputs.shared == 'true'
+        run: pnpm run test:web
 
-      - name: test-worker
-        run: pnpm test:worker
+      - name: Lint Worker
+        if: needs.prepare.outputs.worker == 'true' || needs.prepare.outputs.shared == 'true'
+        run: pnpm run lint:worker
+
+      - name: Typecheck Worker
+        if: needs.prepare.outputs.worker == 'true' || needs.prepare.outputs.shared == 'true'
+        run: pnpm run typecheck:worker
+
+      - name: Test Worker
+        if: needs.prepare.outputs.worker == 'true' || needs.prepare.outputs.shared == 'true'
+        run: pnpm run test:worker

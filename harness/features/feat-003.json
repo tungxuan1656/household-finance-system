@@ -1,0 +1,11 @@
+{
+  "id": "feat-003",
+  "name": "Scope GitHub verify by changed app",
+  "description": "Make the GitHub verify workflow run only the affected app checks and avoid installing or testing the unrelated workspace package.",
+  "dependencies": [
+    "feat-002"
+  ],
+  "status": "done",
+  "evidence": ".github/workflows/verify-code.yml now derives CI scope from git diff, including pnpm-lock.yaml importer sections, so web package changes only trigger web checks unless shared config changed; the helper script is itself part of the trigger/shared scope; it installs all dependencies once and runs the existing root scripts for the affected app checks; .github/workflows/harness-size-check.yml now path-filters to harness/script changes and skips unnecessary Node setup; validation completed locally by reviewing the workflow diff and parsing the workflow YAML structure.",
+  "updated_at": "2026-04-21"
+}
