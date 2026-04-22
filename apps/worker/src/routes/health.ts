@@ -7,7 +7,7 @@ export const healthRoutes = new Hono<AppBindings>()
 
 healthRoutes.get('/health', (ctx) =>
   success(ctx, {
-    service: 'fos-worker',
+    service: 'household-finance-worker',
     ok: true,
     timestamp: new Date().toISOString(),
   }),

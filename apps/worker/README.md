@@ -1,11 +1,11 @@
 # Worker App (apps/worker)
 
-This package is the backend runtime for Family Operating System.
+This package is the backend runtime for Household Finance System.
 
 ## Responsibilities
 
 - Expose backend APIs used by the web client.
-- Implement server-side business rules for contributions, points, and rewards.
+- Implement server-side authentication, profile, and future household/expense rules.
 - Manage persistence via Cloudflare D1 (through Worker bindings).
 - Keep backend logic secure, validated, and testable.
 
@@ -46,7 +46,7 @@ pnpm dev
 
 ## Cloudflare Workers guide
 
-- `docs/cloudflare-workers.md`
+- `docs/references/backend/cloudflare-workers.md`
 
 ## Build, Test, and Deploy
 

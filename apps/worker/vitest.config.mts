@@ -12,11 +12,11 @@ export default defineWorkersConfig({
       workers: {
         miniflare: {
           bindings: {
-            AUTH_ISSUER: 'https://fos.local',
-            AUTH_AUDIENCE: 'fos-api',
+            AUTH_ISSUER: 'https://household-finance.local',
+            AUTH_AUDIENCE: 'household-finance-api',
             ACCESS_TOKEN_TTL_SECONDS: '86400',
             REFRESH_TOKEN_TTL_SECONDS: '2592000',
-            FIREBASE_PROJECT_ID: 'fos-local',
+            FIREBASE_PROJECT_ID: 'household-finance-local',
             FIREBASE_JWKS_URL:
               'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com',
             AUTH_ALLOW_INSECURE_TEST_TOKENS: 'true',

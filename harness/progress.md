@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Implemented feat-006 worker service foundation
+- Who: Codex
+- Summary: Hardened the `apps/worker` foundation by extracting shared JSON-body validation, moving auth user lookup behind a repository helper, aligning worker naming/config with Household Finance, and adding coverage for request-id propagation, 404s, and generic internal-error mapping.
+- Files changed: apps/worker/src/lib/validation.ts, apps/worker/src/db/repositories/user-repository.ts, apps/worker/src/middlewares/auth.ts, apps/worker/src/routes/auth.ts, apps/worker/src/routes/profile.ts, apps/worker/src/routes/health.ts, apps/worker/test/index.spec.ts, apps/worker/test/unit/response.spec.ts, apps/worker/test/unit/env.spec.ts, apps/worker/test/unit/firebase.spec.ts, apps/worker/test/unit/jwt.spec.ts, apps/worker/package.json, apps/worker/wrangler.jsonc, apps/worker/.dev.vars.example, apps/worker/README.md, apps/worker/vitest.config.mts, docs/exec-plans/completed/2026-04-22-feat-006-worker-service-foundation.md, docs/exec-plans/completed/index.md, harness/features/feat-006.json, harness/feature_index.json
+- Blockers: none
+- Next steps: move on to feat-007 database schema and local migrations, using the cleaned worker foundation as the base.
+
 ## 2026-04-22 — Implemented feat-005 auth-state zustand migration
 - Who: Codex
 - Summary: Replaced the shell-auth context with a zustand store, rewired the shell guard and auth pages to use store-backed auth state and return-to handling, added store tests, and revalidated the web app with test, lint, typecheck, and build.

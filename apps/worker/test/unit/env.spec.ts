@@ -8,13 +8,13 @@ const createEnv = (overrides: Partial<Record<string, unknown>> = {}): Env =>
     DB: {
       prepare: () => ({}) as D1PreparedStatement,
     },
-    AUTH_ISSUER: 'https://fos.local',
-    AUTH_AUDIENCE: 'fos-api',
+    AUTH_ISSUER: 'https://household-finance.local',
+    AUTH_AUDIENCE: 'household-finance-api',
     ACCESS_TOKEN_TTL_SECONDS: '86400',
     REFRESH_TOKEN_TTL_SECONDS: '2592000',
     AUTH_JWT_SECRET: 'jwt-secret',
     AUTH_REFRESH_TOKEN_PEPPER: 'refresh-pepper',
-    FIREBASE_PROJECT_ID: 'fos-prod',
+    FIREBASE_PROJECT_ID: 'household-finance-prod',
     ...overrides,
   }) as unknown as Env
 
@@ -22,11 +22,11 @@ describe('env config', () => {
   it('reads config with defaults', () => {
     const config = readConfig(createEnv())
 
-    expect(config.authIssuer).toBe('https://fos.local')
-    expect(config.authAudience).toBe('fos-api')
+    expect(config.authIssuer).toBe('https://household-finance.local')
+    expect(config.authAudience).toBe('household-finance-api')
     expect(config.accessTokenTtlSeconds).toBe(86400)
     expect(config.refreshTokenTtlSeconds).toBe(2592000)
-    expect(config.firebaseProjectId).toBe('fos-prod')
+    expect(config.firebaseProjectId).toBe('household-finance-prod')
     expect(config.allowInsecureTestTokens).toBe(false)
     expect(config.firebaseJwksUrl).toContain(
       'securetoken@system.gserviceaccount.com',

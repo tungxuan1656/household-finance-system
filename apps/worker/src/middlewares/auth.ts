@@ -4,6 +4,7 @@ import {
   findSessionById,
   isSessionActive,
 } from '@/db/repositories/session-repository'
+import { findUserById } from '@/db/repositories/user-repository'
 import type { AppBindings } from '@/dto'
 import { readConfig } from '@/lib/env'
 import { unauthenticated } from '@/lib/errors'
@@ -37,14 +38,7 @@ export const authMiddleware: MiddlewareHandler<AppBindings> = async (
     throw unauthenticated('Session has expired or is revoked.')
   }
 
-  const user = await ctx.env.DB.prepare(
-    `SELECT id, primary_email
-       FROM users
-       WHERE id = ?
-       LIMIT 1`,
-  )
-    .bind(payload.sub)
-    .first<{ id: string; primary_email: string | null }>()
+  const user = await findUserById(ctx.env.DB, payload.sub)
 
   if (!user) {
     throw unauthenticated('User is no longer available.')
@@ -54,7 +48,7 @@ export const authMiddleware: MiddlewareHandler<AppBindings> = async (
 
   ctx.set('currentUser', {
     id: user.id,
-    email: user.primary_email,
+    email: user.primaryEmail,
     provider: 'firebase',
   })
 

@@ -8,3 +8,4 @@ looks the way it does.
 
 - [2026-04-21-feat-005-web-app-shell-ui-foundation.md](2026-04-21-feat-005-web-app-shell-ui-foundation.md) - feat-005 web shell, routing, auth page scaffolding, and UI foundation.
 - [2026-04-21-feat-004-workspace-toolchain-foundation.md](2026-04-21-feat-004-workspace-toolchain-foundation.md) - feat-004 Monorepo workspace & toolchain foundation
+- [2026-04-22-feat-006-worker-service-foundation.md](2026-04-22-feat-006-worker-service-foundation.md) - feat-006 Worker service foundation.

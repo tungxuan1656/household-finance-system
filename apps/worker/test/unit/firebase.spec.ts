@@ -4,13 +4,13 @@ import { AppError } from '@/lib/errors'
 import { verifyFirebaseIdToken } from '@/utils/auth/firebase'
 
 const baseConfig = {
-  authIssuer: 'https://fos.local',
-  authAudience: 'fos-api',
+  authIssuer: 'https://household-finance.local',
+  authAudience: 'household-finance-api',
   accessTokenTtlSeconds: 3600,
   refreshTokenTtlSeconds: 7200,
   authJwtSecret: 'test-jwt-secret',
   refreshTokenPepper: 'test-pepper',
-  firebaseProjectId: 'fos-prod',
+  firebaseProjectId: 'household-finance-prod',
   firebaseJwksUrl:
     'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com',
   allowInsecureTestTokens: false,
@@ -37,7 +37,7 @@ describe('firebase token verification', () => {
     await expect(
       verifyFirebaseIdToken('test:user-2:user2@example.com', {
         ...baseConfig,
-        firebaseProjectId: 'fos-local',
+        firebaseProjectId: 'household-finance-local',
       }),
     ).rejects.toBeInstanceOf(AppError)
   })

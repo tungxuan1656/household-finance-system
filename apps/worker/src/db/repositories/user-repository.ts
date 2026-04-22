@@ -47,6 +47,19 @@ export const loadUserById = async (
   db: D1Database,
   userId: string,
 ): Promise<StoredUser> => {
+  const user = await findUserById(db, userId)
+
+  if (!user) {
+    throw new Error('User upsert failed unexpectedly')
+  }
+
+  return user
+}
+
+export const findUserById = async (
+  db: D1Database,
+  userId: string,
+): Promise<StoredUser | null> => {
   const user = await db
     .prepare(
       `SELECT id, display_name, primary_email, avatar_url
@@ -62,11 +75,7 @@ export const loadUserById = async (
       avatar_url: string | null
     }>()
 
-  if (!user) {
-    throw new Error('User upsert failed unexpectedly')
-  }
-
-  return toStoredUser(user)
+  return user ? toStoredUser(user) : null
 }
 
 export interface UpdateUserProfileInput {

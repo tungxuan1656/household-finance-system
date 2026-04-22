@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import type { ZodSchema } from 'zod'
 
 import {
   loadUserById,
@@ -7,33 +6,9 @@ import {
 } from '@/db/repositories/user-repository'
 import type { AppBindings, ProfileResponse, UpdateProfileRequest } from '@/dto'
 import { updateProfileRequestSchema } from '@/dto'
-import { invalidInput } from '@/lib/errors'
 import { success } from '@/lib/response'
+import { readJsonBody } from '@/lib/validation'
 import { authMiddleware } from '@/middlewares/auth'
-
-const readJsonBody = async <T>(
-  request: Request,
-  schema: ZodSchema<T>,
-): Promise<T> => {
-  let rawBody: unknown
-
-  try {
-    rawBody = await request.json()
-  } catch {
-    throw invalidInput('Request body must be valid JSON.')
-  }
-
-  const parsed = schema.safeParse(rawBody)
-
-  if (!parsed.success) {
-    throw invalidInput(
-      'Request body failed validation.',
-      parsed.error.flatten(),
-    )
-  }
-
-  return parsed.data
-}
 
 const toProfileResponse = (
   user: Awaited<ReturnType<typeof loadUserById>>,
@@ -61,7 +36,6 @@ profileRoutes.patch('/profile', async (ctx) => {
     ctx.req.raw,
     updateProfileRequestSchema,
   )
-  await loadUserById(ctx.env.DB, currentUser.id)
 
   const updatedProfile = await updateUserProfile(ctx.env.DB, currentUser.id, {
     displayName: body.displayName,

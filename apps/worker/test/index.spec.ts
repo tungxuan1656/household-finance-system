@@ -94,6 +94,27 @@ describe('Worker foundation', () => {
     expect(payload.meta.requestId.length).toBeGreaterThan(0)
   })
 
+  it('preserves x-request-id when provided', async () => {
+    const response = await SELF.fetch('https://example.com/api/v1/health', {
+      headers: {
+        'x-request-id': 'request-123',
+      },
+    })
+
+    const payload = await parseJson<ApiEnvelope<{ ok: boolean }>>(response)
+
+    expect(response.status).toBe(200)
+    expect(payload.meta.requestId).toBe('request-123')
+  })
+
+  it('returns not found for unknown routes', async () => {
+    const response = await SELF.fetch('https://example.com/api/v1/unknown')
+    const payload = await parseJson<{ error: { code: string } }>(response)
+
+    expect(response.status).toBe(404)
+    expect(payload.error.code).toBe('NOT_FOUND')
+  })
+
   it('returns invalid input when auth exchange payload is malformed', async () => {
     const response = await SELF.fetch(
       'https://example.com/api/v1/auth/provider/exchange',
