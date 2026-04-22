@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-04-22 — Re-sequenced feat-033 ahead of feat-009
+- Who: Codex
+- Summary: Removed the incorrect dependency from `feat-033` to `feat-009`, kept `feat-033` anchored to the existing backend auth surface from `feat-008`, and updated the active ExecPlan plus `feat-009` dependencies so the frontend auth flow now consumes the standardized API client/error contract instead of blocking it.
+- Files changed: harness/features/feat-033.json, harness/features/feat-009.json, docs/exec-plans/active/2026-04-22-feat-033-api-response-contract-error-handling-standardization.md, harness/progress.md
+- Blockers: none
+- Next steps: implement `feat-033` first, then wire `feat-009` onto the new client/envelope contract.
+
+## 2026-04-22 — Created ExecPlan for feat-033 API response contract standardization
+- Who: Codex
+- Summary: Drafted the active ExecPlan for `feat-033` after reviewing the current worker response/error helpers, route coverage, frontend store state, harness backlog, and the required frontend/backend/shared reference docs. The plan locks the feature to infrastructure-only fullstack work: standardize the worker `{ success, data, error, meta }` envelope, centralize error-code ownership, create the canonical web `src/api` client seam with typed errors and a refresh adapter, and record the remaining dependency on `feat-009` for real auth-session wiring.
+- Files changed: docs/exec-plans/active/2026-04-22-feat-033-api-response-contract-error-handling-standardization.md, docs/exec-plans/active/index.md, harness/progress.md
+- Blockers: final production verification of 401 refresh-and-retry still depends on `feat-009` exposing the real frontend auth-session lifecycle.
+- Next steps: implement worker envelope/error standardization first, then add the web API client and adapter-driven retry tests before running full repo verification.
+
 ## 2026-04-22 — Hardened feat-008 auth/session rotation and logout timing
 - Who: Codex
 - Summary: Tightened refresh-session rotation in the worker repository to be atomic, added logout request-epoch plumbing to avoid near-expiry revocation races, parallelized auth middleware lookups, expanded auth contract/session repository tests for validation and edge cases, and re-verified the worker auth slice with focused tests plus lint/typecheck.
