@@ -141,34 +141,47 @@ export const rotateRefreshSession = async (
   const nowEpoch = Date.now()
   const nextSessionId = input.newSessionId ?? newId()
 
-  const results = await db.batch([
-    db
-      .prepare(
-        `UPDATE refresh_sessions
-         SET revoked_at = ?, updated_at = ?
-         WHERE id = ?
-           AND user_id = ?
-           AND revoked_at IS NULL
-           AND expires_at > ?`,
-      )
-      .bind(
-        nowEpoch,
-        nowEpoch,
-        input.previousSessionId,
-        input.userId,
-        nowEpoch,
-      ),
-    insertRefreshSessionStatement(db, {
+  const revokeResult = await db
+    .prepare(
+      `UPDATE refresh_sessions
+       SET revoked_at = ?, updated_at = ?
+       WHERE id = ?
+         AND user_id = ?
+         AND revoked_at IS NULL
+         AND expires_at > ?`,
+    )
+    .bind(nowEpoch, nowEpoch, input.previousSessionId, input.userId, nowEpoch)
+    .run()
+
+  if (Number(revokeResult.meta.changes ?? 0) !== 1) {
+    return false
+  }
+
+  try {
+    await insertRefreshSessionStatement(db, {
       sessionId: nextSessionId,
       userId: input.userId,
       tokenHash: input.tokenHash,
       expiresAt: input.expiresAt,
       userAgent: input.userAgent,
       ipAddress: input.ipAddress,
-    }),
-  ])
+    }).run()
+  } catch (error) {
+    await db
+      .prepare(
+        `UPDATE refresh_sessions
+         SET revoked_at = NULL, updated_at = ?
+         WHERE id = ?
+           AND user_id = ?
+           AND revoked_at = ?`,
+      )
+      .bind(nowEpoch, input.previousSessionId, input.userId, nowEpoch)
+      .run()
 
-  return Number(results[0].meta.changes ?? 0) === 1
+    throw error
+  }
+
+  return true
 }
 
 export const revokeSessionIfActive = async (

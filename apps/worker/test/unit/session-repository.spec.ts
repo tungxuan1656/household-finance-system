@@ -92,4 +92,39 @@ describe('session repository', () => {
 
     expect(currentSession?.revokedAt).toBeNull()
   })
+
+  it('does not insert a rotated session when the previous session is already revoked', async () => {
+    await env.DB.prepare(
+      `INSERT INTO users (id, display_name, primary_email)
+       VALUES (?, ?, ?)`,
+    )
+      .bind('user-1', 'User One', 'user1@example.com')
+      .run()
+
+    await createRefreshSession(env.DB, {
+      sessionId: 'session-current',
+      userId: 'user-1',
+      tokenHash: 'hash-current',
+      expiresAt: Date.now() + 60_000,
+      userAgent: null,
+      ipAddress: null,
+    })
+
+    await revokeSessionIfActive(env.DB, 'session-current')
+
+    const rotated = await rotateRefreshSession(env.DB, {
+      previousSessionId: 'session-current',
+      newSessionId: 'session-next',
+      userId: 'user-1',
+      tokenHash: 'hash-rotated',
+      expiresAt: Date.now() + 60_000,
+      userAgent: null,
+      ipAddress: null,
+    })
+
+    const nextSession = await findSessionById(env.DB, 'session-next')
+
+    expect(rotated).toBe(false)
+    expect(nextSession).toBeNull()
+  })
 })
