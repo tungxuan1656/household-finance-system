@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Tightened feat-032 fallback verification
+- Who: Codex
+- Summary: Added a render-level regression test that boots the web router under an unsupported browser language hint and confirms the sign-in shell still renders in Vietnamese, closing the remaining verification gap from the feat-032 review.
+- Files changed: apps/web/src/lib/i18n/browser-fallback.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: keep the i18n foundation as-is unless future locale work expands beyond `vi`.
+
 ## 2026-04-22 — Implemented feat-032 frontend internationalization foundation
 - Who: Codex
 - Summary: Delivered the frontend i18n foundation with `i18next`/`react-i18next`/`i18next-browser-languagedetector`, a shared `vi` catalog, browser-language plus `appLanguage` resolution normalized to `vi`, Vietnamese labels across the current auth/shell/onboarding/placeholder/overview surfaces, and regression coverage for translated rendering plus unsupported-locale fallback.

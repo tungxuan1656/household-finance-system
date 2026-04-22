@@ -4,6 +4,6 @@
   "description": "Add frontend internationalization plumbing so the web app resolves all UI labels through a Vietnamese locale catalog with a hard fallback to `vi`, ready for future locale expansion without changing feature screens again.",
   "dependencies": ["feat-005", "feat-031"],
   "status": "done",
-  "evidence": "./init.sh, pnpm --filter web lint, pnpm --filter web typecheck, pnpm --filter web test, pnpm --filter web build",
+  "evidence": "./init.sh, pnpm --filter web lint, pnpm --filter web typecheck, pnpm --filter web test, pnpm --filter web build; added render-level fallback coverage in apps/web/src/lib/i18n/browser-fallback.test.tsx",
   "updated_at": "2026-04-22"
 }
