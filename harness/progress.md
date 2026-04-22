@@ -1,5 +1,26 @@
 # Progress Log
 
+## 2026-04-22 — Implemented feat-005 auth-state zustand migration
+- Who: Codex
+- Summary: Replaced the shell-auth context with a zustand store, rewired the shell guard and auth pages to use store-backed auth state and return-to handling, added store tests, and revalidated the web app with test, lint, typecheck, and build.
+- Files changed: apps/web/src/stores/auth.store.ts, apps/web/src/stores/auth.store.test.tsx, apps/web/src/stores/types.ts, apps/web/src/router.tsx, apps/web/src/components/layouts/shell-guard.tsx, apps/web/src/pages/auth/sign-in-page.tsx, apps/web/src/pages/auth/sign-up-page.tsx, apps/web/src/pages/app/overview-page.tsx, apps/web/src/app.test.tsx
+- Blockers: none
+- Next steps: continue with the next auth/session plan items, especially the real token-backed frontend session flow from feat-009.
+
+## 2026-04-22 — Reactivated feat-005 plan for zustand auth state follow-on
+- Who: Codex
+- Summary: Restored feat-005 as an active execution plan, extended it with the auth-state zustand migration and downstream auth shell follow-on items, and linked it from the active plans index.
+- Files changed: docs/exec-plans/active/2026-04-21-feat-005-web-app-shell-ui-foundation.md, docs/exec-plans/active/index.md
+- Blockers: none
+- Next steps: implement the auth-state zustand store, rewire shell guard and auth pages to it, and add store-level tests before re-validating the web shell.
+
+## 2026-04-21 — Completed feat-005 web app shell and UI foundation
+- Who: Codex
+- Summary: Replaced the starter web app with a React Router shell, public sign-in/sign-up routes, a protected app scaffold with onboarding and placeholder feature routes, local-theme toast integration, and UI test coverage for redirects and shell behavior.
+- Files changed: apps/web/package.json, apps/web/vite.config.ts, apps/web/src/app.tsx, apps/web/src/app.test.tsx, apps/web/src/components/ui/sonner.tsx, apps/web/src/index.css, apps/web/src/main.tsx, apps/web/src/router.tsx, apps/web/src/test/setup.ts, harness/feature_index.json, harness/features/feat-005.json, docs/exec-plans/active/2026-04-21-feat-005-web-app-shell-ui-foundation.md, docs/exec-plans/active/index.md
+- Blockers: None after fixing Vitest config typing and lint formatting.
+- Next steps: Update downstream auth and onboarding features to mount into the new shell routes.
+
 ## 2026-04-21 — Removed shared tsconfig base from feat-004
 - Who: Codex
 - Summary: Reverted the shared TypeScript base and restored app-owned compiler settings so each app keeps its own config without inheritance from a shared root file.

@@ -57,3 +57,9 @@ When you touch architecture-relevant code:
 1. Update this file if the domain map or allowed boundaries changed.
 2. Update the related design doc in `docs/design-docs/` if the reasoning changed.
 3. Add or update an executable check if the rule should be enforced mechanically.
+
+## Meaningful Namespaces and File Organization
+- Agents navigate code primarily via the filesystem; file and folder names are an important API for them.
+- Prefer descriptive paths (e.g., billing/invoices/compute.ts) over generic helpers—this improves discoverability and intent signaling.
+- Keep files small and focused so agents can load and reason about whole files without truncation.
+- When a file is long and contains many tasks, split it into smaller files.
