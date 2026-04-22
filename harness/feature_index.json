@@ -36,6 +36,16 @@
       "status": "done"
     },
     {
+      "id": "feat-031",
+      "name": "Backend internationalization foundation",
+      "status": "pending"
+    },
+    {
+      "id": "feat-032",
+      "name": "Frontend internationalization foundation",
+      "status": "pending"
+    },
+    {
       "id": "feat-008",
       "name": "Authentication backend session exchange",
       "status": "pending"

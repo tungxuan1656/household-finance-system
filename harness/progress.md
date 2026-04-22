@@ -1,5 +1,26 @@
 # Progress Log
 
+## 2026-04-22 — Reordered i18n features ahead of feat-008
+- Who: Codex
+- Summary: Updated harness sequencing so the new backend/frontend internationalization foundations are explicitly scheduled before `feat-008`. The feature index now lists `feat-031` and `feat-032` before auth backend work, `feat-008` now depends on both, and the active auth ExecPlan notes the new prerequisite order.
+- Files changed: harness/feature_index.json, harness/features/feat-008.json, docs/exec-plans/active/2026-04-22-feat-008-authentication-backend-session-exchange.md, harness/progress.md
+- Blockers: none
+- Next steps: create the next ExecPlan for `feat-031` or `feat-032` before resuming `feat-008`.
+
+## 2026-04-22 — Added i18n foundation features to harness backlog
+- Who: Codex
+- Summary: Added two new pending features to the harness backlog for internationalization groundwork before auth implementation: one for backend locale resolution and one for frontend locale wiring. Both are explicitly scoped to Vietnamese-only behavior for now with fallback pinned to `vi`.
+- Files changed: harness/feature_index.json, harness/features/feat-031.json, harness/features/feat-032.json, harness/progress.md
+- Blockers: none
+- Next steps: decide whether `feat-031` or `feat-032` should be planned first, then create an ExecPlan before implementation.
+
+## 2026-04-22 — Created ExecPlan for feat-008 backend auth completion
+- Who: Codex
+- Summary: Drafted the active ExecPlan for `feat-008` after reviewing the auth product spec, worker auth/session code, harness state, and backend reference docs. The plan captures the current partial implementation baseline and narrows the remaining backend scope to logout/session revocation, acceptance coverage, and harness closure.
+- Files changed: docs/exec-plans/active/2026-04-22-feat-008-authentication-backend-session-exchange.md, docs/exec-plans/active/index.md, harness/progress.md
+- Blockers: none
+- Next steps: implement the plan in `feat-008`, keeping exchange/refresh stable while adding logout/session revocation and final verification evidence.
+
 ## 2026-04-22 — Added canonical backend folder-structure reference
 - Who: Codex
 - Summary: Added a backend companion to the frontend folder-structure reference so routes/handlers/repositories/contracts/types/lib/auth placement rules are documented in one canonical backend doc, then linked it from `docs/references/index.md` and `docs/BACKEND.md`.
