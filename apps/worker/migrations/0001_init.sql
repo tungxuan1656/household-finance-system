@@ -127,6 +127,7 @@ CREATE TABLE IF NOT EXISTS expenses (
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   CHECK (amount_minor > 0),
   CHECK (visibility IN ('private', 'household')),
+  CHECK (visibility != 'household' OR household_id IS NOT NULL),
   CHECK (
     (household_id IS NULL AND category_id IS NULL)
     OR household_id IS NOT NULL
@@ -234,14 +235,23 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_expense_categories_household_name_active
 CREATE INDEX IF NOT EXISTS idx_expense_categories_parent
   ON expense_categories(household_id, parent_category_id);
 
+CREATE INDEX IF NOT EXISTS idx_expense_categories_created_by_user_id
+  ON expense_categories(created_by_user_id);
+
 CREATE INDEX IF NOT EXISTS idx_expense_groups_household_status_created
   ON expense_groups(household_id, status, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_expense_groups_created_by_user_id
+  ON expense_groups(created_by_user_id);
 
 CREATE INDEX IF NOT EXISTS idx_expenses_household_occurred_at
   ON expenses(household_id, occurred_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_expenses_household_visibility_occurred_at
   ON expenses(household_id, visibility, occurred_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_expenses_household_category
+  ON expenses(household_id, category_id);
 
 CREATE INDEX IF NOT EXISTS idx_expenses_created_by_user_id
   ON expenses(created_by_user_id, occurred_at DESC);
@@ -263,8 +273,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_budgets_category_scope_month
   ON budgets(household_id, budget_month, category_id)
   WHERE scope = 'category' AND archived_at IS NULL;
 
+CREATE INDEX IF NOT EXISTS idx_budgets_created_by_user_id
+  ON budgets(created_by_user_id);
+
+CREATE INDEX IF NOT EXISTS idx_budgets_household_category
+  ON budgets(household_id, category_id);
+
 CREATE INDEX IF NOT EXISTS idx_budget_limits_budget_id
   ON budget_limits(budget_id);
+
+CREATE INDEX IF NOT EXISTS idx_budget_limits_household_category
+  ON budget_limits(household_id, category_id);
 
 CREATE INDEX IF NOT EXISTS idx_audit_logs_household_created_at
   ON audit_logs(household_id, created_at DESC);
