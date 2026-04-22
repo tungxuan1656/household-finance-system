@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-04-22 — Moved profile orchestration behind worker handlers
+- Who: Codex
+- Summary: Refactored the worker profile route to follow the backend route -> handler -> data-access boundary by introducing dedicated profile handlers and keeping the route focused on middleware, validation, and response wiring.
+- Files changed: apps/worker/src/routes/profile.ts, apps/worker/src/handlers/profile/get-current-profile.ts, apps/worker/src/handlers/profile/update-current-profile.ts, harness/progress.md
+- Blockers: Full `./init.sh` is still blocked by the unrelated web test failure in `apps/web/src/app.test.tsx` (`localStorage.getItem is not a function`).
+- Next steps: run worker verification and keep future worker endpoints on the same handler-first boundary.
+
+## 2026-04-22 — Revalidated feat-006 worker foundation implementation
+- Who: Codex
+- Summary: Re-checked the worker service foundation against the completed ExecPlan, confirmed the runtime/auth/validation/test surfaces are still implemented, and aligned `apps/worker/README.md` with the current `docs/references/*` backend standards.
+- Files changed: apps/worker/README.md, harness/progress.md
+- Blockers: Full `./init.sh` remains blocked by the unrelated web test failure in `apps/web/src/app.test.tsx` (`localStorage.getItem is not a function`).
+- Next steps: keep feat-006 closed unless worker behavior regresses; handle the web test failure under the next appropriate frontend or maintenance task.
+
 ## 2026-04-22 — Rewrote feat-006 completed plan into full ExecPlan
 - Who: Codex
 - Summary: Reviewed the completed `feat-006` worker foundation plan against the repo ExecPlan requirements, rewrote it as a self-contained completed ExecPlan with scope, standards, validation, and recovery details, and re-ran `./init.sh` to capture current baseline drift.

@@ -68,6 +68,7 @@ describe('web shell routing', () => {
       screen.getByLabelText('Email address'),
       'tester@example.com',
     )
+
     await user.type(screen.getByLabelText('Password'), 'password123')
 
     await user.click(screen.getByRole('button', { name: 'Sign in' }))
@@ -94,6 +95,7 @@ describe('web shell routing', () => {
       screen.getByLabelText('Email address'),
       'tester@example.com',
     )
+
     await user.type(screen.getByLabelText('Password'), 'password123')
 
     await user.click(screen.getByRole('button', { name: 'Sign in' }))
@@ -112,6 +114,7 @@ describe('web shell routing', () => {
       screen.getByLabelText('Email address'),
       'tester@example.com',
     )
+
     await user.type(screen.getByLabelText('Password'), 'password123')
 
     await user.click(screen.getByRole('button', { name: 'Sign in' }))
