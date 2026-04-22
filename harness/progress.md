@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Created ExecPlan for feat-031 backend i18n foundation
+- Who: Codex
+- Summary: Drafted the active ExecPlan for `feat-031` after reviewing the worker message surface, backend standards, and harness state. The plan scopes the feature to backend-only locale resolution and Vietnamese error/validation copy with hard fallback to `vi`, without changing API codes or adding dependencies.
+- Files changed: docs/exec-plans/active/2026-04-22-feat-031-backend-internationalization-foundation.md, docs/exec-plans/active/index.md, harness/progress.md
+- Blockers: none
+- Next steps: implement `feat-031` first, then continue with `feat-032` and resume `feat-008` on top of the new backend i18n foundation.
+
 ## 2026-04-22 — Reordered i18n features ahead of feat-008
 - Who: Codex
 - Summary: Updated harness sequencing so the new backend/frontend internationalization foundations are explicitly scheduled before `feat-008`. The feature index now lists `feat-031` and `feat-032` before auth backend work, `feat-008` now depends on both, and the active auth ExecPlan notes the new prerequisite order.
