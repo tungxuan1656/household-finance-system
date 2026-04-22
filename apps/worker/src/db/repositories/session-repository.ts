@@ -141,7 +141,7 @@ export const rotateRefreshSession = async (
   const nowEpoch = Date.now()
   const nextSessionId = input.newSessionId ?? newId()
 
-  const revokeResult = await db
+  const revokeStatement = db
     .prepare(
       `UPDATE refresh_sessions
        SET revoked_at = ?, updated_at = ?
@@ -151,34 +151,29 @@ export const rotateRefreshSession = async (
          AND expires_at > ?`,
     )
     .bind(nowEpoch, nowEpoch, input.previousSessionId, input.userId, nowEpoch)
-    .run()
+
+  const conditionalInsertStatement = db
+    .prepare(
+      `INSERT INTO refresh_sessions (id, user_id, token_hash, expires_at, user_agent, ip_address)
+       SELECT ?, ?, ?, ?, ?, ?
+       WHERE changes() = 1`,
+    )
+    .bind(
+      nextSessionId,
+      input.userId,
+      input.tokenHash,
+      input.expiresAt,
+      input.userAgent,
+      input.ipAddress,
+    )
+
+  const [revokeResult] = await db.batch([
+    revokeStatement,
+    conditionalInsertStatement,
+  ])
 
   if (Number(revokeResult.meta.changes ?? 0) !== 1) {
     return false
-  }
-
-  try {
-    await insertRefreshSessionStatement(db, {
-      sessionId: nextSessionId,
-      userId: input.userId,
-      tokenHash: input.tokenHash,
-      expiresAt: input.expiresAt,
-      userAgent: input.userAgent,
-      ipAddress: input.ipAddress,
-    }).run()
-  } catch (error) {
-    await db
-      .prepare(
-        `UPDATE refresh_sessions
-         SET revoked_at = NULL, updated_at = ?
-         WHERE id = ?
-           AND user_id = ?
-           AND revoked_at = ?`,
-      )
-      .bind(nowEpoch, input.previousSessionId, input.userId, nowEpoch)
-      .run()
-
-    throw error
   }
 
   return true
@@ -187,9 +182,8 @@ export const rotateRefreshSession = async (
 export const revokeSessionIfActive = async (
   db: D1Database,
   sessionId: string,
+  nowEpoch: number = Date.now(),
 ): Promise<boolean> => {
-  const nowEpoch = Date.now()
-
   const result = await db
     .prepare(
       `UPDATE refresh_sessions
@@ -205,7 +199,7 @@ export const revokeSessionIfActive = async (
 }
 
 export const isSessionActive = (session: RefreshSession): boolean => {
-  if (session.revokedAt) {
+  if (session.revokedAt !== null) {
     return false
   }
 

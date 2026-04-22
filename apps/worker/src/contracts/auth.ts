@@ -43,3 +43,7 @@ export interface RefreshSessionResponse {
   refreshToken: string
   refreshTokenExpiresIn: number
 }
+
+export interface LogoutSessionResponse {
+  revoked: true
+}

@@ -1,5 +1,26 @@
 # Progress Log
 
+## 2026-04-22 — Hardened feat-008 auth/session rotation and logout timing
+- Who: Codex
+- Summary: Tightened refresh-session rotation in the worker repository to be atomic, added logout request-epoch plumbing to avoid near-expiry revocation races, parallelized auth middleware lookups, expanded auth contract/session repository tests for validation and edge cases, and re-verified the worker auth slice with focused tests plus lint/typecheck.
+- Files changed: apps/worker/src/db/repositories/session-repository.ts, apps/worker/src/middlewares/auth.ts, apps/worker/src/routes/auth.ts, apps/worker/src/types/app.ts, apps/worker/src/types/auth.ts, apps/worker/src/contracts/auth.ts, apps/worker/src/handlers/auth/logout-session.ts, apps/worker/test/unit/dto-auth.spec.ts, apps/worker/test/unit/session-repository.spec.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep the auth/session flow stable for `feat-009`; no further `feat-008` changes are expected.
+
+## 2026-04-22 — Completed feat-008 backend logout/session revocation
+- Who: Codex
+- Summary: Implemented `POST /api/v1/auth/logout` behind auth middleware, added current-session revocation through the worker session repository, covered unauthorized/logout/post-logout regression paths in the worker integration tests, and verified the workspace with worker lint, typecheck, test, and full `./init.sh`.
+- Files changed: apps/worker/src/contracts/auth.ts, apps/worker/src/types/auth.ts, apps/worker/src/handlers/auth/logout-session.ts, apps/worker/src/routes/auth.ts, apps/worker/test/index.spec.ts, harness/feature_index.json, harness/features/feat-008.json, harness/progress.md
+- Blockers: none
+- Next steps: keep the auth/session lifecycle stable for `feat-009`; no remaining work is expected for `feat-008`.
+
+## 2026-04-22 — Rewrote feat-008 ExecPlan to full backend-scope template
+- Who: Codex
+- Summary: Tightened the active `feat-008` execution plan into a fully template-aligned backend plan with explicit scope map, layer impact, standards matrix, verification path, risks, harness integration steps, and a single owned current implementation step.
+- Files changed: docs/exec-plans/active/2026-04-22-feat-008-authentication-backend-session-exchange.md, harness/progress.md
+- Blockers: none
+- Next steps: start implementation with a failing logout regression test in `apps/worker/test/index.spec.ts`, then add route/handler/repository support and run worker + full repo verification.
+
 ## 2026-04-22 — Hardened feat-032 language persistence against blocked storage
 - Who: Codex
 - Summary: Wrapped the frontend i18n language write in a storage-safe fallback and added a regression test so `changeLanguage()` keeps working even when localStorage is unavailable or blocked.
