@@ -22,6 +22,14 @@ function renderAt(pathname: string) {
 }
 
 describe('web shell routing', () => {
+  it('redirects protected routes back to sign in when shell access is missing', async () => {
+    renderAt('/app')
+
+    expect(
+      await screen.findByRole('heading', { name: 'Sign in' }),
+    ).toBeInTheDocument()
+  })
+
   it('redirects the root route to sign in', async () => {
     renderAt('/')
 
@@ -47,13 +55,41 @@ describe('web shell routing', () => {
   it('renders the protected shell and onboarding placeholder', async () => {
     const user = userEvent.setup()
 
-    renderAt('/app')
+    renderAt('/sign-in')
+
+    await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
     expect(
       screen.getByRole('heading', { name: 'Household workspace' }),
     ).toBeInTheDocument()
 
     await user.click(screen.getByRole('link', { name: 'Onboarding' }))
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Finish setting up your household',
+      }),
+    ).toBeInTheDocument()
+  })
+
+  it('grants shell access when the sign-in form is submitted', async () => {
+    const user = userEvent.setup()
+
+    renderAt('/sign-in')
+
+    await user.click(screen.getByRole('button', { name: 'Sign in' }))
+
+    expect(
+      await screen.findByRole('heading', { name: 'Household workspace' }),
+    ).toBeInTheDocument()
+  })
+
+  it('returns to the requested protected route after sign in', async () => {
+    const user = userEvent.setup()
+
+    renderAt('/app/onboarding')
+
+    await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
     expect(
       await screen.findByRole('heading', {

@@ -41,6 +41,7 @@ function ProtectedShell() {
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                   ].join(' ')
                 }
+                end={item.to === '/app'}
                 to={item.to}>
                 {item.label}
               </NavLink>

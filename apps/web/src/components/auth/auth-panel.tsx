@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
@@ -8,12 +6,14 @@ function AuthPanel({
   children,
   description,
   footer,
+  onSubmit,
   title,
 }: {
   actionLabel: string
   children: React.ReactNode
   description: string
   footer: React.ReactNode
+  onSubmit?: React.FormEventHandler<HTMLFormElement>
   title: string
 }) {
   return (
@@ -27,14 +27,11 @@ function AuthPanel({
       </CardHeader>
 
       <CardContent>
-        <form className='space-y-5'>
+        <form className='space-y-5' onSubmit={onSubmit}>
           <div className='space-y-4'>{children}</div>
 
           <div className='flex flex-wrap items-center gap-3'>
             <Button type='submit'>{actionLabel}</Button>
-            <Button asChild variant='outline'>
-              <Link to='/app'>Continue as shell demo</Link>
-            </Button>
           </div>
         </form>
 

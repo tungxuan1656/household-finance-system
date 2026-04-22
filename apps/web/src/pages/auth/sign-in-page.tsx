@@ -1,10 +1,30 @@
 import { Link } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthPanel } from '@/components/auth/auth-panel'
 import { Input } from '@/components/ui/input'
+import { useShellAccessActions } from '@/lib/shell-access'
 
 function SignInPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { grantShellAccess } = useShellAccessActions()
+
+  const destination =
+    typeof location.state === 'object' &&
+    location.state !== null &&
+    'from' in location.state &&
+    typeof location.state.from === 'string'
+      ? location.state.from
+      : '/app'
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
+    grantShellAccess()
+    navigate(destination, { replace: true })
+  }
+
   return (
     <AuthPanel
       actionLabel='Sign in'
@@ -19,7 +39,8 @@ function SignInPage() {
           </Link>
         </p>
       }
-      title='Sign in'>
+      title='Sign in'
+      onSubmit={handleSubmit}>
       <AuthField
         description='The inbox tied to your account.'
         id='email'
