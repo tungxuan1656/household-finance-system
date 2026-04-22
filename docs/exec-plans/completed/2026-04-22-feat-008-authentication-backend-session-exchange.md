@@ -27,7 +27,7 @@ In scope (expected edits):
 - `harness/features/feat-008.json`
 - `harness/feature_index.json`
 - `harness/progress.md`
-- `docs/exec-plans/active/2026-04-22-feat-008-authentication-backend-session-exchange.md`
+- `docs/exec-plans/completed/2026-04-22-feat-008-authentication-backend-session-exchange.md`
 
 Out of scope:
 

@@ -3,7 +3,8 @@
   "name": "Authentication backend session exchange",
   "description": "Implement backend auth exchange, refresh, and logout endpoints that verify Firebase identity, map a local user, issue application tokens, and manage refresh-session lifecycle according to docs/product-specs/authentication.md.",
   "dependencies": ["feat-006", "feat-007", "feat-031", "feat-032"],
-  "status": "pending",
-  "evidence": "2026-04-22: refactored worker auth/session structure by splitting API contracts from runtime types, moving JWT/Firebase/hash code into src/lib/auth, and making refresh rotation transactional via D1 batch rollback coverage. Verified with pnpm --filter worker lint, pnpm --filter worker typecheck, pnpm --filter worker test, and full ./init.sh.",
+  "status": "done",
+  "evidence": "2026-04-22: implemented POST /api/v1/auth/logout with auth-middleware protection and current-session revocation, added integration coverage for missing-bearer logout, logout revocation, protected-route rejection after logout, and refresh replay failure after logout, then verified with pnpm --filter worker lint, pnpm --filter worker typecheck, pnpm --filter worker test, and full ./init.sh.",
   "updated_at": "2026-04-22"
 }
+

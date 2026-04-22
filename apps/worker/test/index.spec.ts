@@ -78,7 +78,9 @@ describe('Worker foundation', () => {
         'accept-language': 'en-US,en;q=0.9',
       },
     })
-    const payload = await parseJson<{ error: { code: string; message: string } }>(response)
+    const payload = await parseJson<{
+      error: { code: string; message: string }
+    }>(response)
 
     expect(response.status).toBe(404)
     expect(payload.error.code).toBe('NOT_FOUND')
@@ -99,7 +101,9 @@ describe('Worker foundation', () => {
       },
     )
 
-    const payload = await parseJson<{ error: { code: string; message: string } }>(response)
+    const payload = await parseJson<{
+      error: { code: string; message: string }
+    }>(response)
 
     expect(response.status).toBe(400)
     expect(payload.error.code).toBe('INVALID_INPUT')
@@ -107,13 +111,18 @@ describe('Worker foundation', () => {
   })
 
   it('rejects protected route when bearer token is missing', async () => {
-    const response = await SELF.fetch('https://example.com/api/v1/protected/ping', {
-      headers: {
-        'accept-language': 'en-US,en;q=0.9',
+    const response = await SELF.fetch(
+      'https://example.com/api/v1/protected/ping',
+      {
+        headers: {
+          'accept-language': 'en-US,en;q=0.9',
+        },
       },
-    })
+    )
 
-    const payload = await parseJson<{ error: { code: string; message: string } }>(response)
+    const payload = await parseJson<{
+      error: { code: string; message: string }
+    }>(response)
 
     expect(response.status).toBe(401)
     expect(payload.error.code).toBe('UNAUTHENTICATED')
@@ -193,14 +202,16 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           provider: 'firebase',
-          idToken: 'test:firebase-user-profile-name:user-profile-name@example.com',
+          idToken:
+            'test:firebase-user-profile-name:user-profile-name@example.com',
         }),
       },
     )
 
-    const exchangePayload = await parseJson<
-      ApiEnvelope<{ accessToken: string; user: { id: string } }>
-    >(exchangeResponse)
+    const exchangePayload =
+      await parseJson<
+        ApiEnvelope<{ accessToken: string; user: { id: string } }>
+      >(exchangeResponse)
 
     const response = await SELF.fetch('https://example.com/api/v1/profile', {
       method: 'PATCH',
@@ -250,14 +261,16 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           provider: 'firebase',
-          idToken: 'test:firebase-user-profile-avatar:user-profile-avatar@example.com',
+          idToken:
+            'test:firebase-user-profile-avatar:user-profile-avatar@example.com',
         }),
       },
     )
 
-    const exchangePayload = await parseJson<
-      ApiEnvelope<{ accessToken: string; user: { id: string } }>
-    >(exchangeResponse)
+    const exchangePayload =
+      await parseJson<
+        ApiEnvelope<{ accessToken: string; user: { id: string } }>
+      >(exchangeResponse)
 
     const response = await SELF.fetch('https://example.com/api/v1/profile', {
       method: 'PATCH',
@@ -270,9 +283,10 @@ describe('Worker foundation', () => {
       }),
     })
 
-    const payload = await parseJson<
-      ApiEnvelope<{ displayName: string | null; avatarUrl: string | null }>
-    >(response)
+    const payload =
+      await parseJson<
+        ApiEnvelope<{ displayName: string | null; avatarUrl: string | null }>
+      >(response)
 
     expect(response.status).toBe(200)
     expect(payload.data.displayName).toBeNull()
@@ -291,14 +305,14 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           provider: 'firebase',
-          idToken: 'test:firebase-user-profile-both:user-profile-both@example.com',
+          idToken:
+            'test:firebase-user-profile-both:user-profile-both@example.com',
         }),
       },
     )
 
-    const exchangePayload = await parseJson<
-      ApiEnvelope<{ accessToken: string }>
-    >(exchangeResponse)
+    const exchangePayload =
+      await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
     const response = await SELF.fetch('https://example.com/api/v1/profile', {
       method: 'PATCH',
@@ -312,9 +326,10 @@ describe('Worker foundation', () => {
       }),
     })
 
-    const payload = await parseJson<
-      ApiEnvelope<{ displayName: string | null; avatarUrl: string | null }>
-    >(response)
+    const payload =
+      await parseJson<
+        ApiEnvelope<{ displayName: string | null; avatarUrl: string | null }>
+      >(response)
 
     expect(response.status).toBe(200)
     expect(payload.data).toMatchObject({
@@ -333,14 +348,16 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           provider: 'firebase',
-          idToken: 'test:firebase-user-profile-clear:user-profile-clear@example.com',
+          idToken:
+            'test:firebase-user-profile-clear:user-profile-clear@example.com',
         }),
       },
     )
 
-    const exchangePayload = await parseJson<
-      ApiEnvelope<{ accessToken: string; user: { id: string } }>
-    >(exchangeResponse)
+    const exchangePayload =
+      await parseJson<
+        ApiEnvelope<{ accessToken: string; user: { id: string } }>
+      >(exchangeResponse)
 
     await env.DB.prepare(
       `UPDATE users
@@ -366,9 +383,10 @@ describe('Worker foundation', () => {
       }),
     })
 
-    const payload = await parseJson<
-      ApiEnvelope<{ displayName: string | null; avatarUrl: string | null }>
-    >(response)
+    const payload =
+      await parseJson<
+        ApiEnvelope<{ displayName: string | null; avatarUrl: string | null }>
+      >(response)
 
     expect(response.status).toBe(200)
     expect(payload.data).toMatchObject({
@@ -387,14 +405,14 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           provider: 'firebase',
-          idToken: 'test:firebase-user-profile-invalid-avatar:user-profile-invalid-avatar@example.com',
+          idToken:
+            'test:firebase-user-profile-invalid-avatar:user-profile-invalid-avatar@example.com',
         }),
       },
     )
 
-    const exchangePayload = await parseJson<ApiEnvelope<{ accessToken: string }>>(
-      exchangeResponse,
-    )
+    const exchangePayload =
+      await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
     const response = await SELF.fetch('https://example.com/api/v1/profile', {
       method: 'PATCH',
@@ -423,14 +441,14 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           provider: 'firebase',
-          idToken: 'test:firebase-user-profile-blank-name:user-profile-blank-name@example.com',
+          idToken:
+            'test:firebase-user-profile-blank-name:user-profile-blank-name@example.com',
         }),
       },
     )
 
-    const exchangePayload = await parseJson<ApiEnvelope<{ accessToken: string }>>(
-      exchangeResponse,
-    )
+    const exchangePayload =
+      await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
     const response = await SELF.fetch('https://example.com/api/v1/profile', {
       method: 'PATCH',
@@ -459,14 +477,14 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           provider: 'firebase',
-          idToken: 'test:firebase-user-profile-unknown:user-profile-unknown@example.com',
+          idToken:
+            'test:firebase-user-profile-unknown:user-profile-unknown@example.com',
         }),
       },
     )
 
-    const exchangePayload = await parseJson<ApiEnvelope<{ accessToken: string }>>(
-      exchangeResponse,
-    )
+    const exchangePayload =
+      await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
     const response = await SELF.fetch('https://example.com/api/v1/profile', {
       method: 'PATCH',
@@ -496,14 +514,14 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           provider: 'firebase',
-          idToken: 'test:firebase-user-profile-email:user-profile-email@example.com',
+          idToken:
+            'test:firebase-user-profile-email:user-profile-email@example.com',
         }),
       },
     )
 
-    const exchangePayload = await parseJson<ApiEnvelope<{ accessToken: string }>>(
-      exchangeResponse,
-    )
+    const exchangePayload =
+      await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
     const response = await SELF.fetch('https://example.com/api/v1/profile', {
       method: 'PATCH',
@@ -532,14 +550,14 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           provider: 'firebase',
-          idToken: 'test:firebase-user-profile-empty:user-profile-empty@example.com',
+          idToken:
+            'test:firebase-user-profile-empty:user-profile-empty@example.com',
         }),
       },
     )
 
-    const exchangePayload = await parseJson<ApiEnvelope<{ accessToken: string }>>(
-      exchangeResponse,
-    )
+    const exchangePayload =
+      await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
     const response = await SELF.fetch('https://example.com/api/v1/profile', {
       method: 'PATCH',
@@ -871,6 +889,108 @@ describe('Worker foundation', () => {
     expect(protectedPayload.error.code).toBe('UNAUTHENTICATED')
   })
 
+  it('rejects logout without a bearer token', async () => {
+    const logoutResponse = await SELF.fetch(
+      'https://example.com/api/v1/auth/logout',
+      {
+        method: 'POST',
+      },
+    )
+
+    const logoutPayload = await parseJson<{
+      error: { code: string }
+    }>(logoutResponse)
+
+    expect(logoutResponse.status).toBe(401)
+    expect(logoutPayload.error.code).toBe('UNAUTHENTICATED')
+  })
+
+  it('revokes the current session on logout and blocks the previous access token', async () => {
+    const exchangeResponse = await SELF.fetch(
+      'https://example.com/api/v1/auth/provider/exchange',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          provider: 'firebase',
+          idToken: 'test:firebase-user-logout:user-logout@example.com',
+        }),
+      },
+    )
+
+    const exchangePayload = await parseJson<
+      ApiEnvelope<{
+        accessToken: string
+        refreshToken: string
+      }>
+    >(exchangeResponse)
+
+    const protectedBeforeLogoutResponse = await SELF.fetch(
+      'https://example.com/api/v1/protected/ping',
+      {
+        headers: {
+          authorization: `Bearer ${exchangePayload.data.accessToken}`,
+        },
+      },
+    )
+
+    expect(protectedBeforeLogoutResponse.status).toBe(200)
+
+    const logoutResponse = await SELF.fetch(
+      'https://example.com/api/v1/auth/logout',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${exchangePayload.data.accessToken}`,
+        },
+      },
+    )
+
+    const logoutPayload =
+      await parseJson<ApiEnvelope<{ revoked: boolean }>>(logoutResponse)
+
+    expect(logoutResponse.status).toBe(200)
+    expect(logoutPayload.data.revoked).toBe(true)
+
+    const protectedAfterLogoutResponse = await SELF.fetch(
+      'https://example.com/api/v1/protected/ping',
+      {
+        headers: {
+          authorization: `Bearer ${exchangePayload.data.accessToken}`,
+        },
+      },
+    )
+
+    const protectedAfterLogoutPayload = await parseJson<{
+      error: { code: string }
+    }>(protectedAfterLogoutResponse)
+
+    expect(protectedAfterLogoutResponse.status).toBe(401)
+    expect(protectedAfterLogoutPayload.error.code).toBe('UNAUTHENTICATED')
+
+    const refreshAfterLogoutResponse = await SELF.fetch(
+      'https://example.com/api/v1/auth/refresh',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          refreshToken: exchangePayload.data.refreshToken,
+        }),
+      },
+    )
+
+    const refreshAfterLogoutPayload = await parseJson<{
+      error: { code: string }
+    }>(refreshAfterLogoutResponse)
+
+    expect(refreshAfterLogoutResponse.status).toBe(401)
+    expect(refreshAfterLogoutPayload.error.code).toBe('UNAUTHENTICATED')
+  })
+
   it('rejects access token when user has been deleted', async () => {
     const exchangeResponse = await SELF.fetch(
       'https://example.com/api/v1/auth/provider/exchange',
@@ -1081,13 +1201,12 @@ describe('Worker foundation', () => {
       )`,
     ).run()
 
-    const auditRows = await env.DB
-      .prepare(
-        `SELECT action_type, target_type, target_id
+    const auditRows = await env.DB.prepare(
+      `SELECT action_type, target_type, target_id
          FROM audit_logs
          WHERE household_id = ?
          ORDER BY created_at DESC`,
-      )
+    )
       .bind('h1')
       .all<{
         action_type: string

@@ -48,7 +48,7 @@
     {
       "id": "feat-008",
       "name": "Authentication backend session exchange",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "feat-009",
@@ -162,3 +162,4 @@
     }
   ]
 }
+

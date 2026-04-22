@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Completed feat-008 backend logout/session revocation
+- Who: Codex
+- Summary: Implemented `POST /api/v1/auth/logout` behind auth middleware, added current-session revocation through the worker session repository, covered unauthorized/logout/post-logout regression paths in the worker integration tests, and verified the workspace with worker lint, typecheck, test, and full `./init.sh`.
+- Files changed: apps/worker/src/contracts/auth.ts, apps/worker/src/types/auth.ts, apps/worker/src/handlers/auth/logout-session.ts, apps/worker/src/routes/auth.ts, apps/worker/test/index.spec.ts, harness/feature_index.json, harness/features/feat-008.json, harness/progress.md
+- Blockers: none
+- Next steps: keep the auth/session lifecycle stable for `feat-009`; no remaining work is expected for `feat-008`.
+
 ## 2026-04-22 — Rewrote feat-008 ExecPlan to full backend-scope template
 - Who: Codex
 - Summary: Tightened the active `feat-008` execution plan into a fully template-aligned backend plan with explicit scope map, layer impact, standards matrix, verification path, risks, harness integration steps, and a single owned current implementation step.

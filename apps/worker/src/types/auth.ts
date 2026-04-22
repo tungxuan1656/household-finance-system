@@ -17,6 +17,11 @@ export interface RefreshSessionInput {
   ipAddress: string | null
 }
 
+export interface LogoutSessionInput {
+  currentSessionId: string
+  locale: SupportedLocale
+}
+
 export type SessionTokenKind = 'access' | 'refresh'
 
 export interface SessionTokenPayload extends JWTPayload {
