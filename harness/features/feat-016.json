@@ -1,7 +1,7 @@
 {
   "id": "feat-016",
   "name": "Expense categories & input reference data",
-  "description": "Introduce the category, payment-source, and related reference data needed for expense entry and querying, aligned with docs/product-specs/expense-categorization.md and the expense input model in PRODUCT.md.",
+  "description": "Seed and expose the expense input reference data required by the expense create flow. Backend: GET /api/v1/categories (returns household-scoped categories + system defaults), GET /api/v1/sources (returns payment-source options: cash, bank-transfer, card, e-wallet, other). Includes seeding a canonical default-category set into the household on creation (triggered by feat-011). Frontend: category-picker component (searchable list with icons) and source-picker component (segmented control or dropdown), usable in the Add Expense and Quick-add forms. Per docs/product-specs/expense-categorization.md. Does NOT include custom category creation by users (out of scope for MVP).",
   "dependencies": ["feat-011", "feat-007"],
   "status": "pending",
   "evidence": "",

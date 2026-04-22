@@ -1,8 +1,8 @@
 {
   "id": "feat-021",
   "name": "Expense search, filters & pagination",
-  "description": "Implement filterable, searchable, paginated expense listing and summary endpoints plus the corresponding UI controls, based on docs/product-specs/expense-querying.md.",
-  "dependencies": ["feat-018", "feat-020"],
+  "description": "Extend the expense feed with search, filters, and pagination controls. Backend: extends GET /api/v1/expenses with additional query params — query (full-text search on note field, partial-match), amount_min/amount_max, group_id, visibility (scoped to caller), sort (date|amount|created_at), limit+cursor pagination; and a GET /api/v1/expenses/summary endpoint returning aggregated totals (sum, count) for the filtered set. Frontend: Filter bar component (date-range picker, category multi-select, payer select, amount range), search input, sort toggle, and pagination/infinite-scroll wiring. Per docs/product-specs/expense-querying.md. Does NOT include analytics charts (feat-028).",
+  "dependencies": ["feat-018"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"

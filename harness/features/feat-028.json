@@ -1,8 +1,8 @@
 {
   "id": "feat-028",
   "name": "Analytics overview dashboard",
-  "description": "Implement the first analytics dashboard slice with total spend, trend over time, and category-level overview visualizations based on docs/product-specs/analytics-overview.md.",
-  "dependencies": ["feat-021", "feat-027"],
+  "description": "Implement the analytics overview dashboard. Backend: GET /api/v1/analytics/overview?period=YYYY-MM (returns: total spend for period, spend by day time-series, top-5 categories by spend with amount and percent, total expense count). All aggregates respect visibility rules — private expenses excluded from household totals. Frontend: Analytics/Insights page — period selector (default current month), total spend hero number, spend-over-time line or bar chart, category breakdown pie/bar chart with ranked list. Per docs/product-specs/analytics-overview.md. Does NOT require budget data (feat-027 is NOT a dependency) — analytics is pure expense aggregation. Does NOT include month-over-month comparison or group breakdowns (feat-029).",
+  "dependencies": ["feat-021"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"

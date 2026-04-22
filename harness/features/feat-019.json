@@ -1,8 +1,8 @@
 {
   "id": "feat-019",
   "name": "Expense update, delete & restore lifecycle",
-  "description": "Add edit, soft-delete, and restore behaviors for expenses with audit support and permission-aware UI, following docs/product-specs/expense-management.md.",
-  "dependencies": ["feat-018", "feat-015"],
+  "description": "Implement expense edit, soft-delete, and restore lifecycle. Backend: PATCH /api/v1/expenses/:id (edit mutable fields: amount, category_id, source, payer_id, date, note, visibility; writes an immutable audit entry recording actor, changed fields, old/new values, timestamp), DELETE /api/v1/expenses/:id (soft-delete; sets deleted_at; expense hidden from feeds but queryable by admin), POST /api/v1/expenses/:id/restore (admin-only; clears deleted_at within retention window). Permission rules: member can edit/soft-delete own expenses; admin can edit/delete any. Frontend: Edit Expense page (pre-filled form), Delete confirmation dialog, Restore action in admin trash view. Derived budget and analytics aggregates update after edit/delete. Per docs/product-specs/expense-management.md.",
+  "dependencies": ["feat-018", "feat-015a"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"

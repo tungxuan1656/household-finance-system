@@ -1,8 +1,8 @@
 {
   "id": "feat-013",
   "name": "Household invitations",
-  "description": "Implement invite creation, invite validation, and invite acceptance entry points so households can onboard new members through links or codes as defined in docs/product-specs/household-invitation.md.",
-  "dependencies": ["feat-011"],
+  "description": "Implement household invite flow. Backend: POST /api/v1/households/:id/invitations (admin-only; generates a single-use token with configurable TTL and target role), GET /api/v1/invitations/:token (validate token, return household preview — public, no auth required), POST /api/v1/invitations/:token/accept (authenticated; adds caller as member with designated role, rejects if already a member or token expired/used). Frontend: Invite Members panel (copy-link UI), and an Accept Invite page that handles the token deep-link flow (auth-gated, shows household name and role before confirming). Per docs/product-specs/household-invitation.md.",
+  "dependencies": ["feat-015a"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"

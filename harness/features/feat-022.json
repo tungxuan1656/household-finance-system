@@ -1,8 +1,8 @@
 {
   "id": "feat-022",
   "name": "Expense group management",
-  "description": "Implement create, update, archive, and list flows for expense groups or events so households can define shared spending buckets according to docs/product-specs/expense-grouping.md.",
-  "dependencies": ["feat-015", "feat-011"],
+  "description": "Implement expense group (event) CRUD. Backend: POST /api/v1/groups (create; name required, optional description, optional budget amount, optional start/end dates), GET /api/v1/groups (list active groups for household), PATCH /api/v1/groups/:id (update; admin or member if settings allow), POST /api/v1/groups/:id/archive (admin-only). Frontend: Groups list page with group cards (name, total spend, budget progress bar if budget set), Create Group form, Edit Group form. Per docs/product-specs/expense-grouping.md. Does NOT include assigning expenses to groups (feat-023) or group-level analytics.",
+  "dependencies": ["feat-015a", "feat-011"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"

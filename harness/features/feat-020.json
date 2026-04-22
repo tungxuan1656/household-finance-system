@@ -1,9 +1,9 @@
 {
   "id": "feat-020",
   "name": "Expense visibility rules",
-  "description": "Implement the private-versus-household visibility model on expenses and enforce visibility in write/read flows according to docs/product-specs/data-visibility.md.",
-  "dependencies": ["feat-017", "feat-015"],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-04-21"
+  "description": "SUPERSEDED — visibility model (private | household enum, server-side enforcement, default resolution, UI toggle) has been merged into feat-017 (Expense entry create flow) on 2026-04-22. Read enforcement (filtering household feeds) is covered by feat-018. Do not implement this feat separately.",
+  "dependencies": [],
+  "status": "superseded",
+  "evidence": "Merged into feat-017 on 2026-04-22 to avoid shipping expense creation without visibility logic already in place.",
+  "updated_at": "2026-04-22"
 }

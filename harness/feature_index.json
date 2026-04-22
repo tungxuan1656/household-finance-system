@@ -50,9 +50,15 @@
       "name": "Authentication backend session exchange",
       "status": "done"
     },
+
     {
       "id": "feat-009",
       "name": "Authentication frontend session flow",
+      "status": "pending"
+    },
+    {
+      "id": "feat-033",
+      "name": "API response contract & error handling standardization",
       "status": "pending"
     },
     {
@@ -60,9 +66,15 @@
       "name": "User profile & identity settings",
       "status": "pending"
     },
+
     {
       "id": "feat-011",
       "name": "Household creation & active household selection",
+      "status": "pending"
+    },
+    {
+      "id": "feat-015a",
+      "name": "Role & permission policy — backend enforcement",
       "status": "pending"
     },
     {
@@ -81,10 +93,11 @@
       "status": "pending"
     },
     {
-      "id": "feat-015",
-      "name": "Role & permission policy enforcement",
+      "id": "feat-015b",
+      "name": "Role & permission policy — frontend UI affordances",
       "status": "pending"
     },
+
     {
       "id": "feat-016",
       "name": "Expense categories & input reference data",
@@ -92,7 +105,7 @@
     },
     {
       "id": "feat-017",
-      "name": "Expense entry create flow",
+      "name": "Expense entry create flow (incl. visibility rules)",
       "status": "pending"
     },
     {
@@ -106,16 +119,6 @@
       "status": "pending"
     },
     {
-      "id": "feat-020",
-      "name": "Expense visibility rules",
-      "status": "pending"
-    },
-    {
-      "id": "feat-021",
-      "name": "Expense search, filters & pagination",
-      "status": "pending"
-    },
-    {
       "id": "feat-022",
       "name": "Expense group management",
       "status": "pending"
@@ -126,15 +129,11 @@
       "status": "pending"
     },
     {
-      "id": "feat-024",
-      "name": "Quick-add expense basic flow",
+      "id": "feat-021",
+      "name": "Expense search, filters & pagination",
       "status": "pending"
     },
-    {
-      "id": "feat-025",
-      "name": "Quick-add resilience & smart defaults",
-      "status": "pending"
-    },
+
     {
       "id": "feat-026",
       "name": "Budget setup & editing",
@@ -145,6 +144,12 @@
       "name": "Budget tracking & threshold status",
       "status": "pending"
     },
+    {
+      "id": "feat-024",
+      "name": "Quick-add expense flow",
+      "status": "pending"
+    },
+
     {
       "id": "feat-028",
       "name": "Analytics overview dashboard",
@@ -159,7 +164,23 @@
       "id": "feat-030",
       "name": "New user onboarding flow",
       "status": "pending"
+    },
+
+    {
+      "id": "feat-025",
+      "name": "Quick-add resilience & smart defaults",
+      "status": "post-mvp"
+    },
+
+    {
+      "id": "feat-015",
+      "name": "Role & permission policy enforcement",
+      "status": "superseded"
+    },
+    {
+      "id": "feat-020",
+      "name": "Expense visibility rules",
+      "status": "superseded"
     }
   ]
 }
-

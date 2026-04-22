@@ -1,7 +1,7 @@
 {
   "id": "feat-018",
   "name": "Expense detail & activity feed",
-  "description": "Implement expense read flows for individual detail and the core chronological expense feed so users can review what was recorded before advanced search or edit lifecycle work is added.",
+  "description": "Implement expense read flows. Backend: GET /api/v1/expenses (paginated household feed; cursor-based; filters: date range, category_id, payer_id; server enforces visibility — only household expenses returned unless caller is creator of a private one), GET /api/v1/expenses/:id (single expense detail; 403 if caller cannot see it). Frontend: Expense Feed page (chronological list with amount, category icon, payer, date, visibility badge; infinite scroll or load-more), and Expense Detail page/sheet (full metadata: note, group tags, creator vs payer, visibility, timestamps). Per docs/product-specs/expense-tracking.md and data-visibility.md. Does NOT include search/filter controls (feat-021) or edit/delete (feat-019).",
   "dependencies": ["feat-017"],
   "status": "pending",
   "evidence": "",

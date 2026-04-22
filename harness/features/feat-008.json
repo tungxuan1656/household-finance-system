@@ -1,7 +1,7 @@
 {
   "id": "feat-008",
   "name": "Authentication backend session exchange",
-  "description": "Implement backend auth exchange, refresh, and logout endpoints that verify Firebase identity, map a local user, issue application tokens, and manage refresh-session lifecycle according to docs/product-specs/authentication.md.",
+  "description": "Implement backend auth endpoints: POST /api/v1/auth/exchange (Firebase ID token → app access + refresh tokens, local user upsert), POST /api/v1/auth/refresh (atomic refresh-token rotation with near-expiry race guard), POST /api/v1/auth/logout (auth-middleware protected, current-session revocation). Includes session repository, DTO validation, auth middleware, and full regression coverage per docs/product-specs/authentication.md. Does NOT include Firebase SDK setup or any frontend code.",
   "dependencies": ["feat-006", "feat-007", "feat-031", "feat-032"],
   "status": "done",
   "evidence": "2026-04-22: implemented POST /api/v1/auth/logout with auth-middleware protection and current-session revocation, then hardened refresh-session rotation to be atomic, added logout request-epoch plumbing to avoid near-expiry revocation races, expanded auth/session regression coverage, and verified the worker auth slice with pnpm exec vitest run test/unit/dto-auth.spec.ts test/unit/session-repository.spec.ts test/index.spec.ts plus pnpm --filter worker lint and pnpm --filter worker typecheck.",

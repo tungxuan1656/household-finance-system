@@ -1,7 +1,7 @@
 {
   "id": "feat-029",
   "name": "Analytics comparisons & breakdowns",
-  "description": "Extend analytics with month-over-month comparison, payer attribution, and group-level breakdowns, keeping the deeper comparison layer separate from the initial dashboard slice.",
+  "description": "Extend analytics with comparison and breakdown views. Backend: GET /api/v1/analytics/comparison?period=YYYY-MM (returns current month vs previous month: total spend delta, top categories delta, payer attribution — who paid most and percent of total), GET /api/v1/analytics/groups?period=YYYY-MM (per-group spend aggregation for the period). Frontend: adds Month-over-Month comparison section to the analytics page (delta badges, trend arrow), Payer Attribution bar chart (stacked by member), and a Groups tab showing spend per group. Per docs/product-specs/analytics-overview.md.",
   "dependencies": ["feat-023", "feat-028"],
   "status": "pending",
   "evidence": "",

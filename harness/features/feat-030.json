@@ -1,7 +1,7 @@
 {
   "id": "feat-030",
   "name": "New user onboarding flow",
-  "description": "Implement the first-run onboarding that helps a new user set a display name, create or join a household, and learn the quick-add path, based on docs/product-specs/new-user-onboarding.md.",
+  "description": "Implement the first-run onboarding flow for new users who have just authenticated and belong to no household. Frontend-only flow (reuses existing backend endpoints). Steps: (1) Welcome screen — brief value-prop copy; (2) Household choice — 'Create a household' or 'Join via invite link'; (3a) Create path — household name + default currency form (calls POST /api/v1/households); (3b) Join path — invite token input or deep-link auto-fill (calls POST /api/v1/invitations/:token/accept); (4) Completion screen — surfaces three next-step CTAs: invite members, set monthly budget, add first expense via quick-add. Users who skip any step land in the main app in a usable state. Onboarding is skipped automatically when user already belongs to a household. Per docs/product-specs/new-user-onboarding.md.",
   "dependencies": ["feat-009", "feat-011", "feat-013", "feat-024"],
   "status": "pending",
   "evidence": "",
