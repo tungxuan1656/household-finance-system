@@ -8,22 +8,20 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { t } from '@/lib/i18n'
 
 const featureCards = [
   {
-    title: 'Quick add',
-    description:
-      'Capture a transaction in a few seconds with defaults and clear validation.',
+    description: t('shell.public.featureCards.quickAdd.description'),
+    title: t('shell.public.featureCards.quickAdd.title'),
   },
   {
-    title: 'Household context',
-    description:
-      'Keep the active household visible across expense, budget, and insight flows.',
+    description: t('shell.public.featureCards.householdContext.description'),
+    title: t('shell.public.featureCards.householdContext.title'),
   },
   {
-    title: 'Shared primitives',
-    description:
-      'Reuse one form surface for auth, onboarding, and every future settings form.',
+    description: t('shell.public.featureCards.sharedPrimitives.description'),
+    title: t('shell.public.featureCards.sharedPrimitives.title'),
   },
 ] as const
 
@@ -33,17 +31,15 @@ function PublicShell() {
       <section className='flex flex-col justify-between rounded-none border border-border/70 bg-background/85 p-6 shadow-sm backdrop-blur sm:p-8'>
         <div className='max-w-xl space-y-6'>
           <Badge className='w-fit' variant='outline'>
-            Household finance shell
+            {t('shell.public.badge')}
           </Badge>
 
           <div className='space-y-3'>
             <h1 className='font-heading text-3xl tracking-tight sm:text-5xl'>
-              Track every shared expense without losing context.
+              {t('shell.public.title')}
             </h1>
             <p className='max-w-prose text-sm leading-6 text-muted-foreground sm:text-base'>
-              Sign in, join a household, and move through the MVP flows from one
-              stable web shell. The auth pages stay public while the app shell
-              keeps onboarding, expenses, budgets, and insights consistent.
+              {t('shell.public.description')}
             </p>
           </div>
 
@@ -62,9 +58,9 @@ function PublicShell() {
         </div>
 
         <div className='mt-8 flex flex-wrap items-center gap-3 text-xs text-muted-foreground'>
-          <span>Public routes: /sign-in, /sign-up</span>
-          <span>Protected shell: /app</span>
-          <span>Redirect: / → /sign-in</span>
+          <span>{t('shell.public.footer.publicRoutes')}</span>
+          <span>{t('shell.public.footer.protectedShell')}</span>
+          <span>{t('shell.public.footer.redirect')}</span>
         </div>
       </section>
 

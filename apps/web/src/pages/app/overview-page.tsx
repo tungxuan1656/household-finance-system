@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { t } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/auth.store'
 
 function OverviewPage() {
@@ -17,19 +18,17 @@ function OverviewPage() {
   return (
     <div className='space-y-6'>
       <header className='space-y-2'>
-        <Badge variant='outline'>Signed-in shell</Badge>
+        <Badge variant='outline'>{t('app.overview.badge')}</Badge>
         <h1 className='font-heading text-3xl tracking-tight'>
-          Household workspace
+          {t('app.overview.title')}
         </h1>
         <p className='max-w-2xl text-sm leading-6 text-muted-foreground'>
-          This landing page is a scaffold for the authenticated app state. It
-          keeps the next features aligned on layout, navigation, and empty-state
-          behavior before real data lands.
+          {t('app.overview.description')}
         </p>
         <p className='text-sm text-muted-foreground'>
-          Signed in as{' '}
+          {t('app.overview.signedInAs')}{' '}
           <span className='font-medium text-foreground'>
-            {user?.name ?? 'Demo Family'}
+            {user?.name ?? t('app.overview.demoFamily')}
           </span>
           {user?.email ? <span> · {user.email}</span> : null}
         </p>
@@ -38,45 +37,46 @@ function OverviewPage() {
       <div className='grid gap-4 lg:grid-cols-3'>
         <Card>
           <CardHeader>
-            <CardTitle>Active household</CardTitle>
+            <CardTitle>{t('app.overview.activeHousehold.cardTitle')}</CardTitle>
             <CardDescription>
-              Placeholder until household selection lands.
+              {t('app.overview.activeHousehold.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-2 text-sm'>
-            <p className='font-medium'>Demo Family</p>
+            <p className='font-medium'>
+              {t('app.overview.activeHousehold.name')}
+            </p>
             <p className='text-muted-foreground'>
-              Single household context for shell demos.
+              {t('app.overview.activeHousehold.body')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Next action</CardTitle>
+            <CardTitle>{t('app.overview.nextAction.cardTitle')}</CardTitle>
             <CardDescription>
-              Guide the user into the right starting route.
+              {t('app.overview.nextAction.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-2'>
             <Button asChild variant='outline'>
-              <Link to='/app/onboarding'>Open onboarding</Link>
+              <Link to='/app/onboarding'>
+                {t('app.overview.nextAction.button')}
+              </Link>
             </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Shell coverage</CardTitle>
+            <CardTitle>{t('app.overview.shellCoverage.cardTitle')}</CardTitle>
             <CardDescription>
-              Routes that later features will replace.
+              {t('app.overview.shellCoverage.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-2 text-sm text-muted-foreground'>
-            <p>
-              Public auth pages, onboarding, dashboard, expenses, budgets,
-              insights, and settings.
-            </p>
+            <p>{t('app.overview.shellCoverage.body')}</p>
           </CardContent>
         </Card>
       </div>

@@ -3,7 +3,7 @@
   "name": "Frontend internationalization foundation",
   "description": "Add frontend internationalization plumbing so the web app resolves all UI labels through a Vietnamese locale catalog with a hard fallback to `vi`, ready for future locale expansion without changing feature screens again.",
   "dependencies": ["feat-005", "feat-031"],
-  "status": "pending",
-  "evidence": "",
+  "status": "done",
+  "evidence": "./init.sh, pnpm --filter web lint, pnpm --filter web typecheck, pnpm --filter web test, pnpm --filter web build",
   "updated_at": "2026-04-22"
 }

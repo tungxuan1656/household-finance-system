@@ -11,3 +11,4 @@ looks the way it does.
 - [2026-04-22-feat-006-worker-service-foundation.md](2026-04-22-feat-006-worker-service-foundation.md) - feat-006 Worker service foundation.
 - [2026-04-22-feat-007-database-schema-local-migrations.md](2026-04-22-feat-007-database-schema-local-migrations.md) - feat-007 D1 schema replacement, local migrations, and local seed workflow.
 - [2026-04-22-feat-031-backend-internationalization-foundation.md](2026-04-22-feat-031-backend-internationalization-foundation.md) - feat-031 backend locale resolution, Vietnamese message catalog, and `vi` fallback foundation.
+- [2026-04-22-feat-032-frontend-internationalization-foundation.md](2026-04-22-feat-032-frontend-internationalization-foundation.md) - feat-032 frontend locale plumbing, `vi` catalog adoption, and shell/auth copy migration.

@@ -6,7 +6,7 @@ Add a frontend internationalization foundation for `apps/web` so user-facing UI 
 
 ## Purpose / Big Picture
 
-The current web app shell, auth pages, onboarding placeholder, and route scaffolding all embed display copy directly inside React components. That is fine for early scaffolding, but it makes future locale expansion expensive because every new feature would keep inventing its own copy storage pattern. `feat-032` establishes the frontend seams now: one locale catalog in `apps/web/src/lib/i18n/`, one provider/hook boundary for React consumers, one deterministic fallback locale (`vi`), and a staged migration of the existing shell copy to translated keys.
+The current web app shell, auth pages, onboarding placeholder, and route scaffolding all embed display copy directly inside React components. That is fine for early scaffolding, but it makes future locale expansion expensive because every new feature would keep inventing its own copy storage pattern. `feat-032` establishes the frontend seams now: one locale catalog in `apps/web/src/lib/i18n/`, one `i18next` bootstrap plus `t(...)`/`changeLanguage(...)` helpers, one deterministic fallback locale (`vi`), and a staged migration of the existing shell copy to translated keys.
 
 This feature is frontend-only and intentionally narrow. It will use `i18next`, `react-i18next`, and `i18next-browser-languagedetector` as the canonical frontend i18n surface, with language detection coming from persisted app choice first and browser language second. The goal is to make future locale work cheap and consistent, not to solve every language product requirement up front.
 
@@ -47,7 +47,7 @@ This feature is frontend-only and intentionally narrow. It will use `i18next`, `
 
 ## Non-negotiable Requirements
 
-- Keep frontend layering aligned with `ARCHITECTURE.md`: shared locale definitions stay in `lib/i18n`, React consumption happens through a provider/hook boundary, and page/components do not reach into raw locale JSON directly.
+- Keep frontend layering aligned with `ARCHITECTURE.md`: shared locale definitions stay in `lib/i18n`, React consumption happens through the `i18next` bootstrap helpers, and page/components do not reach into raw locale JSON directly.
 - All new user-facing labels on the touched screens must resolve via translation keys. Do not leave mixed hard-coded JSX copy behind in the migrated surfaces.
 - Default and fallback locale must be hard-coded to `vi` for this feature. Unsupported or absent locale hints must degrade safely to Vietnamese without rendering blanks.
 - Preserve current route structure and feature behavior. This feature changes copy plumbing, not auth flow, route guards, or navigation logic.
@@ -59,12 +59,12 @@ This feature is frontend-only and intentionally narrow. It will use `i18next`, `
 
 ## Progress
 
-- [ ] (2026-04-22, owner: Codex, status: in-progress) Finalize the frontend i18n plan and keep one owned current step for implementation readiness.
-- [ ] Add the approved `i18next` dependencies and a minimal web i18n module in `apps/web/src/lib/i18n/` with locale constants, `vi` catalog JSON, browser-language resolution, and the exported `t(...)` / `changeLanguage(...)` entrypoint.
-- [ ] Initialize `i18next` in `apps/web/src/lib/i18n/index.ts`, then ensure the app bootstrap loads it before routed screens render.
-- [ ] Refactor current shell/auth/onboarding/placeholder copy to use translation keys instead of inline strings.
-- [ ] Add or update tests proving translated rendering, accessible labels, and fallback-to-`vi` behavior for unsupported locale hints.
-- [ ] Update harness state and move this plan forward with implementation evidence once the feature lands.
+- [x] (2026-04-22, owner: Codex, status: done) Finalize the frontend i18n plan and keep one owned current step for implementation readiness.
+- [x] Add the approved `i18next` dependencies and a minimal web i18n module in `apps/web/src/lib/i18n/` with locale constants, `vi` catalog JSON, browser-language resolution, and the exported `t(...)` / `changeLanguage(...)` entrypoint.
+- [x] Initialize `i18next` in `apps/web/src/lib/i18n/index.ts`, then ensure the app bootstrap loads it before routed screens render.
+- [x] Refactor current shell/auth/onboarding/placeholder copy to use translation keys instead of inline strings.
+- [x] Add or update tests proving translated rendering, accessible labels, and fallback-to-`vi` behavior for unsupported locale hints.
+- [x] Update harness state and move this plan forward with implementation evidence once the feature lands.
 
 ## Surprises & Discoveries
 
@@ -98,9 +98,9 @@ This feature is frontend-only and intentionally narrow. It will use `i18next`, `
 
 ## Outcomes & Retrospective
 
-- Outcome target: the routed web shell renders its visible labels from a shared Vietnamese catalog through one frontend i18n boundary.
-- Expected gap after completion: only `vi` exists, and locale choice remains non-persistent.
-- Follow-on value: later features can add keys and optionally another locale file without re-plumbing the app root or rewriting existing screens.
+- Outcome: the routed web shell now renders its visible labels from a shared Vietnamese catalog through the `i18next` bootstrap in `apps/web/src/lib/i18n/index.ts`, with browser language and `appLanguage` storage both normalized to `vi` before init.
+- Result: the visible auth, shell, onboarding, placeholder, and overview surfaces now resolve through translated keys, and the test suite proves both translated rendering and unsupported-locale fallback.
+- Follow-on value: later features can add more locale files or expand key coverage without reworking the app bootstrap or current screen composition.
 
 ## Context and Orientation
 
@@ -120,9 +120,7 @@ This feature is frontend-only and intentionally narrow. It will use `i18next`, `
   - `apps/web/src/lib/constants/i18n.ts`
   - `apps/web/src/lib/i18n/index.ts`
   - `apps/web/src/lib/i18n/locales/vi.json`
-  - `apps/web/src/lib/i18n/types.ts`
   - `apps/web/src/lib/i18n/resolve-locale.ts`
-  - `apps/web/src/lib/i18n/translate.ts`
 - Existing files likely edited:
   - `apps/web/package.json`
   - `apps/web/src/app.tsx`
@@ -137,7 +135,7 @@ This feature is frontend-only and intentionally narrow. It will use `i18next`, `
 - `Config`: fallback locale constant, supported locale list, and storage key in `lib/constants` plus i18n bootstrap config in `lib/i18n`.
 - `Repo`: not applicable for frontend scope.
 - `Service`: not applicable as a separate frontend layer in the current app.
-- `Runtime`: provider, locale resolver, translator hook, router bootstrap.
+- `Runtime`: `i18next` bootstrap, locale resolver, translator helper, router bootstrap.
 - `UI`: auth pages, public/protected shells, onboarding placeholder, route placeholder titles.
 
 ### Hard Dependency Checks
@@ -145,7 +143,7 @@ This feature is frontend-only and intentionally narrow. It will use `i18next`, `
 - Lower layers must not depend on higher layers:
   - JSON catalogs and translation helpers stay in `lib/i18n`, not in pages/components.
 - UI must not bypass runtime/service contracts:
-  - components/pages consume `t(...)` or an i18n hook, not raw locale files.
+- components/pages consume `t(...)` or the bootstrap helper, not raw locale files.
 - Data access enters through repositories or adapters:
   - not directly relevant here, but this feature must not add UI-side locale assumptions into API clients or stores.
 - New dependencies:
@@ -201,6 +199,12 @@ This feature is frontend-only and intentionally narrow. It will use `i18next`, `
   - Importing raw JSON locale files directly into page components instead of going through the `i18next` adapter.
   - Relying on `LanguageDetector` output without normalizing unsupported values back to `vi`.
   - Forgetting placeholder titles passed from `router.tsx`, which would leave untranslated text even if pages are migrated.
+
+## Open Decisions
+
+- Resolved: the app uses a single `i18next` bootstrap with `t(...)` and `changeLanguage(...)` exports, and React screens import that module directly.
+- Resolved: `appLanguage` remains the persisted source of truth, while browser language is the fallback input when no persisted value exists.
+- Resolved: route placeholder titles are resolved in `router.tsx` before being passed into `PlaceholderPage`.
 
 ## Interfaces & Dependencies
 
@@ -397,7 +401,7 @@ Expected short outputs:
   - one fallback test proving unsupported locale input still renders Vietnamese
   - final build transcript
 
-## Open Decisions
+## Resolved Decisions
 
-- Decide whether route-level placeholder titles should be translated by passing a key into `PlaceholderPage` or by resolving the string in `router.tsx` before render.
-- Decide whether translation-key typing should be derived from the JSON catalog or kept as a manually maintained type in the first iteration.
+- Route-level placeholder titles are resolved in `router.tsx` before being passed into `PlaceholderPage`.
+- Translation-key typing remains `i18next`-driven via the shared bootstrap module rather than a separate hand-written key registry.

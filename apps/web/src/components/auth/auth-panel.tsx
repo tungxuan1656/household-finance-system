@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 function AuthPanel({
   actionLabel,
+  eyebrowLabel,
   children,
   description,
   footer,
@@ -10,6 +11,7 @@ function AuthPanel({
   title,
 }: {
   actionLabel: string
+  eyebrowLabel: string
   children: React.ReactNode
   description: string
   footer: React.ReactNode
@@ -20,7 +22,7 @@ function AuthPanel({
     <Card className='w-full max-w-md shadow-lg'>
       <CardHeader>
         <p className='text-xs font-medium tracking-[0.2em] text-muted-foreground uppercase'>
-          Public route
+          {eyebrowLabel}
         </p>
         <h1 className='font-heading text-2xl tracking-tight'>{title}</h1>
         <p className='text-xs/relaxed text-muted-foreground'>{description}</p>

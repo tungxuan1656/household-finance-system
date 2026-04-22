@@ -17,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { NativeSelect } from '@/components/ui/native-select'
 import { Textarea } from '@/components/ui/textarea'
+import { t } from '@/lib/i18n'
 
 function OnboardingPage() {
   return (
@@ -26,37 +27,39 @@ function OnboardingPage() {
           <span aria-hidden='true'>✨</span>
         </EmptyMedia>
         <h1 className='font-heading text-2xl tracking-tight'>
-          Finish setting up your household
+          {t('app.onboarding.title')}
         </h1>
-        <EmptyDescription>
-          This placeholder keeps the onboarding entry point visible until the
-          dedicated flow is built.
-        </EmptyDescription>
+        <EmptyDescription>{t('app.onboarding.description')}</EmptyDescription>
       </EmptyHeader>
 
       <EmptyContent>
         <div className='grid w-full gap-4 rounded-none border border-border/70 bg-background/70 p-4 text-left backdrop-blur sm:p-5'>
           <div className='grid gap-4 md:grid-cols-2'>
             <Field>
-              <FieldLabel htmlFor='household-name'>Household name</FieldLabel>
+              <FieldLabel htmlFor='household-name'>
+                {t('app.onboarding.fields.householdName.label')}
+              </FieldLabel>
               <FieldContent>
                 <FieldDescription>
-                  Shown across the shell until the real onboarding flow is
-                  ready.
+                  {t('app.onboarding.fields.householdName.description')}
                 </FieldDescription>
                 <Input
                   id='household-name'
                   name='householdName'
-                  placeholder='Demo Family'
+                  placeholder={t(
+                    'app.onboarding.fields.householdName.placeholder',
+                  )}
                 />
               </FieldContent>
             </Field>
 
             <Field>
-              <FieldLabel htmlFor='currency'>Default currency</FieldLabel>
+              <FieldLabel htmlFor='currency'>
+                {t('app.onboarding.fields.currency.label')}
+              </FieldLabel>
               <FieldContent>
                 <FieldDescription>
-                  Choose the currency the shell should assume by default.
+                  {t('app.onboarding.fields.currency.description')}
                 </FieldDescription>
                 <NativeSelect defaultValue='usd' id='currency' name='currency'>
                   <option value='usd'>USD</option>
@@ -68,16 +71,17 @@ function OnboardingPage() {
           </div>
 
           <Field>
-            <FieldLabel htmlFor='welcome-note'>Welcome note</FieldLabel>
+            <FieldLabel htmlFor='welcome-note'>
+              {t('app.onboarding.fields.welcomeNote.label')}
+            </FieldLabel>
             <FieldContent>
               <FieldDescription>
-                Optional copy that will eventually appear in the onboarding
-                confirmation.
+                {t('app.onboarding.fields.welcomeNote.description')}
               </FieldDescription>
               <Textarea
                 id='welcome-note'
                 name='welcomeNote'
-                placeholder='Add a short note for the household...'
+                placeholder={t('app.onboarding.fields.welcomeNote.placeholder')}
               />
             </FieldContent>
           </Field>
@@ -89,30 +93,32 @@ function OnboardingPage() {
                   aria-hidden='true'
                   className='size-1.5 rounded-full bg-primary'
                 />
-                <span>Choose or create a household</span>
+                <span>{t('app.onboarding.checklist.chooseOrCreate')}</span>
               </li>
               <li className='flex items-center gap-2'>
                 <span
                   aria-hidden='true'
                   className='size-1.5 rounded-full bg-primary'
                 />
-                <span>Set your default currency</span>
+                <span>{t('app.onboarding.checklist.setCurrency')}</span>
               </li>
               <li className='flex items-center gap-2'>
                 <span
                   aria-hidden='true'
                   className='size-1.5 rounded-full bg-primary'
                 />
-                <span>Invite members later if needed</span>
+                <span>{t('app.onboarding.checklist.inviteLater')}</span>
               </li>
             </ul>
 
             <div className='flex flex-wrap items-center gap-3'>
               <Button asChild>
-                <Link to='/app'>Back to shell</Link>
+                <Link to='/app'>{t('app.onboarding.actions.backToShell')}</Link>
               </Button>
               <Button asChild variant='outline'>
-                <Link to='/sign-in'>Return to sign in</Link>
+                <Link to='/sign-in'>
+                  {t('app.onboarding.actions.returnToSignIn')}
+                </Link>
               </Button>
             </div>
           </div>
