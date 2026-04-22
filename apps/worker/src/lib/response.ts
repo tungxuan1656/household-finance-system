@@ -2,6 +2,7 @@ import type { Context } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
 import { AppError, internalError } from '@/lib/errors'
+import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import type { AppBindings } from '@/types'
 
 type ApiErrorBody = {
@@ -27,6 +28,14 @@ const getRequestId = (ctx: Context<AppBindings>): string => {
     return ctx.get('requestId')
   } catch {
     return 'unknown-request'
+  }
+}
+
+const getLocale = (ctx: Context<AppBindings>): SupportedLocale => {
+  try {
+    return ctx.get('locale')
+  } catch {
+    return defaultLocale
   }
 }
 
@@ -76,5 +85,5 @@ export const fromUnknownError = (
     error,
   })
 
-  return errorResponse(ctx, internalError())
+  return errorResponse(ctx, internalError(getLocale(ctx)))
 }

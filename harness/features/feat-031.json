@@ -1,0 +1,9 @@
+{
+  "id": "feat-031",
+  "name": "Backend internationalization foundation",
+  "description": "Add backend internationalization primitives so worker-side validation, error, and response copy can resolve through a single Vietnamese locale with a hard fallback to `vi`, while keeping room for future locales.",
+  "dependencies": ["feat-006"],
+  "status": "done",
+  "evidence": "./init.sh passed after implementing worker i18n foundation, including malformed JSON and x-locale regression coverage, pnpm lint, typecheck, worker/web tests, and frontend build.",
+  "updated_at": "2026-04-22"
+}

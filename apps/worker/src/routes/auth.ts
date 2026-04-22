@@ -13,10 +13,16 @@ import type { AppBindings } from '@/types'
 export const authRoutes = new Hono<AppBindings>()
 
 authRoutes.post('/auth/provider/exchange', async (ctx) => {
-  const body = await readJsonBody(ctx.req.raw, exchangeProviderRequestSchema)
+  const locale = ctx.get('locale')
+  const body = await readJsonBody(
+    ctx.req.raw,
+    exchangeProviderRequestSchema,
+    locale,
+  )
   const result = await exchangeProviderToken(ctx.env, {
     provider: body.provider,
     idToken: body.idToken,
+    locale,
     userAgent: ctx.req.header('user-agent') ?? null,
     ipAddress: ctx.req.header('cf-connecting-ip') ?? null,
   })
@@ -25,9 +31,15 @@ authRoutes.post('/auth/provider/exchange', async (ctx) => {
 })
 
 authRoutes.post('/auth/refresh', async (ctx) => {
-  const body = await readJsonBody(ctx.req.raw, refreshSessionRequestSchema)
+  const locale = ctx.get('locale')
+  const body = await readJsonBody(
+    ctx.req.raw,
+    refreshSessionRequestSchema,
+    locale,
+  )
   const result = await refreshSession(ctx.env, {
     refreshToken: body.refreshToken,
+    locale,
     userAgent: ctx.req.header('user-agent') ?? null,
     ipAddress: ctx.req.header('cf-connecting-ip') ?? null,
   })

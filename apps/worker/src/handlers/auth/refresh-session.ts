@@ -20,7 +20,11 @@ export const refreshSession = async (
   input: RefreshSessionInput,
 ): Promise<RefreshSessionResponse> => {
   const config = readConfig(env)
-  const refreshPayload = await verifyRefreshToken(input.refreshToken, config)
+  const refreshPayload = await verifyRefreshToken(
+    input.refreshToken,
+    config,
+    input.locale,
+  )
   const tokenHash = await hashRefreshToken(
     input.refreshToken,
     config.refreshTokenPepper,
@@ -37,7 +41,7 @@ export const refreshSession = async (
     !isSessionActive(existingSession) ||
     existingSession.userId !== refreshPayload.sub
   ) {
-    throw unauthenticated('Refresh token is invalid, expired, or revoked.')
+    throw unauthenticated(input.locale, 'errors.refreshTokenInvalid')
   }
 
   const rotatedSessionId = newId()
@@ -67,7 +71,7 @@ export const refreshSession = async (
   })
 
   if (!rotated) {
-    throw unauthenticated('Refresh token is invalid, expired, or revoked.')
+    throw unauthenticated(input.locale, 'errors.refreshTokenInvalid')
   }
 
   return {

@@ -1,9 +1,9 @@
 import { Hono } from 'hono'
 
 import {
+  createUpdateProfileRequestSchema,
   type ProfileResponse,
   type UpdateProfileRequest,
-  updateProfileRequestSchema,
 } from '@/contracts'
 import { getCurrentProfile } from '@/handlers/profile/get-current-profile'
 import { updateCurrentProfile } from '@/handlers/profile/update-current-profile'
@@ -18,21 +18,25 @@ profileRoutes.use('/profile', authMiddleware)
 
 profileRoutes.get('/profile', async (ctx) => {
   const currentUser = ctx.get('currentUser')
-  const profile = await getCurrentProfile(ctx.env, currentUser.id)
+  const locale = ctx.get('locale')
+  const profile = await getCurrentProfile(ctx.env, currentUser.id, locale)
 
   return success<ProfileResponse>(ctx, profile)
 })
 
 profileRoutes.patch('/profile', async (ctx) => {
   const currentUser = ctx.get('currentUser')
+  const locale = ctx.get('locale')
   const body = await readJsonBody<UpdateProfileRequest>(
     ctx.req.raw,
-    updateProfileRequestSchema,
+    createUpdateProfileRequestSchema(locale),
+    locale,
   )
 
   const updatedProfile = await updateCurrentProfile(
     ctx.env,
     currentUser.id,
+    locale,
     body,
   )
 

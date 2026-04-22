@@ -42,6 +42,12 @@ Backend work must follow the repository guidance in:
 - Shared auth boundary: `src/middlewares/auth.ts`
 - Shared response envelope + error mapping: `src/lib/response.ts`
 
+## Backend Locale Behavior
+
+- The worker resolves a request locale from `x-locale` or `accept-language`.
+- Unsupported locale hints fall back to `vi`.
+- API-visible human-readable messages are currently emitted in Vietnamese through the backend i18n adapter in `src/lib/i18n/`.
+
 ## Source Layout
 
 - `src/routes/*`: HTTP route registration and middleware composition only

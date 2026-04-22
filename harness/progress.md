@@ -1,5 +1,47 @@
 # Progress Log
 
+## 2026-04-22 — Closed remaining feat-031 verification gaps
+- Who: Codex
+- Summary: Added integration coverage for malformed JSON request bodies and for locale resolution via `x-locale`, then re-ran worker tests and full `./init.sh` to confirm the backend i18n foundation still passes the repo verification gate.
+- Files changed: apps/worker/test/index.spec.ts, harness/features/feat-031.json, harness/progress.md
+- Blockers: none
+- Next steps: continue with `feat-032` or resume `feat-008` now that feat-031 coverage matches the plan.
+
+## 2026-04-22 — Implemented feat-031 backend internationalization foundation
+- Who: Codex
+- Summary: Delivered the worker-side i18n foundation with request-scoped locale resolution, a private Vietnamese message catalog, localized error/validation/auth responses, and `vi` fallback behavior for unsupported language hints. The plan was moved to `docs/exec-plans/completed/`, and the harness now marks `feat-031` as done.
+- Files changed: apps/worker/src/lib/i18n/locales.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/src/lib/i18n/catalog.ts, apps/worker/src/lib/i18n/resolve-locale.ts, apps/worker/src/lib/i18n/translate.ts, apps/worker/src/lib/i18n/zod.ts, apps/worker/src/lib/i18n/index.ts, apps/worker/src/types/app.ts, apps/worker/src/middlewares/request-context.ts, apps/worker/src/lib/errors.ts, apps/worker/src/lib/validation.ts, apps/worker/src/lib/response.ts, apps/worker/src/lib/env.ts, apps/worker/src/index.ts, apps/worker/src/contracts/profile.ts, apps/worker/src/types/auth.ts, apps/worker/src/lib/auth/firebase.ts, apps/worker/src/lib/auth/jwt.ts, apps/worker/src/middlewares/auth.ts, apps/worker/src/routes/auth.ts, apps/worker/src/routes/profile.ts, apps/worker/src/handlers/profile/get-current-profile.ts, apps/worker/src/handlers/profile/update-current-profile.ts, apps/worker/src/handlers/auth/exchange-provider-token.ts, apps/worker/src/handlers/auth/refresh-session.ts, apps/worker/src/db/repositories/user-repository.ts, apps/worker/test/unit/response.spec.ts, apps/worker/test/unit/dto-profile.spec.ts, apps/worker/test/unit/i18n.spec.ts, apps/worker/test/index.spec.ts, apps/worker/README.md, docs/exec-plans/completed/2026-04-22-feat-031-backend-internationalization-foundation.md, docs/exec-plans/active/index.md, docs/exec-plans/completed/index.md, harness/feature_index.json, harness/features/feat-031.json, harness/progress.md
+- Blockers: none
+- Next steps: start `feat-032` for frontend locale wiring, then resume `feat-008` on top of the new backend locale foundation.
+
+## 2026-04-22 — Created ExecPlan for feat-031 backend i18n foundation
+- Who: Codex
+- Summary: Drafted the active ExecPlan for `feat-031` after reviewing the worker message surface, backend standards, and harness state. The plan scopes the feature to backend-only locale resolution and Vietnamese error/validation copy with hard fallback to `vi`, without changing API codes or adding dependencies.
+- Files changed: docs/exec-plans/active/2026-04-22-feat-031-backend-internationalization-foundation.md, docs/exec-plans/active/index.md, harness/progress.md
+- Blockers: none
+- Next steps: implement `feat-031` first, then continue with `feat-032` and resume `feat-008` on top of the new backend i18n foundation.
+
+## 2026-04-22 — Reordered i18n features ahead of feat-008
+- Who: Codex
+- Summary: Updated harness sequencing so the new backend/frontend internationalization foundations are explicitly scheduled before `feat-008`. The feature index now lists `feat-031` and `feat-032` before auth backend work, `feat-008` now depends on both, and the active auth ExecPlan notes the new prerequisite order.
+- Files changed: harness/feature_index.json, harness/features/feat-008.json, docs/exec-plans/active/2026-04-22-feat-008-authentication-backend-session-exchange.md, harness/progress.md
+- Blockers: none
+- Next steps: create the next ExecPlan for `feat-031` or `feat-032` before resuming `feat-008`.
+
+## 2026-04-22 — Added i18n foundation features to harness backlog
+- Who: Codex
+- Summary: Added two new pending features to the harness backlog for internationalization groundwork before auth implementation: one for backend locale resolution and one for frontend locale wiring. Both are explicitly scoped to Vietnamese-only behavior for now with fallback pinned to `vi`.
+- Files changed: harness/feature_index.json, harness/features/feat-031.json, harness/features/feat-032.json, harness/progress.md
+- Blockers: none
+- Next steps: decide whether `feat-031` or `feat-032` should be planned first, then create an ExecPlan before implementation.
+
+## 2026-04-22 — Created ExecPlan for feat-008 backend auth completion
+- Who: Codex
+- Summary: Drafted the active ExecPlan for `feat-008` after reviewing the auth product spec, worker auth/session code, harness state, and backend reference docs. The plan captures the current partial implementation baseline and narrows the remaining backend scope to logout/session revocation, acceptance coverage, and harness closure.
+- Files changed: docs/exec-plans/active/2026-04-22-feat-008-authentication-backend-session-exchange.md, docs/exec-plans/active/index.md, harness/progress.md
+- Blockers: none
+- Next steps: implement the plan in `feat-008`, keeping exchange/refresh stable while adding logout/session revocation and final verification evidence.
+
 ## 2026-04-22 — Added canonical backend folder-structure reference
 - Who: Codex
 - Summary: Added a backend companion to the frontend folder-structure reference so routes/handlers/repositories/contracts/types/lib/auth placement rules are documented in one canonical backend doc, then linked it from `docs/references/index.md` and `docs/BACKEND.md`.

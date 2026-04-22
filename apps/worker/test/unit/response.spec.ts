@@ -33,7 +33,7 @@ describe('response helper', () => {
 
     expect(response.status).toBe(500)
     expect(payload.error.code).toBe('INTERNAL_ERROR')
-    expect(payload.error.message).toBe('Unexpected internal error.')
+    expect(payload.error.message).toBe('Đã xảy ra lỗi nội bộ không mong muốn.')
     expect(payload.meta.requestId).toBe('unknown-request')
     expect(JSON.stringify(payload)).not.toContain('super-secret-token')
 

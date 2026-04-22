@@ -15,8 +15,8 @@ app.use('*', requestContextMiddleware)
 
 app.onError((error, ctx) => fromUnknownError(ctx, error))
 
-app.notFound(() => {
-  throw notFound('Route not found.')
+app.notFound((ctx) => {
+  throw notFound(ctx.get('locale'), 'errors.routeNotFound')
 })
 
 app.route('/api/v1', healthRoutes)

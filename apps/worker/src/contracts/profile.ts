@@ -1,22 +1,30 @@
 import { z } from 'zod'
 
-export const updateProfileRequestSchema = z
-  .object({
-    displayName: z
-      .string()
-      .trim()
-      .min(1, 'Display name must not be blank.')
-      .nullable()
-      .optional(),
-    avatarUrl: z.url().nullable().optional(),
-  })
-  .strict()
-  .refine(
-    (value) => value.displayName !== undefined || value.avatarUrl !== undefined,
-    {
-      message: 'At least one profile field must be provided.',
-    },
-  )
+import { defaultLocale, type SupportedLocale, translate } from '@/lib/i18n'
+
+export const createUpdateProfileRequestSchema = (
+  locale: SupportedLocale = defaultLocale,
+) =>
+  z
+    .object({
+      displayName: z
+        .string()
+        .trim()
+        .min(1, translate(locale, 'profile.displayNameMustNotBeBlank'))
+        .nullable()
+        .optional(),
+      avatarUrl: z.url().nullable().optional(),
+    })
+    .strict()
+    .refine(
+      (value) =>
+        value.displayName !== undefined || value.avatarUrl !== undefined,
+      {
+        message: translate(locale, 'profile.atLeastOneProfileField'),
+      },
+    )
+
+export const updateProfileRequestSchema = createUpdateProfileRequestSchema()
 
 export type UpdateProfileRequest = z.infer<typeof updateProfileRequestSchema>
 

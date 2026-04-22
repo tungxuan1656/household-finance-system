@@ -1,4 +1,5 @@
 import { internalError } from '@/lib/errors'
+import { defaultLocale } from '@/lib/i18n'
 import type { AppConfig } from '@/types'
 
 const DEFAULT_FIREBASE_JWKS_URL =
@@ -8,7 +9,7 @@ const toBoolean = (value: string | undefined): boolean =>
   value?.toLowerCase() === 'true'
 
 const envConfigError = (): ReturnType<typeof internalError> =>
-  internalError('Worker configuration is invalid.')
+  internalError(defaultLocale, 'errors.workerConfigurationInvalid')
 
 const toPositiveInteger = (value: string | undefined): number => {
   const parsed = Number(value)

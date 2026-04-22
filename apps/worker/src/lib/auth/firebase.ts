@@ -1,6 +1,7 @@
 import { createRemoteJWKSet, type JWTPayload, jwtVerify } from 'jose'
 
 import { unauthenticated } from '@/lib/errors'
+import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import type { AppConfig } from '@/types'
 
 const jwksCache = new Map<string, ReturnType<typeof createRemoteJWKSet>>()
@@ -67,9 +68,12 @@ const parseUnsafeTestToken = (idToken: string): FirebaseIdentity | null => {
   }
 }
 
-const normalizeFirebasePayload = (payload: JWTPayload): FirebaseIdentity => {
+const normalizeFirebasePayload = (
+  payload: JWTPayload,
+  locale: SupportedLocale,
+): FirebaseIdentity => {
   if (typeof payload.sub !== 'string' || payload.sub.length === 0) {
-    throw unauthenticated('Firebase token is missing subject.')
+    throw unauthenticated(locale, 'errors.firebaseTokenMissingSubject')
   }
 
   return {
@@ -84,6 +88,7 @@ const normalizeFirebasePayload = (payload: JWTPayload): FirebaseIdentity => {
 export const verifyFirebaseIdToken = async (
   idToken: string,
   config: AppConfig,
+  locale: SupportedLocale = defaultLocale,
 ): Promise<FirebaseIdentity> => {
   if (config.allowInsecureTestTokens) {
     const parsed = parseUnsafeTestToken(idToken)
@@ -108,8 +113,8 @@ export const verifyFirebaseIdToken = async (
       },
     )
   } catch {
-    throw unauthenticated('Invalid Firebase identity token.')
+    throw unauthenticated(locale, 'errors.invalidFirebaseIdentityToken')
   }
 
-  return normalizeFirebasePayload(verificationResult.payload)
+  return normalizeFirebasePayload(verificationResult.payload, locale)
 }
