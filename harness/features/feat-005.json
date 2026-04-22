@@ -3,7 +3,8 @@
   "name": "Web app shell & UI foundation",
   "description": "Create the apps/web shell with routing, base layout, Tailwind/shadcn integration, shared form primitives, toast handling, and authenticated/unauthenticated page scaffolding needed for the MVP flows.",
   "dependencies": ["feat-004"],
-  "status": "pending",
-  "evidence": "",
+  "status": "done",
+  "evidence": "apps/web/src/router.tsx, apps/web/src/app.tsx, apps/web/src/main.tsx, apps/web/src/components/ui/sonner.tsx, apps/web/src/test/setup.ts; verified with pnpm --filter web lint, pnpm --filter web test, pnpm --filter web typecheck, and pnpm --filter web build",
   "updated_at": "2026-04-21"
 }
+

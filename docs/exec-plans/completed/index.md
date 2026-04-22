@@ -3,3 +3,8 @@
 Move finished plans here instead of deleting them. Completed plans are part of
 the repository memory surface and help later agent runs understand why the code
 looks the way it does.
+
+## Completed Plans
+
+- [2026-04-21-feat-005-web-app-shell-ui-foundation.md](2026-04-21-feat-005-web-app-shell-ui-foundation.md) - feat-005 web shell, routing, auth page scaffolding, and UI foundation.
+- [2026-04-21-feat-004-workspace-toolchain-foundation.md](2026-04-21-feat-004-workspace-toolchain-foundation.md) - feat-004 Monorepo workspace & toolchain foundation

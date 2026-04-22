@@ -39,15 +39,15 @@ Out of scope:
 
 ## Progress
 
-- [ ] Run `./init.sh` and confirm the workspace starts cleanly
-- [ ] Create router and shell composition for guest/auth/onboarding states
-- [ ] Replace placeholder home screen with redirect and route groups
-- [ ] Add public auth route scaffolds for `/sign-in` and `/sign-up`
-- [ ] Add protected app shell scaffold and onboarding placeholder
-- [ ] Standardize shared form primitives for shell-level screens
-- [ ] Fix toast/theme integration to match local provider
-- [ ] Add UI test library and route/shell smoke tests
-- [ ] Run web typecheck, tests, and build
+- [x] Run `./init.sh` and confirm the workspace starts cleanly
+- [x] Create router and shell composition for guest/auth/onboarding states
+- [x] Replace placeholder home screen with redirect and route groups
+- [x] Add public auth route scaffolds for `/sign-in` and `/sign-up`
+- [x] Add protected app shell scaffold and onboarding placeholder
+- [x] Standardize shared form primitives for shell-level screens
+- [x] Fix toast/theme integration to match local provider
+- [x] Add UI test library and route/shell smoke tests
+- [x] Run web typecheck, tests, lint, and build
 
 ## Surprises & Discoveries
 
@@ -75,7 +75,7 @@ Out of scope:
 
 ## Outcomes & Retrospective
 
-To be filled after implementation. Expected outcome is a stable frontend shell with route scaffolding, shared primitives, and verifiable redirect behavior.
+The web app now has a real React Router shell with `/` redirecting to `/sign-in`, public `/sign-in` and `/sign-up` pages, a protected `/app` scaffold, onboarding and placeholder feature routes, local-theme Sonner integration, and UI tests that cover the critical shell behavior. The main learning was that the repo’s frontend shell wants route structure and shared primitives before any auth/session logic, and that the shell should stay visibly distinct from future feature routes while still being reusable.
 
 ## Context and Orientation
 
@@ -141,7 +141,7 @@ The feature is accepted when all of the following are true:
 ## Artifacts and Notes
 
 - Update `harness/progress.md` at the end of each working session.
-- Add evidence to `harness/features/feat-005.json` and keep `harness/feature_index.json` in sync once implementation work starts.
+- Evidence is recorded in `harness/features/feat-005.json` and `harness/feature_index.json` is synced to `done`.
 - Keep the route shape and auth/onboarding assumptions documented in this file so later sessions can resume from repository state alone.
 
 ## Interfaces & Dependencies

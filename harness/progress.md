@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-21 — Completed feat-005 web app shell and UI foundation
+- Who: Codex
+- Summary: Replaced the starter web app with a React Router shell, public sign-in/sign-up routes, a protected app scaffold with onboarding and placeholder feature routes, local-theme toast integration, and UI test coverage for redirects and shell behavior.
+- Files changed: apps/web/package.json, apps/web/vite.config.ts, apps/web/src/app.tsx, apps/web/src/app.test.tsx, apps/web/src/components/ui/sonner.tsx, apps/web/src/index.css, apps/web/src/main.tsx, apps/web/src/router.tsx, apps/web/src/test/setup.ts, harness/feature_index.json, harness/features/feat-005.json, docs/exec-plans/active/2026-04-21-feat-005-web-app-shell-ui-foundation.md, docs/exec-plans/active/index.md
+- Blockers: None after fixing Vitest config typing and lint formatting.
+- Next steps: Update downstream auth and onboarding features to mount into the new shell routes.
+
 ## 2026-04-21 — Removed shared tsconfig base from feat-004
 - Who: Codex
 - Summary: Reverted the shared TypeScript base and restored app-owned compiler settings so each app keeps its own config without inheritance from a shared root file.
