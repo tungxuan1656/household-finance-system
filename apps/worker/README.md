@@ -72,6 +72,7 @@ pnpm --filter worker deploy
 
 - Migration files are stored in `migrations/`.
 - Use timestamp/sequence naming, e.g. `0001_init.sql`, `0002_add_xxx.sql`.
+- The initial schema preserves auth/session tables and adds the first household-finance persistence surfaces for households, memberships, categories, groups, expenses, budgets, and audit logs.
 
 Apply migrations locally:
 
@@ -84,6 +85,15 @@ Apply migrations remotely:
 ```bash
 pnpm --filter worker db:migrate:remote
 ```
+
+Seed the local database with a minimal demo household:
+
+```bash
+pnpm --filter worker db:seed:local
+```
+
+The seed file lives at `seeds/local/dev.sql` and is written to be safe to re-run with the same IDs.
+Remote migrations remain operator-only until `wrangler.jsonc` is configured with the real D1 database identifiers.
 
 ## Configuration
 

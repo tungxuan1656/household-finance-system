@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Implemented feat-007 D1 schema and local migration workflow
+- Who: Codex
+- Summary: Replaced the legacy worker `0001_init.sql` schema with a product-aligned household-finance baseline, swapped the old family/rewards integrity tests for household/expense/budget/audit constraints, added deterministic test fixtures and a local SQL seed workflow, and verified the feature with worker tests, local Wrangler migrate/seed/query commands, and full `./init.sh`.
+- Files changed: apps/worker/migrations/0001_init.sql, apps/worker/test/index.spec.ts, apps/worker/test/helpers/household-fixtures.ts, apps/worker/seeds/local/dev.sql, apps/worker/package.json, apps/worker/README.md, docs/exec-plans/completed/2026-04-22-feat-007-database-schema-local-migrations.md, docs/exec-plans/completed/index.md, harness/features/feat-007.json, harness/feature_index.json, harness/progress.md
+- Blockers: Local Wrangler D1 commands must be run sequentially; running migrate, seed, and query in parallel against `.wrangler/state/v3/d1` caused a transient `SQLITE_READONLY` failure during verification.
+- Next steps: Use this schema baseline for the next worker-backed features (`feat-008`, `feat-011`, `feat-016`, `feat-017`) and add new migrations rather than rewriting `0001`.
+
 ## 2026-04-22 — Moved profile orchestration behind worker handlers
 - Who: Codex
 - Summary: Refactored the worker profile route to follow the backend route -> handler -> data-access boundary by introducing dedicated profile handlers and keeping the route focused on middleware, validation, and response wiring.

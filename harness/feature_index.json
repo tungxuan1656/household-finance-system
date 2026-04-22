@@ -33,7 +33,7 @@
     {
       "id": "feat-007",
       "name": "Database schema & local migrations",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "feat-008",
