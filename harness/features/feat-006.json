@@ -3,7 +3,7 @@
   "name": "Worker service foundation",
   "description": "Create the apps/worker runtime with Hono routing, environment/config loading, error handling, auth middleware hooks, validation helpers, and test scaffolding so domain routes can be added consistently.",
   "dependencies": ["feat-004"],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-04-21"
+  "status": "done",
+  "evidence": "pnpm --filter worker lint; pnpm --filter worker typecheck; pnpm --filter worker test; ./init.sh",
+  "updated_at": "2026-04-22"
 }

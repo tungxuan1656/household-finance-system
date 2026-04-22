@@ -1,13 +1,15 @@
 # Worker App (apps/worker)
 
-This package is the backend runtime for Family Operating System.
+This package is the backend runtime for Household Finance System.
 
 ## Responsibilities
 
 - Expose backend APIs used by the web client.
-- Implement server-side business rules for contributions, points, and rewards.
+- Implement server-side authentication, profile, and future household/expense rules.
 - Manage persistence via Cloudflare D1 (through Worker bindings).
 - Keep backend logic secure, validated, and testable.
+- Provide the shared worker foundation for `/api/v1` routing, request metadata,
+  error envelopes, and auth boundaries.
 
 ## Technology Stack
 
@@ -19,16 +21,26 @@ This package is the backend runtime for Family Operating System.
 
 ## Standards
 
-Backend work must follow standards in `docs/standards/`:
+Backend work must follow the repository guidance in:
 
-- `docs/standards/README.md`
-- `docs/standards/architecture-and-boundaries.md`
-- `docs/standards/api-contract-and-validation.md`
-- `docs/standards/database-pattern.md`
-- `docs/standards/error-handling-pattern.md`
-- `docs/standards/security-and-auth-pattern.md`
-- `docs/standards/testing-pattern.md`
-- `docs/standards/code-review-guide.md`
+- `AGENTS.md`
+- `docs/BACKEND.md`
+- `docs/references/index.md`
+- `docs/references/backend/architecture-and-boundaries.md`
+- `docs/references/backend/api-contract-and-validation.md`
+- `docs/references/backend/database-pattern.md`
+- `docs/references/backend/error-handling-pattern.md`
+- `docs/references/backend/security-and-auth-pattern.md`
+- `docs/references/backend/testing-pattern.md`
+- `docs/references/shared/type-naming-pattern.md`
+
+## Foundation Surface
+
+- Base API path: `/api/v1`
+- Shared health endpoint: `GET /api/v1/health`
+- Shared request-body validation helper: `src/lib/validation.ts`
+- Shared auth boundary: `src/middlewares/auth.ts`
+- Shared response envelope + error mapping: `src/lib/response.ts`
 
 ## Development
 
@@ -46,7 +58,7 @@ pnpm dev
 
 ## Cloudflare Workers guide
 
-- `docs/cloudflare-workers.md`
+- `docs/references/backend/cloudflare-workers.md`
 
 ## Build, Test, and Deploy
 

@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import type { ZodSchema } from 'zod'
 
 import {
   type AppBindings,
@@ -8,32 +7,8 @@ import {
 } from '@/dto'
 import { exchangeProviderToken } from '@/handlers/auth/exchange-provider-token'
 import { refreshSession } from '@/handlers/auth/refresh-session'
-import { invalidInput } from '@/lib/errors'
 import { success } from '@/lib/response'
-
-const readJsonBody = async <T>(
-  request: Request,
-  schema: ZodSchema<T>,
-): Promise<T> => {
-  let rawBody: unknown
-
-  try {
-    rawBody = await request.json()
-  } catch {
-    throw invalidInput('Request body must be valid JSON.')
-  }
-
-  const parsed = schema.safeParse(rawBody)
-
-  if (!parsed.success) {
-    throw invalidInput(
-      'Request body failed validation.',
-      parsed.error.flatten(),
-    )
-  }
-
-  return parsed.data
-}
+import { readJsonBody } from '@/lib/validation'
 
 export const authRoutes = new Hono<AppBindings>()
 

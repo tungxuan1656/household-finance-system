@@ -12,13 +12,13 @@ import {
 const encoder = new TextEncoder()
 
 const config = {
-  authIssuer: 'https://fos.local',
-  authAudience: 'fos-api',
+  authIssuer: 'https://household-finance.local',
+  authAudience: 'household-finance-api',
   accessTokenTtlSeconds: 3600,
   refreshTokenTtlSeconds: 7200,
   authJwtSecret: 'test-jwt-secret',
   refreshTokenPepper: 'test-pepper',
-  firebaseProjectId: 'fos-local',
+  firebaseProjectId: 'household-finance-local',
   firebaseJwksUrl:
     'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com',
   allowInsecureTestTokens: true,

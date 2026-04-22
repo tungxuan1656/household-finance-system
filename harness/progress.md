@@ -1,5 +1,33 @@
 # Progress Log
 
+## 2026-04-22 — Moved profile orchestration behind worker handlers
+- Who: Codex
+- Summary: Refactored the worker profile route to follow the backend route -> handler -> data-access boundary by introducing dedicated profile handlers and keeping the route focused on middleware, validation, and response wiring.
+- Files changed: apps/worker/src/routes/profile.ts, apps/worker/src/handlers/profile/get-current-profile.ts, apps/worker/src/handlers/profile/update-current-profile.ts, harness/progress.md
+- Blockers: Full `./init.sh` is still blocked by the unrelated web test failure in `apps/web/src/app.test.tsx` (`localStorage.getItem is not a function`).
+- Next steps: run worker verification and keep future worker endpoints on the same handler-first boundary.
+
+## 2026-04-22 — Revalidated feat-006 worker foundation implementation
+- Who: Codex
+- Summary: Re-checked the worker service foundation against the completed ExecPlan, confirmed the runtime/auth/validation/test surfaces are still implemented, and aligned `apps/worker/README.md` with the current `docs/references/*` backend standards.
+- Files changed: apps/worker/README.md, harness/progress.md
+- Blockers: Full `./init.sh` remains blocked by the unrelated web test failure in `apps/web/src/app.test.tsx` (`localStorage.getItem is not a function`).
+- Next steps: keep feat-006 closed unless worker behavior regresses; handle the web test failure under the next appropriate frontend or maintenance task.
+
+## 2026-04-22 — Rewrote feat-006 completed plan into full ExecPlan
+- Who: Codex
+- Summary: Reviewed the completed `feat-006` worker foundation plan against the repo ExecPlan requirements, rewrote it as a self-contained completed ExecPlan with scope, standards, validation, and recovery details, and re-ran `./init.sh` to capture current baseline drift.
+- Files changed: docs/exec-plans/completed/2026-04-22-feat-006-worker-service-foundation.md, harness/progress.md
+- Blockers: `./init.sh` currently fails outside feat-006 because `apps/web/src/app.test.tsx` hits `localStorage.getItem is not a function` in the theme-provider test path.
+- Next steps: keep `feat-006` closed; address the unrelated web test regression in the next appropriate frontend/session feature or maintenance task.
+
+## 2026-04-22 — Implemented feat-006 worker service foundation
+- Who: Codex
+- Summary: Hardened the `apps/worker` foundation by extracting shared JSON-body validation, moving auth user lookup behind a repository helper, aligning worker naming/config with Household Finance, and adding coverage for request-id propagation, 404s, and generic internal-error mapping.
+- Files changed: apps/worker/src/lib/validation.ts, apps/worker/src/db/repositories/user-repository.ts, apps/worker/src/middlewares/auth.ts, apps/worker/src/routes/auth.ts, apps/worker/src/routes/profile.ts, apps/worker/src/routes/health.ts, apps/worker/test/index.spec.ts, apps/worker/test/unit/response.spec.ts, apps/worker/test/unit/env.spec.ts, apps/worker/test/unit/firebase.spec.ts, apps/worker/test/unit/jwt.spec.ts, apps/worker/package.json, apps/worker/wrangler.jsonc, apps/worker/.dev.vars.example, apps/worker/README.md, apps/worker/vitest.config.mts, docs/exec-plans/completed/2026-04-22-feat-006-worker-service-foundation.md, docs/exec-plans/completed/index.md, harness/features/feat-006.json, harness/feature_index.json
+- Blockers: none
+- Next steps: move on to feat-007 database schema and local migrations, using the cleaned worker foundation as the base.
+
 ## 2026-04-22 — Implemented feat-005 auth-state zustand migration
 - Who: Codex
 - Summary: Replaced the shell-auth context with a zustand store, rewired the shell guard and auth pages to use store-backed auth state and return-to handling, added store tests, and revalidated the web app with test, lint, typecheck, and build.

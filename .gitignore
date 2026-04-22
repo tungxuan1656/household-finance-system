@@ -1,5 +1,9 @@
-.agents/
-!.agents/skill/harness-creator
+.agents/skills/**
+!.agents/skills/
+!.agents/skills/create-plan-for-implement/
+!.agents/skills/create-plan-for-implement/**
+!.agents/skills/harness-creator/
+!.agents/skills/harness-creator/**
 
 # Dependencies
 node_modules/

@@ -28,7 +28,7 @@
     {
       "id": "feat-006",
       "name": "Worker service foundation",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "feat-007",
@@ -152,4 +152,3 @@
     }
   ]
 }
-
