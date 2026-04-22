@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Hardened feat-032 language persistence against blocked storage
+- Who: Codex
+- Summary: Wrapped the frontend i18n language write in a storage-safe fallback and added a regression test so `changeLanguage()` keeps working even when localStorage is unavailable or blocked.
+- Files changed: apps/web/src/lib/i18n/index.ts, apps/web/src/lib/i18n/change-language.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: keep the i18n bootstrap unchanged unless future locale expansion needs a broader storage abstraction.
+
 ## 2026-04-22 — Tightened feat-032 fallback verification
 - Who: Codex
 - Summary: Added a render-level regression test that boots the web router under an unsupported browser language hint and confirms the sign-in shell still renders in Vietnamese, closing the remaining verification gap from the feat-032 review.

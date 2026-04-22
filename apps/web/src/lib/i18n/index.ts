@@ -61,6 +61,7 @@ void i18n
       escapeValue: false,
     },
     detection: {
+      caches: [],
       order: ['localStorage', 'navigator', 'htmlTag'],
       lookupLocalStorage: APP_LANGUAGE_STORAGE_KEY,
     },
@@ -81,7 +82,11 @@ export const changeLanguage = (lang: string) => {
   const nextLanguage = resolveLocale(lang)
 
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem(APP_LANGUAGE_STORAGE_KEY, nextLanguage)
+    try {
+      window.localStorage.setItem(APP_LANGUAGE_STORAGE_KEY, nextLanguage)
+    } catch {
+      // Persisting language is best-effort in restricted storage contexts.
+    }
   }
 
   void i18n.changeLanguage(nextLanguage)
