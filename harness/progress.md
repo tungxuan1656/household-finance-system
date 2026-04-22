@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Reactivated feat-005 plan for zustand auth state follow-on
+- Who: Codex
+- Summary: Restored feat-005 as an active execution plan, extended it with the auth-state zustand migration and downstream auth shell follow-on items, and linked it from the active plans index.
+- Files changed: docs/exec-plans/active/2026-04-21-feat-005-web-app-shell-ui-foundation.md, docs/exec-plans/active/index.md
+- Blockers: none
+- Next steps: implement the auth-state zustand store, rewire shell guard and auth pages to it, and add store-level tests before re-validating the web shell.
+
 ## 2026-04-21 — Completed feat-005 web app shell and UI foundation
 - Who: Codex
 - Summary: Replaced the starter web app with a React Router shell, public sign-in/sign-up routes, a protected app scaffold with onboarding and placeholder feature routes, local-theme toast integration, and UI test coverage for redirects and shell behavior.
