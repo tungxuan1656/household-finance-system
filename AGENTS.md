@@ -130,6 +130,21 @@ This repository uses a pnpm monorepo layout. The root `./init.sh` runs install, 
 
 For more details, see the Learn Harness Engineering documentation and project docs.
 
+---
+
+## Mandatory Guide for Frontend & Backend Code
+
+**All code related to frontend or backend MUST strictly follow the corresponding guide and rules:**
+
+- For frontend code: see [docs/FRONTEND.md](docs/FRONTEND.md)
+- For backend code: see [docs/BACKEND.md](docs/BACKEND.md)
+
+Agents and contributors are required to consult and comply with these documents for:
+- UI/UX, component, and design system standards (frontend)
+- API, data, validation, and security standards (backend)
+
+Any code that does not follow these guides will be considered non-compliant and must be revised before acceptance.
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
