@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthPanel } from '@/components/auth/auth-panel'
 import { Input } from '@/components/ui/input'
+import { t } from '@/lib/i18n'
 import { authActions, useAuthStore } from '@/stores/auth.store'
 
 function SignUpPage() {
@@ -24,16 +25,14 @@ function SignUpPage() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     if (!name || !email || !emailRegex.test(email) || password.length < 8) {
-      setFormError(
-        'Please provide a name, a valid email, and a password (minimum 8 characters).',
-      )
+      setFormError(t('auth.signUp.errors.invalidForm'))
 
       return
     }
 
     authActions.signUp({
       email,
-      name: name || email.split('@')[0] || 'New user',
+      name: name || email.split('@')[0] || t('app.overview.demoFamily'),
     })
 
     const safeDestination =
@@ -50,57 +49,58 @@ function SignUpPage() {
 
   return (
     <AuthPanel
-      actionLabel='Create account'
-      description='Create the account that will later join or create a household.'
+      actionLabel={t('common.actions.createAccount')}
+      description={t('auth.signUp.description')}
+      eyebrowLabel={t('common.labels.publicRoute')}
       footer={
         <p>
-          Already have an account?{' '}
+          {t('auth.signUp.footer.prompt')}{' '}
           <Link
             className='font-medium text-primary underline-offset-4 hover:underline'
             to='/sign-in'>
-            Back to sign in
+            {t('auth.signUp.footer.link')}
           </Link>
         </p>
       }
-      title='Create your account'
+      title={t('auth.signUp.title')}
       onSubmit={handleSubmit}>
       {formError ? (
         <p className='text-sm text-destructive'>{formError}</p>
       ) : null}
       <AuthField
-        description='This is the name shown to your household.'
+        description={t('auth.signUp.fields.fullName.description')}
         id='full-name'
-        label='Full name'>
+        label={t('auth.signUp.fields.fullName.label')}>
         <Input
           autoComplete='name'
           id='full-name'
           name='fullName'
-          placeholder='Alex Morgan'
+          placeholder={t('auth.signUp.fields.fullName.placeholder')}
         />
       </AuthField>
 
       <AuthField
-        description='We will use this for the login flow.'
+        description={t('auth.signUp.fields.email.description')}
         id='sign-up-email'
-        label='Email address'>
+        label={t('auth.signUp.fields.email.label')}>
         <Input
           autoComplete='email'
           id='sign-up-email'
           name='email'
-          placeholder='name@example.com'
+          placeholder={t('auth.signUp.fields.email.placeholder')}
           type='email'
         />
       </AuthField>
 
       <AuthField
-        description='Choose a secure password for the app.'
+        description={t('auth.signUp.fields.password.description')}
         id='sign-up-password'
-        label='Password'>
+        label={t('auth.signUp.fields.password.label')}>
         <Input
           autoComplete='new-password'
           id='sign-up-password'
           name='password'
-          placeholder='••••••••'
+          placeholder={t('auth.signUp.fields.password.placeholder')}
           type='password'
         />
       </AuthField>

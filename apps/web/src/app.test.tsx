@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { t } from '@/lib/i18n'
 import { AppRoutes } from '@/router'
 import { authActions } from '@/stores/auth.store'
 
@@ -33,7 +34,7 @@ describe('web shell routing', () => {
     renderAt('/app')
 
     expect(
-      await screen.findByRole('heading', { name: 'Sign in' }),
+      await screen.findByRole('heading', { name: t('auth.signIn.title') }),
     ).toBeInTheDocument()
   })
 
@@ -41,11 +42,11 @@ describe('web shell routing', () => {
     renderAt('/')
 
     expect(
-      await screen.findByRole('heading', { name: 'Sign in' }),
+      await screen.findByRole('heading', { name: t('auth.signIn.title') }),
     ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('link', { name: 'Create an account' }),
+      screen.getByRole('link', { name: t('auth.signIn.footer.link') }),
     ).toBeInTheDocument()
   })
 
@@ -53,10 +54,12 @@ describe('web shell routing', () => {
     renderAt('/sign-up')
 
     expect(
-      screen.getByRole('heading', { name: 'Create your account' }),
+      screen.getByRole('heading', { name: t('auth.signUp.title') }),
     ).toBeInTheDocument()
 
-    expect(screen.getByLabelText('Full name')).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(t('auth.signUp.fields.fullName.label')),
+    ).toBeInTheDocument()
   })
 
   it('renders the protected shell and onboarding placeholder', async () => {
@@ -65,23 +68,30 @@ describe('web shell routing', () => {
     renderAt('/sign-in')
 
     await user.type(
-      screen.getByLabelText('Email address'),
+      screen.getByLabelText(t('auth.signIn.fields.email.label')),
       'tester@example.com',
     )
 
-    await user.type(screen.getByLabelText('Password'), 'password123')
+    await user.type(
+      screen.getByLabelText(t('auth.signIn.fields.password.label')),
+      'password123',
+    )
 
-    await user.click(screen.getByRole('button', { name: 'Sign in' }))
+    await user.click(
+      screen.getByRole('button', { name: t('common.actions.signIn') }),
+    )
 
     expect(
-      screen.getByRole('heading', { name: 'Household workspace' }),
+      screen.getByRole('heading', { name: t('app.overview.title') }),
     ).toBeInTheDocument()
 
-    await user.click(screen.getByRole('link', { name: 'Onboarding' }))
+    await user.click(
+      screen.getByRole('link', { name: t('shell.protected.nav.onboarding') }),
+    )
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Finish setting up your household',
+        name: t('app.onboarding.title'),
       }),
     ).toBeInTheDocument()
   })
@@ -92,16 +102,21 @@ describe('web shell routing', () => {
     renderAt('/sign-in')
 
     await user.type(
-      screen.getByLabelText('Email address'),
+      screen.getByLabelText(t('auth.signIn.fields.email.label')),
       'tester@example.com',
     )
 
-    await user.type(screen.getByLabelText('Password'), 'password123')
+    await user.type(
+      screen.getByLabelText(t('auth.signIn.fields.password.label')),
+      'password123',
+    )
 
-    await user.click(screen.getByRole('button', { name: 'Sign in' }))
+    await user.click(
+      screen.getByRole('button', { name: t('common.actions.signIn') }),
+    )
 
     expect(
-      await screen.findByRole('heading', { name: 'Household workspace' }),
+      await screen.findByRole('heading', { name: t('app.overview.title') }),
     ).toBeInTheDocument()
   })
 
@@ -111,18 +126,37 @@ describe('web shell routing', () => {
     renderAt('/app/onboarding')
 
     await user.type(
-      screen.getByLabelText('Email address'),
+      screen.getByLabelText(t('auth.signIn.fields.email.label')),
       'tester@example.com',
     )
 
-    await user.type(screen.getByLabelText('Password'), 'password123')
+    await user.type(
+      screen.getByLabelText(t('auth.signIn.fields.password.label')),
+      'password123',
+    )
 
-    await user.click(screen.getByRole('button', { name: 'Sign in' }))
+    await user.click(
+      screen.getByRole('button', { name: t('common.actions.signIn') }),
+    )
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Finish setting up your household',
+        name: t('app.onboarding.title'),
       }),
+    ).toBeInTheDocument()
+  })
+
+  it('shows translated validation feedback when sign-in input is invalid', async () => {
+    const user = userEvent.setup()
+
+    renderAt('/sign-in')
+
+    await user.click(
+      screen.getByRole('button', { name: t('common.actions.signIn') }),
+    )
+
+    expect(
+      screen.getByText(t('auth.signIn.errors.invalidForm')),
     ).toBeInTheDocument()
   })
 

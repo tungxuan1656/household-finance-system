@@ -1,0 +1,183 @@
+{
+  "common": {
+    "actions": {
+      "backToOverview": "Quay lại tổng quan",
+      "backToShell": "Quay lại khung ứng dụng",
+      "backToSignIn": "Quay lại đăng nhập",
+      "createAccount": "Tạo tài khoản",
+      "openOnboarding": "Mở hướng dẫn thiết lập",
+      "signIn": "Đăng nhập"
+    },
+    "labels": {
+      "protectedShell": "Khung bảo vệ",
+      "publicRoute": "Tuyến công khai",
+      "signedInShell": "Khung đã đăng nhập"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "description": "Dùng email để tiếp tục vào không gian hộ gia đình.",
+      "errors": {
+        "invalidForm": "Vui lòng nhập email hợp lệ và mật khẩu có ít nhất 8 ký tự."
+      },
+      "fields": {
+        "email": {
+          "description": "Hộp thư gắn với tài khoản của bạn.",
+          "label": "Địa chỉ email",
+          "placeholder": "ten@vi.du"
+        },
+        "password": {
+          "description": "Ít nhất 8 ký tự.",
+          "label": "Mật khẩu",
+          "placeholder": "••••••••"
+        }
+      },
+      "footer": {
+        "link": "Tạo tài khoản",
+        "prompt": "Bạn mới ở đây?"
+      },
+      "title": "Đăng nhập"
+    },
+    "signUp": {
+      "description": "Tạo tài khoản sẽ tham gia hoặc tạo một hộ gia đình.",
+      "errors": {
+        "invalidForm": "Vui lòng nhập họ tên, email hợp lệ và mật khẩu có ít nhất 8 ký tự."
+      },
+      "fields": {
+        "email": {
+          "description": "Chúng tôi sẽ dùng địa chỉ này cho luồng đăng nhập.",
+          "label": "Địa chỉ email",
+          "placeholder": "ten@vi.du"
+        },
+        "fullName": {
+          "description": "Tên hiển thị cho hộ gia đình.",
+          "label": "Họ và tên",
+          "placeholder": "Alex Morgan"
+        },
+        "password": {
+          "description": "Chọn một mật khẩu đủ mạnh cho ứng dụng.",
+          "label": "Mật khẩu",
+          "placeholder": "••••••••"
+        }
+      },
+      "footer": {
+        "link": "Quay lại đăng nhập",
+        "prompt": "Đã có tài khoản?"
+      },
+      "title": "Tạo tài khoản"
+    }
+  },
+  "app": {
+    "onboarding": {
+      "actions": {
+        "backToShell": "Quay lại khung",
+        "returnToSignIn": "Quay lại đăng nhập"
+      },
+      "checklist": {
+        "chooseOrCreate": "Chọn hoặc tạo một hộ gia đình",
+        "inviteLater": "Mời thành viên sau nếu cần",
+        "setCurrency": "Đặt tiền tệ mặc định"
+      },
+      "description": "Placeholder này giữ điểm vào onboarding hiển thị cho đến khi luồng thật được xây dựng.",
+      "fields": {
+        "currency": {
+          "description": "Chọn đồng tiền mặc định cho khung.",
+          "label": "Tiền tệ mặc định"
+        },
+        "householdName": {
+          "description": "Hiển thị trên khung cho đến khi luồng onboarding thật sẵn sàng.",
+          "label": "Tên hộ gia đình",
+          "placeholder": "Gia đình mẫu"
+        },
+        "welcomeNote": {
+          "description": "Nội dung tuỳ chọn sẽ xuất hiện trong xác nhận onboarding.",
+          "label": "Lời chào mừng",
+          "placeholder": "Ví dụ: Viết vài dòng chào mừng cho hộ gia đình..."
+        }
+      },
+      "title": "Hoàn tất thiết lập hộ gia đình"
+    },
+    "overview": {
+      "activeHousehold": {
+        "body": "Một ngữ cảnh hộ gia đình duy nhất cho bản demo khung.",
+        "cardTitle": "Hộ gia đình đang dùng",
+        "description": "Chờ tính năng chọn hộ gia đình.",
+        "name": "Gia đình mẫu"
+      },
+      "badge": "Khung đã đăng nhập",
+      "description": "Trang đích này là nền cho trạng thái đã xác thực. Nó giữ bố cục, điều hướng, và hành vi trạng thái trống ổn định trước khi dữ liệu thật xuất hiện.",
+      "demoFamily": "Gia đình mẫu",
+      "nextAction": {
+        "button": "Mở hướng dẫn thiết lập",
+        "cardTitle": "Bước tiếp theo",
+        "description": "Dẫn người dùng đến tuyến bắt đầu phù hợp."
+      },
+      "shellCoverage": {
+        "body": "Trang công khai auth, onboarding, bảng điều khiển, chi tiêu, ngân sách, phân tích và cài đặt.",
+        "cardTitle": "Phạm vi khung",
+        "description": "Các tuyến mà các feat sau sẽ thay thế."
+      },
+      "signedInAs": "Đã đăng nhập với vai trò",
+      "title": "Không gian làm việc hộ gia đình"
+    },
+    "placeholder": {
+      "budgets": {
+        "description": "Tuyến này đã được dựng khung cho shell MVP và sẽ được thay thế bởi feat thật ở bước sau.",
+        "title": "Ngân sách"
+      },
+      "expenses": {
+        "description": "Tuyến này đã được dựng khung cho shell MVP và sẽ được thay thế bởi feat thật ở bước sau.",
+        "title": "Chi tiêu"
+      },
+      "insights": {
+        "description": "Tuyến này đã được dựng khung cho shell MVP và sẽ được thay thế bởi feat thật ở bước sau.",
+        "title": "Phân tích"
+      },
+      "settings": {
+        "description": "Tuyến này đã được dựng khung cho shell MVP và sẽ được thay thế bởi feat thật ở bước sau.",
+        "title": "Cài đặt"
+      }
+    }
+  },
+  "shell": {
+    "protected": {
+      "badge": "Khung bảo vệ",
+      "description": "Một khung ổn định cho các tuyến đã xác thực và onboarding.",
+      "footer": "Trạng thái đăng nhập và chọn hộ gia đình sẽ được gắn vào đây ở các feat sau.",
+      "nav": {
+        "ariaLabel": "Các mục ứng dụng",
+        "budgets": "Ngân sách",
+        "expenses": "Chi tiêu",
+        "insights": "Phân tích",
+        "onboarding": "Thiết lập",
+        "overview": "Tổng quan",
+        "settings": "Cài đặt"
+      },
+      "title": "Điều hướng khung ứng dụng"
+    },
+    "public": {
+      "badge": "Không gian hộ gia đình",
+      "description": "Đăng nhập, tham gia một hộ gia đình, và đi qua các luồng MVP từ một khung web ổn định. Khung auth vẫn công khai trong khi app shell giữ onboarding, chi tiêu, ngân sách và phân tích nhất quán.",
+      "featureCards": {
+        "householdContext": {
+          "description": "Giữ hộ gia đình đang dùng hiển thị xuyên suốt các luồng chi tiêu, ngân sách và phân tích.",
+          "title": "Ngữ cảnh hộ gia đình"
+        },
+        "quickAdd": {
+          "description": "Ghi một giao dịch trong vài giây với mặc định rõ ràng và kiểm tra hợp lệ dễ hiểu.",
+          "title": "Thêm nhanh"
+        },
+        "sharedPrimitives": {
+          "description": "Tái sử dụng một bề mặt form cho auth, onboarding và mọi form cài đặt sau này.",
+          "title": "Thành phần dùng chung"
+        }
+      },
+      "footer": {
+        "protectedShell": "Khung ứng dụng: /app",
+        "publicRoutes": "Tuyến công khai: /sign-in, /sign-up",
+        "redirect": "Chuyển hướng: / → /sign-in"
+      },
+      "title": "Theo dõi mọi chi tiêu chung mà không mất ngữ cảnh."
+    }
+  }
+}

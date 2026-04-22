@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthPanel } from '@/components/auth/auth-panel'
 import { Input } from '@/components/ui/input'
+import { t } from '@/lib/i18n'
 import { authActions, useAuthStore } from '@/stores/auth.store'
 
 function SignInPage() {
@@ -23,16 +24,14 @@ function SignInPage() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     if (!email || !emailRegex.test(email) || password.length < 8) {
-      setFormError(
-        'Please provide a valid email and a password (minimum 8 characters).',
-      )
+      setFormError(t('auth.signIn.errors.invalidForm'))
 
       return
     }
 
     authActions.signIn({
       email,
-      name: email.split('@')[0] || 'Signed-in user',
+      name: email.split('@')[0] || t('app.overview.demoFamily'),
     })
 
     const safeDestination =
@@ -49,45 +48,46 @@ function SignInPage() {
 
   return (
     <AuthPanel
-      actionLabel='Sign in'
-      description='Use your email address to continue into the household shell.'
+      actionLabel={t('common.actions.signIn')}
+      description={t('auth.signIn.description')}
+      eyebrowLabel={t('common.labels.publicRoute')}
       footer={
         <p>
-          New here?{' '}
+          {t('auth.signIn.footer.prompt')}{' '}
           <Link
             className='font-medium text-primary underline-offset-4 hover:underline'
             to='/sign-up'>
-            Create an account
+            {t('auth.signIn.footer.link')}
           </Link>
         </p>
       }
-      title='Sign in'
+      title={t('auth.signIn.title')}
       onSubmit={handleSubmit}>
       {formError ? (
         <p className='text-sm text-destructive'>{formError}</p>
       ) : null}
       <AuthField
-        description='The inbox tied to your account.'
+        description={t('auth.signIn.fields.email.description')}
         id='email'
-        label='Email address'>
+        label={t('auth.signIn.fields.email.label')}>
         <Input
           autoComplete='email'
           id='email'
           name='email'
-          placeholder='name@example.com'
+          placeholder={t('auth.signIn.fields.email.placeholder')}
           type='email'
         />
       </AuthField>
 
       <AuthField
-        description='At least 8 characters.'
+        description={t('auth.signIn.fields.password.description')}
         id='password'
-        label='Password'>
+        label={t('auth.signIn.fields.password.label')}>
         <Input
           autoComplete='current-password'
           id='password'
           name='password'
-          placeholder='••••••••'
+          placeholder={t('auth.signIn.fields.password.placeholder')}
           type='password'
         />
       </AuthField>

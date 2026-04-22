@@ -1,14 +1,15 @@
 import { NavLink, Outlet } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
+import { t } from '@/lib/i18n'
 
 const appNavItems = [
-  { to: '/app', label: 'Overview' },
-  { to: '/app/onboarding', label: 'Onboarding' },
-  { to: '/app/expenses', label: 'Expenses' },
-  { to: '/app/budgets', label: 'Budgets' },
-  { to: '/app/insights', label: 'Insights' },
-  { to: '/app/settings', label: 'Settings' },
+  { to: '/app', label: t('shell.protected.nav.overview') },
+  { to: '/app/onboarding', label: t('shell.protected.nav.onboarding') },
+  { to: '/app/expenses', label: t('shell.protected.nav.expenses') },
+  { to: '/app/budgets', label: t('shell.protected.nav.budgets') },
+  { to: '/app/insights', label: t('shell.protected.nav.insights') },
+  { to: '/app/settings', label: t('shell.protected.nav.settings') },
 ] as const
 
 function ProtectedShell() {
@@ -18,18 +19,22 @@ function ProtectedShell() {
         <aside className='flex flex-col gap-4 rounded-none border border-border/70 bg-background/85 p-4 shadow-sm backdrop-blur'>
           <div className='space-y-2'>
             <Badge className='w-fit' variant='secondary'>
-              Protected shell
+              {t('shell.protected.badge')}
             </Badge>
 
             <div>
-              <h2 className='font-heading text-lg'>Shell navigation</h2>
+              <h2 className='font-heading text-lg'>
+                {t('shell.protected.title')}
+              </h2>
               <p className='text-xs text-muted-foreground'>
-                A stable frame for authenticated routes and onboarding.
+                {t('shell.protected.description')}
               </p>
             </div>
           </div>
 
-          <nav aria-label='App sections' className='flex flex-col gap-1'>
+          <nav
+            aria-label={t('shell.protected.nav.ariaLabel')}
+            className='flex flex-col gap-1'>
             {appNavItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -49,7 +54,7 @@ function ProtectedShell() {
           </nav>
 
           <div className='mt-auto rounded-none border border-border/70 bg-muted/40 p-3 text-xs text-muted-foreground'>
-            Auth state and household selection will plug in here in later feats.
+            {t('shell.protected.footer')}
           </div>
         </aside>
 

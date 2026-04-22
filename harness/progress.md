@@ -1,5 +1,40 @@
 # Progress Log
 
+## 2026-04-22 — Hardened feat-032 language persistence against blocked storage
+- Who: Codex
+- Summary: Wrapped the frontend i18n language write in a storage-safe fallback and added a regression test so `changeLanguage()` keeps working even when localStorage is unavailable or blocked.
+- Files changed: apps/web/src/lib/i18n/index.ts, apps/web/src/lib/i18n/change-language.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: keep the i18n bootstrap unchanged unless future locale expansion needs a broader storage abstraction.
+
+## 2026-04-22 — Tightened feat-032 fallback verification
+- Who: Codex
+- Summary: Added a render-level regression test that boots the web router under an unsupported browser language hint and confirms the sign-in shell still renders in Vietnamese, closing the remaining verification gap from the feat-032 review.
+- Files changed: apps/web/src/lib/i18n/browser-fallback.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: keep the i18n foundation as-is unless future locale work expands beyond `vi`.
+
+## 2026-04-22 — Implemented feat-032 frontend internationalization foundation
+- Who: Codex
+- Summary: Delivered the frontend i18n foundation with `i18next`/`react-i18next`/`i18next-browser-languagedetector`, a shared `vi` catalog, browser-language plus `appLanguage` resolution normalized to `vi`, Vietnamese labels across the current auth/shell/onboarding/placeholder/overview surfaces, and regression coverage for translated rendering plus unsupported-locale fallback.
+- Files changed: apps/web/package.json, pnpm-lock.yaml, apps/web/src/lib/constants/i18n.ts, apps/web/src/lib/i18n/index.ts, apps/web/src/lib/i18n/locales/vi.json, apps/web/src/lib/i18n/resolve-locale.ts, apps/web/src/lib/i18n/resolve-locale.test.ts, apps/web/src/main.tsx, apps/web/src/app.tsx, apps/web/src/router.tsx, apps/web/src/components/auth/auth-panel.tsx, apps/web/src/components/layouts/public-shell.tsx, apps/web/src/components/layouts/protected-shell.tsx, apps/web/src/pages/auth/sign-in-page.tsx, apps/web/src/pages/auth/sign-up-page.tsx, apps/web/src/pages/app/overview-page.tsx, apps/web/src/pages/app/onboarding-page.tsx, apps/web/src/pages/app/placeholder-page.tsx, apps/web/src/app.test.tsx, docs/exec-plans/completed/2026-04-22-feat-032-frontend-internationalization-foundation.md, docs/exec-plans/completed/index.md, docs/exec-plans/active/index.md, harness/feature_index.json, harness/features/feat-032.json, harness/progress.md
+- Blockers: none
+- Next steps: continue with the next pending feature; `feat-032` is verified and archived.
+
+## 2026-04-22 — Refined feat-032 ExecPlan with i18next decisions
+- Who: Codex
+- Summary: Updated the active `feat-032` ExecPlan to reflect the chosen frontend i18n direction: use browser language detection plus `localStorage`, normalize unsupported values to `vi` before runtime init, adopt `i18next`/`react-i18next`/`i18next-browser-languagedetector`, and place shared locale constants under `src/lib/constants` with runtime bootstrap under `src/lib/i18n`.
+- Files changed: docs/exec-plans/active/2026-04-22-feat-032-frontend-internationalization-foundation.md, harness/progress.md
+- Blockers: none
+- Next steps: implement `feat-032` with the approved `i18next` bootstrap shape, then verify persisted-locale and fallback-to-`vi` behavior in web tests.
+
+## 2026-04-22 — Created ExecPlan for feat-032 frontend i18n foundation
+- Who: Codex
+- Summary: Drafted the active ExecPlan for `feat-032` after reviewing the current web shell/auth copy surface, frontend reference docs, harness state, and the completed backend i18n foundation. The plan scopes the work to frontend-only locale plumbing with a Vietnamese JSON catalog, hard fallback to `vi`, migration of the current auth/shell/onboarding labels, and explicit verification for fallback behavior.
+- Files changed: docs/exec-plans/active/2026-04-22-feat-032-frontend-internationalization-foundation.md, docs/exec-plans/active/index.md, harness/progress.md
+- Blockers: none
+- Next steps: implement `feat-032` from the new ExecPlan, then update harness feature state and move the plan to `completed/` after verification passes.
+
 ## 2026-04-22 — Closed remaining feat-031 verification gaps
 - Who: Codex
 - Summary: Added integration coverage for malformed JSON request bodies and for locale resolution via `x-locale`, then re-ran worker tests and full `./init.sh` to confirm the backend i18n foundation still passes the repo verification gate.
