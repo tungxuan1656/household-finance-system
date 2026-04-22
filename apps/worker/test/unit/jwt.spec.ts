@@ -7,7 +7,7 @@ import {
   issueRefreshToken,
   verifyAccessToken,
   verifyRefreshToken,
-} from '@/utils/auth/jwt'
+} from '@/lib/auth/jwt'
 
 const encoder = new TextEncoder()
 

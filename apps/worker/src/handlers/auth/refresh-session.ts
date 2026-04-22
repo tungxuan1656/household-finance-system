@@ -1,28 +1,24 @@
+import type { RefreshSessionResponse } from '@/contracts'
 import {
-  createRefreshSession,
   findSessionByIdAndHash,
   isSessionActive,
-  revokeSessionIfActive,
+  rotateRefreshSession,
 } from '@/db/repositories/session-repository'
-import type {
-  AppBindings,
-  RefreshSessionInput,
-  RefreshSessionOutput,
-} from '@/dto'
-import { readConfig } from '@/lib/env'
-import { unauthenticated } from '@/lib/errors'
 import {
   issueAccessToken,
   issueRefreshToken,
   verifyRefreshToken,
-} from '@/utils/auth/jwt'
-import { hashRefreshToken } from '@/utils/auth/security'
-import { newId } from '@/utils/shared/id'
+} from '@/lib/auth/jwt'
+import { hashRefreshToken } from '@/lib/auth/security'
+import { readConfig } from '@/lib/env'
+import { unauthenticated } from '@/lib/errors'
+import type { AppBindings, RefreshSessionInput } from '@/types'
+import { newId } from '@/utils/id'
 
 export const refreshSession = async (
   env: AppBindings['Bindings'],
   input: RefreshSessionInput,
-): Promise<RefreshSessionOutput> => {
+): Promise<RefreshSessionResponse> => {
   const config = readConfig(env)
   const refreshPayload = await verifyRefreshToken(input.refreshToken, config)
   const tokenHash = await hashRefreshToken(
@@ -44,12 +40,6 @@ export const refreshSession = async (
     throw unauthenticated('Refresh token is invalid, expired, or revoked.')
   }
 
-  const isRevoked = await revokeSessionIfActive(env.DB, existingSession.id)
-
-  if (!isRevoked) {
-    throw unauthenticated('Refresh token is invalid, expired, or revoked.')
-  }
-
   const rotatedSessionId = newId()
   const accessToken = await issueAccessToken(
     config,
@@ -66,14 +56,19 @@ export const refreshSession = async (
     config.refreshTokenPepper,
   )
 
-  await createRefreshSession(env.DB, {
-    sessionId: rotatedSessionId,
+  const rotated = await rotateRefreshSession(env.DB, {
+    previousSessionId: existingSession.id,
+    newSessionId: rotatedSessionId,
     userId: existingSession.userId,
     tokenHash: rotatedHash,
     expiresAt: Date.now() + config.refreshTokenTtlSeconds * 1000,
     userAgent: input.userAgent,
     ipAddress: input.ipAddress,
   })
+
+  if (!rotated) {
+    throw unauthenticated('Refresh token is invalid, expired, or revoked.')
+  }
 
   return {
     tokenType: 'Bearer',

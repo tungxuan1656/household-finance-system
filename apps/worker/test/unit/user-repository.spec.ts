@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { upsertUserByFirebaseIdentity } from '@/db/repositories/user-repository'
+import {
+  loadUserById,
+  upsertUserByFirebaseIdentity,
+} from '@/db/repositories/user-repository'
 
 type UserRow = {
   id: string
@@ -387,6 +390,22 @@ describe('user repository', () => {
       display_name: 'New Name',
       primary_email: 'new@example.com',
       avatar_url: 'https://example.com/avatar.png',
+    })
+  })
+
+  it('throws NOT_FOUND when loading an unknown user', async () => {
+    const db = new FakeD1Database({
+      id: 'identity-winner',
+      userId: 'winner-user',
+      provider: 'firebase',
+      providerSubject: 'firebase-subject-1',
+      providerEmail: 'winner@example.com',
+    })
+
+    await expect(
+      loadUserById(db as unknown as D1Database, 'missing-user'),
+    ).rejects.toMatchObject({
+      code: 'NOT_FOUND',
     })
   })
 })

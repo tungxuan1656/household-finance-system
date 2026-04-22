@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { updateProfileRequestSchema } from '@/dto'
+import { updateProfileRequestSchema } from '@/contracts'
 
-describe('profile dto schema', () => {
+describe('profile contract schema', () => {
   it('rejects an empty payload', () => {
     const parsed = updateProfileRequestSchema.safeParse({})
 

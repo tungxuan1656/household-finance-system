@@ -42,6 +42,17 @@ Backend work must follow the repository guidance in:
 - Shared auth boundary: `src/middlewares/auth.ts`
 - Shared response envelope + error mapping: `src/lib/response.ts`
 
+## Source Layout
+
+- `src/routes/*`: HTTP route registration and middleware composition only
+- `src/handlers/*`: per-use-case orchestration and business flow
+- `src/db/repositories/*`: D1 reads/writes and row mapping
+- `src/contracts/*`: API request/response schemas and transport contracts
+- `src/types/*`: runtime-only app/auth types that are not API payload contracts
+- `src/lib/auth/*`: auth/security infrastructure such as Firebase verification, JWT, hashing
+- `src/lib/*`: shared runtime helpers that are broader than a pure utility
+- `src/utils/*`: small reusable pure helpers
+
 ## Development
 
 Run from repository root:

@@ -1,12 +1,16 @@
 import { Hono } from 'hono'
 
-import type { AppBindings, ProfileResponse, UpdateProfileRequest } from '@/dto'
-import { updateProfileRequestSchema } from '@/dto'
+import {
+  type ProfileResponse,
+  type UpdateProfileRequest,
+  updateProfileRequestSchema,
+} from '@/contracts'
 import { getCurrentProfile } from '@/handlers/profile/get-current-profile'
 import { updateCurrentProfile } from '@/handlers/profile/update-current-profile'
 import { success } from '@/lib/response'
 import { readJsonBody } from '@/lib/validation'
 import { authMiddleware } from '@/middlewares/auth'
+import type { AppBindings } from '@/types'
 
 export const profileRoutes = new Hono<AppBindings>()
 

@@ -1,20 +1,17 @@
+import type { ExchangeProviderResponse } from '@/contracts'
 import { createRefreshSession } from '@/db/repositories/session-repository'
 import { upsertUserByFirebaseIdentity } from '@/db/repositories/user-repository'
-import type {
-  AppBindings,
-  ExchangeProviderTokenInput,
-  ExchangeProviderTokenOutput,
-} from '@/dto'
+import { verifyFirebaseIdToken } from '@/lib/auth/firebase'
+import { issueAccessToken, issueRefreshToken } from '@/lib/auth/jwt'
+import { hashRefreshToken } from '@/lib/auth/security'
 import { readConfig } from '@/lib/env'
-import { verifyFirebaseIdToken } from '@/utils/auth/firebase'
-import { issueAccessToken, issueRefreshToken } from '@/utils/auth/jwt'
-import { hashRefreshToken } from '@/utils/auth/security'
-import { newId } from '@/utils/shared/id'
+import type { AppBindings, ExchangeProviderTokenInput } from '@/types'
+import { newId } from '@/utils/id'
 
 export const exchangeProviderToken = async (
   env: AppBindings['Bindings'],
   input: ExchangeProviderTokenInput,
-): Promise<ExchangeProviderTokenOutput> => {
+): Promise<ExchangeProviderResponse> => {
   const config = readConfig(env)
   const firebaseIdentity = await verifyFirebaseIdToken(input.idToken, config)
 

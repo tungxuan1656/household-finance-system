@@ -1,4 +1,4 @@
-import { newId } from '@/utils/shared/id'
+import { newId } from '@/utils/id'
 
 export interface RefreshSession {
   id: string
@@ -6,6 +6,25 @@ export interface RefreshSession {
   tokenHash: string
   expiresAt: number
   revokedAt: number | null
+}
+
+export interface CreateRefreshSessionInput {
+  sessionId?: string
+  userId: string
+  tokenHash: string
+  expiresAt: number
+  userAgent: string | null
+  ipAddress: string | null
+}
+
+export interface RotateRefreshSessionInput {
+  previousSessionId: string
+  newSessionId?: string
+  userId: string
+  tokenHash: string
+  expiresAt: number
+  userAgent: string | null
+  ipAddress: string | null
 }
 
 const toRefreshSession = (row: {
@@ -22,33 +41,34 @@ const toRefreshSession = (row: {
   revokedAt: row.revoked_at,
 })
 
-export const createRefreshSession = async (
+const insertRefreshSessionStatement = (
   db: D1Database,
-  input: {
-    sessionId?: string
-    userId: string
-    tokenHash: string
-    expiresAt: number
-    userAgent: string | null
-    ipAddress: string | null
-  },
-): Promise<RefreshSession> => {
-  const sessionId = input.sessionId ?? newId()
-
-  await db
+  input: Required<CreateRefreshSessionInput>,
+): D1PreparedStatement =>
+  db
     .prepare(
       `INSERT INTO refresh_sessions (id, user_id, token_hash, expires_at, user_agent, ip_address)
        VALUES (?, ?, ?, ?, ?, ?)`,
     )
     .bind(
-      sessionId,
+      input.sessionId,
       input.userId,
       input.tokenHash,
       input.expiresAt,
       input.userAgent,
       input.ipAddress,
     )
-    .run()
+
+export const createRefreshSession = async (
+  db: D1Database,
+  input: CreateRefreshSessionInput,
+): Promise<RefreshSession> => {
+  const sessionId = input.sessionId ?? newId()
+
+  await insertRefreshSessionStatement(db, {
+    ...input,
+    sessionId,
+  }).run()
 
   return {
     id: sessionId,
@@ -112,6 +132,43 @@ export const findSessionById = async (
   }
 
   return toRefreshSession(row)
+}
+
+export const rotateRefreshSession = async (
+  db: D1Database,
+  input: RotateRefreshSessionInput,
+): Promise<boolean> => {
+  const nowEpoch = Date.now()
+  const nextSessionId = input.newSessionId ?? newId()
+
+  const results = await db.batch([
+    db
+      .prepare(
+        `UPDATE refresh_sessions
+         SET revoked_at = ?, updated_at = ?
+         WHERE id = ?
+           AND user_id = ?
+           AND revoked_at IS NULL
+           AND expires_at > ?`,
+      )
+      .bind(
+        nowEpoch,
+        nowEpoch,
+        input.previousSessionId,
+        input.userId,
+        nowEpoch,
+      ),
+    insertRefreshSessionStatement(db, {
+      sessionId: nextSessionId,
+      userId: input.userId,
+      tokenHash: input.tokenHash,
+      expiresAt: input.expiresAt,
+      userAgent: input.userAgent,
+      ipAddress: input.ipAddress,
+    }),
+  ])
+
+  return Number(results[0].meta.changes ?? 0) === 1
 }
 
 export const revokeSessionIfActive = async (

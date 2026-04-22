@@ -1,5 +1,6 @@
+import type { ProfileResponse } from '@/contracts'
 import { loadUserById } from '@/db/repositories/user-repository'
-import type { AppBindings, ProfileResponse } from '@/dto'
+import type { AppBindings } from '@/types'
 
 export const getCurrentProfile = async (
   env: AppBindings['Bindings'],

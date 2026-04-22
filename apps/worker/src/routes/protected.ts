@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 
-import type { AppBindings } from '@/dto'
 import { success } from '@/lib/response'
 import { authMiddleware } from '@/middlewares/auth'
+import type { AppBindings } from '@/types'
 
 export const protectedRoutes = new Hono<AppBindings>()
 

@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 
-import type { AppBindings } from '@/dto'
 import { notFound } from '@/lib/errors'
 import { fromUnknownError } from '@/lib/response'
 import { requestContextMiddleware } from '@/middlewares/request-context'
@@ -8,6 +7,7 @@ import { authRoutes } from '@/routes/auth'
 import { healthRoutes } from '@/routes/health'
 import { profileRoutes } from '@/routes/profile'
 import { protectedRoutes } from '@/routes/protected'
+import type { AppBindings } from '@/types'
 
 const app = new Hono<AppBindings>()
 

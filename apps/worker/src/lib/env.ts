@@ -1,5 +1,5 @@
-import type { AppConfig } from '@/dto'
 import { internalError } from '@/lib/errors'
+import type { AppConfig } from '@/types'
 
 const DEFAULT_FIREBASE_JWKS_URL =
   'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'

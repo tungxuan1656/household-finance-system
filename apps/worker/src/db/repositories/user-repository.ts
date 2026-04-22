@@ -1,4 +1,5 @@
-import { newId } from '@/utils/shared/id'
+import { notFound } from '@/lib/errors'
+import { newId } from '@/utils/id'
 
 export interface StoredUser {
   id: string
@@ -50,7 +51,7 @@ export const loadUserById = async (
   const user = await findUserById(db, userId)
 
   if (!user) {
-    throw new Error('User upsert failed unexpectedly')
+    throw notFound('User not found.')
   }
 
   return user

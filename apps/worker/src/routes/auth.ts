@@ -1,14 +1,14 @@
 import { Hono } from 'hono'
 
 import {
-  type AppBindings,
   exchangeProviderRequestSchema,
   refreshSessionRequestSchema,
-} from '@/dto'
+} from '@/contracts'
 import { exchangeProviderToken } from '@/handlers/auth/exchange-provider-token'
 import { refreshSession } from '@/handlers/auth/refresh-session'
 import { success } from '@/lib/response'
 import { readJsonBody } from '@/lib/validation'
+import type { AppBindings } from '@/types'
 
 export const authRoutes = new Hono<AppBindings>()
 

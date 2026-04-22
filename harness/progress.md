@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-04-22 — Added canonical backend folder-structure reference
+- Who: Codex
+- Summary: Added a backend companion to the frontend folder-structure reference so routes/handlers/repositories/contracts/types/lib/auth placement rules are documented in one canonical backend doc, then linked it from `docs/references/index.md` and `docs/BACKEND.md`.
+- Files changed: docs/references/backend/project-folder-structure.md, docs/references/index.md, docs/BACKEND.md, harness/progress.md
+- Blockers: none
+- Next steps: keep future backend folder moves aligned with this reference and update it when a new canonical backend namespace is introduced.
+
+## 2026-04-22 — Refactored worker auth/session structure for clearer boundaries
+- Who: Codex
+- Summary: Split `apps/worker` transport contracts out of the old `src/dto` bucket into `src/contracts`, moved runtime-only app/auth types into `src/types`, moved Firebase/JWT/security code into `src/lib/auth`, simplified shared ID helper placement, changed refresh-session rotation to a transactional D1 batch flow, added rollback/not-found regression coverage, and documented the source layout in the worker README.
+- Files changed: apps/worker/src/contracts/auth.ts, apps/worker/src/contracts/profile.ts, apps/worker/src/contracts/index.ts, apps/worker/src/types/app.ts, apps/worker/src/types/auth.ts, apps/worker/src/types/index.ts, apps/worker/src/lib/auth/firebase.ts, apps/worker/src/lib/auth/jwt.ts, apps/worker/src/lib/auth/security.ts, apps/worker/src/utils/id.ts, apps/worker/src/db/repositories/session-repository.ts, apps/worker/src/db/repositories/user-repository.ts, apps/worker/src/handlers/auth/exchange-provider-token.ts, apps/worker/src/handlers/auth/refresh-session.ts, apps/worker/src/handlers/profile/get-current-profile.ts, apps/worker/src/handlers/profile/update-current-profile.ts, apps/worker/src/index.ts, apps/worker/src/lib/env.ts, apps/worker/src/lib/response.ts, apps/worker/src/middlewares/auth.ts, apps/worker/src/middlewares/request-context.ts, apps/worker/src/routes/auth.ts, apps/worker/src/routes/health.ts, apps/worker/src/routes/profile.ts, apps/worker/src/routes/protected.ts, apps/worker/test/unit/dto-auth.spec.ts, apps/worker/test/unit/dto-profile.spec.ts, apps/worker/test/unit/firebase.spec.ts, apps/worker/test/unit/jwt.spec.ts, apps/worker/test/unit/response.spec.ts, apps/worker/test/unit/session-repository.spec.ts, apps/worker/test/unit/user-repository.spec.ts, apps/worker/README.md, harness/features/feat-008.json, harness/progress.md
+- Blockers: GitNexus CLI in this session exposes `impact`, `query`, and `context`, but not the `detect_changes` command referenced in repo guidance, so pre-commit graph diff verification could not be run from the available tool surface.
+- Next steps: keep auth work under `feat-008`, add logout/session revocation endpoints on top of the new structure, and continue moving future worker domains into the same contracts/types/lib-auth boundary pattern.
+
 ## 2026-04-22 — Implemented feat-007 D1 schema and local migration workflow
 - Who: Codex
 - Summary: Replaced the legacy worker `0001_init.sql` schema with a product-aligned household-finance baseline, swapped the old family/rewards integrity tests for household/expense/budget/audit constraints, added deterministic test fixtures and a local SQL seed workflow, and verified the feature with worker tests, local Wrangler migrate/seed/query commands, and full `./init.sh`.
