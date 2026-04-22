@@ -1,106 +1,86 @@
-# feat-008: Complete backend authentication session exchange
+# Title
 
-## Objective
-
-Finish the backend half of the authentication flow so the worker fully supports provider token exchange, refresh rotation, and explicit logout/session revocation for the app session lifecycle described in `docs/product-specs/authentication.md`. The observable outcome is that a client can sign in with a Firebase ID token, refresh without re-authenticating while the refresh token is valid, and log out so the current session can no longer refresh or access protected endpoints.
+feat-008: Complete backend authentication session exchange
 
 ## Purpose / Big Picture
 
-`feat-008` is the backend contract that turns Firebase identity into a local application session. Exchange and refresh behavior already exist in `apps/worker`, but the feature is still incomplete because the logout/revocation path and its end-to-end acceptance evidence are missing from the repository memory. This plan locks the remaining scope to backend work only, preserves the current route -> handler -> repository boundaries, and defines the verification and harness updates needed to close the feature safely.
+This plan finalizes the backend authentication session lifecycle in the worker by preserving the existing provider exchange and refresh behavior, then adding explicit logout/session revocation and complete acceptance evidence. Users should be able to exchange a Firebase ID token for app tokens, refresh while the refresh token is valid, and log out so the current app session can no longer access protected endpoints or refresh. The scope is backend-only and keeps the established route -> handler -> repository boundaries.
 
-This plan is now sequenced behind `feat-031` and `feat-032` so backend and frontend locale foundations land first, with current fallback behavior pinned to `vi`.
+## Objective
 
-## Scope and Out-of-Scope
+Implement and verify `POST /api/v1/auth/logout` so `feat-008` can move from pending to done with complete backend acceptance evidence aligned to `docs/product-specs/authentication.md`.
 
-### In Scope
+## Scope
 
-- `apps/worker/src/routes/auth.ts`
-- `apps/worker/src/handlers/auth/*`
-- `apps/worker/src/db/repositories/session-repository.ts`
+In scope (expected edits):
+
 - `apps/worker/src/contracts/auth.ts`
-- `apps/worker/src/types/auth.ts` if logout-specific runtime input types are needed
+- `apps/worker/src/routes/auth.ts`
+- `apps/worker/src/handlers/auth/logout-session.ts` (new)
+- `apps/worker/src/handlers/auth/index.ts` (if needed for exports)
+- `apps/worker/src/db/repositories/session-repository.ts`
+- `apps/worker/src/types/auth.ts` (only if new runtime type is required)
 - `apps/worker/test/index.spec.ts`
 - `apps/worker/test/unit/dto-auth.spec.ts`
 - `apps/worker/test/unit/session-repository.spec.ts`
-- `apps/worker/README.md` if auth endpoint docs need to mention logout semantics
+- `apps/worker/README.md` (only if endpoint docs change)
 - `harness/features/feat-008.json`
 - `harness/feature_index.json`
 - `harness/progress.md`
 - `docs/exec-plans/active/2026-04-22-feat-008-authentication-backend-session-exchange.md`
-- `docs/exec-plans/active/index.md`
 
-### Out of Scope
+Out of scope:
 
-- Frontend Firebase SDK work, token storage, router redirects, and auth-state handling (`feat-009`).
-- Firebase sign-up/sign-in UI, onboarding, and profile UX.
-- Multi-device global logout, provider-wide Firebase token revocation, or admin-driven session invalidation beyond the current app session.
-- Rate limiting, observability dashboards, or new infrastructure dependencies unless a blocker proves they are required.
-- Rewriting the baseline schema from `feat-007`; any schema change discovered during implementation must be additive and justified.
-- Implementing locale infrastructure itself; that belongs to `feat-031` and `feat-032`, which are now prerequisites for this feature.
+- Frontend token storage/session wiring (`feat-009`).
+- Firebase UI auth flows and onboarding/profile UX.
+- Global multi-device logout or provider-wide Firebase revocation.
+- New infrastructure dependencies, rate-limiting rollout, or observability dashboards.
+- Rewriting `apps/worker/migrations/0001_init.sql`; any DB changes must be additive.
 
 ## Non-negotiable Requirements
 
-- Keep backend layering aligned with `ARCHITECTURE.md`: `Types -> Config -> Repo -> Service -> Runtime`, expressed here as `contracts/types -> lib/env -> db/repositories -> handlers -> routes/runtime`.
-- Keep `route -> handler -> repository` ownership intact; routes may parse/validate input and return envelopes, but must not contain business logic or SQL.
-- Keep API transport contracts in `apps/worker/src/contracts`, internal runtime types in `apps/worker/src/types`, and auth/security helpers in `apps/worker/src/lib/auth`.
-- Preserve JSON-only `/api/v1` behavior, `camelCase` API fields, and the shared success/error envelope from `apps/worker/src/lib/response.ts`.
-- Continue storing refresh tokens as hashes only. Never log or persist raw refresh tokens.
-- Add regression coverage for happy path, invalid input, unauthenticated access, and logout-related replay/reuse failure.
-
-## Progress
-
-- [ ] (2026-04-22, owner: Codex, status: current) Confirm the remaining feature delta against the current auth worker surface and keep logout/session revocation as the only new backend behavior.
-- [ ] Wait for `feat-031` and `feat-032` to land so auth contracts and UI flow can build on the repo-standard i18n foundation with `vi` fallback.
-- [ ] Add logout request/response contract shape and route wiring in `apps/worker/src/contracts/auth.ts` and `apps/worker/src/routes/auth.ts`.
-- [ ] Implement a dedicated auth logout handler in `apps/worker/src/handlers/auth/` that revokes the current session using repository helpers and current middleware context.
-- [ ] Tighten `session-repository.ts` only if needed for explicit logout semantics or clearer revoke helpers without widening repository responsibilities.
-- [ ] Extend endpoint and unit tests to prove exchange, refresh rotation, logout revocation, and post-logout rejection behavior.
-- [ ] Update `apps/worker/README.md` if endpoint documentation changes.
-- [ ] Update `harness/features/feat-008.json`, `harness/feature_index.json`, and `harness/progress.md` with completion evidence.
-- [ ] Move this ExecPlan to `docs/exec-plans/completed/` and update both plan indexes when the feature is done.
-
-## Surprises & Discoveries
-
-- Current repo state already implements `POST /api/v1/auth/provider/exchange` and `POST /api/v1/auth/refresh`, plus refresh rotation and protected-route invalidation after refresh. The missing feature evidence is concentrated around logout/session revocation and final harness closure.
-- `harness/features/feat-008.json` already contains implementation evidence from earlier worker auth refactors while the feature status is still `pending`; the implementation session should reconcile that record instead of overwriting it blindly.
-- The current route name is `/auth/provider/exchange` instead of the product-spec shorthand `/auth/exchange`. Keep the existing shipped path stable unless a compatibility reason justifies adding an alias.
-
-## Decision Log
-
-- Decision: Treat `feat-008` as backend-only completion work and leave frontend session orchestration to `feat-009`.
-  Rationale: The harness backlog already separates backend and frontend auth work, and the backend surface is the only remaining scope described in `feat-008`.
-  Date/Author: 2026-04-22 / Codex
-
-- Decision: Keep logout scoped to revoking the current application refresh session rather than revoking all provider sessions.
-  Rationale: The product spec marks provider-wide revocation as optional, and current worker bindings/contracts only support app-session lifecycle management.
-  Date/Author: 2026-04-22 / Codex
-
-- Decision: Preserve the current `/auth/provider/exchange` path instead of renaming it during `feat-008`.
-  Rationale: Renaming a working endpoint would create avoidable contract churn for the upcoming frontend implementation.
-  Date/Author: 2026-04-22 / Codex
-
-## Outcomes & Retrospective
-
-Fill in after implementation:
-
-- Outcome:
-- Gaps:
-- Lessons:
+- Keep architecture direction from `ARCHITECTURE.md`: `Types -> Config -> Repo -> Service -> Runtime -> UI`.
+- Keep worker boundary direction: `contracts/types -> lib/env -> db/repositories -> handlers -> routes/runtime`.
+- Routes must remain thin and contain no SQL.
+- Handlers must orchestrate behavior but not define transport envelope shape ad hoc.
+- Repository layer owns D1 SQL and row mapping.
+- Use JSON-only `/api/v1` contracts with `camelCase` fields and shared response envelope.
+- Refresh tokens remain hashed at rest and never logged.
+- Include endpoint and regression tests for happy path, validation failure, and unauthenticated/invalid-token paths.
 
 ## Context and Orientation
 
 - Product behavior source: `docs/product-specs/authentication.md`
-- Worker auth route surface: `apps/worker/src/routes/auth.ts`
-- Worker auth handlers: `apps/worker/src/handlers/auth/exchange-provider-token.ts`, `apps/worker/src/handlers/auth/refresh-session.ts`, plus the new logout handler to add
+- Existing auth routes: `apps/worker/src/routes/auth.ts`
+- Existing auth orchestration: `apps/worker/src/handlers/auth/exchange-provider-token.ts`, `apps/worker/src/handlers/auth/refresh-session.ts`
 - Session persistence: `apps/worker/src/db/repositories/session-repository.ts`
-- Auth middleware and current session context: `apps/worker/src/middlewares/auth.ts`
-- API contracts: `apps/worker/src/contracts/auth.ts`
-- Worker integration coverage: `apps/worker/test/index.spec.ts`
-- Worker unit coverage: `apps/worker/test/unit/dto-auth.spec.ts`, `apps/worker/test/unit/session-repository.spec.ts`
+- Session context middleware: `apps/worker/src/middlewares/auth.ts`
+- Auth transport contracts: `apps/worker/src/contracts/auth.ts`
+- Integration tests: `apps/worker/test/index.spec.ts`
+- Unit tests: `apps/worker/test/unit/dto-auth.spec.ts`, `apps/worker/test/unit/session-repository.spec.ts`
+- Current harness state: `harness/features/feat-008.json` (pending with partial evidence)
+
+## Scope Map and Layer Impact
+
+Layer impact for this feature:
+
+- Types: possible logout runtime type additions in `apps/worker/src/types/auth.ts`.
+- Config: no planned config/env changes.
+- Repo: session revocation helper updates in `apps/worker/src/db/repositories/session-repository.ts`.
+- Service (handler): new logout orchestration in `apps/worker/src/handlers/auth/logout-session.ts`.
+- Runtime (route/middleware wiring): `apps/worker/src/routes/auth.ts`.
+- UI: no changes (frontend out of scope).
+
+Dependency checks:
+
+- Lower layers will not import higher layers.
+- Route code will not bypass handler/repository contracts.
+- Data access remains repository-only.
+- No new dependency is planned; if one becomes necessary, capture explicit justification in Decision Log before implementation.
 
 ## Standards Enforcement
 
-### Required References
+Required references:
 
 - `docs/references/backend/project-folder-structure.md`
 - `docs/references/backend/architecture-and-boundaries.md`
@@ -112,183 +92,196 @@ Fill in after implementation:
 - `docs/references/backend/cloudflare-workers.md`
 - `docs/references/shared/type-naming-pattern.md`
 
-### Concrete Coding Constraints
+Concrete coding constraints:
 
-- Keep new request schemas in `contracts/auth.ts` with explicit `zod` validation; no implicit coercion.
-- Keep logout input/output names aligned with the shared naming rule: `LogoutSessionRequest` and `LogoutSessionResponse` if new transport types are added.
-- Keep routes thin: validate request body and headers, delegate orchestration to a handler, and return `success(ctx, data)` or mapped errors only.
-- Keep all D1 statements in `session-repository.ts`; do not move session revocation SQL into routes or handlers.
-- Use `401` for invalid/expired/replayed tokens and do not return `200` for failed revocation attempts.
-- Do not use `SELECT *`; bind parameters explicitly and keep DB-to-API field mapping intentional.
-- Avoid logging token values or raw identity payloads. If debugging is needed, log request id and stable identifiers only.
-- If any Worker binding/runtime configuration changes are required, retrieve current Cloudflare Workers docs before editing `wrangler.jsonc` or runtime-specific code.
+- Keep API schemas in `apps/worker/src/contracts/auth.ts` with explicit zod validation.
+- If logout request/response transport types are added, use `LogoutSessionRequest` and `LogoutSessionResponse` naming.
+- Return failures with proper status mapping (`400`, `401`, `500`) and never with `200`.
+- Keep SQL parameterized and avoid `SELECT *`.
+- Do not log token material or secret-bearing payload fields.
+- If worker runtime binding/config changes are required, fetch current Cloudflare docs first and rerun `wrangler types`.
 
 ## Implementation Notes
 
-- Mandatory patterns:
-  - Reuse the existing auth middleware session context (`currentSessionId`, `currentUser`) for logout instead of re-parsing an access token in the handler.
-  - Keep logout semantics idempotent where possible for the client, but still distinguish invalid/expired session replays from successful revocation in tests.
-  - Prefer adding the smallest repository helper needed over broad repository rewrites.
-- Companion skills for implementation:
-  - `tdd-workflow`
-  - `security-review`
-  - `documentation-lookup`
-  - `backend-patterns`
-  - `verification-loop`
-- Common pitfalls to avoid:
-  - Mixing API contract types with runtime-only auth/session types.
-  - Accidentally revoking the current session before using its id for response or audit assertions.
-  - Changing the existing exchange/refresh payload shape in a way that breaks `feat-009`.
+Mandatory implementation patterns:
+
+- Reuse middleware auth context (`currentSessionId`, `currentUser`) for logout identity.
+- Prefer empty logout body and derive revocation target from authenticated session context unless a validated requirement emerges.
+- Keep repository changes minimal and focused on explicit revocation semantics.
+
+Companion skills to use during implementation:
+
+- `tdd-workflow`
+- `security-review`
+- `documentation-lookup`
+- `backend-patterns`
+- `verification-loop`
+
+Common pitfalls to avoid:
+
+- Mixing API contracts and runtime-only internal types.
+- Accidentally changing exchange/refresh response shape used by `feat-009`.
+- Implementing logout in route code instead of handler/repository layers.
 
 ## Interfaces & Dependencies
 
-- Firebase ID token verification via `apps/worker/src/lib/auth/firebase.ts`
-- Access/refresh JWT issuance and verification via `apps/worker/src/lib/auth/jwt.ts`
-- Refresh-token hashing via `apps/worker/src/lib/auth/security.ts`
-- Session persistence in D1 table `refresh_sessions`
-- Current-user/session injection via `apps/worker/src/middlewares/auth.ts`
-- Shared API envelope via `apps/worker/src/lib/response.ts`
+- Firebase ID token verification: `apps/worker/src/lib/auth/firebase.ts`
+- JWT issue/verify: `apps/worker/src/lib/auth/jwt.ts`
+- Refresh-token hashing: `apps/worker/src/lib/auth/security.ts`
+- Session table: `refresh_sessions` (D1)
+- Shared response envelope: `apps/worker/src/lib/response.ts`
 
-Planned contract for the new logout flow:
+Target logout contract:
 
 - Endpoint: `POST /api/v1/auth/logout`
-- Auth: requires a valid bearer access token through `authMiddleware`
-- Request body:
-  - Option A: empty body `{}` with session id taken from middleware context
-  - Option B: `{ refreshToken: string }` if implementation proves the client must prove possession of the refresh token too
-- Planned default for this feature: Option A, because the authenticated access token already identifies the current session and keeps the logout flow narrow
-- Response: success envelope with a minimal explicit result such as `{ revoked: true }`
+- Authorization: required bearer token via auth middleware
+- Request body: default `{}` (or no body) unless implementation requires typed payload
+- Response body: success envelope containing `{ revoked: true }`
 
 ## Plan of Work (Narrative)
 
-1. Confirm the exact backend delta by comparing `docs/product-specs/authentication.md` with the already-shipped worker auth endpoints and tests. Preserve existing exchange and refresh behavior as the baseline.
-2. Extend `apps/worker/src/contracts/auth.ts` with logout request/response schemas only if the route needs a body. Keep transport names explicit and `camelCase`.
-3. Update `apps/worker/src/routes/auth.ts` to mount `POST /auth/logout` behind `authMiddleware`. The route should parse any required body, pass `currentSessionId`, `currentUser.id`, `user-agent`, and `cf-connecting-ip` to a logout handler, and return the standard success envelope.
-4. Add `apps/worker/src/handlers/auth/logout-session.ts` to own logout orchestration. This handler should revoke the current session through `session-repository.ts`, map missing/inactive sessions to the correct auth error, and avoid embedding SQL or Hono-specific logic.
-5. Keep repository work constrained to `apps/worker/src/db/repositories/session-repository.ts`. If current `revokeSessionIfActive` is enough, reuse it. If the handler needs a clearer helper keyed by session id and user id, add it there with bound parameters and explicit return semantics.
-6. Extend `apps/worker/test/index.spec.ts` with end-to-end coverage for:
-   - exchange -> protected route success
-   - refresh rotation invalidating old refresh token
-   - logout revoking current session
-   - protected route rejection after logout
-   - refresh rejection after logout if the revoked session’s refresh token is replayed
-   - invalid input or missing auth header for logout
-7. Extend `apps/worker/test/unit/dto-auth.spec.ts` and `apps/worker/test/unit/session-repository.spec.ts` only where new contract/repository behavior needs direct regression coverage.
-8. Update `apps/worker/README.md` only if auth endpoint docs or local verification instructions changed.
-9. Reconcile harness state at the end: mark `feat-008` done if all acceptance evidence exists, summarize what was implemented in `harness/progress.md`, and move this plan to `completed/`.
+1. Confirm baseline behavior in current tests/routes for exchange and refresh. Keep those flows stable.
+2. Add logout transport contract only if needed in `apps/worker/src/contracts/auth.ts`.
+3. Add `POST /auth/logout` route in `apps/worker/src/routes/auth.ts` behind auth middleware.
+4. Implement `apps/worker/src/handlers/auth/logout-session.ts` for session revocation orchestration.
+5. Update `apps/worker/src/db/repositories/session-repository.ts` only if current helpers are insufficient.
+6. Add integration coverage in `apps/worker/test/index.spec.ts` for post-logout protected and refresh rejection.
+7. Add/adjust focused unit tests in `apps/worker/test/unit/dto-auth.spec.ts` and `apps/worker/test/unit/session-repository.spec.ts` only where behavior changed.
+8. Update worker docs only if endpoint docs changed.
+9. Update harness records and complete plan lifecycle once verification passes.
 
 ## Concrete Steps (Commands)
 
-Run from repo root unless noted otherwise.
+Run from repo root:
 
 ```bash
-# Baseline before implementation
+# Baseline repository verification before implementation
 ./init.sh
 
-# Focused worker auth verification during implementation
+# Focused auth test cycle while implementing
 pnpm --filter worker exec vitest run apps/worker/test/unit/dto-auth.spec.ts apps/worker/test/unit/session-repository.spec.ts apps/worker/test/index.spec.ts
 
-# Worker-wide verification once auth/logout work is complete
+# Worker package gates
 pnpm --filter worker lint
 pnpm --filter worker typecheck
 pnpm --filter worker test
 
-# Final full-repo verification before closing feat-008
+# Final full repository verification before closing the feature
 ./init.sh
 ```
 
-Expected short outputs:
-
-```text
-=== Init complete ===
-Test Files ... passed
-All files pass linting
-Found 0 errors
-```
-
-If a local manual HTTP check is helpful during implementation, run the worker dev server in one shell and exercise:
+Optional manual route check (separate shell with dev worker running):
 
 ```bash
 pnpm dev:worker
 curl -i http://127.0.0.1:8787/api/v1/auth/logout
 ```
 
-Expected behavior after the route exists:
+Expected short outputs:
 
-- Without bearer token: HTTP `401`
-- With a valid bearer token from an exchanged session: HTTP `200` with `{"data":{"revoked":true},...}`
+- `=== Init complete ===`
+- `Test Files ... passed`
+- `All files pass linting`
+- `Found 0 errors`
+- Logout unauthenticated call returns `401`
+- Logout authenticated call returns `200` with `{"data":{"revoked":true},...}`
 
-## Validation and Acceptance
+## Verification Path
 
-### Happy Path
+Happy path evidence:
 
-- `POST /api/v1/auth/provider/exchange` returns `200` and both app tokens.
-- `POST /api/v1/auth/refresh` returns `200` and rotates both tokens.
-- `POST /api/v1/auth/logout` with a valid bearer token returns `200` and marks the current session revoked.
+- Exchange returns app access and refresh tokens.
+- Refresh rotates tokens and invalidates old refresh token.
+- Logout revokes current session and returns `revoked: true`.
 
-### Validation / Error Paths
+Validation and error evidence:
 
-- Exchange rejects malformed payloads with `400`.
-- Refresh rejects missing or replayed refresh tokens with `401`.
-- Logout rejects missing bearer tokens with `401`.
-- Logout rejects attempts to use a revoked or expired session with `401`.
+- Exchange malformed payload -> `400`.
+- Refresh missing/replayed token -> `401`.
+- Logout missing bearer token -> `401`.
+- Logout on invalid/revoked session -> `401`.
 
-### Regression Checks
+Regression evidence:
 
-- A protected endpoint that succeeded before logout now returns `401` after logout using the same access token.
-- Reusing the revoked session’s refresh token after logout returns `401`.
-- Existing exchange and refresh tests continue to pass unchanged.
+- Protected route succeeds before logout and returns `401` after logout using same prior access token.
+- Revoked refresh token cannot be used after logout.
+- Existing exchange/refresh tests remain green.
 
-### Acceptance Artifacts
+Acceptance artifacts:
 
-- `apps/worker/test/index.spec.ts`
-- `apps/worker/test/unit/dto-auth.spec.ts`
-- `apps/worker/test/unit/session-repository.spec.ts`
-- Final `./init.sh` transcript
+- Updated tests in `apps/worker/test/index.spec.ts`
+- Any updated unit tests in `apps/worker/test/unit/dto-auth.spec.ts`
+- Any updated unit tests in `apps/worker/test/unit/session-repository.spec.ts`
+- Final `./init.sh` output transcript snippet
 - Updated `harness/features/feat-008.json`
 
 ## Idempotence & Recovery
 
-- Test and lint commands are safe to re-run.
-- Logout/session repository changes should not require a schema migration; if a migration becomes necessary, create a new migration file instead of editing `0001_init.sql`.
-- Repository updates should be reversible with a normal git revert because no irreversible data migration is planned.
-- If a repository refactor widens unexpectedly, stop and re-scope before touching unrelated auth/profile code.
+- All verify commands are safe to rerun.
+- No destructive migration is planned.
+- If a migration becomes necessary, create a new migration file and include backup/rollback instructions before applying.
+- If scope expands beyond logout/session revocation, pause and log a decision before proceeding.
 
 ## Risks and Blockers
 
-- The main product risk is contract drift between this backend feature and the upcoming frontend auth flow. Avoid changing existing exchange/refresh response fields unless absolutely necessary.
-- Logout semantics can become ambiguous if the implementation mixes access-token identity with refresh-token proof. Keep one clear rule and test it directly.
-- Full-repo verification depends on the current web baseline staying green. If `./init.sh` fails for an unrelated area, record the failure precisely and still complete all worker-local verification.
+- Risk: backend contract drift against upcoming frontend work.
+  Mitigation: keep exchange/refresh payloads backward-compatible and tested.
+
+- Risk: ambiguous logout semantics (current session vs all sessions).
+  Mitigation: lock behavior to current-session revoke for feat-008 and document the decision.
+
+- Risk: unrelated repo failures during final `./init.sh`.
+  Mitigation: run worker-local gates regardless and record unrelated blockers precisely in harness logs.
 
 ## Open Decisions
 
-- Do we need logout to revoke only the current session, or all sessions for the user? Current plan assumption: current session only.
-- Should logout require a request body at all? Current plan assumption: no body, rely on `authMiddleware` session context.
-- Should `feat-008` add provider-revocation hooks for Firebase? Current plan assumption: no, leave provider-wide revocation out of scope unless product requirements change.
+- Confirm whether logout remains current-session-only (default: yes).
+- Confirm whether logout should require request body (default: no).
+- Confirm whether provider-wide Firebase revoke remains out of scope (default: yes).
 
 ## Harness Integration
 
-- Update `harness/features/feat-008.json`:
-  - keep `status` aligned with actual completion state
-  - replace partial/refactor-only evidence with final endpoint/test evidence once complete
-  - update `updated_at`
-- Update `harness/feature_index.json`:
-  - mark `feat-008` as `done` only after final verification passes
-- Update `harness/progress.md`:
-  - add a newest-first entry describing logout implementation, tests, verification evidence, and any blocker
-- Update plan lifecycle:
-  - move this file to `docs/exec-plans/completed/`
-  - add the completed-plan link to `docs/exec-plans/completed/index.md`
-  - remove it from `docs/exec-plans/active/index.md` when finished
+When implementation starts/completes:
 
-## Artifacts and Notes
+- Update `harness/features/feat-008.json` status/evidence/updated_at.
+- Update `harness/feature_index.json` to `done` only after final verification passes.
+- Add newest-first implementation entry to `harness/progress.md` with commands and outcomes.
+- Move this plan to `docs/exec-plans/completed/` and update active/completed indexes.
 
-- Existing evidence already in repo:
-  - exchange and refresh endpoints are implemented
-  - refresh rotation invalidates the old refresh token
-  - old access tokens stop working after refresh rotation
-- New evidence required to close the feature:
-  - logout endpoint contract and handler
-  - post-logout protected-route rejection
-  - post-logout refresh rejection
-  - final harness records and completed plan move
+## Progress
+
+- [x] (2026-04-22, owner: Codex) Revalidated feat-008 scope against auth product spec, worker auth route/test baseline, and harness feature records.
+- [x] (2026-04-22, owner: Codex) Rewrote this ExecPlan to align with template sections, backend reference matrix, and explicit verification path.
+- [ ] (2026-04-22, owner: Codex, status: current) Begin implementation with TDD: add failing integration test for logout/post-logout behavior in `apps/worker/test/index.spec.ts`.
+- [ ] Implement logout route and handler while preserving exchange/refresh contracts.
+- [ ] Add/adjust repository helper(s) for deterministic session revocation semantics.
+- [ ] Pass worker-local gates (`lint`, `typecheck`, `test`) and full `./init.sh`.
+- [ ] Update harness records, then move this plan to completed.
+
+## Surprises & Discoveries
+
+- Existing auth routes already cover `/auth/provider/exchange` and `/auth/refresh`; the functional gap for this feature is explicit logout/session revocation evidence.
+- `harness/features/feat-008.json` already includes partial implementation evidence while status is still `pending`, so implementation must reconcile evidence rather than overwrite context.
+- Product spec naming uses `/auth/exchange` while current runtime uses `/auth/provider/exchange`; plan assumes no endpoint rename for compatibility.
+
+## Decision Log
+
+- Decision: Treat feat-008 as backend-only completion work.
+  Rationale: Frontend auth session behavior is tracked separately as `feat-009`.
+  Date/Author: 2026-04-22 / Codex
+
+- Decision: Keep logout scoped to revoking current app session only.
+  Rationale: Matches current product scope and avoids introducing global session side effects.
+  Date/Author: 2026-04-22 / Codex
+
+- Decision: Keep `/auth/provider/exchange` path stable in feat-008.
+  Rationale: Avoid frontend contract churn before `feat-009` implementation.
+  Date/Author: 2026-04-22 / Codex
+
+## Outcomes & Retrospective
+
+To fill after implementation:
+
+- Outcome:
+- Gaps:
+- Lessons:

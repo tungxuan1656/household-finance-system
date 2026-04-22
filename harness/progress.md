@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Rewrote feat-008 ExecPlan to full backend-scope template
+- Who: Codex
+- Summary: Tightened the active `feat-008` execution plan into a fully template-aligned backend plan with explicit scope map, layer impact, standards matrix, verification path, risks, harness integration steps, and a single owned current implementation step.
+- Files changed: docs/exec-plans/active/2026-04-22-feat-008-authentication-backend-session-exchange.md, harness/progress.md
+- Blockers: none
+- Next steps: start implementation with a failing logout regression test in `apps/worker/test/index.spec.ts`, then add route/handler/repository support and run worker + full repo verification.
+
 ## 2026-04-22 — Hardened feat-032 language persistence against blocked storage
 - Who: Codex
 - Summary: Wrapped the frontend i18n language write in a storage-safe fallback and added a regression test so `changeLanguage()` keeps working even when localStorage is unavailable or blocked.
