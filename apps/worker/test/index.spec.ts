@@ -73,11 +73,16 @@ describe('Worker foundation', () => {
   })
 
   it('returns not found for unknown routes', async () => {
-    const response = await SELF.fetch('https://example.com/api/v1/unknown')
-    const payload = await parseJson<{ error: { code: string } }>(response)
+    const response = await SELF.fetch('https://example.com/api/v1/unknown', {
+      headers: {
+        'accept-language': 'en-US,en;q=0.9',
+      },
+    })
+    const payload = await parseJson<{ error: { code: string; message: string } }>(response)
 
     expect(response.status).toBe(404)
     expect(payload.error.code).toBe('NOT_FOUND')
+    expect(payload.error.message).toBe('Không tìm thấy đường dẫn.')
   })
 
   it('returns invalid input when auth exchange payload is malformed', async () => {
@@ -87,26 +92,31 @@ describe('Worker foundation', () => {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
+          'accept-language': 'en-US,en;q=0.9',
         },
         body: JSON.stringify({ provider: 'firebase' }),
       },
     )
 
-    const payload = await parseJson<{ error: { code: string } }>(response)
+    const payload = await parseJson<{ error: { code: string; message: string } }>(response)
 
     expect(response.status).toBe(400)
     expect(payload.error.code).toBe('INVALID_INPUT')
+    expect(payload.error.message).toBe('Thân yêu cầu không hợp lệ.')
   })
 
   it('rejects protected route when bearer token is missing', async () => {
-    const response = await SELF.fetch(
-      'https://example.com/api/v1/protected/ping',
-    )
+    const response = await SELF.fetch('https://example.com/api/v1/protected/ping', {
+      headers: {
+        'accept-language': 'en-US,en;q=0.9',
+      },
+    })
 
-    const payload = await parseJson<{ error: { code: string } }>(response)
+    const payload = await parseJson<{ error: { code: string; message: string } }>(response)
 
     expect(response.status).toBe(401)
     expect(payload.error.code).toBe('UNAUTHENTICATED')
+    expect(payload.error.message).toBe('Thiếu token bearer.')
   })
 
   it('returns current profile for an authenticated user', async () => {

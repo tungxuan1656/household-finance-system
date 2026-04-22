@@ -1,24 +1,29 @@
 import { describe, expect, it } from 'vitest'
 
-import { updateProfileRequestSchema } from '@/contracts'
+import { createUpdateProfileRequestSchema } from '@/contracts'
 
 describe('profile contract schema', () => {
   it('rejects an empty payload', () => {
-    const parsed = updateProfileRequestSchema.safeParse({})
+    const parsed = createUpdateProfileRequestSchema().safeParse({})
 
     expect(parsed.success).toBe(false)
   })
 
   it('rejects a blank trimmed display name', () => {
-    const parsed = updateProfileRequestSchema.safeParse({
+    const parsed = createUpdateProfileRequestSchema().safeParse({
       displayName: '   ',
     })
 
     expect(parsed.success).toBe(false)
+    if (!parsed.success) {
+      expect(parsed.error.issues[0]?.message).toBe(
+        'Tên hiển thị không được để trống.',
+      )
+    }
   })
 
   it('rejects an invalid avatar URL', () => {
-    const parsed = updateProfileRequestSchema.safeParse({
+    const parsed = createUpdateProfileRequestSchema().safeParse({
       avatarUrl: 'not-a-url',
     })
 

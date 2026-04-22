@@ -1,3 +1,5 @@
+import type { SupportedLocale } from '@/lib/i18n'
+
 export interface AuthUser {
   id: string
   email: string | null
@@ -8,6 +10,7 @@ export type AppBindings = {
   Bindings: Env
   Variables: {
     requestId: string
+    locale: SupportedLocale
     currentUser: AuthUser
     currentSessionId: string
   }

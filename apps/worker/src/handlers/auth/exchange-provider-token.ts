@@ -13,14 +13,22 @@ export const exchangeProviderToken = async (
   input: ExchangeProviderTokenInput,
 ): Promise<ExchangeProviderResponse> => {
   const config = readConfig(env)
-  const firebaseIdentity = await verifyFirebaseIdToken(input.idToken, config)
+  const firebaseIdentity = await verifyFirebaseIdToken(
+    input.idToken,
+    config,
+    input.locale,
+  )
 
-  const user = await upsertUserByFirebaseIdentity(env.DB, {
-    subject: firebaseIdentity.sub,
-    email: firebaseIdentity.email,
-    name: firebaseIdentity.name,
-    picture: firebaseIdentity.picture,
-  })
+  const user = await upsertUserByFirebaseIdentity(
+    env.DB,
+    {
+      subject: firebaseIdentity.sub,
+      email: firebaseIdentity.email,
+      name: firebaseIdentity.name,
+      picture: firebaseIdentity.picture,
+    },
+    input.locale,
+  )
 
   const sessionId = newId()
   const accessToken = await issueAccessToken(config, user.id, sessionId)

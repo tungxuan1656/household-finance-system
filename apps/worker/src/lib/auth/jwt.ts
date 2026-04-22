@@ -1,6 +1,7 @@
 import { jwtVerify, SignJWT } from 'jose'
 
 import { unauthenticated } from '@/lib/errors'
+import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import type { AppConfig, SessionTokenKind, SessionTokenPayload } from '@/types'
 
 const encoder = new TextEncoder()
@@ -48,6 +49,7 @@ const verifyToken = async (
   token: string,
   config: AppConfig,
   expectedType: SessionTokenKind,
+  locale: SupportedLocale = defaultLocale,
 ): Promise<SessionTokenPayload> => {
   let result
 
@@ -58,7 +60,7 @@ const verifyToken = async (
       algorithms: ['HS256'],
     })
   } catch {
-    throw unauthenticated('Invalid or expired session token.')
+    throw unauthenticated(locale, 'errors.invalidOrExpiredSessionToken')
   }
 
   const payload = result.payload
@@ -69,7 +71,7 @@ const verifyToken = async (
     (payload.typ !== 'access' && payload.typ !== 'refresh') ||
     payload.typ !== expectedType
   ) {
-    throw unauthenticated('Invalid session token payload.')
+    throw unauthenticated(locale, 'errors.invalidSessionTokenPayload')
   }
 
   return {
@@ -82,9 +84,11 @@ const verifyToken = async (
 export const verifyAccessToken = (
   token: string,
   config: AppConfig,
-): Promise<SessionTokenPayload> => verifyToken(token, config, 'access')
+  locale: SupportedLocale = defaultLocale,
+): Promise<SessionTokenPayload> => verifyToken(token, config, 'access', locale)
 
 export const verifyRefreshToken = (
   token: string,
   config: AppConfig,
-): Promise<SessionTokenPayload> => verifyToken(token, config, 'refresh')
+  locale: SupportedLocale = defaultLocale,
+): Promise<SessionTokenPayload> => verifyToken(token, config, 'refresh', locale)

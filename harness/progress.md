@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Implemented feat-031 backend internationalization foundation
+- Who: Codex
+- Summary: Delivered the worker-side i18n foundation with request-scoped locale resolution, a private Vietnamese message catalog, localized error/validation/auth responses, and `vi` fallback behavior for unsupported language hints. The plan was moved to `docs/exec-plans/completed/`, and the harness now marks `feat-031` as done.
+- Files changed: apps/worker/src/lib/i18n/locales.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/src/lib/i18n/catalog.ts, apps/worker/src/lib/i18n/resolve-locale.ts, apps/worker/src/lib/i18n/translate.ts, apps/worker/src/lib/i18n/zod.ts, apps/worker/src/lib/i18n/index.ts, apps/worker/src/types/app.ts, apps/worker/src/middlewares/request-context.ts, apps/worker/src/lib/errors.ts, apps/worker/src/lib/validation.ts, apps/worker/src/lib/response.ts, apps/worker/src/lib/env.ts, apps/worker/src/index.ts, apps/worker/src/contracts/profile.ts, apps/worker/src/types/auth.ts, apps/worker/src/lib/auth/firebase.ts, apps/worker/src/lib/auth/jwt.ts, apps/worker/src/middlewares/auth.ts, apps/worker/src/routes/auth.ts, apps/worker/src/routes/profile.ts, apps/worker/src/handlers/profile/get-current-profile.ts, apps/worker/src/handlers/profile/update-current-profile.ts, apps/worker/src/handlers/auth/exchange-provider-token.ts, apps/worker/src/handlers/auth/refresh-session.ts, apps/worker/src/db/repositories/user-repository.ts, apps/worker/test/unit/response.spec.ts, apps/worker/test/unit/dto-profile.spec.ts, apps/worker/test/unit/i18n.spec.ts, apps/worker/test/index.spec.ts, apps/worker/README.md, docs/exec-plans/completed/2026-04-22-feat-031-backend-internationalization-foundation.md, docs/exec-plans/active/index.md, docs/exec-plans/completed/index.md, harness/feature_index.json, harness/features/feat-031.json, harness/progress.md
+- Blockers: none
+- Next steps: start `feat-032` for frontend locale wiring, then resume `feat-008` on top of the new backend locale foundation.
+
 ## 2026-04-22 — Created ExecPlan for feat-031 backend i18n foundation
 - Who: Codex
 - Summary: Drafted the active ExecPlan for `feat-031` after reviewing the worker message surface, backend standards, and harness state. The plan scopes the feature to backend-only locale resolution and Vietnamese error/validation copy with hard fallback to `vi`, without changing API codes or adding dependencies.

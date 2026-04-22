@@ -31,8 +31,8 @@ The implementation should also preserve a future migration seam for a real i18n 
 - `harness/features/feat-031.json`
 - `harness/feature_index.json`
 - `harness/progress.md`
-- `docs/exec-plans/active/2026-04-22-feat-031-backend-internationalization-foundation.md`
-- `docs/exec-plans/active/index.md`
+- `docs/exec-plans/completed/2026-04-22-feat-031-backend-internationalization-foundation.md`
+- `docs/exec-plans/completed/index.md`
 
 ### Out of Scope
 
@@ -55,13 +55,13 @@ The implementation should also preserve a future migration seam for a real i18n 
 
 ## Progress
 
-- [ ] (2026-04-22, owner: Codex, status: current) Finalize the backend i18n scope around request-scoped locale resolution, translated error/validation messages, and `vi` fallback only.
-- [ ] Add a small worker i18n runtime under `apps/worker/src/lib/i18n/` for locale constants, translation keys, message catalog, and translation lookup.
-- [ ] Extend request context so each request has a resolved locale value, derived from headers but normalized to `vi`.
-- [ ] Refactor shared error and validation helpers to use translation keys/catalog lookup rather than hard-coded English strings.
-- [ ] Migrate existing auth/middleware/route-level message call sites that currently emit user-facing English strings.
-- [ ] Add or update tests proving translated messages and fallback semantics.
-- [ ] Update worker docs and harness state, then move this plan to `completed/` once the feature is verified.
+- [x] (2026-04-22, owner: Codex, status: done) Finalize the backend i18n scope around request-scoped locale resolution, translated error/validation messages, and `vi` fallback only.
+- [x] Add a small worker i18n runtime under `apps/worker/src/lib/i18n/` for locale constants, translation keys, message catalog, and translation lookup.
+- [x] Extend request context so each request has a resolved locale value, derived from headers but normalized to `vi`.
+- [x] Refactor shared error and validation helpers to use translation keys/catalog lookup rather than hard-coded English strings.
+- [x] Migrate existing auth/middleware/route-level message call sites that currently emit user-facing English strings.
+- [x] Add or update tests proving translated messages and fallback semantics.
+- [x] Update worker docs and harness state, then move this plan to `completed/` once the feature is verified.
 
 ## Surprises & Discoveries
 
@@ -90,11 +90,9 @@ The implementation should also preserve a future migration seam for a real i18n 
 
 ## Outcomes & Retrospective
 
-Fill in after implementation:
-
-- Outcome:
-- Gaps:
-- Lessons:
+- Outcome: Backend worker messages now resolve through a small internal i18n adapter with `vi` as the only supported locale and deterministic fallback from `Accept-Language` or `x-locale`. Error codes and response envelopes stayed stable while auth, validation, route fallback, and profile schema copy became locale-aware.
+- Gaps: Only Vietnamese is implemented for now. There is no persisted user language preference, and the adapter remains intentionally minimal until `feat-032` or a future library swap needs more.
+- Lessons: Keeping translation behind `apps/worker/src/lib/i18n/*` made the migration low-risk and kept the future library-swap seam narrow.
 
 ## Context and Orientation
 
@@ -369,13 +367,10 @@ Resolved planning decisions for implementation:
 
 ## Harness Integration
 
-- Update `harness/features/feat-031.json` with final implementation evidence and `updated_at`.
-- Keep `harness/feature_index.json` as `pending` until verification is complete, then mark `feat-031` as `done`.
-- Add a new newest-first entry to `harness/progress.md` describing the i18n foundation work, verification, and any residual blockers.
-- When the feature is complete:
-  - move this ExecPlan to `docs/exec-plans/completed/`
-  - add it to `docs/exec-plans/completed/index.md`
-  - remove it from `docs/exec-plans/active/index.md`
+- `harness/features/feat-031.json` now records final implementation evidence and `updated_at`.
+- `harness/feature_index.json` now marks `feat-031` as `done`.
+- `harness/progress.md` has a newest-first entry describing the i18n foundation work and verification.
+- This ExecPlan has been moved to `docs/exec-plans/completed/` and listed in `docs/exec-plans/completed/index.md`.
 
 ## Artifacts and Notes
 

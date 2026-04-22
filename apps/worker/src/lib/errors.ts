@@ -1,3 +1,10 @@
+import {
+  defaultLocale,
+  type MessageKey,
+  type SupportedLocale,
+  translate,
+} from '@/lib/i18n'
+
 export type ErrorCode =
   | 'INVALID_INPUT'
   | 'UNAUTHENTICATED'
@@ -26,23 +33,36 @@ export class AppError extends Error {
   }
 }
 
-export const invalidInput = (message: string, details?: unknown): AppError =>
-  new AppError(400, 'INVALID_INPUT', message, details)
+export const invalidInput = (
+  locale: SupportedLocale = defaultLocale,
+  messageKey: MessageKey = 'errors.invalidRequestBody',
+  details?: unknown,
+): AppError =>
+  new AppError(400, 'INVALID_INPUT', translate(locale, messageKey), details)
 
 export const unauthenticated = (
-  message = 'Authentication is required.',
-): AppError => new AppError(401, 'UNAUTHENTICATED', message)
+  locale: SupportedLocale = defaultLocale,
+  messageKey: MessageKey = 'errors.authenticationRequired',
+): AppError =>
+  new AppError(401, 'UNAUTHENTICATED', translate(locale, messageKey))
 
 export const forbidden = (
-  message = 'You do not have permission to perform this action.',
-): AppError => new AppError(403, 'FORBIDDEN', message)
+  locale: SupportedLocale = defaultLocale,
+  messageKey: MessageKey = 'errors.forbidden',
+): AppError => new AppError(403, 'FORBIDDEN', translate(locale, messageKey))
 
-export const notFound = (message = 'Resource not found.'): AppError =>
-  new AppError(404, 'NOT_FOUND', message)
+export const notFound = (
+  locale: SupportedLocale = defaultLocale,
+  messageKey: MessageKey = 'errors.resourceNotFound',
+): AppError => new AppError(404, 'NOT_FOUND', translate(locale, messageKey))
 
-export const conflict = (message: string): AppError =>
-  new AppError(409, 'CONFLICT', message)
+export const conflict = (
+  locale: SupportedLocale = defaultLocale,
+  messageKey: MessageKey = 'errors.conflict',
+): AppError => new AppError(409, 'CONFLICT', translate(locale, messageKey))
 
 export const internalError = (
-  message = 'Unexpected internal error.',
-): AppError => new AppError(500, 'INTERNAL_ERROR', message)
+  locale: SupportedLocale = defaultLocale,
+  messageKey: MessageKey = 'errors.unexpectedInternalError',
+): AppError =>
+  new AppError(500, 'INTERNAL_ERROR', translate(locale, messageKey))

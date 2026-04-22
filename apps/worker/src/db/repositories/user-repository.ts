@@ -1,4 +1,5 @@
 import { notFound } from '@/lib/errors'
+import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import { newId } from '@/utils/id'
 
 export interface StoredUser {
@@ -47,11 +48,12 @@ const findIdentityUserId = async (
 export const loadUserById = async (
   db: D1Database,
   userId: string,
+  locale: SupportedLocale = defaultLocale,
 ): Promise<StoredUser> => {
   const user = await findUserById(db, userId)
 
   if (!user) {
-    throw notFound('User not found.')
+    throw notFound(locale, 'errors.userNotFound')
   }
 
   return user
@@ -88,6 +90,7 @@ export const updateUserProfile = async (
   db: D1Database,
   userId: string,
   input: UpdateUserProfileInput,
+  locale: SupportedLocale = defaultLocale,
 ): Promise<StoredUser> => {
   const displayName =
     input.displayName === undefined ? undefined : input.displayName
@@ -117,7 +120,7 @@ export const updateUserProfile = async (
     )
     .run()
 
-  return loadUserById(db, userId)
+  return loadUserById(db, userId, locale)
 }
 
 const updateIdentityUser = async (
@@ -125,6 +128,7 @@ const updateIdentityUser = async (
   userId: string,
   identity: FirebaseIdentityInput,
   nowEpoch: number,
+  locale: SupportedLocale = defaultLocale,
 ): Promise<StoredUser> => {
   await db.batch([
     db
@@ -148,7 +152,7 @@ const updateIdentityUser = async (
       .bind(identity.email, nowEpoch, nowEpoch, 'firebase', identity.subject),
   ])
 
-  return loadUserById(db, userId)
+  return loadUserById(db, userId, locale)
 }
 
 const isProviderSubjectConflictError = (error: unknown): boolean => {
@@ -164,12 +168,19 @@ const isProviderSubjectConflictError = (error: unknown): boolean => {
 export const upsertUserByFirebaseIdentity = async (
   db: D1Database,
   identity: FirebaseIdentityInput,
+  locale: SupportedLocale = defaultLocale,
 ): Promise<StoredUser> => {
   const existingIdentityUserId = await findIdentityUserId(db, identity.subject)
   const nowEpoch = Date.now()
 
   if (existingIdentityUserId) {
-    return updateIdentityUser(db, existingIdentityUserId, identity, nowEpoch)
+    return updateIdentityUser(
+      db,
+      existingIdentityUserId,
+      identity,
+      nowEpoch,
+      locale,
+    )
   }
 
   const userId = newId()
@@ -201,8 +212,8 @@ export const upsertUserByFirebaseIdentity = async (
       throw error
     }
 
-    return updateIdentityUser(db, racedUserId, identity, nowEpoch)
+    return updateIdentityUser(db, racedUserId, identity, nowEpoch, locale)
   }
 
-  return loadUserById(db, userId)
+  return loadUserById(db, userId, locale)
 }
