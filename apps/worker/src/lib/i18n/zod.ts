@@ -16,6 +16,8 @@ const translateIssue = (issue: ZodIssue, locale: SupportedLocale): string => {
     maximum?: number
   }
 
+  const schemaMessage = issue.message.trim()
+
   switch (typedIssue.code) {
     case 'invalid_type':
       return translate(locale, 'validation.invalidType')
@@ -30,6 +32,10 @@ const translateIssue = (issue: ZodIssue, locale: SupportedLocale): string => {
     case 'unrecognized_keys':
       return translate(locale, 'validation.unrecognizedKeys')
     case 'too_small':
+      if (schemaMessage.length > 0) {
+        return schemaMessage
+      }
+
       if (typedIssue.origin === 'string' && typedIssue.minimum === 1) {
         return translate(locale, 'validation.stringTooSmall')
       }
@@ -48,6 +54,10 @@ const translateIssue = (issue: ZodIssue, locale: SupportedLocale): string => {
 
       return translate(locale, 'validation.custom')
     case 'too_big':
+      if (schemaMessage.length > 0) {
+        return schemaMessage
+      }
+
       if (typedIssue.origin === 'string') {
         return translate(locale, 'validation.stringTooBig')
       }
