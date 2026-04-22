@@ -1,0 +1,9 @@
+{
+  "id": "feat-015a",
+  "name": "Role & permission policy — backend enforcement",
+  "description": "Implement the server-side permission layer so all household-scoped routes enforce the admin/member matrix from day one. Backend: a requireRole(roles[]) middleware factory, a membership resolver helper (looks up caller's role in the active household), and a permission-policy module exporting named guards (canManageMembers, canEditAnyExpense, canManageGroups, etc.). Wire guards into existing household routes (feat-011, feat-012, feat-013, feat-014) as the routes are built — this feat ships the middleware infra, not the route integrations. Covered by unit tests for each guard and integration tests asserting 403 on unauthorized calls. Per docs/product-specs/role-permission.md. Does NOT include any frontend UI changes.",
+  "dependencies": ["feat-011"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-22"
+}

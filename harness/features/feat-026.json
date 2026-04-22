@@ -1,8 +1,8 @@
 {
   "id": "feat-026",
   "name": "Budget setup & editing",
-  "description": "Implement monthly household budget creation and editing, including overall and optional per-category plans, following docs/product-specs/budget-management.md.",
-  "dependencies": ["feat-015", "feat-021"],
+  "description": "Implement household budget setup and editing. Backend: POST /api/v1/budgets (admin-only; create monthly budget for a period — year+month, total amount required, optional per-category sub-budgets array), GET /api/v1/budgets?period=YYYY-MM (return current period budget with per-category breakdown), PATCH /api/v1/budgets/:id (update total or sub-budgets; records change in audit). Frontend: Budget Setup page (period selector, total budget input, expandable per-category budget rows populated from household categories), and a Budget Summary card on the household dashboard showing period and total. Per docs/product-specs/budget-management.md. Does NOT include spend tracking or threshold alerts (feat-027).",
+  "dependencies": ["feat-015a", "feat-021"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"

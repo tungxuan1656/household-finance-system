@@ -1,7 +1,7 @@
 {
   "id": "feat-023",
   "name": "Expense-to-group assignment & summaries",
-  "description": "Add assignment of expenses to groups and provide group-level summary views, keeping the grouping workflow useful without bundling all group behavior into one oversized feature.",
+  "description": "Add expense-to-group assignment and group summary views. Backend: expense create/edit payloads already accept group_ids[] (feat-017/019); this feat adds PATCH /api/v1/expenses/:id/groups (bulk replace group assignments for an existing expense) and GET /api/v1/groups/:id/summary (total spend, expense count, budget remaining, member contribution breakdown). Frontend: Group Detail page showing the group summary card and a filtered expense list for that group; bulk-assign modal allowing users to retroactively tag multiple existing expenses to a group. Per docs/product-specs/expense-grouping.md.",
   "dependencies": ["feat-018", "feat-022"],
   "status": "pending",
   "evidence": "",

@@ -1,9 +1,9 @@
 {
   "id": "feat-015",
   "name": "Role & permission policy enforcement",
-  "description": "Define and enforce the admin/member permission matrix across household and expense actions, with server-side enforcement first and matching UI affordances from docs/product-specs/role-permission.md.",
-  "dependencies": ["feat-012", "feat-014"],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-04-21"
+  "description": "SUPERSEDED — split into feat-015a (backend enforcement) and feat-015b (frontend UI affordances). Do not implement this feat directly.",
+  "dependencies": [],
+  "status": "superseded",
+  "evidence": "Split on 2026-04-22 to move backend permission middleware earlier in the dependency chain (feat-015a depends only on feat-011) and defer UI affordances until household + membership flows are complete (feat-015b).",
+  "updated_at": "2026-04-22"
 }

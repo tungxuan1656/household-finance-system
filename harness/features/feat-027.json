@@ -1,7 +1,7 @@
 {
   "id": "feat-027",
   "name": "Budget tracking & threshold status",
-  "description": "Add planned-versus-actual budget tracking, remaining budget status, and threshold warnings so budgets become actionable after setup exists.",
+  "description": "Add planned-vs-actual budget tracking and threshold status. Backend: GET /api/v1/budgets/:id/status (returns planned amount, actual spend to date, remaining, percent used, threshold status: ok|warning|exceeded for both total and per-category). Actual spend is computed from the expense aggregate for the budget period, filtered by household and visibility. Frontend: Budget Tracking page — progress bars per category (green/amber/red by threshold), remaining amount, and an inline warning banner when total budget is ≥ 80% consumed or exceeded. Thresholds: warning at 80%, exceeded at 100%. Per docs/product-specs/budget-management.md. Does NOT include push/email notifications (post-MVP per budget-notification.md).",
   "dependencies": ["feat-026", "feat-019"],
   "status": "pending",
   "evidence": "",

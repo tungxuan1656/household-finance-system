@@ -1,0 +1,9 @@
+{
+  "id": "feat-015b",
+  "name": "Role & permission policy — frontend UI affordances",
+  "description": "Surface permission-aware UI so members only see actions they are allowed to perform. Frontend: a usePermission(action) hook that reads the current user's role from household context and returns a boolean, used to show/hide/disable action buttons across household settings, member management, expense edit/delete, and group management pages. Includes a PermissionGate component for declarative gating. Per docs/product-specs/role-permission.md. Backend enforcement (feat-015a) must already be in place — this feat adds defence-in-depth UX only.",
+  "dependencies": ["feat-015a", "feat-014"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-22"
+}

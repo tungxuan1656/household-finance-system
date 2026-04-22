@@ -1,0 +1,9 @@
+{
+  "id": "feat-033",
+  "name": "API response contract & error handling standardization",
+  "description": "Establish the standard API response envelope ({success, data, error, meta}) and error code registry used by all worker routes, plus the matching frontend HTTP client wrapper (fetch-based, auto-injects Authorization header, handles 401 refresh-and-retry, maps server error codes to typed errors). Backend: shared response helper in apps/worker/src/utils/response.ts, error-code constants, and an error-handler middleware. Frontend: apps/web/src/lib/api/client.ts with interceptors and typed error classes. No domain endpoints added — this is infrastructure only. Covered by unit tests on both sides.",
+  "dependencies": ["feat-009"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-22"
+}

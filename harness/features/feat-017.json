@@ -1,8 +1,8 @@
 {
   "id": "feat-017",
   "name": "Expense entry create flow",
-  "description": "Implement the main expense creation path, including amount, category, source, note, timestamp, payer-versus-creator ownership, and household attachment, following docs/product-specs/expense-tracking.md and docs/product-specs/expense-ownership.md.",
-  "dependencies": ["feat-015", "feat-016"],
+  "description": "Implement the expense create flow including the visibility model. Backend: POST /api/v1/expenses (requires: amount, category_id, source, payer_id, date; optional: note, group_ids, visibility). Visibility enum (private | household) is stored on each expense and enforced server-side from creation: private expenses are never returned in household feeds. Default visibility resolves from household settings, overridable per-request. Payer defaults to creator if unset. Frontend: Add Expense page with form (amount-first), category picker, source picker, payer selector (household members), date picker, note, group multi-select, and visibility toggle. New expense is optimistically appended to the feed. Covers docs/product-specs/expense-tracking.md, expense-ownership.md, and data-visibility.md. Does NOT include edit/delete, search, or quick-add shortcut.",
+  "dependencies": ["feat-015a", "feat-016"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"

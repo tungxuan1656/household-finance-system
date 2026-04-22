@@ -1,8 +1,8 @@
 {
   "id": "feat-010",
   "name": "User profile & identity settings",
-  "description": "Implement the current-user profile endpoints and settings UI for display name and basic identity details, keeping the local user record aligned with authenticated session state and docs/product-specs/profile-management.md.",
-  "dependencies": ["feat-009"],
+  "description": "Implement user profile read and update. Backend: GET /api/v1/users/me (return display name, email, created_at) and PATCH /api/v1/users/me (update display name; validates non-empty, max 100 chars). Frontend: Profile Settings page with display-name form, optimistic UI update, and inline error handling. Does NOT include avatar upload, identity-provider linking, or household membership display (those are Phase 2 per docs/product-specs/profile-management.md).",
+  "dependencies": ["feat-033"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"

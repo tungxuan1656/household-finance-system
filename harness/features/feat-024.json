@@ -1,7 +1,7 @@
 {
   "id": "feat-024",
   "name": "Quick-add expense basic flow",
-  "description": "Build the fast-entry expense flow with a clear entry point, amount-first interaction, and minimal confirmation path as the first slice of docs/product-specs/quick-add-experience.md.",
+  "description": "Build the quick-add UX shortcut for fast expense entry (target: under 3 seconds from open to saved). Frontend-only feature — reuses the existing POST /api/v1/expenses endpoint from feat-017. A globally accessible trigger (floating action button + keyboard shortcut) opens a compact bottom-sheet or modal: amount input focused immediately, source defaults to last used, category defaults to last used, payer defaults to current user, date defaults to today, household defaults to active household. One-tap confirm. Success shows a brief toast with an Undo link (calls DELETE on the just-created expense within a 5-second window). Per docs/product-specs/quick-add-experience.md. Does NOT include offline queuing or smart ML defaults (post-MVP).",
   "dependencies": ["feat-017", "feat-018"],
   "status": "pending",
   "evidence": "",

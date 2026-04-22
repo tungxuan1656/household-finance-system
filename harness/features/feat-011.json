@@ -1,8 +1,8 @@
 {
   "id": "feat-011",
   "name": "Household creation & active household selection",
-  "description": "Implement household creation, household listing/read, and active-household switching so a signed-in user can establish or choose the working household context described in docs/product-specs/household-management.md.",
-  "dependencies": ["feat-009", "feat-007"],
+  "description": "Implement household creation and active-household selection. Backend: POST /api/v1/households (create; name, default currency required), GET /api/v1/households (list own households with role), GET /api/v1/households/:id (read one). Frontend: Create Household page, Household Switcher component (persists active household id to local storage), and household context provider that downstream features read to scope their requests. Per docs/product-specs/household-management.md. Does NOT include settings edits, archive, invitations, or member management.",
+  "dependencies": ["feat-033", "feat-007"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"

@@ -1,8 +1,8 @@
 {
   "id": "feat-014",
   "name": "Household membership actions",
-  "description": "Implement membership-level actions such as revoke invite, leave household, and remove member, keeping role boundaries and membership lifecycle explicit after invitation flows are in place.",
-  "dependencies": ["feat-013"],
+  "description": "Implement membership lifecycle actions. Backend: DELETE /api/v1/households/:id/invitations/:invitationId (admin-only; revoke pending invite), DELETE /api/v1/households/:id/members/me (leave household; blocks if caller is the last admin), DELETE /api/v1/households/:id/members/:userId (admin-only; remove member with audit entry), PATCH /api/v1/households/:id/members/:userId (admin-only; promote/demote role; blocks demoting last admin). Frontend: Members page listing members with role badges and action menus (Remove, Promote/Demote), and a Leave Household button in household settings. Per docs/product-specs/household-invitation.md and role-permission.md.",
+  "dependencies": ["feat-013", "feat-015a"],
   "status": "pending",
   "evidence": "",
   "updated_at": "2026-04-21"
