@@ -10,6 +10,7 @@ export type AppBindings = {
   Bindings: Env
   Variables: {
     requestId: string
+    requestEpoch: number
     locale: SupportedLocale
     currentUser: AuthUser
     currentSessionId: string

@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Hardened feat-008 auth/session rotation and logout timing
+- Who: Codex
+- Summary: Tightened refresh-session rotation in the worker repository to be atomic, added logout request-epoch plumbing to avoid near-expiry revocation races, parallelized auth middleware lookups, expanded auth contract/session repository tests for validation and edge cases, and re-verified the worker auth slice with focused tests plus lint/typecheck.
+- Files changed: apps/worker/src/db/repositories/session-repository.ts, apps/worker/src/middlewares/auth.ts, apps/worker/src/routes/auth.ts, apps/worker/src/types/app.ts, apps/worker/src/types/auth.ts, apps/worker/src/contracts/auth.ts, apps/worker/src/handlers/auth/logout-session.ts, apps/worker/test/unit/dto-auth.spec.ts, apps/worker/test/unit/session-repository.spec.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep the auth/session flow stable for `feat-009`; no further `feat-008` changes are expected.
+
 ## 2026-04-22 — Completed feat-008 backend logout/session revocation
 - Who: Codex
 - Summary: Implemented `POST /api/v1/auth/logout` behind auth middleware, added current-session revocation through the worker session repository, covered unauthorized/logout/post-logout regression paths in the worker integration tests, and verified the workspace with worker lint, typecheck, test, and full `./init.sh`.

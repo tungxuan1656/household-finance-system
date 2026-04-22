@@ -4,7 +4,7 @@
   "description": "Implement backend auth exchange, refresh, and logout endpoints that verify Firebase identity, map a local user, issue application tokens, and manage refresh-session lifecycle according to docs/product-specs/authentication.md.",
   "dependencies": ["feat-006", "feat-007", "feat-031", "feat-032"],
   "status": "done",
-  "evidence": "2026-04-22: implemented POST /api/v1/auth/logout with auth-middleware protection and current-session revocation, added integration coverage for missing-bearer logout, logout revocation, protected-route rejection after logout, and refresh replay failure after logout, then verified with pnpm --filter worker lint, pnpm --filter worker typecheck, pnpm --filter worker test, and full ./init.sh.",
+  "evidence": "2026-04-22: implemented POST /api/v1/auth/logout with auth-middleware protection and current-session revocation, then hardened refresh-session rotation to be atomic, added logout request-epoch plumbing to avoid near-expiry revocation races, expanded auth/session regression coverage, and verified the worker auth slice with pnpm exec vitest run test/unit/dto-auth.spec.ts test/unit/session-repository.spec.ts test/index.spec.ts plus pnpm --filter worker lint and pnpm --filter worker typecheck.",
   "updated_at": "2026-04-22"
 }
 

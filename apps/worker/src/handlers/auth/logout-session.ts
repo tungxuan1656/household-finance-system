@@ -7,7 +7,11 @@ export const logoutSession = async (
   env: AppBindings['Bindings'],
   input: LogoutSessionInput,
 ): Promise<LogoutSessionResponse> => {
-  const revoked = await revokeSessionIfActive(env.DB, input.currentSessionId)
+  const revoked = await revokeSessionIfActive(
+    env.DB,
+    input.currentSessionId,
+    input.requestEpoch,
+  )
 
   if (!revoked) {
     throw unauthenticated(input.locale, 'errors.sessionExpiredOrRevoked')

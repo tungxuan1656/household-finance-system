@@ -45,5 +45,5 @@ export interface RefreshSessionResponse {
 }
 
 export interface LogoutSessionResponse {
-  revoked: boolean
+  revoked: true
 }

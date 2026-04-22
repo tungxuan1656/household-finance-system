@@ -19,6 +19,7 @@ export interface RefreshSessionInput {
 
 export interface LogoutSessionInput {
   currentSessionId: string
+  requestEpoch: number
   locale: SupportedLocale
 }
 

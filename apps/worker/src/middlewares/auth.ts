@@ -34,16 +34,21 @@ export const authMiddleware: MiddlewareHandler<AppBindings> = async (
 ) => {
   const config = readConfig(ctx.env)
   const locale: SupportedLocale = ctx.get('locale')
+
+  const requestEpoch = Date.now()
+  ctx.set('requestEpoch', requestEpoch)
+
   const token = getBearerToken(ctx.req.header('authorization'), locale)
   const payload = await verifyAccessToken(token, config, locale)
 
-  const session = await findSessionById(ctx.env.DB, payload.sid)
+  const [session, user] = await Promise.all([
+    findSessionById(ctx.env.DB, payload.sid),
+    findUserById(ctx.env.DB, payload.sub),
+  ])
 
   if (!session || !isSessionActive(session) || session.userId !== payload.sub) {
     throw unauthenticated(locale, 'errors.sessionExpiredOrRevoked')
   }
-
-  const user = await findUserById(ctx.env.DB, payload.sub)
 
   if (!user) {
     throw unauthenticated(locale, 'errors.userUnavailable')

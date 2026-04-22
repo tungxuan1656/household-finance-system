@@ -55,6 +55,7 @@ authRoutes.post('/auth/logout', async (ctx) => {
   const locale = ctx.get('locale')
   const result = await logoutSession(ctx.env, {
     currentSessionId: ctx.get('currentSessionId'),
+    requestEpoch: ctx.get('requestEpoch'),
     locale,
   })
 

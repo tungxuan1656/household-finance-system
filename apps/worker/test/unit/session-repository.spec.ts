@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   createRefreshSession,
   findSessionById,
+  isSessionActive,
   rotateRefreshSession,
   revokeSessionIfActive,
 } from '@/db/repositories/session-repository'
@@ -126,5 +127,17 @@ describe('session repository', () => {
 
     expect(rotated).toBe(false)
     expect(nextSession).toBeNull()
+  })
+
+  it('treats revokedAt at epoch zero as inactive', () => {
+    expect(
+      isSessionActive({
+        id: 'session-epoch-zero',
+        userId: 'user-1',
+        tokenHash: 'hash-epoch-zero',
+        expiresAt: Date.now() + 60_000,
+        revokedAt: 0,
+      }),
+    ).toBe(false)
   })
 })
