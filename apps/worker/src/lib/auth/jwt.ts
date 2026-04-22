@@ -1,7 +1,7 @@
 import { jwtVerify, SignJWT } from 'jose'
 
-import type { AppConfig, SessionTokenKind, SessionTokenPayload } from '@/dto'
 import { unauthenticated } from '@/lib/errors'
+import type { AppConfig, SessionTokenKind, SessionTokenPayload } from '@/types'
 
 const encoder = new TextEncoder()
 

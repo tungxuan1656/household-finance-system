@@ -1,4 +1,3 @@
-import type { JWTPayload } from 'jose'
 import { z } from 'zod'
 
 export const exchangeProviderRequestSchema = z
@@ -20,7 +19,7 @@ export const refreshSessionRequestSchema = z
 
 export type RefreshSessionRequest = z.infer<typeof refreshSessionRequestSchema>
 
-export interface AuthenticatedUserProfile {
+export interface AuthenticatedUserDTO {
   id: string
   email: string | null
   displayName: string | null
@@ -28,40 +27,19 @@ export interface AuthenticatedUserProfile {
   provider: 'firebase'
 }
 
-export interface ExchangeProviderTokenInput {
-  provider: 'firebase'
-  idToken: string
-  userAgent: string | null
-  ipAddress: string | null
-}
-
-export interface ExchangeProviderTokenOutput {
+export interface ExchangeProviderResponse {
   tokenType: 'Bearer'
   accessToken: string
   accessTokenExpiresIn: number
   refreshToken: string
   refreshTokenExpiresIn: number
-  user: AuthenticatedUserProfile
+  user: AuthenticatedUserDTO
 }
 
-export interface RefreshSessionInput {
-  refreshToken: string
-  userAgent: string | null
-  ipAddress: string | null
-}
-
-export interface RefreshSessionOutput {
+export interface RefreshSessionResponse {
   tokenType: 'Bearer'
   accessToken: string
   accessTokenExpiresIn: number
   refreshToken: string
   refreshTokenExpiresIn: number
-}
-
-export type SessionTokenKind = 'access' | 'refresh'
-
-export interface SessionTokenPayload extends JWTPayload {
-  sub: string
-  sid: string
-  typ: SessionTokenKind
 }

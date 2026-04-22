@@ -41,6 +41,7 @@ data patterns unpredictably.
 
 | Document Name | Description | Path |
 |--------------|-------------|------|
+| Project Folder Structure | Canonical backend folder layout and placement rules for routes/handlers/repositories/contracts/types/lib. | [references/backend/project-folder-structure.md](references/backend/project-folder-structure.md) |
 | Architecture and Boundaries | Layer organization standard, route/handler/middleware/utils separation. | [references/backend/architecture-and-boundaries.md](references/backend/architecture-and-boundaries.md) |
 | API Contract and Validation | API contract, versioning, validation, envelope rules. | [references/backend/api-contract-and-validation.md](references/backend/api-contract-and-validation.md) |
 | Database Pattern | Query, mapping, integrity, naming, pagination standard. | [references/backend/database-pattern.md](references/backend/database-pattern.md) |

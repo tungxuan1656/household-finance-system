@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest'
 import {
   exchangeProviderRequestSchema,
   refreshSessionRequestSchema,
-} from '@/dto'
+} from '@/contracts'
 
-describe('auth dto schemas', () => {
+describe('auth contract schemas', () => {
   it('accepts a valid exchange provider payload', () => {
     const parsed = exchangeProviderRequestSchema.safeParse({
       provider: 'firebase',

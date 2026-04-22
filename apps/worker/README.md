@@ -42,6 +42,17 @@ Backend work must follow the repository guidance in:
 - Shared auth boundary: `src/middlewares/auth.ts`
 - Shared response envelope + error mapping: `src/lib/response.ts`
 
+## Source Layout
+
+- `src/routes/*`: HTTP route registration and middleware composition only
+- `src/handlers/*`: per-use-case orchestration and business flow
+- `src/db/repositories/*`: D1 reads/writes and row mapping
+- `src/contracts/*`: API request/response schemas and transport contracts
+- `src/types/*`: runtime-only app/auth types that are not API payload contracts
+- `src/lib/auth/*`: auth/security infrastructure such as Firebase verification, JWT, hashing
+- `src/lib/*`: shared runtime helpers that are broader than a pure utility
+- `src/utils/*`: small reusable pure helpers
+
 ## Development
 
 Run from repository root:
@@ -72,6 +83,7 @@ pnpm --filter worker deploy
 
 - Migration files are stored in `migrations/`.
 - Use timestamp/sequence naming, e.g. `0001_init.sql`, `0002_add_xxx.sql`.
+- The initial schema preserves auth/session tables and adds the first household-finance persistence surfaces for households, memberships, categories, groups, expenses, budgets, and audit logs.
 
 Apply migrations locally:
 
@@ -84,6 +96,15 @@ Apply migrations remotely:
 ```bash
 pnpm --filter worker db:migrate:remote
 ```
+
+Seed the local database with a minimal demo household:
+
+```bash
+pnpm --filter worker db:seed:local
+```
+
+The seed file lives at `seeds/local/dev.sql` and is written to be safe to re-run with the same IDs.
+Remote migrations remain operator-only until `wrangler.jsonc` is configured with the real D1 database identifiers.
 
 ## Configuration
 

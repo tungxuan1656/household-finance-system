@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 
-import type { AppBindings } from '@/dto'
 import { success } from '@/lib/response'
+import type { AppBindings } from '@/types'
 
 export const healthRoutes = new Hono<AppBindings>()
 

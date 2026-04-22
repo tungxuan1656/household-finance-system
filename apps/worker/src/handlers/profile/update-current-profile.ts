@@ -1,5 +1,6 @@
+import type { ProfileResponse, UpdateProfileRequest } from '@/contracts'
 import { updateUserProfile } from '@/db/repositories/user-repository'
-import type { AppBindings, ProfileResponse, UpdateProfileRequest } from '@/dto'
+import type { AppBindings } from '@/types'
 
 export const updateCurrentProfile = async (
   env: AppBindings['Bindings'],

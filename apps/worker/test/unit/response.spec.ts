@@ -1,8 +1,8 @@
 import type { Context } from 'hono'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { AppBindings } from '@/dto'
 import { fromUnknownError } from '@/lib/response'
+import type { AppBindings } from '@/types'
 
 const createContext = (): Context<AppBindings> =>
   ({

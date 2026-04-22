@@ -1,9 +1,17 @@
 import { createRemoteJWKSet, type JWTPayload, jwtVerify } from 'jose'
 
-import { type AppConfig } from '@/dto'
 import { unauthenticated } from '@/lib/errors'
+import type { AppConfig } from '@/types'
 
 const jwksCache = new Map<string, ReturnType<typeof createRemoteJWKSet>>()
+
+interface FirebaseIdentity {
+  sub: string
+  email: string | null
+  emailVerified: boolean
+  name: string | null
+  picture: string | null
+}
 
 const getJwks = (url: string): ReturnType<typeof createRemoteJWKSet> => {
   const cached = jwksCache.get(url)
@@ -18,15 +26,7 @@ const getJwks = (url: string): ReturnType<typeof createRemoteJWKSet> => {
   return jwks
 }
 
-const parseUnsafeTestToken = (
-  idToken: string,
-): {
-  sub: string
-  email: string | null
-  emailVerified: boolean
-  name: string | null
-  picture: string | null
-} | null => {
+const parseUnsafeTestToken = (idToken: string): FirebaseIdentity | null => {
   if (!idToken.startsWith('test:')) {
     return null
   }
@@ -67,7 +67,7 @@ const parseUnsafeTestToken = (
   }
 }
 
-const normalizeFirebasePayload = (payload: JWTPayload) => {
+const normalizeFirebasePayload = (payload: JWTPayload): FirebaseIdentity => {
   if (typeof payload.sub !== 'string' || payload.sub.length === 0) {
     throw unauthenticated('Firebase token is missing subject.')
   }
@@ -84,7 +84,7 @@ const normalizeFirebasePayload = (payload: JWTPayload) => {
 export const verifyFirebaseIdToken = async (
   idToken: string,
   config: AppConfig,
-) => {
+): Promise<FirebaseIdentity> => {
   if (config.allowInsecureTestTokens) {
     const parsed = parseUnsafeTestToken(idToken)
 

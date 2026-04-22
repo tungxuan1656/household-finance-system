@@ -5,10 +5,10 @@ import {
   isSessionActive,
 } from '@/db/repositories/session-repository'
 import { findUserById } from '@/db/repositories/user-repository'
-import type { AppBindings } from '@/dto'
+import { verifyAccessToken } from '@/lib/auth/jwt'
 import { readConfig } from '@/lib/env'
 import { unauthenticated } from '@/lib/errors'
-import { verifyAccessToken } from '@/utils/auth/jwt'
+import type { AppBindings } from '@/types'
 
 const getBearerToken = (authorizationHeader: string | undefined): string => {
   if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {

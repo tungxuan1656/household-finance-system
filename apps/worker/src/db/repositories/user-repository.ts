@@ -1,4 +1,5 @@
-import { newId } from '@/utils/shared/id'
+import { notFound } from '@/lib/errors'
+import { newId } from '@/utils/id'
 
 export interface StoredUser {
   id: string
@@ -50,7 +51,7 @@ export const loadUserById = async (
   const user = await findUserById(db, userId)
 
   if (!user) {
-    throw new Error('User upsert failed unexpectedly')
+    throw notFound('User not found.')
   }
 
   return user
@@ -125,28 +126,27 @@ const updateIdentityUser = async (
   identity: FirebaseIdentityInput,
   nowEpoch: number,
 ): Promise<StoredUser> => {
-  await db
-    .prepare(
-      `UPDATE users
+  await db.batch([
+    db
+      .prepare(
+        `UPDATE users
        SET display_name = COALESCE(?, display_name),
            primary_email = COALESCE(?, primary_email),
            avatar_url = COALESCE(?, avatar_url),
            updated_at = ?
        WHERE id = ?`,
-    )
-    .bind(identity.name, identity.email, identity.picture, nowEpoch, userId)
-    .run()
-
-  await db
-    .prepare(
-      `UPDATE auth_identities
+      )
+      .bind(identity.name, identity.email, identity.picture, nowEpoch, userId),
+    db
+      .prepare(
+        `UPDATE auth_identities
        SET provider_email = COALESCE(?, provider_email),
            last_login_at = ?,
            updated_at = ?
        WHERE provider = ? AND provider_subject = ?`,
-    )
-    .bind(identity.email, nowEpoch, nowEpoch, 'firebase', identity.subject)
-    .run()
+      )
+      .bind(identity.email, nowEpoch, nowEpoch, 'firebase', identity.subject),
+  ])
 
   return loadUserById(db, userId)
 }
@@ -175,36 +175,25 @@ export const upsertUserByFirebaseIdentity = async (
   const userId = newId()
   const identityId = newId()
 
-  await db
-    .prepare(
-      `INSERT INTO users (id, display_name, primary_email, avatar_url)
-       VALUES (?, ?, ?, ?)`,
-    )
-    .bind(userId, identity.name, identity.email, identity.picture)
-    .run()
-
   try {
-    await db
-      .prepare(
-        `INSERT INTO auth_identities (id, user_id, provider, provider_subject, provider_email)
+    await db.batch([
+      db
+        .prepare(
+          `INSERT INTO users (id, display_name, primary_email, avatar_url)
+         VALUES (?, ?, ?, ?)`,
+        )
+        .bind(userId, identity.name, identity.email, identity.picture),
+      db
+        .prepare(
+          `INSERT INTO auth_identities (id, user_id, provider, provider_subject, provider_email)
          VALUES (?, ?, ?, ?, ?)`,
-      )
-      .bind(identityId, userId, 'firebase', identity.subject, identity.email)
-      .run()
+        )
+        .bind(identityId, userId, 'firebase', identity.subject, identity.email),
+    ])
   } catch (error) {
     if (!isProviderSubjectConflictError(error)) {
       throw error
     }
-
-    // Another request won the identity insert race. Remove the temporary user
-    // created by this request to avoid orphan records, then continue on winner.
-    await db
-      .prepare(
-        `DELETE FROM users
-         WHERE id = ?`,
-      )
-      .bind(userId)
-      .run()
 
     const racedUserId = await findIdentityUserId(db, identity.subject)
 

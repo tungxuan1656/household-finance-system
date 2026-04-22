@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   createRefreshSession,
   findSessionById,
+  rotateRefreshSession,
   revokeSessionIfActive,
 } from '@/db/repositories/session-repository'
 import { applyMigrations } from '../helpers/apply-migrations'
@@ -47,5 +48,83 @@ describe('session repository', () => {
     expect(firstRevokeResult).toBe(true)
     expect(secondRevokeResult).toBe(false)
     expect(storedSession?.revokedAt).not.toBeNull()
+  })
+
+  it('rolls back revocation when rotated session insert fails', async () => {
+    await env.DB.prepare(
+      `INSERT INTO users (id, display_name, primary_email)
+       VALUES (?, ?, ?)`,
+    )
+      .bind('user-1', 'User One', 'user1@example.com')
+      .run()
+
+    await createRefreshSession(env.DB, {
+      sessionId: 'session-current',
+      userId: 'user-1',
+      tokenHash: 'hash-current',
+      expiresAt: Date.now() + 60_000,
+      userAgent: null,
+      ipAddress: null,
+    })
+
+    await createRefreshSession(env.DB, {
+      sessionId: 'session-conflict',
+      userId: 'user-1',
+      tokenHash: 'hash-conflict',
+      expiresAt: Date.now() + 60_000,
+      userAgent: null,
+      ipAddress: null,
+    })
+
+    await expect(
+      rotateRefreshSession(env.DB, {
+        previousSessionId: 'session-current',
+        newSessionId: 'session-conflict',
+        userId: 'user-1',
+        tokenHash: 'hash-rotated',
+        expiresAt: Date.now() + 60_000,
+        userAgent: null,
+        ipAddress: null,
+      }),
+    ).rejects.toThrow()
+
+    const currentSession = await findSessionById(env.DB, 'session-current')
+
+    expect(currentSession?.revokedAt).toBeNull()
+  })
+
+  it('does not insert a rotated session when the previous session is already revoked', async () => {
+    await env.DB.prepare(
+      `INSERT INTO users (id, display_name, primary_email)
+       VALUES (?, ?, ?)`,
+    )
+      .bind('user-1', 'User One', 'user1@example.com')
+      .run()
+
+    await createRefreshSession(env.DB, {
+      sessionId: 'session-current',
+      userId: 'user-1',
+      tokenHash: 'hash-current',
+      expiresAt: Date.now() + 60_000,
+      userAgent: null,
+      ipAddress: null,
+    })
+
+    await revokeSessionIfActive(env.DB, 'session-current')
+
+    const rotated = await rotateRefreshSession(env.DB, {
+      previousSessionId: 'session-current',
+      newSessionId: 'session-next',
+      userId: 'user-1',
+      tokenHash: 'hash-rotated',
+      expiresAt: Date.now() + 60_000,
+      userAgent: null,
+      ipAddress: null,
+    })
+
+    const nextSession = await findSessionById(env.DB, 'session-next')
+
+    expect(rotated).toBe(false)
+    expect(nextSession).toBeNull()
   })
 })

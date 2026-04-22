@@ -1,8 +1,8 @@
 import type { Context } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
-import type { AppBindings } from '@/dto'
 import { AppError, internalError } from '@/lib/errors'
+import type { AppBindings } from '@/types'
 
 type ApiErrorBody = {
   error: {

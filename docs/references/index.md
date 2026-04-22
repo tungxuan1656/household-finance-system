@@ -25,6 +25,7 @@ Canonical standards index for agent execution and review.
 
 ## Backend
 
+- `backend/project-folder-structure.md`
 - `backend/architecture-and-boundaries.md`
 - `backend/api-contract-and-validation.md`
 - `backend/database-pattern.md`
