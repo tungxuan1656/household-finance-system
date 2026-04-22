@@ -85,16 +85,17 @@ describe('Worker foundation', () => {
     expect(payload.error.message).toBe('Không tìm thấy đường dẫn.')
   })
 
-  it('returns invalid input when auth exchange payload is malformed', async () => {
+  it('returns invalid input when auth exchange payload is malformed JSON via x-locale', async () => {
     const response = await SELF.fetch(
       'https://example.com/api/v1/auth/provider/exchange',
       {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
+          'x-locale': 'fr-FR',
           'accept-language': 'en-US,en;q=0.9',
         },
-        body: JSON.stringify({ provider: 'firebase' }),
+        body: '{',
       },
     )
 
@@ -102,7 +103,7 @@ describe('Worker foundation', () => {
 
     expect(response.status).toBe(400)
     expect(payload.error.code).toBe('INVALID_INPUT')
-    expect(payload.error.message).toBe('Thân yêu cầu không hợp lệ.')
+    expect(payload.error.message).toBe('Thân yêu cầu phải là JSON hợp lệ.')
   })
 
   it('rejects protected route when bearer token is missing', async () => {

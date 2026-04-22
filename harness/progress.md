@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Closed remaining feat-031 verification gaps
+- Who: Codex
+- Summary: Added integration coverage for malformed JSON request bodies and for locale resolution via `x-locale`, then re-ran worker tests and full `./init.sh` to confirm the backend i18n foundation still passes the repo verification gate.
+- Files changed: apps/worker/test/index.spec.ts, harness/features/feat-031.json, harness/progress.md
+- Blockers: none
+- Next steps: continue with `feat-032` or resume `feat-008` now that feat-031 coverage matches the plan.
+
 ## 2026-04-22 — Implemented feat-031 backend internationalization foundation
 - Who: Codex
 - Summary: Delivered the worker-side i18n foundation with request-scoped locale resolution, a private Vietnamese message catalog, localized error/validation/auth responses, and `vi` fallback behavior for unsupported language hints. The plan was moved to `docs/exec-plans/completed/`, and the harness now marks `feat-031` as done.
