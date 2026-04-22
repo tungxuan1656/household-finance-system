@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
@@ -9,19 +10,41 @@ import { authActions, useAuthStore } from '@/stores/auth.store'
 function SignInPage() {
   const navigate = useNavigate()
 
+  const [formError, setFormError] = useState<string | null>(null)
+
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
     const email = String(formData.get('email') ?? '').trim()
+    const password = String(formData.get('password') ?? '').trim()
     const destination = useAuthStore.getState().returnTo ?? '/app'
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!email || !emailRegex.test(email) || password.length < 8) {
+      setFormError(
+        'Please provide a valid email and a password (minimum 8 characters).',
+      )
+
+      return
+    }
 
     authActions.signIn({
       email,
       name: email.split('@')[0] || 'Signed-in user',
     })
 
-    navigate(destination, { replace: true })
+    const safeDestination =
+      typeof destination === 'string' &&
+      destination.startsWith('/') &&
+      !destination.startsWith('//') &&
+      !destination.includes('://')
+        ? destination
+        : '/app'
+
+    setFormError(null)
+    navigate(safeDestination, { replace: true })
   }
 
   return (
@@ -40,6 +63,9 @@ function SignInPage() {
       }
       title='Sign in'
       onSubmit={handleSubmit}>
+      {formError ? (
+        <p className='text-sm text-destructive'>{formError}</p>
+      ) : null}
       <AuthField
         description='The inbox tied to your account.'
         id='email'

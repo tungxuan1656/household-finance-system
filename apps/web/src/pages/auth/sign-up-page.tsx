@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
@@ -9,20 +10,42 @@ import { authActions, useAuthStore } from '@/stores/auth.store'
 function SignUpPage() {
   const navigate = useNavigate()
 
+  const [formError, setFormError] = useState<string | null>(null)
+
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
     const name = String(formData.get('fullName') ?? '').trim()
     const email = String(formData.get('email') ?? '').trim()
+    const password = String(formData.get('password') ?? '').trim()
     const destination = useAuthStore.getState().returnTo ?? '/app/onboarding'
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!name || !email || !emailRegex.test(email) || password.length < 8) {
+      setFormError(
+        'Please provide a name, a valid email, and a password (minimum 8 characters).',
+      )
+
+      return
+    }
 
     authActions.signUp({
       email,
       name: name || email.split('@')[0] || 'New user',
     })
 
-    navigate(destination, { replace: true })
+    const safeDestination =
+      typeof destination === 'string' &&
+      destination.startsWith('/') &&
+      !destination.startsWith('//') &&
+      !destination.includes('://')
+        ? destination
+        : '/app/onboarding'
+
+    setFormError(null)
+    navigate(safeDestination, { replace: true })
   }
 
   return (
@@ -41,6 +64,9 @@ function SignUpPage() {
       }
       title='Create your account'
       onSubmit={handleSubmit}>
+      {formError ? (
+        <p className='text-sm text-destructive'>{formError}</p>
+      ) : null}
       <AuthField
         description='This is the name shown to your household.'
         id='full-name'
