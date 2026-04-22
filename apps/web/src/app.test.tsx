@@ -64,6 +64,12 @@ describe('web shell routing', () => {
 
     renderAt('/sign-in')
 
+    await user.type(
+      screen.getByLabelText('Email address'),
+      'tester@example.com',
+    )
+    await user.type(screen.getByLabelText('Password'), 'password123')
+
     await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
     expect(
@@ -84,6 +90,12 @@ describe('web shell routing', () => {
 
     renderAt('/sign-in')
 
+    await user.type(
+      screen.getByLabelText('Email address'),
+      'tester@example.com',
+    )
+    await user.type(screen.getByLabelText('Password'), 'password123')
+
     await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
     expect(
@@ -95,6 +107,12 @@ describe('web shell routing', () => {
     const user = userEvent.setup()
 
     renderAt('/app/onboarding')
+
+    await user.type(
+      screen.getByLabelText('Email address'),
+      'tester@example.com',
+    )
+    await user.type(screen.getByLabelText('Password'), 'password123')
 
     await user.click(screen.getByRole('button', { name: 'Sign in' }))
 
