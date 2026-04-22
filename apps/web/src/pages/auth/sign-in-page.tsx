@@ -1,27 +1,26 @@
 import { Link } from 'react-router-dom'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthPanel } from '@/components/auth/auth-panel'
 import { Input } from '@/components/ui/input'
-import { useShellAccessActions } from '@/lib/shell-access'
+import { authActions, useAuthStore } from '@/stores/auth.store'
 
 function SignInPage() {
   const navigate = useNavigate()
-  const location = useLocation()
-  const { grantShellAccess } = useShellAccessActions()
-
-  const destination =
-    typeof location.state === 'object' &&
-    location.state !== null &&
-    'from' in location.state &&
-    typeof location.state.from === 'string'
-      ? location.state.from
-      : '/app'
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault()
-    grantShellAccess()
+
+    const formData = new FormData(event.currentTarget)
+    const email = String(formData.get('email') ?? '').trim()
+    const destination = useAuthStore.getState().returnTo ?? '/app'
+
+    authActions.signIn({
+      email,
+      name: email.split('@')[0] || 'Signed-in user',
+    })
+
     navigate(destination, { replace: true })
   }
 

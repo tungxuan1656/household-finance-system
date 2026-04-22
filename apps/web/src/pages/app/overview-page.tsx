@@ -9,8 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { useAuthStore } from '@/stores/auth.store'
 
 function OverviewPage() {
+  const user = useAuthStore.use.user()
+
   return (
     <div className='space-y-6'>
       <header className='space-y-2'>
@@ -22,6 +25,13 @@ function OverviewPage() {
           This landing page is a scaffold for the authenticated app state. It
           keeps the next features aligned on layout, navigation, and empty-state
           behavior before real data lands.
+        </p>
+        <p className='text-sm text-muted-foreground'>
+          Signed in as{' '}
+          <span className='font-medium text-foreground'>
+            {user?.name ?? 'Demo Family'}
+          </span>
+          {user?.email ? <span> · {user.email}</span> : null}
         </p>
       </header>
 

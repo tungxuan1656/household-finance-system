@@ -1,27 +1,27 @@
 import { Link } from 'react-router-dom'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthPanel } from '@/components/auth/auth-panel'
 import { Input } from '@/components/ui/input'
-import { useShellAccessActions } from '@/lib/shell-access'
+import { authActions, useAuthStore } from '@/stores/auth.store'
 
 function SignUpPage() {
   const navigate = useNavigate()
-  const location = useLocation()
-  const { grantShellAccess } = useShellAccessActions()
-
-  const destination =
-    typeof location.state === 'object' &&
-    location.state !== null &&
-    'from' in location.state &&
-    typeof location.state.from === 'string'
-      ? location.state.from
-      : '/app/onboarding'
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault()
-    grantShellAccess()
+
+    const formData = new FormData(event.currentTarget)
+    const name = String(formData.get('fullName') ?? '').trim()
+    const email = String(formData.get('email') ?? '').trim()
+    const destination = useAuthStore.getState().returnTo ?? '/app/onboarding'
+
+    authActions.signUp({
+      email,
+      name: name || email.split('@')[0] || 'New user',
+    })
+
     navigate(destination, { replace: true })
   }
 

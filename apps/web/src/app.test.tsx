@@ -1,11 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { AppRoutes } from '@/router'
+import { authActions } from '@/stores/auth.store'
 
 vi.mock('sonner', () => ({
   Toaster: ({ theme }: { theme?: string }) => (
@@ -20,6 +21,12 @@ function renderAt(pathname: string) {
     </MemoryRouter>,
   )
 }
+
+beforeEach(() => {
+  act(() => {
+    authActions.reset()
+  })
+})
 
 describe('web shell routing', () => {
   it('redirects protected routes back to sign in when shell access is missing', async () => {

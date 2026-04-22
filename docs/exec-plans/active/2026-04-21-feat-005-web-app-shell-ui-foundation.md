@@ -52,10 +52,10 @@ Out of scope:
 - [x] Fix toast/theme integration to match local provider
 - [x] Add UI test library and route/shell smoke tests
 - [x] Run web typecheck, tests, lint, and build
-- [ ] Move shell auth state into zustand store
-- [ ] Rewire shell guard and auth pages to use the store
-- [ ] Add store-level tests for initial state and actions
-- [ ] Re-run web validation after store migration
+- [x] Move shell auth state into zustand store
+- [x] Rewire shell guard and auth pages to use the store
+- [x] Add store-level tests for initial state and actions
+- [x] Re-run web validation after store migration
 
 ## Surprises & Discoveries
 
@@ -88,7 +88,7 @@ Out of scope:
 
 ## Outcomes & Retrospective
 
-The web app now has a real React Router shell with `/` redirecting to `/sign-in`, public `/sign-in` and `/sign-up` pages, a protected `/app` scaffold, onboarding and placeholder feature routes, local-theme Sonner integration, and UI tests that cover the critical shell behavior. The next step is to replace the temporary shell auth state implementation with a zustand store so the auth shell follows the repo's standard state pattern and downstream auth features can build on it cleanly.
+The web app now has a real React Router shell with `/` redirecting to `/sign-in`, public `/sign-in` and `/sign-up` pages, a protected `/app` scaffold, onboarding and placeholder feature routes, local-theme Sonner integration, and UI tests that cover the critical shell behavior. The shell auth state is now backed by a zustand store with selectors and reset-friendly actions, and downstream auth features can build on that pattern cleanly.
 
 ## Context and Orientation
 

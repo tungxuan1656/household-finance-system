@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Implemented feat-005 auth-state zustand migration
+- Who: Codex
+- Summary: Replaced the shell-auth context with a zustand store, rewired the shell guard and auth pages to use store-backed auth state and return-to handling, added store tests, and revalidated the web app with test, lint, typecheck, and build.
+- Files changed: apps/web/src/stores/auth.store.ts, apps/web/src/stores/auth.store.test.tsx, apps/web/src/stores/types.ts, apps/web/src/router.tsx, apps/web/src/components/layouts/shell-guard.tsx, apps/web/src/pages/auth/sign-in-page.tsx, apps/web/src/pages/auth/sign-up-page.tsx, apps/web/src/pages/app/overview-page.tsx, apps/web/src/app.test.tsx
+- Blockers: none
+- Next steps: continue with the next auth/session plan items, especially the real token-backed frontend session flow from feat-009.
+
 ## 2026-04-22 — Reactivated feat-005 plan for zustand auth state follow-on
 - Who: Codex
 - Summary: Restored feat-005 as an active execution plan, extended it with the auth-state zustand migration and downstream auth shell follow-on items, and linked it from the active plans index.
