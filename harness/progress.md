@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-22 — Implemented feat-033 API response contract standardization
+- Who: Codex
+- Summary: Standardized all current worker `/api/v1` responses onto the symmetric `{ success, data, error, meta }` envelope, centralized worker error-code ownership, added explicit response-envelope assertions in worker unit/integration tests, and created the canonical web `src/api` layer with endpoint constants, typed transport contracts, a fetch-based client, and adapter-driven 401 refresh-and-retry coverage. Archived the ExecPlan and marked `feat-033` done after full repo verification.
+- Files changed: apps/worker/src/lib/errors.ts, apps/worker/src/lib/response.ts, apps/worker/test/unit/response.spec.ts, apps/worker/test/index.spec.ts, apps/web/src/api/client.ts, apps/web/src/api/client.test.ts, apps/web/src/api/endpoints.ts, apps/web/src/types/api.ts, docs/exec-plans/completed/2026-04-22-feat-033-api-response-contract-error-handling-standardization.md, docs/exec-plans/active/index.md, docs/exec-plans/completed/index.md, harness/feature_index.json, harness/features/feat-033.json, harness/progress.md
+- Blockers: none
+- Next steps: wire `feat-009` to the new API client/auth-session adapter instead of adding raw fetch/session logic in auth pages or stores.
+
 ## 2026-04-22 — Re-sequenced feat-033 ahead of feat-009
 - Who: Codex
 - Summary: Removed the incorrect dependency from `feat-033` to `feat-009`, kept `feat-033` anchored to the existing backend auth surface from `feat-008`, and updated the active ExecPlan plus `feat-009` dependencies so the frontend auth flow now consumes the standardized API client/error contract instead of blocking it.

@@ -1,27 +1,40 @@
 import type { Context } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
+import type { ErrorCode } from '@/lib/errors'
 import { AppError, internalError } from '@/lib/errors'
 import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import type { AppBindings } from '@/types'
 
-type ApiErrorBody = {
+export type ApiMeta = {
+  requestId: string
+}
+
+export type ApiError = {
+  code: ErrorCode
+  message: string
+  details?: unknown
+}
+
+export type ApiErrorEnvelope = {
+  success: false
+  data: null
   error: {
-    code: string
+    code: ErrorCode
     message: string
     details?: unknown
   }
-  meta: {
-    requestId: string
-  }
+  meta: ApiMeta
 }
 
-type ApiSuccessBody<T> = {
+export type ApiSuccessEnvelope<T> = {
+  success: true
   data: T
-  meta: {
-    requestId: string
-  }
+  error: null
+  meta: ApiMeta
 }
+
+export type ApiEnvelope<T> = ApiSuccessEnvelope<T> | ApiErrorEnvelope
 
 const getRequestId = (ctx: Context<AppBindings>): string => {
   try {
@@ -44,8 +57,10 @@ export const success = <T>(
   data: T,
   status: ContentfulStatusCode = 200,
 ): Response => {
-  const body: ApiSuccessBody<T> = {
+  const body: ApiSuccessEnvelope<T> = {
+    success: true,
     data,
+    error: null,
     meta: {
       requestId: getRequestId(ctx),
     },
@@ -58,7 +73,9 @@ export const errorResponse = (
   ctx: Context<AppBindings>,
   error: AppError,
 ): Response => {
-  const body: ApiErrorBody = {
+  const body: ApiErrorEnvelope = {
+    success: false,
+    data: null,
     error: {
       code: error.code,
       message: error.message,

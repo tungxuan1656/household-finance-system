@@ -28,7 +28,22 @@ const clearTableStatements = [
 ]
 
 type ApiEnvelope<T> = {
+  success: true
   data: T
+  error: null
+  meta: {
+    requestId: string
+  }
+}
+
+type ApiErrorEnvelope = {
+  success: false
+  data: null
+  error: {
+    code: string
+    message: string
+    details?: unknown
+  }
   meta: {
     requestId: string
   }
@@ -55,7 +70,9 @@ describe('Worker foundation', () => {
     const payload = await parseJson<ApiEnvelope<{ ok: boolean }>>(response)
 
     expect(response.status).toBe(200)
+    expect(payload.success).toBe(true)
     expect(payload.data.ok).toBe(true)
+    expect(payload.error).toBeNull()
     expect(payload.meta.requestId.length).toBeGreaterThan(0)
   })
 
@@ -69,6 +86,7 @@ describe('Worker foundation', () => {
     const payload = await parseJson<ApiEnvelope<{ ok: boolean }>>(response)
 
     expect(response.status).toBe(200)
+    expect(payload.success).toBe(true)
     expect(payload.meta.requestId).toBe('request-123')
   })
 
@@ -78,13 +96,14 @@ describe('Worker foundation', () => {
         'accept-language': 'en-US,en;q=0.9',
       },
     })
-    const payload = await parseJson<{
-      error: { code: string; message: string }
-    }>(response)
+    const payload = await parseJson<ApiErrorEnvelope>(response)
 
     expect(response.status).toBe(404)
+    expect(payload.success).toBe(false)
+    expect(payload.data).toBeNull()
     expect(payload.error.code).toBe('NOT_FOUND')
     expect(payload.error.message).toBe('Không tìm thấy đường dẫn.')
+    expect(payload.meta.requestId.length).toBeGreaterThan(0)
   })
 
   it('returns invalid input when auth exchange payload is malformed JSON via x-locale', async () => {
@@ -101,11 +120,11 @@ describe('Worker foundation', () => {
       },
     )
 
-    const payload = await parseJson<{
-      error: { code: string; message: string }
-    }>(response)
+    const payload = await parseJson<ApiErrorEnvelope>(response)
 
     expect(response.status).toBe(400)
+    expect(payload.success).toBe(false)
+    expect(payload.data).toBeNull()
     expect(payload.error.code).toBe('INVALID_INPUT')
     expect(payload.error.message).toBe('Thân yêu cầu phải là JSON hợp lệ.')
   })
@@ -120,11 +139,11 @@ describe('Worker foundation', () => {
       },
     )
 
-    const payload = await parseJson<{
-      error: { code: string; message: string }
-    }>(response)
+    const payload = await parseJson<ApiErrorEnvelope>(response)
 
     expect(response.status).toBe(401)
+    expect(payload.success).toBe(false)
+    expect(payload.data).toBeNull()
     expect(payload.error.code).toBe('UNAUTHENTICATED')
     expect(payload.error.message).toBe('Thiếu token bearer.')
   })
@@ -186,9 +205,11 @@ describe('Worker foundation', () => {
   it('rejects current profile request when bearer token is missing', async () => {
     const response = await SELF.fetch('https://example.com/api/v1/profile')
 
-    const payload = await parseJson<{ error: { code: string } }>(response)
+    const payload = await parseJson<ApiErrorEnvelope>(response)
 
     expect(response.status).toBe(401)
+    expect(payload.success).toBe(false)
+    expect(payload.data).toBeNull()
     expect(payload.error.code).toBe('UNAUTHENTICATED')
   })
 

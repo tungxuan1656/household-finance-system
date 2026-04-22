@@ -70,12 +70,12 @@ The current worker already has shared helpers in `apps/worker/src/lib/response.t
 ## Progress
 
 - [x] (2026-04-22, owner: Codex, status: done) Review harness state, active backend/frontend standards, and current worker/web transport code to define a plan grounded in repo reality.
-- [ ] (current, owner: Codex, status: pending) Align the web auth-session adapter seam with `feat-009` assumptions before implementation starts so 401 refresh-and-retry does not conflict with the future auth store contract.
-- [ ] Add the worker-side canonical envelope helpers and error-code registry, then migrate all current `/api/v1` routes to it without changing route ownership boundaries.
-- [ ] Expand worker unit/integration coverage so success, validation, auth, not-found, and unknown-error cases all assert the full envelope shape.
-- [ ] Create the shared web API client, endpoint registry, API transport types, and typed error classes in the canonical `src/api` / `src/types` locations.
-- [ ] Add web-side client tests for header injection, envelope parsing, server-error mapping, and one-shot 401 refresh-and-retry behavior through an injected auth-session adapter.
-- [ ] Update harness evidence, mark `feat-033` status based on verification results, and move the plan to `completed/` when implementation is finished.
+- [x] (2026-04-22, owner: Codex, status: done) Align the web auth-session adapter seam with `feat-009` assumptions before implementation starts so 401 refresh-and-retry does not conflict with the future auth store contract.
+- [x] Add the worker-side canonical envelope helpers and error-code registry, then migrate all current `/api/v1` routes to it without changing route ownership boundaries.
+- [x] Expand worker unit/integration coverage so success, validation, auth, not-found, and unknown-error cases all assert the full envelope shape.
+- [x] Create the shared web API client, endpoint registry, API transport types, and typed error classes in the canonical `src/api` / `src/types` locations.
+- [x] Add web-side client tests for header injection, envelope parsing, server-error mapping, and one-shot 401 refresh-and-retry behavior through an injected auth-session adapter.
+- [x] Update harness evidence, mark `feat-033` status based on verification results, and move the plan to `completed/` when implementation is finished.
 
 ## Surprises & Discoveries
 
@@ -113,9 +113,10 @@ The current worker already has shared helpers in `apps/worker/src/lib/response.t
 
 ## Outcomes & Retrospective
 
-- Planned outcome: every current worker route returns the same envelope contract, making future handlers and tests faster to add and easier to reason about.
-- Planned outcome: the web app gains one reusable typed client seam so future domain modules can focus on business types rather than auth headers, response parsing, or error normalization.
-- Expected follow-on: `feat-009` should integrate with this client through the adapter contract instead of inventing its own transport stack, reducing auth-specific glue code in future screens.
+- Outcome: all current `/api/v1` worker routes now return the standardized envelope with `success`, `data`, `error`, and `meta.requestId`, and worker tests now assert both success and failure shapes explicitly.
+- Outcome: the web app now has a canonical `src/api` transport seam with typed endpoint constants, typed envelopes/errors, a fetch-based client, and one-shot 401 refresh-and-retry via an injected auth-session adapter.
+- Verification: `pnpm --filter worker exec vitest run test/unit/response.spec.ts test/index.spec.ts`, `pnpm --filter web exec vitest run src/api/client.test.ts`, `pnpm --filter web build`, and full `./init.sh` all passed on 2026-04-22.
+- Follow-on: `feat-009` should now consume `apps/web/src/api/client.ts` and its adapter seam instead of introducing another transport layer.
 
 ## Context and Orientation
 

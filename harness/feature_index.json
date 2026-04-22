@@ -53,7 +53,7 @@
     {
       "id": "feat-033",
       "name": "API response contract & error handling standardization",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "feat-009",
@@ -184,4 +184,3 @@
     }
   ]
 }
-
