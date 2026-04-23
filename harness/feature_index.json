@@ -60,6 +60,11 @@
       "name": "Authentication frontend session flow",
       "status": "done"
     },
+    {
+      "id": "feat-009b",
+      "name": "Mobile-first UI/UX for Auth (Sign-in/Sign-up)",
+      "status": "pending"
+    },
 
     {
       "id": "feat-010",
