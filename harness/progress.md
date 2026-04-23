@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-23 — Hardened auth session bootstrap and browser storage fallback
+- Who: Codex
+- Summary: Fixed the remaining `feat-009` review issues by adding stale-bootstrap guards in the frontend auth session service, finalizing bootstrap when Firebase auth initialization fails, rolling back Firebase sign-in/sign-up if the provider exchange fails, and routing web theme/i18n storage through a safe browser-storage helper so the app and tests tolerate the current jsdom localStorage behavior. Added focused regressions for the auth race/rollback paths and the Firebase readiness gate, then re-ran `pnpm --filter web lint`, `pnpm --filter web test`, `pnpm --filter web build`, and the full `./init.sh` workspace verification successfully.
+- Files changed: apps/web/src/components/theme-provider.tsx, apps/web/src/lib/auth/firebase-auth.ts, apps/web/src/lib/auth/firebase-auth.test.ts, apps/web/src/lib/auth/session-service.ts, apps/web/src/lib/auth/session-service.test.ts, apps/web/src/lib/i18n/browser-fallback.test.tsx, apps/web/src/lib/i18n/change-language.test.tsx, apps/web/src/lib/i18n/index.ts, apps/web/src/lib/storages/auth-refresh-token-storage.ts, apps/web/src/lib/storages/browser-storage.ts, apps/web/src/test/setup.ts, harness/progress.md, harness/features/feat-009.json, AGENTS.md
+- Blockers: none
+- Next steps: keep the auth/session seam stable for follow-on profile/onboarding work and future API consumers.
+
 ## 2026-04-23 — Completed feat-009 frontend authentication session flow
 - Who: Codex
 - Summary: Implemented the frontend auth/session flow end-to-end for `feat-009`: Firebase email/password sign-in and sign-up, backend token exchange and refresh/logout calls, refresh-token persistence behind a storage adapter, in-memory access token/session state with scheduled silent refresh, bootstrap gating, protected-route redirects, sign-out cleanup, and onboarding redirect handling. Verified the workspace with `pnpm --filter web lint`, `pnpm --filter web test`, `pnpm --filter web build`, and `./init.sh`, then archived the ExecPlan and updated the harness records.

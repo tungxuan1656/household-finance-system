@@ -2,8 +2,10 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { removeLocalStorageItem } from '@/lib/storages/browser-storage'
+
 afterEach(() => {
-  window.localStorage.removeItem('appLanguage')
+  removeLocalStorageItem('appLanguage')
   document.documentElement.lang = ''
   vi.restoreAllMocks()
 })

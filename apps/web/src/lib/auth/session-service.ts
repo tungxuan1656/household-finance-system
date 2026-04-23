@@ -31,6 +31,17 @@ const isUnauthenticatedError = (error: unknown): boolean =>
   ((error as Error & { status?: number }).status === 401 ||
     (error as Error & { code?: string }).code === 'UNAUTHENTICATED')
 
+let sessionMutationVersion = 0
+
+const markSessionMutation = () => {
+  sessionMutationVersion += 1
+
+  return sessionMutationVersion
+}
+
+const isStaleBootstrap = (bootstrapVersion: number) =>
+  bootstrapVersion !== sessionMutationVersion
+
 const readCurrentUser = async (): Promise<AuthenticatedUserDTO | null> => {
   const firebaseUser = await getFirebaseCurrentUser()
 
@@ -54,6 +65,7 @@ const applySession = async (
     user?: AuthenticatedUserDTO | null
   },
 ) => {
+  markSessionMutation()
   authRefreshTokenStorage.write(session.refreshToken)
 
   authActions.setSession({
@@ -68,6 +80,7 @@ const applySession = async (
 }
 
 const clearSessionAfterFailure = (preserveReturnTo: boolean) => {
+  markSessionMutation()
   authRefreshTokenStorage.clear()
 
   authActions.clearSession({
@@ -100,8 +113,15 @@ const refreshSessionFromStorage = async () => {
   }
 }
 
-const restoreFromRefreshToken = async (preserveReturnTo: boolean) => {
+const restoreFromRefreshToken = async (
+  preserveReturnTo: boolean,
+  bootstrapVersion: number,
+) => {
   const result = await refreshSessionFromStorage()
+
+  if (isStaleBootstrap(bootstrapVersion)) {
+    return
+  }
 
   if (result.kind === 'missing') {
     authActions.clearSession({
@@ -112,9 +132,19 @@ const restoreFromRefreshToken = async (preserveReturnTo: boolean) => {
   }
 
   if (result.kind === 'restored') {
+    if (isStaleBootstrap(bootstrapVersion)) {
+      return
+    }
+
+    const user = await readCurrentUser()
+
+    if (isStaleBootstrap(bootstrapVersion)) {
+      return
+    }
+
     await applySession(result.session, {
       refreshSessionCallback: refreshCurrentSession,
-      user: await readCurrentUser(),
+      user,
     })
 
     return
@@ -148,7 +178,18 @@ export const bootstrapAuthSession = async () => {
   }
 
   authActions.setBootstrapping()
-  await restoreFromRefreshToken(true)
+
+  const bootstrapVersion = sessionMutationVersion
+
+  try {
+    await restoreFromRefreshToken(true, bootstrapVersion)
+  } catch {
+    if (isStaleBootstrap(bootstrapVersion)) {
+      return
+    }
+
+    clearSessionAfterFailure(true)
+  }
 }
 
 export const refreshCurrentSession = async () => {
@@ -179,16 +220,26 @@ export const signInWithEmailPassword = async (input: {
   password: string
 }) => {
   const credential = await signInWithFirebaseEmailPassword(input)
-  const idToken = await getFirebaseIdToken(credential.user)
-  const session = await exchangeProviderToken({
-    idToken,
-    provider: getFirebaseProvider(),
-  })
+  try {
+    const idToken = await getFirebaseIdToken(credential.user)
+    const session = await exchangeProviderToken({
+      idToken,
+      provider: getFirebaseProvider(),
+    })
 
-  await applySession(session, {
-    refreshSessionCallback: refreshCurrentSession,
-    user: session.user,
-  })
+    await applySession(session, {
+      refreshSessionCallback: refreshCurrentSession,
+      user: session.user,
+    })
+  } catch (error) {
+    try {
+      await signOutFirebaseSession()
+    } catch {
+      // If exchange fails after Firebase sign-in, best-effort sign-out keeps the browser consistent.
+    }
+
+    throw error
+  }
 
   const destination = resolveAuthRedirect({
     fallback: AUTH_DEFAULT_REDIRECT_PATH,
@@ -206,16 +257,26 @@ export const signUpWithEmailPassword = async (input: {
   password: string
 }) => {
   const credential = await signUpWithFirebaseEmailPassword(input)
-  const idToken = await getFirebaseIdToken(credential.user)
-  const session = await exchangeProviderToken({
-    idToken,
-    provider: getFirebaseProvider(),
-  })
+  try {
+    const idToken = await getFirebaseIdToken(credential.user)
+    const session = await exchangeProviderToken({
+      idToken,
+      provider: getFirebaseProvider(),
+    })
 
-  await applySession(session, {
-    refreshSessionCallback: refreshCurrentSession,
-    user: session.user,
-  })
+    await applySession(session, {
+      refreshSessionCallback: refreshCurrentSession,
+      user: session.user,
+    })
+  } catch (error) {
+    try {
+      await signOutFirebaseSession()
+    } catch {
+      // If exchange fails after Firebase sign-up, best-effort sign-out keeps the browser consistent.
+    }
+
+    throw error
+  }
 
   authActions.setPostAuthRedirect(AUTH_ONBOARDING_REDIRECT_PATH)
 

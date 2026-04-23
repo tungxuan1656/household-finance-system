@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   getIdToken,
+  onAuthStateChanged,
   setPersistence,
   signInWithEmailAndPassword,
   signOut,
@@ -53,6 +54,25 @@ const readFirebaseConfig = (): FirebaseAuthConfig => {
 let firebaseApp: FirebaseApp | null = null
 let firebaseAuthPromise: Promise<Auth> | null = null
 
+const waitForFirebaseAuthReady = async (auth: Auth) => {
+  const readyAuth = auth as Auth & {
+    authStateReady?: () => Promise<void>
+  }
+
+  if (typeof readyAuth.authStateReady === 'function') {
+    await readyAuth.authStateReady()
+
+    return
+  }
+
+  await new Promise<void>((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, () => {
+      unsubscribe()
+      resolve()
+    })
+  })
+}
+
 const getFirebaseApp = () => {
   if (firebaseApp) {
     return firebaseApp
@@ -69,7 +89,13 @@ const getFirebaseAuth = async () => {
   if (!firebaseAuthPromise) {
     firebaseAuthPromise = (async () => {
       const auth = getAuth(getFirebaseApp())
-      await setPersistence(auth, browserLocalPersistence)
+      try {
+        await setPersistence(auth, browserLocalPersistence)
+        await waitForFirebaseAuthReady(auth)
+      } catch (error) {
+        firebaseAuthPromise = null
+        throw error
+      }
 
       return auth
     })()
