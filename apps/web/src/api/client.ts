@@ -7,6 +7,11 @@ type RequestBody = BodyInit | Record<string, unknown> | undefined
 
 type MaybePromise<T> = Promise<T> | T
 
+type PreparedRequestBody = {
+  bodyInit: BodyInit | undefined
+  isJsonPayload: boolean
+}
+
 export interface AuthSessionAdapter {
   getAccessToken(): MaybePromise<string | null>
   refreshSession(): Promise<string | null>
@@ -69,18 +74,30 @@ const isBodyInit = (value: RequestBody): value is BodyInit =>
   value instanceof ArrayBuffer ||
   typeof value === 'string'
 
-const toJsonBody = (body: RequestBody): BodyInit | undefined => {
+const toRequestBody = (body: RequestBody): PreparedRequestBody => {
   if (body === undefined || isBodyInit(body)) {
-    return body
+    return {
+      bodyInit: body,
+      isJsonPayload: false,
+    }
   }
 
-  return JSON.stringify(body)
+  return {
+    bodyInit: JSON.stringify(body),
+    isJsonPayload: true,
+  }
 }
 
 const toHeaders = (input?: HeadersInit): Headers => new Headers(input)
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
+
+const hasOwn = <TKey extends string>(
+  value: Record<string, unknown>,
+  key: TKey,
+): value is Record<TKey, unknown> =>
+  Object.prototype.hasOwnProperty.call(value, key)
 
 const getRequestId = (payload: unknown): string | undefined => {
   if (!isRecord(payload)) {
@@ -123,6 +140,7 @@ const isApiSuccessEnvelope = <T>(
 ): payload is ApiEnvelope<T> & { success: true } => {
   if (
     !isRecord(payload) ||
+    !hasOwn(payload, 'data') ||
     payload.success !== true ||
     payload.error !== null
   ) {
@@ -192,9 +210,9 @@ const createRequestMethod =
     const headers = toHeaders(init?.headers)
     headers.set('accept', 'application/json')
 
-    const bodyInit = toJsonBody(body as RequestBody)
+    const { bodyInit, isJsonPayload } = toRequestBody(body as RequestBody)
 
-    if (bodyInit !== undefined && !headers.has('content-type')) {
+    if (isJsonPayload && !headers.has('content-type')) {
       headers.set('content-type', 'application/json')
     }
 

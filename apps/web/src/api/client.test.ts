@@ -241,6 +241,35 @@ describe('api client', () => {
     })
   })
 
+  it('rejects success envelopes that omit the data field', async () => {
+    const fetchImpl = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            success: true,
+            error: null,
+            meta: {
+              requestId: 'request-8',
+            },
+          }),
+          {
+            status: 200,
+            headers: {
+              'content-type': 'application/json',
+            },
+          },
+        ),
+    )
+    const apiClient = createApiClient({ fetchImpl })
+
+    await expect(apiClient.get(API_ENDPOINTS.health)).rejects.toMatchObject({
+      code: 'HTTP_ERROR',
+      message: 'Response did not match the API envelope contract.',
+      requestId: 'request-8',
+      status: 200,
+    })
+  })
+
   it('wraps invalid JSON responses in a typed client error', async () => {
     const fetchImpl = vi.fn(
       async () =>
@@ -258,5 +287,43 @@ describe('api client', () => {
       message: 'Response body was not valid JSON.',
       status: 502,
     })
+  })
+
+  it('does not force a JSON content type for FormData payloads', async () => {
+    let capturedInit: RequestInit | undefined
+    const fetchImpl = vi.fn(
+      async (_input: RequestInfo | URL, init?: RequestInit) => {
+        capturedInit = init
+
+        return createEnvelopeResponse(
+          {
+            success: true,
+            data: { ok: true },
+            error: null,
+            meta: {
+              requestId: 'request-9',
+            },
+          },
+          200,
+        )
+      },
+    )
+    const apiClient = createApiClient({ fetchImpl })
+    const formData = new FormData()
+
+    formData.set('avatar', 'binary-ish')
+
+    await expect(
+      apiClient.post<{ ok: boolean }, FormData>(
+        API_ENDPOINTS.auth.providerExchange,
+        formData,
+      ),
+    ).resolves.toEqual({
+      ok: true,
+    })
+
+    const headers = new Headers(capturedInit?.headers)
+
+    expect(headers.get('content-type')).toBeNull()
   })
 })
