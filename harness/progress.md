@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-23 — Created ExecPlan for feat-009 frontend authentication session flow
+- Who: Codex
+- Summary: Drafted the active ExecPlan for `feat-009` after reviewing the current shell-auth stub flow, the completed `feat-008` backend auth endpoints, the `feat-033` typed API client/auth-session adapter seam, the product auth/onboarding specs, and the required frontend/shared planning references. The plan locks the feature to frontend session orchestration: Firebase email/password auth, backend token exchange, refresh-token persistence behind a storage adapter, in-memory access token ownership in the auth store, silent refresh/bootstrap behavior, logout cleanup, protected-route gating, and a replaceable onboarding redirect seam.
+- Files changed: docs/exec-plans/active/2026-04-23-feat-009-authentication-frontend-session-flow.md, docs/exec-plans/active/index.md, harness/progress.md
+- Blockers: none for planning; implementation must verify the auth exchange endpoint naming (`exchange` vs `provider/exchange`) and document any required Firebase web env/config exposure.
+- Next steps: start implementation with failing auth/session regression tests, then build the Firebase auth service, storage adapter, real auth store lifecycle, and route/bootstrap wiring before full repo verification.
+
 ## 2026-04-23 — Hardened feat-033 web API client envelope validation
 - Who: Codex
 - Summary: Fixed the follow-up review issues in the shared web API client by rejecting malformed JSON success payloads that do not satisfy the `{ success, data, error, meta }` contract and by wrapping invalid JSON responses into typed `ApiClientError` transport failures. Added regression tests for both cases and re-verified the web and repo-wide checks.
