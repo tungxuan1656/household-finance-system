@@ -13,9 +13,6 @@ importers:
       '@base-ui/react':
         specifier: ^1.4.0
         version: 1.4.0(@date-fns/tz@1.4.1)(@types/react@19.2.14)(date-fns@4.1.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      '@fontsource-variable/inter':
-        specifier: ^5.2.8
-        version: 5.2.8
       '@tailwindcss/vite':
         specifier: ^4.2.1
         version: 4.2.2(vite@7.3.2(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0))
@@ -62,8 +59,8 @@ importers:
         specifier: ^7.14.2
         version: 7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       shadcn:
-        specifier: ^4.3.1
-        version: 4.3.1(@types/node@24.12.2)(typescript@5.9.3)
+        specifier: ^4.4.0
+        version: 4.4.0(@types/node@24.12.2)(typescript@5.9.3)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -1156,9 +1153,6 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
-
-  '@fontsource-variable/inter@5.2.8':
-    resolution: {integrity: sha512-kOfP2D+ykbcX/P3IFnokOhVRNoTozo5/JxhAIVYLpea/UBmCQ/YWPBfWIDuBImXX/15KH+eKh4xpEUyS2sQQGQ==}
 
   '@grpc/grpc-js@1.9.15':
     resolution: {integrity: sha512-nqE7Hc0AzI+euzUwDAy0aY5hCp10r734gMGRdU+qOPX0XSceI2ULrcXB5U2xSc5VkWwalCj4M7GzCAygZl2KoQ==}
@@ -4607,8 +4601,8 @@ packages:
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
 
-  shadcn@4.3.1:
-    resolution: {integrity: sha512-X3XodbqNKQLCoR4sZZLMKrx2XjfhSsoDLN5+7TLsEx/uDG2P3iyfOLfBlU+z7BVOpkFkbWCEA0LlbGqWg1oeyQ==}
+  shadcn@4.4.0:
+    resolution: {integrity: sha512-0V1AjVktKwhK1e0ONXb9SeBoyJePH04iTSJeMjl9eROqjjyb8OoWYtWDI39UdBU3GzpUlFBJFohhB9c6fGOkQA==}
     hasBin: true
 
   sharp@0.34.5:
@@ -6171,8 +6165,6 @@ snapshots:
       react-dom: 19.2.5(react@19.2.5)
 
   '@floating-ui/utils@0.2.11': {}
-
-  '@fontsource-variable/inter@5.2.8': {}
 
   '@grpc/grpc-js@1.9.15':
     dependencies:
@@ -9889,7 +9881,7 @@ snapshots:
 
   setprototypeof@1.2.0: {}
 
-  shadcn@4.3.1(@types/node@24.12.2)(typescript@5.9.3):
+  shadcn@4.4.0(@types/node@24.12.2)(typescript@5.9.3):
     dependencies:
       '@babel/core': 7.29.0
       '@babel/parser': 7.29.2
