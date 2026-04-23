@@ -50,17 +50,17 @@
       "name": "Authentication backend session exchange",
       "status": "done"
     },
-
+    {
+      "id": "feat-033",
+      "name": "API response contract & error handling standardization",
+      "status": "done"
+    },
     {
       "id": "feat-009",
       "name": "Authentication frontend session flow",
       "status": "pending"
     },
-    {
-      "id": "feat-033",
-      "name": "API response contract & error handling standardization",
-      "status": "pending"
-    },
+
     {
       "id": "feat-010",
       "name": "User profile & identity settings",

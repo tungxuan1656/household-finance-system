@@ -5,14 +5,17 @@ import {
   translate,
 } from '@/lib/i18n'
 
-export type ErrorCode =
-  | 'INVALID_INPUT'
-  | 'UNAUTHENTICATED'
-  | 'FORBIDDEN'
-  | 'NOT_FOUND'
-  | 'CONFLICT'
-  | 'RATE_LIMITED'
-  | 'INTERNAL_ERROR'
+export const ERROR_CODES = {
+  CONFLICT: 'CONFLICT',
+  FORBIDDEN: 'FORBIDDEN',
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+  INVALID_INPUT: 'INVALID_INPUT',
+  NOT_FOUND: 'NOT_FOUND',
+  RATE_LIMITED: 'RATE_LIMITED',
+  UNAUTHENTICATED: 'UNAUTHENTICATED',
+} as const
+
+export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES]
 
 export class AppError extends Error {
   public readonly status: number
@@ -38,31 +41,39 @@ export const invalidInput = (
   messageKey: MessageKey = 'errors.invalidRequestBody',
   details?: unknown,
 ): AppError =>
-  new AppError(400, 'INVALID_INPUT', translate(locale, messageKey), details)
+  new AppError(
+    400,
+    ERROR_CODES.INVALID_INPUT,
+    translate(locale, messageKey),
+    details,
+  )
 
 export const unauthenticated = (
   locale: SupportedLocale = defaultLocale,
   messageKey: MessageKey = 'errors.authenticationRequired',
 ): AppError =>
-  new AppError(401, 'UNAUTHENTICATED', translate(locale, messageKey))
+  new AppError(401, ERROR_CODES.UNAUTHENTICATED, translate(locale, messageKey))
 
 export const forbidden = (
   locale: SupportedLocale = defaultLocale,
   messageKey: MessageKey = 'errors.forbidden',
-): AppError => new AppError(403, 'FORBIDDEN', translate(locale, messageKey))
+): AppError =>
+  new AppError(403, ERROR_CODES.FORBIDDEN, translate(locale, messageKey))
 
 export const notFound = (
   locale: SupportedLocale = defaultLocale,
   messageKey: MessageKey = 'errors.resourceNotFound',
-): AppError => new AppError(404, 'NOT_FOUND', translate(locale, messageKey))
+): AppError =>
+  new AppError(404, ERROR_CODES.NOT_FOUND, translate(locale, messageKey))
 
 export const conflict = (
   locale: SupportedLocale = defaultLocale,
   messageKey: MessageKey = 'errors.conflict',
-): AppError => new AppError(409, 'CONFLICT', translate(locale, messageKey))
+): AppError =>
+  new AppError(409, ERROR_CODES.CONFLICT, translate(locale, messageKey))
 
 export const internalError = (
   locale: SupportedLocale = defaultLocale,
   messageKey: MessageKey = 'errors.unexpectedInternalError',
 ): AppError =>
-  new AppError(500, 'INTERNAL_ERROR', translate(locale, messageKey))
+  new AppError(500, ERROR_CODES.INTERNAL_ERROR, translate(locale, messageKey))
