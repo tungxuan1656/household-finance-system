@@ -28,7 +28,7 @@ function OverviewPage() {
         <p className='text-sm text-muted-foreground'>
           {t('app.overview.signedInAs')}{' '}
           <span className='font-medium text-foreground'>
-            {user?.name ?? t('app.overview.demoFamily')}
+            {user?.displayName ?? t('app.overview.demoFamily')}
           </span>
           {user?.email ? <span> · {user.email}</span> : null}
         </p>

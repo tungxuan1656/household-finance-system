@@ -27,7 +27,7 @@ const featureCards = [
 
 function PublicShell() {
   return (
-    <div className='grid min-h-svh gap-6 p-4 sm:p-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:p-8'>
+    <div className='grid min-h-svh gap-6 bg-background p-4 sm:p-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:p-8'>
       <section className='flex flex-col justify-between rounded-none border border-border/70 bg-background/85 p-6 shadow-sm backdrop-blur sm:p-8'>
         <div className='max-w-xl space-y-6'>
           <Badge className='w-fit' variant='outline'>

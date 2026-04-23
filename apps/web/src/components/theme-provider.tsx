@@ -1,5 +1,10 @@
 import * as React from 'react'
 
+import {
+  readLocalStorageItem,
+  writeLocalStorageItem,
+} from '@/lib/storages/browser-storage'
+
 type Theme = 'dark' | 'light' | 'system'
 type ResolvedTheme = 'dark' | 'light'
 
@@ -87,7 +92,7 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setThemeState] = React.useState<Theme>(() => {
-    const storedTheme = localStorage.getItem(storageKey)
+    const storedTheme = readLocalStorageItem(storageKey)
     if (isTheme(storedTheme)) {
       return storedTheme
     }
@@ -97,7 +102,7 @@ export function ThemeProvider({
 
   const setTheme = React.useCallback(
     (nextTheme: Theme) => {
-      localStorage.setItem(storageKey, nextTheme)
+      writeLocalStorageItem(storageKey, nextTheme)
       setThemeState(nextTheme)
     },
     [storageKey],
@@ -169,7 +174,7 @@ export function ThemeProvider({
                 ? 'light'
                 : 'dark'
 
-        localStorage.setItem(storageKey, nextTheme)
+        writeLocalStorageItem(storageKey, nextTheme)
 
         return nextTheme
       })
@@ -183,8 +188,10 @@ export function ThemeProvider({
   }, [storageKey])
 
   React.useEffect(() => {
+    const browserStorage = window.localStorage
+
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.storageArea !== localStorage) {
+      if (event.storageArea !== browserStorage) {
         return
       }
 

@@ -5,9 +5,86 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import {
+  signInWithEmailPassword,
+  signOutCurrentSession,
+} from '@/lib/auth/session-service'
 import { t } from '@/lib/i18n'
 import { AppRoutes } from '@/router'
 import { authActions } from '@/stores/auth.store'
+
+type AuthStoreMock = {
+  authActions: {
+    clearSession: (input?: { preserveReturnTo?: boolean }) => void
+    setPostAuthRedirect: (postAuthRedirect: string | null) => void
+    setSession: typeof authActions.setSession
+  }
+  useAuthStore: {
+    getState: () => {
+      postAuthRedirect: string | null
+      returnTo: string | null
+    }
+  }
+}
+
+vi.mock('@/lib/auth/session-service', async () => {
+  const { authActions, useAuthStore } = (await vi.importActual(
+    '@/stores/auth.store',
+  )) as AuthStoreMock
+
+  const resolveDestination = (fallback: string, preferOnboarding = false) => {
+    const { postAuthRedirect, returnTo } = useAuthStore.getState()
+
+    if (preferOnboarding && postAuthRedirect) {
+      return postAuthRedirect
+    }
+
+    return returnTo ?? fallback
+  }
+
+  return {
+    bootstrapAuthSession: vi.fn(async () => undefined),
+    signInWithEmailPassword: vi.fn(async () => {
+      authActions.setSession({
+        accessToken: 'access-token',
+        accessTokenExpiresIn: 120,
+        refreshSession: vi.fn(async () => undefined),
+        user: {
+          avatarUrl: null,
+          displayName: 'Alex Morgan',
+          email: 'tester@example.com',
+          id: 'user-1',
+          provider: 'firebase',
+        },
+      })
+
+      return resolveDestination('/app')
+    }),
+    signOutCurrentSession: vi.fn(async () => {
+      authActions.clearSession({ preserveReturnTo: false })
+
+      return '/sign-in'
+    }),
+    signUpWithEmailPassword: vi.fn(async () => {
+      authActions.setSession({
+        accessToken: 'access-token',
+        accessTokenExpiresIn: 120,
+        refreshSession: vi.fn(async () => undefined),
+        user: {
+          avatarUrl: null,
+          displayName: 'Alex Morgan',
+          email: 'tester@example.com',
+          id: 'user-1',
+          provider: 'firebase',
+        },
+      })
+
+      authActions.setPostAuthRedirect('/app/onboarding')
+
+      return resolveDestination('/app/onboarding', true)
+    }),
+  }
+})
 
 vi.mock('sonner', () => ({
   Toaster: ({ theme }: { theme?: string }) => (
@@ -26,6 +103,7 @@ function renderAt(pathname: string) {
 beforeEach(() => {
   act(() => {
     authActions.reset()
+    authActions.clearSession({ preserveReturnTo: true })
   })
 })
 
@@ -62,37 +140,26 @@ describe('web shell routing', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders the protected shell and onboarding placeholder', async () => {
-    const user = userEvent.setup()
+  it('renders the protected shell when a session is already available', () => {
+    act(() => {
+      authActions.setSession({
+        accessToken: 'access-token',
+        accessTokenExpiresIn: 120,
+        refreshSession: vi.fn(async () => undefined),
+        user: {
+          avatarUrl: null,
+          displayName: 'Alex Morgan',
+          email: 'alex@example.com',
+          id: 'user-1',
+          provider: 'firebase',
+        },
+      })
+    })
 
-    renderAt('/sign-in')
-
-    await user.type(
-      screen.getByLabelText(t('auth.signIn.fields.email.label')),
-      'tester@example.com',
-    )
-
-    await user.type(
-      screen.getByLabelText(t('auth.signIn.fields.password.label')),
-      'password123',
-    )
-
-    await user.click(
-      screen.getByRole('button', { name: t('common.actions.signIn') }),
-    )
+    renderAt('/app')
 
     expect(
       screen.getByRole('heading', { name: t('app.overview.title') }),
-    ).toBeInTheDocument()
-
-    await user.click(
-      screen.getByRole('link', { name: t('shell.protected.nav.onboarding') }),
-    )
-
-    expect(
-      await screen.findByRole('heading', {
-        name: t('app.onboarding.title'),
-      }),
     ).toBeInTheDocument()
   })
 
@@ -114,6 +181,11 @@ describe('web shell routing', () => {
     await user.click(
       screen.getByRole('button', { name: t('common.actions.signIn') }),
     )
+
+    expect(signInWithEmailPassword).toHaveBeenCalledWith({
+      email: 'tester@example.com',
+      password: 'password123',
+    })
 
     expect(
       await screen.findByRole('heading', { name: t('app.overview.title') }),
@@ -146,6 +218,29 @@ describe('web shell routing', () => {
     ).toBeInTheDocument()
   })
 
+  it('redirects authenticated users away from public auth pages', async () => {
+    act(() => {
+      authActions.setSession({
+        accessToken: 'access-token',
+        accessTokenExpiresIn: 120,
+        refreshSession: vi.fn(async () => undefined),
+        user: {
+          avatarUrl: null,
+          displayName: 'Alex Morgan',
+          email: 'alex@example.com',
+          id: 'user-1',
+          provider: 'firebase',
+        },
+      })
+    })
+
+    renderAt('/sign-in')
+
+    expect(
+      await screen.findByRole('heading', { name: t('app.overview.title') }),
+    ).toBeInTheDocument()
+  })
+
   it('shows translated validation feedback when sign-in input is invalid', async () => {
     const user = userEvent.setup()
 
@@ -157,6 +252,37 @@ describe('web shell routing', () => {
 
     expect(
       screen.getByText(t('auth.signIn.errors.invalidForm')),
+    ).toBeInTheDocument()
+  })
+
+  it('signs out and returns to the public route', async () => {
+    const user = userEvent.setup()
+
+    act(() => {
+      authActions.setSession({
+        accessToken: 'access-token',
+        accessTokenExpiresIn: 120,
+        refreshSession: vi.fn(async () => undefined),
+        user: {
+          avatarUrl: null,
+          displayName: 'Alex Morgan',
+          email: 'alex@example.com',
+          id: 'user-1',
+          provider: 'firebase',
+        },
+      })
+    })
+
+    renderAt('/app')
+
+    await user.click(
+      screen.getByRole('button', { name: t('common.actions.signOut') }),
+    )
+
+    expect(signOutCurrentSession).toHaveBeenCalled()
+
+    expect(
+      await screen.findByRole('heading', { name: t('auth.signIn.title') }),
     ).toBeInTheDocument()
   })
 

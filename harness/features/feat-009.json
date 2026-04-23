@@ -3,7 +3,7 @@
   "name": "Authentication frontend session flow",
   "description": "Build the authentication frontend flow: sign-up and sign-in pages (email/password via Firebase Auth SDK), backend token exchange call (POST /api/v1/auth/exchange), in-memory access token + secure-storage refresh token persistence, automatic silent refresh before expiry, and sign-out (POST /api/v1/auth/logout + clear local state). Includes protected-route guard that redirects unauthenticated users and an auth store (Zustand or Context). Also establishes the new-user routing hook so first-time users are directed to onboarding. Per docs/product-specs/authentication.md. Does NOT include profile editing or household flows.",
   "dependencies": ["feat-005", "feat-008", "feat-033"],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-04-21"
+  "status": "done",
+  "evidence": "Verified with pnpm --filter web lint, pnpm --filter web test, pnpm --filter web build, and ./init.sh. Implemented Firebase-backed sign-in/sign-up, backend token exchange, refresh-token persistence, silent refresh scheduling, logout cleanup, protected-route bootstrap/redirect handling, onboarding redirect routing, stale-bootstrap guarding, Firebase auth readiness gating, provider-exchange rollback, and browser-storage fallbacks for theme/i18n session behavior.",
+  "updated_at": "2026-04-23"
 }

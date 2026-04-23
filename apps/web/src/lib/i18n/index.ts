@@ -8,6 +8,10 @@ import {
   DEFAULT_LOCALE,
   SUPPORTED_LOCALES,
 } from '@/lib/constants/i18n'
+import {
+  readLocalStorageItem,
+  writeLocalStorageItem,
+} from '@/lib/storages/browser-storage'
 
 import translationVI from './locales/vi.json'
 import { resolveLocale } from './resolve-locale'
@@ -25,15 +29,7 @@ declare module 'i18next' {
 }
 
 const readStoredLanguage = () => {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  try {
-    return window.localStorage.getItem(APP_LANGUAGE_STORAGE_KEY)
-  } catch {
-    return null
-  }
+  return readLocalStorageItem(APP_LANGUAGE_STORAGE_KEY)
 }
 
 const readBrowserLanguage = () => {
@@ -83,7 +79,7 @@ export const changeLanguage = (lang: string) => {
 
   if (typeof window !== 'undefined') {
     try {
-      window.localStorage.setItem(APP_LANGUAGE_STORAGE_KEY, nextLanguage)
+      writeLocalStorageItem(APP_LANGUAGE_STORAGE_KEY, nextLanguage)
     } catch {
       // Persisting language is best-effort in restricted storage contexts.
     }

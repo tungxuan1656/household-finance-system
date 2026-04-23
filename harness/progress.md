@@ -1,5 +1,26 @@
 # Progress Log
 
+## 2026-04-23 — Hardened auth session bootstrap and browser storage fallback
+- Who: Codex
+- Summary: Fixed the remaining `feat-009` review issues by adding stale-bootstrap guards in the frontend auth session service, finalizing bootstrap when Firebase auth initialization fails, rolling back Firebase sign-in/sign-up if the provider exchange fails, and routing web theme/i18n storage through a safe browser-storage helper so the app and tests tolerate the current jsdom localStorage behavior. Added focused regressions for the auth race/rollback paths and the Firebase readiness gate, then re-ran `pnpm --filter web lint`, `pnpm --filter web test`, `pnpm --filter web build`, and the full `./init.sh` workspace verification successfully.
+- Files changed: apps/web/src/components/theme-provider.tsx, apps/web/src/lib/auth/firebase-auth.ts, apps/web/src/lib/auth/firebase-auth.test.ts, apps/web/src/lib/auth/session-service.ts, apps/web/src/lib/auth/session-service.test.ts, apps/web/src/lib/i18n/browser-fallback.test.tsx, apps/web/src/lib/i18n/change-language.test.tsx, apps/web/src/lib/i18n/index.ts, apps/web/src/lib/storages/auth-refresh-token-storage.ts, apps/web/src/lib/storages/browser-storage.ts, apps/web/src/test/setup.ts, harness/progress.md, harness/features/feat-009.json, AGENTS.md
+- Blockers: none
+- Next steps: keep the auth/session seam stable for follow-on profile/onboarding work and future API consumers.
+
+## 2026-04-23 — Completed feat-009 frontend authentication session flow
+- Who: Codex
+- Summary: Implemented the frontend auth/session flow end-to-end for `feat-009`: Firebase email/password sign-in and sign-up, backend token exchange and refresh/logout calls, refresh-token persistence behind a storage adapter, in-memory access token/session state with scheduled silent refresh, bootstrap gating, protected-route redirects, sign-out cleanup, and onboarding redirect handling. Verified the workspace with `pnpm --filter web lint`, `pnpm --filter web test`, `pnpm --filter web build`, and `./init.sh`, then archived the ExecPlan and updated the harness records.
+- Files changed: apps/web/package.json, apps/web/src/api/auth.ts, apps/web/src/api/endpoints.ts, apps/web/src/app.test.tsx, apps/web/src/app.tsx, apps/web/src/components/auth/auth-field.tsx, apps/web/src/components/auth/auth-panel.tsx, apps/web/src/components/layouts/protected-shell.tsx, apps/web/src/components/layouts/shell-guard.tsx, apps/web/src/lib/auth/firebase-auth.ts, apps/web/src/lib/auth/redirect.ts, apps/web/src/lib/auth/session-service.ts, apps/web/src/lib/constants/auth.ts, apps/web/src/lib/i18n/locales/vi.json, apps/web/src/lib/storages/auth-refresh-token-storage.ts, apps/web/src/pages/app/overview-page.tsx, apps/web/src/pages/auth/sign-in-page.tsx, apps/web/src/pages/auth/sign-up-page.tsx, apps/web/src/stores/auth.store.test.tsx, apps/web/src/stores/auth.store.ts, apps/web/src/types/auth.ts, docs/exec-plans/active/index.md, docs/exec-plans/completed/2026-04-23-feat-009-authentication-frontend-session-flow.md, docs/exec-plans/completed/index.md, harness/feature_index.json, harness/features/feat-009.json, harness/progress.md, pnpm-lock.yaml
+- Blockers: none
+- Next steps: keep the new auth/session seam stable for follow-on profile/onboarding work and future API consumers.
+
+## 2026-04-23 — Created ExecPlan for feat-009 frontend authentication session flow
+- Who: Codex
+- Summary: Drafted the active ExecPlan for `feat-009` after reviewing the current shell-auth stub flow, the completed `feat-008` backend auth endpoints, the `feat-033` typed API client/auth-session adapter seam, the product auth/onboarding specs, and the required frontend/shared planning references. The plan locks the feature to frontend session orchestration: Firebase email/password auth, backend token exchange, refresh-token persistence behind a storage adapter, in-memory access token ownership in the auth store, silent refresh/bootstrap behavior, logout cleanup, protected-route gating, and a replaceable onboarding redirect seam.
+- Files changed: docs/exec-plans/active/2026-04-23-feat-009-authentication-frontend-session-flow.md, docs/exec-plans/active/index.md, harness/progress.md
+- Blockers: none for planning; implementation must verify the auth exchange endpoint naming (`exchange` vs `provider/exchange`) and document any required Firebase web env/config exposure.
+- Next steps: start implementation with failing auth/session regression tests, then build the Firebase auth service, storage adapter, real auth store lifecycle, and route/bootstrap wiring before full repo verification.
+
 ## 2026-04-23 — Hardened feat-033 web API client envelope validation
 - Who: Codex
 - Summary: Fixed the follow-up review issues in the shared web API client by rejecting malformed JSON success payloads that do not satisfy the `{ success, data, error, meta }` contract and by wrapping invalid JSON responses into typed `ApiClientError` transport failures. Added regression tests for both cases and re-verified the web and repo-wide checks.
