@@ -77,7 +77,6 @@ export const SignUpPage = () => {
     <AuthPanel
       actionLabel={t('common.actions.createAccount')}
       description={t('auth.signUp.description')}
-      eyebrowLabel={t('common.labels.publicRoute')}
       footer={
         <p>
           {t('auth.signUp.footer.prompt')}{' '}
@@ -94,10 +93,7 @@ export const SignUpPage = () => {
       {formError ? (
         <p className='text-sm text-destructive'>{formError}</p>
       ) : null}
-      <AuthField
-        description={t('auth.signUp.fields.fullName.description')}
-        id='full-name'
-        label={t('auth.signUp.fields.fullName.label')}>
+      <AuthField id='full-name' label={t('auth.signUp.fields.fullName.label')}>
         <Input
           autoComplete='name'
           id='full-name'
@@ -106,10 +102,7 @@ export const SignUpPage = () => {
         />
       </AuthField>
 
-      <AuthField
-        description={t('auth.signUp.fields.email.description')}
-        id='sign-up-email'
-        label={t('auth.signUp.fields.email.label')}>
+      <AuthField id='sign-up-email' label={t('auth.signUp.fields.email.label')}>
         <Input
           autoComplete='email'
           id='sign-up-email'
@@ -120,7 +113,6 @@ export const SignUpPage = () => {
       </AuthField>
 
       <AuthField
-        description={t('auth.signUp.fields.password.description')}
         id='sign-up-password'
         label={t('auth.signUp.fields.password.label')}>
         <Input

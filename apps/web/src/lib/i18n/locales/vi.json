@@ -167,30 +167,6 @@
         "settings": "Cài đặt"
       },
       "title": "Điều hướng khung ứng dụng"
-    },
-    "public": {
-      "badge": "Không gian hộ gia đình",
-      "description": "Đăng nhập, tham gia một hộ gia đình, và đi qua các luồng MVP từ một khung web ổn định. Khung auth vẫn công khai trong khi app shell giữ onboarding, chi tiêu, ngân sách và phân tích nhất quán.",
-      "featureCards": {
-        "householdContext": {
-          "description": "Giữ hộ gia đình đang dùng hiển thị xuyên suốt các luồng chi tiêu, ngân sách và phân tích.",
-          "title": "Ngữ cảnh hộ gia đình"
-        },
-        "quickAdd": {
-          "description": "Ghi một giao dịch trong vài giây với mặc định rõ ràng và kiểm tra hợp lệ dễ hiểu.",
-          "title": "Thêm nhanh"
-        },
-        "sharedPrimitives": {
-          "description": "Tái sử dụng một bề mặt form cho auth, onboarding và mọi form cài đặt sau này.",
-          "title": "Thành phần dùng chung"
-        }
-      },
-      "footer": {
-        "protectedShell": "Khung ứng dụng: /app",
-        "publicRoutes": "Tuyến công khai: /sign-in, /sign-up",
-        "redirect": "Chuyển hướng: / → /sign-in"
-      },
-      "title": "Theo dõi mọi chi tiêu chung mà không mất ngữ cảnh."
     }
   }
 }

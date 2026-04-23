@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-04-23 — Quieted init.sh step output on success
+- Who: Codex
+- Summary: Wrapped each `init.sh` step in a capture-and-replay helper so normal runs only show the step banners, while any failing step prints its collected stdout/stderr after the failure.
+- Files changed: init.sh, harness/progress.md
+- Blockers: none
+- Next steps: if needed, apply the same wrapper pattern to any future repo bootstrap scripts that are too noisy on success.
+
+## 2026-04-23 — Mobile-first auth UI redesign
+- Who: Antigravity
+- Summary: Completed `feat-009b`: Redesigned Auth UI to be mobile-first and minimal. Swapped Form/Hero order in `PublicShell` for better mobile above-the-fold experience. Removed debug labels and technical footer text. Reverted custom component modifications; used only default shadcn variants (`size="lg"` for buttons). Corrected theme resolution logic in `Toaster` component (now using project-local `useTheme` instead of `next-themes`) to fix failing tests. Verified the workspace with `pnpm --filter web lint`, `pnpm --filter web test`, `pnpm --filter web build`, and the full `./init.sh` workspace verification successfully.
+- Files changed: apps/web/src/components/layouts/public-shell.tsx, apps/web/src/components/ui/toaster.tsx, apps/web/src/components/auth/auth-panel.tsx, apps/web/src/pages/auth/sign-in-page.tsx, apps/web/src/pages/auth/sign-up-page.tsx, harness/progress.md
+- Blockers: none
+- Next steps: keep the auth/session seam stable for follow-on profile/onboarding work and future API consumers.
+
 ## 2026-04-23 — Hardened auth session bootstrap and browser storage fallback
 - Who: Codex
 - Summary: Fixed the remaining `feat-009` review issues by adding stale-bootstrap guards in the frontend auth session service, finalizing bootstrap when Firebase auth initialization fails, rolling back Firebase sign-in/sign-up if the provider exchange fails, and routing web theme/i18n storage through a safe browser-storage helper so the app and tests tolerate the current jsdom localStorage behavior. Added focused regressions for the auth race/rollback paths and the Firebase readiness gate, then re-ran `pnpm --filter web lint`, `pnpm --filter web test`, `pnpm --filter web build`, and the full `./init.sh` workspace verification successfully.
