@@ -210,4 +210,53 @@ describe('api client', () => {
     expect(authSessionAdapter.refreshSession).toHaveBeenCalled()
     expect(handleUnauthenticated).toHaveBeenCalled()
   })
+
+  it('rejects malformed JSON success payloads that do not match the API envelope', async () => {
+    const fetchImpl = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            data: {
+              ok: true,
+            },
+            meta: {
+              requestId: 'request-7',
+            },
+          }),
+          {
+            status: 200,
+            headers: {
+              'content-type': 'application/json',
+            },
+          },
+        ),
+    )
+    const apiClient = createApiClient({ fetchImpl })
+
+    await expect(apiClient.get(API_ENDPOINTS.health)).rejects.toMatchObject({
+      code: 'HTTP_ERROR',
+      message: 'Response did not match the API envelope contract.',
+      requestId: 'request-7',
+      status: 200,
+    })
+  })
+
+  it('wraps invalid JSON responses in a typed client error', async () => {
+    const fetchImpl = vi.fn(
+      async () =>
+        new Response('{', {
+          status: 502,
+          headers: {
+            'content-type': 'application/json',
+          },
+        }),
+    )
+    const apiClient = createApiClient({ fetchImpl })
+
+    await expect(apiClient.get(API_ENDPOINTS.health)).rejects.toMatchObject({
+      code: 'HTTP_ERROR',
+      message: 'Response body was not valid JSON.',
+      status: 502,
+    })
+  })
 })

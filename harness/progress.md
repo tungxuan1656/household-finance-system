@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-23 — Hardened feat-033 web API client envelope validation
+- Who: Codex
+- Summary: Fixed the follow-up review issues in the shared web API client by rejecting malformed JSON success payloads that do not satisfy the `{ success, data, error, meta }` contract and by wrapping invalid JSON responses into typed `ApiClientError` transport failures. Added regression tests for both cases and re-verified the web and repo-wide checks.
+- Files changed: apps/web/src/api/client.ts, apps/web/src/api/client.test.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep future `src/api/*` consumers on the typed client path so transport contract regressions remain centralized and testable.
+
 ## 2026-04-22 — Implemented feat-033 API response contract standardization
 - Who: Codex
 - Summary: Standardized all current worker `/api/v1` responses onto the symmetric `{ success, data, error, meta }` envelope, centralized worker error-code ownership, added explicit response-envelope assertions in worker unit/integration tests, and created the canonical web `src/api` layer with endpoint constants, typed transport contracts, a fetch-based client, and adapter-driven 401 refresh-and-retry coverage. Archived the ExecPlan and marked `feat-033` done after full repo verification.

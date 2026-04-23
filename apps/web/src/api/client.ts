@@ -79,29 +79,77 @@ const toJsonBody = (body: RequestBody): BodyInit | undefined => {
 
 const toHeaders = (input?: HeadersInit): Headers => new Headers(input)
 
-const toApiClientError = (
-  status: number,
-  payload: Partial<ApiEnvelope<unknown>> | null,
-): ApiClientError => {
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const getRequestId = (payload: unknown): string | undefined => {
+  if (!isRecord(payload)) {
+    return undefined
+  }
+
+  const meta = payload.meta
+
+  if (!isRecord(meta) || typeof meta.requestId !== 'string') {
+    return undefined
+  }
+
+  return meta.requestId
+}
+
+const isApiErrorEnvelope = (
+  payload: unknown,
+): payload is ApiEnvelope<unknown> & { success: false } => {
   if (
-    payload &&
-    payload.success === false &&
-    payload.error &&
-    typeof payload.error.message === 'string'
+    !isRecord(payload) ||
+    payload.success !== false ||
+    payload.data !== null
   ) {
+    return false
+  }
+
+  if (!isRecord(payload.error) || !isRecord(payload.meta)) {
+    return false
+  }
+
+  return (
+    typeof payload.error.code === 'string' &&
+    typeof payload.error.message === 'string' &&
+    typeof payload.meta.requestId === 'string'
+  )
+}
+
+const isApiSuccessEnvelope = <T>(
+  payload: unknown,
+): payload is ApiEnvelope<T> & { success: true } => {
+  if (
+    !isRecord(payload) ||
+    payload.success !== true ||
+    payload.error !== null
+  ) {
+    return false
+  }
+
+  return isRecord(payload.meta) && typeof payload.meta.requestId === 'string'
+}
+
+const toApiClientError = (status: number, payload: unknown): ApiClientError => {
+  if (isApiErrorEnvelope(payload)) {
     return new ApiClientError({
       code: payload.error.code,
       details: payload.error.details,
       message: payload.error.message,
-      requestId: payload.meta?.requestId,
+      requestId: payload.meta.requestId,
       status,
     })
   }
 
   return new ApiClientError({
     code: 'HTTP_ERROR',
-    message: `Request failed with status ${status}.`,
-    requestId: payload?.meta?.requestId,
+    message:
+      payload === null
+        ? `Request failed with status ${status}.`
+        : 'Response did not match the API envelope contract.',
+    requestId: getRequestId(payload),
     status,
   })
 }
@@ -115,7 +163,16 @@ const parseEnvelope = async <T>(
     return null
   }
 
-  return (await response.json()) as ApiEnvelope<T>
+  try {
+    return (await response.json()) as ApiEnvelope<T>
+  } catch (error) {
+    throw new ApiClientError({
+      code: 'HTTP_ERROR',
+      details: error,
+      message: 'Response body was not valid JSON.',
+      status: response.status,
+    })
+  }
 }
 
 const createRequestMethod =
@@ -192,7 +249,7 @@ const createRequestMethod =
       }
     }
 
-    if (!response.ok || payload?.success === false || payload === null) {
+    if (!response.ok || payload === null || !isApiSuccessEnvelope(payload)) {
       const clientError = toApiClientError(response.status, payload)
 
       if (response.status === 401) {
