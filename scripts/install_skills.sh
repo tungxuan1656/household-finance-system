@@ -18,54 +18,54 @@ REQUESTED_SKILLS=(
   frontend-design
   design-system
   frontend-slides
-  e2e-testing
+  # e2e-testing
   ui-demo
   browser-qa
 
-  hexagonal-architecture
+  # hexagonal-architecture
   backend-patterns
-  nestjs-patterns
+  # nestjs-patterns
   database-migrations
-  postgres-patterns
-  jpa-patterns
+  # postgres-patterns
+  # jpa-patterns
   api-design
   api-connector-builder
-  mcp-server-patterns
+  # mcp-server-patterns
   nodejs-keccak256
 
-  tdd-workflow
-  security-review
-  benchmark
-  git-workflow
+  # tdd-workflow
+  # security-review
+  # benchmark
+  # git-workflow
   deployment-patterns
-  docker-patterns
-  code-tour
-  codebase-onboarding
-  documentation-lookup
-  terminal-ops
-  exa-search
-  deep-research
+  # docker-patterns
+  # code-tour
+  # codebase-onboarding
+  # documentation-lookup
+  # terminal-ops
+  # exa-search
+  # deep-research
   coding-standards
 )
 
 # Agents relevant to frontend + backend + common workflows for React, React Native, and Node.js.
 REQUESTED_AGENTS=(
   architect
-  build-error-resolver
-  code-explorer
-  code-simplifier
-  comment-analyzer
+  # build-error-resolver
+  # code-explorer
+  # code-simplifier
+  # comment-analyzer
   database-reviewer
-  doc-updater
-  docs-lookup
-  e2e-runner
-  performance-optimizer
+  # doc-updater
+  # docs-lookup
+  # e2e-runner
+  # performance-optimizer
   planner
-  pr-test-analyzer
-  refactor-cleaner
+  # pr-test-analyzer
+  # refactor-cleaner
   security-reviewer
-  silent-failure-hunter
-  tdd-guide
+  # silent-failure-hunter
+  # tdd-guide
   type-design-analyzer
   typescript-reviewer
 )
@@ -185,24 +185,24 @@ echo ""
 echo "Installing core skills..."
 
 core_skills=(
-  systematic-debugging
-  lint-and-validate
-  verification-before-completion
+  # systematic-debugging
+  # lint-and-validate
+  # verification-before-completion
   concise-planning
-  react-native-architecture
+  # react-native-architecture
   react-component-performance
   i18n-localization
-  e2e-testing-patterns
-  browser-automation
-  code-documentation-doc-generate
-  building-native-ui
-  expo-api-routes
-  expo-tailwind-setup
+  # e2e-testing-patterns
+  # browser-automation
+  # code-documentation-doc-generate
+  # building-native-ui
+  # expo-api-routes
+  # expo-tailwind-setup
   tailwind-design-system
   tailwind-patterns
   shadcn
   monorepo-architect
-  mobile-security-coder
+  # mobile-security-coder
 )
 
 for skill in "${core_skills[@]}"; do
