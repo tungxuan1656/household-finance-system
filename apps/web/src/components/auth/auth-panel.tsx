@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
-function AuthPanel({
+export const AuthPanel = ({
   actionLabel,
   eyebrowLabel,
   children,
   description,
+  isSubmitting = false,
   footer,
   onSubmit,
   title,
@@ -14,10 +15,11 @@ function AuthPanel({
   eyebrowLabel: string
   children: React.ReactNode
   description: string
+  isSubmitting?: boolean
   footer: React.ReactNode
   onSubmit?: React.FormEventHandler<HTMLFormElement>
   title: string
-}) {
+}) => {
   return (
     <Card className='w-full max-w-md shadow-lg'>
       <CardHeader>
@@ -33,7 +35,9 @@ function AuthPanel({
           <div className='space-y-4'>{children}</div>
 
           <div className='flex flex-wrap items-center gap-3'>
-            <Button type='submit'>{actionLabel}</Button>
+            <Button disabled={isSubmitting} type='submit'>
+              {actionLabel}
+            </Button>
           </div>
         </form>
 
@@ -42,5 +46,3 @@ function AuthPanel({
     </Card>
   )
 }
-
-export { AuthPanel }

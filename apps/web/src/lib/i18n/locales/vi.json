@@ -6,7 +6,8 @@
       "backToSignIn": "Quay lại đăng nhập",
       "createAccount": "Tạo tài khoản",
       "openOnboarding": "Mở hướng dẫn thiết lập",
-      "signIn": "Đăng nhập"
+      "signIn": "Đăng nhập",
+      "signOut": "Đăng xuất"
     },
     "labels": {
       "protectedShell": "Khung bảo vệ",
@@ -15,10 +16,21 @@
     }
   },
   "auth": {
+    "session": {
+      "errors": {
+        "logoutFailed": "Không thể đăng xuất hoàn toàn ở phía máy chủ. Phiên cục bộ vẫn đã được xoá.",
+        "restoreFailed": "Không thể khôi phục phiên đăng nhập hiện tại. Vui lòng đăng nhập lại.",
+        "signInFailed": "Không thể đăng nhập bằng tài khoản này. Vui lòng thử lại.",
+        "signUpFailed": "Không thể tạo tài khoản ngay lúc này. Vui lòng thử lại."
+      },
+      "loadingDescription": "Đang kiểm tra hoặc khôi phục phiên đăng nhập trước khi mở khung đã xác thực.",
+      "loadingTitle": "Đang khôi phục phiên"
+    },
     "signIn": {
       "description": "Dùng email để tiếp tục vào không gian hộ gia đình.",
       "errors": {
-        "invalidForm": "Vui lòng nhập email hợp lệ và mật khẩu có ít nhất 8 ký tự."
+        "invalidForm": "Vui lòng nhập email hợp lệ và mật khẩu có ít nhất 8 ký tự.",
+        "providerFailed": "Không thể đăng nhập bằng Firebase. Vui lòng kiểm tra lại thông tin."
       },
       "fields": {
         "email": {
@@ -41,7 +53,8 @@
     "signUp": {
       "description": "Tạo tài khoản sẽ tham gia hoặc tạo một hộ gia đình.",
       "errors": {
-        "invalidForm": "Vui lòng nhập họ tên, email hợp lệ và mật khẩu có ít nhất 8 ký tự."
+        "invalidForm": "Vui lòng nhập họ tên, email hợp lệ và mật khẩu có ít nhất 8 ký tự.",
+        "providerFailed": "Không thể tạo tài khoản Firebase. Vui lòng thử lại."
       },
       "fields": {
         "email": {

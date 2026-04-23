@@ -1,50 +1,76 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthPanel } from '@/components/auth/auth-panel'
 import { Input } from '@/components/ui/input'
+import { resolveAuthRedirect } from '@/lib/auth/redirect'
+import { signUpWithEmailPassword } from '@/lib/auth/session-service'
 import { t } from '@/lib/i18n'
-import { authActions, useAuthStore } from '@/stores/auth.store'
+import { useAuthStore } from '@/stores/auth.store'
 
-function SignUpPage() {
+export const SignUpPage = () => {
   const navigate = useNavigate()
 
-  const [formError, setFormError] = useState<string | null>(null)
+  const bootstrapComplete = useAuthStore.use.bootstrapComplete()
+  const isAuthenticated = useAuthStore.use.isAuthenticated()
+  const postAuthRedirect = useAuthStore.use.postAuthRedirect()
+  const returnTo = useAuthStore.use.returnTo()
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+  const [formError, setFormError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (!bootstrapComplete || !isAuthenticated) {
+      return
+    }
+
+    navigate(
+      resolveAuthRedirect({
+        fallback: '/app/onboarding',
+        postAuthRedirect,
+        returnTo,
+      }),
+      {
+        replace: true,
+      },
+    )
+  }, [bootstrapComplete, isAuthenticated, navigate, postAuthRedirect, returnTo])
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (
+    event,
+  ) => {
     event.preventDefault()
+    setIsSubmitting(true)
 
     const formData = new FormData(event.currentTarget)
     const name = String(formData.get('fullName') ?? '').trim()
     const email = String(formData.get('email') ?? '').trim()
     const password = String(formData.get('password') ?? '').trim()
-    const destination = useAuthStore.getState().returnTo ?? '/app/onboarding'
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     if (!name || !email || !emailRegex.test(email) || password.length < 8) {
       setFormError(t('auth.signUp.errors.invalidForm'))
+      setIsSubmitting(false)
 
       return
     }
 
-    authActions.signUp({
-      email,
-      name: name || email.split('@')[0] || t('app.overview.demoFamily'),
-    })
+    try {
+      const destination = await signUpWithEmailPassword({
+        email,
+        name,
+        password,
+      })
 
-    const safeDestination =
-      typeof destination === 'string' &&
-      destination.startsWith('/') &&
-      !destination.startsWith('//') &&
-      !destination.includes('://')
-        ? destination
-        : '/app/onboarding'
-
-    setFormError(null)
-    navigate(safeDestination, { replace: true })
+      setFormError(null)
+      navigate(destination, { replace: true })
+    } catch {
+      setFormError(t('auth.session.errors.signUpFailed'))
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -62,6 +88,7 @@ function SignUpPage() {
           </Link>
         </p>
       }
+      isSubmitting={isSubmitting}
       title={t('auth.signUp.title')}
       onSubmit={handleSubmit}>
       {formError ? (
@@ -107,5 +134,3 @@ function SignUpPage() {
     </AuthPanel>
   )
 }
-
-export { SignUpPage }

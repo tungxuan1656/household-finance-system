@@ -5,7 +5,7 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 
-function AuthField({
+export const AuthField = ({
   children,
   description,
   id,
@@ -15,7 +15,7 @@ function AuthField({
   description: string
   id: string
   label: string
-}) {
+}) => {
   return (
     <Field>
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
@@ -26,5 +26,3 @@ function AuthField({
     </Field>
   )
 }
-
-export { AuthField }

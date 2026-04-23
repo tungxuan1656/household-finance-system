@@ -1,6 +1,8 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { signOutCurrentSession } from '@/lib/auth/session-service'
 import { t } from '@/lib/i18n'
 
 const appNavItems = [
@@ -13,6 +15,14 @@ const appNavItems = [
 ] as const
 
 function ProtectedShell() {
+  const navigate = useNavigate()
+
+  const handleSignOut = async () => {
+    const destination = await signOutCurrentSession()
+
+    navigate(destination, { replace: true })
+  }
+
   return (
     <div className='min-h-svh p-4 sm:p-6 lg:p-8'>
       <div className='mx-auto grid min-h-[calc(100svh-2rem)] max-w-7xl gap-4 lg:grid-cols-[240px_minmax(0,1fr)]'>
@@ -53,8 +63,14 @@ function ProtectedShell() {
             ))}
           </nav>
 
-          <div className='mt-auto rounded-none border border-border/70 bg-muted/40 p-3 text-xs text-muted-foreground'>
-            {t('shell.protected.footer')}
+          <div className='mt-auto space-y-3 rounded-none border border-border/70 bg-muted/40 p-3 text-xs text-muted-foreground'>
+            <p>{t('shell.protected.footer')}</p>
+            <Button
+              className='w-full'
+              variant='outline'
+              onClick={handleSignOut}>
+              {t('common.actions.signOut')}
+            </Button>
           </div>
         </aside>
 
