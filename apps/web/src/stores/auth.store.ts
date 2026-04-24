@@ -44,23 +44,40 @@ const initialState: AuthSessionState = {
   user: null,
 }
 
+let setSessionCheckedOnHydrationError:
+  | ((isSessionChecked: boolean) => void)
+  | null = null
+
 const _useAuthStore = create<AuthSessionState>()(
   devtools(
-    persist(() => initialState, {
-      merge: (persistedState, currentState) => ({
-        ...currentState,
-        ...(persistedState as Partial<AuthSessionState>),
-        isSessionChecked: true,
-      }),
-      name: 'auth-store',
-      partialize: (state) => ({
-        accessToken: state.accessToken,
-        isAuthenticated: state.isAuthenticated,
-        refreshToken: state.refreshToken,
-        user: state.user,
-      }),
-      storage: createJSONStorage(() => localStorage),
-    }),
+    persist(
+      (set) => {
+        setSessionCheckedOnHydrationError = (isSessionChecked) =>
+          set({ isSessionChecked })
+
+        return initialState
+      },
+      {
+        merge: (persistedState, currentState) => ({
+          ...currentState,
+          ...(persistedState as Partial<AuthSessionState>),
+          isSessionChecked: true,
+        }),
+        name: 'auth-store',
+        onRehydrateStorage: () => (_state, error) => {
+          if (error) {
+            setSessionCheckedOnHydrationError?.(true)
+          }
+        },
+        partialize: (state) => ({
+          accessToken: state.accessToken,
+          isAuthenticated: state.isAuthenticated,
+          refreshToken: state.refreshToken,
+          user: state.user,
+        }),
+        storage: createJSONStorage(() => localStorage),
+      },
+    ),
     {
       name: 'auth-store',
     },
