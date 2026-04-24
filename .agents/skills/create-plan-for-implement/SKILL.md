@@ -11,14 +11,14 @@ Create a high-quality, implementation-ready ExecPlan that minimizes ambiguity an
 ## When To Use
 
 Use this skill when you need to:
-- Create a new execution plan in `docs/exec-plans/active/`.
+- Create a new execution plan in `docs/exec-plans/plans/`.
 - Rewrite or tighten an existing plan before implementation.
 - Ensure a plan is fully aligned with harness workflow and quality gates.
 - Force scope-based standards and pattern selection before coding starts.
 
 Plan lifecycle requirements:
-- Active work stays in `docs/exec-plans/active/`.
-- Completed plans must be moved to `docs/exec-plans/completed/`.
+- Active and completed plan files stay in `docs/exec-plans/plans/` (no file moves across status folders).
+- Plan status must be tracked in `docs/exec-plans/index.md` under `Active` and `Completed` sections.
 - Deferred items must be logged in `docs/exec-plans/tech-debt-tracker.md`.
 
 Do not use this skill for:
@@ -42,6 +42,7 @@ Read these before writing:
 - `ARCHITECTURE.md`
 - `docs/PLANS.md`
 - `docs/exec-plans/__plan-template__.md`
+- `docs/exec-plans/index.md`
 - `docs/knowledge/harness-engineering.md`
 - `docs/knowledge/codex-exec-plan.md`
 - `docs/references/index.md`

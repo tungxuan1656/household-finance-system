@@ -9,6 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
+import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n'
 
 function PlaceholderPage({
@@ -29,7 +30,7 @@ function PlaceholderPage({
       </EmptyHeader>
       <EmptyContent>
         <Button asChild variant='outline'>
-          <Link to='/app'>{t('common.actions.backToOverview')}</Link>
+          <Link to={PATHS.APP_ROOT}>{t('common.actions.backToOverview')}</Link>
         </Button>
       </EmptyContent>
     </Empty>

@@ -17,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { NativeSelect } from '@/components/ui/native-select'
 import { Textarea } from '@/components/ui/textarea'
+import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n'
 
 function OnboardingPage() {
@@ -113,7 +114,9 @@ function OnboardingPage() {
 
             <div className='flex flex-wrap items-center gap-3'>
               <Button asChild>
-                <Link to='/app'>{t('app.onboarding.actions.backToShell')}</Link>
+                <Link to={PATHS.APP_ROOT}>
+                  {t('app.onboarding.actions.backToShell')}
+                </Link>
               </Button>
               <Button asChild variant='outline'>
                 <Link to='/sign-in'>

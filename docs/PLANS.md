@@ -14,8 +14,9 @@ Create an execution plan when work:
 
 ## Plan Locations
 
-- `docs/exec-plans/active/`: plans currently driving work
-- `docs/exec-plans/completed/`: finished plans kept for future agent context
+- `docs/exec-plans/plans/`: all execution plans (active + completed) in one folder
+- `docs/exec-plans/index.md`: single index with two sections (`Active` and `Completed`)
+- `docs/exec-plans/__plan-template__.md`: canonical ExecPlan template
 - `docs/exec-plans/tech-debt-tracker.md`: deferred work and follow-ups
 
 ## Minimum Plan Sections
@@ -32,4 +33,4 @@ Create an execution plan when work:
 - One active plan should have one clearly owned current step.
 - Update the plan as work progresses; do not treat it as static prose.
 - If a decision changes implementation direction, record it in the plan.
-- Move finished plans to `completed/` so agents can still discover prior context.
+- Keep plan files in `docs/exec-plans/plans/` and update status placement in `docs/exec-plans/index.md` instead of moving files between folders.

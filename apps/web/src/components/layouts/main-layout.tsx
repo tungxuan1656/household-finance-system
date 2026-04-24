@@ -1,82 +1,43 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { AppSidebar } from '@/components/layouts/app-sidebar'
+import { BottomTab } from '@/components/layouts/bottom-tab'
+import { useIsMobile } from '@/hooks/shared/use-mobile'
 import { signOutCurrentSession } from '@/lib/auth/session-service'
-import { t } from '@/lib/i18n'
-
-const appNavItems = [
-  { to: '/', label: t('shell.protected.nav.overview') },
-  { to: '/app/onboarding', label: t('shell.protected.nav.onboarding') },
-  { to: '/app/expenses', label: t('shell.protected.nav.expenses') },
-  { to: '/app/budgets', label: t('shell.protected.nav.budgets') },
-  { to: '/app/insights', label: t('shell.protected.nav.insights') },
-  { to: '/app/settings', label: t('shell.protected.nav.settings') },
-] as const
+import { PATHS } from '@/lib/constants/paths'
 
 function MainLayout() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   const handleSignOut = async () => {
     await signOutCurrentSession()
-    navigate('/sign-in', { replace: true })
+    navigate(PATHS.SIGN_IN, { replace: true })
   }
 
   return (
-    <div className='min-h-svh p-4 sm:p-6 lg:p-8'>
-      <div className='mx-auto grid min-h-[calc(100svh-2rem)] max-w-7xl gap-4 lg:grid-cols-[240px_minmax(0,1fr)]'>
-        <aside className='flex flex-col gap-4 rounded-none border border-border/70 bg-background/85 p-4 shadow-sm backdrop-blur'>
-          <div className='space-y-2'>
-            <Badge className='w-fit' variant='secondary'>
-              {t('shell.protected.badge')}
-            </Badge>
-
-            <div>
-              <h2 className='font-heading text-lg'>
-                {t('shell.protected.title')}
-              </h2>
-              <p className='text-xs text-muted-foreground'>
-                {t('shell.protected.description')}
-              </p>
+    <div className='min-h-svh bg-background'>
+      {/* Desktop Wrapper */}
+      <div className='mx-auto grid min-h-svh w-full md:grid-cols-[240px_minmax(0,1fr)] lg:max-w-7xl lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8 lg:p-8'>
+        {/* Desktop Sidebar (hidden on mobile) */}
+        {!isMobile && (
+          <div className='hidden md:block'>
+            <div className='sticky top-8 h-[calc(100svh-4rem)]'>
+              <AppSidebar onSignOut={handleSignOut} />
             </div>
           </div>
+        )}
 
-          <nav
-            aria-label={t('shell.protected.nav.ariaLabel')}
-            className='flex flex-col gap-1'>
-            {appNavItems.map((item) => (
-              <NavLink
-                key={item.to}
-                className={({ isActive }) =>
-                  [
-                    'rounded-none px-3 py-2 text-sm transition-colors',
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                  ].join(' ')
-                }
-                end={item.to === '/'}
-                to={item.to}>
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-
-          <div className='mt-auto space-y-3 rounded-none border border-border/70 bg-muted/40 p-3 text-xs text-muted-foreground'>
-            <p>{t('shell.protected.footer')}</p>
-            <Button
-              className='w-full'
-              variant='outline'
-              onClick={handleSignOut}>
-              {t('common.actions.signOut')}
-            </Button>
-          </div>
-        </aside>
-
-        <section className='space-y-4 rounded-none border border-border/70 bg-background/85 p-5 shadow-sm backdrop-blur sm:p-6'>
-          <Outlet />
-        </section>
+        {/* Main Content Area */}
+        <main className='flex w-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-8 lg:pb-0'>
+          <section className='flex-1 rounded-none bg-background/85 p-4 shadow-sm backdrop-blur sm:p-6 md:rounded-lg md:border-x'>
+            <Outlet />
+          </section>
+        </main>
       </div>
+
+      {/* Mobile Bottom Tab (hidden on desktop) */}
+      {isMobile && <BottomTab />}
     </div>
   )
 }

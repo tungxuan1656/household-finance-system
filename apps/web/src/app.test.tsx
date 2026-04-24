@@ -71,7 +71,7 @@ beforeEach(() => {
 
 describe('web shell routing', () => {
   it('redirects protected routes back to sign in when shell access is missing', async () => {
-    renderAt('/app')
+    renderAt('/settings')
 
     expect(
       await screen.findByText(t('auth.signIn.title'), {
@@ -249,7 +249,7 @@ describe('web shell routing', () => {
       })
     })
 
-    renderAt('/app')
+    renderAt('/')
 
     await user.click(
       screen.getByRole('button', { name: t('common.actions.signOut') }),
