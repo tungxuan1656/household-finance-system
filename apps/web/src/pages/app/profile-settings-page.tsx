@@ -224,7 +224,7 @@ export const ProfileSettingsPage = () => {
         </CardHeader>
         <CardContent className='flex flex-col gap-8'>
           <div className='flex flex-col items-start gap-6 sm:flex-row sm:items-center'>
-            <Avatar className='h-24 w-24 sm:h-20 sm:w-20' size='lg'>
+            <Avatar className='size-24!' size='lg'>
               <AvatarImage src={currentAvatarSrc} />
               <AvatarFallback className='text-2xl'>
                 {getAvatarFallback(

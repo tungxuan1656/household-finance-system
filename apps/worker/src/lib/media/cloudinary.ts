@@ -32,7 +32,6 @@ const CLOUDINARY_UPLOAD_PRESET = 'household-finance-system-preset'
 type SignableCloudinaryParams = {
   allowed_formats: string
   folder: string
-  max_file_size: number
   public_id: string
   timestamp: number
   upload_preset: string
@@ -159,7 +158,6 @@ export const createUploadSignature = (input: {
   const signableParams: SignableCloudinaryParams = {
     allowed_formats: allowedFormats.join(','),
     folder,
-    max_file_size: maxFileSize,
     public_id: publicId,
     timestamp,
     upload_preset: CLOUDINARY_UPLOAD_PRESET,
