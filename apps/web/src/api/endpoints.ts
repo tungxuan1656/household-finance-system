@@ -9,6 +9,9 @@ export const API_ENDPOINTS = {
     refresh: '/auth/refresh',
   },
   health: '/health',
+  media: {
+    uploadSignature: '/media/upload-signature',
+  },
   profile: '/users/me',
   protected: {
     ping: '/protected/ping',

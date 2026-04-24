@@ -28,3 +28,14 @@ export interface AppConfig {
   firebaseJwksUrl: string
   allowInsecureTestTokens: boolean
 }
+
+export interface CloudinaryConfig {
+  appEnvironment: string
+  cloudinaryCloudName: string
+  cloudinaryApiKey: string
+  cloudinaryApiSecret: string
+  cloudinaryMaxImageBytes: number
+  cloudinaryMaxVideoBytes: number
+  cloudinaryAllowedImageMimeTypes: string[]
+  cloudinaryAllowedVideoMimeTypes: string[]
+}

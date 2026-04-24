@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
 import { AppError } from '@/lib/errors'
-import { assertDatabaseBinding, readConfig } from '@/lib/env'
+import {
+  assertDatabaseBinding,
+  readCloudinaryConfig,
+  readConfig,
+} from '@/lib/env'
 
 const createEnv = (overrides: Partial<Record<string, unknown>> = {}): Env =>
   ({
@@ -15,6 +19,10 @@ const createEnv = (overrides: Partial<Record<string, unknown>> = {}): Env =>
     AUTH_JWT_SECRET: 'jwt-secret',
     AUTH_REFRESH_TOKEN_PEPPER: 'refresh-pepper',
     FIREBASE_PROJECT_ID: 'household-finance-prod',
+    APP_ENV: 'test',
+    CLOUDINARY_CLOUD_NAME: 'demo-cloud',
+    CLOUDINARY_API_KEY: 'demo-key',
+    CLOUDINARY_API_SECRET: 'demo-secret',
     ...overrides,
   }) as unknown as Env
 
@@ -31,6 +39,14 @@ describe('env config', () => {
     expect(config.firebaseJwksUrl).toContain(
       'securetoken@system.gserviceaccount.com',
     )
+  })
+
+  it('reads cloudinary config only when media flow needs it', () => {
+    const config = readCloudinaryConfig(createEnv())
+
+    expect(config.cloudinaryCloudName).toBe('demo-cloud')
+    expect(config.cloudinaryApiKey).toBe('demo-key')
+    expect(config.appEnvironment).toBe('test')
   })
 
   it('throws INTERNAL_ERROR when required value is missing', () => {
@@ -51,6 +67,18 @@ describe('env config', () => {
     } catch (error) {
       expect((error as AppError).code).toBe('INTERNAL_ERROR')
     }
+  })
+
+  it('allows auth config to load without cloudinary variables', () => {
+    const config = readConfig(
+      createEnv({
+        CLOUDINARY_CLOUD_NAME: undefined,
+        CLOUDINARY_API_KEY: undefined,
+        CLOUDINARY_API_SECRET: undefined,
+      }),
+    )
+
+    expect(config.authIssuer).toBe('https://household-finance.local')
   })
 
   it('throws INTERNAL_ERROR when token TTL is invalid', () => {

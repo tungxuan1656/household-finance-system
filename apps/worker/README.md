@@ -135,4 +135,11 @@ Remote secrets setup example:
 ```bash
 pnpm --filter worker exec wrangler secret put AUTH_JWT_SECRET
 pnpm --filter worker exec wrangler secret put AUTH_REFRESH_TOKEN_PEPPER
+pnpm --filter worker exec wrangler secret put CLOUDINARY_API_SECRET
 ```
+
+Cloudinary signing variables required by media upload signature endpoint:
+
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET` (secret)

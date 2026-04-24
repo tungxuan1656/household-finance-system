@@ -86,6 +86,11 @@
       "name": "Responsive main layout shell for web frontend",
       "status": "done"
     },
+    {
+      "id": "feat-036",
+      "name": "Cloudinary signed media upload foundation",
+      "status": "done"
+    },
 
     {
       "id": "feat-011",
