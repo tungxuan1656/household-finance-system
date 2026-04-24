@@ -43,12 +43,10 @@ vi.mock('@/lib/auth/session-service', async () => {
   }
 
   return {
-    bootstrapAuthSession: vi.fn(async () => undefined),
     signInWithEmailPassword: vi.fn(async () => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -68,8 +66,7 @@ vi.mock('@/lib/auth/session-service', async () => {
     signUpWithEmailPassword: vi.fn(async () => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -150,8 +147,7 @@ describe('web shell routing', () => {
     act(() => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -228,8 +224,7 @@ describe('web shell routing', () => {
     act(() => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -257,8 +252,8 @@ describe('web shell routing', () => {
     )
 
     expect(
-      screen.getByText(t('auth.signIn.errors.invalidForm')),
-    ).toBeInTheDocument()
+      screen.getAllByText(t('auth.signIn.errors.invalidForm')),
+    ).toHaveLength(2)
   })
 
   it('signs out and returns to the public route', async () => {
@@ -267,8 +262,7 @@ describe('web shell routing', () => {
     act(() => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',

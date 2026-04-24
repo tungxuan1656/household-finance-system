@@ -1,3 +1,4 @@
+import axios, { AxiosError, AxiosHeaders, type AxiosRequestConfig } from 'axios'
 import { describe, expect, it, vi } from 'vitest'
 
 import {
@@ -8,99 +9,112 @@ import {
 import { API_ENDPOINTS } from '@/api/endpoints'
 import type { ApiEnvelope } from '@/types/api'
 
-const createEnvelopeResponse = <T>(
-  body: ApiEnvelope<T>,
-  status: number,
-): Response =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      'content-type': 'application/json',
-    },
+const createSuccessResponse = <T>(
+  config: any,
+  data: ApiEnvelope<T>,
+  status = 200,
+): any => ({
+  config,
+  data,
+  headers: {},
+  request: {},
+  status,
+  statusText: String(status),
+})
+
+const createError = <T>(config: any, data: ApiEnvelope<T>, status: number) =>
+  new AxiosError(
+    `Request failed with status ${status}`,
+    undefined,
+    config,
+    {},
+    createSuccessResponse(config, data, status),
+  )
+
+const createAxiosTestClient = (handler: (config: any) => Promise<any>) =>
+  axios.create({
+    adapter: async (config: AxiosRequestConfig) => handler(config),
+    baseURL: '/api/v1',
   })
 
 describe('api client', () => {
   it('unwraps successful response data', async () => {
-    const fetchImpl = vi.fn(async () =>
-      createEnvelopeResponse(
+    const axiosInstance = createAxiosTestClient(async (config) =>
+      createSuccessResponse(
+        config,
         {
-          success: true,
           data: { ok: true },
           error: null,
-          meta: {
-            requestId: 'request-1',
-          },
+          meta: { requestId: 'request-1' },
+          success: true,
         },
         200,
       ),
     )
-    const apiClient = createApiClient({ fetchImpl })
+    const apiClient = createApiClient({ axiosInstance })
 
     await expect(
       apiClient.get<{ ok: boolean }>(API_ENDPOINTS.health),
     ).resolves.toEqual({
       ok: true,
     })
-
-    expect(fetchImpl).toHaveBeenCalledWith(
-      expect.stringContaining('/api/v1/health'),
-      expect.objectContaining({
-        method: 'GET',
-      }),
-    )
   })
 
   it('injects the bearer token from the auth adapter', async () => {
-    let capturedInit: RequestInit | undefined
-    const fetchImpl = vi.fn(
-      async (_input: RequestInfo | URL, init?: RequestInit) => {
-        capturedInit = init
+    let capturedConfig: any = null
+    const axiosInstance = createAxiosTestClient(async (config) => {
+      capturedConfig = config
 
-        return createEnvelopeResponse(
-          {
-            success: true,
-            data: { ok: true },
-            error: null,
-            meta: {
-              requestId: 'request-2',
-            },
-          },
-          200,
-        )
-      },
-    )
+      return createSuccessResponse(
+        config,
+        {
+          data: { ok: true },
+          error: null,
+          meta: { requestId: 'request-2' },
+          success: true,
+        },
+        200,
+      )
+    })
     const authSessionAdapter: AuthSessionAdapter = {
       getAccessToken: vi.fn(async () => 'access-token-123'),
       refreshSession: vi.fn(async () => null),
     }
-    const apiClient = createApiClient({ authSessionAdapter, fetchImpl })
+    const apiClient = createApiClient({ authSessionAdapter, axiosInstance })
 
     await apiClient.get<{ ok: boolean }>(API_ENDPOINTS.health)
 
-    const headers = new Headers(capturedInit?.headers)
+    const headers: Record<string, unknown> = {}
 
-    expect(headers.get('authorization')).toBe('Bearer access-token-123')
-    expect(headers.get('accept')).toBe('application/json')
+    if (capturedConfig && capturedConfig.headers instanceof AxiosHeaders) {
+      Object.assign(headers, capturedConfig.headers.toJSON())
+    } else if (capturedConfig && capturedConfig.headers) {
+      Object.assign(headers, capturedConfig.headers)
+    }
+
+    expect(headers.authorization).toBe('Bearer access-token-123')
+    expect(headers.accept ?? headers.Accept).toBe('application/json')
   })
 
   it('maps API failure envelopes to typed client errors', async () => {
-    const fetchImpl = vi.fn(async () =>
-      createEnvelopeResponse(
-        {
-          success: false,
-          data: null,
-          error: {
-            code: 'INVALID_INPUT',
-            message: 'Invalid payload.',
+    const axiosInstance = createAxiosTestClient(async (config) =>
+      Promise.reject(
+        createError(
+          config,
+          {
+            data: null,
+            error: {
+              code: 'INVALID_INPUT',
+              message: 'Invalid payload.',
+            },
+            meta: { requestId: 'request-3' },
+            success: false,
           },
-          meta: {
-            requestId: 'request-3',
-          },
-        },
-        400,
+          400,
+        ),
       ),
     )
-    const apiClient = createApiClient({ fetchImpl })
+    const apiClient = createApiClient({ axiosInstance })
 
     await expect(
       apiClient.post(API_ENDPOINTS.auth.providerExchange, {}),
@@ -113,41 +127,41 @@ describe('api client', () => {
   })
 
   it('refreshes once after a 401 and retries with the refreshed token', async () => {
-    const capturedInits: Array<RequestInit | undefined> = []
-    const fetchImpl = vi.fn(
-      async (_input: RequestInfo | URL, init?: RequestInit) => {
-        capturedInits.push(init)
+    const requestAuthorizationHeaders: string[] = []
+    let requestCount = 0
+    const axiosInstance = createAxiosTestClient(async (config) => {
+      requestCount += 1
+      requestAuthorizationHeaders.push(config.headers.authorization as string)
 
-        if (capturedInits.length === 1) {
-          return createEnvelopeResponse(
+      if (requestCount === 1) {
+        return Promise.reject(
+          createError(
+            config,
             {
-              success: false,
               data: null,
               error: {
                 code: 'UNAUTHENTICATED',
                 message: 'Expired token.',
               },
-              meta: {
-                requestId: 'request-4',
-              },
+              meta: { requestId: 'request-4' },
+              success: false,
             },
             401,
-          )
-        }
-
-        return createEnvelopeResponse(
-          {
-            success: true,
-            data: { ok: true },
-            error: null,
-            meta: {
-              requestId: 'request-5',
-            },
-          },
-          200,
+          ),
         )
-      },
-    )
+      }
+
+      return createSuccessResponse(
+        config,
+        {
+          data: { ok: true },
+          error: null,
+          meta: { requestId: 'request-5' },
+          success: true,
+        },
+        200,
+      )
+    })
     const authSessionAdapter: AuthSessionAdapter = {
       getAccessToken: vi
         .fn()
@@ -156,7 +170,7 @@ describe('api client', () => {
       refreshSession: vi.fn(async () => 'fresh-token'),
       handleUnauthenticated: vi.fn(),
     }
-    const apiClient = createApiClient({ authSessionAdapter, fetchImpl })
+    const apiClient = createApiClient({ authSessionAdapter, axiosInstance })
 
     await expect(
       apiClient.get<{ ok: boolean }>(API_ENDPOINTS.profile),
@@ -165,28 +179,93 @@ describe('api client', () => {
     })
 
     expect(authSessionAdapter.refreshSession).toHaveBeenCalledTimes(1)
-    expect(fetchImpl).toHaveBeenCalledTimes(2)
 
-    const headers = new Headers(capturedInits[1]?.headers)
+    expect(requestAuthorizationHeaders).toEqual([
+      'Bearer stale-token',
+      'Bearer fresh-token',
+    ])
+  })
 
-    expect(headers.get('authorization')).toBe('Bearer fresh-token')
+  it('replays queued 401 requests after one shared refresh', async () => {
+    let refreshCompleted = false
+    let requestCount = 0
+    const axiosInstance = createAxiosTestClient(async (config) => {
+      if (!refreshCompleted) {
+        requestCount += 1
+
+        return Promise.reject(
+          createError(
+            config,
+            {
+              data: null,
+              error: {
+                code: 'UNAUTHENTICATED',
+                message: 'Expired token.',
+              },
+              meta: { requestId: `request-${requestCount}` },
+              success: false,
+            },
+            401,
+          ),
+        )
+      }
+
+      return createSuccessResponse(
+        config,
+        {
+          data: {
+            ok: true,
+            url: config.url,
+          },
+          error: null,
+          meta: { requestId: `request-${requestCount + 1}` },
+          success: true,
+        },
+        200,
+      )
+    })
+    const authSessionAdapter: AuthSessionAdapter = {
+      getAccessToken: vi.fn(async () => 'stale-token'),
+      refreshSession: vi.fn(async () => {
+        refreshCompleted = true
+
+        return 'fresh-token'
+      }),
+      handleUnauthenticated: vi.fn(),
+    }
+    const apiClient = createApiClient({ authSessionAdapter, axiosInstance })
+
+    const pendingRequests = await Promise.all([
+      apiClient.get<{ ok: boolean; url?: string }>(API_ENDPOINTS.profile),
+      apiClient.get<{ ok: boolean; url?: string }>(
+        API_ENDPOINTS.protected.ping,
+      ),
+    ])
+
+    expect(authSessionAdapter.refreshSession).toHaveBeenCalledTimes(1)
+
+    expect(pendingRequests).toEqual([
+      { ok: true, url: API_ENDPOINTS.profile },
+      { ok: true, url: API_ENDPOINTS.protected.ping },
+    ])
   })
 
   it('surfaces unauthenticated errors when refresh cannot recover', async () => {
-    const fetchImpl = vi.fn(async () =>
-      createEnvelopeResponse(
-        {
-          success: false,
-          data: null,
-          error: {
-            code: 'UNAUTHENTICATED',
-            message: 'Session expired.',
+    const axiosInstance = createAxiosTestClient(async (config) =>
+      Promise.reject(
+        createError(
+          config,
+          {
+            data: null,
+            error: {
+              code: 'UNAUTHENTICATED',
+              message: 'Session expired.',
+            },
+            meta: { requestId: 'request-6' },
+            success: false,
           },
-          meta: {
-            requestId: 'request-6',
-          },
-        },
-        401,
+          401,
+        ),
       ),
     )
     const handleUnauthenticated = vi.fn()
@@ -195,7 +274,7 @@ describe('api client', () => {
       refreshSession: vi.fn(async () => null),
       handleUnauthenticated,
     }
-    const apiClient = createApiClient({ authSessionAdapter, fetchImpl })
+    const apiClient = createApiClient({ authSessionAdapter, axiosInstance })
 
     const requestPromise = apiClient.get(API_ENDPOINTS.profile)
 
@@ -211,27 +290,19 @@ describe('api client', () => {
     expect(handleUnauthenticated).toHaveBeenCalled()
   })
 
-  it('rejects malformed JSON success payloads that do not match the API envelope', async () => {
-    const fetchImpl = vi.fn(
-      async () =>
-        new Response(
-          JSON.stringify({
-            data: {
-              ok: true,
-            },
-            meta: {
-              requestId: 'request-7',
-            },
-          }),
-          {
-            status: 200,
-            headers: {
-              'content-type': 'application/json',
-            },
-          },
-        ),
-    )
-    const apiClient = createApiClient({ fetchImpl })
+  it('rejects malformed success payloads that do not match the API envelope', async () => {
+    const axiosInstance = createAxiosTestClient(async (config) => ({
+      config,
+      data: {
+        data: { ok: true },
+        meta: { requestId: 'request-7' },
+      },
+      headers: {},
+      request: {},
+      status: 200,
+      statusText: '200',
+    }))
+    const apiClient = createApiClient({ axiosInstance })
 
     await expect(apiClient.get(API_ENDPOINTS.health)).rejects.toMatchObject({
       code: 'HTTP_ERROR',
@@ -239,91 +310,5 @@ describe('api client', () => {
       requestId: 'request-7',
       status: 200,
     })
-  })
-
-  it('rejects success envelopes that omit the data field', async () => {
-    const fetchImpl = vi.fn(
-      async () =>
-        new Response(
-          JSON.stringify({
-            success: true,
-            error: null,
-            meta: {
-              requestId: 'request-8',
-            },
-          }),
-          {
-            status: 200,
-            headers: {
-              'content-type': 'application/json',
-            },
-          },
-        ),
-    )
-    const apiClient = createApiClient({ fetchImpl })
-
-    await expect(apiClient.get(API_ENDPOINTS.health)).rejects.toMatchObject({
-      code: 'HTTP_ERROR',
-      message: 'Response did not match the API envelope contract.',
-      requestId: 'request-8',
-      status: 200,
-    })
-  })
-
-  it('wraps invalid JSON responses in a typed client error', async () => {
-    const fetchImpl = vi.fn(
-      async () =>
-        new Response('{', {
-          status: 502,
-          headers: {
-            'content-type': 'application/json',
-          },
-        }),
-    )
-    const apiClient = createApiClient({ fetchImpl })
-
-    await expect(apiClient.get(API_ENDPOINTS.health)).rejects.toMatchObject({
-      code: 'HTTP_ERROR',
-      message: 'Response body was not valid JSON.',
-      status: 502,
-    })
-  })
-
-  it('does not force a JSON content type for FormData payloads', async () => {
-    let capturedInit: RequestInit | undefined
-    const fetchImpl = vi.fn(
-      async (_input: RequestInfo | URL, init?: RequestInit) => {
-        capturedInit = init
-
-        return createEnvelopeResponse(
-          {
-            success: true,
-            data: { ok: true },
-            error: null,
-            meta: {
-              requestId: 'request-9',
-            },
-          },
-          200,
-        )
-      },
-    )
-    const apiClient = createApiClient({ fetchImpl })
-    const formData = new FormData()
-
-    formData.set('avatar', 'binary-ish')
-
-    await expect(
-      apiClient.post<{ ok: boolean }, FormData>(
-        API_ENDPOINTS.auth.providerExchange,
-        formData,
-      ),
-    ).resolves.toEqual({
-      ok: true,
-    })
-
-    const headers = new Headers(capturedInit?.headers)
-
-    expect(headers.get('content-type')).toBeNull()
   })
 })

@@ -68,7 +68,7 @@
     {
       "id": "feat-009c",
       "name": "Standardize apps/web authentication call flow and auth state handling",
-      "status": "pending"
+      "status": "done"
     },
 
     {

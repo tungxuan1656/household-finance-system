@@ -1,19 +1,21 @@
 import { act, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import { authActions, useAuthStore } from '@/stores/auth.store'
 
 function AuthUserProbe() {
-  const bootstrapComplete = useAuthStore.use.bootstrapComplete()
   const isAuthenticated = useAuthStore.use.isAuthenticated()
+  const isSessionChecked = useAuthStore.use.isSessionChecked()
   const postAuthRedirect = useAuthStore.use.postAuthRedirect()
+  const refreshToken = useAuthStore.use.refreshToken()
   const returnTo = useAuthStore.use.returnTo()
   const user = useAuthStore.use.user()
 
   return (
     <div>
-      <span data-testid='bootstrap-complete'>{String(bootstrapComplete)}</span>
+      <span data-testid='is-session-checked'>{String(isSessionChecked)}</span>
       <span data-testid='is-authenticated'>{String(isAuthenticated)}</span>
+      <span data-testid='refresh-token'>{refreshToken ?? ''}</span>
       <span data-testid='post-auth-redirect'>{postAuthRedirect ?? ''}</span>
       <span data-testid='return-to'>{returnTo ?? ''}</span>
       <span data-testid='user-display-name'>{user?.displayName ?? ''}</span>
@@ -22,24 +24,30 @@ function AuthUserProbe() {
 }
 
 beforeEach(() => {
-  vi.useFakeTimers()
-
   act(() => {
     authActions.reset()
   })
 })
 
 describe('auth store', () => {
-  it('starts in the bootstrapping anonymous session state', () => {
+  it('starts in anonymous non-hydrated state', () => {
     expect(useAuthStore.getState()).toMatchObject({
       accessToken: null,
-      accessTokenExpiresAt: null,
-      bootstrapComplete: false,
       isAuthenticated: false,
+      isSessionChecked: false,
       postAuthRedirect: null,
+      refreshToken: null,
       returnTo: null,
       user: null,
     })
+  })
+
+  it('marks session checked after hydration gate resolves', () => {
+    act(() => {
+      authActions.markSessionChecked()
+    })
+
+    expect(useAuthStore.getState().isSessionChecked).toBe(true)
   })
 
   it('stores and clears routing state independently', () => {
@@ -63,14 +71,11 @@ describe('auth store', () => {
     })
   })
 
-  it('stores an authenticated session and schedules silent refresh', async () => {
-    const refreshSession = vi.fn(async () => undefined)
-
+  it('stores an authenticated session', () => {
     act(() => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession,
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -83,29 +88,23 @@ describe('auth store', () => {
 
     expect(useAuthStore.getState()).toMatchObject({
       accessToken: 'access-token',
-      bootstrapComplete: true,
       isAuthenticated: true,
+      isSessionChecked: true,
+      refreshToken: 'refresh-token',
       user: {
         displayName: 'Alex Morgan',
         email: 'alex@example.com',
       },
     })
-
-    await act(async () => {
-      await vi.runOnlyPendingTimersAsync()
-    })
-
-    expect(refreshSession).toHaveBeenCalledTimes(1)
   })
 
-  it('preserves the requested return path when clearing a failed session', () => {
+  it('preserves return-to when clearing failed session', () => {
     act(() => {
       authActions.setReturnTo('/app/expenses')
 
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -122,8 +121,9 @@ describe('auth store', () => {
 
     expect(useAuthStore.getState()).toMatchObject({
       accessToken: null,
-      bootstrapComplete: true,
       isAuthenticated: false,
+      isSessionChecked: true,
+      refreshToken: null,
       returnTo: '/app/expenses',
       user: null,
     })
@@ -133,8 +133,7 @@ describe('auth store', () => {
     act(() => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -149,8 +148,12 @@ describe('auth store', () => {
 
     render(<AuthUserProbe />)
 
-    expect(screen.getByTestId('bootstrap-complete')).toHaveTextContent('true')
+    expect(screen.getByTestId('is-session-checked')).toHaveTextContent('true')
     expect(screen.getByTestId('is-authenticated')).toHaveTextContent('true')
+
+    expect(screen.getByTestId('refresh-token')).toHaveTextContent(
+      'refresh-token',
+    )
 
     expect(screen.getByTestId('post-auth-redirect')).toHaveTextContent(
       '/app/onboarding',
@@ -161,35 +164,5 @@ describe('auth store', () => {
     expect(screen.getByTestId('user-display-name')).toHaveTextContent(
       'Alex Morgan',
     )
-  })
-
-  it('resets back to the initial anonymous bootstrapping state', () => {
-    act(() => {
-      authActions.setSession({
-        accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
-        user: {
-          avatarUrl: null,
-          displayName: 'Alex Morgan',
-          email: 'alex@example.com',
-          id: 'user-1',
-          provider: 'firebase',
-        },
-      })
-
-      authActions.setReturnTo('/app/settings')
-      authActions.reset()
-    })
-
-    expect(useAuthStore.getState()).toMatchObject({
-      accessToken: null,
-      accessTokenExpiresAt: null,
-      bootstrapComplete: false,
-      isAuthenticated: false,
-      postAuthRedirect: null,
-      returnTo: null,
-      user: null,
-    })
   })
 })

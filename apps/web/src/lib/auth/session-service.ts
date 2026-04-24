@@ -5,7 +5,6 @@ import {
 } from '@/api/auth'
 import { type AuthSessionAdapter, createApiClient } from '@/api/client'
 import {
-  getFirebaseCurrentUser,
   getFirebaseIdToken,
   getFirebaseProvider,
   signInWithFirebaseEmailPassword,
@@ -17,7 +16,6 @@ import {
   AUTH_DEFAULT_REDIRECT_PATH,
   AUTH_ONBOARDING_REDIRECT_PATH,
 } from '@/lib/constants/auth'
-import { authRefreshTokenStorage } from '@/lib/storages/auth-refresh-token-storage'
 import { authActions, useAuthStore } from '@/stores/auth.store'
 import type {
   AuthenticatedUserDTO,
@@ -31,131 +29,18 @@ const isUnauthenticatedError = (error: unknown): boolean =>
   ((error as Error & { status?: number }).status === 401 ||
     (error as Error & { code?: string }).code === 'UNAUTHENTICATED')
 
-let sessionMutationVersion = 0
-
-const markSessionMutation = () => {
-  sessionMutationVersion += 1
-
-  return sessionMutationVersion
-}
-
-const isStaleBootstrap = (bootstrapVersion: number) =>
-  bootstrapVersion !== sessionMutationVersion
-
-const readCurrentUser = async (): Promise<AuthenticatedUserDTO | null> => {
-  const firebaseUser = await getFirebaseCurrentUser()
-
-  if (!firebaseUser) {
-    return useAuthStore.getState().user
-  }
-
-  return {
-    avatarUrl: firebaseUser.photoURL,
-    displayName: firebaseUser.displayName,
-    email: firebaseUser.email,
-    id: firebaseUser.uid,
-    provider: getFirebaseProvider(),
-  }
-}
-
-const applySession = async (
+const applySession = (
   session: ExchangeProviderResponse | RefreshSessionResponse,
-  options: {
-    refreshSessionCallback: () => Promise<unknown>
-    user?: AuthenticatedUserDTO | null
-  },
+  user: AuthenticatedUserDTO | null,
 ) => {
-  markSessionMutation()
-  authRefreshTokenStorage.write(session.refreshToken)
-
   authActions.setSession({
     accessToken: session.accessToken,
-    accessTokenExpiresIn: session.accessTokenExpiresIn,
-    refreshSession: async () => {
-      await options.refreshSessionCallback()
-    },
-    user:
-      options.user ?? (await readCurrentUser()) ?? useAuthStore.getState().user,
+    refreshToken: session.refreshToken,
+    user,
   })
 }
 
 const clearSessionAfterFailure = (preserveReturnTo: boolean) => {
-  markSessionMutation()
-  authRefreshTokenStorage.clear()
-
-  authActions.clearSession({
-    preserveReturnTo,
-  })
-}
-
-const refreshSessionFromStorage = async () => {
-  const refreshToken = authRefreshTokenStorage.read()
-
-  if (!refreshToken) {
-    return { kind: 'missing' as const }
-  }
-
-  try {
-    const refreshedSession = await refreshSession({
-      refreshToken,
-    })
-
-    return {
-      kind: 'restored' as const,
-      session: refreshedSession,
-    }
-  } catch (error) {
-    return {
-      kind: isUnauthenticatedError(error)
-        ? ('unauthenticated' as const)
-        : ('failed' as const),
-    }
-  }
-}
-
-const restoreFromRefreshToken = async (
-  preserveReturnTo: boolean,
-  bootstrapVersion: number,
-) => {
-  const result = await refreshSessionFromStorage()
-
-  if (isStaleBootstrap(bootstrapVersion)) {
-    return
-  }
-
-  if (result.kind === 'missing') {
-    authActions.clearSession({
-      preserveReturnTo,
-    })
-
-    return
-  }
-
-  if (result.kind === 'restored') {
-    if (isStaleBootstrap(bootstrapVersion)) {
-      return
-    }
-
-    const user = await readCurrentUser()
-
-    if (isStaleBootstrap(bootstrapVersion)) {
-      return
-    }
-
-    await applySession(result.session, {
-      refreshSessionCallback: refreshCurrentSession,
-      user,
-    })
-
-    return
-  }
-
-  if (result.kind === 'unauthenticated') {
-    clearSessionAfterFailure(preserveReturnTo)
-
-    return
-  }
-
   authActions.clearSession({
     preserveReturnTo,
   })
@@ -172,28 +57,8 @@ const getAuthenticatedApiClient = () => {
   return authenticatedApiClient
 }
 
-export const bootstrapAuthSession = async () => {
-  if (useAuthStore.getState().bootstrapComplete) {
-    return
-  }
-
-  authActions.setBootstrapping()
-
-  const bootstrapVersion = sessionMutationVersion
-
-  try {
-    await restoreFromRefreshToken(true, bootstrapVersion)
-  } catch {
-    if (isStaleBootstrap(bootstrapVersion)) {
-      return
-    }
-
-    clearSessionAfterFailure(true)
-  }
-}
-
 export const refreshCurrentSession = async () => {
-  const refreshToken = authRefreshTokenStorage.read()
+  const refreshToken = useAuthStore.getState().refreshToken
 
   if (!refreshToken) {
     return null
@@ -204,13 +69,14 @@ export const refreshCurrentSession = async () => {
       refreshToken,
     })
 
-    await applySession(refreshedSession, {
-      refreshSessionCallback: refreshCurrentSession,
-      user: await readCurrentUser(),
-    })
+    applySession(refreshedSession, useAuthStore.getState().user)
 
     return refreshedSession.accessToken
-  } catch {
+  } catch (error) {
+    if (isUnauthenticatedError(error)) {
+      clearSessionAfterFailure(true)
+    }
+
     return null
   }
 }
@@ -227,10 +93,7 @@ export const signInWithEmailPassword = async (input: {
       provider: getFirebaseProvider(),
     })
 
-    await applySession(session, {
-      refreshSessionCallback: refreshCurrentSession,
-      user: session.user,
-    })
+    applySession(session, session.user)
   } catch (error) {
     try {
       await signOutFirebaseSession()
@@ -264,10 +127,7 @@ export const signUpWithEmailPassword = async (input: {
       provider: getFirebaseProvider(),
     })
 
-    await applySession(session, {
-      refreshSessionCallback: refreshCurrentSession,
-      user: session.user,
-    })
+    applySession(session, session.user)
   } catch (error) {
     try {
       await signOutFirebaseSession()

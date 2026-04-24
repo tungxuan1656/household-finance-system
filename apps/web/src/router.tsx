@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { ProtectedShell } from '@/components/layouts/protected-shell'
+import { PublicRoute } from '@/components/layouts/public-route'
 import { PublicShell } from '@/components/layouts/public-shell'
 import { ShellGuard } from '@/components/layouts/shell-guard'
 import { t } from '@/lib/i18n'
@@ -14,9 +15,11 @@ function AppRoutes() {
   return (
     <Routes>
       <Route element={<Navigate replace to='/sign-in' />} path='/' />
-      <Route element={<PublicShell />}>
-        <Route element={<SignInPage />} path='/sign-in' />
-        <Route element={<SignUpPage />} path='/sign-up' />
+      <Route element={<PublicRoute />}>
+        <Route element={<PublicShell />}>
+          <Route element={<SignInPage />} path='/sign-in' />
+          <Route element={<SignUpPage />} path='/sign-up' />
+        </Route>
       </Route>
       <Route element={<ShellGuard />}>
         <Route element={<ProtectedShell />} path='/app'>

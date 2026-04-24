@@ -1,15 +1,25 @@
+import axios, {
+  AxiosHeaders,
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  isAxiosError,
+} from 'axios'
+
 import { API_BASE_PATH } from '@/api/endpoints'
 import type { ApiEnvelope, ApiErrorCode } from '@/types/api'
 
-type ApiClientMethod = 'GET' | 'PATCH' | 'POST'
-
-type RequestBody = BodyInit | Record<string, unknown> | undefined
+type ApiClientMethod = 'get' | 'patch' | 'post'
 
 type MaybePromise<T> = Promise<T> | T
 
-type PreparedRequestBody = {
-  bodyInit: BodyInit | undefined
-  isJsonPayload: boolean
+type RequestBody = FormData | Record<string, unknown> | undefined
+
+export type ApiRequestOptions = {
+  headers?: Record<string, string>
+  signal?: AbortSignal
+  skipAuth?: boolean
+  skipAuthRefresh?: boolean
 }
 
 export interface AuthSessionAdapter {
@@ -43,52 +53,21 @@ export class ApiClientError extends Error {
 interface ApiClientConfig {
   authSessionAdapter?: AuthSessionAdapter
   basePath?: string
-  fetchImpl?: typeof fetch
+  axiosInstance?: AxiosInstance
 }
 
-interface InternalRequestOptions {
-  accessTokenOverride?: string
-  retryUnauthorized?: boolean
-}
-
-const isAbsoluteUrl = (value: string): boolean =>
-  /^https?:\/\//u.test(value) || value.startsWith('//')
-
-const resolveUrl = (path: string, basePath: string): string => {
-  if (isAbsoluteUrl(path) || path.startsWith(basePath)) {
-    return path
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    skipAuth?: boolean
+    skipAuthRefresh?: boolean
   }
 
-  if (path.startsWith('/')) {
-    return `${basePath}${path}`
-  }
-
-  return `${basePath}/${path}`
-}
-
-const isBodyInit = (value: RequestBody): value is BodyInit =>
-  value instanceof Blob ||
-  value instanceof FormData ||
-  value instanceof URLSearchParams ||
-  ArrayBuffer.isView(value) ||
-  value instanceof ArrayBuffer ||
-  typeof value === 'string'
-
-const toRequestBody = (body: RequestBody): PreparedRequestBody => {
-  if (body === undefined || isBodyInit(body)) {
-    return {
-      bodyInit: body,
-      isJsonPayload: false,
-    }
-  }
-
-  return {
-    bodyInit: JSON.stringify(body),
-    isJsonPayload: true,
+  interface InternalAxiosRequestConfig {
+    _retry?: boolean
+    skipAuth?: boolean
+    skipAuthRefresh?: boolean
   }
 }
-
-const toHeaders = (input?: HeadersInit): Headers => new Headers(input)
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
@@ -150,7 +129,11 @@ const isApiSuccessEnvelope = <T>(
   return isRecord(payload.meta) && typeof payload.meta.requestId === 'string'
 }
 
-const toApiClientError = (status: number, payload: unknown): ApiClientError => {
+const toApiClientError = (
+  status: number,
+  payload: unknown,
+  details?: unknown,
+): ApiClientError => {
   if (isApiErrorEnvelope(payload)) {
     return new ApiClientError({
       code: payload.error.code,
@@ -162,145 +145,224 @@ const toApiClientError = (status: number, payload: unknown): ApiClientError => {
   }
 
   return new ApiClientError({
-    code: 'HTTP_ERROR',
+    code: status === 0 ? 'NETWORK_ERROR' : 'HTTP_ERROR',
+    details,
     message:
-      payload === null
-        ? `Request failed with status ${status}.`
-        : 'Response did not match the API envelope contract.',
+      status === 0
+        ? 'Network request failed.'
+        : payload === null
+          ? `Request failed with status ${status}.`
+          : 'Response did not match the API envelope contract.',
     requestId: getRequestId(payload),
     status,
   })
 }
 
-const parseEnvelope = async <T>(
-  response: Response,
-): Promise<ApiEnvelope<T> | null> => {
-  const contentType = response.headers.get('content-type') ?? ''
+const setHeader = (
+  config: {
+    headers?: AxiosHeaders | Record<string, string>
+  },
+  key: string,
+  value: string,
+) => {
+  if (config.headers instanceof AxiosHeaders) {
+    config.headers.set(key, value)
 
-  if (!contentType.includes('application/json')) {
-    return null
+    return
   }
 
-  try {
-    return (await response.json()) as ApiEnvelope<T>
-  } catch (error) {
-    throw new ApiClientError({
-      code: 'HTTP_ERROR',
-      details: error,
-      message: 'Response body was not valid JSON.',
-      status: response.status,
-    })
+  config.headers = {
+    ...config.headers,
+    [key]: value,
   }
 }
 
-const createRequestMethod =
-  (
-    config: Required<Pick<ApiClientConfig, 'basePath' | 'fetchImpl'>> &
-      Pick<ApiClientConfig, 'authSessionAdapter'>,
-  ) =>
-  async <TResponse, TBody = undefined>(
+const setAuthorizationHeader = (
+  config: {
+    headers?: AxiosHeaders | Record<string, string>
+  },
+  accessToken: string,
+) => {
+  setHeader(config, 'authorization', `Bearer ${accessToken}`)
+}
+
+const withInterceptors = (
+  axiosClient: AxiosInstance,
+  authSessionAdapter?: AuthSessionAdapter,
+) => {
+  let isRefreshing = false
+  const failedQueue: Array<{
+    reject: (reason?: unknown) => void
+    resolve: (token: string) => void
+  }> = []
+
+  const processQueue = (error: unknown, refreshedToken: string | null) => {
+    failedQueue.forEach((pendingRequest) => {
+      if (error || !refreshedToken) {
+        pendingRequest.reject(error ?? new Error('Refresh failed'))
+
+        return
+      }
+
+      pendingRequest.resolve(refreshedToken)
+    })
+
+    failedQueue.length = 0
+  }
+
+  axiosClient.interceptors.request.use(
+    async (config) => {
+      setHeader(config, 'accept', 'application/json')
+
+      if (!config.skipAuth && authSessionAdapter) {
+        const accessToken = await authSessionAdapter.getAccessToken()
+
+        if (accessToken) {
+          setAuthorizationHeader(config, accessToken)
+        }
+      }
+
+      return config
+    },
+    (error) => Promise.reject(error),
+  )
+
+  axiosClient.interceptors.response.use(
+    (response: AxiosResponse<ApiEnvelope<unknown>>) => {
+      if (isApiSuccessEnvelope(response.data)) {
+        return {
+          ...response,
+          data: response.data.data,
+        }
+      }
+
+      throw toApiClientError(response.status, response.data)
+    },
+    async (error: unknown) => {
+      if (!isAxiosError(error)) {
+        throw toApiClientError(0, null, error)
+      }
+
+      const response = error.response
+      const originalRequest = error.config
+
+      if (!response) {
+        throw toApiClientError(0, null, error)
+      }
+
+      if (
+        response.status === 401 &&
+        authSessionAdapter &&
+        originalRequest &&
+        !originalRequest.skipAuthRefresh
+      ) {
+        if (originalRequest._retry) {
+          const authError = toApiClientError(response.status, response.data)
+
+          await authSessionAdapter.handleUnauthenticated?.(authError)
+          throw authError
+        }
+
+        if (isRefreshing) {
+          return new Promise<AxiosResponse>((resolve, reject) => {
+            failedQueue.push({
+              reject,
+              resolve: (refreshedToken) => {
+                originalRequest._retry = true
+                setAuthorizationHeader(originalRequest, refreshedToken)
+                resolve(axiosClient.request(originalRequest))
+              },
+            })
+          })
+        }
+
+        originalRequest._retry = true
+        isRefreshing = true
+
+        try {
+          const refreshedToken = await authSessionAdapter.refreshSession()
+          const retryToken =
+            refreshedToken ?? (await authSessionAdapter.getAccessToken())
+
+          if (!retryToken) {
+            throw toApiClientError(response.status, response.data)
+          }
+
+          processQueue(null, retryToken)
+          setAuthorizationHeader(originalRequest, retryToken)
+
+          return axiosClient.request(originalRequest)
+        } catch (refreshError) {
+          processQueue(refreshError, null)
+
+          if (
+            isAxiosError(refreshError) &&
+            refreshError.response &&
+            isApiErrorEnvelope(refreshError.response.data)
+          ) {
+            const refreshClientError = toApiClientError(
+              refreshError.response.status,
+              refreshError.response.data,
+            )
+
+            await authSessionAdapter.handleUnauthenticated?.(refreshClientError)
+            throw refreshClientError
+          }
+
+          const authError = toApiClientError(response.status, response.data)
+          await authSessionAdapter.handleUnauthenticated?.(authError)
+          throw authError
+        } finally {
+          isRefreshing = false
+        }
+      }
+
+      throw toApiClientError(response.status, response.data)
+    },
+  )
+}
+
+export const createApiClient = (config: ApiClientConfig = {}) => {
+  const axiosClient =
+    config.axiosInstance ??
+    axios.create({
+      baseURL: config.basePath ?? API_BASE_PATH,
+    })
+
+  withInterceptors(axiosClient, config.authSessionAdapter)
+
+  const request = async <TResponse, TBody = RequestBody>(
     method: ApiClientMethod,
     path: string,
     body?: TBody,
-    init?: RequestInit,
-    options: InternalRequestOptions = {
-      retryUnauthorized: true,
-    },
-  ): Promise<TResponse> => {
-    const headers = toHeaders(init?.headers)
-    headers.set('accept', 'application/json')
+    options?: ApiRequestOptions,
+  ) => {
+    const response = await axiosClient.request<TResponse>({
+      data: body,
+      headers: options?.headers,
+      method,
+      signal: options?.signal,
+      skipAuth: options?.skipAuth,
+      skipAuthRefresh: options?.skipAuthRefresh,
+      url: path,
+    } as AxiosRequestConfig<TBody>)
 
-    const { bodyInit, isJsonPayload } = toRequestBody(body as RequestBody)
-
-    if (isJsonPayload && !headers.has('content-type')) {
-      headers.set('content-type', 'application/json')
-    }
-
-    const accessToken =
-      options.accessTokenOverride ??
-      (await config.authSessionAdapter?.getAccessToken())
-
-    if (accessToken && !headers.has('authorization')) {
-      headers.set('authorization', `Bearer ${accessToken}`)
-    }
-
-    let response: Response
-
-    try {
-      response = await config.fetchImpl(resolveUrl(path, config.basePath), {
-        ...init,
-        body: bodyInit,
-        headers,
-        method,
-      })
-    } catch (error) {
-      throw new ApiClientError({
-        code: 'NETWORK_ERROR',
-        details: error,
-        message: 'Network request failed.',
-        status: 0,
-      })
-    }
-
-    const payload = await parseEnvelope<TResponse>(response)
-
-    if (
-      response.status === 401 &&
-      options.retryUnauthorized !== false &&
-      config.authSessionAdapter
-    ) {
-      const refreshedToken = await config.authSessionAdapter.refreshSession()
-      const retryToken =
-        refreshedToken ?? (await config.authSessionAdapter.getAccessToken())
-
-      if (retryToken) {
-        return createRequestMethod(config)<TResponse, TBody>(
-          method,
-          path,
-          body,
-          init,
-          {
-            accessTokenOverride: retryToken,
-            retryUnauthorized: false,
-          },
-        )
-      }
-    }
-
-    if (!response.ok || payload === null || !isApiSuccessEnvelope(payload)) {
-      const clientError = toApiClientError(response.status, payload)
-
-      if (response.status === 401) {
-        await config.authSessionAdapter?.handleUnauthenticated?.(clientError)
-      }
-
-      throw clientError
-    }
-
-    return payload.data
+    return response.data
   }
-
-export const createApiClient = (config: ApiClientConfig = {}) => {
-  const runtimeConfig = {
-    authSessionAdapter: config.authSessionAdapter,
-    basePath: config.basePath ?? API_BASE_PATH,
-    fetchImpl: config.fetchImpl ?? fetch,
-  }
-  const request = createRequestMethod(runtimeConfig)
 
   return {
-    get: <TResponse>(path: string, init?: RequestInit) =>
-      request<TResponse>('GET', path, undefined, init),
+    get: <TResponse>(path: string, options?: ApiRequestOptions) =>
+      request<TResponse>('get', path, undefined, options),
     patch: <TResponse, TBody = Record<string, unknown>>(
       path: string,
       body: TBody,
-      init?: RequestInit,
-    ) => request<TResponse, TBody>('PATCH', path, body, init),
+      options?: ApiRequestOptions,
+    ) => request<TResponse, TBody>('patch', path, body, options),
     post: <TResponse, TBody = Record<string, unknown>>(
       path: string,
       body: TBody,
-      init?: RequestInit,
-    ) => request<TResponse, TBody>('POST', path, body, init),
+      options?: ApiRequestOptions,
+    ) => request<TResponse, TBody>('post', path, body, options),
   }
 }
 

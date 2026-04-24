@@ -3,7 +3,7 @@
   "name": "Standardize apps/web authentication call flow and auth state handling",
   "description": "Refactor frontend authentication to an axios-based API client with interceptor-driven 401 refresh-and-retry, simplify Firebase->backend exchange orchestration, persist auth session in Zustand store with hydration gate for route protection, and migrate auth forms to react-hook-form + zod while preserving current UI layout.",
   "dependencies": ["feat-009", "feat-009b", "feat-033"],
-  "status": "pending",
-  "evidence": "",
+  "status": "done",
+  "evidence": "Implemented axios client/interceptor queue retry in apps/web/src/api/client.ts, persisted auth hydration gate in apps/web/src/stores/auth.store.ts, simplified auth lifecycle in apps/web/src/lib/auth/session-service.ts, and RHF+zod auth forms in sign-in/up pages. Verified with `pnpm --filter web lint`, `pnpm --filter web typecheck`, `pnpm --filter web test`, `pnpm --filter web build`, and `./init.sh`.",
   "updated_at": "2026-04-24"
 }

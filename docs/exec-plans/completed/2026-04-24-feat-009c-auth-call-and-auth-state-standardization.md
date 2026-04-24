@@ -37,15 +37,15 @@ Simplify and standardize the frontend authentication lifecycle so auth behavior 
 ## Progress
 
 - [x] 2026-04-24: Captured implementation goals and chosen direction (persist store + hydration gate + axios interceptor queue retry).
-- [ ] Add form dependencies (`react-hook-form`, `zod`, `@hookform/resolvers`) in `apps/web`.
-- [ ] Rewrite `apps/web/src/api/client.ts` to axios with request/response interceptors and typed error mapping.
-- [ ] Implement queued 401 refresh-and-retry behavior to replay failed API calls after token renewal.
-- [ ] Refactor auth store to persisted session state with explicit hydration-complete state (`isSessionChecked` or equivalent).
-- [ ] Simplify session service flow (Firebase -> exchange -> set store session, refresh, logout cleanup).
-- [ ] Update auth route guards to block rendering until hydration is complete.
-- [ ] Refactor sign-in/sign-up pages to RHF + zod while preserving current UI layout and copy.
-- [ ] Update/extend tests for client interceptor behavior, store hydration, route guards, and auth forms.
-- [ ] Run verification (`./init.sh`) and collect evidence for harness update.
+- [x] Add form dependencies (`react-hook-form`, `zod`, `@hookform/resolvers`) in `apps/web`.
+- [x] Rewrite `apps/web/src/api/client.ts` to axios with request/response interceptors and typed error mapping.
+- [x] Implement queued 401 refresh-and-retry behavior to replay failed API calls after token renewal.
+- [x] Refactor auth store to persisted session state with explicit hydration-complete state (`isSessionChecked`).
+- [x] Simplify session service flow (Firebase -> exchange -> set store session, refresh, logout cleanup).
+- [x] Update auth route guards to block rendering until hydration is complete.
+- [x] Refactor sign-in/sign-up pages to RHF + zod while preserving current UI layout and copy.
+- [x] Update/extend tests for client interceptor behavior, store hydration, route guards, and auth forms.
+- [x] Run verification (`./init.sh`) and collect evidence for harness update.
 
 ## Surprises & Discoveries
 
@@ -69,7 +69,14 @@ Simplify and standardize the frontend authentication lifecycle so auth behavior 
 
 ## Outcomes & Retrospective
 
-- To be filled after implementation and full verification complete.
+- Completed `feat-009c` with the target architecture: axios transport + centralized interceptor retry, persisted auth store hydration gate, and simplified auth orchestration.
+- Added regression coverage for concurrent 401 refresh queue replay, hydrated-route gating, session store behavior, and schema-driven auth form validation.
+- Verification status:
+  - `pnpm --filter web lint` passed.
+  - `pnpm --filter web typecheck` passed.
+  - `pnpm --filter web test` passed.
+  - `pnpm --filter web build` passed.
+  - `./init.sh` passed (after removing transient `apps/worker/.wrangler/tmp` generated artifact from a prior run).
 
 ## Context and Orientation
 

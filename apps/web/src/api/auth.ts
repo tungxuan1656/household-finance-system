@@ -9,10 +9,16 @@ import type {
 } from '@/types/auth'
 
 export const exchangeProviderToken = (payload: ExchangeProviderRequest) =>
-  client.post<ExchangeProviderResponse>(API_ENDPOINTS.auth.exchange, payload)
+  client.post<ExchangeProviderResponse>(API_ENDPOINTS.auth.exchange, payload, {
+    skipAuth: true,
+    skipAuthRefresh: true,
+  })
 
 export const refreshSession = (payload: RefreshSessionRequest) =>
-  client.post<RefreshSessionResponse>(API_ENDPOINTS.auth.refresh, payload)
+  client.post<RefreshSessionResponse>(API_ENDPOINTS.auth.refresh, payload, {
+    skipAuth: true,
+    skipAuthRefresh: true,
+  })
 
 export const logoutSession = (
   authenticatedClient: Pick<ReturnType<typeof createApiClient>, 'post'>,
