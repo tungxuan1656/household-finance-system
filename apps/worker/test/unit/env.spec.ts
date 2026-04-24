@@ -15,6 +15,10 @@ const createEnv = (overrides: Partial<Record<string, unknown>> = {}): Env =>
     AUTH_JWT_SECRET: 'jwt-secret',
     AUTH_REFRESH_TOKEN_PEPPER: 'refresh-pepper',
     FIREBASE_PROJECT_ID: 'household-finance-prod',
+    APP_ENV: 'test',
+    CLOUDINARY_CLOUD_NAME: 'demo-cloud',
+    CLOUDINARY_API_KEY: 'demo-key',
+    CLOUDINARY_API_SECRET: 'demo-secret',
     ...overrides,
   }) as unknown as Env
 
@@ -31,6 +35,9 @@ describe('env config', () => {
     expect(config.firebaseJwksUrl).toContain(
       'securetoken@system.gserviceaccount.com',
     )
+    expect(config.cloudinaryCloudName).toBe('demo-cloud')
+    expect(config.cloudinaryApiKey).toBe('demo-key')
+    expect(config.appEnvironment).toBe('test')
   })
 
   it('throws INTERNAL_ERROR when required value is missing', () => {

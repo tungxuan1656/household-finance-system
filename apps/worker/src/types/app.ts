@@ -27,4 +27,12 @@ export interface AppConfig {
   firebaseProjectId: string
   firebaseJwksUrl: string
   allowInsecureTestTokens: boolean
+  appEnvironment: string
+  cloudinaryCloudName: string
+  cloudinaryApiKey: string
+  cloudinaryApiSecret: string
+  cloudinaryMaxImageBytes: number
+  cloudinaryMaxVideoBytes: number
+  cloudinaryAllowedImageMimeTypes: string[]
+  cloudinaryAllowedVideoMimeTypes: string[]
 }

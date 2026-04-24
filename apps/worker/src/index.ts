@@ -6,6 +6,7 @@ import { fromUnknownError } from '@/lib/response'
 import { requestContextMiddleware } from '@/middlewares/request-context'
 import { authRoutes } from '@/routes/auth'
 import { healthRoutes } from '@/routes/health'
+import { mediaRoutes } from '@/routes/media'
 import { profileRoutes } from '@/routes/profile'
 import { protectedRoutes } from '@/routes/protected'
 import type { AppBindings } from '@/types'
@@ -50,6 +51,7 @@ app.notFound((ctx) => {
 app.route('/api/v1', healthRoutes)
 app.route('/api/v1', authRoutes)
 app.route('/api/v1', profileRoutes)
+app.route('/api/v1', mediaRoutes)
 app.route('/api/v1', protectedRoutes)
 
 export default {

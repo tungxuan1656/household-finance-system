@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-04-24 — Locked Cloudinary upload to required preset
+- Who: Codex
+- Summary: Updated signed-upload flow to enforce preset-only uploads using `household-finance-system-preset`. Backend now includes `upload_preset` in signed params and response ticket, and frontend upload helper always forwards `upload_preset` from server-issued ticket to Cloudinary multipart upload.
+- Files changed: apps/worker/src/lib/media/cloudinary.ts, apps/worker/src/contracts/media.ts, apps/worker/test/unit/cloudinary.spec.ts, apps/worker/test/index.spec.ts, apps/web/src/types/media.ts, apps/web/src/lib/media/cloudinary-upload.ts, apps/web/src/api/media.test.ts, apps/web/src/lib/media/cloudinary-upload.test.ts, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-04-24 — Implemented and closed feat-036 Cloudinary signed upload foundation
+- Who: Codex
+- Summary: Delivered a reusable signed media-upload foundation across worker and web. Backend now exposes authenticated `POST /api/v1/media/upload-signature` with strict request validation, server-controlled `folder/public_id/timestamp`, policy enforcement per resource type (`image|video`), and Cloudinary SHA-1 signature generation using protected server secret. Frontend now has shared media API + Cloudinary SDK helpers for the two-step flow (`requestUploadSignature` then multipart upload), with normalized upload result mapping for future features.
+- Files changed: apps/worker/src/contracts/media.ts, apps/worker/src/contracts/index.ts, apps/worker/src/routes/media.ts, apps/worker/src/handlers/media/create-upload-signature.ts, apps/worker/src/lib/media/cloudinary.ts, apps/worker/src/index.ts, apps/worker/src/lib/env.ts, apps/worker/src/types/app.ts, apps/worker/.dev.vars.example, apps/worker/vitest.config.mts, apps/worker/test/index.spec.ts, apps/worker/test/unit/cloudinary.spec.ts, apps/worker/test/unit/dto-media.spec.ts, apps/worker/test/unit/env.spec.ts, apps/worker/README.md, apps/web/src/api/endpoints.ts, apps/web/src/api/media.ts, apps/web/src/api/media.test.ts, apps/web/src/types/media.ts, apps/web/src/lib/media/cloudinary-upload.ts, apps/web/src/lib/media/cloudinary-upload.test.ts, harness/feature_index.json, harness/features/feat-036.json, harness/progress.md
+- Blockers: none
+- Next steps: integrate `uploadMediaViaCloudinary` into specific product features (avatar, expense attachments, etc.) in separate feature scopes.
+
 ## 2026-04-24 — Fixed Prettier plugin resolution and increased Commitlint header limit
 - Who: Codex
 - Summary: Installed `prettier-plugin-tailwindcss` at the workspace root to resolve Husky/lint-staged errors where Prettier could not find the plugin from the root context. Updated `commitlint.config.cjs` to increase the `header-max-length` from the conventional default to 150 characters to accommodate longer descriptive commit messages.
