@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Backfilled missing ExecPlan for feat-036
+- Who: Codex
+- Summary: Added missing execution plan document for `feat-036` into `docs/exec-plans/plans/` and registered it in `docs/exec-plans/index.md` under `Completed`, aligning the feature with harness plan governance flow.
+- Files changed: docs/exec-plans/plans/2026-04-24-feat-036-cloudinary-signed-media-upload-foundation.md, docs/exec-plans/index.md, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-04-24 — Locked Cloudinary upload to required preset
 - Who: Codex
 - Summary: Updated signed-upload flow to enforce preset-only uploads using `household-finance-system-preset`. Backend now includes `upload_preset` in signed params and response ticket, and frontend upload helper always forwards `upload_preset` from server-issued ticket to Cloudinary multipart upload.

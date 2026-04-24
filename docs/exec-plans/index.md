@@ -7,6 +7,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Completed
 
+- [2026-04-24-feat-036-cloudinary-signed-media-upload-foundation.md](plans/2026-04-24-feat-036-cloudinary-signed-media-upload-foundation.md) - feat-036 Cloudinary signed upload foundation for reusable image/video uploads with backend signature policy and frontend shared SDK.
 - [2026-04-24-feat-035-responsive-main-layout-shell.md](plans/2026-04-24-feat-035-responsive-main-layout-shell.md) - feat-035 responsive main layout shell (desktop sidebar + mobile bottom tabs).
 - [2026-04-24-feat-010-user-profile-settings-avatar-upload.md](plans/2026-04-24-feat-010-user-profile-settings-avatar-upload.md) - feat-010 user profile settings with `/users/me` contract alignment, display-name update, and avatar upload via Firebase Storage with square crop + client-side compression.
 - [2026-04-24-feat-009c-auth-call-and-auth-state-standardization.md](plans/2026-04-24-feat-009c-auth-call-and-auth-state-standardization.md) - feat-009c axios-based auth client/interceptor queue refresh, persisted auth-store hydration gating, and schema-driven auth form wiring.
