@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Created ExecPlan and harness records for feat-035 responsive main layout shell
+- Who: Codex
+- Summary: Created the active ExecPlan for `feat-035` to build a responsive protected-app layout shell in `apps/web` with desktop sidebar, mobile bottom tabs (`5 tabs + More`), canonical protected routing rooted at `/`, shared navigation constants, safe-area spacing guarantees, and i18n-ready navigation copy. Registered the new feature in harness as `in_progress` so implementation can start immediately in the next step.
+- Files changed: docs/exec-plans/active/2026-04-24-feat-035-responsive-main-layout-shell.md, docs/exec-plans/active/index.md, harness/features/feat-035.json, harness/feature_index.json, harness/progress.md
+- Blockers: none for planning; implementation must still execute the AGENTS-mandated impact analysis step before editing symbols.
+- Next steps: start implementing `feat-035` from the new ExecPlan, then collect verification evidence (`pnpm --filter web lint`, `pnpm --filter web typecheck`, `pnpm --filter web test`, `pnpm --filter web build`, `./init.sh`) before moving plan/feature to done.
+
 ## 2026-04-24 — Added local Husky hooks for staged lint/format, push tests, and commit message linting
 - Who: Codex
 - Summary: Added repository-level Husky hooks so `pre-commit` runs `lint-staged` on staged files, `pre-push` runs the existing root `test` suite only, and `commit-msg` validates Conventional Commit messages with commitlint. Also added root-level hook dependencies plus a repo-prettier dependency so staged docs, harness files, lockfiles, and package manifests can be formatted locally before commit.

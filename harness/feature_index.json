@@ -81,6 +81,11 @@
       "name": "User profile & identity settings",
       "status": "done"
     },
+    {
+      "id": "feat-035",
+      "name": "Responsive main layout shell for web frontend",
+      "status": "in_progress"
+    },
 
     {
       "id": "feat-011",
