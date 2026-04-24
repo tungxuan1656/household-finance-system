@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Created ExecPlan for feat-010 profile settings + avatar upload
+- Who: Codex
+- Summary: Created the active ExecPlan for `feat-010` at `docs/exec-plans/active/2026-04-24-feat-010-user-profile-settings-avatar-upload.md` using the repository `__plan-template__.md` structure, with strict `/api/v1/users/me` contract migration, display-name update validation, and expanded avatar workflow (square crop + client-side compression + Firebase Storage upload + backend profile persistence). Updated active plan index and synchronized `harness/features/feat-010.json` scope to match the approved feature expansion.
+- Files changed: docs/exec-plans/active/2026-04-24-feat-010-user-profile-settings-avatar-upload.md, docs/exec-plans/active/index.md, harness/features/feat-010.json, harness/progress.md
+- Blockers: none
+- Next steps: implement feat-010 from the new ExecPlan, then collect verification evidence (`pnpm test:worker`, `pnpm test:web`, `./init.sh`) before marking the feature complete.
+
 ## 2026-04-24 — Implemented and closed feat-009c auth standardization
 - Who: Codex
 - Summary: Completed `feat-009c` by refactoring `apps/web` auth flow to axios transport + interceptor-driven refresh-and-retry queue, persisting session state (`user`, `accessToken`, `refreshToken`) in the zustand auth store with hydration gating (`isSessionChecked`), simplifying auth session orchestration, and migrating sign-in/sign-up forms to `react-hook-form` + `zod` while preserving existing UI composition. Updated auth route guards to wait for hydration and added/updated tests for client, store, session service, and routing behavior.

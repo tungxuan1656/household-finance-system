@@ -1,9 +1,9 @@
 {
   "id": "feat-010",
   "name": "User profile & identity settings",
-  "description": "Implement user profile read and update. Backend: GET /api/v1/users/me (return display name, email, created_at) and PATCH /api/v1/users/me (update display name; validates non-empty, max 100 chars). Frontend: Profile Settings page with display-name form, optimistic UI update, and inline error handling. Does NOT include avatar upload, identity-provider linking, or household membership display (those are Phase 2 per docs/product-specs/profile-management.md).",
+  "description": "Implement user profile read and update with avatar management. Backend: GET /api/v1/users/me (return id, displayName, email, avatarUrl, createdAt) and PATCH /api/v1/users/me (update displayName with trim/non-empty/max-100 validation and avatarUrl). Frontend: Profile Settings page with display-name form, optimistic UI update, inline error handling, and avatar flow: square crop + client-side compression + upload to Firebase Storage + persist public URL to backend profile. Out of scope: identity-provider linking/unlinking and household membership display (Phase 2 per docs/product-specs/profile-management.md).",
   "dependencies": ["feat-033"],
   "status": "pending",
   "evidence": "",
-  "updated_at": "2026-04-21"
+  "updated_at": "2026-04-24"
 }
