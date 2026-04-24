@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Fixed web auth routing tests to respect session hydration gate
+- Who: Codex
+- Summary: Updated `apps/web/src/app.test.tsx` so the shared test reset marks the auth store session as checked after clearing state. This keeps the public/protected auth route tests aligned with the current hydration gate behavior instead of getting stuck on the temporary "restoring session" screen.
+- Files changed: apps/web/src/app.test.tsx, harness/features/feat-009.json, harness/progress.md
+- Blockers: none
+- Next steps: keep auth route tests aligned with the store hydration contract whenever that gate changes again.
+
 ## 2026-04-24 — Removed stale web auth/session and axios refresh plumbing
 - Who: Codex
 - Summary: Simplified the web auth flow by removing the unused `returnTo`/`postAuthRedirect` routing state, trimming `session-service` down to sign-in/sign-up/sign-out only, deleting obsolete client/session tests, and reducing the axios client to request auth headers + API envelope unwrapping. Also aligned profile queries to return DTOs directly so the settings page and React Query hooks consume the expected types again.

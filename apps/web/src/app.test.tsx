@@ -65,6 +65,7 @@ function renderAt(pathname: string) {
 beforeEach(() => {
   act(() => {
     storeAuthActions.reset()
+    storeAuthActions.markSessionChecked()
   })
 })
 
