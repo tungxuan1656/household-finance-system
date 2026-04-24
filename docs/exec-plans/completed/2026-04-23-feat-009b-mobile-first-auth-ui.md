@@ -69,4 +69,4 @@ pnpm --filter web test
 ## Artifacts and Notes
 
 - Browser subagent confirmed that the previous iteration had the hero section blocking the form on mobile and was cluttered with debug strings.
-- Template `radix-mira` provides a good foundation for sizing, but explicit height overrides may be needed if components default to `h-8`.
+- Template `radix-nova` provides a good foundation for sizing, but explicit height overrides may be needed if components default to `h-8`.

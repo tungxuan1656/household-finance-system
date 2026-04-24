@@ -15,3 +15,4 @@ looks the way it does.
 - [2026-04-22-feat-008-authentication-backend-session-exchange.md](2026-04-22-feat-008-authentication-backend-session-exchange.md) - feat-008 backend auth exchange/refresh completion and logout/session revocation.
 - [2026-04-22-feat-033-api-response-contract-error-handling-standardization.md](2026-04-22-feat-033-api-response-contract-error-handling-standardization.md) - feat-033 worker API envelope standardization and typed web HTTP client foundation.
 - [2026-04-23-feat-009-authentication-frontend-session-flow.md](2026-04-23-feat-009-authentication-frontend-session-flow.md) - feat-009 frontend authentication session flow with Firebase sign-in/sign-up, refresh-token persistence, silent refresh, logout cleanup, and onboarding redirect handling.
+- [2026-04-23-feat-009b-mobile-first-auth-ui.md](2026-04-23-feat-009b-mobile-first-auth-ui.md) - feat-009b Mobile-first UI/UX for Auth (Sign-in/Sign-up)

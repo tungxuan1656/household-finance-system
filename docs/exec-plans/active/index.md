@@ -11,4 +11,3 @@ work from the repository alone.
 
 ## Active Plans
 
-- [2026-04-23-feat-009b-mobile-first-auth-ui.md](file:///Users/tungdoan/Projects/Web/household-finance-system/docs/exec-plans/active/2026-04-23-feat-009b-mobile-first-auth-ui.md)
