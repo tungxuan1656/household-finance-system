@@ -56,7 +56,7 @@ vi.mock('@/lib/auth/session-service', async () => {
         },
       })
 
-      return resolveDestination('/app')
+      return resolveDestination('/')
     }),
     signOutCurrentSession: vi.fn(async () => {
       authActions.clearSession({ preserveReturnTo: false })
@@ -115,7 +115,7 @@ describe('web shell routing', () => {
     ).toBeInTheDocument()
   })
 
-  it('redirects the root route to sign in', async () => {
+  it('routes root through protected flow and redirects unauthenticated users', async () => {
     renderAt('/')
 
     expect(
@@ -158,7 +158,7 @@ describe('web shell routing', () => {
       })
     })
 
-    renderAt('/app')
+    renderAt('/')
 
     expect(
       screen.getByRole('heading', { name: t('app.overview.title') }),
@@ -299,5 +299,15 @@ describe('web shell routing', () => {
       'data-theme',
       'dark',
     )
+  })
+
+  it('renders the 404 page for unknown routes and links back to home', () => {
+    renderAt('/this-route-does-not-exist')
+
+    expect(screen.getByRole('heading', { name: 'Whoops!' })).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', { name: 'Back to home page' }),
+    ).toHaveAttribute('href', '/')
   })
 })

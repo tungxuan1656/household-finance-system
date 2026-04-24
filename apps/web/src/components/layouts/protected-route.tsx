@@ -5,7 +5,7 @@ import { AUTH_SIGN_IN_PATH } from '@/lib/constants/auth'
 import { t } from '@/lib/i18n'
 import { authActions, useAuthStore } from '@/stores/auth.store'
 
-function ShellGuard() {
+function ProtectedRoute() {
   const location = useLocation()
   const isAuthenticated = useAuthStore.use.isAuthenticated()
   const isSessionChecked = useAuthStore.use.isSessionChecked()
@@ -48,4 +48,4 @@ function ShellGuard() {
   return <Outlet />
 }
 
-export { ShellGuard }
+export { ProtectedRoute }

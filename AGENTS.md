@@ -148,7 +148,7 @@ Any code that does not follow these guides will be considered non-compliant and 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **household-finance-system** (2106 symbols, 3074 relationships, 56 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **household-finance-system** (2054 symbols, 2956 relationships, 38 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
