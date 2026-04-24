@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
 import { AppError } from '@/lib/errors'
-import { assertDatabaseBinding, readConfig } from '@/lib/env'
+import {
+  assertDatabaseBinding,
+  readCloudinaryConfig,
+  readConfig,
+} from '@/lib/env'
 
 const createEnv = (overrides: Partial<Record<string, unknown>> = {}): Env =>
   ({
@@ -35,6 +39,11 @@ describe('env config', () => {
     expect(config.firebaseJwksUrl).toContain(
       'securetoken@system.gserviceaccount.com',
     )
+  })
+
+  it('reads cloudinary config only when media flow needs it', () => {
+    const config = readCloudinaryConfig(createEnv())
+
     expect(config.cloudinaryCloudName).toBe('demo-cloud')
     expect(config.cloudinaryApiKey).toBe('demo-key')
     expect(config.appEnvironment).toBe('test')
@@ -58,6 +67,18 @@ describe('env config', () => {
     } catch (error) {
       expect((error as AppError).code).toBe('INTERNAL_ERROR')
     }
+  })
+
+  it('allows auth config to load without cloudinary variables', () => {
+    const config = readConfig(
+      createEnv({
+        CLOUDINARY_CLOUD_NAME: undefined,
+        CLOUDINARY_API_KEY: undefined,
+        CLOUDINARY_API_SECRET: undefined,
+      }),
+    )
+
+    expect(config.authIssuer).toBe('https://household-finance.local')
   })
 
   it('throws INTERNAL_ERROR when token TTL is invalid', () => {

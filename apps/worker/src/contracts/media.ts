@@ -68,4 +68,6 @@ export interface UploadSignatureResponse {
   expiresAt: number
   maxBytes: number
   allowedMimeTypes: string[]
+  maxFileSize: number
+  allowedFormats: string[]
 }

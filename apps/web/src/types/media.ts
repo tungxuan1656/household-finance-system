@@ -22,6 +22,8 @@ export type UploadSignatureTicketDTO = {
   expiresAt: number
   maxBytes: number
   allowedMimeTypes: string[]
+  maxFileSize: number
+  allowedFormats: string[]
 }
 
 export type CloudinaryUploadedAsset = {

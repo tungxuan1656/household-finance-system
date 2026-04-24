@@ -267,6 +267,8 @@ describe('Worker foundation', () => {
         expiresAt: number
         maxBytes: number
         allowedMimeTypes: string[]
+        maxFileSize: number
+        allowedFormats: string[]
       }>
     >(response)
 
@@ -283,7 +285,9 @@ describe('Worker foundation', () => {
     expect(payload.data.signature.length).toBe(40)
     expect(payload.data.expiresAt).toBeGreaterThan(payload.data.timestamp)
     expect(payload.data.maxBytes).toBeGreaterThan(0)
+    expect(payload.data.maxFileSize).toBe(payload.data.maxBytes)
     expect(payload.data.allowedMimeTypes).toContain('image/jpeg')
+    expect(payload.data.allowedFormats).toContain('jpg')
   })
 
   it('rejects media upload signature request when bearer token is missing', async () => {

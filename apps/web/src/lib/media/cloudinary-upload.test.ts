@@ -26,6 +26,8 @@ const createTicket = (): UploadSignatureTicketDTO => ({
   expiresAt: 1_700_000_300,
   maxBytes: 1024 * 1024,
   allowedMimeTypes: ['image/jpeg'],
+  maxFileSize: 1024 * 1024,
+  allowedFormats: ['jpg', 'jpeg'],
 })
 
 describe('cloudinary upload helper', () => {
@@ -70,6 +72,11 @@ describe('cloudinary upload helper', () => {
     expect(formData.get('upload_preset')).toBe(ticket.uploadPreset)
     expect(formData.get('folder')).toBe(ticket.folder)
     expect(formData.get('public_id')).toBe(ticket.publicId)
+    expect(formData.get('max_file_size')).toBe(ticket.maxFileSize.toString())
+
+    expect(formData.get('allowed_formats')).toBe(
+      ticket.allowedFormats.join(','),
+    )
 
     expect(uploaded).toEqual({
       secureUrl: 'https://res.cloudinary.com/demo/image/upload/file-123',

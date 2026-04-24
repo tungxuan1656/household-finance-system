@@ -1,6 +1,6 @@
 import { internalError } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
-import type { AppConfig } from '@/types'
+import type { AppConfig, CloudinaryConfig } from '@/types'
 
 const DEFAULT_FIREBASE_JWKS_URL =
   'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
@@ -115,6 +115,13 @@ export const readConfig = (env: Env): AppConfig => {
     allowInsecureTestTokens: toBoolean(
       readOptional(env, 'AUTH_ALLOW_INSECURE_TEST_TOKENS'),
     ),
+  }
+}
+
+export const readCloudinaryConfig = (env: Env): CloudinaryConfig => {
+  assertDatabaseBinding(env)
+
+  return {
     appEnvironment:
       readOptional(env, 'APP_ENV')?.trim() || DEFAULT_APP_ENVIRONMENT,
     cloudinaryCloudName: readRequired(env, 'CLOUDINARY_CLOUD_NAME'),

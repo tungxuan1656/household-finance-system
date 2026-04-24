@@ -5,18 +5,9 @@ import {
   canonicalizeCloudinaryParams,
   signCloudinaryParams,
 } from '@/lib/media/cloudinary'
-import type { AppConfig } from '@/types'
+import type { CloudinaryConfig } from '@/types'
 
-const appConfig: AppConfig = {
-  authIssuer: 'https://example.com',
-  authAudience: 'api',
-  accessTokenTtlSeconds: 3600,
-  refreshTokenTtlSeconds: 86_400,
-  authJwtSecret: 'jwt-secret',
-  refreshTokenPepper: 'pepper',
-  firebaseProjectId: 'project',
-  firebaseJwksUrl: 'https://jwks.example.com',
-  allowInsecureTestTokens: false,
+const appConfig: CloudinaryConfig = {
   appEnvironment: 'local',
   cloudinaryCloudName: 'demo-cloud',
   cloudinaryApiKey: 'demo-key',
@@ -30,21 +21,25 @@ const appConfig: AppConfig = {
 describe('cloudinary upload signing', () => {
   it('canonicalizes signable params in lexicographic key order', () => {
     const canonical = canonicalizeCloudinaryParams({
+      allowed_formats: 'jpg,jpeg,png',
       folder: 'app/local/user-1/expense_receipt',
+      max_file_size: 10_485_760,
       public_id: 'abc123',
       timestamp: 1_700_000_000,
       upload_preset: 'household-finance-system-preset',
     })
 
     expect(canonical).toBe(
-      'folder=app/local/user-1/expense_receipt&public_id=abc123&timestamp=1700000000&upload_preset=household-finance-system-preset',
+      'allowed_formats=jpg,jpeg,png&folder=app/local/user-1/expense_receipt&max_file_size=10485760&public_id=abc123&timestamp=1700000000&upload_preset=household-finance-system-preset',
     )
   })
 
   it('generates expected SHA-1 signature for a known fixture', () => {
     const signature = signCloudinaryParams(
       {
+        allowed_formats: 'jpg,jpeg,png',
         folder: 'app/local/user-1/expense_receipt',
+        max_file_size: 10_485_760,
         public_id: 'abc123',
         timestamp: 1_700_000_000,
         upload_preset: 'household-finance-system-preset',
@@ -52,7 +47,7 @@ describe('cloudinary upload signing', () => {
       'test-secret',
     )
 
-    expect(signature).toBe('f47c367b2c8231b79f8db25e1c3b911d48edc5ff')
+    expect(signature).toBe('1fdbc5811bdd3acc5064809728a0ca7adbf25393')
   })
 
   it('rejects unsupported mime type from policy', () => {
@@ -95,5 +90,7 @@ describe('cloudinary upload signing', () => {
     expect(payload.uploadPreset).toBe('household-finance-system-preset')
     expect(payload.folder).toBe('app/local/user-1/expense-attachment')
     expect(payload.allowedMimeTypes).toEqual(['video/mp4'])
+    expect(payload.allowedFormats).toEqual(['mp4'])
+    expect(payload.maxFileSize).toBe(appConfig.cloudinaryMaxVideoBytes)
   })
 })

@@ -32,6 +32,8 @@ describe('media api', () => {
       expiresAt: 1_700_000_300,
       maxBytes: 1024,
       allowedMimeTypes: ['image/jpeg'],
+      maxFileSize: 1024,
+      allowedFormats: ['jpg', 'jpeg'],
     }
 
     postMock.mockResolvedValueOnce({ data: ticket })

@@ -8,7 +8,7 @@ import type {
 } from '@/contracts'
 import { invalidInput } from '@/lib/errors'
 import type { SupportedLocale } from '@/lib/i18n'
-import type { AppConfig } from '@/types'
+import type { CloudinaryConfig } from '@/types'
 
 const DEFAULT_ALLOWED_IMAGE_MIME_TYPES = [
   'image/jpeg',
@@ -30,7 +30,9 @@ const SIGNATURE_TTL_SECONDS = 5 * 60
 const CLOUDINARY_UPLOAD_PRESET = 'household-finance-system-preset'
 
 type SignableCloudinaryParams = {
+  allowed_formats: string
   folder: string
+  max_file_size: number
   public_id: string
   timestamp: number
   upload_preset: string
@@ -43,6 +45,19 @@ type UploadPolicy = {
 
 const sanitizePathSegment = (value: string): string =>
   value.replaceAll(/[^a-zA-Z0-9_-]/g, '-')
+
+const mimeTypeToFormats: Record<string, string[]> = {
+  'image/gif': ['gif'],
+  'image/heic': ['heic'],
+  'image/jpeg': ['jpg', 'jpeg'],
+  'image/jpg': ['jpg', 'jpeg'],
+  'image/png': ['png'],
+  'image/webp': ['webp'],
+  'video/mp4': ['mp4'],
+  'video/quicktime': ['mov'],
+  'video/webm': ['webm'],
+  'video/x-matroska': ['mkv'],
+}
 
 const canonicalizeCloudinaryParams = (
   params: SignableCloudinaryParams,
@@ -61,7 +76,7 @@ const signCloudinaryParams = (
     .digest('hex')
 
 const resolveUploadPolicy = (
-  config: AppConfig,
+  config: CloudinaryConfig,
   resourceType: UploadSignatureRequest['resourceType'],
 ): UploadPolicy =>
   resourceType === 'image'
@@ -101,8 +116,29 @@ const assertWithinPolicy = (
   }
 }
 
+const resolveAllowedFormats = (allowedMimeTypes: string[]): string[] => {
+  const formats = allowedMimeTypes.flatMap((mimeType) => {
+    const normalized = mimeType.toLowerCase()
+    const mapped = mimeTypeToFormats[normalized]
+
+    if (mapped) {
+      return mapped
+    }
+
+    const [, subtype] = normalized.split('/')
+
+    if (!subtype) {
+      return []
+    }
+
+    return [subtype.replace(/^x-/, '')]
+  })
+
+  return [...new Set(formats)]
+}
+
 export const createUploadSignature = (input: {
-  appConfig: AppConfig
+  appConfig: CloudinaryConfig
   locale: SupportedLocale
   request: UploadSignatureRequest
   userId: string
@@ -115,6 +151,7 @@ export const createUploadSignature = (input: {
   assertWithinPolicy(input.request, policy, input.locale)
 
   const timestamp = Math.floor(Date.now() / 1000)
+  const allowedFormats = resolveAllowedFormats(policy.allowedMimeTypes)
   const folder = `app/${sanitizePathSegment(input.appConfig.appEnvironment)}/${sanitizePathSegment(input.userId)}/${sanitizePathSegment(input.request.feature)}`
 
   const basePublicId = ulid().toLowerCase()
@@ -123,7 +160,9 @@ export const createUploadSignature = (input: {
     : basePublicId
 
   const signableParams: SignableCloudinaryParams = {
+    allowed_formats: allowedFormats.join(','),
     folder,
+    max_file_size: policy.maxBytes,
     public_id: publicId,
     timestamp,
     upload_preset: CLOUDINARY_UPLOAD_PRESET,
@@ -147,6 +186,8 @@ export const createUploadSignature = (input: {
     expiresAt: timestamp + SIGNATURE_TTL_SECONDS,
     maxBytes: policy.maxBytes,
     allowedMimeTypes: policy.allowedMimeTypes,
+    maxFileSize: policy.maxBytes,
+    allowedFormats,
   }
 }
 

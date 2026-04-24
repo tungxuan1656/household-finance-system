@@ -27,6 +27,9 @@ export interface AppConfig {
   firebaseProjectId: string
   firebaseJwksUrl: string
   allowInsecureTestTokens: boolean
+}
+
+export interface CloudinaryConfig {
   appEnvironment: string
   cloudinaryCloudName: string
   cloudinaryApiKey: string
