@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-04-24 — Kept shared card UI unchanged and aligned auth tests to current markup
+- Who: Codex
+- Summary: Reverted the temporary `CardTitle` semantic change so `apps/web/src/components/ui` stays untouched, then updated the auth routing and i18n tests to assert the existing `data-slot="card-title"` markup instead of relying on a heading role. Verified the web workspace with `pnpm test:web` and `pnpm typecheck:web`.
+- Files changed: apps/web/src/components/ui/card.tsx, apps/web/src/app.test.tsx, apps/web/src/lib/i18n/browser-fallback.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: if future UI tests need accessibility-driven queries, add semantics at the page-specific layer rather than in shared UI primitives.
+
+## 2026-04-24 — Fixed web test regressions in auth headings and API client expectation
+- Who: Codex
+- Summary: Updated the shared `CardTitle` component to render a semantic `h2`, which restored heading-based queries across the sign-in, sign-up, and overview UI tests. Also aligned the API client test with the configured absolute `VITE_API_BASE_URL` so the fetch assertion matches runtime behavior. Verified the web workspace with `pnpm test:web` and `pnpm typecheck:web`.
+- Files changed: apps/web/src/components/ui/card.tsx, apps/web/src/api/client.test.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep using semantic heading elements in shared card headers so accessibility and Testing Library queries stay aligned.
+
 ## 2026-04-23 — Quieted init.sh step output on success
 - Who: Codex
 - Summary: Wrapped each `init.sh` step in a capture-and-replay helper so normal runs only show the step banners, while any failing step prints its collected stdout/stderr after the failure.

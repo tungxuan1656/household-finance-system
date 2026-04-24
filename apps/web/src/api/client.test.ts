@@ -43,7 +43,7 @@ describe('api client', () => {
     })
 
     expect(fetchImpl).toHaveBeenCalledWith(
-      '/api/v1/health',
+      'http://localhost:8787/api/v1/health',
       expect.objectContaining({
         method: 'GET',
       }),

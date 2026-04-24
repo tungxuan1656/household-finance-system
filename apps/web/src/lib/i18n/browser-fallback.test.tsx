@@ -26,7 +26,9 @@ describe('frontend i18n bootstrap', () => {
     )
 
     expect(
-      await screen.findByRole('heading', { name: t('auth.signIn.title') }),
+      await screen.findByText(t('auth.signIn.title'), {
+        selector: '[data-slot="card-title"]',
+      }),
     ).toBeInTheDocument()
   })
 })
