@@ -9,7 +9,7 @@ export function BottomTab() {
   return createPortal(
     <nav
       aria-label={t('shell.protected.nav.ariaLabel')}
-      className='fixed inset-x-0 bottom-0 z-50 flex h-16 items-center justify-around border-t border-border/70 bg-background/85 pb-safe backdrop-blur'>
+      className='fixed inset-x-0 bottom-0 z-50 flex h-16 items-center justify-around border-t border-border/70 bg-background/50 pb-safe shadow-md backdrop-blur-lg'>
       {BOTTOM_TAB_ITEMS.map((item) => (
         <NavLink
           key={item.to}

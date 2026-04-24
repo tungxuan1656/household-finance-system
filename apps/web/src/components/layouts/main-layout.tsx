@@ -30,7 +30,7 @@ function MainLayout() {
 
         {/* Main Content Area */}
         <main className='flex w-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-8 lg:pb-0'>
-          <section className='flex-1 rounded-none border-x-0 border-y border-border/70 bg-background/85 p-4 shadow-sm backdrop-blur sm:p-6 md:rounded-lg md:border-x'>
+          <section className='flex-1 rounded-none bg-background/85 p-4 shadow-sm backdrop-blur sm:p-6 md:rounded-lg md:border-x'>
             <Outlet />
           </section>
         </main>
