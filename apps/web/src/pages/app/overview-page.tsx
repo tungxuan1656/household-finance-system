@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n'
 import { useAuthStore } from '@/stores/auth.store'
 
@@ -61,7 +62,7 @@ function OverviewPage() {
           </CardHeader>
           <CardContent className='space-y-2'>
             <Button asChild variant='outline'>
-              <Link to='/app/onboarding'>
+              <Link to={PATHS.ONBOARDING}>
                 {t('app.overview.nextAction.button')}
               </Link>
             </Button>

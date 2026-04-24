@@ -3,7 +3,7 @@
   "name": "Responsive main layout shell for web frontend",
   "description": "Build a responsive protected-app shell in apps/web with desktop sidebar navigation and mobile bottom tabs (5 tabs + More), standardized route model rooted at `/`, shared nav constants/active-state logic, safe-area-aware spacing, and i18n-ready navigation labels for upcoming product features.",
   "dependencies": ["feat-005", "feat-032"],
-  "status": "in_progress",
-  "evidence": "",
+  "status": "done",
+  "evidence": "Implemented AppSidebar, BottomTab, useIsMobile hook, updated index.css safe-area utilities, refactored router to canonical paths. Tests pass.",
   "updated_at": "2026-04-24"
 }

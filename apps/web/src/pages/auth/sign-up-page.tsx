@@ -7,6 +7,7 @@ import { AuthField } from '@/components/auth/auth-field'
 import { AuthPanel } from '@/components/auth/auth-panel'
 import { Input } from '@/components/ui/input'
 import { signUpWithEmailPassword } from '@/lib/auth/session-service'
+import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n'
 
 const signUpSchema = z.object({
@@ -33,7 +34,7 @@ export const SignUpPage = () => {
       await signUpWithEmailPassword(values)
 
       form.clearErrors('root')
-      navigate('/app/onboarding', { replace: true })
+      navigate(PATHS.ONBOARDING, { replace: true })
     } catch {
       form.setError('root', {
         message: t('auth.session.errors.signUpFailed'),

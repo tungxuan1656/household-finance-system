@@ -150,6 +150,10 @@
       "settings": {
         "description": "Tuyến này đã được dựng khung cho shell MVP và sẽ được thay thế bởi feat thật ở bước sau.",
         "title": "Cài đặt"
+      },
+      "more": {
+        "description": "Menu mở rộng cho màn hình nhỏ.",
+        "title": "Thêm"
       }
     },
     "settings": {
@@ -200,7 +204,8 @@
         "insights": "Phân tích",
         "onboarding": "Thiết lập",
         "overview": "Tổng quan",
-        "settings": "Cài đặt"
+        "settings": "Cài đặt",
+        "more": "Thêm"
       },
       "title": "Điều hướng khung ứng dụng"
     }

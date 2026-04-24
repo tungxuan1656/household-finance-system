@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Implemented and closed feat-035 responsive main layout shell
+- Who: Codex
+- Summary: Completed `feat-035` by creating `AppSidebar` and `BottomTab` components with unified `APP_MENU_ITEMS` and `BOTTOM_TAB_ITEMS` constants under `paths.ts` and `navigation.ts`. Refactored `router.tsx` to a single `/` base protected app root and eliminated the legacy `/app` path prefix. Used `createPortal` for bottom tabs to render above the page safe area. Confirmed layout rendering and responsive logic via test suite and marked feature as done.
+- Files changed: apps/web/src/router.tsx, apps/web/src/components/layouts/main-layout.tsx, apps/web/src/components/layouts/app-sidebar.tsx, apps/web/src/components/layouts/bottom-tab.tsx, apps/web/src/hooks/shared/use-mobile.ts, apps/web/src/lib/constants/paths.ts, apps/web/src/lib/constants/navigation.ts, apps/web/src/lib/constants/auth.ts, apps/web/src/index.css, apps/web/src/lib/i18n/locales/vi.json, apps/web/src/app.test.tsx, apps/web/src/test/setup.ts, apps/web/src/pages/auth/sign-up-page.tsx, apps/web/src/pages/app/onboarding-page.tsx, apps/web/src/pages/app/overview-page.tsx, apps/web/src/pages/app/placeholder-page.tsx, docs/exec-plans/index.md, harness/features/feat-035.json, harness/feature_index.json, harness/progress.md
+- Blockers: GitNexus `detect_changes` isn't available for the environment, so couldn't execute GitNexus diff check. Mocked `window.matchMedia` for `jsdom` testing in Vitest since `useIsMobile` needed it.
+- Next steps: Proceed to the next prioritized features or bug fixes.
+
 ## 2026-04-24 — Restructured exec-plan storage to keep stable file paths
 - Who: Codex
 - Summary: Updated plan storage structure per request to keep `docs/exec-plans/` as the root and avoid active/completed folder moves: all plan files now live under `docs/exec-plans/plans/`, while `docs/exec-plans/index.md` tracks status with `Active` and `Completed` sections. Updated plan governance docs and the planning skill guidance to match this workflow.

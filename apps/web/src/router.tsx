@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layouts/main-layout'
 import { ProtectedRoute } from '@/components/layouts/protected-route'
 import { PublicLayout } from '@/components/layouts/public-layout'
 import { PublicRoute } from '@/components/layouts/public-route'
+import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n'
 import { OnboardingPage } from '@/pages/app/onboarding-page'
 import { OverviewPage } from '@/pages/app/overview-page'
@@ -23,14 +24,12 @@ function AppRoutes() {
         </Route>
       </Route>
       <Route element={<ProtectedRoute />}>
-        <Route element={<MainLayout />} path='/'>
+        <Route element={<MainLayout />} path={PATHS.APP_ROOT}>
           <Route index element={<OverviewPage />} />
-        </Route>
-      </Route>
-      <Route element={<ProtectedRoute />}>
-        <Route element={<MainLayout />} path='/app'>
-          <Route index element={<OverviewPage />} />
-          <Route element={<OnboardingPage />} path='onboarding' />
+          <Route
+            element={<OnboardingPage />}
+            path={PATHS.ONBOARDING.replace('/', '')}
+          />
           <Route
             element={
               <PlaceholderPage
@@ -38,7 +37,7 @@ function AppRoutes() {
                 title={t('app.placeholder.expenses.title')}
               />
             }
-            path='expenses'
+            path={PATHS.EXPENSES.replace('/', '')}
           />
           <Route
             element={
@@ -47,7 +46,7 @@ function AppRoutes() {
                 title={t('app.placeholder.budgets.title')}
               />
             }
-            path='budgets'
+            path={PATHS.BUDGETS.replace('/', '')}
           />
           <Route
             element={
@@ -56,9 +55,21 @@ function AppRoutes() {
                 title={t('app.placeholder.insights.title')}
               />
             }
-            path='insights'
+            path={PATHS.INSIGHTS.replace('/', '')}
           />
-          <Route element={<ProfileSettingsPage />} path='settings' />
+          <Route
+            element={<ProfileSettingsPage />}
+            path={PATHS.SETTINGS.replace('/', '')}
+          />
+          <Route
+            element={
+              <PlaceholderPage
+                description={t('app.placeholder.more.description')}
+                title={t('app.placeholder.more.title')}
+              />
+            }
+            path={PATHS.MORE.replace('/', '')}
+          />
         </Route>
       </Route>
       <Route element={<NotFoundPage />} path='*' />
