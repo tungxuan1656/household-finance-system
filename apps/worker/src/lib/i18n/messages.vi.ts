@@ -34,6 +34,7 @@ export const viMessages = {
   'validation.arrayTooBig': 'Danh sách quá dài.',
   'validation.custom': 'Giá trị không hợp lệ.',
   'profile.displayNameMustNotBeBlank': 'Tên hiển thị không được để trống.',
+  'profile.displayNameTooLong': 'Tên hiển thị không được vượt quá 100 ký tự.',
   'profile.atLeastOneProfileField': 'Cần cung cấp ít nhất một trường hồ sơ.',
 } as const
 

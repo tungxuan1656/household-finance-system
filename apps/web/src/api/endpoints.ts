@@ -9,7 +9,7 @@ export const API_ENDPOINTS = {
     refresh: '/auth/refresh',
   },
   health: '/health',
-  profile: '/profile',
+  profile: '/users/me',
   protected: {
     ping: '/protected/ping',
   },

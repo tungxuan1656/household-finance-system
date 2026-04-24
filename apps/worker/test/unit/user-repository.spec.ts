@@ -6,6 +6,7 @@ import {
 } from '@/db/repositories/user-repository'
 
 type UserRow = {
+  created_at: number
   id: string
   display_name: string | null
   primary_email: string | null
@@ -141,6 +142,7 @@ class FakeD1Database {
       ]
 
       this.workingUsers().set(id, {
+        created_at: Date.now(),
         id,
         display_name: displayName,
         primary_email: primaryEmail,
@@ -243,7 +245,7 @@ class FakeD1Database {
     }
 
     if (
-      /^SELECT\s+id,\s*display_name,\s*primary_email,\s*avatar_url\s+FROM\s+users/i.test(
+      /^SELECT\s+id,\s*created_at,\s*display_name,\s*primary_email,\s*avatar_url\s+FROM\s+users/i.test(
         sql,
       )
     ) {
@@ -361,6 +363,7 @@ describe('user repository', () => {
     })
 
     db.seedUser({
+      created_at: Date.now(),
       id: 'winner-user',
       display_name: 'Original Winner',
       primary_email: 'winner@example.com',
@@ -378,6 +381,7 @@ describe('user repository', () => {
     )
 
     expect(createdUser).toEqual({
+      createdAt: expect.any(Number),
       id: 'winner-user',
       displayName: 'New Name',
       primaryEmail: 'new@example.com',
@@ -386,6 +390,7 @@ describe('user repository', () => {
     expect(db.getUserCount()).toBe(1)
     expect(db.getAuthIdentityCount()).toBe(1)
     expect(db.getUser('winner-user')).toEqual({
+      created_at: expect.any(Number),
       id: 'winner-user',
       display_name: 'New Name',
       primary_email: 'new@example.com',

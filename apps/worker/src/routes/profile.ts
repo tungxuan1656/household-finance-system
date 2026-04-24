@@ -14,9 +14,9 @@ import type { AppBindings } from '@/types'
 
 export const profileRoutes = new Hono<AppBindings>()
 
-profileRoutes.use('/profile', authMiddleware)
+profileRoutes.use('/users/me', authMiddleware)
 
-profileRoutes.get('/profile', async (ctx) => {
+profileRoutes.get('/users/me', async (ctx) => {
   const currentUser = ctx.get('currentUser')
   const locale = ctx.get('locale')
   const profile = await getCurrentProfile(ctx.env, currentUser.id, locale)
@@ -24,7 +24,7 @@ profileRoutes.get('/profile', async (ctx) => {
   return success<ProfileResponse>(ctx, profile)
 })
 
-profileRoutes.patch('/profile', async (ctx) => {
+profileRoutes.patch('/users/me', async (ctx) => {
   const currentUser = ctx.get('currentUser')
   const locale = ctx.get('locale')
   const body = await readJsonBody<UpdateProfileRequest>(

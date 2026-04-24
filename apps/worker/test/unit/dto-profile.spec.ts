@@ -29,4 +29,12 @@ describe('profile contract schema', () => {
 
     expect(parsed.success).toBe(false)
   })
+
+  it('rejects display name longer than 100 characters', () => {
+    const parsed = createUpdateProfileRequestSchema().safeParse({
+      displayName: 'a'.repeat(101),
+    })
+
+    expect(parsed.success).toBe(false)
+  })
 })

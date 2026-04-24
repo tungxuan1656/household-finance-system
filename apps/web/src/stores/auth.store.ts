@@ -32,6 +32,10 @@ type AuthStoreActions = {
   setPostAuthRedirect: (postAuthRedirect: string | null) => void
   setReturnTo: (returnTo: string | null) => void
   setSession: (input: SetSessionInput) => void
+  updateUserProfile: (input: {
+    avatarUrl?: string | null
+    displayName?: string | null
+  }) => void
 }
 
 const initialState: AuthSessionState = {
@@ -123,6 +127,26 @@ const authActions: AuthStoreActions = {
       isSessionChecked: true,
       refreshToken: input.refreshToken,
       user: input.user,
+    }),
+  updateUserProfile: (input) =>
+    _useAuthStore.setState((state) => {
+      if (!state.user) {
+        return state
+      }
+
+      return {
+        user: {
+          ...state.user,
+          avatarUrl:
+            input.avatarUrl !== undefined
+              ? input.avatarUrl
+              : state.user.avatarUrl,
+          displayName:
+            input.displayName !== undefined
+              ? input.displayName
+              : state.user.displayName,
+        },
+      }
     }),
 }
 

@@ -19,6 +19,6 @@
     },
     "types": ["./worker-configuration.d.ts", "node"]
   },
-  "exclude": ["test"],
+  "exclude": ["test", ".wrangler", "migrations", "dist"],
   "include": ["worker-configuration.d.ts", "src/**/*.ts"]
 }

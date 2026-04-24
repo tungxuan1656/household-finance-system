@@ -11,6 +11,7 @@ export const createUpdateProfileRequestSchema = (
         .string()
         .trim()
         .min(1, translate(locale, 'profile.displayNameMustNotBeBlank'))
+        .max(100, translate(locale, 'profile.displayNameTooLong'))
         .nullable()
         .optional(),
       avatarUrl: z.url().nullable().optional(),
@@ -29,6 +30,7 @@ export const updateProfileRequestSchema = createUpdateProfileRequestSchema()
 export type UpdateProfileRequest = z.infer<typeof updateProfileRequestSchema>
 
 export interface ProfileResponse {
+  createdAt: number
   id: string
   email: string | null
   displayName: string | null

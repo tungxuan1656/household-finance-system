@@ -176,7 +176,7 @@ describe('Worker foundation', () => {
     >(exchangeResponse)
 
     const profileResponse = await SELF.fetch(
-      'https://example.com/api/v1/profile',
+      'https://example.com/api/v1/users/me',
       {
         headers: {
           authorization: `Bearer ${exchangePayload.data.accessToken}`,
@@ -186,6 +186,7 @@ describe('Worker foundation', () => {
 
     const profilePayload = await parseJson<
       ApiEnvelope<{
+        createdAt: number
         id: string
         email: string | null
         displayName: string | null
@@ -194,7 +195,9 @@ describe('Worker foundation', () => {
     >(profileResponse)
 
     expect(profileResponse.status).toBe(200)
+    expect(typeof profilePayload.data.createdAt).toBe('number')
     expect(profilePayload.data).toEqual({
+      createdAt: profilePayload.data.createdAt,
       id: exchangePayload.data.user.id,
       email: 'user-profile@example.com',
       displayName: null,
@@ -203,7 +206,7 @@ describe('Worker foundation', () => {
   })
 
   it('rejects current profile request when bearer token is missing', async () => {
-    const response = await SELF.fetch('https://example.com/api/v1/profile')
+    const response = await SELF.fetch('https://example.com/api/v1/users/me')
 
     const payload = await parseJson<ApiErrorEnvelope>(response)
 
@@ -234,7 +237,7 @@ describe('Worker foundation', () => {
         ApiEnvelope<{ accessToken: string; user: { id: string } }>
       >(exchangeResponse)
 
-    const response = await SELF.fetch('https://example.com/api/v1/profile', {
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
       method: 'PATCH',
       headers: {
         authorization: `Bearer ${exchangePayload.data.accessToken}`,
@@ -247,6 +250,7 @@ describe('Worker foundation', () => {
 
     const payload = await parseJson<
       ApiEnvelope<{
+        createdAt: number
         id: string
         email: string | null
         displayName: string | null
@@ -255,6 +259,7 @@ describe('Worker foundation', () => {
     >(response)
 
     expect(response.status).toBe(200)
+    expect(typeof payload.data.createdAt).toBe('number')
     expect(payload.data.displayName).toBe('Updated Name')
     expect(payload.data.avatarUrl).toBeNull()
 
@@ -293,7 +298,7 @@ describe('Worker foundation', () => {
         ApiEnvelope<{ accessToken: string; user: { id: string } }>
       >(exchangeResponse)
 
-    const response = await SELF.fetch('https://example.com/api/v1/profile', {
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
       method: 'PATCH',
       headers: {
         authorization: `Bearer ${exchangePayload.data.accessToken}`,
@@ -335,7 +340,7 @@ describe('Worker foundation', () => {
     const exchangePayload =
       await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
-    const response = await SELF.fetch('https://example.com/api/v1/profile', {
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
       method: 'PATCH',
       headers: {
         authorization: `Bearer ${exchangePayload.data.accessToken}`,
@@ -392,7 +397,7 @@ describe('Worker foundation', () => {
       )
       .run()
 
-    const response = await SELF.fetch('https://example.com/api/v1/profile', {
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
       method: 'PATCH',
       headers: {
         authorization: `Bearer ${exchangePayload.data.accessToken}`,
@@ -435,7 +440,7 @@ describe('Worker foundation', () => {
     const exchangePayload =
       await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
-    const response = await SELF.fetch('https://example.com/api/v1/profile', {
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
       method: 'PATCH',
       headers: {
         authorization: `Bearer ${exchangePayload.data.accessToken}`,
@@ -471,7 +476,7 @@ describe('Worker foundation', () => {
     const exchangePayload =
       await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
-    const response = await SELF.fetch('https://example.com/api/v1/profile', {
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
       method: 'PATCH',
       headers: {
         authorization: `Bearer ${exchangePayload.data.accessToken}`,
@@ -479,6 +484,42 @@ describe('Worker foundation', () => {
       },
       body: JSON.stringify({
         displayName: '   ',
+      }),
+    })
+
+    const payload = await parseJson<{ error: { code: string } }>(response)
+
+    expect(response.status).toBe(400)
+    expect(payload.error.code).toBe('INVALID_INPUT')
+  })
+
+  it('rejects display name longer than 100 characters on profile patch', async () => {
+    const exchangeResponse = await SELF.fetch(
+      'https://example.com/api/v1/auth/provider/exchange',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          provider: 'firebase',
+          idToken:
+            'test:firebase-user-profile-long-name:user-profile-long-name@example.com',
+        }),
+      },
+    )
+
+    const exchangePayload =
+      await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
+
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
+      method: 'PATCH',
+      headers: {
+        authorization: `Bearer ${exchangePayload.data.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        displayName: 'a'.repeat(101),
       }),
     })
 
@@ -507,7 +548,7 @@ describe('Worker foundation', () => {
     const exchangePayload =
       await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
-    const response = await SELF.fetch('https://example.com/api/v1/profile', {
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
       method: 'PATCH',
       headers: {
         authorization: `Bearer ${exchangePayload.data.accessToken}`,
@@ -544,7 +585,7 @@ describe('Worker foundation', () => {
     const exchangePayload =
       await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
-    const response = await SELF.fetch('https://example.com/api/v1/profile', {
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
       method: 'PATCH',
       headers: {
         authorization: `Bearer ${exchangePayload.data.accessToken}`,
@@ -580,7 +621,7 @@ describe('Worker foundation', () => {
     const exchangePayload =
       await parseJson<ApiEnvelope<{ accessToken: string }>>(exchangeResponse)
 
-    const response = await SELF.fetch('https://example.com/api/v1/profile', {
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
       method: 'PATCH',
       headers: {
         authorization: `Bearer ${exchangePayload.data.accessToken}`,

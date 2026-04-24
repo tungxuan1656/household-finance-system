@@ -61,12 +61,12 @@ This feature replaces the current settings placeholder with a real Profile Setti
 - [x] (2026-04-24) Confirm next pending feature is `feat-010` from `harness/feature_index.json`.
 - [x] (2026-04-24) Confirm implementation direction with user: strict replace to `/users/me`.
 - [x] (2026-04-24) Expand feature intent with user to include avatar upload + compression + square crop.
-- [ ] (2026-04-24) Implement worker route/contract/repository updates for `/users/me` + `createdAt`.
-- [ ] (2026-04-24) Implement web profile settings page, RHF form, and React Query profile hooks.
-- [ ] (2026-04-24) Implement avatar crop + compress + Firebase Storage upload + backend persistence.
-- [ ] (2026-04-24) Add/update worker and web tests for happy path and failures.
-- [ ] (2026-04-24) Run full verification (`./init.sh`) and collect evidence.
-- [ ] (2026-04-24) Update harness feature/progress records with evidence.
+- [x] (2026-04-24) Implement worker route/contract/repository updates for `/users/me` + `createdAt`.
+- [x] (2026-04-24) Implement web profile settings page, RHF form, and React Query profile hooks.
+- [x] (2026-04-24) Implement avatar crop + compress + Firebase Storage upload + backend persistence.
+- [x] (2026-04-24) Add/update worker and web tests for happy path and failures.
+- [x] (2026-04-24) Run full verification (`./init.sh`) and collect evidence.
+- [x] (2026-04-24) Update harness feature/progress records with evidence.
 
 ## Surprises & Discoveries
 
@@ -76,6 +76,8 @@ This feature replaces the current settings placeholder with a real Profile Setti
   - Evidence: `harness/features/feat-010.json`.
 - Discovery: web workspace has `@tanstack/react-query` installed but no `QueryClientProvider` wiring in `apps/web/src/main.tsx` yet.
   - Evidence: dependency exists in `apps/web/package.json`; no `QueryClient` references in `apps/web/src`.
+- Discovery: GitNexus CLI in this environment still does not expose `detect_changes` command referenced in AGENTS guidance.
+  - Evidence: `npx gitnexus detect-changes` and `npx gitnexus detect_changes` both return unknown command.
 
 ## Decision Log
 
@@ -93,7 +95,9 @@ This feature replaces the current settings placeholder with a real Profile Setti
 
 ## Outcomes & Retrospective
 
-- To be filled after implementation completes.
+- Completed `feat-010` with strict `/api/v1/users/me` contract migration and live profile settings UI in `apps/web`.
+- Added profile avatar flow with client-side square crop and JPEG compression before Firebase Storage upload, then persisted `avatarUrl` via backend profile patch.
+- Verification passed across targeted and full-repo checks (`lint`, `typecheck`, `test`, `build`, `./init.sh`).
 
 ## Context and Orientation
 

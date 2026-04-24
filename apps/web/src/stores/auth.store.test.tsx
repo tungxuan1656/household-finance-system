@@ -129,6 +129,39 @@ describe('auth store', () => {
     })
   })
 
+  it('updates user profile fields without replacing auth session', () => {
+    act(() => {
+      authActions.setSession({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        user: {
+          avatarUrl: 'https://cdn.example.com/old-avatar.jpg',
+          displayName: 'Alex Morgan',
+          email: 'alex@example.com',
+          id: 'user-1',
+          provider: 'firebase',
+        },
+      })
+
+      authActions.updateUserProfile({
+        avatarUrl: 'https://cdn.example.com/new-avatar.jpg',
+        displayName: 'Alex Updated',
+      })
+    })
+
+    expect(useAuthStore.getState()).toMatchObject({
+      accessToken: 'access-token',
+      isAuthenticated: true,
+      refreshToken: 'refresh-token',
+      user: {
+        avatarUrl: 'https://cdn.example.com/new-avatar.jpg',
+        displayName: 'Alex Updated',
+        email: 'alex@example.com',
+        id: 'user-1',
+      },
+    })
+  })
+
   it('renders selector-backed auth data', () => {
     act(() => {
       authActions.setSession({

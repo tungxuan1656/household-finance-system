@@ -8,6 +8,7 @@ import { t } from '@/lib/i18n'
 import { OnboardingPage } from '@/pages/app/onboarding-page'
 import { OverviewPage } from '@/pages/app/overview-page'
 import { PlaceholderPage } from '@/pages/app/placeholder-page'
+import { ProfileSettingsPage } from '@/pages/app/profile-settings-page'
 import { SignInPage } from '@/pages/auth/sign-in-page'
 import { SignUpPage } from '@/pages/auth/sign-up-page'
 import { NotFoundPage } from '@/pages/not-found-page'
@@ -57,15 +58,7 @@ function AppRoutes() {
             }
             path='insights'
           />
-          <Route
-            element={
-              <PlaceholderPage
-                description={t('app.placeholder.settings.description')}
-                title={t('app.placeholder.settings.title')}
-              />
-            }
-            path='settings'
-          />
+          <Route element={<ProfileSettingsPage />} path='settings' />
         </Route>
       </Route>
       <Route element={<NotFoundPage />} path='*' />
