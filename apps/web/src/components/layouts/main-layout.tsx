@@ -6,7 +6,7 @@ import { signOutCurrentSession } from '@/lib/auth/session-service'
 import { t } from '@/lib/i18n'
 
 const appNavItems = [
-  { to: '/app', label: t('shell.protected.nav.overview') },
+  { to: '/', label: t('shell.protected.nav.overview') },
   { to: '/app/onboarding', label: t('shell.protected.nav.onboarding') },
   { to: '/app/expenses', label: t('shell.protected.nav.expenses') },
   { to: '/app/budgets', label: t('shell.protected.nav.budgets') },
@@ -14,7 +14,7 @@ const appNavItems = [
   { to: '/app/settings', label: t('shell.protected.nav.settings') },
 ] as const
 
-function ProtectedShell() {
+function MainLayout() {
   const navigate = useNavigate()
 
   const handleSignOut = async () => {
@@ -56,7 +56,7 @@ function ProtectedShell() {
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                   ].join(' ')
                 }
-                end={item.to === '/app'}
+                end={item.to === '/'}
                 to={item.to}>
                 {item.label}
               </NavLink>
@@ -82,4 +82,4 @@ function ProtectedShell() {
   )
 }
 
-export { ProtectedShell }
+export { MainLayout }

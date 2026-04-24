@@ -9,26 +9,22 @@ import type {
 const mocks = vi.hoisted(() => {
   const authState = {
     accessToken: null as string | null,
-    accessTokenExpiresAt: null as number | null,
-    bootstrapComplete: false,
     isAuthenticated: false,
+    isSessionChecked: false,
     postAuthRedirect: null as string | null,
+    refreshToken: null as string | null,
     returnTo: null as string | null,
     user: null as AuthenticatedUserDTO | null,
   }
 
   const resetAuthState = () => {
     authState.accessToken = null
-    authState.accessTokenExpiresAt = null
-    authState.bootstrapComplete = false
     authState.isAuthenticated = false
+    authState.isSessionChecked = false
     authState.postAuthRedirect = null
+    authState.refreshToken = null
     authState.returnTo = null
     authState.user = null
-  }
-
-  const refreshSessionValue = {
-    current: 'refresh-token',
   }
 
   const authActions = {
@@ -38,18 +34,18 @@ const mocks = vi.hoisted(() => {
     }),
     clearSession: vi.fn((input?: { preserveReturnTo?: boolean }) => {
       authState.accessToken = null
-      authState.accessTokenExpiresAt = null
-      authState.bootstrapComplete = true
       authState.isAuthenticated = false
+      authState.isSessionChecked = true
       authState.postAuthRedirect = null
+      authState.refreshToken = null
       authState.returnTo = input?.preserveReturnTo ? authState.returnTo : null
       authState.user = null
     }),
+    markSessionChecked: vi.fn(() => {
+      authState.isSessionChecked = true
+    }),
     reset: vi.fn(() => {
       resetAuthState()
-    }),
-    setBootstrapping: vi.fn(() => {
-      authState.bootstrapComplete = false
     }),
     setPostAuthRedirect: vi.fn((postAuthRedirect: string | null) => {
       authState.postAuthRedirect = postAuthRedirect
@@ -60,17 +56,13 @@ const mocks = vi.hoisted(() => {
     setSession: vi.fn(
       (input: {
         accessToken: string
-        accessTokenExpiresIn: number
-        refreshSession: () => Promise<unknown>
+        refreshToken: string
         user: AuthenticatedUserDTO | null
       }) => {
         authState.accessToken = input.accessToken
-
-        authState.accessTokenExpiresAt =
-          Date.now() + input.accessTokenExpiresIn * 1000
-
-        authState.bootstrapComplete = true
         authState.isAuthenticated = true
+        authState.isSessionChecked = true
+        authState.refreshToken = input.refreshToken
         authState.user = input.user
       },
     ),
@@ -79,7 +71,6 @@ const mocks = vi.hoisted(() => {
   return {
     authActions,
     authState,
-    refreshSessionValue,
   }
 })
 
@@ -103,22 +94,6 @@ const createSession = (
   ...overrides,
 })
 
-const createDeferred = <T>() => {
-  let resolve!: (value: T | PromiseLike<T>) => void
-  let reject!: (reason?: unknown) => void
-
-  const promise = new Promise<T>((promiseResolve, promiseReject) => {
-    resolve = promiseResolve
-    reject = promiseReject
-  })
-
-  return {
-    promise,
-    reject,
-    resolve,
-  }
-}
-
 vi.mock('@/api/auth', () => ({
   exchangeProviderToken: vi.fn(),
   logoutSession: vi.fn(),
@@ -126,11 +101,14 @@ vi.mock('@/api/auth', () => ({
 }))
 
 vi.mock('@/api/client', () => ({
-  createApiClient: vi.fn(() => ({})),
+  createApiClient: vi.fn(() => ({
+    post: vi.fn(async () => ({
+      revoked: true,
+    })),
+  })),
 }))
 
 vi.mock('@/lib/auth/firebase-auth', () => ({
-  getFirebaseCurrentUser: vi.fn(),
   getFirebaseIdToken: vi.fn(),
   getFirebaseProvider: vi.fn(() => 'firebase'),
   signInWithFirebaseEmailPassword: vi.fn(),
@@ -140,14 +118,6 @@ vi.mock('@/lib/auth/firebase-auth', () => ({
 
 vi.mock('@/lib/auth/redirect', () => ({
   resolveAuthRedirect: vi.fn(() => '/app'),
-}))
-
-vi.mock('@/lib/storages/auth-refresh-token-storage', () => ({
-  authRefreshTokenStorage: {
-    clear: vi.fn(),
-    read: vi.fn(() => mocks.refreshSessionValue.current),
-    write: vi.fn(),
-  },
 }))
 
 vi.mock('@/stores/auth.store', () => ({
@@ -164,33 +134,25 @@ vi.mock('@/lib/constants/auth', () => ({
 
 import { exchangeProviderToken, refreshSession } from '@/api/auth'
 import {
-  getFirebaseCurrentUser,
   getFirebaseIdToken,
   signInWithFirebaseEmailPassword,
   signOutFirebaseSession,
   signUpWithFirebaseEmailPassword,
 } from '@/lib/auth/firebase-auth'
 import {
-  bootstrapAuthSession,
+  refreshCurrentSession,
   signInWithEmailPassword,
   signUpWithEmailPassword,
 } from '@/lib/auth/session-service'
-import { authRefreshTokenStorage } from '@/lib/storages/auth-refresh-token-storage'
 import { authActions, useAuthStore } from '@/stores/auth.store'
 
 describe('auth session service', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mocks.authActions.reset()
-    mocks.refreshSessionValue.current = 'refresh-token'
-    useAuthStore.getState().bootstrapComplete = false
-    useAuthStore.getState().isAuthenticated = false
   })
 
-  it('ignores a stale bootstrap result after a newer sign-in completes', async () => {
-    const deferredSession = createDeferred<RefreshSessionResponse>()
-    vi.mocked(refreshSession).mockReturnValueOnce(deferredSession.promise)
-
+  it('stores backend user + tokens on sign-in', async () => {
     vi.mocked(signInWithFirebaseEmailPassword).mockResolvedValueOnce({
       user: {
         uid: 'firebase-user',
@@ -200,39 +162,23 @@ describe('auth session service', () => {
     vi.mocked(getFirebaseIdToken).mockResolvedValueOnce('firebase-id-token')
     vi.mocked(exchangeProviderToken).mockResolvedValueOnce(createSession())
 
-    const bootstrapPromise = bootstrapAuthSession()
-
     await signInWithEmailPassword({
       email: 'alex@example.com',
       password: 'secret-password',
     })
 
-    deferredSession.resolve(createSession())
-
-    await bootstrapPromise
-
-    expect(authActions.setSession).toHaveBeenCalledTimes(1)
-    expect(getFirebaseCurrentUser).not.toHaveBeenCalled()
-    expect(authActions.clearSession).not.toHaveBeenCalled()
-    expect(authRefreshTokenStorage.write).toHaveBeenCalledTimes(1)
-  })
-
-  it('finalizes bootstrap when Firebase auth initialization fails', async () => {
-    vi.mocked(refreshSession).mockResolvedValueOnce(createSession())
-
-    vi.mocked(getFirebaseCurrentUser).mockRejectedValueOnce(
-      new Error('firebase auth init failed'),
+    expect(authActions.setSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        user: expect.objectContaining({
+          displayName: 'Alex Morgan',
+        }),
+      }),
     )
-
-    await bootstrapAuthSession()
-
-    expect(authActions.setBootstrapping).toHaveBeenCalledTimes(1)
-    expect(authActions.clearSession).toHaveBeenCalledTimes(1)
-    expect(authActions.setSession).not.toHaveBeenCalled()
-    expect(useAuthStore.getState().bootstrapComplete).toBe(true)
   })
 
-  it('signs out Firebase when provider exchange fails during sign-in', async () => {
+  it('signs out Firebase when exchange fails during sign-in', async () => {
     vi.mocked(signInWithFirebaseEmailPassword).mockResolvedValueOnce({
       user: {
         uid: 'firebase-user',
@@ -256,10 +202,9 @@ describe('auth session service', () => {
 
     expect(signOutFirebaseSession).toHaveBeenCalledTimes(1)
     expect(authActions.setSession).not.toHaveBeenCalled()
-    expect(authRefreshTokenStorage.write).not.toHaveBeenCalled()
   })
 
-  it('signs out Firebase when provider exchange fails during sign-up', async () => {
+  it('stores onboarding redirect + session on sign-up', async () => {
     vi.mocked(signUpWithFirebaseEmailPassword).mockResolvedValueOnce({
       user: {
         uid: 'firebase-user',
@@ -267,23 +212,70 @@ describe('auth session service', () => {
     } as never)
 
     vi.mocked(getFirebaseIdToken).mockResolvedValueOnce('firebase-id-token')
+    vi.mocked(exchangeProviderToken).mockResolvedValueOnce(createSession())
 
-    vi.mocked(exchangeProviderToken).mockRejectedValueOnce(
-      new Error('exchange failed'),
+    await signUpWithEmailPassword({
+      email: 'alex@example.com',
+      name: 'Alex Morgan',
+      password: 'secret-password',
+    })
+
+    expect(authActions.setSession).toHaveBeenCalled()
+
+    expect(authActions.setPostAuthRedirect).toHaveBeenCalledWith(
+      '/app/onboarding',
+    )
+  })
+
+  it('rotates tokens with refreshCurrentSession and keeps existing user', async () => {
+    useAuthStore.getState().refreshToken = 'refresh-token'
+
+    useAuthStore.getState().user = {
+      avatarUrl: null,
+      displayName: 'Existing User',
+      email: 'existing@example.com',
+      id: 'user-1',
+      provider: 'firebase',
+    }
+
+    vi.mocked(refreshSession).mockResolvedValueOnce(
+      createSession({
+        accessToken: 'fresh-access-token',
+        refreshToken: 'fresh-refresh-token',
+      }),
     )
 
-    vi.mocked(signOutFirebaseSession).mockResolvedValueOnce(undefined)
+    const accessToken = await refreshCurrentSession()
 
-    await expect(
-      signUpWithEmailPassword({
-        email: 'alex@example.com',
-        name: 'Alex Morgan',
-        password: 'secret-password',
+    expect(accessToken).toBe('fresh-access-token')
+
+    expect(authActions.setSession).toHaveBeenCalledWith({
+      accessToken: 'fresh-access-token',
+      refreshToken: 'fresh-refresh-token',
+      user: expect.objectContaining({
+        displayName: 'Existing User',
       }),
-    ).rejects.toThrow('exchange failed')
+    })
+  })
 
-    expect(signOutFirebaseSession).toHaveBeenCalledTimes(1)
-    expect(authActions.setSession).not.toHaveBeenCalled()
-    expect(authRefreshTokenStorage.write).not.toHaveBeenCalled()
+  it('clears session when refresh returns unauthenticated', async () => {
+    useAuthStore.getState().refreshToken = 'refresh-token'
+
+    const unauthenticatedError = new Error('session expired') as Error & {
+      code: string
+      status: number
+    }
+    unauthenticatedError.code = 'UNAUTHENTICATED'
+    unauthenticatedError.status = 401
+
+    vi.mocked(refreshSession).mockRejectedValueOnce(unauthenticatedError)
+
+    const accessToken = await refreshCurrentSession()
+
+    expect(accessToken).toBeNull()
+
+    expect(authActions.clearSession).toHaveBeenCalledWith({
+      preserveReturnTo: true,
+    })
   })
 })

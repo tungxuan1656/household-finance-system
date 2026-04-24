@@ -65,6 +65,11 @@
       "name": "Mobile-first UI/UX for Auth (Sign-in/Sign-up)",
       "status": "done"
     },
+    {
+      "id": "feat-009c",
+      "name": "Standardize apps/web authentication call flow and auth state handling",
+      "status": "done"
+    },
 
     {
       "id": "feat-010",
@@ -189,4 +194,3 @@
     }
   ]
 }
-

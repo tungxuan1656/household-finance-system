@@ -10,4 +10,3 @@ Each active plan should be current enough that a fresh agent session can resume
 work from the repository alone.
 
 ## Active Plans
-

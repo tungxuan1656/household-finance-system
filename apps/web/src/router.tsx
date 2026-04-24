@@ -1,25 +1,33 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
-import { ProtectedShell } from '@/components/layouts/protected-shell'
-import { PublicShell } from '@/components/layouts/public-shell'
-import { ShellGuard } from '@/components/layouts/shell-guard'
+import { MainLayout } from '@/components/layouts/main-layout'
+import { ProtectedRoute } from '@/components/layouts/protected-route'
+import { PublicLayout } from '@/components/layouts/public-layout'
+import { PublicRoute } from '@/components/layouts/public-route'
 import { t } from '@/lib/i18n'
 import { OnboardingPage } from '@/pages/app/onboarding-page'
 import { OverviewPage } from '@/pages/app/overview-page'
 import { PlaceholderPage } from '@/pages/app/placeholder-page'
 import { SignInPage } from '@/pages/auth/sign-in-page'
 import { SignUpPage } from '@/pages/auth/sign-up-page'
+import { NotFoundPage } from '@/pages/not-found-page'
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route element={<Navigate replace to='/sign-in' />} path='/' />
-      <Route element={<PublicShell />}>
-        <Route element={<SignInPage />} path='/sign-in' />
-        <Route element={<SignUpPage />} path='/sign-up' />
+      <Route element={<PublicRoute />}>
+        <Route element={<PublicLayout />}>
+          <Route element={<SignInPage />} path='/sign-in' />
+          <Route element={<SignUpPage />} path='/sign-up' />
+        </Route>
       </Route>
-      <Route element={<ShellGuard />}>
-        <Route element={<ProtectedShell />} path='/app'>
+      <Route element={<ProtectedRoute />}>
+        <Route element={<MainLayout />} path='/'>
+          <Route index element={<OverviewPage />} />
+        </Route>
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route element={<MainLayout />} path='/app'>
           <Route index element={<OverviewPage />} />
           <Route element={<OnboardingPage />} path='onboarding' />
           <Route
@@ -60,7 +68,7 @@ function AppRoutes() {
           />
         </Route>
       </Route>
-      <Route element={<Navigate replace to='/sign-in' />} path='*' />
+      <Route element={<NotFoundPage />} path='*' />
     </Routes>
   )
 }

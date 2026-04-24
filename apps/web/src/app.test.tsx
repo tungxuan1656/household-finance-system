@@ -43,12 +43,10 @@ vi.mock('@/lib/auth/session-service', async () => {
   }
 
   return {
-    bootstrapAuthSession: vi.fn(async () => undefined),
     signInWithEmailPassword: vi.fn(async () => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -58,7 +56,7 @@ vi.mock('@/lib/auth/session-service', async () => {
         },
       })
 
-      return resolveDestination('/app')
+      return resolveDestination('/')
     }),
     signOutCurrentSession: vi.fn(async () => {
       authActions.clearSession({ preserveReturnTo: false })
@@ -68,8 +66,7 @@ vi.mock('@/lib/auth/session-service', async () => {
     signUpWithEmailPassword: vi.fn(async () => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -118,7 +115,7 @@ describe('web shell routing', () => {
     ).toBeInTheDocument()
   })
 
-  it('redirects the root route to sign in', async () => {
+  it('routes root through protected flow and redirects unauthenticated users', async () => {
     renderAt('/')
 
     expect(
@@ -150,8 +147,7 @@ describe('web shell routing', () => {
     act(() => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -162,7 +158,7 @@ describe('web shell routing', () => {
       })
     })
 
-    renderAt('/app')
+    renderAt('/')
 
     expect(
       screen.getByRole('heading', { name: t('app.overview.title') }),
@@ -228,8 +224,7 @@ describe('web shell routing', () => {
     act(() => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -257,8 +252,8 @@ describe('web shell routing', () => {
     )
 
     expect(
-      screen.getByText(t('auth.signIn.errors.invalidForm')),
-    ).toBeInTheDocument()
+      screen.getAllByText(t('auth.signIn.errors.invalidForm')),
+    ).toHaveLength(2)
   })
 
   it('signs out and returns to the public route', async () => {
@@ -267,8 +262,7 @@ describe('web shell routing', () => {
     act(() => {
       authActions.setSession({
         accessToken: 'access-token',
-        accessTokenExpiresIn: 120,
-        refreshSession: vi.fn(async () => undefined),
+        refreshToken: 'refresh-token',
         user: {
           avatarUrl: null,
           displayName: 'Alex Morgan',
@@ -305,5 +299,15 @@ describe('web shell routing', () => {
       'data-theme',
       'dark',
     )
+  })
+
+  it('renders the 404 page for unknown routes and links back to home', () => {
+    renderAt('/this-route-does-not-exist')
+
+    expect(screen.getByRole('heading', { name: 'Whoops!' })).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', { name: 'Back to home page' }),
+    ).toHaveAttribute('href', '/')
   })
 })
