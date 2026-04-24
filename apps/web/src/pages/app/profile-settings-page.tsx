@@ -223,7 +223,7 @@ export const ProfileSettingsPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className='flex flex-col gap-8'>
-          <div className='flex flex-col items-start gap-6 sm:flex-row sm:items-center'>
+          <div className='flex flex-col items-center gap-4 text-center'>
             <Avatar className='size-24!' size='lg'>
               <AvatarImage src={currentAvatarSrc} />
               <AvatarFallback className='text-2xl'>
@@ -234,17 +234,15 @@ export const ProfileSettingsPage = () => {
               </AvatarFallback>
             </Avatar>
 
-            <div className='flex flex-1 flex-col gap-3'>
-              <div className='flex flex-wrap items-center gap-3'>
-                <Button
-                  disabled={isSubmitting}
-                  type='button'
-                  variant='outline'
-                  onClick={() => fileInputRef.current?.click()}>
-                  <CameraIcon data-icon='inline-start' />
-                  {t('app.settings.profile.actions.changeAvatar')}
-                </Button>
-              </div>
+            <div className='flex flex-col items-center gap-3'>
+              <Button
+                disabled={isSubmitting}
+                type='button'
+                variant='outline'
+                onClick={() => fileInputRef.current?.click()}>
+                <CameraIcon data-icon='inline-start' />
+                {t('app.settings.profile.actions.changeAvatar')}
+              </Button>
               <p className='text-sm text-muted-foreground'>
                 {t('app.settings.profile.avatarHelpText')}
               </p>
@@ -268,9 +266,7 @@ export const ProfileSettingsPage = () => {
                 control={form.control}
                 name='displayName'
                 render={({ field, fieldState }) => (
-                  <Field
-                    data-invalid={fieldState.invalid}
-                    orientation='horizontal'>
+                  <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor='profile-display-name'>
                       {t('app.settings.profile.fields.displayName.label')}
                     </FieldLabel>
