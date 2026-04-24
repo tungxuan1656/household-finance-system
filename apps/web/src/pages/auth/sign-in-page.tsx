@@ -28,10 +28,10 @@ export const SignInPage = () => {
 
   const handleSubmit = form.handleSubmit(async (values) => {
     try {
-      const destination = await signInWithEmailPassword(values)
+      await signInWithEmailPassword(values)
 
       form.clearErrors('root')
-      navigate(destination, { replace: true })
+      navigate('/', { replace: true })
     } catch {
       form.setError('root', {
         message: t('auth.session.errors.signInFailed'),

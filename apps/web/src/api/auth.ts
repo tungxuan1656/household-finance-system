@@ -4,8 +4,6 @@ import type {
   ExchangeProviderRequest,
   ExchangeProviderResponse,
   LogoutSessionResponse,
-  RefreshSessionRequest,
-  RefreshSessionResponse,
 } from '@/types/auth'
 
 export const exchangeProviderToken = async (
@@ -16,20 +14,6 @@ export const exchangeProviderToken = async (
     payload,
     {
       skipAuth: true,
-      skipAuthRefresh: true,
-    },
-  )
-
-  return response.data
-}
-
-export const refreshSession = async (payload: RefreshSessionRequest) => {
-  const response = await client.post<RefreshSessionResponse>(
-    API_ENDPOINTS.auth.refresh,
-    payload,
-    {
-      skipAuth: true,
-      skipAuthRefresh: true,
     },
   )
 
@@ -42,7 +26,6 @@ export const logoutSession = async () => {
     {},
     {
       skipAuth: true,
-      skipAuthRefresh: true,
     },
   )
 

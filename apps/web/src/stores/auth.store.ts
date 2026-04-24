@@ -8,9 +8,7 @@ type AuthSessionState = {
   accessToken: string | null
   isAuthenticated: boolean
   isSessionChecked: boolean
-  postAuthRedirect: string | null
   refreshToken: string | null
-  returnTo: string | null
   user: AuthenticatedUserDTO | null
 }
 
@@ -20,17 +18,11 @@ type SetSessionInput = {
   user: AuthenticatedUserDTO | null
 }
 
-type ClearSessionInput = {
-  preserveReturnTo?: boolean
-}
-
 const initialState: AuthSessionState = {
   accessToken: null,
   isAuthenticated: false,
   isSessionChecked: false,
-  postAuthRedirect: null,
   refreshToken: null,
-  returnTo: null,
   user: null,
 }
 
@@ -75,19 +67,12 @@ const _useAuthStore = create<AuthSessionState>()(
 )
 
 const authActions = {
-  clearRoutingState: () =>
-    _useAuthStore.setState({
-      postAuthRedirect: null,
-      returnTo: null,
-    }),
-  clearSession: (input?: ClearSessionInput) =>
-    _useAuthStore.setState((state) => ({
+  clearSession: () =>
+    _useAuthStore.setState(() => ({
       accessToken: null,
       isAuthenticated: false,
       isSessionChecked: true,
-      postAuthRedirect: null,
       refreshToken: null,
-      returnTo: input?.preserveReturnTo ? state.returnTo : null,
       user: null,
     })),
   markSessionChecked: () =>
@@ -98,14 +83,6 @@ const authActions = {
     _useAuthStore.setState(initialState)
     void _useAuthStore.persist.clearStorage()
   },
-  setPostAuthRedirect: (postAuthRedirect: string | null) =>
-    _useAuthStore.setState({
-      postAuthRedirect,
-    }),
-  setReturnTo: (returnTo: string | null) =>
-    _useAuthStore.setState({
-      returnTo,
-    }),
   setSession: (input: SetSessionInput) =>
     _useAuthStore.setState({
       accessToken: input.accessToken,
@@ -114,11 +91,6 @@ const authActions = {
       refreshToken: input.refreshToken,
       user: input.user,
     }),
-  updateSession: (input: { accessToken?: string; refreshToken?: string }) =>
-    _useAuthStore.setState((state) => ({
-      accessToken: input.accessToken ?? state.accessToken,
-      refreshToken: input.refreshToken ?? state.refreshToken,
-    })),
   updateUserProfile: (input: {
     avatarUrl?: string | null
     displayName?: string | null
@@ -146,5 +118,5 @@ const authActions = {
 
 const useAuthStore = createSelectors(_useAuthStore)
 
-export type { AuthSessionState, ClearSessionInput, SetSessionInput }
+export type { AuthSessionState, SetSessionInput }
 export { authActions, useAuthStore }

@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Removed stale web auth/session and axios refresh plumbing
+- Who: Codex
+- Summary: Simplified the web auth flow by removing the unused `returnTo`/`postAuthRedirect` routing state, trimming `session-service` down to sign-in/sign-up/sign-out only, deleting obsolete client/session tests, and reducing the axios client to request auth headers + API envelope unwrapping. Also aligned profile queries to return DTOs directly so the settings page and React Query hooks consume the expected types again.
+- Files changed: apps/web/src/api/auth.ts, apps/web/src/api/client.ts, apps/web/src/api/profile.ts, apps/web/src/app.test.tsx, apps/web/src/components/layouts/main-layout.tsx, apps/web/src/components/layouts/protected-route.tsx, apps/web/src/lib/auth/session-service.ts, apps/web/src/pages/auth/sign-in-page.tsx, apps/web/src/pages/auth/sign-up-page.tsx, apps/web/src/stores/auth.store.test.tsx, apps/web/src/stores/auth.store.ts, apps/web/src/api/client.test.ts, apps/web/src/lib/auth/session-service.test.ts, apps/web/src/lib/auth/redirect.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep `apps/web` auth/session changes minimal unless a future feature needs redirect persistence again.
+
 ## 2026-04-24 — Implemented and closed feat-010 profile settings + avatar upload
 - Who: Codex
 - Summary: Completed `feat-010` end-to-end by migrating profile API contract from `/api/v1/profile` to `/api/v1/users/me`, adding `createdAt` in profile responses, and enforcing backend display-name validation (`trim`, non-empty, max 100). Replaced the web settings placeholder with a real `ProfileSettingsPage` using shadcn-first composition + RHF/Zod + React Query optimistic updates, added Firebase Storage avatar upload with client-side square crop/compression before upload, and synchronized updated profile data back into auth store state.

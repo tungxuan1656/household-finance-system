@@ -5,9 +5,21 @@ import type {
   UpdateCurrentUserProfileRequest,
 } from '@/types/profile'
 
-export const getCurrentUserProfile = () =>
-  client.get<CurrentUserProfileDTO>(API_ENDPOINTS.profile)
+export const getCurrentUserProfile = async () => {
+  const response = await client.get<CurrentUserProfileDTO>(
+    API_ENDPOINTS.profile,
+  )
 
-export const updateCurrentUserProfile = (
+  return response.data
+}
+
+export const updateCurrentUserProfile = async (
   payload: UpdateCurrentUserProfileRequest,
-) => client.patch<CurrentUserProfileDTO>(API_ENDPOINTS.profile, payload)
+) => {
+  const response = await client.patch<CurrentUserProfileDTO>(
+    API_ENDPOINTS.profile,
+    payload,
+  )
+
+  return response.data
+}

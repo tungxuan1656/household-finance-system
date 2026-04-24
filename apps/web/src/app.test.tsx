@@ -8,43 +8,16 @@ import { Toaster } from '@/components/ui/sonner'
 import {
   signInWithEmailPassword,
   signOutCurrentSession,
+  signUpWithEmailPassword,
 } from '@/lib/auth/session-service'
 import { t } from '@/lib/i18n'
 import { AppRoutes } from '@/router'
-import { authActions } from '@/stores/auth.store'
-
-type AuthStoreMock = {
-  authActions: {
-    clearSession: (input?: { preserveReturnTo?: boolean }) => void
-    setPostAuthRedirect: (postAuthRedirect: string | null) => void
-    setSession: typeof authActions.setSession
-  }
-  useAuthStore: {
-    getState: () => {
-      postAuthRedirect: string | null
-      returnTo: string | null
-    }
-  }
-}
+import { authActions as storeAuthActions } from '@/stores/auth.store'
 
 vi.mock('@/lib/auth/session-service', async () => {
-  const { authActions, useAuthStore } = (await vi.importActual(
-    '@/stores/auth.store',
-  )) as AuthStoreMock
-
-  const resolveDestination = (fallback: string, preferOnboarding = false) => {
-    const { postAuthRedirect, returnTo } = useAuthStore.getState()
-
-    if (preferOnboarding && postAuthRedirect) {
-      return postAuthRedirect
-    }
-
-    return returnTo ?? fallback
-  }
-
   return {
     signInWithEmailPassword: vi.fn(async () => {
-      authActions.setSession({
+      storeAuthActions.setSession({
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
         user: {
@@ -55,16 +28,12 @@ vi.mock('@/lib/auth/session-service', async () => {
           provider: 'firebase',
         },
       })
-
-      return resolveDestination('/')
     }),
     signOutCurrentSession: vi.fn(async () => {
-      authActions.clearSession({ preserveReturnTo: false })
-
-      return '/sign-in'
+      storeAuthActions.clearSession()
     }),
     signUpWithEmailPassword: vi.fn(async () => {
-      authActions.setSession({
+      storeAuthActions.setSession({
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
         user: {
@@ -75,10 +44,6 @@ vi.mock('@/lib/auth/session-service', async () => {
           provider: 'firebase',
         },
       })
-
-      authActions.setPostAuthRedirect('/app/onboarding')
-
-      return resolveDestination('/app/onboarding', true)
     }),
   }
 })
@@ -99,8 +64,7 @@ function renderAt(pathname: string) {
 
 beforeEach(() => {
   act(() => {
-    authActions.reset()
-    authActions.clearSession({ preserveReturnTo: true })
+    storeAuthActions.reset()
   })
 })
 
@@ -145,7 +109,7 @@ describe('web shell routing', () => {
 
   it('renders the protected shell when a session is already available', () => {
     act(() => {
-      authActions.setSession({
+      storeAuthActions.setSession({
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
         user: {
@@ -194,24 +158,35 @@ describe('web shell routing', () => {
     ).toBeInTheDocument()
   })
 
-  it('returns to the requested protected route after sign in', async () => {
+  it('shows the onboarding flow after sign up', async () => {
     const user = userEvent.setup()
 
-    renderAt('/app/onboarding')
+    renderAt('/sign-up')
 
     await user.type(
-      screen.getByLabelText(t('auth.signIn.fields.email.label')),
+      screen.getByLabelText(t('auth.signUp.fields.fullName.label')),
+      'Alex Morgan',
+    )
+
+    await user.type(
+      screen.getByLabelText(t('auth.signUp.fields.email.label')),
       'tester@example.com',
     )
 
     await user.type(
-      screen.getByLabelText(t('auth.signIn.fields.password.label')),
+      screen.getByLabelText(t('auth.signUp.fields.password.label')),
       'password123',
     )
 
     await user.click(
-      screen.getByRole('button', { name: t('common.actions.signIn') }),
+      screen.getByRole('button', { name: t('common.actions.createAccount') }),
     )
+
+    expect(signUpWithEmailPassword).toHaveBeenCalledWith({
+      email: 'tester@example.com',
+      name: 'Alex Morgan',
+      password: 'password123',
+    })
 
     expect(
       await screen.findByText(t('app.onboarding.title'), {
@@ -222,7 +197,7 @@ describe('web shell routing', () => {
 
   it('redirects authenticated users away from public auth pages', async () => {
     act(() => {
-      authActions.setSession({
+      storeAuthActions.setSession({
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
         user: {
@@ -256,11 +231,11 @@ describe('web shell routing', () => {
     ).toHaveLength(2)
   })
 
-  it('signs out and returns to the public route', async () => {
+  it('signs out and returns to the sign-in page', async () => {
     const user = userEvent.setup()
 
     act(() => {
-      authActions.setSession({
+      storeAuthActions.setSession({
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
         user: {
