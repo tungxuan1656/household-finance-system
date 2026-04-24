@@ -27,9 +27,9 @@ Revamp the Profile Settings page to improve visual aesthetics, UX, and responsiv
 ## Progress
 - [x] Create execution plan (this document).
 - [x] Add `feat-037` to `harness/feature_index.json` and create `harness/features/feat-037.json`.
-- [ ] Refactor `apps/web/src/pages/app/profile-settings-page.tsx` for enhanced UI and Cloudinary integration.
-- [ ] Verify functionality via `./init.sh` and manual testing.
-- [ ] Update `harness/progress.md` with session results.
+- [x] Refactor `apps/web/src/pages/app/profile-settings-page.tsx` for enhanced UI and Cloudinary integration.
+- [x] Verify functionality via `./init.sh` and manual testing.
+- [x] Update `harness/progress.md` with session results.
 
 ## Surprises & Discoveries
 - *(To be filled during implementation)*

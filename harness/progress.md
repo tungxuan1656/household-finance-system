@@ -1,5 +1,11 @@
 # Progress Log
 
+## 2026-04-25 — Implemented and closed feat-037 profile settings UI and Cloudinary integration
+- Who: Agent
+- Summary: Refactored `apps/web/src/pages/app/profile-settings-page.tsx` for a premium side-by-side UI layout with CardDescription context, updated i18n locales with new descriptions, and successfully migrated the avatar upload flow from Firebase Storage to Cloudinary signed uploads (`uploadMediaViaCloudinary`). Ran lint and fixed formatting, updated harness artifacts to mark feat-037 done.
+- Files changed: apps/web/src/pages/app/profile-settings-page.tsx, apps/web/src/lib/i18n/locales/vi.json, docs/exec-plans/plans/2026-04-25-feat-037-improve-profile-settings.md, harness/feature_index.json, harness/features/feat-037.json, harness/progress.md
+- Blockers: none
+- Next steps: proceed to next pending feature.
 ## 2026-04-24 — Backfilled missing ExecPlan for feat-036
 - Who: Codex
 - Summary: Added missing execution plan document for `feat-036` into `docs/exec-plans/plans/` and registered it in `docs/exec-plans/index.md` under `Completed`, aligning the feature with harness plan governance flow.
