@@ -4,6 +4,6 @@
   "description": "Build a reusable signed-upload foundation for image/video media: authenticated backend endpoint `POST /api/v1/media/upload-signature` generates Cloudinary SHA-1 signatures from server-controlled parameters (folder/public_id/timestamp + policy checks), and frontend exposes shared API + SDK helpers for two-step signed upload (`requestUploadSignature` then multipart upload to Cloudinary). Scope excludes migrating existing Firebase avatar flow.",
   "dependencies": ["feat-006", "feat-009c", "feat-010"],
   "status": "done",
-  "evidence": "Implemented worker media contract/route/handler/signing lib with Cloudinary env + policy enforcement, added worker integration/unit tests (signature fixture, policy validation, auth/error paths), added web media API + Cloudinary upload SDK + tests for multipart fields/error mapping/2-step flow. Verification passed: pnpm test:worker, pnpm typecheck:worker, pnpm test:web, pnpm typecheck:web, ./init.sh.",
-  "updated_at": "2026-04-24"
+  "evidence": "Implemented worker media contract/route/handler/signing lib with Cloudinary env + policy enforcement, added worker integration/unit tests (signature fixture, policy validation, auth/error paths), added web media API + Cloudinary upload SDK + tests for multipart fields/error mapping/2-step flow. Follow-up verification on 2026-04-25 confirmed the upload helper intentionally does not send `max_file_size`, and `pnpm test:web` passes with the corrected test expectation. Previous full verification passed: pnpm test:worker, pnpm typecheck:worker, pnpm test:web, pnpm typecheck:web, ./init.sh.",
+  "updated_at": "2026-04-25"
 }

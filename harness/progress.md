@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-25 — Corrected Cloudinary upload test contract
+- Who: Agent
+- Summary: Removed the accidental `max_file_size` multipart field from `apps/web/src/lib/media/cloudinary-upload.ts` and updated `apps/web/src/lib/media/cloudinary-upload.test.ts` so the assertion matches the intended Cloudinary upload payload. Re-ran `pnpm test:web` and the full web suite passed.
+- Files changed: apps/web/src/lib/media/cloudinary-upload.ts, apps/web/src/lib/media/cloudinary-upload.test.ts, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-04-25 — Implemented and closed feat-037 profile settings UI and Cloudinary integration
 - Who: Agent
 - Summary: Refactored `apps/web/src/pages/app/profile-settings-page.tsx` for a premium side-by-side UI layout with CardDescription context, updated i18n locales with new descriptions, and successfully migrated the avatar upload flow from Firebase Storage to Cloudinary signed uploads (`uploadMediaViaCloudinary`). Ran lint and fixed formatting, updated harness artifacts to mark feat-037 done.
