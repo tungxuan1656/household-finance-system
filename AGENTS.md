@@ -138,12 +138,25 @@ For more details, see the Learn Harness Engineering documentation and project do
 
 - For frontend code: see [docs/FRONTEND.md](docs/FRONTEND.md)
 - For backend code: see [docs/BACKEND.md](docs/BACKEND.md)
+- For web UI design governance: see [docs/design-docs/shadcn-first-ui-web-guide.md](docs/design-docs/shadcn-first-ui-web-guide.md)
 
 Agents and contributors are required to consult and comply with these documents for:
 - UI/UX, component, and design system standards (frontend)
 - API, data, validation, and security standards (backend)
+- mandatory shadcn-first composition and variant/token usage rules (web UI)
 
 Any code that does not follow these guides will be considered non-compliant and must be revised before acceptance.
+
+## Mandatory Pre-Read for UI Work
+
+Before any UI task in `apps/web` (design, implementation, review), agents/contributors MUST read:
+
+1. `.agents/skills/shadcn/SKILL.md`
+2. `.agents/skills/shadcn/rules/styling.md`
+3. `.agents/skills/shadcn/rules/forms.md`
+4. `.agents/skills/shadcn/rules/composition.md`
+
+Skipping this pre-read is non-compliant.
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence

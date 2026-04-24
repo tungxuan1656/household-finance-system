@@ -18,6 +18,21 @@ patterns unpredictably.
 - Keep copy, keyboard behavior, and visual hierarchy consistent across flows.
 - When a UI bug is fixed, add or update the matching validation step.
 
+## Mandatory Shadcn Governance
+
+- UI work in `apps/web` must follow `docs/design-docs/shadcn-first-ui-web-guide.md`.
+- Before any UI task (design/implement/review), contributors must read:
+  - `.agents/skills/shadcn/SKILL.md`
+  - `.agents/skills/shadcn/rules/styling.md`
+  - `.agents/skills/shadcn/rules/forms.md`
+  - `.agents/skills/shadcn/rules/composition.md`
+- Base UI primitives must be imported from `@/components/ui/*` and used directly.
+- Do not create wrapper replacements for base primitives (`Button`, `Input`, `Card`, `Dialog`, etc.).
+- Shared feature components are allowed, but they must compose shadcn primitives internally.
+- Prefer `variant`/`size` contracts and semantic tokens over ad-hoc visual utility classes.
+- `className` on primitives is for layout-level concerns only, not for restyling primitive internals.
+- Non-compliant UI must be revised before merge.
+
 
 ## Verification Expectations
 

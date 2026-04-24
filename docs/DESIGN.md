@@ -18,6 +18,7 @@ single chat, sprint, or reviewer memory.
 
 - `docs/design-docs/index.md`: index of accepted, proposed, and deprecated docs
 - `docs/design-docs/core-beliefs.md`: project-wide agent-first beliefs
+- `docs/design-docs/shadcn-first-ui-web-guide.md`: mandatory shadcn-first UI governance for `apps/web`
 
 ## Design Rules
 
