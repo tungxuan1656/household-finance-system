@@ -27,13 +27,13 @@ run_step() {
   return "$status"
 }
 
-# if [ -t 1 ]; then
-#   run_step "pnpm install" pnpm install
-# else
-#   run_step "pnpm install" env CI=true pnpm install
-# fi
+if [ -t 1 ]; then
+  run_step "pnpm install" pnpm install
+else
+  run_step "pnpm install" env CI=true pnpm install
+fi
 
-# run_step "Harness checks" ./scripts/check_harness_size.sh
+run_step "Harness checks" ./scripts/check_harness_size.sh
 run_step "Linting" pnpm run lint:fix
 run_step "Type checking" pnpm run typecheck
 run_step "Running tests" pnpm run test
