@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Restructured exec-plan storage to keep stable file paths
+- Who: Codex
+- Summary: Updated plan storage structure per request to keep `docs/exec-plans/` as the root and avoid active/completed folder moves: all plan files now live under `docs/exec-plans/plans/`, while `docs/exec-plans/index.md` tracks status with `Active` and `Completed` sections. Updated plan governance docs and the planning skill guidance to match this workflow.
+- Files changed: docs/exec-plans/index.md, docs/exec-plans/__plan-template__.md (moved), docs/exec-plans/tech-debt-tracker.md (moved), docs/exec-plans/plans/*.md (moved), docs/PLANS.md, .agents/skills/create-plan-for-implement/SKILL.md, docs/exec-plans/plans/2026-04-24-feat-035-responsive-main-layout-shell.md, harness/progress.md
+- Blockers: none
+- Next steps: when finishing any feature plan, keep the same file in `docs/exec-plans/plans/` and only move its line item from `Active` to `Completed` in `docs/exec-plans/index.md`.
+
 ## 2026-04-24 — Created ExecPlan and harness records for feat-035 responsive main layout shell
 - Who: Codex
 - Summary: Created the active ExecPlan for `feat-035` to build a responsive protected-app layout shell in `apps/web` with desktop sidebar, mobile bottom tabs (`5 tabs + More`), canonical protected routing rooted at `/`, shared navigation constants, safe-area spacing guarantees, and i18n-ready navigation copy. Registered the new feature in harness as `in_progress` so implementation can start immediately in the next step.

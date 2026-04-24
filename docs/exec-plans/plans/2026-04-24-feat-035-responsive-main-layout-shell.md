@@ -48,7 +48,7 @@ Build a production-ready responsive application shell for authenticated web rout
 - [ ] Add safe-area spacing utility and shell-level content bottom padding guarantees.
 - [ ] Add/update layout-routing tests for responsive visibility, active states, and `/more` route behavior.
 - [ ] Run verification commands and update harness evidence.
-- [ ] Archive completed plan to `docs/exec-plans/completed/` after implementation.
+- [ ] Keep this file in `docs/exec-plans/plans/` and move its entry from `Active` to `Completed` in `docs/exec-plans/index.md` after implementation.
 
 ## Surprises & Discoveries
 
