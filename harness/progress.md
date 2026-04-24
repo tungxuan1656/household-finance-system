@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Created ExecPlan and harness records for feat-009c
+- Who: Codex
+- Summary: Added the active ExecPlan for `feat-009c` to standardize frontend auth API calls and auth-state handling (`axios` interceptor refresh-and-retry queue, persisted auth-store hydration gate, and react-hook-form + zod auth form wiring with current UI preserved). Updated active plan index, created `harness/features/feat-009c.json`, and registered the new feature in `harness/feature_index.json`.
+- Files changed: docs/exec-plans/active/2026-04-24-feat-009c-auth-call-and-auth-state-standardization.md, docs/exec-plans/active/index.md, harness/features/feat-009c.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: implement `feat-009c` according to the new ExecPlan and attach verification evidence after `./init.sh` and web auth-focused test suites pass.
+
 ## 2026-04-24 — Decoupled API client test from VITE_API_BASE_URL
 - Who: Codex
 - Summary: Relaxed the web API client fetch assertion so it only checks the expected `/api/v1/health` path suffix, which makes the test pass in CI and local environments regardless of whether `VITE_API_BASE_URL` is set. Re-verified the web workspace with `pnpm test:web` and `pnpm typecheck:web`.

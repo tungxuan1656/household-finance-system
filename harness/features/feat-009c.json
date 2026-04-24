@@ -1,0 +1,9 @@
+{
+  "id": "feat-009c",
+  "name": "Standardize apps/web authentication call flow and auth state handling",
+  "description": "Refactor frontend authentication to an axios-based API client with interceptor-driven 401 refresh-and-retry, simplify Firebase->backend exchange orchestration, persist auth session in Zustand store with hydration gate for route protection, and migrate auth forms to react-hook-form + zod while preserving current UI layout.",
+  "dependencies": ["feat-009", "feat-009b", "feat-033"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-04-24"
+}
