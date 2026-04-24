@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Added local Husky hooks for staged lint/format, push tests, and commit message linting
+- Who: Codex
+- Summary: Added repository-level Husky hooks so `pre-commit` runs `lint-staged` on staged files, `pre-push` runs the existing root `test` suite only, and `commit-msg` validates Conventional Commit messages with commitlint. Also added root-level hook dependencies plus a repo-prettier dependency so staged docs, harness files, lockfiles, and package manifests can be formatted locally before commit.
+- Files changed: package.json, pnpm-lock.yaml, .gitignore, .lintstagedrc.cjs, commitlint.config.cjs, .husky/pre-commit, .husky/pre-push, .husky/commit-msg, harness/features/feat-034.json, harness/feature_index.json, harness/progress.md
+- Blockers: `npx gitnexus detect-changes` is unavailable in this environment (`unknown command 'detect-changes'`), so the repo-mandated graph-diff step could not be run with that exact subcommand.
+- Next steps: keep CI unchanged, and use the new hooks as a local fast-fail layer before push/PR.
+
 ## 2026-04-24 — Fixed web auth routing tests to respect session hydration gate
 - Who: Codex
 - Summary: Updated `apps/web/src/app.test.tsx` so the shared test reset marks the auth store session as checked after clearing state. This keeps the public/protected auth route tests aligned with the current hydration gate behavior instead of getting stuck on the temporary "restoring session" screen.

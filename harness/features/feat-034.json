@@ -1,0 +1,9 @@
+{
+  "id": "feat-034",
+  "name": "Local git hooks for pre-commit and pre-push verification",
+  "description": "Add repository-level Husky hooks so local commits run lint-staged formatting and linting on staged files, local pushes run the existing test suite, and commit messages are validated with commitlint. CI verification remains unchanged as the server-side safety net.",
+  "dependencies": [],
+  "status": "done",
+  "evidence": "Installed Husky, lint-staged, commitlint, and root prettier; configured `.husky/pre-commit` to run `pnpm exec lint-staged`, `.husky/pre-push` to run `pnpm test`, and `.husky/commit-msg` to run `pnpm exec commitlint --edit \"$1\"`. Verified with `./init.sh`, `pnpm exec lint-staged` on staged hook/config files, and `pnpm exec commitlint --edit /tmp/commitlint-msg`.",
+  "updated_at": "2026-04-24"
+}
