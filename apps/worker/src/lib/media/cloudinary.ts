@@ -116,25 +116,21 @@ const assertWithinPolicy = (
   }
 }
 
-const resolveAllowedFormats = (allowedMimeTypes: string[]): string[] => {
-  const formats = allowedMimeTypes.flatMap((mimeType) => {
-    const normalized = mimeType.toLowerCase()
-    const mapped = mimeTypeToFormats[normalized]
+const resolveAllowedFormats = (mimeType: string): string[] => {
+  const normalizedMimeType = mimeType.toLowerCase()
+  const mappedFormats = mimeTypeToFormats[normalizedMimeType]
 
-    if (mapped) {
-      return mapped
-    }
+  if (mappedFormats) {
+    return mappedFormats
+  }
 
-    const [, subtype] = normalized.split('/')
+  const [, subtype] = normalizedMimeType.split('/')
 
-    if (!subtype) {
-      return []
-    }
+  if (!subtype) {
+    return []
+  }
 
-    return [subtype.replace(/^x-/, '')]
-  })
-
-  return [...new Set(formats)]
+  return [subtype.replace(/^x-/, '')]
 }
 
 export const createUploadSignature = (input: {
@@ -151,7 +147,8 @@ export const createUploadSignature = (input: {
   assertWithinPolicy(input.request, policy, input.locale)
 
   const timestamp = Math.floor(Date.now() / 1000)
-  const allowedFormats = resolveAllowedFormats(policy.allowedMimeTypes)
+  const maxFileSize = Math.min(input.request.sizeBytes, policy.maxBytes)
+  const allowedFormats = resolveAllowedFormats(input.request.mimeType)
   const folder = `app/${sanitizePathSegment(input.appConfig.appEnvironment)}/${sanitizePathSegment(input.userId)}/${sanitizePathSegment(input.request.feature)}`
 
   const basePublicId = ulid().toLowerCase()
@@ -162,7 +159,7 @@ export const createUploadSignature = (input: {
   const signableParams: SignableCloudinaryParams = {
     allowed_formats: allowedFormats.join(','),
     folder,
-    max_file_size: policy.maxBytes,
+    max_file_size: maxFileSize,
     public_id: publicId,
     timestamp,
     upload_preset: CLOUDINARY_UPLOAD_PRESET,
@@ -186,7 +183,7 @@ export const createUploadSignature = (input: {
     expiresAt: timestamp + SIGNATURE_TTL_SECONDS,
     maxBytes: policy.maxBytes,
     allowedMimeTypes: policy.allowedMimeTypes,
-    maxFileSize: policy.maxBytes,
+    maxFileSize,
     allowedFormats,
   }
 }

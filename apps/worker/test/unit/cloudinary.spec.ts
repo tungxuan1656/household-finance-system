@@ -91,6 +91,6 @@ describe('cloudinary upload signing', () => {
     expect(payload.folder).toBe('app/local/user-1/expense-attachment')
     expect(payload.allowedMimeTypes).toEqual(['video/mp4'])
     expect(payload.allowedFormats).toEqual(['mp4'])
-    expect(payload.maxFileSize).toBe(appConfig.cloudinaryMaxVideoBytes)
+    expect(payload.maxFileSize).toBe(1024)
   })
 })
