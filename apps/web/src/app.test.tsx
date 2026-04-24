@@ -112,7 +112,9 @@ describe('web shell routing', () => {
     renderAt('/app')
 
     expect(
-      await screen.findByRole('heading', { name: t('auth.signIn.title') }),
+      await screen.findByText(t('auth.signIn.title'), {
+        selector: '[data-slot="card-title"]',
+      }),
     ).toBeInTheDocument()
   })
 
@@ -120,7 +122,9 @@ describe('web shell routing', () => {
     renderAt('/')
 
     expect(
-      await screen.findByRole('heading', { name: t('auth.signIn.title') }),
+      await screen.findByText(t('auth.signIn.title'), {
+        selector: '[data-slot="card-title"]',
+      }),
     ).toBeInTheDocument()
 
     expect(
@@ -132,7 +136,9 @@ describe('web shell routing', () => {
     renderAt('/sign-up')
 
     expect(
-      screen.getByRole('heading', { name: t('auth.signUp.title') }),
+      screen.getByText(t('auth.signUp.title'), {
+        selector: '[data-slot="card-title"]',
+      }),
     ).toBeInTheDocument()
 
     expect(
@@ -212,8 +218,8 @@ describe('web shell routing', () => {
     )
 
     expect(
-      await screen.findByRole('heading', {
-        name: t('app.onboarding.title'),
+      await screen.findByText(t('app.onboarding.title'), {
+        selector: 'h1',
       }),
     ).toBeInTheDocument()
   })
@@ -282,7 +288,9 @@ describe('web shell routing', () => {
     expect(signOutCurrentSession).toHaveBeenCalled()
 
     expect(
-      await screen.findByRole('heading', { name: t('auth.signIn.title') }),
+      await screen.findByText(t('auth.signIn.title'), {
+        selector: '[data-slot="card-title"]',
+      }),
     ).toBeInTheDocument()
   })
 

@@ -75,7 +75,6 @@ export const SignInPage = () => {
     <AuthPanel
       actionLabel={t('common.actions.signIn')}
       description={t('auth.signIn.description')}
-      eyebrowLabel={t('common.labels.publicRoute')}
       footer={
         <p>
           {t('auth.signIn.footer.prompt')}{' '}
@@ -92,10 +91,7 @@ export const SignInPage = () => {
       {formError ? (
         <p className='text-sm text-destructive'>{formError}</p>
       ) : null}
-      <AuthField
-        description={t('auth.signIn.fields.email.description')}
-        id='email'
-        label={t('auth.signIn.fields.email.label')}>
+      <AuthField id='email' label={t('auth.signIn.fields.email.label')}>
         <Input
           autoComplete='email'
           id='email'
@@ -105,10 +101,7 @@ export const SignInPage = () => {
         />
       </AuthField>
 
-      <AuthField
-        description={t('auth.signIn.fields.password.description')}
-        id='password'
-        label={t('auth.signIn.fields.password.label')}>
+      <AuthField id='password' label={t('auth.signIn.fields.password.label')}>
         <Input
           autoComplete='current-password'
           id='password'

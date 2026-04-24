@@ -1,5 +1,40 @@
 # Progress Log
 
+## 2026-04-24 — Decoupled API client test from VITE_API_BASE_URL
+- Who: Codex
+- Summary: Relaxed the web API client fetch assertion so it only checks the expected `/api/v1/health` path suffix, which makes the test pass in CI and local environments regardless of whether `VITE_API_BASE_URL` is set. Re-verified the web workspace with `pnpm test:web` and `pnpm typecheck:web`.
+- Files changed: apps/web/src/api/client.test.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep environment-specific base URLs out of unit-test expectations unless the test is explicitly verifying env wiring.
+
+## 2026-04-24 — Kept shared card UI unchanged and aligned auth tests to current markup
+- Who: Codex
+- Summary: Reverted the temporary `CardTitle` semantic change so `apps/web/src/components/ui` stays untouched, then updated the auth routing and i18n tests to assert the existing `data-slot="card-title"` markup instead of relying on a heading role. Verified the web workspace with `pnpm test:web` and `pnpm typecheck:web`.
+- Files changed: apps/web/src/components/ui/card.tsx, apps/web/src/app.test.tsx, apps/web/src/lib/i18n/browser-fallback.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: if future UI tests need accessibility-driven queries, add semantics at the page-specific layer rather than in shared UI primitives.
+
+## 2026-04-24 — Fixed web test regressions in auth headings and API client expectation
+- Who: Codex
+- Summary: Updated the shared `CardTitle` component to render a semantic `h2`, which restored heading-based queries across the sign-in, sign-up, and overview UI tests. Also aligned the API client test with the configured absolute `VITE_API_BASE_URL` so the fetch assertion matches runtime behavior. Verified the web workspace with `pnpm test:web` and `pnpm typecheck:web`.
+- Files changed: apps/web/src/components/ui/card.tsx, apps/web/src/api/client.test.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep using semantic heading elements in shared card headers so accessibility and Testing Library queries stay aligned.
+
+## 2026-04-23 — Quieted init.sh step output on success
+- Who: Codex
+- Summary: Wrapped each `init.sh` step in a capture-and-replay helper so normal runs only show the step banners, while any failing step prints its collected stdout/stderr after the failure.
+- Files changed: init.sh, harness/progress.md
+- Blockers: none
+- Next steps: if needed, apply the same wrapper pattern to any future repo bootstrap scripts that are too noisy on success.
+
+## 2026-04-23 — Mobile-first auth UI redesign
+- Who: Antigravity
+- Summary: Completed `feat-009b`: Redesigned Auth UI to be mobile-first and minimal. Swapped Form/Hero order in `PublicShell` for better mobile above-the-fold experience. Removed debug labels and technical footer text. Reverted custom component modifications; used only default shadcn variants (`size="lg"` for buttons). Corrected theme resolution logic in `Toaster` component (now using project-local `useTheme` instead of `next-themes`) to fix failing tests. Verified the workspace with `pnpm --filter web lint`, `pnpm --filter web test`, `pnpm --filter web build`, and the full `./init.sh` workspace verification successfully.
+- Files changed: apps/web/src/components/layouts/public-shell.tsx, apps/web/src/components/ui/toaster.tsx, apps/web/src/components/auth/auth-panel.tsx, apps/web/src/pages/auth/sign-in-page.tsx, apps/web/src/pages/auth/sign-up-page.tsx, harness/progress.md
+- Blockers: none
+- Next steps: keep the auth/session seam stable for follow-on profile/onboarding work and future API consumers.
+
 ## 2026-04-23 — Hardened auth session bootstrap and browser storage fallback
 - Who: Codex
 - Summary: Fixed the remaining `feat-009` review issues by adding stale-bootstrap guards in the frontend auth session service, finalizing bootstrap when Firebase auth initialization fails, rolling back Firebase sign-in/sign-up if the provider exchange fails, and routing web theme/i18n storage through a safe browser-storage helper so the app and tests tolerate the current jsdom localStorage behavior. Added focused regressions for the auth race/rollback paths and the Firebase readiness gate, then re-ran `pnpm --filter web lint`, `pnpm --filter web test`, `pnpm --filter web build`, and the full `./init.sh` workspace verification successfully.

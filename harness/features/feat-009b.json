@@ -1,0 +1,13 @@
+{
+  "id": "feat-009b",
+  "name": "Mobile-first UI/UX for Auth (Sign-in/Sign-up)",
+  "description": "Redesign sign-in and sign-up screens to be mobile-first, high-end, and premium aesthetics as per project guidelines.",
+  "status": "done",
+  "dependencies": ["feat-009"],
+  "ownership": "Antigravity",
+  "evidence": {
+    "visual": [],
+    "verification": []
+  }
+}
+
