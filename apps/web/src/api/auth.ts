@@ -23,10 +23,6 @@ export const exchangeProviderToken = async (
 export const logoutSession = async () => {
   const response = await client.post<LogoutSessionResponse>(
     API_ENDPOINTS.auth.logout,
-    {},
-    {
-      skipAuth: true,
-    },
   )
 
   return response.data
