@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-24 — Decoupled API client test from VITE_API_BASE_URL
+- Who: Codex
+- Summary: Relaxed the web API client fetch assertion so it only checks the expected `/api/v1/health` path suffix, which makes the test pass in CI and local environments regardless of whether `VITE_API_BASE_URL` is set. Re-verified the web workspace with `pnpm test:web` and `pnpm typecheck:web`.
+- Files changed: apps/web/src/api/client.test.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep environment-specific base URLs out of unit-test expectations unless the test is explicitly verifying env wiring.
+
 ## 2026-04-24 — Kept shared card UI unchanged and aligned auth tests to current markup
 - Who: Codex
 - Summary: Reverted the temporary `CardTitle` semantic change so `apps/web/src/components/ui` stays untouched, then updated the auth routing and i18n tests to assert the existing `data-slot="card-title"` markup instead of relying on a heading role. Verified the web workspace with `pnpm test:web` and `pnpm typecheck:web`.
