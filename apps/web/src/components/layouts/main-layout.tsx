@@ -18,9 +18,8 @@ function MainLayout() {
   const navigate = useNavigate()
 
   const handleSignOut = async () => {
-    const destination = await signOutCurrentSession()
-
-    navigate(destination, { replace: true })
+    await signOutCurrentSession()
+    navigate('/sign-in', { replace: true })
   }
 
   return (

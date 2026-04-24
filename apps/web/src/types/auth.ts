@@ -22,18 +22,6 @@ export type ExchangeProviderResponse = {
   user: AuthenticatedUserDTO
 }
 
-export type RefreshSessionRequest = {
-  refreshToken: string
-}
-
-export type RefreshSessionResponse = {
-  accessToken: string
-  accessTokenExpiresIn: number
-  refreshToken: string
-  refreshTokenExpiresIn: number
-  tokenType: 'Bearer'
-}
-
 export type LogoutSessionResponse = {
   revoked: true
 }

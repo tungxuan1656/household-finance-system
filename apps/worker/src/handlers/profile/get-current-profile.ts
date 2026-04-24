@@ -11,6 +11,7 @@ export const getCurrentProfile = async (
   const user = await loadUserById(env.DB, userId, locale)
 
   return {
+    createdAt: user.createdAt,
     id: user.id,
     email: user.primaryEmail,
     displayName: user.displayName,

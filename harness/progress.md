@@ -1,5 +1,40 @@
 # Progress Log
 
+## 2026-04-24 — Added local Husky hooks for staged lint/format, push tests, and commit message linting
+- Who: Codex
+- Summary: Added repository-level Husky hooks so `pre-commit` runs `lint-staged` on staged files, `pre-push` runs the existing root `test` suite only, and `commit-msg` validates Conventional Commit messages with commitlint. Also added root-level hook dependencies plus a repo-prettier dependency so staged docs, harness files, lockfiles, and package manifests can be formatted locally before commit.
+- Files changed: package.json, pnpm-lock.yaml, .gitignore, .lintstagedrc.cjs, commitlint.config.cjs, .husky/pre-commit, .husky/pre-push, .husky/commit-msg, harness/features/feat-034.json, harness/feature_index.json, harness/progress.md
+- Blockers: `npx gitnexus detect-changes` is unavailable in this environment (`unknown command 'detect-changes'`), so the repo-mandated graph-diff step could not be run with that exact subcommand.
+- Next steps: keep CI unchanged, and use the new hooks as a local fast-fail layer before push/PR.
+
+## 2026-04-24 — Fixed web auth routing tests to respect session hydration gate
+- Who: Codex
+- Summary: Updated `apps/web/src/app.test.tsx` so the shared test reset marks the auth store session as checked after clearing state. This keeps the public/protected auth route tests aligned with the current hydration gate behavior instead of getting stuck on the temporary "restoring session" screen.
+- Files changed: apps/web/src/app.test.tsx, harness/features/feat-009.json, harness/progress.md
+- Blockers: none
+- Next steps: keep auth route tests aligned with the store hydration contract whenever that gate changes again.
+
+## 2026-04-24 — Removed stale web auth/session and axios refresh plumbing
+- Who: Codex
+- Summary: Simplified the web auth flow by removing the unused `returnTo`/`postAuthRedirect` routing state, trimming `session-service` down to sign-in/sign-up/sign-out only, deleting obsolete client/session tests, and reducing the axios client to request auth headers + API envelope unwrapping. Also aligned profile queries to return DTOs directly so the settings page and React Query hooks consume the expected types again.
+- Files changed: apps/web/src/api/auth.ts, apps/web/src/api/client.ts, apps/web/src/api/profile.ts, apps/web/src/app.test.tsx, apps/web/src/components/layouts/main-layout.tsx, apps/web/src/components/layouts/protected-route.tsx, apps/web/src/lib/auth/session-service.ts, apps/web/src/pages/auth/sign-in-page.tsx, apps/web/src/pages/auth/sign-up-page.tsx, apps/web/src/stores/auth.store.test.tsx, apps/web/src/stores/auth.store.ts, apps/web/src/api/client.test.ts, apps/web/src/lib/auth/session-service.test.ts, apps/web/src/lib/auth/redirect.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep `apps/web` auth/session changes minimal unless a future feature needs redirect persistence again.
+
+## 2026-04-24 — Implemented and closed feat-010 profile settings + avatar upload
+- Who: Codex
+- Summary: Completed `feat-010` end-to-end by migrating profile API contract from `/api/v1/profile` to `/api/v1/users/me`, adding `createdAt` in profile responses, and enforcing backend display-name validation (`trim`, non-empty, max 100). Replaced the web settings placeholder with a real `ProfileSettingsPage` using shadcn-first composition + RHF/Zod + React Query optimistic updates, added Firebase Storage avatar upload with client-side square crop/compression before upload, and synchronized updated profile data back into auth store state.
+- Files changed: AGENTS.md, apps/worker/eslint.config.mjs, apps/worker/tsconfig.json, apps/worker/src/routes/profile.ts, apps/worker/src/contracts/profile.ts, apps/worker/src/db/repositories/user-repository.ts, apps/worker/src/handlers/profile/get-current-profile.ts, apps/worker/src/handlers/profile/update-current-profile.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/test/index.spec.ts, apps/worker/test/unit/dto-profile.spec.ts, apps/worker/test/unit/user-repository.spec.ts, apps/web/src/main.tsx, apps/web/src/router.tsx, apps/web/src/api/endpoints.ts, apps/web/src/api/profile.ts, apps/web/src/hooks/api/use-profile.ts, apps/web/src/types/profile.ts, apps/web/src/lib/forms/profile.schema.ts, apps/web/src/lib/firebase/storage.ts, apps/web/src/lib/images/avatar-image.ts, apps/web/src/pages/app/profile-settings-page.tsx, apps/web/src/stores/auth.store.ts, apps/web/src/stores/auth.store.test.tsx, apps/web/src/lib/i18n/locales/vi.json, docs/exec-plans/completed/2026-04-24-feat-010-user-profile-settings-avatar-upload.md, docs/exec-plans/active/index.md, docs/exec-plans/completed/index.md, harness/features/feat-010.json, harness/feature_index.json, harness/progress.md
+- Blockers: GitNexus CLI in this environment does not expose the `detect_changes` command referenced in AGENTS guidance (`npx gitnexus detect-changes` / `detect_changes` are unknown), so that specific pre-commit graph-diff step could not be executed.
+- Next steps: move to the next pending feature (`feat-011`) when requested.
+
+## 2026-04-24 — Created ExecPlan for feat-010 profile settings + avatar upload
+- Who: Codex
+- Summary: Created the active ExecPlan for `feat-010` at `docs/exec-plans/active/2026-04-24-feat-010-user-profile-settings-avatar-upload.md` using the repository `__plan-template__.md` structure, with strict `/api/v1/users/me` contract migration, display-name update validation, and expanded avatar workflow (square crop + client-side compression + Firebase Storage upload + backend profile persistence). Updated active plan index and synchronized `harness/features/feat-010.json` scope to match the approved feature expansion.
+- Files changed: docs/exec-plans/active/2026-04-24-feat-010-user-profile-settings-avatar-upload.md, docs/exec-plans/active/index.md, harness/features/feat-010.json, harness/progress.md
+- Blockers: none
+- Next steps: implement feat-010 from the new ExecPlan, then collect verification evidence (`pnpm test:worker`, `pnpm test:web`, `./init.sh`) before marking the feature complete.
+
 ## 2026-04-24 — Implemented and closed feat-009c auth standardization
 - Who: Codex
 - Summary: Completed `feat-009c` by refactoring `apps/web` auth flow to axios transport + interceptor-driven refresh-and-retry queue, persisting session state (`user`, `accessToken`, `refreshToken`) in the zustand auth store with hydration gating (`isSessionChecked`), simplifying auth session orchestration, and migrating sign-in/sign-up forms to `react-hook-form` + `zod` while preserving existing UI composition. Updated auth route guards to wait for hydration and added/updated tests for client, store, session service, and routing behavior.

@@ -3,6 +3,7 @@ import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import { newId } from '@/utils/id'
 
 export interface StoredUser {
+  createdAt: number
   id: string
   displayName: string | null
   primaryEmail: string | null
@@ -17,11 +18,13 @@ interface FirebaseIdentityInput {
 }
 
 const toStoredUser = (row: {
+  created_at: number
   id: string
   display_name: string | null
   primary_email: string | null
   avatar_url: string | null
 }): StoredUser => ({
+  createdAt: row.created_at,
   id: row.id,
   displayName: row.display_name,
   primaryEmail: row.primary_email,
@@ -65,13 +68,14 @@ export const findUserById = async (
 ): Promise<StoredUser | null> => {
   const user = await db
     .prepare(
-      `SELECT id, display_name, primary_email, avatar_url
+      `SELECT id, created_at, display_name, primary_email, avatar_url
        FROM users
        WHERE id = ?
        LIMIT 1`,
     )
     .bind(userId)
     .first<{
+      created_at: number
       id: string
       display_name: string | null
       primary_email: string | null

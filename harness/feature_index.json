@@ -56,6 +56,11 @@
       "status": "done"
     },
     {
+      "id": "feat-034",
+      "name": "Local git hooks for pre-commit and pre-push verification",
+      "status": "done"
+    },
+    {
       "id": "feat-009",
       "name": "Authentication frontend session flow",
       "status": "done"
@@ -74,7 +79,7 @@
     {
       "id": "feat-010",
       "name": "User profile & identity settings",
-      "status": "pending"
+      "status": "done"
     },
 
     {

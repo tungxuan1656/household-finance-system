@@ -1,28 +1,14 @@
-import { useEffect } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { AUTH_SIGN_IN_PATH } from '@/lib/constants/auth'
 import { t } from '@/lib/i18n'
-import { authActions, useAuthStore } from '@/stores/auth.store'
+import { useAuthStore } from '@/stores/auth.store'
 
 function ProtectedRoute() {
   const location = useLocation()
   const isAuthenticated = useAuthStore.use.isAuthenticated()
   const isSessionChecked = useAuthStore.use.isSessionChecked()
   const fullPath = `${location.pathname}${location.search}${location.hash}`
-
-  useEffect(() => {
-    if (isSessionChecked && !isAuthenticated) {
-      authActions.setReturnTo(fullPath)
-    }
-  }, [
-    isSessionChecked,
-    fullPath,
-    isAuthenticated,
-    location.hash,
-    location.pathname,
-    location.search,
-  ])
 
   if (!isSessionChecked) {
     return (

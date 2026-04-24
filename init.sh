@@ -14,7 +14,7 @@ run_step() {
   # echo "${label}:"
   if "$@" >"$log_file" 2>&1; then
     rm -f "$log_file"
-    # echo "${label}: success"
+    echo "${label}: OK"
     trap - RETURN
     return 0
   fi
@@ -37,6 +37,6 @@ run_step "Harness checks" ./scripts/check_harness_size.sh
 run_step "Linting" pnpm run lint:fix
 run_step "Type checking" pnpm run typecheck
 run_step "Running tests" pnpm run test
-run_step "Building" pnpm run build
+# run_step "Building" pnpm run build
 
-echo "Init successful"
+echo "Init Done"

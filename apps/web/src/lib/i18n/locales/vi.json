@@ -4,6 +4,7 @@
       "backToOverview": "Quay lại tổng quan",
       "backToShell": "Quay lại khung ứng dụng",
       "backToSignIn": "Quay lại đăng nhập",
+      "cancel": "Huỷ",
       "createAccount": "Tạo tài khoản",
       "openOnboarding": "Mở hướng dẫn thiết lập",
       "signIn": "Đăng nhập",
@@ -149,6 +150,41 @@
       "settings": {
         "description": "Tuyến này đã được dựng khung cho shell MVP và sẽ được thay thế bởi feat thật ở bước sau.",
         "title": "Cài đặt"
+      }
+    },
+    "settings": {
+      "profile": {
+        "actions": {
+          "applyAvatar": "Áp dụng ảnh đại diện",
+          "changeAvatar": "Đổi ảnh đại diện",
+          "retry": "Thử lại",
+          "save": "Lưu thay đổi",
+          "saving": "Đang lưu...",
+          "uploadingAvatar": "Đang tải ảnh..."
+        },
+        "crop": {
+          "description": "Ảnh sẽ được cắt vuông ở trung tâm và nén trước khi tải lên.",
+          "previewAlt": "Xem trước ảnh đại diện",
+          "title": "Chuẩn bị ảnh đại diện"
+        },
+        "errors": {
+          "avatarInvalidType": "Vui lòng chọn tệp ảnh hợp lệ.",
+          "avatarTooLarge": "Ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 8MB.",
+          "avatarUploadFailed": "Không thể tải ảnh đại diện lên. Vui lòng thử lại.",
+          "displayNameRequired": "Tên hiển thị không được để trống.",
+          "displayNameTooLong": "Tên hiển thị không được vượt quá 100 ký tự.",
+          "loadFailed": "Không thể tải dữ liệu hồ sơ. Vui lòng thử lại.",
+          "saveFailed": "Không thể lưu hồ sơ lúc này. Vui lòng thử lại."
+        },
+        "fields": {
+          "displayName": {
+            "description": "Tên này sẽ hiển thị trong không gian hộ gia đình.",
+            "label": "Tên hiển thị",
+            "placeholder": "Ví dụ: Alex Morgan"
+          }
+        },
+        "loading": "Đang tải hồ sơ...",
+        "title": "Cài đặt hồ sơ cá nhân"
       }
     }
   },

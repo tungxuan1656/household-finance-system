@@ -14,7 +14,7 @@
     "db:migrate:remote": "wrangler d1 migrations apply household-finance-main --remote --config ./wrangler.jsonc",
     "db:seed:local": "wrangler d1 execute household-finance-main --local --file ./seeds/local/dev.sql --config ./wrangler.jsonc",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.12.4",

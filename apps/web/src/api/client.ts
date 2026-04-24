@@ -1,32 +1,14 @@
 import axios, {
   AxiosHeaders,
   type AxiosInstance,
-  type AxiosRequestConfig,
   type AxiosResponse,
   isAxiosError,
 } from 'axios'
 
-import { API_BASE_PATH } from '@/api/endpoints'
+import { authActions, useAuthStore } from '@/stores/auth.store'
 import type { ApiEnvelope, ApiErrorCode } from '@/types/api'
 
-type ApiClientMethod = 'get' | 'patch' | 'post'
-
-type MaybePromise<T> = Promise<T> | T
-
-type RequestBody = FormData | Record<string, unknown> | undefined
-
-export type ApiRequestOptions = {
-  headers?: Record<string, string>
-  signal?: AbortSignal
-  skipAuth?: boolean
-  skipAuthRefresh?: boolean
-}
-
-export interface AuthSessionAdapter {
-  getAccessToken(): MaybePromise<string | null>
-  refreshSession(): Promise<string | null>
-  handleUnauthenticated?(error: ApiClientError): MaybePromise<void>
-}
+import { API_BASE_PATH } from './endpoints'
 
 export class ApiClientError extends Error {
   public readonly code: ApiErrorCode | 'HTTP_ERROR' | 'NETWORK_ERROR'
@@ -50,22 +32,13 @@ export class ApiClientError extends Error {
   }
 }
 
-interface ApiClientConfig {
-  authSessionAdapter?: AuthSessionAdapter
-  basePath?: string
-  axiosInstance?: AxiosInstance
-}
-
 declare module 'axios' {
   interface AxiosRequestConfig {
     skipAuth?: boolean
-    skipAuthRefresh?: boolean
   }
 
   interface InternalAxiosRequestConfig {
-    _retry?: boolean
     skipAuth?: boolean
-    skipAuthRefresh?: boolean
   }
 }
 
@@ -186,36 +159,13 @@ const setAuthorizationHeader = (
   setHeader(config, 'authorization', `Bearer ${accessToken}`)
 }
 
-const withInterceptors = (
-  axiosClient: AxiosInstance,
-  authSessionAdapter?: AuthSessionAdapter,
-) => {
-  let isRefreshing = false
-  const failedQueue: Array<{
-    reject: (reason?: unknown) => void
-    resolve: (token: string) => void
-  }> = []
-
-  const processQueue = (error: unknown, refreshedToken: string | null) => {
-    failedQueue.forEach((pendingRequest) => {
-      if (error || !refreshedToken) {
-        pendingRequest.reject(error ?? new Error('Refresh failed'))
-
-        return
-      }
-
-      pendingRequest.resolve(refreshedToken)
-    })
-
-    failedQueue.length = 0
-  }
-
+const withInterceptors = (axiosClient: AxiosInstance) => {
   axiosClient.interceptors.request.use(
-    async (config) => {
+    (config) => {
       setHeader(config, 'accept', 'application/json')
 
-      if (!config.skipAuth && authSessionAdapter) {
-        const accessToken = await authSessionAdapter.getAccessToken()
+      if (!config.skipAuth) {
+        const accessToken = useAuthStore.getState().accessToken
 
         if (accessToken) {
           setAuthorizationHeader(config, accessToken)
@@ -244,77 +194,13 @@ const withInterceptors = (
       }
 
       const response = error.response
-      const originalRequest = error.config
 
       if (!response) {
         throw toApiClientError(0, null, error)
       }
 
-      if (
-        response.status === 401 &&
-        authSessionAdapter &&
-        originalRequest &&
-        !originalRequest.skipAuthRefresh
-      ) {
-        if (originalRequest._retry) {
-          const authError = toApiClientError(response.status, response.data)
-
-          await authSessionAdapter.handleUnauthenticated?.(authError)
-          throw authError
-        }
-
-        if (isRefreshing) {
-          return new Promise<AxiosResponse>((resolve, reject) => {
-            failedQueue.push({
-              reject,
-              resolve: (refreshedToken) => {
-                originalRequest._retry = true
-                setAuthorizationHeader(originalRequest, refreshedToken)
-                resolve(axiosClient.request(originalRequest))
-              },
-            })
-          })
-        }
-
-        originalRequest._retry = true
-        isRefreshing = true
-
-        try {
-          const refreshedToken = await authSessionAdapter.refreshSession()
-          const retryToken =
-            refreshedToken ?? (await authSessionAdapter.getAccessToken())
-
-          if (!retryToken) {
-            throw toApiClientError(response.status, response.data)
-          }
-
-          processQueue(null, retryToken)
-          setAuthorizationHeader(originalRequest, retryToken)
-
-          return axiosClient.request(originalRequest)
-        } catch (refreshError) {
-          processQueue(refreshError, null)
-
-          if (
-            isAxiosError(refreshError) &&
-            refreshError.response &&
-            isApiErrorEnvelope(refreshError.response.data)
-          ) {
-            const refreshClientError = toApiClientError(
-              refreshError.response.status,
-              refreshError.response.data,
-            )
-
-            await authSessionAdapter.handleUnauthenticated?.(refreshClientError)
-            throw refreshClientError
-          }
-
-          const authError = toApiClientError(response.status, response.data)
-          await authSessionAdapter.handleUnauthenticated?.(authError)
-          throw authError
-        } finally {
-          isRefreshing = false
-        }
+      if (response.status === 401) {
+        authActions.clearSession()
       }
 
       throw toApiClientError(response.status, response.data)
@@ -322,48 +208,11 @@ const withInterceptors = (
   )
 }
 
-export const createApiClient = (config: ApiClientConfig = {}) => {
-  const axiosClient =
-    config.axiosInstance ??
-    axios.create({
-      baseURL: config.basePath ?? API_BASE_PATH,
-    })
+export const client = axios.create({
+  baseURL: API_BASE_PATH,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
 
-  withInterceptors(axiosClient, config.authSessionAdapter)
-
-  const request = async <TResponse, TBody = RequestBody>(
-    method: ApiClientMethod,
-    path: string,
-    body?: TBody,
-    options?: ApiRequestOptions,
-  ) => {
-    const response = await axiosClient.request<TResponse>({
-      data: body,
-      headers: options?.headers,
-      method,
-      signal: options?.signal,
-      skipAuth: options?.skipAuth,
-      skipAuthRefresh: options?.skipAuthRefresh,
-      url: path,
-    } as AxiosRequestConfig<TBody>)
-
-    return response.data
-  }
-
-  return {
-    get: <TResponse>(path: string, options?: ApiRequestOptions) =>
-      request<TResponse>('get', path, undefined, options),
-    patch: <TResponse, TBody = Record<string, unknown>>(
-      path: string,
-      body: TBody,
-      options?: ApiRequestOptions,
-    ) => request<TResponse, TBody>('patch', path, body, options),
-    post: <TResponse, TBody = Record<string, unknown>>(
-      path: string,
-      body: TBody,
-      options?: ApiRequestOptions,
-    ) => request<TResponse, TBody>('post', path, body, options),
-  }
-}
-
-export const client = createApiClient()
+withInterceptors(client)

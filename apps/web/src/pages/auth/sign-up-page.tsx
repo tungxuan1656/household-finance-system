@@ -30,10 +30,10 @@ export const SignUpPage = () => {
 
   const handleSubmit = form.handleSubmit(async (values) => {
     try {
-      const destination = await signUpWithEmailPassword(values)
+      await signUpWithEmailPassword(values)
 
       form.clearErrors('root')
-      navigate(destination, { replace: true })
+      navigate('/app/onboarding', { replace: true })
     } catch {
       form.setError('root', {
         message: t('auth.session.errors.signUpFailed'),

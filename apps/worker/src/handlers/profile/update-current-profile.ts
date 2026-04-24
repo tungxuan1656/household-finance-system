@@ -20,6 +20,7 @@ export const updateCurrentProfile = async (
   )
 
   return {
+    createdAt: user.createdAt,
     id: user.id,
     email: user.primaryEmail,
     displayName: user.displayName,
