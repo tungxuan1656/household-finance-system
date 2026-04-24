@@ -1,5 +1,11 @@
 # Progress Log
 
+## 2026-04-24 — Fixed Prettier plugin resolution and increased Commitlint header limit
+- Who: Codex
+- Summary: Installed `prettier-plugin-tailwindcss` at the workspace root to resolve Husky/lint-staged errors where Prettier could not find the plugin from the root context. Updated `commitlint.config.cjs` to increase the `header-max-length` from the conventional default to 150 characters to accommodate longer descriptive commit messages.
+- Files changed: package.json, commitlint.config.cjs, harness/progress.md
+- Blockers: None.
+
 ## 2026-04-24 — Implemented and closed feat-035 responsive main layout shell
 - Who: Codex
 - Summary: Completed `feat-035` by creating `AppSidebar` and `BottomTab` components with unified `APP_MENU_ITEMS` and `BOTTOM_TAB_ITEMS` constants under `paths.ts` and `navigation.ts`. Refactored `router.tsx` to a single `/` base protected app root and eliminated the legacy `/app` path prefix. Used `createPortal` for bottom tabs to render above the page safe area. Confirmed layout rendering and responsive logic via test suite and marked feature as done.
