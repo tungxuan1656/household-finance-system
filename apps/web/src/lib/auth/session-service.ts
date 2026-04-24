@@ -3,7 +3,6 @@ import {
   logoutSession,
   refreshSession,
 } from '@/api/auth'
-import { type AuthSessionAdapter, createApiClient } from '@/api/client'
 import {
   getFirebaseIdToken,
   getFirebaseProvider,
@@ -17,45 +16,12 @@ import {
   AUTH_ONBOARDING_REDIRECT_PATH,
 } from '@/lib/constants/auth'
 import { authActions, useAuthStore } from '@/stores/auth.store'
-import type {
-  AuthenticatedUserDTO,
-  ExchangeProviderResponse,
-  RefreshSessionResponse,
-} from '@/types/auth'
 
 const isUnauthenticatedError = (error: unknown): boolean =>
   error instanceof Error &&
   ('status' in error || 'code' in error) &&
   ((error as Error & { status?: number }).status === 401 ||
     (error as Error & { code?: string }).code === 'UNAUTHENTICATED')
-
-const applySession = (
-  session: ExchangeProviderResponse | RefreshSessionResponse,
-  user: AuthenticatedUserDTO | null,
-) => {
-  authActions.setSession({
-    accessToken: session.accessToken,
-    refreshToken: session.refreshToken,
-    user,
-  })
-}
-
-const clearSessionAfterFailure = (preserveReturnTo: boolean) => {
-  authActions.clearSession({
-    preserveReturnTo,
-  })
-}
-
-let authenticatedApiClient: ReturnType<typeof createApiClient> | null = null
-const getAuthenticatedApiClient = () => {
-  if (!authenticatedApiClient) {
-    authenticatedApiClient = createApiClient({
-      authSessionAdapter,
-    })
-  }
-
-  return authenticatedApiClient
-}
 
 export const refreshCurrentSession = async () => {
   const refreshToken = useAuthStore.getState().refreshToken
@@ -69,12 +35,15 @@ export const refreshCurrentSession = async () => {
       refreshToken,
     })
 
-    applySession(refreshedSession, useAuthStore.getState().user)
+    authActions.updateSession({
+      accessToken: refreshedSession.accessToken,
+      refreshToken: refreshedSession.refreshToken,
+    })
 
     return refreshedSession.accessToken
   } catch (error) {
     if (isUnauthenticatedError(error)) {
-      clearSessionAfterFailure(true)
+      authActions.clearSession()
     }
 
     return null
@@ -93,7 +62,11 @@ export const signInWithEmailPassword = async (input: {
       provider: getFirebaseProvider(),
     })
 
-    applySession(session, session.user)
+    authActions.setSession({
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
+      user: session.user,
+    })
   } catch (error) {
     try {
       await signOutFirebaseSession()
@@ -127,7 +100,11 @@ export const signUpWithEmailPassword = async (input: {
       provider: getFirebaseProvider(),
     })
 
-    applySession(session, session.user)
+    authActions.setSession({
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
+      user: session.user,
+    })
   } catch (error) {
     try {
       await signOutFirebaseSession()
@@ -154,7 +131,7 @@ export const signUpWithEmailPassword = async (input: {
 export const signOutCurrentSession = async () => {
   try {
     if (useAuthStore.getState().isAuthenticated) {
-      await logoutSession(getAuthenticatedApiClient())
+      await logoutSession()
     }
   } catch {
     // Logout must still clear local state if the server call fails.
@@ -165,16 +142,8 @@ export const signOutCurrentSession = async () => {
       // Firebase sign-out is best-effort after the app session is revoked.
     }
 
-    clearSessionAfterFailure(false)
+    authActions.clearSession()
   }
 
   return AUTH_DEFAULT_REDIRECT_PATH
-}
-
-export const authSessionAdapter: AuthSessionAdapter = {
-  getAccessToken: async () => useAuthStore.getState().accessToken,
-  handleUnauthenticated: async () => {
-    clearSessionAfterFailure(true)
-  },
-  refreshSession: async () => refreshCurrentSession(),
 }

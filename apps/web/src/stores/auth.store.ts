@@ -24,20 +24,6 @@ type ClearSessionInput = {
   preserveReturnTo?: boolean
 }
 
-type AuthStoreActions = {
-  clearRoutingState: () => void
-  clearSession: (input?: ClearSessionInput) => void
-  markSessionChecked: () => void
-  reset: () => void
-  setPostAuthRedirect: (postAuthRedirect: string | null) => void
-  setReturnTo: (returnTo: string | null) => void
-  setSession: (input: SetSessionInput) => void
-  updateUserProfile: (input: {
-    avatarUrl?: string | null
-    displayName?: string | null
-  }) => void
-}
-
 const initialState: AuthSessionState = {
   accessToken: null,
   isAuthenticated: false,
@@ -88,13 +74,13 @@ const _useAuthStore = create<AuthSessionState>()(
   ),
 )
 
-const authActions: AuthStoreActions = {
+const authActions = {
   clearRoutingState: () =>
     _useAuthStore.setState({
       postAuthRedirect: null,
       returnTo: null,
     }),
-  clearSession: (input) =>
+  clearSession: (input?: ClearSessionInput) =>
     _useAuthStore.setState((state) => ({
       accessToken: null,
       isAuthenticated: false,
@@ -112,15 +98,15 @@ const authActions: AuthStoreActions = {
     _useAuthStore.setState(initialState)
     void _useAuthStore.persist.clearStorage()
   },
-  setPostAuthRedirect: (postAuthRedirect) =>
+  setPostAuthRedirect: (postAuthRedirect: string | null) =>
     _useAuthStore.setState({
       postAuthRedirect,
     }),
-  setReturnTo: (returnTo) =>
+  setReturnTo: (returnTo: string | null) =>
     _useAuthStore.setState({
       returnTo,
     }),
-  setSession: (input) =>
+  setSession: (input: SetSessionInput) =>
     _useAuthStore.setState({
       accessToken: input.accessToken,
       isAuthenticated: true,
@@ -128,7 +114,15 @@ const authActions: AuthStoreActions = {
       refreshToken: input.refreshToken,
       user: input.user,
     }),
-  updateUserProfile: (input) =>
+  updateSession: (input: { accessToken?: string; refreshToken?: string }) =>
+    _useAuthStore.setState((state) => ({
+      accessToken: input.accessToken ?? state.accessToken,
+      refreshToken: input.refreshToken ?? state.refreshToken,
+    })),
+  updateUserProfile: (input: {
+    avatarUrl?: string | null
+    displayName?: string | null
+  }) =>
     _useAuthStore.setState((state) => {
       if (!state.user) {
         return state

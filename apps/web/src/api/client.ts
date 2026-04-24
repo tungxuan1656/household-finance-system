@@ -1,31 +1,20 @@
 import axios, {
   AxiosHeaders,
   type AxiosInstance,
-  type AxiosRequestConfig,
   type AxiosResponse,
   isAxiosError,
 } from 'axios'
 
-import { API_BASE_PATH } from '@/api/endpoints'
+import { authActions, useAuthStore } from '@/stores/auth.store'
 import type { ApiEnvelope, ApiErrorCode } from '@/types/api'
 
-type ApiClientMethod = 'get' | 'patch' | 'post'
-
-type MaybePromise<T> = Promise<T> | T
-
-type RequestBody = FormData | Record<string, unknown> | undefined
+import { API_BASE_PATH } from './endpoints'
 
 export type ApiRequestOptions = {
   headers?: Record<string, string>
   signal?: AbortSignal
   skipAuth?: boolean
   skipAuthRefresh?: boolean
-}
-
-export interface AuthSessionAdapter {
-  getAccessToken(): MaybePromise<string | null>
-  refreshSession(): Promise<string | null>
-  handleUnauthenticated?(error: ApiClientError): MaybePromise<void>
 }
 
 export class ApiClientError extends Error {
@@ -48,12 +37,6 @@ export class ApiClientError extends Error {
     this.requestId = input.requestId
     this.status = input.status
   }
-}
-
-interface ApiClientConfig {
-  authSessionAdapter?: AuthSessionAdapter
-  basePath?: string
-  axiosInstance?: AxiosInstance
 }
 
 declare module 'axios' {
@@ -186,10 +169,7 @@ const setAuthorizationHeader = (
   setHeader(config, 'authorization', `Bearer ${accessToken}`)
 }
 
-const withInterceptors = (
-  axiosClient: AxiosInstance,
-  authSessionAdapter?: AuthSessionAdapter,
-) => {
+const withInterceptors = (axiosClient: AxiosInstance) => {
   let isRefreshing = false
   const failedQueue: Array<{
     reject: (reason?: unknown) => void
@@ -211,11 +191,11 @@ const withInterceptors = (
   }
 
   axiosClient.interceptors.request.use(
-    async (config) => {
+    (config) => {
       setHeader(config, 'accept', 'application/json')
 
-      if (!config.skipAuth && authSessionAdapter) {
-        const accessToken = await authSessionAdapter.getAccessToken()
+      if (!config.skipAuth) {
+        const accessToken = useAuthStore.getState().accessToken
 
         if (accessToken) {
           setAuthorizationHeader(config, accessToken)
@@ -252,14 +232,13 @@ const withInterceptors = (
 
       if (
         response.status === 401 &&
-        authSessionAdapter &&
         originalRequest &&
         !originalRequest.skipAuthRefresh
       ) {
         if (originalRequest._retry) {
           const authError = toApiClientError(response.status, response.data)
 
-          await authSessionAdapter.handleUnauthenticated?.(authError)
+          authActions.clearSession({ preserveReturnTo: true })
           throw authError
         }
 
@@ -280,16 +259,14 @@ const withInterceptors = (
         isRefreshing = true
 
         try {
-          const refreshedToken = await authSessionAdapter.refreshSession()
-          const retryToken =
-            refreshedToken ?? (await authSessionAdapter.getAccessToken())
+          const refreshedToken = useAuthStore.getState().refreshToken
 
-          if (!retryToken) {
+          if (!refreshedToken) {
             throw toApiClientError(response.status, response.data)
           }
 
-          processQueue(null, retryToken)
-          setAuthorizationHeader(originalRequest, retryToken)
+          processQueue(null, refreshedToken)
+          setAuthorizationHeader(originalRequest, refreshedToken)
 
           return axiosClient.request(originalRequest)
         } catch (refreshError) {
@@ -305,12 +282,12 @@ const withInterceptors = (
               refreshError.response.data,
             )
 
-            await authSessionAdapter.handleUnauthenticated?.(refreshClientError)
+            authActions.clearSession({ preserveReturnTo: true })
             throw refreshClientError
           }
 
           const authError = toApiClientError(response.status, response.data)
-          await authSessionAdapter.handleUnauthenticated?.(authError)
+          authActions.clearSession({ preserveReturnTo: true })
           throw authError
         } finally {
           isRefreshing = false
@@ -321,49 +298,11 @@ const withInterceptors = (
     },
   )
 }
+export const client = axios.create({
+  baseURL: API_BASE_PATH,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
 
-export const createApiClient = (config: ApiClientConfig = {}) => {
-  const axiosClient =
-    config.axiosInstance ??
-    axios.create({
-      baseURL: config.basePath ?? API_BASE_PATH,
-    })
-
-  withInterceptors(axiosClient, config.authSessionAdapter)
-
-  const request = async <TResponse, TBody = RequestBody>(
-    method: ApiClientMethod,
-    path: string,
-    body?: TBody,
-    options?: ApiRequestOptions,
-  ) => {
-    const response = await axiosClient.request<TResponse>({
-      data: body,
-      headers: options?.headers,
-      method,
-      signal: options?.signal,
-      skipAuth: options?.skipAuth,
-      skipAuthRefresh: options?.skipAuthRefresh,
-      url: path,
-    } as AxiosRequestConfig<TBody>)
-
-    return response.data
-  }
-
-  return {
-    get: <TResponse>(path: string, options?: ApiRequestOptions) =>
-      request<TResponse>('get', path, undefined, options),
-    patch: <TResponse, TBody = Record<string, unknown>>(
-      path: string,
-      body: TBody,
-      options?: ApiRequestOptions,
-    ) => request<TResponse, TBody>('patch', path, body, options),
-    post: <TResponse, TBody = Record<string, unknown>>(
-      path: string,
-      body: TBody,
-      options?: ApiRequestOptions,
-    ) => request<TResponse, TBody>('post', path, body, options),
-  }
-}
-
-export const client = createApiClient()
+withInterceptors(client)
