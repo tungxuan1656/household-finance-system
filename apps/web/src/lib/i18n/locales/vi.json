@@ -238,6 +238,10 @@
           "role": "Vai trò"
         },
         "description": "Bảng thành viên hiện là placeholder cho tính năng thành viên.",
+        "placeholders": {
+          "member": "Thành viên (placeholder)",
+          "owner": "Chủ gia đình (placeholder)"
+        },
         "title": "Thành viên gia đình"
       },
       "meta": {

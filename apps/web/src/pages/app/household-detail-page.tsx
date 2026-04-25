@@ -272,7 +272,8 @@ function HouseholdDetailPage() {
                 {t('app.householdDetail.members.description')}
               </CardDescription>
             </div>
-            <Button type='button' variant='outline'>
+            {/* TODO(feat-members): Enable invite action when member-management API is implemented. */}
+            <Button disabled type='button' variant='outline'>
               {t('app.householdDetail.members.actions.invite')}
             </Button>
           </div>
@@ -297,23 +298,29 @@ function HouseholdDetailPage() {
               </thead>
               <tbody>
                 <tr className='border-b'>
-                  <td className='px-3 py-2'>Owner (placeholder)</td>
+                  <td className='px-3 py-2'>
+                    {t('app.householdDetail.members.placeholders.owner')}
+                  </td>
                   <td className='px-3 py-2'>
                     <Badge variant='secondary'>admin</Badge>
                   </td>
                   <td className='px-3 py-2'>
-                    <Button size='sm' type='button' variant='outline'>
+                    {/* TODO(feat-members): Enable remove action when member-management API is implemented. */}
+                    <Button disabled size='sm' type='button' variant='outline'>
                       {t('app.householdDetail.members.actions.remove')}
                     </Button>
                   </td>
                 </tr>
                 <tr>
-                  <td className='px-3 py-2'>Member (placeholder)</td>
+                  <td className='px-3 py-2'>
+                    {t('app.householdDetail.members.placeholders.member')}
+                  </td>
                   <td className='px-3 py-2'>
                     <Badge variant='secondary'>member</Badge>
                   </td>
                   <td className='px-3 py-2'>
-                    <Button size='sm' type='button' variant='outline'>
+                    {/* TODO(feat-members): Enable remove action when member-management API is implemented. */}
+                    <Button disabled size='sm' type='button' variant='outline'>
                       {t('app.householdDetail.members.actions.remove')}
                     </Button>
                   </td>

@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-25 — Fixed member placeholder UX review issues in household detail
+- Who: Codex
+- Summary: Addressed review findings in household detail placeholder members section by disabling Invite/Remove buttons until member-management APIs exist and adding explicit TODO comments for follow-up feature work. Also replaced hardcoded English placeholder row labels with i18n-backed strings.
+- Files changed: apps/web/src/pages/app/household-detail-page.tsx, apps/web/src/lib/i18n/locales/vi.json, harness/progress.md
+- Blockers: none
+- Next steps: enable invite/remove actions after feat members endpoints are implemented.
+
 ## 2026-04-25 — Default VND backend + remove currency choice/display from web
 - Who: Codex
 - Summary: Temporarily disabled currency selection in gia đình create flows by making worker create-contract accept omitted currency and default to `VND` server-side. Updated web create/edit forms to remove currency fields and removed gia đình currency rendering from list/detail UI, keeping member-count placeholder only.
