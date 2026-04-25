@@ -3,13 +3,18 @@ import { Hono } from 'hono'
 import {
   type CreateHouseholdRequest,
   createHouseholdRequestSchema,
+  type DeleteHouseholdResponse,
   type HouseholdDTO,
   householdPathParamsSchema,
   type ListHouseholdsResponse,
+  type UpdateHouseholdRequest,
+  updateHouseholdRequestSchema,
 } from '@/contracts'
+import { archiveHousehold } from '@/handlers/households/archive-household'
 import { createHousehold } from '@/handlers/households/create-household'
 import { getHousehold } from '@/handlers/households/get-household'
 import { listHouseholds } from '@/handlers/households/list-households'
+import { updateHousehold } from '@/handlers/households/update-household'
 import { invalidInput } from '@/lib/errors'
 import { formatValidationDetails } from '@/lib/i18n'
 import { success } from '@/lib/response'
@@ -66,4 +71,60 @@ householdRoutes.get('/households/:id', async (ctx) => {
   )
 
   return success<HouseholdDTO>(ctx, result)
+})
+
+householdRoutes.patch('/households/:id', async (ctx) => {
+  const currentUser = ctx.get('currentUser')
+  const locale = ctx.get('locale')
+  const parsedParams = householdPathParamsSchema(locale).safeParse({
+    id: ctx.req.param('id'),
+  })
+
+  if (!parsedParams.success) {
+    throw invalidInput(
+      locale,
+      'errors.invalidRequestBody',
+      formatValidationDetails(parsedParams.error.issues, locale),
+    )
+  }
+
+  const body = await readJsonBody<UpdateHouseholdRequest>(
+    ctx.req.raw,
+    updateHouseholdRequestSchema(locale),
+    locale,
+  )
+  const result = await updateHousehold(
+    ctx.env,
+    currentUser.id,
+    parsedParams.data.id,
+    locale,
+    body,
+  )
+
+  return success<HouseholdDTO>(ctx, result)
+})
+
+householdRoutes.delete('/households/:id', async (ctx) => {
+  const currentUser = ctx.get('currentUser')
+  const locale = ctx.get('locale')
+  const parsedParams = householdPathParamsSchema(locale).safeParse({
+    id: ctx.req.param('id'),
+  })
+
+  if (!parsedParams.success) {
+    throw invalidInput(
+      locale,
+      'errors.invalidRequestBody',
+      formatValidationDetails(parsedParams.error.issues, locale),
+    )
+  }
+
+  const result = await archiveHousehold(
+    ctx.env,
+    currentUser.id,
+    parsedParams.data.id,
+    locale,
+  )
+
+  return success<DeleteHouseholdResponse>(ctx, result)
 })

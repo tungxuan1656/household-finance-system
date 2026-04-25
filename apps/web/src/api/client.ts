@@ -5,7 +5,6 @@ import axios, {
   isAxiosError,
 } from 'axios'
 
-import { useActiveHouseholdStore } from '@/stores/active-household.store'
 import { authActions, useAuthStore } from '@/stores/auth.store'
 import type { ApiEnvelope, ApiErrorCode } from '@/types/api'
 
@@ -167,15 +166,9 @@ const withInterceptors = (axiosClient: AxiosInstance) => {
 
       if (!config.skipAuth) {
         const accessToken = useAuthStore.getState().accessToken
-        const activeHouseholdId =
-          useActiveHouseholdStore.getState().activeHouseholdId
 
         if (accessToken) {
           setAuthorizationHeader(config, accessToken)
-        }
-
-        if (activeHouseholdId) {
-          setHeader(config, 'x-household-id', activeHouseholdId)
         }
       }
 

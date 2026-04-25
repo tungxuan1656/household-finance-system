@@ -6,6 +6,9 @@ import { PublicLayout } from '@/components/layouts/public-layout'
 import { PublicRoute } from '@/components/layouts/public-route'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n'
+import { HouseholdDetailPage } from '@/pages/app/household-detail-page'
+import { HouseholdsPage } from '@/pages/app/households-page'
+import { MorePage } from '@/pages/app/more-page'
 import { OnboardingPage } from '@/pages/app/onboarding-page'
 import { OverviewPage } from '@/pages/app/overview-page'
 import { PlaceholderPage } from '@/pages/app/placeholder-page'
@@ -30,6 +33,11 @@ function AppRoutes() {
             element={<OnboardingPage />}
             path={PATHS.ONBOARDING.replace('/', '')}
           />
+          <Route
+            element={<HouseholdsPage />}
+            path={PATHS.HOUSEHOLDS.replace('/', '')}
+          />
+          <Route element={<HouseholdDetailPage />} path='households/:id' />
           <Route
             element={
               <PlaceholderPage
@@ -61,15 +69,7 @@ function AppRoutes() {
             element={<ProfileSettingsPage />}
             path={PATHS.SETTINGS.replace('/', '')}
           />
-          <Route
-            element={
-              <PlaceholderPage
-                description={t('app.placeholder.more.description')}
-                title={t('app.placeholder.more.title')}
-              />
-            }
-            path={PATHS.MORE.replace('/', '')}
-          />
+          <Route element={<MorePage />} path={PATHS.MORE.replace('/', '')} />
         </Route>
       </Route>
       <Route element={<NotFoundPage />} path='*' />

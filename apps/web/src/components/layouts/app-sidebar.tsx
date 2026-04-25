@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom'
 
-import { HouseholdSwitcher } from '@/components/layouts/household-switcher'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { APP_MENU_ITEMS } from '@/lib/constants/navigation'
@@ -48,8 +47,6 @@ export function AppSidebar({ onSignOut }: AppSidebarProps) {
           </NavLink>
         ))}
       </nav>
-
-      <HouseholdSwitcher />
 
       <div className='mt-auto space-y-3 rounded-none border border-border/70 bg-muted/40 p-3 text-xs text-muted-foreground'>
         <p>{t('shell.protected.footer')}</p>

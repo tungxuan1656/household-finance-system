@@ -453,6 +453,238 @@ describe('Worker foundation', () => {
     expect(payload.error.code).toBe('NOT_FOUND')
   })
 
+  it('updates a household for an admin member', async () => {
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-household-update-owner:update-owner@example.com',
+    )
+
+    const createResponse = await SELF.fetch(
+      'https://example.com/api/v1/households',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Family Delta',
+          defaultCurrencyCode: 'usd',
+        }),
+      },
+    )
+    const createdPayload =
+      await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
+
+    const updateResponse = await SELF.fetch(
+      `https://example.com/api/v1/households/${createdPayload.data.id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Family Delta Updated',
+          defaultCurrencyCode: 'vnd',
+        }),
+      },
+    )
+    const updatePayload = await parseJson<
+      ApiEnvelope<{
+        id: string
+        name: string
+        defaultCurrencyCode: string
+      }>
+    >(updateResponse)
+
+    expect(updateResponse.status).toBe(200)
+    expect(updatePayload.data).toMatchObject({
+      id: createdPayload.data.id,
+      name: 'Family Delta Updated',
+      defaultCurrencyCode: 'VND',
+    })
+  })
+
+  it('rejects household update when request body is invalid', async () => {
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-household-update-invalid:update-invalid@example.com',
+    )
+
+    const createResponse = await SELF.fetch(
+      'https://example.com/api/v1/households',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Family Echo',
+          defaultCurrencyCode: 'usd',
+        }),
+      },
+    )
+    const createdPayload =
+      await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
+
+    const updateResponse = await SELF.fetch(
+      `https://example.com/api/v1/households/${createdPayload.data.id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      },
+    )
+    const updatePayload = await parseJson<ApiErrorEnvelope>(updateResponse)
+
+    expect(updateResponse.status).toBe(400)
+    expect(updatePayload.error.code).toBe('INVALID_INPUT')
+  })
+
+  it('returns not found when non-admin member updates household', async () => {
+    await insertHouseholdFixture(env.DB)
+
+    const member = await exchangeAccessToken(
+      'test:firebase-user-household-member-update:member@example.com',
+    )
+    await env.DB.prepare(
+      `INSERT INTO household_memberships (
+          id,
+          household_id,
+          user_id,
+          role,
+          state
+        )
+        VALUES (?, ?, ?, ?, ?)`,
+    )
+      .bind('hm-member-update', 'h1', member.user.id, 'member', 'active')
+      .run()
+
+    const response = await SELF.fetch(
+      'https://example.com/api/v1/households/h1',
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${member.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Should Not Update',
+        }),
+      },
+    )
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+
+    expect(response.status).toBe(404)
+    expect(payload.error.code).toBe('NOT_FOUND')
+  })
+
+  it('archives a household for an admin and hides it from list/detail', async () => {
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-household-archive-owner:archive-owner@example.com',
+    )
+
+    const createResponse = await SELF.fetch(
+      'https://example.com/api/v1/households',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Family Foxtrot',
+          defaultCurrencyCode: 'usd',
+        }),
+      },
+    )
+    const createdPayload =
+      await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
+
+    const archiveResponse = await SELF.fetch(
+      `https://example.com/api/v1/households/${createdPayload.data.id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+        },
+      },
+    )
+    const archivePayload =
+      await parseJson<ApiEnvelope<{ archived: true }>>(archiveResponse)
+
+    expect(archiveResponse.status).toBe(200)
+    expect(archivePayload.data).toEqual({ archived: true })
+
+    const listResponse = await SELF.fetch(
+      'https://example.com/api/v1/households',
+      {
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+        },
+      },
+    )
+    const listPayload =
+      await parseJson<ApiEnvelope<{ items: Array<{ id: string }> }>>(
+        listResponse,
+      )
+
+    expect(listResponse.status).toBe(200)
+    expect(
+      listPayload.data.items.find((item) => item.id === createdPayload.data.id),
+    ).toBeUndefined()
+
+    const detailResponse = await SELF.fetch(
+      `https://example.com/api/v1/households/${createdPayload.data.id}`,
+      {
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+        },
+      },
+    )
+    const detailPayload = await parseJson<ApiErrorEnvelope>(detailResponse)
+
+    expect(detailResponse.status).toBe(404)
+    expect(detailPayload.error.code).toBe('NOT_FOUND')
+  })
+
+  it('returns not found when non-admin member archives household', async () => {
+    await insertHouseholdFixture(env.DB)
+
+    const member = await exchangeAccessToken(
+      'test:firebase-user-household-member-archive:member-archive@example.com',
+    )
+    await env.DB.prepare(
+      `INSERT INTO household_memberships (
+          id,
+          household_id,
+          user_id,
+          role,
+          state
+        )
+        VALUES (?, ?, ?, ?, ?)`,
+    )
+      .bind('hm-member-archive', 'h1', member.user.id, 'member', 'active')
+      .run()
+
+    const response = await SELF.fetch(
+      'https://example.com/api/v1/households/h1',
+      {
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${member.accessToken}`,
+        },
+      },
+    )
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+
+    expect(response.status).toBe(404)
+    expect(payload.error.code).toBe('NOT_FOUND')
+  })
+
   it('returns upload signature payload for authenticated image upload request', async () => {
     const exchangeResponse = await SELF.fetch(
       'https://example.com/api/v1/auth/provider/exchange',

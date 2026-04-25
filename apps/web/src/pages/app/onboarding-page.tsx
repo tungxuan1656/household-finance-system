@@ -14,17 +14,17 @@ import {
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { NativeSelect } from '@/components/ui/native-select'
-import { useCreateHouseholdMutation } from '@/hooks/api/use-households'
+import { PATHS } from '@/lib/constants/paths'
 import {
   type CreateHouseholdFormValues,
   createHouseholdSchema,
 } from '@/lib/forms/household.schema'
 import { t } from '@/lib/i18n'
-import { activeHouseholdActions } from '@/stores/active-household.store'
+import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 function OnboardingPage() {
   const navigate = useNavigate()
-  const createHouseholdMutation = useCreateHouseholdMutation()
+  const isLoading = useHouseholdStore.use.isLoading()
   const form = useForm<CreateHouseholdFormValues>({
     defaultValues: {
       defaultCurrencyCode: 'USD',
@@ -35,11 +35,10 @@ function OnboardingPage() {
 
   const onSubmit = async (values: CreateHouseholdFormValues) => {
     try {
-      const createdHousehold = await createHouseholdMutation.mutateAsync(values)
-      activeHouseholdActions.setActiveHouseholdId(createdHousehold.id)
+      await householdActions.createHousehold(values)
 
       toast.success(t('app.onboarding.feedback.createSuccess'))
-      navigate('/', { replace: true })
+      navigate(PATHS.HOUSEHOLDS, { replace: true })
     } catch {
       toast.error(t('app.onboarding.feedback.createFailed'))
     }
@@ -121,8 +120,8 @@ function OnboardingPage() {
         </FieldGroup>
 
         <div className='mt-5 flex items-center justify-end gap-3'>
-          <Button disabled={createHouseholdMutation.isPending} type='submit'>
-            {createHouseholdMutation.isPending
+          <Button disabled={isLoading} type='submit'>
+            {isLoading
               ? t('app.onboarding.actions.creating')
               : t('app.onboarding.actions.create')}
           </Button>

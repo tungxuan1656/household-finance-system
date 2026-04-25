@@ -17,6 +17,11 @@ export interface CreateHouseholdInput {
   defaultCurrencyCode: string
 }
 
+export interface UpdateHouseholdInput {
+  name?: string
+  defaultCurrencyCode?: string
+}
+
 const isSlugConflictError = (error: unknown): boolean => {
   if (!(error instanceof Error)) {
     return false
@@ -222,4 +227,80 @@ export const createHouseholdForUser = async (
   }
 
   throw conflict(locale, 'errors.conflict')
+}
+
+export const updateHouseholdForAdmin = async (
+  db: D1Database,
+  userId: string,
+  householdId: string,
+  input: UpdateHouseholdInput,
+): Promise<StoredHousehold | null> => {
+  const nowEpoch = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE households
+       SET name = CASE
+             WHEN ?1 THEN ?2
+             ELSE name
+           END,
+           default_currency_code = CASE
+             WHEN ?3 THEN ?4
+             ELSE default_currency_code
+           END,
+           updated_at = ?5
+       WHERE id = ?6
+         AND archived_at IS NULL
+         AND EXISTS (
+           SELECT 1
+             FROM household_memberships hm
+            WHERE hm.household_id = households.id
+              AND hm.user_id = ?7
+              AND hm.state = 'active'
+              AND hm.role = 'admin'
+         )`,
+    )
+    .bind(
+      input.name !== undefined ? 1 : 0,
+      input.name ?? null,
+      input.defaultCurrencyCode !== undefined ? 1 : 0,
+      input.defaultCurrencyCode ?? null,
+      nowEpoch,
+      householdId,
+      userId,
+    )
+    .run()
+
+  if (Number(result.meta.changes ?? 0) !== 1) {
+    return null
+  }
+
+  return findUserHouseholdById(db, userId, householdId)
+}
+
+export const archiveHouseholdForAdmin = async (
+  db: D1Database,
+  userId: string,
+  householdId: string,
+): Promise<boolean> => {
+  const nowEpoch = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE households
+       SET archived_at = ?1,
+           updated_at = ?1
+       WHERE id = ?2
+         AND archived_at IS NULL
+         AND EXISTS (
+           SELECT 1
+             FROM household_memberships hm
+            WHERE hm.household_id = households.id
+              AND hm.user_id = ?3
+              AND hm.state = 'active'
+              AND hm.role = 'admin'
+         )`,
+    )
+    .bind(nowEpoch, householdId, userId)
+    .run()
+
+  return Number(result.meta.changes ?? 0) === 1
 }

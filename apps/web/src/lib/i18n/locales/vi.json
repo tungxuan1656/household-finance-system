@@ -111,17 +111,14 @@
       "title": "Thiết lập hộ gia đình"
     },
     "overview": {
-      "activeHousehold": {
-        "body": "Một ngữ cảnh hộ gia đình duy nhất cho bản demo khung.",
-        "cardTitle": "Hộ gia đình đang dùng",
-        "description": "Chờ tính năng chọn hộ gia đình.",
-        "loading": "Đang tải hộ gia đình...",
-        "name": "Gia đình mẫu",
-        "selectedBody": "Hộ gia đình này đang là ngữ cảnh hoạt động cho các thao tác tiếp theo."
-      },
       "badge": "Khung đã đăng nhập",
       "description": "Trang đích này là nền cho trạng thái đã xác thực. Nó giữ bố cục, điều hướng, và hành vi trạng thái trống ổn định trước khi dữ liệu thật xuất hiện.",
       "demoFamily": "Gia đình mẫu",
+      "households": {
+        "button": "Mở danh sách hộ gia đình",
+        "cardTitle": "Hộ gia đình",
+        "description": "Tạo, xem chi tiết và quản lý các household bạn tham gia."
+      },
       "nextAction": {
         "button": "Mở hướng dẫn thiết lập",
         "cardTitle": "Bước tiếp theo",
@@ -157,12 +154,103 @@
         "title": "Thêm"
       }
     },
-    "householdSwitcher": {
-      "activeRole": "Vai trò hiện tại:",
-      "createAction": "Tạo hộ gia đình mới",
-      "empty": "Bạn chưa có hộ gia đình nào. Hãy tạo hộ gia đình đầu tiên.",
-      "label": "Chuyển hộ gia đình",
-      "loading": "Đang tải danh sách hộ gia đình..."
+    "households": {
+      "actions": {
+        "create": "Tạo household",
+        "creating": "Đang tạo...",
+        "retry": "Thử lại",
+        "viewDetail": "Xem chi tiết"
+      },
+      "create": {
+        "description": "Tạo household mới để bắt đầu ghi nhận chi tiêu theo nhóm.",
+        "title": "Tạo household mới"
+      },
+      "description": "Danh sách household bạn đang tham gia.",
+      "empty": {
+        "description": "Bạn chưa có household nào. Hãy tạo household đầu tiên.",
+        "title": "Chưa có household"
+      },
+      "feedback": {
+        "createFailed": "Không thể tạo household lúc này. Vui lòng thử lại.",
+        "createSuccess": "Đã tạo household thành công."
+      },
+      "fields": {
+        "currency": {
+          "description": "Tiền tệ mặc định cho household.",
+          "label": "Tiền tệ mặc định"
+        },
+        "householdName": {
+          "description": "Tên hiển thị của household.",
+          "label": "Tên household",
+          "placeholder": "Ví dụ: Gia đình Nguyễn"
+        }
+      },
+      "loading": "Đang tải danh sách household...",
+      "title": "Households"
+    },
+    "householdDetail": {
+      "actions": {
+        "back": "Quay lại danh sách",
+        "delete": "Xoá",
+        "edit": "Sửa",
+        "retry": "Thử lại",
+        "save": "Lưu thay đổi"
+      },
+      "deleteDialog": {
+        "confirm": "Xác nhận xoá",
+        "description": "Household sẽ được lưu trữ (archive) và không còn hiển thị trong danh sách.",
+        "title": "Xoá household này?"
+      },
+      "description": "Chi tiết household và quản trị cơ bản.",
+      "feedback": {
+        "archiveFailed": "Không thể xoá household lúc này. Vui lòng thử lại.",
+        "archiveSuccess": "Đã xoá household thành công.",
+        "updateFailed": "Không thể cập nhật household lúc này. Vui lòng thử lại.",
+        "updateSuccess": "Đã cập nhật household."
+      },
+      "fields": {
+        "currency": {
+          "description": "Tiền tệ mặc định áp dụng cho household.",
+          "label": "Tiền tệ mặc định"
+        },
+        "householdName": {
+          "description": "Tên hiển thị mới của household.",
+          "label": "Tên household",
+          "placeholder": "Ví dụ: Gia đình Nguyễn"
+        }
+      },
+      "invalidId": "Đường dẫn household không hợp lệ.",
+      "loading": "Đang tải chi tiết household...",
+      "members": {
+        "actions": {
+          "invite": "Mời thành viên",
+          "remove": "Xoá thành viên"
+        },
+        "columns": {
+          "actions": "Thao tác",
+          "name": "Tên",
+          "role": "Vai trò"
+        },
+        "description": "Bảng thành viên hiện là placeholder cho feature members.",
+        "title": "Thành viên household"
+      },
+      "meta": {
+        "defaultCurrency": "Tiền tệ mặc định"
+      },
+      "title": "Chi tiết household"
+    },
+    "more": {
+      "description": "Các điều hướng mở rộng cho app.",
+      "links": {
+        "households": "Households",
+        "onboarding": "Thiết lập household",
+        "settings": "Cài đặt hồ sơ"
+      },
+      "quickLinks": {
+        "description": "Truy cập nhanh các trang không nằm trong tab chính.",
+        "title": "Lối tắt"
+      },
+      "title": "Thêm"
     },
     "settings": {
       "profile": {
@@ -206,11 +294,12 @@
     "protected": {
       "badge": "Khung bảo vệ",
       "description": "Một khung ổn định cho các tuyến đã xác thực và onboarding.",
-      "footer": "Trạng thái đăng nhập và chọn hộ gia đình sẽ được gắn vào đây ở các feat sau.",
+      "footer": "Các tuyến chức năng sẽ tiếp tục được mở rộng từ khung điều hướng này.",
       "nav": {
         "ariaLabel": "Các mục ứng dụng",
         "budgets": "Ngân sách",
         "expenses": "Chi tiêu",
+        "households": "Households",
         "insights": "Phân tích",
         "onboarding": "Thiết lập",
         "overview": "Tổng quan",

@@ -41,6 +41,8 @@ export const viMessages = {
   'households.defaultCurrencyCodeInvalid':
     'Mã tiền tệ mặc định phải gồm đúng 3 ký tự chữ cái.',
   'households.householdIdMustNotBeBlank': 'Mã hộ gia đình không hợp lệ.',
+  'households.atLeastOneFieldRequired':
+    'Cần cung cấp ít nhất một trường để cập nhật hộ gia đình.',
 } as const
 
 export type MessageKey = keyof typeof viMessages

@@ -15,6 +15,15 @@ export type CreateHouseholdRequest = {
   defaultCurrencyCode: string
 }
 
+export type UpdateHouseholdRequest = {
+  name?: string
+  defaultCurrencyCode?: string
+}
+
 export type ListHouseholdsResponse = {
   items: HouseholdDTO[]
+}
+
+export type DeleteHouseholdResponse = {
+  archived: true
 }

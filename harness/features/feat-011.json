@@ -1,9 +1,9 @@
 {
   "id": "feat-011",
-  "name": "Household creation & active household selection",
-  "description": "Implement household creation and active-household selection. Backend: POST /api/v1/households (create; name, default currency required), GET /api/v1/households (list own households with role), GET /api/v1/households/:id (read one). Frontend: Create Household page, Household Switcher component (persists active household id to local storage), and household context provider that downstream features read to scope their requests. Per docs/product-specs/household-management.md. Does NOT include settings edits, archive, invitations, or member management.",
+  "name": "Household CRUD + household pages (no active household global)",
+  "description": "Implement household CRUD and household management pages without active-household global state. Backend: POST /api/v1/households, GET /api/v1/households, GET /api/v1/households/:id, PATCH /api/v1/households/:id (admin), DELETE /api/v1/households/:id soft-archive (admin). Frontend: single zustand household.store, /households list with create flow, /households/:id detail with edit/delete, members placeholder table with invite/remove buttons (TODO for follow-up feat), and /more navigation to households plus sidebar More item. Does NOT include real member/invitation APIs.",
   "dependencies": ["feat-033", "feat-007"],
   "status": "done",
-  "evidence": "Implemented worker household endpoints (POST/GET list/GET detail), onboarding create-household flow, active household persisted context/switcher, and request header propagation. Verification passed: pnpm typecheck:worker, pnpm test:worker, pnpm typecheck:web, pnpm test:web, pnpm build:web, ./init.sh.",
+  "evidence": "Implemented worker household CRUD endpoints (POST/GET list/GET detail/PATCH/DELETE archive), non-archived list/detail behavior, and admin-only update/archive checks with integration tests. Web now uses one household.store (zustand) and removed active-household store/context/switcher/header injection. Added /households list+create, /households/:id detail with edit/delete and members placeholder, and /more page household navigation. Verification passed: pnpm typecheck:worker, pnpm test:worker, pnpm typecheck:web, pnpm test:web, pnpm build:web, ./init.sh.",
   "updated_at": "2026-04-25"
 }

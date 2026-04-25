@@ -54,42 +54,6 @@ vi.mock('sonner', () => ({
   ),
 }))
 
-vi.mock('@/hooks/api/use-households', () => ({
-  useCreateHouseholdMutation: () => ({
-    isPending: false,
-    mutateAsync: vi.fn(async () => ({
-      createdAt: Date.now(),
-      defaultCurrencyCode: 'USD',
-      id: 'household-1',
-      name: 'Gia đình mẫu',
-      role: 'admin',
-      slug: 'gia-dinh-mau',
-      timezone: 'UTC',
-    })),
-  }),
-  useHouseholdQuery: () => ({
-    data: null,
-    isLoading: false,
-  }),
-  useHouseholdsQuery: () => ({
-    data: {
-      items: [
-        {
-          createdAt: Date.now(),
-          defaultCurrencyCode: 'USD',
-          id: 'household-1',
-          name: 'Gia đình mẫu',
-          role: 'admin',
-          slug: 'gia-dinh-mau',
-          timezone: 'UTC',
-        },
-      ],
-    },
-    isLoading: false,
-    isSuccess: true,
-  }),
-}))
-
 function renderAt(pathname: string) {
   return render(
     <MemoryRouter initialEntries={[pathname]}>

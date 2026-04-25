@@ -26,6 +26,28 @@ export const createHouseholdRequestSchema = (
     })
     .strict()
 
+export const updateHouseholdRequestSchema = (
+  locale: SupportedLocale = defaultLocale,
+) =>
+  z
+    .object({
+      name: z
+        .string()
+        .trim()
+        .min(1, translate(locale, 'households.nameMustNotBeBlank'))
+        .max(120, translate(locale, 'households.nameTooLong'))
+        .optional(),
+      defaultCurrencyCode: currencyCodeSchema(locale).optional(),
+    })
+    .strict()
+    .refine(
+      (value) =>
+        value.name !== undefined || value.defaultCurrencyCode !== undefined,
+      {
+        message: translate(locale, 'households.atLeastOneFieldRequired'),
+      },
+    )
+
 export const householdPathParamsSchema = (
   locale: SupportedLocale = defaultLocale,
 ) =>
@@ -40,6 +62,9 @@ export const householdPathParamsSchema = (
 
 export type CreateHouseholdRequest = z.output<
   ReturnType<typeof createHouseholdRequestSchema>
+>
+export type UpdateHouseholdRequest = z.output<
+  ReturnType<typeof updateHouseholdRequestSchema>
 >
 
 export type HouseholdRoleDTO = 'admin' | 'member'
@@ -56,4 +81,8 @@ export interface HouseholdDTO {
 
 export interface ListHouseholdsResponse {
   items: HouseholdDTO[]
+}
+
+export interface DeleteHouseholdResponse {
+  archived: true
 }

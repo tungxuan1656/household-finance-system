@@ -99,7 +99,7 @@
 
     {
       "id": "feat-011",
-      "name": "Household creation & active household selection",
+      "name": "Household CRUD + household pages (no active household global)",
       "status": "done"
     },
     {

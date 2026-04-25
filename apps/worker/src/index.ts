@@ -38,12 +38,7 @@ app.use(
       return allowedOrigins.includes(origin) ? origin : ''
     },
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-Client-Type',
-      'X-Household-Id',
-    ],
+    allowHeaders: ['Content-Type', 'Authorization', 'X-Client-Type'],
     credentials: true,
   }),
 )

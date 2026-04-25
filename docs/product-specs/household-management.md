@@ -14,14 +14,14 @@ Provide clear household lifecycle and settings management so users can create, c
 2. After creation, user lands in the household dashboard showing recent activity, members, budgets, and quick actions.
 3. Household settings include: name, currency, timezone, default category list, Group/Event management, and privacy defaults (private vs household default visibility).
 4. Admins can manage members (promote/demote, remove), manage household groups, export household data, and delete/archive the household.
-5. Switch household: user with multiple households can switch active household via a quick selector; current household context is shown across UI.
+5. Household selection for actions: user with multiple households can open household list/detail pages and pick a household explicitly in each household-scoped flow (no global active household focus in MVP).
 
 ## Acceptance Criteria
 
 - Users can create and configure a household with required fields.
 - Household dashboard surfaces members, recent expenses, and key actions.
 - Admin-only settings are enforced (member management, deletion).
-- Switching households updates active context and persists preference.
+- Household list/detail pages are available and household-scoped flows can request explicit household selection.
 
 ## Failure States
 

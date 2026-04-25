@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   createHouseholdRequestSchema,
   householdPathParamsSchema,
+  updateHouseholdRequestSchema,
 } from '@/contracts'
 
 describe('household contract schema', () => {
@@ -41,6 +42,24 @@ describe('household contract schema', () => {
     const parsed = householdPathParamsSchema().safeParse({
       id: '   ',
     })
+
+    expect(parsed.success).toBe(false)
+  })
+
+  it('accepts valid update payload', () => {
+    const parsed = updateHouseholdRequestSchema().safeParse({
+      defaultCurrencyCode: 'eur',
+      name: 'Family Hub Updated',
+    })
+
+    expect(parsed.success).toBe(true)
+    if (parsed.success) {
+      expect(parsed.data.defaultCurrencyCode).toBe('EUR')
+    }
+  })
+
+  it('rejects empty update payload', () => {
+    const parsed = updateHouseholdRequestSchema().safeParse({})
 
     expect(parsed.success).toBe(false)
   })
