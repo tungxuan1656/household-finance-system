@@ -91,6 +91,11 @@
       "name": "Cloudinary signed media upload foundation",
       "status": "done"
     },
+    {
+      "id": "feat-037",
+      "name": "Improve profile settings UI and Cloudinary avatar upload",
+      "status": "done"
+    },
 
     {
       "id": "feat-011",

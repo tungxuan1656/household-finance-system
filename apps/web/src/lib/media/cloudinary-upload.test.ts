@@ -72,7 +72,6 @@ describe('cloudinary upload helper', () => {
     expect(formData.get('upload_preset')).toBe(ticket.uploadPreset)
     expect(formData.get('folder')).toBe(ticket.folder)
     expect(formData.get('public_id')).toBe(ticket.publicId)
-    expect(formData.get('max_file_size')).toBe(ticket.maxFileSize.toString())
 
     expect(formData.get('allowed_formats')).toBe(
       ticket.allowedFormats.join(','),

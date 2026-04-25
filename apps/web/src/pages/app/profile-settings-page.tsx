@@ -6,7 +6,13 @@ import { Controller, useForm } from 'react-hook-form'
 import { ApiClientError } from '@/api/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -28,7 +34,6 @@ import {
   useCurrentUserProfileQuery,
   useUpdateCurrentUserProfileMutation,
 } from '@/hooks/api/use-profile'
-import { uploadProfileAvatar } from '@/lib/firebase/storage'
 import {
   type UpdateProfileFormValues,
   updateProfileSchema,
@@ -38,6 +43,7 @@ import {
   isAvatarImageFile,
   prepareSquareAvatarImage,
 } from '@/lib/images/avatar-image'
+import { uploadMediaViaCloudinary } from '@/lib/media/cloudinary-upload'
 
 const MAX_AVATAR_SIZE_BYTES = 8 * 1024 * 1024
 
@@ -143,13 +149,18 @@ export const ProfileSettingsPage = () => {
         file: avatarFile,
       })
 
-      const avatarUrl = await uploadProfileAvatar({
+      const uploadedAsset = await uploadMediaViaCloudinary({
         file: preparedAvatar.blob,
-        userId: profileQuery.data.id,
+        signatureRequest: {
+          feature: 'profile-avatar',
+          mimeType: preparedAvatar.blob.type,
+          resourceType: 'image',
+          sizeBytes: preparedAvatar.blob.size,
+        },
       })
 
       await updateProfileMutation.mutateAsync({
-        avatarUrl,
+        avatarUrl: uploadedAsset.secureUrl,
       })
 
       clearAvatarCandidate()
@@ -207,12 +218,15 @@ export const ProfileSettingsPage = () => {
       <Card>
         <CardHeader>
           <CardTitle>{t('app.settings.profile.title')}</CardTitle>
+          <CardDescription>
+            {t('app.settings.profile.description')}
+          </CardDescription>
         </CardHeader>
-        <CardContent className='flex flex-col gap-6'>
-          <div className='flex flex-col gap-3'>
-            <Avatar size='lg'>
+        <CardContent className='flex flex-col gap-8'>
+          <div className='flex flex-col items-center gap-4 text-center'>
+            <Avatar className='size-24!' size='lg'>
               <AvatarImage src={currentAvatarSrc} />
-              <AvatarFallback>
+              <AvatarFallback className='text-2xl'>
                 {getAvatarFallback(
                   profileQuery.data.displayName,
                   profileQuery.data.email,
@@ -220,25 +234,31 @@ export const ProfileSettingsPage = () => {
               </AvatarFallback>
             </Avatar>
 
-            <div className='flex gap-2'>
+            <div className='flex flex-col items-center gap-3'>
               <Button
+                disabled={isSubmitting}
                 type='button'
                 variant='outline'
                 onClick={() => fileInputRef.current?.click()}>
                 <CameraIcon data-icon='inline-start' />
                 {t('app.settings.profile.actions.changeAvatar')}
               </Button>
+              <p className='text-sm text-muted-foreground'>
+                {t('app.settings.profile.avatarHelpText')}
+              </p>
+              {avatarError ? <FieldError>{avatarError}</FieldError> : null}
+              <input
+                ref={fileInputRef}
+                accept='image/*'
+                className='hidden'
+                disabled={isSubmitting}
+                type='file'
+                onChange={handleAvatarFileChange}
+              />
             </div>
-
-            {avatarError ? <FieldError>{avatarError}</FieldError> : null}
-            <input
-              ref={fileInputRef}
-              accept='image/*'
-              className='hidden'
-              type='file'
-              onChange={handleAvatarFileChange}
-            />
           </div>
+
+          <div className='h-px w-full bg-border' />
 
           <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
             <FieldGroup>
@@ -246,9 +266,7 @@ export const ProfileSettingsPage = () => {
                 control={form.control}
                 name='displayName'
                 render={({ field, fieldState }) => (
-                  <Field
-                    data-invalid={fieldState.invalid}
-                    orientation='horizontal'>
+                  <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor='profile-display-name'>
                       {t('app.settings.profile.fields.displayName.label')}
                     </FieldLabel>

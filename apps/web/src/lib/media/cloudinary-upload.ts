@@ -90,7 +90,6 @@ export const uploadToCloudinaryWithSignature = async (input: {
   formData.append('upload_preset', input.ticket.uploadPreset)
   formData.append('folder', input.ticket.folder)
   formData.append('public_id', input.ticket.publicId)
-  formData.append('max_file_size', input.ticket.maxFileSize.toString())
   formData.append('allowed_formats', input.ticket.allowedFormats.join(','))
 
   const response = await fetch(input.ticket.uploadUrl, {

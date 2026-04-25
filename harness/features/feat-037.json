@@ -1,0 +1,9 @@
+{
+  "id": "feat-037",
+  "name": "Improve profile settings UI and Cloudinary avatar upload",
+  "description": "Revamp profile settings layout and integrate Cloudinary upload flow.",
+  "dependencies": ["feat-010", "feat-036"],
+  "status": "done",
+  "evidence": "profile-settings-page.tsx refactored and uses Cloudinary",
+  "updated_at": "2026-04-25"
+}
