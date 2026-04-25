@@ -28,7 +28,7 @@
       "loadingTitle": "Đang khôi phục phiên"
     },
     "signIn": {
-      "description": "Dùng email để tiếp tục vào không gian hộ gia đình.",
+      "description": "Dùng email để tiếp tục vào không gian gia đình.",
       "errors": {
         "invalidForm": "Vui lòng nhập email hợp lệ và mật khẩu có ít nhất 8 ký tự.",
         "providerFailed": "Không thể đăng nhập bằng Firebase. Vui lòng kiểm tra lại thông tin."
@@ -52,7 +52,7 @@
       "title": "Đăng nhập"
     },
     "signUp": {
-      "description": "Tạo tài khoản sẽ tham gia hoặc tạo một hộ gia đình.",
+      "description": "Tạo tài khoản sẽ tham gia hoặc tạo một gia đình.",
       "errors": {
         "invalidForm": "Vui lòng nhập họ tên, email hợp lệ và mật khẩu có ít nhất 8 ký tự.",
         "providerFailed": "Không thể tạo tài khoản Firebase. Vui lòng thử lại."
@@ -64,7 +64,7 @@
           "placeholder": "ten@vi.du"
         },
         "fullName": {
-          "description": "Tên hiển thị cho hộ gia đình.",
+          "description": "Tên hiển thị cho gia đình.",
           "label": "Họ và tên",
           "placeholder": "Alex Morgan"
         },
@@ -84,43 +84,41 @@
   "app": {
     "onboarding": {
       "actions": {
-        "backToShell": "Quay lại khung",
-        "returnToSignIn": "Quay lại đăng nhập"
+        "create": "Tạo gia đình",
+        "creating": "Đang tạo..."
       },
-      "checklist": {
-        "chooseOrCreate": "Chọn hoặc tạo một hộ gia đình",
-        "inviteLater": "Mời thành viên sau nếu cần",
-        "setCurrency": "Đặt tiền tệ mặc định"
+      "description": "Tạo gia đình đầu tiên để bắt đầu theo dõi chi tiêu và ngân sách.",
+      "errors": {
+        "currencyInvalid": "Mã tiền tệ phải gồm đúng 3 ký tự chữ cái.",
+        "nameRequired": "Tên gia đình không được để trống.",
+        "nameTooLong": "Tên gia đình không được vượt quá 120 ký tự."
       },
-      "description": "Placeholder này giữ điểm vào onboarding hiển thị cho đến khi luồng thật được xây dựng.",
+      "feedback": {
+        "createFailed": "Không thể tạo gia đình lúc này. Vui lòng thử lại.",
+        "createSuccess": "Đã tạo gia đình thành công."
+      },
       "fields": {
         "currency": {
-          "description": "Chọn đồng tiền mặc định cho khung.",
+          "description": "Đồng tiền mặc định cho các bản ghi chi tiêu trong gia đình.",
           "label": "Tiền tệ mặc định"
         },
         "householdName": {
-          "description": "Hiển thị trên khung cho đến khi luồng onboarding thật sẵn sàng.",
-          "label": "Tên hộ gia đình",
-          "placeholder": "Gia đình mẫu"
-        },
-        "welcomeNote": {
-          "description": "Nội dung tuỳ chọn sẽ xuất hiện trong xác nhận onboarding.",
-          "label": "Lời chào mừng",
-          "placeholder": "Ví dụ: Viết vài dòng chào mừng cho hộ gia đình..."
+          "description": "Tên này sẽ hiển thị trong các màn hình liên quan.",
+          "label": "Tên gia đình",
+          "placeholder": "Ví dụ: Gia đình Nguyễn"
         }
       },
-      "title": "Hoàn tất thiết lập hộ gia đình"
+      "title": "Thiết lập gia đình"
     },
     "overview": {
-      "activeHousehold": {
-        "body": "Một ngữ cảnh hộ gia đình duy nhất cho bản demo khung.",
-        "cardTitle": "Hộ gia đình đang dùng",
-        "description": "Chờ tính năng chọn hộ gia đình.",
-        "name": "Gia đình mẫu"
-      },
       "badge": "Khung đã đăng nhập",
       "description": "Trang đích này là nền cho trạng thái đã xác thực. Nó giữ bố cục, điều hướng, và hành vi trạng thái trống ổn định trước khi dữ liệu thật xuất hiện.",
       "demoFamily": "Gia đình mẫu",
+      "households": {
+        "button": "Mở danh sách gia đình",
+        "cardTitle": "Gia đình",
+        "description": "Tạo, xem chi tiết và quản lý các gia đình bạn tham gia."
+      },
       "nextAction": {
         "button": "Mở hướng dẫn thiết lập",
         "cardTitle": "Bước tiếp theo",
@@ -132,7 +130,7 @@
         "description": "Các tuyến mà các feat sau sẽ thay thế."
       },
       "signedInAs": "Đã đăng nhập với vai trò",
-      "title": "Không gian làm việc hộ gia đình"
+      "title": "Không gian làm việc gia đình"
     },
     "placeholder": {
       "budgets": {
@@ -155,6 +153,114 @@
         "description": "Menu mở rộng cho màn hình nhỏ.",
         "title": "Thêm"
       }
+    },
+    "households": {
+      "actions": {
+        "create": "Tạo gia đình",
+        "creating": "Đang tạo...",
+        "retry": "Thử lại",
+        "viewDetail": "Xem chi tiết"
+      },
+      "create": {
+        "description": "Tạo gia đình mới để bắt đầu ghi nhận chi tiêu theo nhóm.",
+        "title": "Tạo gia đình mới"
+      },
+      "description": "Danh sách gia đình bạn đang tham gia.",
+      "empty": {
+        "description": "Bạn chưa có gia đình nào. Hãy tạo gia đình đầu tiên.",
+        "title": "Chưa có gia đình"
+      },
+      "feedback": {
+        "createFailed": "Không thể tạo gia đình lúc này. Vui lòng thử lại.",
+        "createSuccess": "Đã tạo gia đình thành công."
+      },
+      "fields": {
+        "currency": {
+          "description": "Tiền tệ mặc định cho gia đình.",
+          "label": "Tiền tệ mặc định"
+        },
+        "householdName": {
+          "description": "Tên hiển thị của gia đình.",
+          "label": "Tên gia đình",
+          "placeholder": "Ví dụ: Gia đình Nguyễn"
+        }
+      },
+      "loading": "Đang tải danh sách gia đình...",
+      "memberCountPlaceholder": "Số thành viên: --",
+      "title": "Gia đình"
+    },
+    "householdDetail": {
+      "actions": {
+        "back": "Quay lại danh sách",
+        "delete": "Xoá",
+        "edit": "Sửa",
+        "retry": "Thử lại",
+        "save": "Lưu thay đổi"
+      },
+      "deleteDialog": {
+        "confirm": "Xác nhận xoá",
+        "description": "Gia đình sẽ được lưu trữ (archive) và không còn hiển thị trong danh sách.",
+        "title": "Xoá gia đình này?"
+      },
+      "description": "Chi tiết gia đình và quản trị cơ bản.",
+      "editDialog": {
+        "description": "Cập nhật thông tin cơ bản của gia đình.",
+        "title": "Chỉnh sửa gia đình"
+      },
+      "feedback": {
+        "archiveFailed": "Không thể xoá gia đình lúc này. Vui lòng thử lại.",
+        "archiveSuccess": "Đã xoá gia đình thành công.",
+        "updateFailed": "Không thể cập nhật gia đình lúc này. Vui lòng thử lại.",
+        "updateSuccess": "Đã cập nhật gia đình."
+      },
+      "fields": {
+        "currency": {
+          "description": "Tiền tệ mặc định áp dụng cho gia đình.",
+          "label": "Tiền tệ mặc định"
+        },
+        "householdName": {
+          "description": "Tên hiển thị mới của gia đình.",
+          "label": "Tên gia đình",
+          "placeholder": "Ví dụ: Gia đình Nguyễn"
+        }
+      },
+      "invalidId": "Đường dẫn gia đình không hợp lệ.",
+      "loading": "Đang tải chi tiết gia đình...",
+      "memberCountPlaceholder": "Số thành viên: --",
+      "members": {
+        "actions": {
+          "invite": "Mời thành viên",
+          "remove": "Xoá thành viên"
+        },
+        "columns": {
+          "actions": "Thao tác",
+          "name": "Tên",
+          "role": "Vai trò"
+        },
+        "description": "Bảng thành viên hiện là placeholder cho tính năng thành viên.",
+        "placeholders": {
+          "member": "Thành viên (placeholder)",
+          "owner": "Chủ gia đình (placeholder)"
+        },
+        "title": "Thành viên gia đình"
+      },
+      "meta": {
+        "defaultCurrency": "Tiền tệ mặc định"
+      },
+      "title": "Chi tiết gia đình"
+    },
+    "more": {
+      "description": "Các điều hướng mở rộng cho app.",
+      "links": {
+        "households": "Gia đình",
+        "onboarding": "Thiết lập gia đình",
+        "settings": "Cài đặt hồ sơ"
+      },
+      "quickLinks": {
+        "description": "Truy cập nhanh các trang không nằm trong tab chính.",
+        "title": "Lối tắt"
+      },
+      "title": "Thêm"
     },
     "settings": {
       "profile": {
@@ -182,7 +288,7 @@
         },
         "fields": {
           "displayName": {
-            "description": "Tên này sẽ hiển thị trong không gian hộ gia đình.",
+            "description": "Tên này sẽ hiển thị trong không gian gia đình.",
             "label": "Tên hiển thị",
             "placeholder": "Ví dụ: Alex Morgan"
           }
@@ -198,11 +304,12 @@
     "protected": {
       "badge": "Khung bảo vệ",
       "description": "Một khung ổn định cho các tuyến đã xác thực và onboarding.",
-      "footer": "Trạng thái đăng nhập và chọn hộ gia đình sẽ được gắn vào đây ở các feat sau.",
+      "footer": "Các tuyến chức năng sẽ tiếp tục được mở rộng từ khung điều hướng này.",
       "nav": {
         "ariaLabel": "Các mục ứng dụng",
         "budgets": "Ngân sách",
         "expenses": "Chi tiêu",
+        "households": "Gia đình",
         "insights": "Phân tích",
         "onboarding": "Thiết lập",
         "overview": "Tổng quan",

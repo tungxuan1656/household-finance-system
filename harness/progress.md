@@ -1,5 +1,40 @@
 # Progress Log
 
+## 2026-04-25 — Fixed member placeholder UX review issues in household detail
+- Who: Codex
+- Summary: Addressed review findings in household detail placeholder members section by disabling Invite/Remove buttons until member-management APIs exist and adding explicit TODO comments for follow-up feature work. Also replaced hardcoded English placeholder row labels with i18n-backed strings.
+- Files changed: apps/web/src/pages/app/household-detail-page.tsx, apps/web/src/lib/i18n/locales/vi.json, harness/progress.md
+- Blockers: none
+- Next steps: enable invite/remove actions after feat members endpoints are implemented.
+
+## 2026-04-25 — Default VND backend + remove currency choice/display from web
+- Who: Codex
+- Summary: Temporarily disabled currency selection in gia đình create flows by making worker create-contract accept omitted currency and default to `VND` server-side. Updated web create/edit forms to remove currency fields and removed gia đình currency rendering from list/detail UI, keeping member-count placeholder only.
+- Files changed: apps/worker/src/contracts/household.ts, apps/worker/src/db/repositories/household-repository.ts, apps/worker/test/unit/dto-household.spec.ts, apps/worker/test/index.spec.ts, apps/web/src/lib/forms/household.schema.ts, apps/web/src/types/household.ts, apps/web/src/pages/app/onboarding-page.tsx, apps/web/src/pages/app/households-page.tsx, apps/web/src/pages/app/household-detail-page.tsx, apps/web/src/stores/household.store.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: when member feature is implemented, replace `Số thành viên: --` placeholders with real counts from household members API.
+
+## 2026-04-25 — Refined gia đình wording + household dialogs UI
+- Who: Codex
+- Summary: Updated web household UI copy to use Vietnamese term `gia đình`, removed slug display from household list/detail screens, added member-count placeholder text (`Số thành viên: --`), and converted create/edit gia đình forms to `Dialog` flows while removing field-level descriptions to reduce visual noise.
+- Files changed: apps/web/src/pages/app/households-page.tsx, apps/web/src/pages/app/household-detail-page.tsx, apps/web/src/lib/i18n/locales/vi.json, harness/progress.md
+- Blockers: none
+- Next steps: wire real member counts after member-management feature APIs land.
+
+## 2026-04-25 — Reworked feat-011 to household CRUD + pages without active household
+- Who: Codex
+- Summary: Re-implemented `feat-011` to remove global active-household assumptions and ship full household CRUD. Backend now supports `PATCH /api/v1/households/:id` and `DELETE /api/v1/households/:id` (soft archive), plus expanded integration coverage for update/archive validation and authorization. Web now uses a single `household.store`, removed active-household store/context/switcher and header injection, and added `/households`, `/households/:id`, and `/more` pages with household navigation; household detail includes members placeholder table + invite/remove buttons with TODO markers for follow-up member features.
+- Files changed: apps/worker/src/contracts/household.ts, apps/worker/src/db/repositories/household-repository.ts, apps/worker/src/handlers/households/update-household.ts, apps/worker/src/handlers/households/archive-household.ts, apps/worker/src/routes/households.ts, apps/worker/src/index.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/test/unit/dto-household.spec.ts, apps/worker/test/index.spec.ts, apps/web/src/api/client.ts, apps/web/src/api/household.ts, apps/web/src/types/household.ts, apps/web/src/stores/household.store.ts, apps/web/src/stores/household.store.test.tsx, apps/web/src/pages/app/onboarding-page.tsx, apps/web/src/pages/app/households-page.tsx, apps/web/src/pages/app/household-detail-page.tsx, apps/web/src/pages/app/more-page.tsx, apps/web/src/pages/app/overview-page.tsx, apps/web/src/router.tsx, apps/web/src/lib/constants/navigation.ts, apps/web/src/lib/constants/paths.ts, apps/web/src/lib/i18n/locales/vi.json, apps/web/src/app.test.tsx, docs/exec-plans/plans/2026-04-25-feat-011-household-crud-pages-no-active.md, docs/exec-plans/index.md, harness/features/feat-011.json, harness/feature_index.json, harness/progress.md
+- Blockers: GitNexus impact/detect-changes automation is still unavailable in this environment because the repository is not discoverable from available GitNexus MCP repository listing; previous `npx gitnexus analyze` attempts also failed with runtime index errors.
+- Next steps: move to `feat-012`/`feat-013`/`feat-014` for real household settings and member-management APIs if prioritized.
+
+## 2026-04-25 — Implemented and closed feat-011 household creation + active household selection
+- Who: Codex
+- Summary: Completed `feat-011` end-to-end by adding authenticated worker household APIs (`POST /api/v1/households`, `GET /api/v1/households`, `GET /api/v1/households/:id`) with membership-aware access control and creator admin bootstrap, plus web onboarding create-household flow, persisted active-household zustand store, shell household switcher, household context provider fallback logic, and `X-Household-Id` request propagation in the web API client.
+- Files changed: apps/worker/src/contracts/household.ts, apps/worker/src/contracts/index.ts, apps/worker/src/db/repositories/household-repository.ts, apps/worker/src/handlers/households/create-household.ts, apps/worker/src/handlers/households/list-households.ts, apps/worker/src/handlers/households/get-household.ts, apps/worker/src/routes/households.ts, apps/worker/src/index.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/test/unit/dto-household.spec.ts, apps/worker/test/index.spec.ts, apps/web/src/types/household.ts, apps/web/src/lib/forms/household.schema.ts, apps/web/src/api/endpoints.ts, apps/web/src/api/household.ts, apps/web/src/hooks/api/use-households.ts, apps/web/src/stores/active-household.store.ts, apps/web/src/stores/active-household.store.test.tsx, apps/web/src/components/layouts/household-context-provider.tsx, apps/web/src/components/layouts/household-switcher.tsx, apps/web/src/components/layouts/main-layout.tsx, apps/web/src/components/layouts/app-sidebar.tsx, apps/web/src/pages/app/onboarding-page.tsx, apps/web/src/pages/app/overview-page.tsx, apps/web/src/api/client.ts, apps/web/src/lib/i18n/locales/vi.json, apps/web/src/app.test.tsx, docs/exec-plans/plans/2026-04-25-feat-011-household-creation-active-selection.md, docs/exec-plans/index.md, harness/features/feat-011.json, harness/feature_index.json, harness/progress.md
+- Blockers: GitNexus impact/detect-changes automation remained unavailable for this repo in this environment because the repository was not indexed in MCP, and `npx gitnexus analyze` failed with `Cannot destructure property 'package' of 'node.target' as it is null`.
+- Next steps: continue with dependent household features (`feat-015a`, `feat-012`, `feat-013`, `feat-014`) on top of the new household context/API foundation.
+
 ## 2026-04-25 — Corrected Cloudinary upload test contract
 - Who: Agent
 - Summary: Removed the accidental `max_file_size` multipart field from `apps/web/src/lib/media/cloudinary-upload.ts` and updated `apps/web/src/lib/media/cloudinary-upload.test.ts` so the assertion matches the intended Cloudinary upload payload. Re-ran `pnpm test:web` and the full web suite passed.

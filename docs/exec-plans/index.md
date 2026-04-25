@@ -7,6 +7,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Completed
 
+- [2026-04-25-feat-011-household-crud-pages-no-active.md](plans/2026-04-25-feat-011-household-crud-pages-no-active.md) - feat-011 household CRUD API + households list/detail pages without active-household global state.
 - [2026-04-25-feat-037-improve-profile-settings.md](plans/2026-04-25-feat-037-improve-profile-settings.md) - feat-037 improve profile settings UI and implement Cloudinary avatar upload.
 
 - [2026-04-24-feat-036-cloudinary-signed-media-upload-foundation.md](plans/2026-04-24-feat-036-cloudinary-signed-media-upload-foundation.md) - feat-036 Cloudinary signed upload foundation for reusable image/video uploads with backend signature policy and frontend shared SDK.

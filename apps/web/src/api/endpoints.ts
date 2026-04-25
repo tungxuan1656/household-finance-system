@@ -9,6 +9,10 @@ export const API_ENDPOINTS = {
     refresh: '/auth/refresh',
   },
   health: '/health',
+  households: {
+    detail: (householdId: string) => `/households/${householdId}`,
+    list: '/households',
+  },
   media: {
     uploadSignature: '/media/upload-signature',
   },

@@ -36,6 +36,13 @@ export const viMessages = {
   'profile.displayNameMustNotBeBlank': 'Tên hiển thị không được để trống.',
   'profile.displayNameTooLong': 'Tên hiển thị không được vượt quá 100 ký tự.',
   'profile.atLeastOneProfileField': 'Cần cung cấp ít nhất một trường hồ sơ.',
+  'households.nameMustNotBeBlank': 'Tên hộ gia đình không được để trống.',
+  'households.nameTooLong': 'Tên hộ gia đình không được vượt quá 120 ký tự.',
+  'households.defaultCurrencyCodeInvalid':
+    'Mã tiền tệ mặc định phải gồm đúng 3 ký tự chữ cái.',
+  'households.householdIdMustNotBeBlank': 'Mã hộ gia đình không hợp lệ.',
+  'households.atLeastOneFieldRequired':
+    'Cần cung cấp ít nhất một trường để cập nhật hộ gia đình.',
 } as const
 
 export type MessageKey = keyof typeof viMessages

@@ -11,6 +11,7 @@ export const PATHS = {
   EXPENSES: '/expenses',
   BUDGETS: '/budgets',
   INSIGHTS: '/insights',
+  HOUSEHOLDS: '/households',
   SETTINGS: '/settings',
   MORE: '/more',
 } as const

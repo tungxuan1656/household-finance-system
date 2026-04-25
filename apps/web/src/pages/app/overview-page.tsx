@@ -38,18 +38,17 @@ function OverviewPage() {
       <div className='grid gap-4 lg:grid-cols-3'>
         <Card>
           <CardHeader>
-            <CardTitle>{t('app.overview.activeHousehold.cardTitle')}</CardTitle>
+            <CardTitle>{t('app.overview.households.cardTitle')}</CardTitle>
             <CardDescription>
-              {t('app.overview.activeHousehold.description')}
+              {t('app.overview.households.description')}
             </CardDescription>
           </CardHeader>
-          <CardContent className='space-y-2 text-sm'>
-            <p className='font-medium'>
-              {t('app.overview.activeHousehold.name')}
-            </p>
-            <p className='text-muted-foreground'>
-              {t('app.overview.activeHousehold.body')}
-            </p>
+          <CardContent className='space-y-2'>
+            <Button asChild variant='outline'>
+              <Link to={PATHS.HOUSEHOLDS}>
+                {t('app.overview.households.button')}
+              </Link>
+            </Button>
           </CardContent>
         </Card>
 

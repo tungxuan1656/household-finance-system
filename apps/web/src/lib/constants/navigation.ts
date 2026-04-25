@@ -2,6 +2,7 @@ import {
   Banknote,
   ChartPie,
   Home,
+  House,
   Menu,
   PiggyBank,
   Settings,
@@ -27,9 +28,19 @@ export const APP_MENU_ITEMS = [
     icon: ChartPie,
   },
   {
+    to: PATHS.HOUSEHOLDS,
+    labelKey: 'shell.protected.nav.households',
+    icon: House,
+  },
+  {
     to: PATHS.SETTINGS,
     labelKey: 'shell.protected.nav.settings',
     icon: Settings,
+  },
+  {
+    to: PATHS.MORE,
+    labelKey: 'shell.protected.nav.more',
+    icon: Menu,
   },
 ] as const
 
