@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-25 — Refined gia đình wording + household dialogs UI
+- Who: Codex
+- Summary: Updated web household UI copy to use Vietnamese term `gia đình`, removed slug display from household list/detail screens, added member-count placeholder text (`Số thành viên: --`), and converted create/edit gia đình forms to `Dialog` flows while removing field-level descriptions to reduce visual noise.
+- Files changed: apps/web/src/pages/app/households-page.tsx, apps/web/src/pages/app/household-detail-page.tsx, apps/web/src/lib/i18n/locales/vi.json, harness/progress.md
+- Blockers: none
+- Next steps: wire real member counts after member-management feature APIs land.
+
 ## 2026-04-25 — Reworked feat-011 to household CRUD + pages without active household
 - Who: Codex
 - Summary: Re-implemented `feat-011` to remove global active-household assumptions and ship full household CRUD. Backend now supports `PATCH /api/v1/households/:id` and `DELETE /api/v1/households/:id` (soft archive), plus expanded integration coverage for update/archive validation and authorization. Web now uses a single `household.store`, removed active-household store/context/switcher and header injection, and added `/households`, `/households/:id`, and `/more` pages with household navigation; household detail includes members placeholder table + invite/remove buttons with TODO markers for follow-up member features.

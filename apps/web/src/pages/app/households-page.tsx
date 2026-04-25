@@ -15,6 +15,15 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -25,7 +34,6 @@ import {
 import {
   Field,
   FieldContent,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -43,7 +51,7 @@ function HouseholdsPage() {
   const households = useHouseholdStore.use.households()
   const isLoading = useHouseholdStore.use.isLoading()
   const error = useHouseholdStore.use.error()
-  const [isCreateFormVisible, setIsCreateFormVisible] = useState(false)
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   const form = useForm<CreateHouseholdFormValues>({
     defaultValues: {
@@ -66,7 +74,7 @@ function HouseholdsPage() {
         name: '',
       })
 
-      setIsCreateFormVisible(false)
+      setIsCreateDialogOpen(false)
       toast.success(t('app.households.feedback.createSuccess'))
     } catch {
       toast.error(t('app.households.feedback.createFailed'))
@@ -84,24 +92,20 @@ function HouseholdsPage() {
             {t('app.households.description')}
           </p>
         </div>
-        <Button
-          type='button'
-          variant='outline'
-          onClick={() => setIsCreateFormVisible((value) => !value)}>
-          <Plus data-icon='inline-start' />
-          {t('app.households.actions.create')}
-        </Button>
-      </header>
-
-      {isCreateFormVisible ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('app.households.create.title')}</CardTitle>
-            <CardDescription>
-              {t('app.households.create.description')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button type='button' variant='outline'>
+              <Plus data-icon='inline-start' />
+              {t('app.households.actions.create')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className='sm:max-w-md' showCloseButton={false}>
+            <DialogHeader>
+              <DialogTitle>{t('app.households.create.title')}</DialogTitle>
+              <DialogDescription>
+                {t('app.households.create.description')}
+              </DialogDescription>
+            </DialogHeader>
             <form
               className='flex flex-col gap-5'
               onSubmit={form.handleSubmit(onSubmit)}>
@@ -115,9 +119,6 @@ function HouseholdsPage() {
                         {t('app.households.fields.householdName.label')}
                       </FieldLabel>
                       <FieldContent>
-                        <FieldDescription>
-                          {t('app.households.fields.householdName.description')}
-                        </FieldDescription>
                         <Input
                           {...field}
                           aria-invalid={fieldState.invalid}
@@ -143,9 +144,6 @@ function HouseholdsPage() {
                         {t('app.households.fields.currency.label')}
                       </FieldLabel>
                       <FieldContent>
-                        <FieldDescription>
-                          {t('app.households.fields.currency.description')}
-                        </FieldDescription>
                         <NativeSelect
                           aria-invalid={fieldState.invalid}
                           id='household-currency'
@@ -165,12 +163,11 @@ function HouseholdsPage() {
                   )}
                 />
               </FieldGroup>
-
-              <div className='flex items-center justify-end gap-2'>
+              <DialogFooter>
                 <Button
                   type='button'
                   variant='ghost'
-                  onClick={() => setIsCreateFormVisible(false)}>
+                  onClick={() => setIsCreateDialogOpen(false)}>
                   {t('common.actions.cancel')}
                 </Button>
                 <Button disabled={isLoading} type='submit'>
@@ -178,11 +175,11 @@ function HouseholdsPage() {
                     ? t('app.households.actions.creating')
                     : t('app.households.actions.create')}
                 </Button>
-              </div>
+              </DialogFooter>
             </form>
-          </CardContent>
-        </Card>
-      ) : null}
+          </DialogContent>
+        </Dialog>
+      </header>
 
       {isLoading ? (
         <Card>
@@ -218,7 +215,7 @@ function HouseholdsPage() {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button type='button' onClick={() => setIsCreateFormVisible(true)}>
+            <Button type='button' onClick={() => setIsCreateDialogOpen(true)}>
               {t('app.households.actions.create')}
             </Button>
           </EmptyContent>
@@ -242,7 +239,7 @@ function HouseholdsPage() {
               </CardHeader>
               <CardContent className='flex items-center justify-between gap-3'>
                 <p className='text-sm text-muted-foreground'>
-                  {household.slug}
+                  {t('app.households.memberCountPlaceholder')}
                 </p>
                 <Button asChild variant='outline'>
                   <Link to={`/households/${household.id}`}>

@@ -25,9 +25,16 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
   Field,
   FieldContent,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -159,14 +166,16 @@ function HouseholdDetailPage() {
             <div className='flex flex-wrap items-center justify-between gap-3'>
               <div className='flex flex-col gap-1'>
                 <CardTitle>{currentHousehold.name}</CardTitle>
-                <CardDescription>{currentHousehold.slug}</CardDescription>
+                <CardDescription>
+                  {t('app.householdDetail.memberCountPlaceholder')}
+                </CardDescription>
               </div>
               <div className='flex items-center gap-2'>
                 <Badge variant='secondary'>{currentHousehold.role}</Badge>
                 <Button
                   type='button'
                   variant='outline'
-                  onClick={() => setIsEditing((value) => !value)}>
+                  onClick={() => setIsEditing(true)}>
                   {t('app.householdDetail.actions.edit')}
                 </Button>
                 <AlertDialog>
@@ -206,92 +215,91 @@ function HouseholdDetailPage() {
                 {currentHousehold.defaultCurrencyCode}
               </span>
             </p>
-
-            {isEditing ? (
-              <form
-                className='flex flex-col gap-5 rounded-lg border p-4'
-                onSubmit={form.handleSubmit(handleUpdate)}>
-                <FieldGroup>
-                  <Controller
-                    control={form.control}
-                    name='name'
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor='detail-household-name'>
-                          {t('app.householdDetail.fields.householdName.label')}
-                        </FieldLabel>
-                        <FieldContent>
-                          <FieldDescription>
-                            {t(
-                              'app.householdDetail.fields.householdName.description',
-                            )}
-                          </FieldDescription>
-                          <Input
-                            {...field}
-                            aria-invalid={fieldState.invalid}
-                            id='detail-household-name'
-                            placeholder={t(
-                              'app.householdDetail.fields.householdName.placeholder',
-                            )}
-                          />
-                          {fieldState.invalid ? (
-                            <FieldError errors={[fieldState.error]} />
-                          ) : null}
-                        </FieldContent>
-                      </Field>
-                    )}
-                  />
-
-                  <Controller
-                    control={form.control}
-                    name='defaultCurrencyCode'
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor='detail-household-currency'>
-                          {t('app.householdDetail.fields.currency.label')}
-                        </FieldLabel>
-                        <FieldContent>
-                          <FieldDescription>
-                            {t(
-                              'app.householdDetail.fields.currency.description',
-                            )}
-                          </FieldDescription>
-                          <NativeSelect
-                            aria-invalid={fieldState.invalid}
-                            id='detail-household-currency'
-                            value={field.value}
-                            onChange={(event) =>
-                              field.onChange(event.target.value)
-                            }>
-                            <option value='VND'>VND</option>
-                            <option value='USD'>USD</option>
-                            <option value='EUR'>EUR</option>
-                          </NativeSelect>
-                          {fieldState.invalid ? (
-                            <FieldError errors={[fieldState.error]} />
-                          ) : null}
-                        </FieldContent>
-                      </Field>
-                    )}
-                  />
-                </FieldGroup>
-
-                <div className='flex items-center justify-end gap-2'>
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    onClick={() => setIsEditing(false)}>
-                    {t('common.actions.cancel')}
-                  </Button>
-                  <Button disabled={isLoading} type='submit'>
-                    {t('app.householdDetail.actions.save')}
-                  </Button>
-                </div>
-              </form>
-            ) : null}
           </CardContent>
         </Card>
       ) : null}
+
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className='sm:max-w-md' showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>
+              {t('app.householdDetail.editDialog.title')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('app.householdDetail.editDialog.description')}
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            className='flex flex-col gap-5'
+            onSubmit={form.handleSubmit(handleUpdate)}>
+            <FieldGroup>
+              <Controller
+                control={form.control}
+                name='name'
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor='detail-household-name'>
+                      {t('app.householdDetail.fields.householdName.label')}
+                    </FieldLabel>
+                    <FieldContent>
+                      <Input
+                        {...field}
+                        aria-invalid={fieldState.invalid}
+                        id='detail-household-name'
+                        placeholder={t(
+                          'app.householdDetail.fields.householdName.placeholder',
+                        )}
+                      />
+                      {fieldState.invalid ? (
+                        <FieldError errors={[fieldState.error]} />
+                      ) : null}
+                    </FieldContent>
+                  </Field>
+                )}
+              />
+
+              <Controller
+                control={form.control}
+                name='defaultCurrencyCode'
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor='detail-household-currency'>
+                      {t('app.householdDetail.fields.currency.label')}
+                    </FieldLabel>
+                    <FieldContent>
+                      <NativeSelect
+                        aria-invalid={fieldState.invalid}
+                        id='detail-household-currency'
+                        value={field.value}
+                        onChange={(event) =>
+                          field.onChange(event.target.value)
+                        }>
+                        <option value='VND'>VND</option>
+                        <option value='USD'>USD</option>
+                        <option value='EUR'>EUR</option>
+                      </NativeSelect>
+                      {fieldState.invalid ? (
+                        <FieldError errors={[fieldState.error]} />
+                      ) : null}
+                    </FieldContent>
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+            <DialogFooter>
+              <Button
+                type='button'
+                variant='ghost'
+                onClick={() => setIsEditing(false)}>
+                {t('common.actions.cancel')}
+              </Button>
+              <Button disabled={isLoading} type='submit'>
+                {t('app.householdDetail.actions.save')}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Card>
         <CardHeader>
