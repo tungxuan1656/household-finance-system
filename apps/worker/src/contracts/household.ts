@@ -22,7 +22,7 @@ export const createHouseholdRequestSchema = (
         .trim()
         .min(1, translate(locale, 'households.nameMustNotBeBlank'))
         .max(120, translate(locale, 'households.nameTooLong')),
-      defaultCurrencyCode: currencyCodeSchema(locale),
+      defaultCurrencyCode: currencyCodeSchema(locale).optional().default('VND'),
     })
     .strict()
 

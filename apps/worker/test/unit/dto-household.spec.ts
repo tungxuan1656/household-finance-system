@@ -7,23 +7,21 @@ import {
 } from '@/contracts'
 
 describe('household contract schema', () => {
-  it('accepts valid create payload and normalizes currency code', () => {
+  it('accepts valid create payload and defaults currency to VND', () => {
     const parsed = createHouseholdRequestSchema().safeParse({
       name: 'Family Hub',
-      defaultCurrencyCode: 'usd',
     })
 
     expect(parsed.success).toBe(true)
 
     if (parsed.success) {
-      expect(parsed.data.defaultCurrencyCode).toBe('USD')
+      expect(parsed.data.defaultCurrencyCode).toBe('VND')
     }
   })
 
   it('rejects blank household name', () => {
     const parsed = createHouseholdRequestSchema().safeParse({
       name: '   ',
-      defaultCurrencyCode: 'USD',
     })
 
     expect(parsed.success).toBe(false)

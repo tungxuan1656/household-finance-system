@@ -14,7 +14,7 @@ export interface StoredHousehold {
 
 export interface CreateHouseholdInput {
   name: string
-  defaultCurrencyCode: string
+  defaultCurrencyCode?: string
 }
 
 export interface UpdateHouseholdInput {
@@ -174,7 +174,7 @@ export const createHouseholdForUser = async (
             householdId,
             input.name,
             slug,
-            input.defaultCurrencyCode,
+            input.defaultCurrencyCode ?? 'VND',
             'UTC',
             userId,
             nowEpoch,

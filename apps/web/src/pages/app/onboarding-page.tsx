@@ -13,7 +13,6 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { NativeSelect } from '@/components/ui/native-select'
 import { PATHS } from '@/lib/constants/paths'
 import {
   type CreateHouseholdFormValues,
@@ -27,7 +26,6 @@ function OnboardingPage() {
   const isLoading = useHouseholdStore.use.isLoading()
   const form = useForm<CreateHouseholdFormValues>({
     defaultValues: {
-      defaultCurrencyCode: 'USD',
       name: '',
     },
     resolver: zodResolver(createHouseholdSchema),
@@ -79,37 +77,6 @@ function OnboardingPage() {
                       'app.onboarding.fields.householdName.placeholder',
                     )}
                   />
-                  {fieldState.invalid ? (
-                    <FieldError errors={[fieldState.error]} />
-                  ) : null}
-                </FieldContent>
-              </Field>
-            )}
-          />
-
-          <Controller
-            control={form.control}
-            name='defaultCurrencyCode'
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor='default-currency-code'>
-                  {t('app.onboarding.fields.currency.label')}
-                </FieldLabel>
-                <FieldContent>
-                  <FieldDescription>
-                    {t('app.onboarding.fields.currency.description')}
-                  </FieldDescription>
-                  <NativeSelect
-                    aria-invalid={fieldState.invalid}
-                    id='default-currency-code'
-                    value={field.value}
-                    onChange={(event) => {
-                      field.onChange(event.target.value)
-                    }}>
-                    <option value='VND'>VND</option>
-                    <option value='USD'>USD</option>
-                    <option value='EUR'>EUR</option>
-                  </NativeSelect>
                   {fieldState.invalid ? (
                     <FieldError errors={[fieldState.error]} />
                   ) : null}

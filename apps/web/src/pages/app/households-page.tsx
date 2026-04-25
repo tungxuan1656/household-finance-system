@@ -7,13 +7,7 @@ import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -39,7 +33,6 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { NativeSelect } from '@/components/ui/native-select'
 import {
   type CreateHouseholdFormValues,
   createHouseholdSchema,
@@ -55,7 +48,6 @@ function HouseholdsPage() {
 
   const form = useForm<CreateHouseholdFormValues>({
     defaultValues: {
-      defaultCurrencyCode: 'USD',
       name: '',
     },
     resolver: zodResolver(createHouseholdSchema),
@@ -70,7 +62,6 @@ function HouseholdsPage() {
       await householdActions.createHousehold(values)
 
       form.reset({
-        defaultCurrencyCode: 'USD',
         name: '',
       })
 
@@ -127,34 +118,6 @@ function HouseholdsPage() {
                             'app.households.fields.householdName.placeholder',
                           )}
                         />
-                        {fieldState.invalid ? (
-                          <FieldError errors={[fieldState.error]} />
-                        ) : null}
-                      </FieldContent>
-                    </Field>
-                  )}
-                />
-
-                <Controller
-                  control={form.control}
-                  name='defaultCurrencyCode'
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor='household-currency'>
-                        {t('app.households.fields.currency.label')}
-                      </FieldLabel>
-                      <FieldContent>
-                        <NativeSelect
-                          aria-invalid={fieldState.invalid}
-                          id='household-currency'
-                          value={field.value}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }>
-                          <option value='VND'>VND</option>
-                          <option value='USD'>USD</option>
-                          <option value='EUR'>EUR</option>
-                        </NativeSelect>
                         {fieldState.invalid ? (
                           <FieldError errors={[fieldState.error]} />
                         ) : null}
@@ -230,9 +193,6 @@ function HouseholdsPage() {
                 <div className='flex items-start justify-between gap-2'>
                   <div className='flex flex-col gap-1'>
                     <CardTitle>{household.name}</CardTitle>
-                    <CardDescription>
-                      {household.defaultCurrencyCode}
-                    </CardDescription>
                   </div>
                   <Badge variant='secondary'>{household.role}</Badge>
                 </div>

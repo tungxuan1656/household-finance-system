@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-25 — Default VND backend + remove currency choice/display from web
+- Who: Codex
+- Summary: Temporarily disabled currency selection in gia đình create flows by making worker create-contract accept omitted currency and default to `VND` server-side. Updated web create/edit forms to remove currency fields and removed gia đình currency rendering from list/detail UI, keeping member-count placeholder only.
+- Files changed: apps/worker/src/contracts/household.ts, apps/worker/src/db/repositories/household-repository.ts, apps/worker/test/unit/dto-household.spec.ts, apps/worker/test/index.spec.ts, apps/web/src/lib/forms/household.schema.ts, apps/web/src/types/household.ts, apps/web/src/pages/app/onboarding-page.tsx, apps/web/src/pages/app/households-page.tsx, apps/web/src/pages/app/household-detail-page.tsx, apps/web/src/stores/household.store.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: when member feature is implemented, replace `Số thành viên: --` placeholders with real counts from household members API.
+
 ## 2026-04-25 — Refined gia đình wording + household dialogs UI
 - Who: Codex
 - Summary: Updated web household UI copy to use Vietnamese term `gia đình`, removed slug display from household list/detail screens, added member-count placeholder text (`Số thành viên: --`), and converted create/edit gia đình forms to `Dialog` flows while removing field-level descriptions to reduce visual noise.

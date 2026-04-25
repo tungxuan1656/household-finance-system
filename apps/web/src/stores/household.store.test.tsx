@@ -79,7 +79,6 @@ describe('household store', () => {
 
   it('creates household and appends to list', async () => {
     await householdActions.createHousehold({
-      defaultCurrencyCode: 'USD',
       name: 'Family One',
     })
 
@@ -97,7 +96,6 @@ describe('household store', () => {
 
   it('updates household in list and current household', async () => {
     await householdActions.createHousehold({
-      defaultCurrencyCode: 'USD',
       name: 'Family One',
     })
 
@@ -118,7 +116,6 @@ describe('household store', () => {
 
   it('archives household and removes it from list', async () => {
     await householdActions.createHousehold({
-      defaultCurrencyCode: 'USD',
       name: 'Family One',
     })
 

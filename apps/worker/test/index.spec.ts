@@ -263,7 +263,6 @@ describe('Worker foundation', () => {
       },
       body: JSON.stringify({
         name: 'Gia Dinh Toi',
-        defaultCurrencyCode: 'vnd',
       }),
     })
 

@@ -12,7 +12,7 @@ export type HouseholdDTO = {
 
 export type CreateHouseholdRequest = {
   name: string
-  defaultCurrencyCode: string
+  defaultCurrencyCode?: string
 }
 
 export type UpdateHouseholdRequest = {
