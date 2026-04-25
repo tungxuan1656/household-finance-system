@@ -84,39 +84,40 @@
   "app": {
     "onboarding": {
       "actions": {
-        "backToShell": "Quay lại khung",
-        "returnToSignIn": "Quay lại đăng nhập"
+        "create": "Tạo hộ gia đình",
+        "creating": "Đang tạo..."
       },
-      "checklist": {
-        "chooseOrCreate": "Chọn hoặc tạo một hộ gia đình",
-        "inviteLater": "Mời thành viên sau nếu cần",
-        "setCurrency": "Đặt tiền tệ mặc định"
+      "description": "Tạo hộ gia đình đầu tiên để bắt đầu theo dõi chi tiêu và ngân sách.",
+      "errors": {
+        "currencyInvalid": "Mã tiền tệ phải gồm đúng 3 ký tự chữ cái.",
+        "nameRequired": "Tên hộ gia đình không được để trống.",
+        "nameTooLong": "Tên hộ gia đình không được vượt quá 120 ký tự."
       },
-      "description": "Placeholder này giữ điểm vào onboarding hiển thị cho đến khi luồng thật được xây dựng.",
+      "feedback": {
+        "createFailed": "Không thể tạo hộ gia đình lúc này. Vui lòng thử lại.",
+        "createSuccess": "Đã tạo hộ gia đình thành công."
+      },
       "fields": {
         "currency": {
-          "description": "Chọn đồng tiền mặc định cho khung.",
+          "description": "Đồng tiền mặc định cho các bản ghi chi tiêu trong hộ gia đình.",
           "label": "Tiền tệ mặc định"
         },
         "householdName": {
-          "description": "Hiển thị trên khung cho đến khi luồng onboarding thật sẵn sàng.",
+          "description": "Tên này sẽ hiển thị trong bộ chọn hộ gia đình và các màn hình liên quan.",
           "label": "Tên hộ gia đình",
-          "placeholder": "Gia đình mẫu"
-        },
-        "welcomeNote": {
-          "description": "Nội dung tuỳ chọn sẽ xuất hiện trong xác nhận onboarding.",
-          "label": "Lời chào mừng",
-          "placeholder": "Ví dụ: Viết vài dòng chào mừng cho hộ gia đình..."
+          "placeholder": "Ví dụ: Gia đình Nguyễn"
         }
       },
-      "title": "Hoàn tất thiết lập hộ gia đình"
+      "title": "Thiết lập hộ gia đình"
     },
     "overview": {
       "activeHousehold": {
         "body": "Một ngữ cảnh hộ gia đình duy nhất cho bản demo khung.",
         "cardTitle": "Hộ gia đình đang dùng",
         "description": "Chờ tính năng chọn hộ gia đình.",
-        "name": "Gia đình mẫu"
+        "loading": "Đang tải hộ gia đình...",
+        "name": "Gia đình mẫu",
+        "selectedBody": "Hộ gia đình này đang là ngữ cảnh hoạt động cho các thao tác tiếp theo."
       },
       "badge": "Khung đã đăng nhập",
       "description": "Trang đích này là nền cho trạng thái đã xác thực. Nó giữ bố cục, điều hướng, và hành vi trạng thái trống ổn định trước khi dữ liệu thật xuất hiện.",
@@ -155,6 +156,13 @@
         "description": "Menu mở rộng cho màn hình nhỏ.",
         "title": "Thêm"
       }
+    },
+    "householdSwitcher": {
+      "activeRole": "Vai trò hiện tại:",
+      "createAction": "Tạo hộ gia đình mới",
+      "empty": "Bạn chưa có hộ gia đình nào. Hãy tạo hộ gia đình đầu tiên.",
+      "label": "Chuyển hộ gia đình",
+      "loading": "Đang tải danh sách hộ gia đình..."
     },
     "settings": {
       "profile": {

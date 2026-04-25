@@ -6,6 +6,7 @@ import { fromUnknownError } from '@/lib/response'
 import { requestContextMiddleware } from '@/middlewares/request-context'
 import { authRoutes } from '@/routes/auth'
 import { healthRoutes } from '@/routes/health'
+import { householdRoutes } from '@/routes/households'
 import { mediaRoutes } from '@/routes/media'
 import { profileRoutes } from '@/routes/profile'
 import { protectedRoutes } from '@/routes/protected'
@@ -37,7 +38,12 @@ app.use(
       return allowedOrigins.includes(origin) ? origin : ''
     },
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization', 'X-Client-Type'],
+    allowHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Client-Type',
+      'X-Household-Id',
+    ],
     credentials: true,
   }),
 )
@@ -51,6 +57,7 @@ app.notFound((ctx) => {
 app.route('/api/v1', healthRoutes)
 app.route('/api/v1', authRoutes)
 app.route('/api/v1', profileRoutes)
+app.route('/api/v1', householdRoutes)
 app.route('/api/v1', mediaRoutes)
 app.route('/api/v1', protectedRoutes)
 

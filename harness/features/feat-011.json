@@ -3,7 +3,7 @@
   "name": "Household creation & active household selection",
   "description": "Implement household creation and active-household selection. Backend: POST /api/v1/households (create; name, default currency required), GET /api/v1/households (list own households with role), GET /api/v1/households/:id (read one). Frontend: Create Household page, Household Switcher component (persists active household id to local storage), and household context provider that downstream features read to scope their requests. Per docs/product-specs/household-management.md. Does NOT include settings edits, archive, invitations, or member management.",
   "dependencies": ["feat-033", "feat-007"],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-04-21"
+  "status": "done",
+  "evidence": "Implemented worker household endpoints (POST/GET list/GET detail), onboarding create-household flow, active household persisted context/switcher, and request header propagation. Verification passed: pnpm typecheck:worker, pnpm test:worker, pnpm typecheck:web, pnpm test:web, pnpm build:web, ./init.sh.",
+  "updated_at": "2026-04-25"
 }

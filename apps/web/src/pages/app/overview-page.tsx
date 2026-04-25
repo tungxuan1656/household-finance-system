@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+import { useHouseholdContext } from '@/components/layouts/household-context-provider'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +16,7 @@ import { useAuthStore } from '@/stores/auth.store'
 
 function OverviewPage() {
   const user = useAuthStore.use.user()
+  const { activeHousehold, isLoading } = useHouseholdContext()
 
   return (
     <div className='space-y-6'>
@@ -45,10 +47,15 @@ function OverviewPage() {
           </CardHeader>
           <CardContent className='space-y-2 text-sm'>
             <p className='font-medium'>
-              {t('app.overview.activeHousehold.name')}
+              {isLoading
+                ? t('app.overview.activeHousehold.loading')
+                : (activeHousehold?.name ??
+                  t('app.overview.activeHousehold.name'))}
             </p>
             <p className='text-muted-foreground'>
-              {t('app.overview.activeHousehold.body')}
+              {activeHousehold
+                ? t('app.overview.activeHousehold.selectedBody')
+                : t('app.overview.activeHousehold.body')}
             </p>
           </CardContent>
         </Card>
