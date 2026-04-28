@@ -92,14 +92,14 @@ describe('household contract schema', () => {
     }
   })
 
-  it('accepts update payload with valid defaultVisibility "shared"', () => {
+  it('accepts update payload with valid defaultVisibility "household"', () => {
     const parsed = updateHouseholdRequestSchema().safeParse({
-      defaultVisibility: 'shared',
+      defaultVisibility: 'household',
     })
 
     expect(parsed.success).toBe(true)
     if (parsed.success) {
-      expect(parsed.data.defaultVisibility).toBe('shared')
+      expect(parsed.data.defaultVisibility).toBe('household')
     }
   })
 
@@ -116,14 +116,14 @@ describe('household contract schema', () => {
       name: 'Family Hub v2',
       defaultCurrencyCode: 'usd',
       timezone: 'UTC',
-      defaultVisibility: 'shared',
+      defaultVisibility: 'household',
     })
 
     expect(parsed.success).toBe(true)
     if (parsed.success) {
       expect(parsed.data.defaultCurrencyCode).toBe('USD')
       expect(parsed.data.timezone).toBe('UTC')
-      expect(parsed.data.defaultVisibility).toBe('shared')
+      expect(parsed.data.defaultVisibility).toBe('household')
     }
   })
 })

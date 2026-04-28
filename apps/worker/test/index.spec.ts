@@ -713,7 +713,7 @@ describe('Worker foundation', () => {
         },
         body: JSON.stringify({
           timezone: 'Asia/Ho_Chi_Minh',
-          defaultVisibility: 'shared',
+          defaultVisibility: 'household',
         }),
       },
     )
@@ -729,7 +729,7 @@ describe('Worker foundation', () => {
     expect(updatePayload.data).toMatchObject({
       id: createdPayload.data.id,
       timezone: 'Asia/Ho_Chi_Minh',
-      defaultVisibility: 'shared',
+      defaultVisibility: 'household',
     })
   })
 

@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-04-28 — Implemented feat-012 plan, then surfaced enum mismatch during verification
+- Who: Codex
+- Summary: Implemented `feat-012` according to the active ExecPlan, then verification exposed a contract drift where `defaultVisibility` still had stale `shared` references in part of the worker test surface and list handler typing. That mismatch was then fixed in the follow-up session.
+- Files changed: apps/worker/src/handlers/households/list-households.ts, apps/worker/test/unit/dto-household.spec.ts, apps/worker/test/index.spec.ts, harness/progress.md
+- Blockers: none
+- Next steps: keep `feat-012` moving through harness evidence updates and commit once you are ready.
+
+## 2026-04-28 — Fixed feat-012 defaultVisibility enum mismatch (worker typecheck + tests)
+- Who: Codex
+- Summary: Fixed worker-side enum drift where some files/tests still used `shared` while the implemented contract uses `household`. Updated household list handler typing and aligned worker DTO/integration tests to `defaultVisibility: 'household'`, removing TS errors and restoring green worker update-settings tests.
+- Files changed: apps/worker/src/handlers/households/list-households.ts, apps/worker/test/unit/dto-household.spec.ts, apps/worker/test/index.spec.ts, harness/progress.md
+- Blockers: worker tests needed unsandboxed execution because Wrangler writes logs to `~/Library/Preferences/.wrangler/logs`.
+- Next steps: continue your feat-012 completion flow (harness evidence/status updates and commit) now that `./init.sh` is green.
+
 ## 2026-04-28 — Created active ExecPlan for feat-012 household settings/delete safeguards
 - Who: Codex
 - Summary: Created and registered the active ExecPlan for `feat-012` in `docs/exec-plans/plans/`, capturing fullstack scope for household settings expansion (`name`, `defaultCurrencyCode`, `timezone`, `defaultVisibility`) and delete safeguards (`409` when other active members remain). Plan locks current implementation direction for `/households/:id` as the settings surface and records current decisions for validation/error semantics.
