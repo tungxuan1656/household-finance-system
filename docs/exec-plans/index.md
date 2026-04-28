@@ -5,6 +5,8 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-04-28-feat-012-household-settings-delete-safeguards.md](plans/2026-04-28-feat-012-household-settings-delete-safeguards.md) - feat-012 fullstack household settings expansion (name/currency/timezone/default visibility) and delete safeguard blocking admin delete when other active members remain.
+
 ## Completed
 
 - [2026-04-28-feat-015a-role-permission-backend-enforcement.md](plans/2026-04-28-feat-015a-role-permission-backend-enforcement.md) - feat-015a worker-side household membership resolution, reusable role guards, and hybrid `404`/`403` authorization for explicitly selected households.

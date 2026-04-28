@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-28 — Created active ExecPlan for feat-012 household settings/delete safeguards
+- Who: Codex
+- Summary: Created and registered the active ExecPlan for `feat-012` in `docs/exec-plans/plans/`, capturing fullstack scope for household settings expansion (`name`, `defaultCurrencyCode`, `timezone`, `defaultVisibility`) and delete safeguards (`409` when other active members remain). Plan locks current implementation direction for `/households/:id` as the settings surface and records current decisions for validation/error semantics.
+- Files changed: docs/exec-plans/plans/2026-04-28-feat-012-household-settings-delete-safeguards.md, docs/exec-plans/index.md, harness/progress.md
+- Blockers: none
+- Next steps: execute `feat-012` implementation from the new active ExecPlan and update `harness/features/feat-012.json` to reconcile the old delete-confirmation wording during implementation.
+
 ## 2026-04-28 — Implemented and closed feat-015a backend permission enforcement
 - Who: Codex
 - Summary: Implemented `feat-015a` end-to-end on worker by adding explicit household membership resolution middleware (`validateHouseholdIdParam`, `resolveHouseholdMembership`) and role guard middleware (`requireRole`) so household-scoped permissions no longer depend on any global active-household state. Added a reusable household permission-policy module, refactored household repository/handlers to remove embedded admin checks from SQL update/delete paths, and updated integration behavior to return `403 FORBIDDEN` for active non-admin members while retaining `404 NOT_FOUND` for non-members.
