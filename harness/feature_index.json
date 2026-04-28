@@ -105,11 +105,11 @@
     {
       "id": "feat-015a",
       "name": "Role & permission policy — backend enforcement",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "feat-012",
-      "name": "Household settings & archive rules",
+      "name": "Household settings & delete rules",
       "status": "pending"
     },
     {

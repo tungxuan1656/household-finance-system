@@ -12,6 +12,15 @@ export interface StoredHousehold {
   createdAt: number
 }
 
+export interface StoredHouseholdDetail {
+  id: string
+  name: string
+  slug: string
+  defaultCurrencyCode: string
+  timezone: string
+  createdAt: number
+}
+
 export interface CreateHouseholdInput {
   name: string
   defaultCurrencyCode?: string
@@ -45,6 +54,22 @@ const toStoredHousehold = (row: {
   defaultCurrencyCode: row.default_currency_code,
   timezone: row.timezone,
   role: row.role,
+  createdAt: row.created_at,
+})
+
+const toStoredHouseholdDetail = (row: {
+  id: string
+  name: string
+  slug: string
+  default_currency_code: string
+  timezone: string
+  created_at: number
+}): StoredHouseholdDetail => ({
+  id: row.id,
+  name: row.name,
+  slug: row.slug,
+  defaultCurrencyCode: row.default_currency_code,
+  timezone: row.timezone,
   createdAt: row.created_at,
 })
 
@@ -229,12 +254,45 @@ export const createHouseholdForUser = async (
   throw conflict(locale, 'errors.conflict')
 }
 
-export const updateHouseholdForAdmin = async (
+export const findHouseholdById = async (
   db: D1Database,
-  userId: string,
+  householdId: string,
+): Promise<StoredHouseholdDetail | null> => {
+  const household = await db
+    .prepare(
+      `SELECT h.id,
+              h.name,
+              h.slug,
+              h.default_currency_code,
+              h.timezone,
+              h.created_at
+         FROM households h
+        WHERE h.id = ?
+          AND h.archived_at IS NULL
+        LIMIT 1`,
+    )
+    .bind(householdId)
+    .first<{
+      id: string
+      name: string
+      slug: string
+      default_currency_code: string
+      timezone: string
+      created_at: number
+    }>()
+
+  if (!household) {
+    return null
+  }
+
+  return toStoredHouseholdDetail(household)
+}
+
+export const updateHouseholdById = async (
+  db: D1Database,
   householdId: string,
   input: UpdateHouseholdInput,
-): Promise<StoredHousehold | null> => {
+): Promise<boolean> => {
   const nowEpoch = Date.now()
   const result = await db
     .prepare(
@@ -249,15 +307,7 @@ export const updateHouseholdForAdmin = async (
            END,
            updated_at = ?5
        WHERE id = ?6
-         AND archived_at IS NULL
-         AND EXISTS (
-           SELECT 1
-             FROM household_memberships hm
-            WHERE hm.household_id = households.id
-              AND hm.user_id = ?7
-              AND hm.state = 'active'
-              AND hm.role = 'admin'
-         )`,
+         AND archived_at IS NULL`,
     )
     .bind(
       input.name !== undefined ? 1 : 0,
@@ -266,20 +316,14 @@ export const updateHouseholdForAdmin = async (
       input.defaultCurrencyCode ?? null,
       nowEpoch,
       householdId,
-      userId,
     )
     .run()
 
-  if (Number(result.meta.changes ?? 0) !== 1) {
-    return null
-  }
-
-  return findUserHouseholdById(db, userId, householdId)
+  return Number(result.meta.changes ?? 0) === 1
 }
 
-export const archiveHouseholdForAdmin = async (
+export const archiveHouseholdById = async (
   db: D1Database,
-  userId: string,
   householdId: string,
 ): Promise<boolean> => {
   const nowEpoch = Date.now()
@@ -289,17 +333,9 @@ export const archiveHouseholdForAdmin = async (
        SET archived_at = ?1,
            updated_at = ?1
        WHERE id = ?2
-         AND archived_at IS NULL
-         AND EXISTS (
-           SELECT 1
-             FROM household_memberships hm
-            WHERE hm.household_id = households.id
-              AND hm.user_id = ?3
-              AND hm.state = 'active'
-              AND hm.role = 'admin'
-         )`,
+         AND archived_at IS NULL`,
     )
-    .bind(nowEpoch, householdId, userId)
+    .bind(nowEpoch, householdId)
     .run()
 
   return Number(result.meta.changes ?? 0) === 1

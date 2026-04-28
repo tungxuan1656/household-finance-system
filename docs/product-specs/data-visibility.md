@@ -25,7 +25,7 @@ Specify clear rules for which users can see which expenses and related metadata 
 
 ## User Flow Examples
 
-- Viewing household feed: server returns expenses where `visibility=household` and `household_id` matches user's active household.
+- Viewing household feed: server returns expenses where `visibility=household` and `household_id` matches the household explicitly selected by the current view or request.
 - Viewing personal feed: server returns expenses where `creator_id` == user or `visibility=private` for that user.
 - Sharing an expense: UI prompts confirmation and explains impact before flipping visibility.
 

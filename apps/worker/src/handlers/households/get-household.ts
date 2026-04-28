@@ -1,16 +1,16 @@
 import type { HouseholdDTO } from '@/contracts'
-import { findUserHouseholdById } from '@/db/repositories/household-repository'
+import { findHouseholdById } from '@/db/repositories/household-repository'
 import { notFound } from '@/lib/errors'
 import type { SupportedLocale } from '@/lib/i18n'
-import type { AppBindings } from '@/types'
+import type { AppBindings, HouseholdRole } from '@/types'
 
 export const getHousehold = async (
   env: AppBindings['Bindings'],
-  userId: string,
   householdId: string,
+  role: HouseholdRole,
   locale: SupportedLocale,
 ): Promise<HouseholdDTO> => {
-  const household = await findUserHouseholdById(env.DB, userId, householdId)
+  const household = await findHouseholdById(env.DB, householdId)
 
   if (!household) {
     throw notFound(locale, 'errors.resourceNotFound')
@@ -22,7 +22,7 @@ export const getHousehold = async (
     slug: household.slug,
     defaultCurrencyCode: household.defaultCurrencyCode,
     timezone: household.timezone,
-    role: household.role,
+    role,
     createdAt: household.createdAt,
   }
 }
