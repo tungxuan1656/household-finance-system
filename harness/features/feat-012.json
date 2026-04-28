@@ -1,9 +1,9 @@
 {
   "id": "feat-012",
   "name": "Household settings & delete rules",
-  "description": "Complete household settings and delete safeguards on top of the existing household CRUD endpoints. Backend: extend PATCH /api/v1/households/:id (admin-only; update name, default currency, timezone, default visibility preference) and harden DELETE /api/v1/households/:id (admin-only; blocks delete if other active members exist and requires an explicit confirmation flag). Frontend: Household Settings page with form for metadata fields and a danger-zone Delete section with confirmation dialog. Per docs/product-specs/household-management.md. Does NOT include member management or household hard-delete semantics.",
+  "description": "Complete household settings and delete safeguards on top of the existing household CRUD endpoints. Backend: extend PATCH /api/v1/households/:id (admin-only; update name, default currency, timezone, default visibility preference) and harden DELETE /api/v1/households/:id (admin-only; blocks delete if other active members exist). Frontend: Household Settings page with form for metadata fields and a danger-zone Delete section with confirmation dialog. Per docs/product-specs/household-management.md. Does NOT include member management or household hard-delete semantics.",
   "dependencies": ["feat-015a"],
-  "status": "pending",
-  "evidence": "",
+  "status": "done",
+  "evidence": "./init.sh, pnpm --filter worker typecheck, pnpm --filter worker test",
   "updated_at": "2026-04-28"
 }

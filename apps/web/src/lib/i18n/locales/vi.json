@@ -197,18 +197,27 @@
         "retry": "Thử lại",
         "save": "Lưu thay đổi"
       },
+      "dangerZone": {
+        "description": "Các hành động này không thể hoàn tác. Hãy cẩn thận.",
+        "deleteSection": {
+          "description": "Xoá gia đình sẽ lưu trữ dữ liệu và không thể khôi phục dễ dàng. Chỉ khả dụng khi bạn là thành viên duy nhất.",
+          "label": "Xoá gia đình"
+        },
+        "title": "Khu vực nguy hiểm"
+      },
       "deleteDialog": {
         "confirm": "Xác nhận xoá",
         "description": "Gia đình sẽ được lưu trữ (archive) và không còn hiển thị trong danh sách.",
         "title": "Xoá gia đình này?"
       },
-      "description": "Chi tiết gia đình và quản trị cơ bản.",
+      "description": "Quản lý cài đặt và thành viên gia đình.",
       "editDialog": {
         "description": "Cập nhật thông tin cơ bản của gia đình.",
         "title": "Chỉnh sửa gia đình"
       },
       "feedback": {
         "archiveFailed": "Không thể xoá gia đình lúc này. Vui lòng thử lại.",
+        "archiveBlockedByMembers": "Không thể xoá gia đình khi vẫn còn thành viên đang hoạt động khác.",
         "archiveSuccess": "Đã xoá gia đình thành công.",
         "updateFailed": "Không thể cập nhật gia đình lúc này. Vui lòng thử lại.",
         "updateSuccess": "Đã cập nhật gia đình."
@@ -218,10 +227,23 @@
           "description": "Tiền tệ mặc định áp dụng cho gia đình.",
           "label": "Tiền tệ mặc định"
         },
+        "defaultVisibility": {
+          "description": "Chế độ hiển thị mặc định cho các giao dịch mới trong gia đình.",
+          "label": "Hiển thị mặc định",
+          "options": {
+            "household": "Chia sẻ trong gia đình",
+            "private": "Riêng tư"
+          }
+        },
         "householdName": {
           "description": "Tên hiển thị mới của gia đình.",
           "label": "Tên gia đình",
           "placeholder": "Ví dụ: Gia đình Nguyễn"
+        },
+        "timezone": {
+          "description": "Múi giờ mặc định cho các giao dịch trong gia đình (theo chuẩn IANA, ví dụ: Asia/Ho_Chi_Minh).",
+          "label": "Múi giờ",
+          "placeholder": "Ví dụ: Asia/Ho_Chi_Minh"
         }
       },
       "invalidId": "Đường dẫn gia đình không hợp lệ.",
@@ -247,7 +269,7 @@
       "meta": {
         "defaultCurrency": "Tiền tệ mặc định"
       },
-      "title": "Chi tiết gia đình"
+      "title": "Cài đặt gia đình"
     },
     "more": {
       "description": "Các điều hướng mở rộng cho app.",

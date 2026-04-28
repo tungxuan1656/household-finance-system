@@ -7,6 +7,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Completed
 
+- [2026-04-28-feat-012-household-settings-delete-safeguards.md](plans/2026-04-28-feat-012-household-settings-delete-safeguards.md) - feat-012 fullstack household settings expansion (name/currency/timezone/default visibility) and delete safeguard blocking admin delete when other active members remain.
 - [2026-04-28-feat-015a-role-permission-backend-enforcement.md](plans/2026-04-28-feat-015a-role-permission-backend-enforcement.md) - feat-015a worker-side household membership resolution, reusable role guards, and hybrid `404`/`403` authorization for explicitly selected households.
 - [2026-04-25-feat-011-household-crud-pages-no-active.md](plans/2026-04-25-feat-011-household-crud-pages-no-active.md) - feat-011 household CRUD API + households list/detail pages without active-household global state.
 - [2026-04-25-feat-037-improve-profile-settings.md](plans/2026-04-25-feat-037-improve-profile-settings.md) - feat-037 improve profile settings UI and implement Cloudinary avatar upload.

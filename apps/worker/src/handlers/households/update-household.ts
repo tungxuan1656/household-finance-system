@@ -32,6 +32,7 @@ export const updateHousehold = async (
     slug: household.slug,
     defaultCurrencyCode: household.defaultCurrencyCode,
     timezone: household.timezone,
+    defaultVisibility: household.defaultVisibility,
     role,
     createdAt: household.createdAt,
   }

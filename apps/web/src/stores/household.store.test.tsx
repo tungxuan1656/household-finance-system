@@ -10,47 +10,30 @@ import {
 } from '@/api/household'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
+const baseHousehold = {
+  createdAt: Date.now(),
+  defaultCurrencyCode: 'USD',
+  defaultVisibility: 'private' as const,
+  id: 'h-1',
+  name: 'Family One',
+  role: 'admin' as const,
+  slug: 'family-one',
+  timezone: 'UTC',
+}
+
 vi.mock('@/api/household', () => ({
   archiveHousehold: vi.fn(async () => ({ archived: true })),
-  createHousehold: vi.fn(async () => ({
-    createdAt: Date.now(),
-    defaultCurrencyCode: 'USD',
-    id: 'h-1',
-    name: 'Family One',
-    role: 'admin',
-    slug: 'family-one',
-    timezone: 'UTC',
-  })),
-  getHousehold: vi.fn(async () => ({
-    createdAt: Date.now(),
-    defaultCurrencyCode: 'USD',
-    id: 'h-1',
-    name: 'Family One',
-    role: 'admin',
-    slug: 'family-one',
-    timezone: 'UTC',
-  })),
+  createHousehold: vi.fn(async () => ({ ...baseHousehold })),
+  getHousehold: vi.fn(async () => ({ ...baseHousehold })),
   listHouseholds: vi.fn(async () => ({
-    items: [
-      {
-        createdAt: Date.now(),
-        defaultCurrencyCode: 'USD',
-        id: 'h-1',
-        name: 'Family One',
-        role: 'admin',
-        slug: 'family-one',
-        timezone: 'UTC',
-      },
-    ],
+    items: [{ ...baseHousehold }],
   })),
   updateHousehold: vi.fn(async () => ({
-    createdAt: Date.now(),
+    ...baseHousehold,
     defaultCurrencyCode: 'EUR',
-    id: 'h-1',
+    defaultVisibility: 'household' as const,
     name: 'Family One Updated',
-    role: 'admin',
-    slug: 'family-one',
-    timezone: 'UTC',
+    timezone: 'Asia/Ho_Chi_Minh',
   })),
 }))
 
@@ -94,6 +77,39 @@ describe('household store', () => {
     expect(useHouseholdStore.getState().currentHousehold?.id).toBe('h-1')
   })
 
+  it('fetched household includes defaultVisibility field', async () => {
+    await householdActions.fetchHouseholdById('h-1')
+
+    expect(
+      useHouseholdStore.getState().currentHousehold?.defaultVisibility,
+    ).toBe('private')
+  })
+
+  it('updates household with timezone and defaultVisibility', async () => {
+    await householdActions.createHousehold({
+      name: 'Family One',
+    })
+
+    await householdActions.updateHousehold('h-1', {
+      defaultCurrencyCode: 'EUR',
+      defaultVisibility: 'household',
+      name: 'Family One Updated',
+      timezone: 'Asia/Ho_Chi_Minh',
+    })
+
+    expect(updateHousehold).toHaveBeenCalledWith('h-1', {
+      defaultCurrencyCode: 'EUR',
+      defaultVisibility: 'household',
+      name: 'Family One Updated',
+      timezone: 'Asia/Ho_Chi_Minh',
+    })
+
+    const current = useHouseholdStore.getState().currentHousehold
+    expect(current?.name).toBe('Family One Updated')
+    expect(current?.timezone).toBe('Asia/Ho_Chi_Minh')
+    expect(current?.defaultVisibility).toBe('household')
+  })
+
   it('updates household in list and current household', async () => {
     await householdActions.createHousehold({
       name: 'Family One',
@@ -124,5 +140,20 @@ describe('household store', () => {
     expect(archiveHousehold).toHaveBeenCalledWith('h-1')
     expect(useHouseholdStore.getState().households).toHaveLength(0)
     expect(useHouseholdStore.getState().currentHousehold).toBeNull()
+  })
+
+  it('propagates archive error when API throws (e.g. 409 conflict)', async () => {
+    vi.mocked(archiveHousehold).mockRejectedValueOnce(
+      new Error('Conflict: active members remain'),
+    )
+
+    await householdActions.createHousehold({
+      name: 'Family One',
+    })
+
+    await expect(householdActions.archiveHousehold('h-1')).rejects.toThrow()
+
+    // Household should still be in list when archive fails
+    expect(useHouseholdStore.getState().households).toHaveLength(1)
   })
 })
