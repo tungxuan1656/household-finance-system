@@ -39,13 +39,13 @@ Implement full household settings behavior on top of existing household CRUD and
 
 ## Progress
 
-- [ ] Create active ExecPlan entry and keep this file in `docs/exec-plans/plans/`.
-- [ ] Extend household contracts and repository mapping for timezone/default visibility settings.
-- [ ] Implement worker-side delete safeguard with active-member counting.
-- [ ] Upgrade web `/households/:id` into settings-oriented page and danger-zone delete UX.
-- [ ] Add/adjust worker + web tests for new behavior.
-- [ ] Run verification path and record evidence in harness artifacts.
-- [ ] Move plan index entry from `Active` to `Completed` after implementation.
+- [x] (2026-04-28) Create active ExecPlan entry and keep this file in `docs/exec-plans/plans/`.
+- [x] (2026-04-28) Extend household contracts and repository mapping for timezone/default visibility settings.
+- [x] (2026-04-28) Implement worker-side delete safeguard with active-member counting.
+- [x] (2026-04-28) Upgrade web `/households/:id` into settings-oriented page and danger-zone delete UX.
+- [x] (2026-04-28) Add/adjust worker + web tests for new behavior.
+- [x] (2026-04-28) Run verification path and record evidence in harness artifacts.
+- [x] (2026-04-28) Move plan index entry from `Active` to `Completed` after implementation.
 
 ## Surprises & Discoveries
 
@@ -76,7 +76,8 @@ Implement full household settings behavior on top of existing household CRUD and
 
 ## Outcomes & Retrospective
 
-- To be completed after implementation with final verification transcript and learned constraints.
+- Implementation completed and verified with `./init.sh` plus worker-focused typecheck/test coverage.
+- The only mid-session regression was enum drift on `defaultVisibility` (`shared` vs `household`), which was fixed by aligning the list handler and tests to the contract source of truth.
 
 ## Context and Orientation
 

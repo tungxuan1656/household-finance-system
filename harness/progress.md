@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-28 — Marked feat-012 complete in harness and plan index
+- Who: Codex
+- Summary: Updated `feat-012` feature metadata to `done`, moved its ExecPlan entry from `Active` to `Completed`, and aligned the plan file with completed status so the repo records now match the verified implementation state.
+- Files changed: harness/features/feat-012.json, harness/feature_index.json, docs/exec-plans/index.md, docs/exec-plans/plans/2026-04-28-feat-012-household-settings-delete-safeguards.md, harness/progress.md
+- Blockers: none
+- Next steps: none unless you want follow-up cleanup or a commit.
+
 ## 2026-04-28 — Implemented feat-012 plan, then surfaced enum mismatch during verification
 - Who: Codex
 - Summary: Implemented `feat-012` according to the active ExecPlan, then verification exposed a contract drift where `defaultVisibility` still had stale `shared` references in part of the worker test surface and list handler typing. That mismatch was then fixed in the follow-up session.
