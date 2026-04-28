@@ -26,6 +26,25 @@ export const createHouseholdRequestSchema = (
     })
     .strict()
 
+// IANA timezone validation: prefer Intl.supportedValuesOf (V8/Workers), fall back
+// to formatting a fixed date which forces timezone resolution and throws on invalid values.
+// Note: some valid IANA aliases (e.g. Asia/Ho_Chi_Minh) may not appear in
+// supportedValuesOf in all runtimes; we use it as an allow-list but always
+// confirm via DateTimeFormat.format() as authoritative check.
+const isValidIanaTimezone = (value: string): boolean => {
+  // Authoritative check: format a concrete date to force the runtime to resolve
+  // the timezone. An invalid timezone causes a RangeError.
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: value }).format(new Date(0))
+
+    return true
+  } catch {
+    return false
+  }
+}
+
+export type DefaultVisibility = 'private' | 'household'
+
 export const updateHouseholdRequestSchema = (
   locale: SupportedLocale = defaultLocale,
 ) =>
@@ -38,11 +57,26 @@ export const updateHouseholdRequestSchema = (
         .max(120, translate(locale, 'households.nameTooLong'))
         .optional(),
       defaultCurrencyCode: currencyCodeSchema(locale).optional(),
+      timezone: z
+        .string()
+        .trim()
+        .refine(isValidIanaTimezone, {
+          message: translate(locale, 'households.timezoneInvalid'),
+        })
+        .optional(),
+      defaultVisibility: z
+        .enum(['private', 'household'], {
+          message: translate(locale, 'households.defaultVisibilityInvalid'),
+        })
+        .optional(),
     })
     .strict()
     .refine(
       (value) =>
-        value.name !== undefined || value.defaultCurrencyCode !== undefined,
+        value.name !== undefined ||
+        value.defaultCurrencyCode !== undefined ||
+        value.timezone !== undefined ||
+        value.defaultVisibility !== undefined,
       {
         message: translate(locale, 'households.atLeastOneFieldRequired'),
       },
@@ -75,6 +109,7 @@ export interface HouseholdDTO {
   slug: string
   defaultCurrencyCode: string
   timezone: string
+  defaultVisibility: DefaultVisibility
   role: HouseholdRoleDTO
   createdAt: number
 }

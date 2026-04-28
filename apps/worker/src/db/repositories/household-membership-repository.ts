@@ -38,3 +38,22 @@ export const findActiveHouseholdMembership = async (
     userId: membership.user_id,
   }
 }
+
+export const countActiveHouseholdMembers = async (
+  db: D1Database,
+  householdId: string,
+): Promise<number> => {
+  const row = await db
+    .prepare(
+      `SELECT COUNT(*) as count
+         FROM household_memberships hm
+         INNER JOIN households h ON h.id = hm.household_id
+        WHERE hm.household_id = ?
+          AND hm.state = 'active'
+          AND h.archived_at IS NULL`,
+    )
+    .bind(householdId)
+    .first<{ count: number }>()
+
+  return row?.count ?? 0
+}

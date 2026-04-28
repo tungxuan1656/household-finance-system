@@ -8,6 +8,7 @@ export interface StoredHousehold {
   slug: string
   defaultCurrencyCode: string
   timezone: string
+  defaultVisibility: 'private' | 'household'
   role: 'admin' | 'member'
   createdAt: number
 }
@@ -18,6 +19,7 @@ export interface StoredHouseholdDetail {
   slug: string
   defaultCurrencyCode: string
   timezone: string
+  defaultVisibility: 'private' | 'household'
   createdAt: number
 }
 
@@ -29,6 +31,8 @@ export interface CreateHouseholdInput {
 export interface UpdateHouseholdInput {
   name?: string
   defaultCurrencyCode?: string
+  timezone?: string
+  defaultVisibility?: 'private' | 'household'
 }
 
 const isSlugConflictError = (error: unknown): boolean => {
@@ -45,6 +49,7 @@ const toStoredHousehold = (row: {
   slug: string
   default_currency_code: string
   timezone: string
+  default_visibility: 'private' | 'household'
   role: 'admin' | 'member'
   created_at: number
 }): StoredHousehold => ({
@@ -53,6 +58,7 @@ const toStoredHousehold = (row: {
   slug: row.slug,
   defaultCurrencyCode: row.default_currency_code,
   timezone: row.timezone,
+  defaultVisibility: row.default_visibility,
   role: row.role,
   createdAt: row.created_at,
 })
@@ -63,6 +69,7 @@ const toStoredHouseholdDetail = (row: {
   slug: string
   default_currency_code: string
   timezone: string
+  default_visibility: 'private' | 'household'
   created_at: number
 }): StoredHouseholdDetail => ({
   id: row.id,
@@ -70,6 +77,7 @@ const toStoredHouseholdDetail = (row: {
   slug: row.slug,
   defaultCurrencyCode: row.default_currency_code,
   timezone: row.timezone,
+  defaultVisibility: row.default_visibility,
   createdAt: row.created_at,
 })
 
@@ -102,6 +110,7 @@ export const listUserHouseholds = async (
               h.slug,
               h.default_currency_code,
               h.timezone,
+              h.default_visibility,
               hm.role,
               h.created_at
          FROM households h
@@ -118,6 +127,7 @@ export const listUserHouseholds = async (
       slug: string
       default_currency_code: string
       timezone: string
+      default_visibility: 'private' | 'household'
       role: 'admin' | 'member'
       created_at: number
     }>()
@@ -137,6 +147,7 @@ export const findUserHouseholdById = async (
               h.slug,
               h.default_currency_code,
               h.timezone,
+              h.default_visibility,
               hm.role,
               h.created_at
          FROM households h
@@ -154,6 +165,7 @@ export const findUserHouseholdById = async (
       slug: string
       default_currency_code: string
       timezone: string
+      default_visibility: 'private' | 'household'
       role: 'admin' | 'member'
       created_at: number
     }>()
@@ -265,6 +277,7 @@ export const findHouseholdById = async (
               h.slug,
               h.default_currency_code,
               h.timezone,
+              h.default_visibility,
               h.created_at
          FROM households h
         WHERE h.id = ?
@@ -278,6 +291,7 @@ export const findHouseholdById = async (
       slug: string
       default_currency_code: string
       timezone: string
+      default_visibility: 'private' | 'household'
       created_at: number
     }>()
 
@@ -305,8 +319,16 @@ export const updateHouseholdById = async (
              WHEN ?3 THEN ?4
              ELSE default_currency_code
            END,
-           updated_at = ?5
-       WHERE id = ?6
+           timezone = CASE
+             WHEN ?5 THEN ?6
+             ELSE timezone
+           END,
+           default_visibility = CASE
+             WHEN ?7 THEN ?8
+             ELSE default_visibility
+           END,
+           updated_at = ?9
+       WHERE id = ?10
          AND archived_at IS NULL`,
     )
     .bind(
@@ -314,6 +336,10 @@ export const updateHouseholdById = async (
       input.name ?? null,
       input.defaultCurrencyCode !== undefined ? 1 : 0,
       input.defaultCurrencyCode ?? null,
+      input.timezone !== undefined ? 1 : 0,
+      input.timezone ?? null,
+      input.defaultVisibility !== undefined ? 1 : 0,
+      input.defaultVisibility ?? null,
       nowEpoch,
       householdId,
     )
