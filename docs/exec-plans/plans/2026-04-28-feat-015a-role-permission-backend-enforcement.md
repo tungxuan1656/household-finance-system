@@ -33,11 +33,11 @@ Implement reusable worker-side household authorization so every household-scoped
 ## Progress
 
 - [x] (2026-04-28 / Codex) Reconcile household source-of-truth docs and harness records with explicit household selection and delete terminology.
-- [ ] (Current step) Add explicit-household membership repository support plus middleware context plumbing in `apps/worker`.
-- [ ] Add named household permission-policy helpers and lock default admin-only behavior for configurable member powers.
-- [ ] Refactor current household detail/update/delete flow to use middleware-based authorization instead of repository-embedded role checks.
-- [ ] Add worker unit + integration coverage for hybrid `404`/`403` behavior.
-- [ ] Run worker-focused verification, then full repo verification, and record evidence in harness artifacts.
+- [x] Add explicit-household membership repository support plus middleware context plumbing in `apps/worker`.
+- [x] Add named household permission-policy helpers and lock default admin-only behavior for configurable member powers.
+- [x] Refactor current household detail/update/delete flow to use middleware-based authorization instead of repository-embedded role checks.
+- [x] Add worker unit + integration coverage for hybrid `404`/`403` behavior.
+- [x] Run worker-focused verification, then full repo verification, and record evidence in harness artifacts.
 
 ## Surprises & Discoveries
 
@@ -45,6 +45,7 @@ Implement reusable worker-side household authorization so every household-scoped
 - `feat-012` still described a future archive endpoint, but the current worker surface already exposes `DELETE /api/v1/households/:id`; the remaining work is to harden rules around that existing delete flow.
 - Current admin-only household authorization is embedded in SQL helpers and returns `404` for non-admin members; `feat-015a` must deliberately move that distinction into middleware and change active-member failures to `403`.
 - `./init.sh` runs `pnpm run lint:fix`, so full verification can rewrite imports/formatting beyond the immediately touched worker files.
+- Running `pnpm test:worker` inside the default sandbox failed because Wrangler could not write to `~/Library/Preferences/.wrangler/logs`; rerunning with escalated permission resolved it.
 
 ## Decision Log
 
@@ -67,7 +68,10 @@ Implement reusable worker-side household authorization so every household-scoped
 
 ## Outcomes & Retrospective
 
-- To be completed during implementation.
+- Added reusable, explicit-household authorization infrastructure in worker (`household-membership` repository + middleware + policy module) without introducing global active-household state.
+- Refactored household detail/update/delete flow so role checks are middleware-driven instead of embedded in repository SQL.
+- Landed the intended hybrid authorization behavior: active member lacking role -> `403 FORBIDDEN`; non-member -> `404 NOT_FOUND`.
+- Verification evidence captured with passing `pnpm typecheck:worker`, `pnpm lint:worker`, `pnpm test:worker`, and `./init.sh`.
 
 ## Context and Orientation
 

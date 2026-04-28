@@ -6,6 +6,15 @@ export interface AuthUser {
   provider: 'firebase'
 }
 
+export type HouseholdRole = 'admin' | 'member'
+
+export interface ResolvedHouseholdMembership {
+  householdId: string
+  id: string
+  role: HouseholdRole
+  userId: string
+}
+
 export type AppBindings = {
   Bindings: Env
   Variables: {
@@ -14,6 +23,9 @@ export type AppBindings = {
     locale: SupportedLocale
     currentUser: AuthUser
     currentSessionId: string
+    requestHouseholdId?: string
+    currentHouseholdId?: string
+    currentHouseholdMembership?: ResolvedHouseholdMembership
   }
 }
 

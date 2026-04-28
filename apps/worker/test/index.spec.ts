@@ -543,7 +543,7 @@ describe('Worker foundation', () => {
     expect(updatePayload.error.code).toBe('INVALID_INPUT')
   })
 
-  it('returns not found when non-admin member updates household', async () => {
+  it('returns forbidden when non-admin member updates household', async () => {
     await insertHouseholdFixture(env.DB)
 
     const member = await exchangeAccessToken(
@@ -577,8 +577,8 @@ describe('Worker foundation', () => {
     )
     const payload = await parseJson<ApiErrorEnvelope>(response)
 
-    expect(response.status).toBe(404)
-    expect(payload.error.code).toBe('NOT_FOUND')
+    expect(response.status).toBe(403)
+    expect(payload.error.code).toBe('FORBIDDEN')
   })
 
   it('archives a household for an admin and hides it from list/detail', async () => {
@@ -650,7 +650,7 @@ describe('Worker foundation', () => {
     expect(detailPayload.error.code).toBe('NOT_FOUND')
   })
 
-  it('returns not found when non-admin member archives household', async () => {
+  it('returns forbidden when non-admin member archives household', async () => {
     await insertHouseholdFixture(env.DB)
 
     const member = await exchangeAccessToken(
@@ -680,8 +680,8 @@ describe('Worker foundation', () => {
     )
     const payload = await parseJson<ApiErrorEnvelope>(response)
 
-    expect(response.status).toBe(404)
-    expect(payload.error.code).toBe('NOT_FOUND')
+    expect(response.status).toBe(403)
+    expect(payload.error.code).toBe('FORBIDDEN')
   })
 
   it('returns upload signature payload for authenticated image upload request', async () => {
