@@ -4,6 +4,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
+import { ApiClientError } from '@/api/client'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,14 +45,11 @@ import { t } from '@/lib/i18n'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 const isConflictError = (error: unknown): boolean => {
-  if (!(error instanceof Error)) {
+  if (!(error instanceof ApiClientError)) {
     return false
   }
 
-  return (
-    error.message.toLowerCase().includes('conflict') ||
-    error.message.toLowerCase().includes('thành viên')
-  )
+  return error.status === 409 || error.code === 'CONFLICT'
 }
 
 function HouseholdDetailPage() {
@@ -63,6 +61,7 @@ function HouseholdDetailPage() {
 
   const form = useForm<UpdateHouseholdSettingsFormValues>({
     defaultValues: {
+      defaultCurrencyCode: '',
       name: '',
       timezone: '',
       defaultVisibility: undefined,
@@ -84,6 +83,7 @@ function HouseholdDetailPage() {
     }
 
     form.reset({
+      defaultCurrencyCode: currentHousehold.defaultCurrencyCode,
       name: currentHousehold.name,
       timezone: currentHousehold.timezone,
       defaultVisibility: currentHousehold.defaultVisibility,
@@ -212,6 +212,36 @@ function HouseholdDetailPage() {
                           <FieldDescription>
                             {t(
                               'app.householdDetail.fields.householdName.description',
+                            )}
+                          </FieldDescription>
+                          {fieldState.invalid ? (
+                            <FieldError errors={[fieldState.error]} />
+                          ) : null}
+                        </FieldContent>
+                      </Field>
+                    )}
+                  />
+
+                  {/* Default Currency Code */}
+                  <Controller
+                    control={form.control}
+                    name='defaultCurrencyCode'
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor='settings-default-currency-code'>
+                          {t('app.householdDetail.fields.currency.label')}
+                        </FieldLabel>
+                        <FieldContent>
+                          <Input
+                            {...field}
+                            aria-invalid={fieldState.invalid}
+                            id='settings-default-currency-code'
+                            maxLength={3}
+                            placeholder='USD'
+                          />
+                          <FieldDescription>
+                            {t(
+                              'app.householdDetail.fields.currency.description',
                             )}
                           </FieldDescription>
                           {fieldState.invalid ? (
