@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-28 — Reconciled household docs and created feat-015a ExecPlan
+- Who: Codex
+- Summary: Updated household-related docs and harness feature records to match the explicit household-selection model (no global active household) and the current delete terminology for household flows. Added the active ExecPlan for `feat-015a` so backend permission enforcement now targets explicit request household resolution plus hybrid `404`/`403` authorization behavior.
+- Files changed: docs/product-specs/household-management.md, docs/product-specs/role-permission.md, docs/product-specs/data-visibility.md, docs/product-specs/expense-tracking.md, docs/product-specs/quick-add-experience.md, docs/exec-plans/plans/2026-04-25-feat-011-household-crud-pages-no-active.md, docs/exec-plans/plans/2026-04-28-feat-015a-role-permission-backend-enforcement.md, docs/exec-plans/index.md, docs/exec-plans/tech-debt-tracker.md, harness/features/feat-011.json, harness/features/feat-012.json, harness/features/feat-015a.json, harness/features/feat-024.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: implement `feat-015a` against the new ExecPlan; keep configurable member invite/group permissions deferred until household settings/schema is defined.
+
 ## 2026-04-25 — Fixed member placeholder UX review issues in household detail
 - Who: Codex
 - Summary: Addressed review findings in household detail placeholder members section by disabling Invite/Remove buttons until member-management APIs exist and adding explicit TODO comments for follow-up feature work. Also replaced hardcoded English placeholder row labels with i18n-backed strings.

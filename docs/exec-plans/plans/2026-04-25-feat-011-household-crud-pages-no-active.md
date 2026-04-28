@@ -2,7 +2,7 @@
 
 ## Purpose / Big Picture
 
-Ship a complete household CRUD foundation for MVP without introducing a global active-household state. Users can create households, view household list/detail pages, edit/archive households, and navigate to household management from the shell.
+Ship a complete household CRUD foundation for MVP without introducing a global active-household state. Users can create households, view household list/detail pages, edit/delete households, and navigate to household management from the shell.
 
 ## Scope
 
@@ -12,8 +12,8 @@ Ship a complete household CRUD foundation for MVP without introducing a global a
     - `GET /api/v1/households`
     - `GET /api/v1/households/:id`
     - `PATCH /api/v1/households/:id`
-    - `DELETE /api/v1/households/:id` (soft archive)
-  - Membership-aware access and admin-only update/archive behavior.
+    - `DELETE /api/v1/households/:id` (user-facing delete backed by recoverable soft-delete storage)
+  - Membership-aware access and admin-only update/delete behavior.
   - Web pages:
     - `/households`
     - `/households/:id`
@@ -30,7 +30,7 @@ Ship a complete household CRUD foundation for MVP without introducing a global a
 
 - Keep backend boundaries: route -> handler -> repository.
 - Return only non-archived households in list/detail flows.
-- Return `404` for inaccessible household ids and non-admin update/archive requests.
+- Return `404` for inaccessible household ids and non-admin update/delete requests.
 - Keep all user-facing copy i18n-backed.
 - Keep household frontend domain on one zustand store (`household.store`) only.
 
@@ -38,7 +38,7 @@ Ship a complete household CRUD foundation for MVP without introducing a global a
 
 - [x] Extend worker contracts/repository/handlers/routes for `PATCH` + `DELETE`.
 - [x] Remove obsolete `X-Household-Id` CORS/header assumptions.
-- [x] Add worker tests for update/archive happy/error/authorization scenarios.
+- [x] Add worker tests for update/delete happy/error/authorization scenarios.
 - [x] Remove active-household store/context/switcher and hook dependencies from web.
 - [x] Add `/households`, `/households/:id`, and `/more` pages wired to `household.store`.
 - [x] Add member-table placeholder and TODO markers for follow-up members feature.
@@ -54,7 +54,7 @@ Ship a complete household CRUD foundation for MVP without introducing a global a
 ## Outcomes & Retrospective
 
 - Feature scope now aligns with the no-active-household product direction.
-- Household CRUD works end-to-end (create/read/update/archive) with authorization checks.
+- Household CRUD works end-to-end (create/read/update/delete) with authorization checks.
 - Household list/detail pages exist and are wired to a single zustand domain store.
 - Members UI is scaffolded for follow-up feature work without introducing premature backend scope.
 

@@ -1,9 +1,9 @@
 {
   "id": "feat-012",
-  "name": "Household settings & archive rules",
-  "description": "Implement household settings update and archive. Backend: PATCH /api/v1/households/:id (admin-only; update name, default currency, timezone, default visibility preference) and POST /api/v1/households/:id/archive (admin-only; blocks archive if other active members exist, requires explicit confirmation flag). Frontend: Household Settings page with form for metadata fields and a danger-zone Archive section with confirmation dialog. Per docs/product-specs/household-management.md. Does NOT include member management or deletion (delete is post-MVP).",
+  "name": "Household settings & delete rules",
+  "description": "Complete household settings and delete safeguards on top of the existing household CRUD endpoints. Backend: extend PATCH /api/v1/households/:id (admin-only; update name, default currency, timezone, default visibility preference) and harden DELETE /api/v1/households/:id (admin-only; blocks delete if other active members exist and requires an explicit confirmation flag). Frontend: Household Settings page with form for metadata fields and a danger-zone Delete section with confirmation dialog. Per docs/product-specs/household-management.md. Does NOT include member management or household hard-delete semantics.",
   "dependencies": ["feat-015a"],
   "status": "pending",
   "evidence": "",
-  "updated_at": "2026-04-21"
+  "updated_at": "2026-04-28"
 }

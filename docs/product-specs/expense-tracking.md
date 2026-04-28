@@ -16,7 +16,7 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 3. Optionally assigns the expense to one or more Groups (Events).
 4. User chooses visibility: private or household.
 5. User confirms; expense is stored and appears in the transaction list.
-6. If the user is in multiple households, prompt to choose active household.
+6. If the user is in multiple households, prompt to choose the target household for this expense at the time of submission; do not depend on one global active household.
 
 ## Acceptance Criteria
 
@@ -35,5 +35,5 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 ---
 
 Notes:
-- Prefer conservative defaults (last used category, current household, creator=payer if not specified).
+- Prefer conservative defaults (last used category, selected household for the current submission, creator=payer if not specified).
 - Track telemetry: time-to-add, fields used, and quick-add conversion.
