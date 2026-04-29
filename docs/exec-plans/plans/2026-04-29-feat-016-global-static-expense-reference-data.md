@@ -63,14 +63,14 @@ Deliver `feat-016` as a fullstack reference-data foundation that:
 ## Progress
 
 - [x] (2026-04-29) Create and register active ExecPlan for `feat-016`.
-- [ ] Implement worker-side checked-in catalog module and public reference-data contracts.
-- [ ] Add worker handlers/routes/cache headers and integration coverage for `/categories` and `/sources`.
-- [ ] Add web reference-data types, API functions, and React Query hooks.
-- [ ] Add expense-domain `category-picker` and `source-picker` components with component/API tests.
-- [ ] Run worker/web/full-repo verification and capture evidence in harness artifacts.
-- [ ] Mark plan `Completed` in `docs/exec-plans/index.md` after implementation finishes.
+- [x] (2026-04-29) Implement worker-side checked-in catalog module and public reference-data contracts.
+- [x] (2026-04-29) Add worker handlers/routes/cache headers and integration coverage for `/categories` and `/sources`.
+- [x] (2026-04-29) Add web reference-data types, API functions, and React Query hooks.
+- [x] (2026-04-29) Add expense-domain `category-picker` and `source-picker` components with component/API tests.
+- [x] (2026-04-29) Run worker/web/full-repo verification and capture evidence in harness artifacts.
+- [x] (2026-04-29) Mark plan `Completed` in `docs/exec-plans/index.md` after implementation finishes.
 
-Current owned step: worker catalog + public endpoint foundation.
+Current owned step: completed.
 
 ## Surprises & Discoveries
 
@@ -121,11 +121,13 @@ Current owned step: worker catalog + public endpoint foundation.
 
 ## Outcomes & Retrospective
 
-- Placeholder for implementation completion.
-- Expected completion outcome:
-  - worker serves stable static reference-data endpoints,
-  - web has tested hooks and picker components ready for `feat-017` and `feat-024`,
-  - legacy schema mismatch remains explicitly deferred and tracked.
+- Worker now serves public/cacheable static reference-data endpoints:
+  - `GET /api/v1/categories`
+  - `GET /api/v1/sources`
+- Worker catalog source of truth is checked-in code with canonical order, semantic keys, and required metadata (`key`, `kind`, `iconUrl`, `color`).
+- Web now has typed reference-data DTOs, API transport, React Query hooks, and reusable `category-picker`/`source-picker` components with API/component tests.
+- Full verification completed via `./init.sh` (`pnpm install`, harness checks, lint, typecheck, tests).
+- Legacy schema mismatch (`expense_categories` household-scoped model) remains intentionally deferred and tracked as tech debt.
 
 ## Context and Orientation
 
