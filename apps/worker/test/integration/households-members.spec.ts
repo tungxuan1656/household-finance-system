@@ -272,6 +272,40 @@ describe('Worker integration: household member actions', () => {
     expect(removePayload.error.code).toBe('FORBIDDEN')
   })
 
+  it('blocks admin removal when target is the last active admin', async () => {
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-members-remove-last-admin:members-remove-last-admin@example.com',
+    )
+    const createHouseholdResponse = await SELF.fetch(
+      'https://example.com/api/v1/households',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ name: 'Family Remove Last Admin' }),
+      },
+    )
+    const createdHouseholdPayload = await parseJson<
+      ApiEnvelope<{ id: string }>
+    >(createHouseholdResponse)
+
+    const removeResponse = await SELF.fetch(
+      `https://example.com/api/v1/households/${createdHouseholdPayload.data.id}/members/${owner.user.id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+        },
+      },
+    )
+    const removePayload = await parseJson<ApiErrorEnvelope>(removeResponse)
+
+    expect(removeResponse.status).toBe(409)
+    expect(removePayload.error.code).toBe('CONFLICT')
+  })
+
   it('allows a non-admin member to leave household via members/me endpoint', async () => {
     const owner = await exchangeAccessToken(
       'test:firebase-user-members-leave-owner:members-leave-owner@example.com',

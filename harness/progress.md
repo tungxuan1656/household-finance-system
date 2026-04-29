@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Guarded member removal against deleting the last household admin
+- Who: Codex
+- Summary: Fixed review finding on `DELETE /households/:id/members/:userId` by adding a last-admin guard in `handleRemoveHouseholdMember`. The handler now loads target membership, counts active admins, and returns `409 CONFLICT` when removal would delete the final admin. Added integration coverage for this specific path (`blocks admin removal when target is the last active admin`).
+- Files changed: apps/worker/src/handlers/households/remove-household-member.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/test/integration/households-members.spec.ts, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-04-29 — Refactored oversized worker integration test file into domain-scoped specs
 - Who: Codex
 - Summary: Split `apps/worker/test/index.spec.ts` (~2800 lines) into smaller domain-focused test files under `apps/worker/test/integration/` and added shared setup/util context under `apps/worker/test/helpers/test-context.ts`. Test coverage remains equivalent (130 tests) while improving maintainability and discoverability by domain (core, households CRUD, member actions, invitations, media/profile, auth/session, data integrity).

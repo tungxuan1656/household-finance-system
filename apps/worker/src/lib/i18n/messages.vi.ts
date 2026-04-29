@@ -50,6 +50,8 @@ export const viMessages = {
     'Không thể xóa hộ gia đình khi vẫn còn thành viên đang hoạt động khác.',
   'households.cannotLeaveAsLastAdmin':
     'Không thể rời khỏi hộ gia đình khi bạn là quản trị viên cuối cùng.',
+  'households.cannotRemoveLastAdmin':
+    'Không thể xóa quản trị viên cuối cùng của hộ gia đình.',
   'invitations.invalidRole': 'Vai trò được mời phải là "admin" hoặc "member".',
   'invitations.invalidExpiresIn':
     'Thời gian hết hạn phải là "24h", "72h" hoặc "7d".',
