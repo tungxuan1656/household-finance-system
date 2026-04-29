@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { APP_MENU_ITEMS } from '@/lib/constants/navigation'
 import { PATHS } from '@/lib/constants/paths'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 
 interface AppSidebarProps {
   onSignOut: () => void

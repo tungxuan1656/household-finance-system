@@ -44,7 +44,7 @@ import {
   type UpdateHouseholdSettingsFormValues,
   updateHouseholdSettingsSchema,
 } from '@/lib/forms/household.schema'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 const isConflictError = (error: unknown): boolean => {

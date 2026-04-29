@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\"",
-    "typecheck": "tsc --noEmit --project tsconfig.json"
+    "typecheck": "next typegen && tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",

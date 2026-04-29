@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 
 export const createHouseholdSchema = z.object({
   name: z

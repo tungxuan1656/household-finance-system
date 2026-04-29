@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { type ReactNode, useEffect } from 'react'
 
 import { AUTH_SIGN_IN_PATH } from '@/lib/constants/auth'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 import { useAuthStore } from '@/stores/auth.store'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {

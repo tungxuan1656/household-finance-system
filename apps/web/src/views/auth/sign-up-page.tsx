@@ -11,7 +11,7 @@ import { AuthPanel } from '@/components/auth/auth-panel'
 import { Input } from '@/components/ui/input'
 import { signUpWithEmailPassword } from '@/lib/auth/session-service'
 import { PATHS } from '@/lib/constants/paths'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 
 const signUpSchema = z.object({
   email: z.string().trim().email(t('auth.signUp.errors.invalidForm')),

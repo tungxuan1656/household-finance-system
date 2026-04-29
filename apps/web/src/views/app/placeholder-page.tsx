@@ -12,7 +12,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { PATHS } from '@/lib/constants/paths'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 
 function PlaceholderPage({
   description,

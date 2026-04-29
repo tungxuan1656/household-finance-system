@@ -48,18 +48,18 @@ Deliver a production-ready Next.js App Router web app in `apps/web` that:
 
 ## Progress
 
-- [ ] (2026-04-29) Create and register `feat-038` harness records (`feature_index`, `features/feat-038.json`, progress log).
-- [ ] (2026-04-29) Scaffold Next.js App Router foundation in `apps/web` and remove Vite entrypoints.
-- [ ] (2026-04-29) Migrate route system and guards to Next navigation primitives.
-- [ ] (2026-04-29) Implement landing page `/` and move protected home to `/home`.
-- [ ] (2026-04-29) Migrate env contracts from `VITE_*` to `NEXT_PUBLIC_*`.
-- [ ] (2026-04-29) Integrate Next-compatible PWA surfaces (manifest, SW registration, icons).
-- [ ] (2026-04-29) Enforce direct-import policy and remove critical barrel/index usage.
-- [ ] (2026-04-29) Update tests for new route model and Next runtime boundaries.
-- [ ] (2026-04-29) Update docs (root, web, AGENTS guidance where relevant to stack).
-- [ ] (2026-04-29) Run full verification path and capture evidence in harness.
+- [x] (2026-04-29) Create and register `feat-038` harness records (`feature_index`, `features/feat-038.json`, progress log).
+- [x] (2026-04-29) Scaffold Next.js App Router foundation in `apps/web` and remove Vite entrypoints.
+- [x] (2026-04-29) Migrate route system and guards to Next navigation primitives.
+- [x] (2026-04-29) Implement landing page `/` and move protected home to `/home`.
+- [x] (2026-04-29) Migrate env contracts from `VITE_*` to `NEXT_PUBLIC_*`.
+- [x] (2026-04-29) Integrate Next-compatible PWA surfaces (manifest, SW registration, icons).
+- [x] (2026-04-29) Enforce direct-import policy and remove critical barrel/index usage.
+- [x] (2026-04-29) Update tests for new route model and Next runtime boundaries.
+- [x] (2026-04-29) Update docs (root, web, AGENTS guidance where relevant to stack).
+- [x] (2026-04-29) Run full verification path and capture evidence in harness.
 
-Current owned step: Step 1 (Owner: Codex, Status: pending start).
+Current owned step: none. All plan items completed and verified.
 
 ## Surprises & Discoveries
 
@@ -100,7 +100,11 @@ Current owned step: Step 1 (Owner: Codex, Status: pending start).
 
 ## Outcomes & Retrospective
 
-- To be completed after implementation and verification.
+- `apps/web` now runs on Next.js App Router with `/` as the public landing page and `/home` as the protected shell entry.
+- Vite runtime/config artifacts were removed, env access moved to `NEXT_PUBLIC_*`, and PWA support was re-established using Next-compatible surfaces.
+- Runtime-critical i18n imports now use direct file targets instead of barrel imports.
+- Verification completed successfully with `pnpm --filter web lint`, `pnpm --filter web typecheck`, `pnpm --filter web test`, `pnpm --filter web build`, and `./init.sh`.
+- Remaining lint warnings are non-blocking image-optimization suggestions in legacy UI blocks and profile preview code.
 
 ## Context and Orientation
 

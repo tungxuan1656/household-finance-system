@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { PATHS } from '@/lib/constants/paths'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 import { useAuthStore } from '@/stores/auth.store'
 
 function OverviewPage() {

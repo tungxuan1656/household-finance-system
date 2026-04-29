@@ -39,7 +39,7 @@ import {
   type CreateHouseholdFormValues,
   createHouseholdSchema,
 } from '@/lib/forms/household.schema'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 function HouseholdsPage() {

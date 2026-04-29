@@ -99,7 +99,7 @@
     {
       "id": "feat-038",
       "name": "Migrate web stack from React/Vite to Next.js App Router",
-      "status": "in_progress"
+      "status": "done"
     },
 
     {

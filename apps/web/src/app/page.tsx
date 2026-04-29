@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { PATHS } from '@/lib/constants/paths'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 
 export default function LandingPage() {
   return (

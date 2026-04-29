@@ -1,6 +1,6 @@
 'use client'
 
-import '@/lib/i18n'
+import '@/lib/i18n/i18n-init'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { type ReactNode, useState } from 'react'

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { removeLocalStorageItem } from '@/lib/storages/browser-storage'
 
-import { changeLanguage } from './index'
+import { changeLanguage } from './change-language'
 
 afterEach(() => {
   vi.restoreAllMocks()

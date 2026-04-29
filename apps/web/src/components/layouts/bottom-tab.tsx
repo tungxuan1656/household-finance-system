@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom'
 
 import { BOTTOM_TAB_ITEMS } from '@/lib/constants/navigation'
 import { PATHS } from '@/lib/constants/paths'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 
 export function BottomTab() {
   const pathname = usePathname()

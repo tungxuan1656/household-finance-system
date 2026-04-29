@@ -40,7 +40,7 @@ import {
   type UpdateProfileFormValues,
   updateProfileSchema,
 } from '@/lib/forms/profile.schema'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 import {
   isAvatarImageFile,
   prepareSquareAvatarImage,

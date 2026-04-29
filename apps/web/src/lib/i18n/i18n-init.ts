@@ -8,10 +8,7 @@ import {
   DEFAULT_LOCALE,
   SUPPORTED_LOCALES,
 } from '@/lib/constants/i18n'
-import {
-  readLocalStorageItem,
-  writeLocalStorageItem,
-} from '@/lib/storages/browser-storage'
+import { readLocalStorageItem } from '@/lib/storages/browser-storage'
 
 import translationVI from './locales/vi.json'
 import { resolveLocale } from './resolve-locale'
@@ -69,25 +66,4 @@ void i18n
 
 export default i18n
 
-export const t = (
-  key: ParseKeys<'translation'>,
-  options?: Record<string, unknown>,
-) => i18n.t(key, options as never) as unknown as string
-
-export const changeLanguage = (lang: string) => {
-  const nextLanguage = resolveLocale(lang)
-
-  if (typeof window !== 'undefined') {
-    try {
-      writeLocalStorageItem(APP_LANGUAGE_STORAGE_KEY, nextLanguage)
-    } catch {
-      // Persisting language is best-effort in restricted storage contexts.
-    }
-  }
-
-  void i18n.changeLanguage(nextLanguage)
-
-  if (typeof window !== 'undefined') {
-    window.location.reload()
-  }
-}
+export type TranslationKey = ParseKeys<'translation'>

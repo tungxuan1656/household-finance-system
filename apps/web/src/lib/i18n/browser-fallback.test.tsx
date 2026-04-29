@@ -21,7 +21,7 @@ describe('frontend i18n bootstrap', () => {
     vi.resetModules()
 
     const { SignInPage } = await import('@/views/auth/sign-in-page')
-    const { t } = await import('@/lib/i18n')
+    const { t } = await import('./t')
 
     render(<SignInPage />)
 

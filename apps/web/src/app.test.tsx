@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ProtectedRoute } from '@/components/layouts/protected-route'
 import { PublicRoute } from '@/components/layouts/public-route'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 import { authActions as storeAuthActions } from '@/stores/auth.store'
 import { SignInPage } from '@/views/auth/sign-in-page'
 

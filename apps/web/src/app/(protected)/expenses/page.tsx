@@ -1,6 +1,6 @@
 'use client'
 
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 import { PlaceholderPage } from '@/views/app/placeholder-page'
 
 export default function ExpensesRoutePage() {

@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Completed feat-038 Next.js App Router migration
+- Who: Codex
+- Summary: Finished the `feat-038` migration: `apps/web` now runs on Next.js App Router with `/` as a public landing page and `/home` as the protected home route. I also completed the direct-import cleanup for runtime-critical i18n modules, verified env migration to `NEXT_PUBLIC_*`, kept Vitest in place with a dedicated config, and confirmed the repo passes lint, typecheck, tests, build, and `./init.sh`.
+- Files changed: docs/exec-plans/plans/2026-04-29-feat-038-nextjs-app-router-migration.md, docs/exec-plans/index.md, harness/features/feat-038.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: none unless you want follow-up polish on remaining Next image-optimization warnings.
+
 ## 2026-04-29 — Started implementing feat-038 Next.js App Router migration
 - Who: Codex
 - Summary: Executed the first implementation pass for `feat-038`: migrated `apps/web` to Next.js App Router structure (landing at `/`, app shell at `/home`), replaced React Router usage with Next navigation primitives, migrated public env keys to `NEXT_PUBLIC_*`, removed Vite entry/config artifacts, added Next configs (`next.config.ts`, `next-env.d.ts`, app routes/layout/providers), and wired Next-compatible PWA artifacts (`manifest.ts`, `public/sw.js`, app icons, service-worker register hook). Stabilized tests/build by adding dedicated `vitest.config.ts`, switching Vitest JSX transform to automatic runtime, and resolving protected-route suspense/build issues.
