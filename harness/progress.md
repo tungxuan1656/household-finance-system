@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Created active ExecPlan for feat-038 Next.js App Router migration
+- Who: Codex
+- Summary: Created and registered the active ExecPlan for migrating `apps/web` from React + Vite SPA to Next.js App Router (Node runtime), including route contract changes (`/` landing, `/home` protected home), Next-compatible PWA setup, env migration from `VITE_*` to `NEXT_PUBLIC_*`, direct-import cleanup expectations, and full verification/harness evidence workflow.
+- Files changed: docs/exec-plans/plans/2026-04-29-feat-038-nextjs-app-router-migration.md, docs/exec-plans/index.md, harness/feature_index.json, harness/features/feat-038.json, harness/progress.md
+- Blockers: none
+- Next steps: execute `feat-038` implementation from the new ExecPlan and keep progress/evidence updated after each implementation session.
+
 ## 2026-04-28 — Marked feat-012 complete in harness and plan index
 - Who: Codex
 - Summary: Updated `feat-012` feature metadata to `done`, moved its ExecPlan entry from `Active` to `Completed`, and aligned the plan file with completed status so the repo records now match the verified implementation state.

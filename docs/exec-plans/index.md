@@ -5,6 +5,8 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-04-29-feat-038-nextjs-app-router-migration.md](plans/2026-04-29-feat-038-nextjs-app-router-migration.md) - feat-038 migration of `apps/web` from React + Vite SPA to Next.js App Router with landing page at `/`, protected home at `/home`, Next-compatible PWA setup, and Vite/env contract cleanup.
+
 ## Completed
 
 - [2026-04-28-feat-012-household-settings-delete-safeguards.md](plans/2026-04-28-feat-012-household-settings-delete-safeguards.md) - feat-012 fullstack household settings expansion (name/currency/timezone/default visibility) and delete safeguard blocking admin delete when other active members remain.

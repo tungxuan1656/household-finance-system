@@ -96,6 +96,11 @@
       "name": "Improve profile settings UI and Cloudinary avatar upload",
       "status": "done"
     },
+    {
+      "id": "feat-038",
+      "name": "Migrate web stack from React/Vite to Next.js App Router",
+      "status": "in_progress"
+    },
 
     {
       "id": "feat-011",
