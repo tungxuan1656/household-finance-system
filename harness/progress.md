@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Created active ExecPlan for feat-016 global static expense reference data
+- Who: Codex
+- Summary: Created and registered the active ExecPlan for `feat-016` to deliver a fullstack reference-data foundation for expense categories and sources. The plan locks the runtime source of truth to a checked-in worker catalog, public/cacheable `GET /api/v1/categories` and `GET /api/v1/sources` endpoints, semantic string keys without numeric ids, key-based i18n labels on web, and reusable `category-picker`/`source-picker` components without `/expenses` or quick-add page integration. The plan also records the deferred schema migration away from legacy household-scoped `expense_categories` as explicit tech debt and marks `feat-016` as `in_progress` in harness state.
+- Files changed: docs/exec-plans/plans/2026-04-29-feat-016-global-static-expense-reference-data.md, docs/exec-plans/index.md, docs/exec-plans/tech-debt-tracker.md, harness/features/feat-016.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: implement worker catalog/routes/tests first, then web transport/hooks/pickers/tests, and only mark `feat-016` done after full `./init.sh` verification and harness evidence updates.
+
 ## 2026-04-29 — Aligned quick-add product spec with post-MVP offline queue scope
 - Who: Codex
 - Summary: Resolved a contract conflict where `feat-024` and `feat-025` already treated offline queueing as post-MVP, but `docs/product-specs/quick-add-experience.md` still required queued offline behavior and automatic retry in MVP. Updated the quick-add spec to require manual retry only in MVP and explicitly defer offline queueing/pending-entry recovery to `feat-025`. Also aligned the generic expense-tracking failure-state wording so MVP docs no longer imply offline queue support before the resilience follow-up feature exists.

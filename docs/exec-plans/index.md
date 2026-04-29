@@ -5,6 +5,8 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-04-29-feat-016-global-static-expense-reference-data.md](plans/2026-04-29-feat-016-global-static-expense-reference-data.md) - feat-016 fullstack reference-data foundation: public/cacheable categories/sources endpoints served from checked-in code, typed web transport/hooks, and reusable `category-picker`/`source-picker` components without `/expenses` page integration.
+
 ## Completed
 
 - [2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md](plans/2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md) - feat-014 + feat-015b: household detail page role-based UI (admin vs member), member management API (list/remove/leave), Vietnam-market defaults (VND, Asia/Ho_Chi_Minh, household-share visibility).
