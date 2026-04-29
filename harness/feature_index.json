@@ -96,7 +96,6 @@
       "name": "Improve profile settings UI and Cloudinary avatar upload",
       "status": "done"
     },
-
     {
       "id": "feat-011",
       "name": "Household CRUD + household pages (no active household global)",
@@ -110,6 +109,16 @@
     {
       "id": "feat-012",
       "name": "Household settings & delete rules",
+      "status": "done"
+    },
+    {
+      "id": "feat-038",
+      "name": "Migrate web stack from React/Vite to Next.js App Router",
+      "status": "done"
+    },
+    {
+      "id": "feat-039",
+      "name": "Auth & Service Worker review fixes and cleanup",
       "status": "done"
     },
     {

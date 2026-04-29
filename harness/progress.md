@@ -1,5 +1,54 @@
 # Progress Log
 
+## 2026-04-29 — Removed returnTo functionality and cleaned up Service Worker
+- Who: Antigravity
+- Summary: Addressed review comments by removing the `returnTo` redirect feature from `ProtectedRoute` to simplify authentication flows. Cleaned up `SwRegister` and `sw.js` by removing forced service worker and cache clearing on every app load, moving to a standard production-only registration pattern for a fresh start. Verified changes with web lint, typecheck, and test suites.
+- Files changed: apps/web/src/components/layouts/protected-route.tsx, apps/web/src/app/providers/sw-register.tsx, apps/web/public/sw.js, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-04-29 — Verified Next.js migration and fixed final styling/hydration issues
+- Who: Antigravity
+- Summary: Conducted a comprehensive verification of the Next.js migration. Discovered and fixed a critical styling issue caused by a missing `@import 'shadcn/tailwind.css'` in `src/index.css`. Mitigated hydration mismatch warnings by adding `suppressHydrationWarning` to the `body` tag in `src/app/layout.tsx`. Verified core functionality (auth, navigation, data fetching) across Home, Households, and placeholder pages.
+- Files changed: apps/web/src/index.css, apps/web/src/app/layout.tsx, harness/progress.md
+- Blockers: none
+- Next steps: proceed with implementing features for placeholder pages (Expenses, Budgets, etc.).
+
+## 2026-04-29 — Fixed Tailwind utility generation for Next CSS pipeline
+- Who: Codex
+- Summary: Diagnosed the "plain text" rendering issue as a missing Tailwind v4 PostCSS integration. Added `@tailwindcss/postcss` and `apps/web/postcss.config.mjs`, then verified the emitted CSS bundle now contains utility classes such as `flex`, `grid`, `min-h-dvh`, `bg-background`, and `rounded-lg` instead of only theme/base rules.
+- Files changed: apps/web/src/index.css, apps/web/postcss.config.mjs, apps/web/package.json, pnpm-lock.yaml, harness/progress.md
+- Blockers: none
+- Next steps: restart the web dev server and hard-refresh the browser so it loads the newly generated CSS bundle instead of stale assets.
+
+## 2026-04-29 — Fixed web CSS load issue by narrowing service worker behavior
+- Who: Codex
+- Summary: Investigated the post-migration styling issue and found the PWA service worker was caching same-origin navigation responses broadly, which can keep stale HTML/CSS pairs alive in the browser after a framework swap. Updated the SW registration to unregister in development and narrowed the production SW to cache only static asset destinations, not document navigations.
+- Files changed: apps/web/src/app/providers/sw-register.tsx, apps/web/public/sw.js, harness/progress.md
+- Blockers: none
+- Next steps: if the browser still shows stale styling, clear the existing service worker once or hard refresh; future navigations will no longer cache HTML responses.
+
+## 2026-04-29 — Completed feat-038 Next.js App Router migration
+- Who: Codex
+- Summary: Finished the `feat-038` migration: `apps/web` now runs on Next.js App Router with `/` as a public landing page and `/home` as the protected home route. I also completed the direct-import cleanup for runtime-critical i18n modules, verified env migration to `NEXT_PUBLIC_*`, kept Vitest in place with a dedicated config, and confirmed the repo passes lint, typecheck, tests, build, and `./init.sh`.
+- Files changed: docs/exec-plans/plans/2026-04-29-feat-038-nextjs-app-router-migration.md, docs/exec-plans/index.md, harness/features/feat-038.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: none unless you want follow-up polish on remaining Next image-optimization warnings.
+
+## 2026-04-29 — Started implementing feat-038 Next.js App Router migration
+- Who: Codex
+- Summary: Executed the first implementation pass for `feat-038`: migrated `apps/web` to Next.js App Router structure (landing at `/`, app shell at `/home`), replaced React Router usage with Next navigation primitives, migrated public env keys to `NEXT_PUBLIC_*`, removed Vite entry/config artifacts, added Next configs (`next.config.ts`, `next-env.d.ts`, app routes/layout/providers), and wired Next-compatible PWA artifacts (`manifest.ts`, `public/sw.js`, app icons, service-worker register hook). Stabilized tests/build by adding dedicated `vitest.config.ts`, switching Vitest JSX transform to automatic runtime, and resolving protected-route suspense/build issues.
+- Files changed: apps/web package/config/app/router/view files, AGENTS.md, README.md, pnpm-lock.yaml, harness/progress.md
+- Blockers: none
+- Next steps: continue `feat-038` by converting remaining barrel-index imports to direct imports where it impacts bundle size, then update feature evidence docs and finalize harness status once migration is fully complete.
+
+## 2026-04-29 — Created active ExecPlan for feat-038 Next.js App Router migration
+- Who: Codex
+- Summary: Created and registered the active ExecPlan for migrating `apps/web` from React + Vite SPA to Next.js App Router (Node runtime), including route contract changes (`/` landing, `/home` protected home), Next-compatible PWA setup, env migration from `VITE_*` to `NEXT_PUBLIC_*`, direct-import cleanup expectations, and full verification/harness evidence workflow.
+- Files changed: docs/exec-plans/plans/2026-04-29-feat-038-nextjs-app-router-migration.md, docs/exec-plans/index.md, harness/feature_index.json, harness/features/feat-038.json, harness/progress.md
+- Blockers: none
+- Next steps: execute `feat-038` implementation from the new ExecPlan and keep progress/evidence updated after each implementation session.
+
 ## 2026-04-28 — Marked feat-012 complete in harness and plan index
 - Who: Codex
 - Summary: Updated `feat-012` feature metadata to `done`, moved its ExecPlan entry from `Active` to `Completed`, and aligned the plan file with completed status so the repo records now match the verified implementation state.

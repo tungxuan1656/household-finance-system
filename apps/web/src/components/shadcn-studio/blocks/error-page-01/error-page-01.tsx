@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { Button } from '@/components/ui/button'
 
 const ErrorPage01 = () => {
@@ -11,7 +13,7 @@ const ErrorPage01 = () => {
           to home.
         </p>
         <Button asChild className='rounded-lg text-base' size='lg'>
-          <a href='/'>Back to home page</a>
+          <Link href='/'>Back to home page</Link>
         </Button>
       </div>
 

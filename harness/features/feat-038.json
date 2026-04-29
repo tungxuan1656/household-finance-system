@@ -1,0 +1,9 @@
+{
+  "id": "feat-038",
+  "name": "Migrate web stack from React/Vite to Next.js App Router",
+  "description": "Migrate `apps/web` from React + Vite SPA to Next.js App Router with Node runtime target. Route contract changes: `/` becomes public landing page with CTA entry points, `/home` becomes protected home/overview, and all other existing app/auth paths remain stable. Includes PWA migration on Next, env contract rename from `VITE_*` to `NEXT_PUBLIC_*`, removal of Vite/react-router runtime surfaces, and direct-import cleanup for runtime-critical modules.",
+  "dependencies": ["feat-005", "feat-009c", "feat-032", "feat-035", "feat-037"],
+  "status": "done",
+  "evidence": "Next.js App Router migration completed. ExecPlan registered in docs/exec-plans/plans/2026-04-29-feat-038-nextjs-app-router-migration.md and moved to docs/exec-plans/index.md Completed section. Verification: pnpm --filter web lint, pnpm --filter web typecheck, pnpm --filter web test, pnpm --filter web build, and ./init.sh all passed.",
+  "updated_at": "2026-04-29"
+}

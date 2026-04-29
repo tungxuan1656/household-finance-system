@@ -1,0 +1,14 @@
+{
+  "id": "feat-039",
+  "name": "Auth & Service Worker review fixes and cleanup",
+  "description": "Addressed review comments by removing returnTo redirect functionality and cleaning up service worker registration to avoid forced state clearing.",
+  "status": "done",
+  "dependencies": ["feat-038"],
+  "evidence": {
+    "lint": "passed",
+    "typecheck": "passed",
+    "test": "passed",
+    "manual": "Verified redirect logic and service worker registration in browser console"
+  },
+  "ownership": "Antigravity"
+}

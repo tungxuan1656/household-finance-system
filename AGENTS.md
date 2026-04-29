@@ -8,7 +8,7 @@ This repository is designed for a small team to build and maintain a reliable, c
 
 ## Tech Stack (current)
 
-- Frontend (`apps/web`): React 19, TypeScript, Vite, Tailwind CSS, shadcn UI, sonner, date-fns.
+- Frontend (`apps/web`): React 19, TypeScript, Next.js App Router, Tailwind CSS, shadcn UI, sonner, date-fns.
 - Backend / Edge (`apps/worker`): Cloudflare Workers, Hono, D1 (SQLite-compatible), Wrangler, `zod` for validation, `jose` for JWT/JWKS handling, `ulid` for ids.
 - Tooling & CI: `pnpm` monorepo, ESLint, Prettier, Vitest, TypeScript.
 
@@ -81,7 +81,7 @@ Useful dev & verification commands:
 # Full workspace verification
 ./init.sh
 
-# Frontend dev (Vite)
+# Frontend dev (Next.js)
 pnpm dev:web
 
 # Worker dev (Cloudflare Wrangler)
@@ -100,7 +100,7 @@ This repository uses a pnpm monorepo layout. The root `./init.sh` runs install, 
 
 ## Directory Structure (Recommended)
 - /apps/worker (Cloudflare Worker, Hono, D1, wrangler)
-- /apps/web (React, Vite, Tailwind, shadcn)
+- /apps/web (React, Next.js, Tailwind, shadcn)
 - /packages (shared libraries)
 - AGENTS.md, ARCHITECTURE.md, PRODUCT.md, harness/, init.sh
 
@@ -161,7 +161,7 @@ Skipping this pre-read is non-compliant.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **household-finance-system** (2619 symbols, 3800 relationships, 57 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **household-finance-system** (2745 symbols, 3962 relationships, 60 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 

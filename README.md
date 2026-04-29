@@ -8,7 +8,7 @@ This project helps households track spending transparently, control budgets, and
 
 This is a `pnpm` monorepo with two main apps:
 
-- `apps/web`: React 19 + TypeScript + Vite + Tailwind + shadcn UI
+- `apps/web`: React 19 + TypeScript + Next.js App Router + Tailwind + shadcn UI
 - `apps/worker`: Cloudflare Workers + Hono + D1 + Zod
 
 Core intent:
@@ -23,7 +23,7 @@ Core intent:
 ```text
 .
 |- apps/
-|  |- web/      # Frontend (Vite + React)
+|  |- web/      # Frontend (Next.js + React)
 |  |- worker/   # Backend/Edge API (Cloudflare Worker)
 |- docs/        # Product, architecture, plans, standards
 |- init.sh      # Standard setup + verification entry point

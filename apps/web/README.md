@@ -1,6 +1,6 @@
-# React + TypeScript + Vite + shadcn/ui
+# Next.js + TypeScript + shadcn/ui
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+`apps/web` is now powered by Next.js App Router.
 
 ## Adding components
 
@@ -17,5 +17,5 @@ This will place the ui components in the `src/components` directory.
 To use the components in your app, import them as follows:
 
 ```tsx
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 ```

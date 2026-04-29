@@ -1,14 +1,22 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
+'use client'
+
+import { useRouter } from 'next/navigation'
+import { type ReactNode, useEffect } from 'react'
 
 import { AUTH_SIGN_IN_PATH } from '@/lib/constants/auth'
-import { t } from '@/lib/i18n'
+import { t } from '@/lib/i18n/t'
 import { useAuthStore } from '@/stores/auth.store'
 
-function ProtectedRoute() {
-  const location = useLocation()
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const router = useRouter()
   const isAuthenticated = useAuthStore.use.isAuthenticated()
   const isSessionChecked = useAuthStore.use.isSessionChecked()
-  const fullPath = `${location.pathname}${location.search}${location.hash}`
+
+  useEffect(() => {
+    if (isSessionChecked && !isAuthenticated) {
+      router.replace(AUTH_SIGN_IN_PATH)
+    }
+  }, [isAuthenticated, isSessionChecked, router])
 
   if (!isSessionChecked) {
     return (
@@ -26,12 +34,10 @@ function ProtectedRoute() {
   }
 
   if (!isAuthenticated) {
-    return (
-      <Navigate replace state={{ from: fullPath }} to={AUTH_SIGN_IN_PATH} />
-    )
+    return null
   }
 
-  return <Outlet />
+  return <>{children}</>
 }
 
 export { ProtectedRoute }

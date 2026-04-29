@@ -1,21 +1,27 @@
-import { Navigate, Outlet } from 'react-router-dom'
+'use client'
+
+import { useRouter } from 'next/navigation'
+import { type ReactNode, useEffect } from 'react'
 
 import { AUTH_DEFAULT_REDIRECT_PATH } from '@/lib/constants/auth'
 import { useAuthStore } from '@/stores/auth.store'
 
-function PublicRoute() {
+function PublicRoute({ children }: { children: ReactNode }) {
+  const router = useRouter()
   const isSessionChecked = useAuthStore.use.isSessionChecked()
   const isAuthenticated = useAuthStore.use.isAuthenticated()
 
-  if (!isSessionChecked) {
+  useEffect(() => {
+    if (isSessionChecked && isAuthenticated) {
+      router.replace(AUTH_DEFAULT_REDIRECT_PATH)
+    }
+  }, [isAuthenticated, isSessionChecked, router])
+
+  if (!isSessionChecked || isAuthenticated) {
     return null
   }
 
-  if (isAuthenticated) {
-    return <Navigate replace to={AUTH_DEFAULT_REDIRECT_PATH} />
-  }
-
-  return <Outlet />
+  return <>{children}</>
 }
 
 export { PublicRoute }
