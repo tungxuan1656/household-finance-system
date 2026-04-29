@@ -75,7 +75,6 @@
       "name": "Standardize apps/web authentication call flow and auth state handling",
       "status": "done"
     },
-
     {
       "id": "feat-010",
       "name": "User profile & identity settings",
@@ -124,7 +123,7 @@
     {
       "id": "feat-013",
       "name": "Household invitations",
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "feat-014",
@@ -136,7 +135,6 @@
       "name": "Role & permission policy — frontend UI affordances",
       "status": "pending"
     },
-
     {
       "id": "feat-016",
       "name": "Expense categories & input reference data",
@@ -172,7 +170,6 @@
       "name": "Expense search, filters & pagination",
       "status": "pending"
     },
-
     {
       "id": "feat-026",
       "name": "Budget setup & editing",
@@ -188,7 +185,6 @@
       "name": "Quick-add expense flow",
       "status": "pending"
     },
-
     {
       "id": "feat-028",
       "name": "Analytics overview dashboard",
@@ -204,13 +200,11 @@
       "name": "New user onboarding flow",
       "status": "pending"
     },
-
     {
       "id": "feat-025",
       "name": "Quick-add resilience & smart defaults",
       "status": "post-mvp"
     },
-
     {
       "id": "feat-015",
       "name": "Role & permission policy enforcement",

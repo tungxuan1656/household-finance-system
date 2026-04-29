@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Created active ExecPlan for feat-013 household invitations
+- Who: Codex
+- Summary: Created and registered the active ExecPlan for `feat-013` covering fullstack invitation delivery: dedicated invitation persistence model, admin-only invite creation with role (`member|admin`) and TTL presets (`24h/72h/7d`, default `72h`), public token preview validation, authenticated token acceptance, household-detail invite panel, and `/invitations/{token}` accept page with sign-in return-path handling. Locked decision set for status mapping (`404` invalid token, `409` expired/used/already-member), post-accept redirect to household detail, audit logging in-scope, and invite rate-limit deferred as explicit tech debt.
+- Files changed: docs/exec-plans/plans/2026-04-29-feat-013-household-invitations.md, docs/exec-plans/index.md, harness/features/feat-013.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: execute `feat-013` implementation from the new ExecPlan and capture verification evidence before marking the feature done.
+
 ## 2026-04-29 — Removed returnTo functionality and cleaned up Service Worker
 - Who: Antigravity
 - Summary: Addressed review comments by removing the `returnTo` redirect feature from `ProtectedRoute` to simplify authentication flows. Cleaned up `SwRegister` and `sw.js` by removing forced service worker and cache clearing on every app load, moving to a standard production-only registration pattern for a fresh start. Verified changes with web lint, typecheck, and test suites.

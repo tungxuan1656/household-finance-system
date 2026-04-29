@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-04-29-feat-013-household-invitations.md](plans/2026-04-29-feat-013-household-invitations.md) - feat-013 fullstack invitation flow: admin invite-link generation (single-use token + TTL preset + role), public token preview validation, authenticated acceptance, invite panel in household detail, and `/invitations/{token}` deep-link accept page with auth return-path handling.
 ## Completed
 
 - [2026-04-29-feat-038-nextjs-app-router-migration.md](plans/2026-04-29-feat-038-nextjs-app-router-migration.md) - feat-038 migration of `apps/web` from React + Vite SPA to Next.js App Router with landing page at `/`, protected home at `/home`, Next-compatible PWA setup, and Vite/env contract cleanup.
