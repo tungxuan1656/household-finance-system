@@ -7,6 +7,8 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Completed
 
+- [2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md](plans/2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md) - feat-014 + feat-015b: household detail page role-based UI (admin vs member), member management API (list/remove/leave), Vietnam-market defaults (VND, Asia/Ho_Chi_Minh, household-share visibility).
+- [2026-04-29-feat-013-household-invitations.md](plans/2026-04-29-feat-013-household-invitations.md) - feat-013 fullstack invitation flow: admin invite-link generation (single-use token + TTL preset + role), public token preview validation, authenticated acceptance, invite panel in household detail, and `/invitations/{token}` deep-link accept page with auth return-path handling.
 - [2026-04-29-feat-038-nextjs-app-router-migration.md](plans/2026-04-29-feat-038-nextjs-app-router-migration.md) - feat-038 migration of `apps/web` from React + Vite SPA to Next.js App Router with landing page at `/`, protected home at `/home`, Next-compatible PWA setup, and Vite/env contract cleanup.
 - [2026-04-28-feat-012-household-settings-delete-safeguards.md](plans/2026-04-28-feat-012-household-settings-delete-safeguards.md) - feat-012 fullstack household settings expansion (name/currency/timezone/default visibility) and delete safeguard blocking admin delete when other active members remain.
 - [2026-04-28-feat-015a-role-permission-backend-enforcement.md](plans/2026-04-28-feat-015a-role-permission-backend-enforcement.md) - feat-015a worker-side household membership resolution, reusable role guards, and hybrid `404`/`403` authorization for explicitly selected households.

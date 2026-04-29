@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -22,6 +22,7 @@ type SignInFormValues = z.infer<typeof signInSchema>
 
 export const SignInPage = () => {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const form = useForm<SignInFormValues>({
     defaultValues: {
       email: '',
@@ -35,6 +36,14 @@ export const SignInPage = () => {
       await signInWithEmailPassword(values)
 
       form.clearErrors('root')
+
+      const returnTo = searchParams.get('returnTo')
+      if (returnTo && returnTo.startsWith('/')) {
+        router.replace(returnTo)
+
+        return
+      }
+
       router.replace(PATHS.APP_ROOT)
     } catch {
       form.setError('root', {

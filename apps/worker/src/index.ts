@@ -7,6 +7,7 @@ import { requestContextMiddleware } from '@/middlewares/request-context'
 import { authRoutes } from '@/routes/auth'
 import { healthRoutes } from '@/routes/health'
 import { householdRoutes } from '@/routes/households'
+import { invitationRoutes } from '@/routes/invitations'
 import { mediaRoutes } from '@/routes/media'
 import { profileRoutes } from '@/routes/profile'
 import { protectedRoutes } from '@/routes/protected'
@@ -20,6 +21,7 @@ app.use('*', requestContextMiddleware)
 const allowedOrigins = [
   'https://3000-viec-thien.web.app',
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
@@ -55,6 +57,7 @@ app.route('/api/v1', healthRoutes)
 app.route('/api/v1', authRoutes)
 app.route('/api/v1', profileRoutes)
 app.route('/api/v1', householdRoutes)
+app.route('/api/v1', invitationRoutes)
 app.route('/api/v1', mediaRoutes)
 app.route('/api/v1', protectedRoutes)
 

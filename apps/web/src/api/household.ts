@@ -4,7 +4,10 @@ import type {
   CreateHouseholdRequest,
   DeleteHouseholdResponse,
   HouseholdDTO,
+  LeaveHouseholdResponse,
+  ListHouseholdMembersResponse,
   ListHouseholdsResponse,
+  RemoveMemberResponse,
   UpdateHouseholdRequest,
 } from '@/types/household'
 
@@ -48,6 +51,33 @@ export const updateHousehold = async (
 export const archiveHousehold = async (householdId: string) => {
   const response = await client.delete<DeleteHouseholdResponse>(
     API_ENDPOINTS.households.detail(householdId),
+  )
+
+  return response.data
+}
+
+export const getHouseholdMembers = async (householdId: string) => {
+  const response = await client.get<ListHouseholdMembersResponse>(
+    API_ENDPOINTS.households.members(householdId),
+  )
+
+  return response.data
+}
+
+export const removeHouseholdMember = async (
+  householdId: string,
+  userId: string,
+) => {
+  const response = await client.delete<RemoveMemberResponse>(
+    API_ENDPOINTS.households.member(householdId, userId),
+  )
+
+  return response.data
+}
+
+export const leaveHousehold = async (householdId: string) => {
+  const response = await client.delete<LeaveHouseholdResponse>(
+    API_ENDPOINTS.households.leave(householdId),
   )
 
   return response.data

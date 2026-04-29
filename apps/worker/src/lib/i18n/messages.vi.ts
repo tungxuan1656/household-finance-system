@@ -48,6 +48,17 @@ export const viMessages = {
     'Chế độ hiển thị mặc định phải là "private" hoặc "household".',
   'households.deleteBlockedByActiveMembers':
     'Không thể xóa hộ gia đình khi vẫn còn thành viên đang hoạt động khác.',
+  'households.cannotLeaveAsLastAdmin':
+    'Không thể rời khỏi hộ gia đình khi bạn là quản trị viên cuối cùng.',
+  'households.cannotRemoveLastAdmin':
+    'Không thể xóa quản trị viên cuối cùng của hộ gia đình.',
+  'invitations.invalidRole': 'Vai trò được mời phải là "admin" hoặc "member".',
+  'invitations.invalidExpiresIn':
+    'Thời gian hết hạn phải là "24h", "72h" hoặc "7d".',
+  'invitations.invalidToken':
+    'Mã lời mời không hợp lệ hoặc không được để trống.',
+  'invitations.tokenUnavailable': 'Lời mời đã hết hạn hoặc đã được sử dụng.',
+  'invitations.alreadyMember': 'Bạn đã là thành viên của gia đình này.',
 } as const
 
 export type MessageKey = keyof typeof viMessages

@@ -32,6 +32,7 @@ Before writing or changing code:
 - Use clear, consistent, and maintainable code
 - Commit with descriptive messages
 - Update harness feature state and harness/progress.md before ending session
+- For frontend work, apply component-splitting strategy early (page orchestrator + feature smart components + shared reusable components) to avoid late large refactors
 
 ---
 
@@ -147,6 +148,25 @@ Agents and contributors are required to consult and comply with these documents 
 
 Any code that does not follow these guides will be considered non-compliant and must be revised before acceptance.
 
+## Mandatory Component Decomposition Policy (Frontend)
+
+For UI work in `apps/web`, contributors must design component boundaries from the start:
+
+1. `views/*` pages should act as orchestrators:
+   - keep route/store/query wiring and high-level flow
+   - avoid embedding all feature UI + handlers in one file
+2. Feature-bounded smart components go in `apps/web/src/components/<feature>/`:
+   - each smart component should own one clear concern (for example settings form, invite dialog, avatar upload section)
+3. Cross-feature reusable pieces go in `apps/web/src/components/shared/`:
+   - only promote components that are likely reused across multiple features
+   - avoid moving feature-specific API logic into shared components
+4. Split early:
+   - if a component approaches ~200 lines or mixes multiple concerns, split immediately
+   - do not defer decomposition until after the feature is complete
+5. Keep abstractions pragmatic:
+   - prefer concrete prop contracts used today
+   - avoid over-generic helper frameworks
+
 ## Mandatory Pre-Read for UI Work
 
 Before any UI task in `apps/web` (design, implementation, review), agents/contributors MUST read:
@@ -161,7 +181,7 @@ Skipping this pre-read is non-compliant.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **household-finance-system** (2745 symbols, 3962 relationships, 60 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **household-finance-system** (3137 symbols, 4588 relationships, 81 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 

@@ -5,19 +5,24 @@ import {
   archiveHousehold,
   createHousehold,
   getHousehold,
+  getHouseholdMembers,
+  leaveHousehold,
   listHouseholds,
+  removeHouseholdMember,
   updateHousehold,
 } from '@/api/household'
 import { createSelectors } from '@/stores/types'
 import type {
   CreateHouseholdRequest,
   HouseholdDTO,
+  HouseholdMemberDTO,
   UpdateHouseholdRequest,
 } from '@/types/household'
 
 type HouseholdState = {
   households: HouseholdDTO[]
   currentHousehold: HouseholdDTO | null
+  members: HouseholdMemberDTO[]
   isLoading: boolean
   error: string | null
 }
@@ -25,6 +30,7 @@ type HouseholdState = {
 const initialState: HouseholdState = {
   households: [],
   currentHousehold: null,
+  members: [],
   isLoading: false,
   error: null,
 }
@@ -128,6 +134,64 @@ const householdActions = {
   },
   reset: () => {
     _useHouseholdStore.setState(initialState)
+  },
+  fetchHouseholdMembers: async (householdId: string) => {
+    _useHouseholdStore.setState({ error: null, isLoading: true })
+    try {
+      const response = await getHouseholdMembers(householdId)
+
+      _useHouseholdStore.setState({
+        members: response.items,
+        isLoading: false,
+      })
+
+      return response.items
+    } catch (error) {
+      _useHouseholdStore.setState({
+        error: error instanceof Error ? error.message : 'Load members failed',
+        isLoading: false,
+      })
+
+      throw error
+    }
+  },
+  removeHouseholdMember: async (householdId: string, userId: string) => {
+    _useHouseholdStore.setState({ error: null, isLoading: true })
+    try {
+      await removeHouseholdMember(householdId, userId)
+
+      _useHouseholdStore.setState((state) => ({
+        members: state.members.filter((m) => m.userId !== userId),
+        isLoading: false,
+      }))
+    } catch (error) {
+      _useHouseholdStore.setState({
+        error: error instanceof Error ? error.message : 'Remove member failed',
+        isLoading: false,
+      })
+
+      throw error
+    }
+  },
+  leaveHousehold: async (householdId: string) => {
+    _useHouseholdStore.setState({ error: null, isLoading: true })
+    try {
+      await leaveHousehold(householdId)
+
+      _useHouseholdStore.setState({
+        members: [],
+        currentHousehold: null,
+        isLoading: false,
+      })
+    } catch (error) {
+      _useHouseholdStore.setState({
+        error:
+          error instanceof Error ? error.message : 'Leave household failed',
+        isLoading: false,
+      })
+
+      throw error
+    }
   },
   updateHousehold: async (
     householdId: string,

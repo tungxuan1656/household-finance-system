@@ -10,19 +10,23 @@ Define a minimal, safe permission model that maps household roles to actions, en
 
 ## Roles (MVP)
 
-- Admin: full household management (members, settings, groups/events, delete, export).
-- Member: create expenses, edit own expenses, view household expenses (depending on visibility), invite others if allowed, and create groups if permitted by settings.
+- Admin: full household management (members, settings, delete).
+- Member: create expenses, edit own expenses, view household expenses (depending on visibility), leave voluntarily. Cannot manage members or change settings.
 
-## Permission Matrix (examples)
+## Permission Matrix
 
-- Create Expense: Member, Admin
-- Edit Own Expense: Member, Admin
-- Edit Any Expense: Admin (or Member with elevated rights)
-- Delete Expense: Admin (soft-delete by Member if allowed)
-- Manage Groups: Admin, Member (if allowed in settings)
-- Manage Members: Admin
-- Change Household Settings: Admin
-- View Audit Logs: Admin
+| Action | Admin | Member |
+|--------|-------|--------|
+| Create Expense | ✓ | ✓ |
+| Edit Own Expense | ✓ | ✓ |
+| Edit Any Expense | ✓ | ✗ |
+| Delete Expense | ✓ | ✗ |
+| View Members | ✓ | ✓ |
+| Invite Members | ✓ | ✗ |
+| Remove Members | ✓ | ✗ |
+| Leave Household | ✓ | ✓ |
+| Change Household Settings (name, visibility) | ✓ | ✗ |
+| Delete Household | ✓ | ✗ |
 
 ## User Flow
 
@@ -45,3 +49,5 @@ Define a minimal, safe permission model that maps household roles to actions, en
 
 Notes:
 - Keep the model intentionally simple to avoid complex RBAC in MVP; extend with groups/roles later if needed.
+- Last admin cannot leave or be removed until another admin is promoted or transferred.
+- Members can leave voluntarily; admins cannot be "kicked" — only demoted via promote/demote action.

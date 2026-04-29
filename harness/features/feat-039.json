@@ -8,7 +8,7 @@
     "lint": "passed",
     "typecheck": "passed",
     "test": "passed",
-    "manual": "Verified redirect logic and service worker registration in browser console"
+    "manual": "Verified redirect logic and service worker registration in browser console; stale service worker registrations and cached assets are now cleared in non-production sessions before the protected shell loads"
   },
   "ownership": "Antigravity"
 }

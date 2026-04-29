@@ -32,3 +32,23 @@ export type ListHouseholdsResponse = {
 export type DeleteHouseholdResponse = {
   archived: true
 }
+
+export type HouseholdMemberDTO = {
+  userId: string
+  name: string
+  email: string
+  role: HouseholdRoleDTO
+  joinedAt: number
+}
+
+export type ListHouseholdMembersResponse = {
+  items: HouseholdMemberDTO[]
+}
+
+export type RemoveMemberResponse = {
+  removed: true
+}
+
+export type LeaveHouseholdResponse = {
+  left: true
+}

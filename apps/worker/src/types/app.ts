@@ -26,6 +26,7 @@ export type AppBindings = {
     requestHouseholdId?: string
     currentHouseholdId?: string
     currentHouseholdMembership?: ResolvedHouseholdMembership
+    requestTargetUserId?: string
   }
 }
 

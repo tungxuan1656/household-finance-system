@@ -121,3 +121,15 @@ export interface ListHouseholdsResponse {
 export interface DeleteHouseholdResponse {
   archived: true
 }
+
+export interface HouseholdMemberDTO {
+  userId: string
+  name: string
+  email: string
+  role: HouseholdRoleDTO
+  joinedAt: number
+}
+
+export interface ListHouseholdMembersResponse {
+  items: HouseholdMemberDTO[]
+}

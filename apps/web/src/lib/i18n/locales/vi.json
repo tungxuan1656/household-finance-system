@@ -189,6 +189,28 @@
       "memberCountPlaceholder": "Số thành viên: --",
       "title": "Gia đình"
     },
+    "invitationAccept": {
+      "actions": {
+        "accept": "Tham gia gia đình",
+        "accepting": "Đang tham gia...",
+        "goToSignIn": "Đăng nhập để tiếp tục"
+      },
+      "description": "Xác nhận tham gia gia đình bằng liên kết mời.",
+      "feedback": {
+        "acceptFailed": "Không thể tham gia gia đình từ lời mời này.",
+        "acceptSuccess": "Bạn đã tham gia gia đình thành công.",
+        "loadFailed": "Không thể tải thông tin lời mời."
+      },
+      "meta": {
+        "expiresAt": "Hiệu lực đến",
+        "role": "Vai trò"
+      },
+      "states": {
+        "loading": "Đang kiểm tra lời mời...",
+        "requiresAuth": "Bạn cần đăng nhập để chấp nhận lời mời."
+      },
+      "title": "Lời mời tham gia gia đình"
+    },
     "householdDetail": {
       "actions": {
         "back": "Quay lại danh sách",
@@ -219,6 +241,8 @@
         "archiveFailed": "Không thể xoá gia đình lúc này. Vui lòng thử lại.",
         "archiveBlockedByMembers": "Không thể xoá gia đình khi vẫn còn thành viên đang hoạt động khác.",
         "archiveSuccess": "Đã xoá gia đình thành công.",
+        "removeMemberFailed": "Không thể xoá thành viên lúc này. Vui lòng thử lại.",
+        "removeMemberSuccess": "Đã xoá thành viên.",
         "updateFailed": "Không thể cập nhật gia đình lúc này. Vui lòng thử lại.",
         "updateSuccess": "Đã cập nhật gia đình."
       },
@@ -248,18 +272,57 @@
       },
       "invalidId": "Đường dẫn gia đình không hợp lệ.",
       "loading": "Đang tải chi tiết gia đình...",
-      "memberCountPlaceholder": "Số thành viên: --",
+      "memberCount": "{count} thành viên",
+      "memberReadOnly": "Chỉ quản trị viên mới có thể chỉnh sửa thông tin gia đình.",
       "members": {
         "actions": {
-          "invite": "Mời thành viên",
-          "remove": "Xoá thành viên"
+          "invite": "Mời thành viên"
         },
         "columns": {
-          "actions": "Thao tác",
+          "actions": "",
           "name": "Tên",
           "role": "Vai trò"
         },
-        "description": "Bảng thành viên hiện là placeholder cho tính năng thành viên.",
+        "description": "Danh sách thành viên trong gia đình.",
+        "empty": "Chưa có thành viên nào.",
+        "title": "Thành viên",
+        "invite": {
+          "actions": {
+            "copy": "Sao chép liên kết",
+            "generate": "Tạo liên kết",
+            "generating": "Đang tạo..."
+          },
+          "description": "Tạo liên kết mời một lần sử dụng với vai trò và thời hạn cụ thể.",
+          "feedback": {
+            "copyFailed": "Không thể sao chép liên kết mời. Vui lòng thử lại.",
+            "copySuccess": "Đã sao chép liên kết mời.",
+            "createFailed": "Không thể tạo liên kết mời. Vui lòng thử lại.",
+            "createSuccess": "Đã tạo liên kết mời mới."
+          },
+          "fields": {
+            "link": {
+              "description": "Chia sẻ liên kết này với người bạn muốn mời vào gia đình.",
+              "label": "Liên kết mời",
+              "placeholder": "Nhấn “Tạo liên kết” để tạo lời mời."
+            },
+            "role": {
+              "label": "Vai trò được mời",
+              "options": {
+                "admin": "Quản trị viên",
+                "member": "Thành viên"
+              }
+            },
+            "ttl": {
+              "label": "Thời hạn liên kết",
+              "options": {
+                "24h": "24 giờ",
+                "72h": "72 giờ",
+                "7d": "7 ngày"
+              }
+            }
+          },
+          "title": "Mời thành viên mới"
+        },
         "placeholders": {
           "member": "Thành viên (placeholder)",
           "owner": "Chủ gia đình (placeholder)"

@@ -1,5 +1,54 @@
 # Progress Log
 
+## 2026-04-29 — Guarded member removal against deleting the last household admin
+- Who: Codex
+- Summary: Fixed review finding on `DELETE /households/:id/members/:userId` by adding a last-admin guard in `handleRemoveHouseholdMember`. The handler now loads target membership, counts active admins, and returns `409 CONFLICT` when removal would delete the final admin. Added integration coverage for this specific path (`blocks admin removal when target is the last active admin`).
+- Files changed: apps/worker/src/handlers/households/remove-household-member.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/test/integration/households-members.spec.ts, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-04-29 — Refactored oversized worker integration test file into domain-scoped specs
+- Who: Codex
+- Summary: Split `apps/worker/test/index.spec.ts` (~2800 lines) into smaller domain-focused test files under `apps/worker/test/integration/` and added shared setup/util context under `apps/worker/test/helpers/test-context.ts`. Test coverage remains equivalent (130 tests) while improving maintainability and discoverability by domain (core, households CRUD, member actions, invitations, media/profile, auth/session, data integrity).
+- Files changed: apps/worker/test/helpers/test-context.ts, apps/worker/test/integration/core.spec.ts, apps/worker/test/integration/households-crud.spec.ts, apps/worker/test/integration/households-members.spec.ts, apps/worker/test/integration/invitations.spec.ts, apps/worker/test/integration/media-profile.spec.ts, apps/worker/test/integration/auth-session.spec.ts, apps/worker/test/integration/data-integrity.spec.ts, apps/worker/test/index.spec.ts, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-04-29 — Addressed review findings for feat-013/014/015b closure and added regression coverage
+- Who: Codex
+- Summary: Resolved all four review findings by aligning feat-014/015b plan/harness artifacts and adding missing regression tests. Added explicit worker integration coverage for member endpoints (`GET /households/:id/members`, `DELETE /households/:id/members/:userId`, `DELETE /households/:id/members/me`) and web UI-affordance coverage for admin/member conditional rendering in household detail/settings/members cards. While implementing tests, uncovered real backend regressions and fixed them: route middleware did not apply to `/households/:id/*`, `/members/me` was shadowed by `/members/:userId`, and member-list query selected non-existent `users.email` column.
+- Files changed: apps/worker/src/routes/households.ts, apps/worker/src/db/repositories/household-membership-repository.ts, apps/worker/test/index.spec.ts, apps/web/src/views/app/household-detail-page.test.tsx, apps/web/src/components/household/household-settings-card.test.tsx, apps/web/src/components/household/household-members-card.test.tsx, docs/exec-plans/plans/2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md, harness/features/feat-014.json, harness/features/feat-015b.json, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-04-29 — Implemented and closed feat-014 + feat-015b household membership actions and role-based UI affordances
+- Who: Codex
+- Summary: Implemented member management API (list/remove/leave) and role-based UI for household detail page. Backend: fixed createHousehold defaults (Asia/Ho_Chi_Minh, household-share visibility), added GET/DELETE member endpoints, last-admin leave block. Frontend: HouseholdSettingsCard read-only for members, HouseholdMembersCard with trash icon for admin, HouseholdDetailPage conditional rendering (admin sees DangerZone, member does not).
+- Files changed: apps/worker/src/db/repositories/household-repository.ts (defaults), apps/worker/src/db/repositories/household-membership-repository.ts (member CRUD), apps/worker/src/handlers/households/get-household-members.ts, leave-household.ts, apps/worker/src/routes/households.ts, apps/worker/src/middlewares/household-membership.ts (validateTargetUserIdParam), apps/worker/src/contracts/household.ts, apps/worker/src/types/app.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/test/index.spec.ts, apps/web/src/types/household.ts, apps/web/src/api/endpoints.ts, apps/web/src/api/household.ts, apps/web/src/stores/household.store.ts, apps/web/src/components/household/household-settings-card.tsx, apps/web/src/components/household/household-members-card.tsx, apps/web/src/views/app/household-detail-page.tsx, apps/web/src/lib/i18n/locales/vi.json, docs/product-specs/household-management.md, docs/product-specs/role-permission.md, harness/features/feat-014.json, harness/features/feat-015b.json, harness/feature_index.json, docs/exec-plans/index.md, docs/exec-plans/plans/2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-04-29 — Fixed protected-route chunk-load resilience for stale service-worker state
+- Who: Codex
+- Summary: Investigated the reported `ChunkLoadError` on the protected layout and reproduced the protected shell on a clean browser session. The app build and browser network path were healthy, so I hardened the service-worker bootstrap to clear any stale registrations and cached static assets in non-production environments before the protected shell loads. This prevents old cached chunks from poisoning the current App Router bundle during local development.
+- Files changed: apps/web/src/app/providers/sw-register.tsx, apps/web/src/app/providers/sw-register.test.tsx, harness/progress.md, harness/features/feat-039.json
+- Blockers: none
+- Next steps: if the error still appears on an existing browser profile, clear that profile’s service worker once; fresh sessions should no longer hit the stale chunk path.
+
+## 2026-04-29 — Implemented and closed feat-013 household invitations
+- Who: Codex
+- Summary: Delivered `feat-013` end-to-end across worker and web. Backend now supports invitation creation (`POST /api/v1/households/:id/invitations`, admin-only), public invitation preview (`GET /api/v1/invitations/:token`), and authenticated acceptance (`POST /api/v1/invitations/:token/accept`) with single-use token consumption and role assignment (`member|admin`). Added dedicated invitation persistence via `household_invitations` migration, invitation token hashing, and audit log entries for invitation created/accepted events. Frontend now enables household-detail Invite Members dialog (role + TTL preset + copy-link flow), adds deep-link accept page at `/invitations/[token]`, and updates sign-in flow to honor `returnTo` for invite continuation after authentication.
+- Files changed: apps/worker/migrations/0002_household_invitations.sql, apps/worker/src/contracts/invitation.ts, apps/worker/src/contracts/index.ts, apps/worker/src/db/repositories/household-invitation-repository.ts, apps/worker/src/db/repositories/audit-log-repository.ts, apps/worker/src/handlers/invitations/create-household-invitation.ts, apps/worker/src/handlers/invitations/get-invitation-preview.ts, apps/worker/src/handlers/invitations/accept-invitation.ts, apps/worker/src/routes/invitations.ts, apps/worker/src/index.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/test/unit/dto-invitation.spec.ts, apps/worker/test/index.spec.ts, apps/web/src/api/endpoints.ts, apps/web/src/api/invitation.ts, apps/web/src/types/invitation.ts, apps/web/src/views/app/household-detail-page.tsx, apps/web/src/views/invitations/accept-invitation-page.tsx, apps/web/src/app/invitations/[token]/page.tsx, apps/web/src/views/auth/sign-in-page.tsx, apps/web/src/lib/i18n/locales/vi.json, apps/web/src/lib/i18n/browser-fallback.test.tsx, docs/exec-plans/plans/2026-04-29-feat-013-household-invitations.md, docs/exec-plans/index.md, docs/exec-plans/tech-debt-tracker.md, harness/features/feat-013.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-04-29 — Created active ExecPlan for feat-013 household invitations
+- Who: Codex
+- Summary: Created and registered the active ExecPlan for `feat-013` covering fullstack invitation delivery: dedicated invitation persistence model, admin-only invite creation with role (`member|admin`) and TTL presets (`24h/72h/7d`, default `72h`), public token preview validation, authenticated token acceptance, household-detail invite panel, and `/invitations/{token}` accept page with sign-in return-path handling. Locked decision set for status mapping (`404` invalid token, `409` expired/used/already-member), post-accept redirect to household detail, audit logging in-scope, and invite rate-limit deferred as explicit tech debt.
+- Files changed: docs/exec-plans/plans/2026-04-29-feat-013-household-invitations.md, docs/exec-plans/index.md, harness/features/feat-013.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: execute `feat-013` implementation from the new ExecPlan and capture verification evidence before marking the feature done.
+
 ## 2026-04-29 — Removed returnTo functionality and cleaned up Service Worker
 - Who: Antigravity
 - Summary: Addressed review comments by removing the `returnTo` redirect feature from `ProtectedRoute` to simplify authentication flows. Cleaned up `SwRegister` and `sw.js` by removing forced service worker and cache clearing on every app load, moving to a standard production-only registration pattern for a fresh start. Verified changes with web lint, typecheck, and test suites.
