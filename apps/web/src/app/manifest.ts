@@ -7,9 +7,24 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     icons: [
       {
+        sizes: '64x64',
+        src: '/pwa-64x64.png',
+        type: 'image/png',
+      },
+      {
+        sizes: '192x192',
+        src: '/pwa-192x192.png',
+        type: 'image/png',
+      },
+      {
+        sizes: '512x512',
+        src: '/pwa-512x512.png',
+        type: 'image/png',
+      },
+      {
         purpose: 'maskable',
-        sizes: '1024x1024',
-        src: '/icon.png',
+        sizes: '512x512',
+        src: '/maskable-icon-512x512.png',
         type: 'image/png',
       },
     ],
@@ -28,6 +43,6 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
     start_url: '/',
-    theme_color: '#ffffff',
+    theme_color: '#0a0a0a',
   }
 }
