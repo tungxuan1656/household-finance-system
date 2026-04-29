@@ -1,4 +1,7 @@
-import { Outlet, useNavigate } from 'react-router-dom'
+'use client'
+
+import { useRouter } from 'next/navigation'
+import type { ReactNode } from 'react'
 
 import { AppSidebar } from '@/components/layouts/app-sidebar'
 import { BottomTab } from '@/components/layouts/bottom-tab'
@@ -6,13 +9,13 @@ import { useIsMobile } from '@/hooks/shared/use-mobile'
 import { signOutCurrentSession } from '@/lib/auth/session-service'
 import { PATHS } from '@/lib/constants/paths'
 
-function MainLayout() {
-  const navigate = useNavigate()
+function MainLayout({ children }: { children: ReactNode }) {
+  const router = useRouter()
   const isMobile = useIsMobile()
 
   const handleSignOut = async () => {
     await signOutCurrentSession()
-    navigate(PATHS.SIGN_IN, { replace: true })
+    router.replace(PATHS.SIGN_IN)
   }
 
   return (
@@ -31,7 +34,7 @@ function MainLayout() {
         {/* Main Content Area */}
         <main className='flex w-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-8 lg:pb-0'>
           <section className='flex-1 rounded-none bg-background/85 p-4 shadow-sm backdrop-blur sm:p-6 md:rounded-lg md:border-x'>
-            <Outlet />
+            {children}
           </section>
         </main>
       </div>

@@ -10,20 +10,12 @@ type FirebaseStorageConfig = {
 }
 
 const readFirebaseStorageConfig = (): FirebaseStorageConfig => {
-  const env = import.meta.env as ImportMetaEnv & {
-    readonly VITE_FIREBASE_API_KEY?: string
-    readonly VITE_FIREBASE_APP_ID?: string
-    readonly VITE_FIREBASE_AUTH_DOMAIN?: string
-    readonly VITE_FIREBASE_PROJECT_ID?: string
-    readonly VITE_FIREBASE_STORAGE_BUCKET?: string
-  }
-
   const config = {
-    apiKey: env.VITE_FIREBASE_API_KEY,
-    appId: env.VITE_FIREBASE_APP_ID,
-    authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   }
 
   if (
@@ -34,7 +26,7 @@ const readFirebaseStorageConfig = (): FirebaseStorageConfig => {
     !config.storageBucket
   ) {
     throw new Error(
-      'Missing Firebase storage config. Set VITE_FIREBASE_API_KEY, VITE_FIREBASE_APP_ID, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID, and VITE_FIREBASE_STORAGE_BUCKET.',
+      'Missing Firebase storage config. Set NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_APP_ID, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, NEXT_PUBLIC_FIREBASE_PROJECT_ID, and NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET.',
     )
   }
 

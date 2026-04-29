@@ -23,18 +23,11 @@ type FirebaseAuthConfig = {
 }
 
 const readFirebaseConfig = (): FirebaseAuthConfig => {
-  const env = import.meta.env as ImportMetaEnv & {
-    readonly VITE_FIREBASE_API_KEY?: string
-    readonly VITE_FIREBASE_APP_ID?: string
-    readonly VITE_FIREBASE_AUTH_DOMAIN?: string
-    readonly VITE_FIREBASE_PROJECT_ID?: string
-  }
-
   const config = {
-    apiKey: env.VITE_FIREBASE_API_KEY,
-    appId: env.VITE_FIREBASE_APP_ID,
-    authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: env.VITE_FIREBASE_PROJECT_ID,
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   }
 
   if (
@@ -44,7 +37,7 @@ const readFirebaseConfig = (): FirebaseAuthConfig => {
     !config.projectId
   ) {
     throw new Error(
-      'Missing Firebase web config. Set VITE_FIREBASE_API_KEY, VITE_FIREBASE_APP_ID, VITE_FIREBASE_AUTH_DOMAIN, and VITE_FIREBASE_PROJECT_ID.',
+      'Missing Firebase web config. Set NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_APP_ID, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN, and NEXT_PUBLIC_FIREBASE_PROJECT_ID.',
     )
   }
 

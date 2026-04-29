@@ -1,10 +1,11 @@
 export const PATHS = {
+  LANDING: '/',
   // Public routes
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up',
 
   // Protected shell base
-  APP_ROOT: '/',
+  APP_ROOT: '/home',
 
   // Protected features
   ONBOARDING: '/onboarding',

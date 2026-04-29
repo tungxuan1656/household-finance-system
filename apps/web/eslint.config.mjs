@@ -1,4 +1,5 @@
 import { defineConfig, globalIgnores } from 'eslint/config'
+import nextPlugin from '@next/eslint-plugin-next'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -7,7 +8,6 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import unicorn from 'eslint-plugin-unicorn'
 import unusedImports from 'eslint-plugin-unused-imports'
 import tseslint from 'typescript-eslint'
-import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default defineConfig([
   globalIgnores([
@@ -40,6 +40,7 @@ export default defineConfig([
   reactCompiler.configs.recommended,
   {
     plugins: {
+      '@next/next': nextPlugin,
       react,
       'react-hooks': reactHooks,
       unicorn,
@@ -52,8 +53,10 @@ export default defineConfig([
         version: 'detect',
       },
     },
-    extends: [reactRefresh.configs.vite],
     rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
+
       // General rules
       indent: 'off',
       semi: ['error', 'never'],
@@ -141,7 +144,6 @@ export default defineConfig([
         { blankLine: 'always', prev: '*', next: 'return' },
       ],
 
-      'react-refresh/only-export-components': 'off',
       'no-console': 'off',
     },
   },
@@ -153,7 +155,7 @@ export default defineConfig([
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.app.json',
+        project: './tsconfig.json',
         tsconfigRootDir: import.meta.dirname,
         sourceType: 'module',
       },

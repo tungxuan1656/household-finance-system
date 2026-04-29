@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Started implementing feat-038 Next.js App Router migration
+- Who: Codex
+- Summary: Executed the first implementation pass for `feat-038`: migrated `apps/web` to Next.js App Router structure (landing at `/`, app shell at `/home`), replaced React Router usage with Next navigation primitives, migrated public env keys to `NEXT_PUBLIC_*`, removed Vite entry/config artifacts, added Next configs (`next.config.ts`, `next-env.d.ts`, app routes/layout/providers), and wired Next-compatible PWA artifacts (`manifest.ts`, `public/sw.js`, app icons, service-worker register hook). Stabilized tests/build by adding dedicated `vitest.config.ts`, switching Vitest JSX transform to automatic runtime, and resolving protected-route suspense/build issues.
+- Files changed: apps/web package/config/app/router/view files, AGENTS.md, README.md, pnpm-lock.yaml, harness/progress.md
+- Blockers: none
+- Next steps: continue `feat-038` by converting remaining barrel-index imports to direct imports where it impacts bundle size, then update feature evidence docs and finalize harness status once migration is fully complete.
+
 ## 2026-04-29 — Created active ExecPlan for feat-038 Next.js App Router migration
 - Who: Codex
 - Summary: Created and registered the active ExecPlan for migrating `apps/web` from React + Vite SPA to Next.js App Router (Node runtime), including route contract changes (`/` landing, `/home` protected home), Next-compatible PWA setup, env migration from `VITE_*` to `NEXT_PUBLIC_*`, direct-import cleanup expectations, and full verification/harness evidence workflow.
