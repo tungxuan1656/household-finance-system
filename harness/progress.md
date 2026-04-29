@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Fixed protected-route chunk-load resilience for stale service-worker state
+- Who: Codex
+- Summary: Investigated the reported `ChunkLoadError` on the protected layout and reproduced the protected shell on a clean browser session. The app build and browser network path were healthy, so I hardened the service-worker bootstrap to clear any stale registrations and cached static assets in non-production environments before the protected shell loads. This prevents old cached chunks from poisoning the current App Router bundle during local development.
+- Files changed: apps/web/src/app/providers/sw-register.tsx, apps/web/src/app/providers/sw-register.test.tsx, harness/progress.md, harness/features/feat-039.json
+- Blockers: none
+- Next steps: if the error still appears on an existing browser profile, clear that profile’s service worker once; fresh sessions should no longer hit the stale chunk path.
+
 ## 2026-04-29 — Implemented and closed feat-013 household invitations
 - Who: Codex
 - Summary: Delivered `feat-013` end-to-end across worker and web. Backend now supports invitation creation (`POST /api/v1/households/:id/invitations`, admin-only), public invitation preview (`GET /api/v1/invitations/:token`), and authenticated acceptance (`POST /api/v1/invitations/:token/accept`) with single-use token consumption and role assignment (`member|admin`). Added dedicated invitation persistence via `household_invitations` migration, invitation token hashing, and audit log entries for invitation created/accepted events. Frontend now enables household-detail Invite Members dialog (role + TTL preset + copy-link flow), adds deep-link accept page at `/invitations/[token]`, and updates sign-in flow to honor `returnTo` for invite continuation after authentication.
