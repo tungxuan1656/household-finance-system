@@ -27,31 +27,29 @@ import type { HouseholdDTO } from '@/types/household'
 
 type HouseholdSettingsCardProps = {
   household: HouseholdDTO
+  memberCount: number
+  isAdmin: boolean
   isSubmitting: boolean
   onSubmit: (values: UpdateHouseholdSettingsFormValues) => Promise<void>
 }
 
 export const HouseholdSettingsCard = ({
   household,
+  memberCount,
+  isAdmin,
   isSubmitting,
   onSubmit,
 }: HouseholdSettingsCardProps) => {
   const form = useForm<UpdateHouseholdSettingsFormValues>({
     defaultValues: {
-      defaultCurrencyCode: '',
-      defaultVisibility: undefined,
       name: '',
-      timezone: '',
     },
     resolver: zodResolver(updateHouseholdSettingsSchema),
   })
 
   useEffect(() => {
     form.reset({
-      defaultCurrencyCode: household.defaultCurrencyCode,
-      defaultVisibility: household.defaultVisibility,
       name: household.name,
-      timezone: household.timezone,
     })
   }, [form, household])
 
@@ -62,85 +60,74 @@ export const HouseholdSettingsCard = ({
           <div className='flex flex-col gap-1'>
             <CardTitle>{household.name}</CardTitle>
             <CardDescription>
-              {t('app.householdDetail.memberCountPlaceholder')}
+              {t('app.householdDetail.memberCount', { count: memberCount })}
             </CardDescription>
           </div>
           <Badge variant='secondary'>{household.role}</Badge>
         </div>
       </CardHeader>
       <CardContent>
-        <form
-          className='flex flex-col gap-5'
-          onSubmit={form.handleSubmit(async (values) => {
-            await onSubmit(values)
-          })}>
-          <FieldGroup>
-            <FieldInputController
-              control={form.control}
-              description={t(
-                'app.householdDetail.fields.householdName.description',
-              )}
-              id='settings-household-name'
-              label={t('app.householdDetail.fields.householdName.label')}
-              name='name'
-              placeholder={t(
-                'app.householdDetail.fields.householdName.placeholder',
-              )}
-            />
+        {isAdmin ? (
+          <form
+            className='flex flex-col gap-5'
+            onSubmit={form.handleSubmit(async (values) => {
+              await onSubmit(values)
+            })}>
+            <FieldGroup>
+              <FieldInputController
+                control={form.control}
+                description={t(
+                  'app.householdDetail.fields.householdName.description',
+                )}
+                id='settings-household-name'
+                label={t('app.householdDetail.fields.householdName.label')}
+                name='name'
+                placeholder={t(
+                  'app.householdDetail.fields.householdName.placeholder',
+                )}
+              />
 
-            <FieldInputController
-              control={form.control}
-              description={t('app.householdDetail.fields.currency.description')}
-              id='settings-default-currency-code'
-              label={t('app.householdDetail.fields.currency.label')}
-              maxLength={3}
-              name='defaultCurrencyCode'
-              placeholder='USD'
-            />
+              <FieldSelectController
+                control={form.control}
+                description={t(
+                  'app.householdDetail.fields.defaultVisibility.description',
+                )}
+                id='settings-default-visibility'
+                label={t('app.householdDetail.fields.defaultVisibility.label')}
+                name='defaultVisibility'
+                options={[
+                  {
+                    label: t(
+                      'app.householdDetail.fields.defaultVisibility.options.private',
+                    ),
+                    value: 'private',
+                  },
+                  {
+                    label: t(
+                      'app.householdDetail.fields.defaultVisibility.options.household',
+                    ),
+                    value: 'household',
+                  },
+                ]}
+                onValueChange={(value) =>
+                  value === 'private' || value === 'household'
+                    ? value
+                    : undefined
+                }
+              />
+            </FieldGroup>
 
-            <FieldInputController
-              control={form.control}
-              description={t('app.householdDetail.fields.timezone.description')}
-              id='settings-timezone'
-              label={t('app.householdDetail.fields.timezone.label')}
-              name='timezone'
-              placeholder={t('app.householdDetail.fields.timezone.placeholder')}
-            />
-
-            <FieldSelectController
-              control={form.control}
-              description={t(
-                'app.householdDetail.fields.defaultVisibility.description',
-              )}
-              id='settings-default-visibility'
-              label={t('app.householdDetail.fields.defaultVisibility.label')}
-              name='defaultVisibility'
-              options={[
-                {
-                  label: t(
-                    'app.householdDetail.fields.defaultVisibility.options.private',
-                  ),
-                  value: 'private',
-                },
-                {
-                  label: t(
-                    'app.householdDetail.fields.defaultVisibility.options.household',
-                  ),
-                  value: 'household',
-                },
-              ]}
-              onValueChange={(value) =>
-                value === 'private' || value === 'household' ? value : undefined
-              }
-            />
-          </FieldGroup>
-
-          <div className='flex justify-end'>
-            <Button disabled={isSubmitting} type='submit'>
-              {t('app.householdDetail.actions.save')}
-            </Button>
-          </div>
-        </form>
+            <div className='flex justify-end'>
+              <Button disabled={isSubmitting} type='submit'>
+                {t('app.householdDetail.actions.save')}
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <p className='text-sm text-muted-foreground'>
+            {t('app.householdDetail.memberReadOnly')}
+          </p>
+        )}
       </CardContent>
     </Card>
   )

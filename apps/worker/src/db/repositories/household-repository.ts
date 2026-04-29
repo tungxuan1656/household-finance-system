@@ -201,18 +201,20 @@ export const createHouseholdForUser = async (
               slug,
               default_currency_code,
               timezone,
+              default_visibility,
               created_by_user_id,
               created_at,
               updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             householdId,
             input.name,
             slug,
             input.defaultCurrencyCode ?? 'VND',
-            'UTC',
+            'Asia/Ho_Chi_Minh',
+            'household',
             userId,
             nowEpoch,
             nowEpoch,

@@ -76,3 +76,17 @@ export const requireRole = (
     await next()
   }
 }
+
+export const validateTargetUserIdParam: MiddlewareHandler<AppBindings> = async (
+  ctx,
+  next,
+) => {
+  const targetUserId = ctx.req.param('userId')
+
+  if (!targetUserId || targetUserId.trim().length === 0) {
+    throw notFound(ctx.get('locale'), 'errors.resourceNotFound')
+  }
+
+  ctx.set('requestTargetUserId', targetUserId.trim())
+  await next()
+}

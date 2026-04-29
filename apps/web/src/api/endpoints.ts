@@ -14,6 +14,10 @@ export const API_ENDPOINTS = {
     invitations: (householdId: string) =>
       `/households/${householdId}/invitations`,
     list: '/households',
+    members: (householdId: string) => `/households/${householdId}/members`,
+    member: (householdId: string, userId: string) =>
+      `/households/${householdId}/members/${userId}`,
+    leave: (householdId: string) => `/households/${householdId}/members/me`,
   },
   invitations: {
     accept: (token: string) => `/invitations/${token}/accept`,

@@ -32,6 +32,7 @@ function HouseholdDetailPage() {
   const router = useRouter()
 
   const currentHousehold = useHouseholdStore.use.currentHousehold()
+  const members = useHouseholdStore.use.members()
   const isLoading = useHouseholdStore.use.isLoading()
   const error = useHouseholdStore.use.error()
 
@@ -84,6 +85,8 @@ function HouseholdDetailPage() {
     )
   }
 
+  const isAdmin = currentHousehold?.role === 'admin'
+
   return (
     <div className='flex flex-col gap-6'>
       <HouseholdDetailHeader />
@@ -114,11 +117,16 @@ function HouseholdDetailPage() {
         <>
           <HouseholdSettingsCard
             household={currentHousehold}
+            isAdmin={isAdmin}
             isSubmitting={isLoading}
+            memberCount={members.length}
             onSubmit={handleSaveSettings}
           />
-          <HouseholdMembersCard householdId={currentHousehold.id} />
-          <HouseholdDangerZoneCard onArchive={handleArchive} />
+          <HouseholdMembersCard
+            householdId={currentHousehold.id}
+            isAdmin={isAdmin}
+          />
+          {isAdmin && <HouseholdDangerZoneCard onArchive={handleArchive} />}
         </>
       ) : null}
     </div>

@@ -241,6 +241,8 @@
         "archiveFailed": "Không thể xoá gia đình lúc này. Vui lòng thử lại.",
         "archiveBlockedByMembers": "Không thể xoá gia đình khi vẫn còn thành viên đang hoạt động khác.",
         "archiveSuccess": "Đã xoá gia đình thành công.",
+        "removeMemberFailed": "Không thể xoá thành viên lúc này. Vui lòng thử lại.",
+        "removeMemberSuccess": "Đã xoá thành viên.",
         "updateFailed": "Không thể cập nhật gia đình lúc này. Vui lòng thử lại.",
         "updateSuccess": "Đã cập nhật gia đình."
       },
@@ -270,18 +272,20 @@
       },
       "invalidId": "Đường dẫn gia đình không hợp lệ.",
       "loading": "Đang tải chi tiết gia đình...",
-      "memberCountPlaceholder": "Số thành viên: --",
+      "memberCount": "{count} thành viên",
+      "memberReadOnly": "Chỉ quản trị viên mới có thể chỉnh sửa thông tin gia đình.",
       "members": {
         "actions": {
-          "invite": "Mời thành viên",
-          "remove": "Xoá thành viên"
+          "invite": "Mời thành viên"
         },
         "columns": {
-          "actions": "Thao tác",
+          "actions": "",
           "name": "Tên",
           "role": "Vai trò"
         },
-        "description": "Bảng thành viên hiện là placeholder cho tính năng thành viên.",
+        "description": "Danh sách thành viên trong gia đình.",
+        "empty": "Chưa có thành viên nào.",
+        "title": "Thành viên",
         "invite": {
           "actions": {
             "copy": "Sao chép liên kết",

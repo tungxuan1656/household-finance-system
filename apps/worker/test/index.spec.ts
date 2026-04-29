@@ -284,7 +284,7 @@ describe('Worker foundation', () => {
       name: 'Gia Dinh Toi',
       slug: 'gia-dinh-toi',
       defaultCurrencyCode: 'VND',
-      timezone: 'UTC',
+      timezone: 'Asia/Ho_Chi_Minh',
       role: 'admin',
     })
     expect(typeof payload.data.createdAt).toBe('number')
