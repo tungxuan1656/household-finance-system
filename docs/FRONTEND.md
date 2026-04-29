@@ -18,6 +18,27 @@ patterns unpredictably.
 - Keep copy, keyboard behavior, and visual hierarchy consistent across flows.
 - When a UI bug is fixed, add or update the matching validation step.
 
+## Component Decomposition Strategy (Required)
+
+- Build pages with an **orchestrator-first** pattern from the start:
+  - Page-level file owns route params, store/query wiring, and high-level flow only.
+  - Feature-level **smart components** own bounded UI + local feature logic (form submit, dialog state, mutation handlers) for one concern.
+  - Reusable **shared components** are promoted only when the same shape is used across multiple features.
+- Prefer early split over late refactor:
+  - If a page/component is trending beyond ~200 lines or mixes 3+ concerns (data wiring, form, dialog, table, danger zone), split immediately.
+  - Do not wait until the component becomes hard to review.
+- Shared extraction rule:
+  - Put cross-feature reusable UI/controller components in `src/components/shared/*`.
+  - Keep feature-only components in `src/components/<feature>/*`.
+  - Do not move feature-specific business logic into shared components.
+- Smart vs dumb boundary:
+  - **Smart component**: feature-scoped state + API/mutation handlers + composed UI.
+  - **Dumb component**: presentational-only, controlled by props, no feature API calls.
+- Keep decomposition pragmatic:
+  - Avoid over-generic abstractions.
+  - Extract only the prop contracts that are actually reused.
+  - Re-check naming/export conventions in `docs/references/frontend/component-structure-pattern.md` and `docs/references/frontend/naming-and-conventions-pattern.md`.
+
 ## Mandatory Shadcn Governance
 
 - UI work in `apps/web` must follow `docs/design-docs/shadcn-first-ui-web-guide.md`.

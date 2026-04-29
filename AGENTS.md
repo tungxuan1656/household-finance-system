@@ -32,6 +32,7 @@ Before writing or changing code:
 - Use clear, consistent, and maintainable code
 - Commit with descriptive messages
 - Update harness feature state and harness/progress.md before ending session
+- For frontend work, apply component-splitting strategy early (page orchestrator + feature smart components + shared reusable components) to avoid late large refactors
 
 ---
 
@@ -146,6 +147,25 @@ Agents and contributors are required to consult and comply with these documents 
 - mandatory shadcn-first composition and variant/token usage rules (web UI)
 
 Any code that does not follow these guides will be considered non-compliant and must be revised before acceptance.
+
+## Mandatory Component Decomposition Policy (Frontend)
+
+For UI work in `apps/web`, contributors must design component boundaries from the start:
+
+1. `views/*` pages should act as orchestrators:
+   - keep route/store/query wiring and high-level flow
+   - avoid embedding all feature UI + handlers in one file
+2. Feature-bounded smart components go in `apps/web/src/components/<feature>/`:
+   - each smart component should own one clear concern (for example settings form, invite dialog, avatar upload section)
+3. Cross-feature reusable pieces go in `apps/web/src/components/shared/`:
+   - only promote components that are likely reused across multiple features
+   - avoid moving feature-specific API logic into shared components
+4. Split early:
+   - if a component approaches ~200 lines or mixes multiple concerns, split immediately
+   - do not defer decomposition until after the feature is complete
+5. Keep abstractions pragmatic:
+   - prefer concrete prop contracts used today
+   - avoid over-generic helper frameworks
 
 ## Mandatory Pre-Read for UI Work
 
