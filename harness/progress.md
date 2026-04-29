@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Refactored oversized worker integration test file into domain-scoped specs
+- Who: Codex
+- Summary: Split `apps/worker/test/index.spec.ts` (~2800 lines) into smaller domain-focused test files under `apps/worker/test/integration/` and added shared setup/util context under `apps/worker/test/helpers/test-context.ts`. Test coverage remains equivalent (130 tests) while improving maintainability and discoverability by domain (core, households CRUD, member actions, invitations, media/profile, auth/session, data integrity).
+- Files changed: apps/worker/test/helpers/test-context.ts, apps/worker/test/integration/core.spec.ts, apps/worker/test/integration/households-crud.spec.ts, apps/worker/test/integration/households-members.spec.ts, apps/worker/test/integration/invitations.spec.ts, apps/worker/test/integration/media-profile.spec.ts, apps/worker/test/integration/auth-session.spec.ts, apps/worker/test/integration/data-integrity.spec.ts, apps/worker/test/index.spec.ts, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-04-29 — Addressed review findings for feat-013/014/015b closure and added regression coverage
 - Who: Codex
 - Summary: Resolved all four review findings by aligning feat-014/015b plan/harness artifacts and adding missing regression tests. Added explicit worker integration coverage for member endpoints (`GET /households/:id/members`, `DELETE /households/:id/members/:userId`, `DELETE /households/:id/members/me`) and web UI-affordance coverage for admin/member conditional rendering in household detail/settings/members cards. While implementing tests, uncovered real backend regressions and fixed them: route middleware did not apply to `/households/:id/*`, `/members/me` was shadowed by `/members/:userId`, and member-list query selected non-existent `users.email` column.
