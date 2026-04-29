@@ -8,18 +8,22 @@ import type { ReferenceCategoryDTO } from '@/types/reference-data'
 
 let currentItems: string[] = []
 let currentOnValueChange: ((value: string | null) => void) | undefined
+let currentItemToStringLabel: ((item: string) => string) | undefined
 
 vi.mock('@/components/ui/combobox', () => ({
   Combobox: ({
     items,
+    itemToStringLabel,
     onValueChange,
     children,
   }: {
     items: string[]
+    itemToStringLabel?: (item: string) => string
     onValueChange?: (value: string | null) => void
     children: ReactNode
   }) => {
     currentItems = items
+    currentItemToStringLabel = itemToStringLabel
     currentOnValueChange = onValueChange
 
     return <div>{children}</div>
@@ -83,21 +87,41 @@ describe('CategoryPicker', () => {
 
     expect(
       screen.getByRole('button', {
-        name: t('app.expenseReference.categories.food'),
+        name: /Ăn uống/u,
       }),
     ).toBeInTheDocument()
 
     expect(
       screen.getByRole('button', {
-        name: t('app.expenseReference.categories.shopping'),
+        name: /Mua sắm/u,
       }),
     ).toBeInTheDocument()
 
     expect(
       screen.queryByRole('button', {
-        name: t('app.expenseReference.categories.money-in'),
+        name: /Nhận tiền/u,
       }),
     ).not.toBeInTheDocument()
+
+    expect(
+      screen.getByRole('img', {
+        name: t('app.expenseReference.categories.food'),
+      }),
+    ).toBeInTheDocument()
+  })
+
+  it('configures translated labels as combobox search strings', () => {
+    render(
+      <CategoryPicker
+        categories={categories}
+        value={null}
+        onValueChange={vi.fn()}
+      />,
+    )
+
+    expect(currentItemToStringLabel?.('food')).toBe(
+      t('app.expenseReference.categories.food'),
+    )
   })
 
   it('forwards selected category key through onValueChange', () => {
@@ -113,7 +137,7 @@ describe('CategoryPicker', () => {
 
     fireEvent.click(
       screen.getByRole('button', {
-        name: t('app.expenseReference.categories.shopping'),
+        name: /Mua sắm/u,
       }),
     )
 

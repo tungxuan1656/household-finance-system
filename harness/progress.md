@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Applied review fixes for feat-016 category picker contract alignment
+- Who: Codex
+- Summary: Addressed post-implementation review findings for `feat-016` by updating `CategoryPicker` to render category icons from `iconUrl` and configuring combobox search labeling with translated category labels via `itemToStringLabel`. Extended component tests to assert icon rendering and translated-label search mapping behavior, while keeping source picker behavior unchanged.
+- Files changed: apps/web/src/components/expense/category-picker.tsx, apps/web/src/components/expense/category-picker.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-04-29 — Implemented and closed feat-016 global static expense reference data
 - Who: Codex
 - Summary: Implemented `feat-016` end-to-end as a global immutable reference-data foundation. Worker now serves public/cacheable `GET /api/v1/categories` and `GET /api/v1/sources` from a checked-in catalog with semantic keys and category metadata (`key`, `kind`, `iconUrl`, `color`). Added worker contracts, handlers, route registration, cache-header policy, unit schema tests, and integration tests for unauthenticated access, payload contract, and canonical ordering. Web now includes typed reference-data models, endpoint wiring, API functions, React Query hooks, i18n key-based label mapping, reusable expense components (`category-picker`, `source-picker`), and component/API tests. Feature and plan tracking were moved to completed state with evidence updates.

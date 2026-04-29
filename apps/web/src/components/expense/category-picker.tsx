@@ -25,12 +25,19 @@ export const CategoryPicker = ({
   onValueChange,
   disabled = false,
 }: CategoryPickerProps) => {
-  const expenseCategoryKeys = categories
-    .filter((category) => category.kind === 'expense')
-    .map((category) => category.key)
+  const expenseCategories = categories.filter(
+    (category) => category.kind === 'expense',
+  )
+
+  const iconByKey = new Map(
+    expenseCategories.map((category) => [category.key, category.iconUrl]),
+  )
+
+  const expenseCategoryKeys = expenseCategories.map((category) => category.key)
 
   return (
     <Combobox
+      itemToStringLabel={(categoryKey) => getCategoryLabel(categoryKey)}
       items={expenseCategoryKeys}
       value={value}
       onValueChange={(nextValue) => {
@@ -47,11 +54,20 @@ export const CategoryPicker = ({
           {t('app.expenseReference.categoryPicker.empty')}
         </ComboboxEmpty>
         <ComboboxList>
-          {(categoryKey) => (
-            <ComboboxItem key={categoryKey} value={categoryKey}>
-              {getCategoryLabel(categoryKey)}
-            </ComboboxItem>
-          )}
+          {(categoryKey) => {
+            const label = getCategoryLabel(categoryKey)
+
+            return (
+              <ComboboxItem key={categoryKey} value={categoryKey}>
+                <img
+                  alt={label}
+                  className='size-4 rounded-sm object-contain'
+                  src={iconByKey.get(categoryKey)}
+                />
+                <span>{label}</span>
+              </ComboboxItem>
+            )
+          }}
         </ComboboxList>
       </ComboboxContent>
     </Combobox>
