@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Removed returnTo functionality and cleaned up Service Worker
+- Who: Antigravity
+- Summary: Addressed review comments by removing the `returnTo` redirect feature from `ProtectedRoute` to simplify authentication flows. Cleaned up `SwRegister` and `sw.js` by removing forced service worker and cache clearing on every app load, moving to a standard production-only registration pattern for a fresh start. Verified changes with web lint, typecheck, and test suites.
+- Files changed: apps/web/src/components/layouts/protected-route.tsx, apps/web/src/app/providers/sw-register.tsx, apps/web/public/sw.js, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-04-29 — Verified Next.js migration and fixed final styling/hydration issues
 - Who: Antigravity
 - Summary: Conducted a comprehensive verification of the Next.js migration. Discovered and fixed a critical styling issue caused by a missing `@import 'shadcn/tailwind.css'` in `src/index.css`. Mitigated hydration mismatch warnings by adding `suppressHydrationWarning` to the `body` tag in `src/app/layout.tsx`. Verified core functionality (auth, navigation, data fetching) across Home, Households, and placeholder pages.

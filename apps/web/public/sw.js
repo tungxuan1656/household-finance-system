@@ -1,4 +1,6 @@
-const CACHE_NAME = 'household-finance-static-v2'
+// Service Worker for Household Finance System
+const CACHE_NAME = 'hfs-static-v1' // Reset to v1 for a clean start
+
 const CACHEABLE_DESTINATIONS = new Set([
   'style',
   'script',
@@ -8,6 +10,7 @@ const CACHEABLE_DESTINATIONS = new Set([
 ])
 
 self.addEventListener('install', (event) => {
+  // Force the waiting service worker to become the active service worker
   event.waitUntil(self.skipWaiting())
 })
 

@@ -117,6 +117,11 @@
       "status": "done"
     },
     {
+      "id": "feat-039",
+      "name": "Auth & Service Worker review fixes and cleanup",
+      "status": "done"
+    },
+    {
       "id": "feat-013",
       "name": "Household invitations",
       "status": "pending"
