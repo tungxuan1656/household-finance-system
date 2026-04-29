@@ -1,13 +1,14 @@
-const CACHE_NAME = 'household-finance-static-v1'
-const OFFLINE_URLS = ['/', '/home', '/sign-in', '/sign-up']
+const CACHE_NAME = 'household-finance-static-v2'
+const CACHEABLE_DESTINATIONS = new Set([
+  'style',
+  'script',
+  'image',
+  'font',
+  'manifest',
+])
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => cache.addAll(OFFLINE_URLS))
-      .then(() => self.skipWaiting()),
-  )
+  event.waitUntil(self.skipWaiting())
 })
 
 self.addEventListener('activate', (event) => {
@@ -37,6 +38,14 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (requestUrl.pathname.startsWith('/api/')) {
+    return
+  }
+
+  if (event.request.mode === 'navigate') {
+    return
+  }
+
+  if (!CACHEABLE_DESTINATIONS.has(event.request.destination)) {
     return
   }
 

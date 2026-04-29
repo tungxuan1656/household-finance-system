@@ -1,5 +1,26 @@
 # Progress Log
 
+## 2026-04-29 — Verified Next.js migration and fixed final styling/hydration issues
+- Who: Antigravity
+- Summary: Conducted a comprehensive verification of the Next.js migration. Discovered and fixed a critical styling issue caused by a missing `@import 'shadcn/tailwind.css'` in `src/index.css`. Mitigated hydration mismatch warnings by adding `suppressHydrationWarning` to the `body` tag in `src/app/layout.tsx`. Verified core functionality (auth, navigation, data fetching) across Home, Households, and placeholder pages.
+- Files changed: apps/web/src/index.css, apps/web/src/app/layout.tsx, harness/progress.md
+- Blockers: none
+- Next steps: proceed with implementing features for placeholder pages (Expenses, Budgets, etc.).
+
+## 2026-04-29 — Fixed Tailwind utility generation for Next CSS pipeline
+- Who: Codex
+- Summary: Diagnosed the "plain text" rendering issue as a missing Tailwind v4 PostCSS integration. Added `@tailwindcss/postcss` and `apps/web/postcss.config.mjs`, then verified the emitted CSS bundle now contains utility classes such as `flex`, `grid`, `min-h-dvh`, `bg-background`, and `rounded-lg` instead of only theme/base rules.
+- Files changed: apps/web/src/index.css, apps/web/postcss.config.mjs, apps/web/package.json, pnpm-lock.yaml, harness/progress.md
+- Blockers: none
+- Next steps: restart the web dev server and hard-refresh the browser so it loads the newly generated CSS bundle instead of stale assets.
+
+## 2026-04-29 — Fixed web CSS load issue by narrowing service worker behavior
+- Who: Codex
+- Summary: Investigated the post-migration styling issue and found the PWA service worker was caching same-origin navigation responses broadly, which can keep stale HTML/CSS pairs alive in the browser after a framework swap. Updated the SW registration to unregister in development and narrowed the production SW to cache only static asset destinations, not document navigations.
+- Files changed: apps/web/src/app/providers/sw-register.tsx, apps/web/public/sw.js, harness/progress.md
+- Blockers: none
+- Next steps: if the browser still shows stale styling, clear the existing service worker once or hard refresh; future navigations will no longer cache HTML responses.
+
 ## 2026-04-29 — Completed feat-038 Next.js App Router migration
 - Who: Codex
 - Summary: Finished the `feat-038` migration: `apps/web` now runs on Next.js App Router with `/` as a public landing page and `/home` as the protected home route. I also completed the direct-import cleanup for runtime-critical i18n modules, verified env migration to `NEXT_PUBLIC_*`, kept Vitest in place with a dedicated config, and confirmed the repo passes lint, typecheck, tests, build, and `./init.sh`.
