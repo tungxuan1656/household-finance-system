@@ -14,7 +14,7 @@ Provide an ultra-fast, low-friction entry path for recording expenses (target: 2
 1. User opens quick-add via shortcut/fab/global input.
 2. UI focuses on amount input first; user types amount.
 3. User picks Source (mandatory - default to last used) and optionally Category, Group, Payer, Date, Note.
-4. Defaults: last-used category, last-used source, creator=payer if unset, and either the locally scoped household from the launch surface or an explicit household pick inside quick-add; never a hidden global active household.
+4. Expense scope defaults to personal/private. If the user switches the entry to household-shared, quick-add must require an explicit household selection or a locally scoped household from the launch surface; it must never rely on a hidden global active household.
 5. User confirms (Enter/Done); expense is created and a brief success toast appears with an "Undo" action.
 6. If offline or network failure, expense is queued locally and retried; user sees pending state in feed.
 
@@ -36,4 +36,5 @@ Provide an ultra-fast, low-friction entry path for recording expenses (target: 2
 Notes:
 - Keep visual design minimal; prefer single-line compact inputs on mobile.
 - Expose advanced "Add expense" screen for full metadata editing when needed.
+- Categories are chosen from the global static catalog; MVP quick-add does not depend on per-user category history or suggestion logic.
 - Consider microcopy to explain visibility and payer concepts in the quick-add UI.

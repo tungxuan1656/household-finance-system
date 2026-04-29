@@ -2,7 +2,7 @@
 
 ## Goal
 
-Outline the basic analytics and insights the app provides in MVP: spend summaries, category breakdowns, and simple trend comparisons to help households understand where money goes.
+Outline the basic analytics and insights the app provides in MVP: spend summaries, category breakdowns, and simple trend comparisons to help households understand where money goes. Category breakdowns reference the global static category catalog by stable key.
 
 ## Entry Conditions
 
@@ -21,7 +21,7 @@ Outline the basic analytics and insights the app provides in MVP: spend summarie
 
 1. User opens the Insights/Dashboard page and selects a time range (month default).
 2. Server computes aggregates for the requested range, respecting `visibility` rules.
-3. Frontend displays charts: time series, pie/bar for categories, and list of top categories.
+3. Frontend displays charts: time series, pie/bar for categories, and list of top categories. Labels/icon/color resolve from the global static category catalog by key.
 4. User can export a CSV snapshot for the selected range.
 
 ## Acceptance Criteria
@@ -39,5 +39,6 @@ Outline the basic analytics and insights the app provides in MVP: spend summarie
 ---
 
 Notes:
+- Expense analytics use categories whose catalog `kind` is `expense`; the catalog may still contain income/transfer entries for future flows.
 - Implement daily rollups for ranged queries to meet performance targets.
 - Advanced analytics (trend forecasting, health score) belong to Phase 2+.

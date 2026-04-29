@@ -14,16 +14,16 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 1. User opens quick-add (global) or dedicated Add Expense screen.
 2. User enters amount; picks category, source (mandatory), payer, date, and note.
 3. Optionally assigns the expense to one or more Groups (Events).
-4. User chooses visibility: private or household.
-5. User confirms; expense is stored and appears in the transaction list.
-6. If the user is in multiple households, prompt to choose the target household for this expense at the time of submission; do not depend on one global active household.
+4. Expense scope defaults to personal/private.
+5. If the user switches the expense to household-shared, the UI must require an explicit household selection for that submission; category choice is independent from the household decision.
+6. User confirms; expense is stored and appears in the transaction list.
 
 ## Acceptance Criteria
 
-- Quick-add accepts amount and creates an expense with defaults filled (including default source and group if applicable).
+- Quick-add accepts amount and creates an expense with defaults filled where applicable.
 - Add Expense screen requires fields: amount, category, source, payer.
 - Add Expense screen supports optional fields: note, date, group assignment.
-- Visibility (private vs household) is explicit and remembered per user preference.
+- Visibility/scope is explicit, defaults to personal/private, and requires an explicit household selection only when the user chooses household sharing.
 - New expense appears immediately in UI and is indexed for query & analytics.
 
 ## Failure States
@@ -35,5 +35,6 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 ---
 
 Notes:
-- Prefer conservative defaults (last used category, selected household for the current submission, creator=payer if not specified).
+- Categories and sources come from global static reference-data catalogs. Expense flows treat category selection and household selection as separate decisions.
+- Prefer conservative defaults (selected household only when the user explicitly chooses household sharing, creator=payer if not specified).
 - Track telemetry: time-to-add, fields used, and quick-add conversion.

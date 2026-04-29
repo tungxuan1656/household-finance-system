@@ -56,8 +56,8 @@ Một công cụ:
 #### Mỗi khoản chi bao gồm:
 
 * Số tiền
-* Category (ăn uống, sinh hoạt, giáo dục...)
-* Nguồn tiền (tiền mặt, tài khoản...)
+* Category (chọn từ catalog toàn cục, immutable)
+* Nguồn tiền (chọn từ catalog toàn cục, immutable)
 * Ghi chú
 * Thời gian
 
@@ -65,6 +65,12 @@ Một công cụ:
 
 * **Creator**: người nhập
 * **Payer**: người trả tiền (có thể khác creator)
+
+#### Mô hình reference data:
+
+* Categories và sources là dữ liệu dùng chung cho toàn bộ hệ thống.
+* End user không có quyền tạo/sửa/xóa categories hoặc sources.
+* Web hiển thị label qua i18n dựa trên stable key thay vì coi tên hiển thị là source of truth.
 
 ---
 
@@ -74,6 +80,12 @@ Một công cụ:
 
   * **Cá nhân (private)** → chỉ mình thấy
   * **Gia đình (household)** → shared trong group
+
+#### Mặc định:
+
+* Expense mới mặc định là **cá nhân/private**.
+* Nếu muốn đánh dấu là chi tiêu cho gia đình, user phải chủ động chuyển scope và chọn household đích cho lần nhập đó.
+* Category không quyết định expense là cá nhân hay gia đình.
 
 👉 Đảm bảo:
 
@@ -124,7 +136,7 @@ Một công cụ:
 #### Thiết lập:
 
 * Budget theo tháng
-* Có thể theo category
+* Có thể theo category từ cùng catalog toàn cục
 
 #### Theo dõi:
 
@@ -168,7 +180,7 @@ Một công cụ:
 #### Bao gồm:
 
 * Tổng chi theo thời gian
-* Breakdown theo category
+* Breakdown theo category dựa trên stable key của catalog toàn cục
 * So sánh:
 
   * Tháng này vs tháng trước
@@ -224,6 +236,7 @@ Bao gồm:
 
 * Auth (Google)
  - Auth (Firebase email/password)
+* Global static category/source catalogs làm reference data
 * CRUD expense (Số tiền, Category, Nguồn tiền, Group, Payer, Creator, Visibility)
 * Cá nhân vs household
 * Household + role (admin/member)

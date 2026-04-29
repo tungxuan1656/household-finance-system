@@ -1,5 +1,7 @@
 # feat-007: Household-Finance D1 Schema and Local Migrations
 
+> Superseded note (2026-04-29): this historical plan describes a schema baseline where `expense_categories` is household-scoped. Product/source-of-truth docs now define categories as a global static catalog served from checked-in code. The current DB model should be treated as a legacy mismatch and future migration target, not as the current product truth.
+
 ## Objective
 
 Replace the legacy worker migration baseline with a real Household Finance D1 schema that preserves the working auth/session tables from `feat-006` and adds the storage foundation for households, memberships, categories, groups, expenses, budgets, and audit logs. The observable outcome is that worker tests continue to pass on the new schema and local Wrangler commands can migrate and seed a usable household-finance dataset.
@@ -7,6 +9,8 @@ Replace the legacy worker migration baseline with a real Household Finance D1 sc
 ## Purpose / Big Picture
 
 Before this feature, `apps/worker/migrations/0001_init.sql` modeled a different family rewards domain that did not match the product specs or the harness record for `feat-007`. This change makes the database baseline align with the current product (`households`, `expenses`, `budgets`, `audit`) while keeping the auth/session foundation stable for downstream auth and profile features. Developers can now bootstrap a local D1 instance with the canonical migration and a small seed dataset instead of relying only on test-time schema setup.
+
+Historical clarification: the schema created here still models `expense_categories` as household-scoped storage. After the later global static category-catalog decision, that part of the baseline no longer matches the intended product model.
 
 ## Scope and Out-of-Scope
 
