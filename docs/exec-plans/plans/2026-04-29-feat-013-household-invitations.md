@@ -265,16 +265,19 @@ Init Done
 - [x] (2026-04-29) Gathered feature intent and repository constraints from AGENTS/docs/spec/harness context.
 - [x] (2026-04-29) Closed all blocking decisions with user (model, auth return flow, role/TTL presets, status mapping, link route, post-accept redirect).
 - [x] (2026-04-29) Authored ExecPlan for implementation.
-- [ ] Execute implementation for `feat-013` according to this plan.
-- [ ] Run verification path and capture evidence.
-- [ ] Mark plan as completed in index and harness artifacts.
+- [x] (2026-04-29) Execute implementation for `feat-013` according to this plan.
+- [x] (2026-04-29) Run verification path and capture evidence (`pnpm typecheck:worker`, `pnpm test:worker`, `pnpm typecheck:web`, `pnpm test:web`, `pnpm build:web`, `./init.sh`).
+- [x] (2026-04-29) Mark plan as completed in index and harness artifacts.
 
 ## Surprises & Discoveries
 
-- Existing schema has no dedicated invitation table yet; introducing robust single-use token flow requires a migration in this feature.
+- An untracked `apps/worker/migrations/0002_household_invitations.sql` already existed in workspace at implementation start; the feature implementation aligned to this migration instead of regenerating a duplicate.
 - Current sign-in flow redirects to `/home` unconditionally; return-path support is required to satisfy invite deep-link behavior.
 - Existing household detail page already contains invite placeholders/TODO markers that can be upgraded directly without route redesign.
 
 ## Outcomes & Retrospective
 
-- Pending implementation.
+- Delivered end-to-end invitation flow across worker and web: admin invite-link creation with role/TTL presets, public token preview endpoint, authenticated token acceptance with single-use consumption, and invite deep-link UX at `/invitations/[token]`.
+- Added dedicated invitation persistence (`household_invitations`) plus audit log writes for invitation created/accepted actions.
+- Added sign-in return-path support via `returnTo` query handling so invitation deep-links survive authentication redirect.
+- Verification evidence: `pnpm typecheck:worker`, `pnpm test:worker` (124 tests), `pnpm typecheck:web`, `pnpm test:web` (31 tests), `pnpm build:web`, and full `./init.sh` all passed on 2026-04-29.

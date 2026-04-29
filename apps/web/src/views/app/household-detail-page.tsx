@@ -3,11 +3,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
+import { createInvitation } from '@/api/invitation'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +30,15 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
   Field,
   FieldContent,
   FieldDescription,
@@ -46,6 +56,7 @@ import {
 } from '@/lib/forms/household.schema'
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
+import type { InvitationRoleDTO, InvitationTtlHours } from '@/types/invitation'
 
 const isConflictError = (error: unknown): boolean => {
   if (!(error instanceof ApiClientError)) {
@@ -62,6 +73,13 @@ function HouseholdDetailPage() {
   const currentHousehold = useHouseholdStore.use.currentHousehold()
   const isLoading = useHouseholdStore.use.isLoading()
   const error = useHouseholdStore.use.error()
+  const [invitationRole, setInvitationRole] =
+    useState<InvitationRoleDTO>('member')
+  const [invitationTtlHours, setInvitationTtlHours] =
+    useState<InvitationTtlHours>(72)
+  const [inviteLink, setInviteLink] = useState<string>('')
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
+  const [isCreatingInvite, setIsCreatingInvite] = useState(false)
 
   const form = useForm<UpdateHouseholdSettingsFormValues>({
     defaultValues: {
@@ -124,6 +142,48 @@ function HouseholdDetailPage() {
       } else {
         toast.error(t('app.householdDetail.feedback.archiveFailed'))
       }
+    }
+  }
+
+  const handleGenerateInviteLink = async () => {
+    if (!id) {
+      return
+    }
+
+    try {
+      setIsCreatingInvite(true)
+
+      const createdInvitation = await createInvitation(id, {
+        role: invitationRole,
+        ttlHours: invitationTtlHours,
+      })
+      const origin = window.location.origin
+      const generatedInviteLink = `${origin}${createdInvitation.invitePath}`
+      setInviteLink(generatedInviteLink)
+
+      toast.success(
+        t('app.householdDetail.members.invite.feedback.createSuccess'),
+      )
+    } catch {
+      toast.error(t('app.householdDetail.members.invite.feedback.createFailed'))
+    } finally {
+      setIsCreatingInvite(false)
+    }
+  }
+
+  const handleCopyInviteLink = async () => {
+    if (!inviteLink) {
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(inviteLink)
+
+      toast.success(
+        t('app.householdDetail.members.invite.feedback.copySuccess'),
+      )
+    } catch {
+      toast.error(t('app.householdDetail.members.invite.feedback.copyFailed'))
     }
   }
 
@@ -358,15 +418,155 @@ function HouseholdDetailPage() {
                     {t('app.householdDetail.members.description')}
                   </CardDescription>
                 </div>
-                {/* TODO(feat-members): Enable invite action when member-management API is implemented. */}
-                <Button disabled type='button' variant='outline'>
-                  {t('app.householdDetail.members.actions.invite')}
-                </Button>
+                <Dialog
+                  open={isInviteDialogOpen}
+                  onOpenChange={(open) => {
+                    setIsInviteDialogOpen(open)
+                    if (!open) {
+                      setInviteLink('')
+                    }
+                  }}>
+                  <DialogTrigger asChild>
+                    <Button type='button' variant='outline'>
+                      {t('app.householdDetail.members.actions.invite')}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {t('app.householdDetail.members.invite.title')}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {t('app.householdDetail.members.invite.description')}
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <div className='flex flex-col gap-4'>
+                      <FieldGroup>
+                        <Field>
+                          <FieldLabel htmlFor='invite-role'>
+                            {t(
+                              'app.householdDetail.members.invite.fields.role.label',
+                            )}
+                          </FieldLabel>
+                          <FieldContent>
+                            <NativeSelect
+                              id='invite-role'
+                              value={invitationRole}
+                              onChange={(event) => {
+                                const nextRole = event.target.value
+                                if (
+                                  nextRole === 'admin' ||
+                                  nextRole === 'member'
+                                ) {
+                                  setInvitationRole(nextRole)
+                                }
+                              }}>
+                              <NativeSelectOption value='member'>
+                                {t(
+                                  'app.householdDetail.members.invite.fields.role.options.member',
+                                )}
+                              </NativeSelectOption>
+                              <NativeSelectOption value='admin'>
+                                {t(
+                                  'app.householdDetail.members.invite.fields.role.options.admin',
+                                )}
+                              </NativeSelectOption>
+                            </NativeSelect>
+                          </FieldContent>
+                        </Field>
+
+                        <Field>
+                          <FieldLabel htmlFor='invite-ttl'>
+                            {t(
+                              'app.householdDetail.members.invite.fields.ttl.label',
+                            )}
+                          </FieldLabel>
+                          <FieldContent>
+                            <NativeSelect
+                              id='invite-ttl'
+                              value={String(invitationTtlHours)}
+                              onChange={(event) => {
+                                const nextTtlHours = Number(event.target.value)
+                                if (
+                                  nextTtlHours === 24 ||
+                                  nextTtlHours === 72 ||
+                                  nextTtlHours === 168
+                                ) {
+                                  setInvitationTtlHours(nextTtlHours)
+                                }
+                              }}>
+                              <NativeSelectOption value='24'>
+                                {t(
+                                  'app.householdDetail.members.invite.fields.ttl.options.24h',
+                                )}
+                              </NativeSelectOption>
+                              <NativeSelectOption value='72'>
+                                {t(
+                                  'app.householdDetail.members.invite.fields.ttl.options.72h',
+                                )}
+                              </NativeSelectOption>
+                              <NativeSelectOption value='168'>
+                                {t(
+                                  'app.householdDetail.members.invite.fields.ttl.options.7d',
+                                )}
+                              </NativeSelectOption>
+                            </NativeSelect>
+                          </FieldContent>
+                        </Field>
+
+                        <Field>
+                          <FieldLabel htmlFor='invite-link'>
+                            {t(
+                              'app.householdDetail.members.invite.fields.link.label',
+                            )}
+                          </FieldLabel>
+                          <FieldContent>
+                            <Input
+                              readOnly
+                              id='invite-link'
+                              placeholder={t(
+                                'app.householdDetail.members.invite.fields.link.placeholder',
+                              )}
+                              value={inviteLink}
+                            />
+                            <FieldDescription>
+                              {t(
+                                'app.householdDetail.members.invite.fields.link.description',
+                              )}
+                            </FieldDescription>
+                          </FieldContent>
+                        </Field>
+                      </FieldGroup>
+                    </div>
+
+                    <DialogFooter>
+                      <Button
+                        disabled={!inviteLink}
+                        type='button'
+                        variant='outline'
+                        onClick={() => void handleCopyInviteLink()}>
+                        {t('app.householdDetail.members.invite.actions.copy')}
+                      </Button>
+                      <Button
+                        disabled={isCreatingInvite}
+                        type='button'
+                        onClick={() => void handleGenerateInviteLink()}>
+                        {isCreatingInvite
+                          ? t(
+                              'app.householdDetail.members.invite.actions.generating',
+                            )
+                          : t(
+                              'app.householdDetail.members.invite.actions.generate',
+                            )}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             </CardHeader>
             <CardContent>
               {/* TODO(feat-members): Replace placeholder rows with real household members API integration. */}
-              {/* TODO(feat-members): Wire invite and remove actions to invitation/member-management endpoints. */}
               <div className='overflow-x-auto rounded-lg border'>
                 <table className='min-w-full text-sm'>
                   <thead className='border-b bg-muted/40 text-left text-muted-foreground'>

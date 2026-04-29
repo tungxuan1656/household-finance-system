@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CameraIcon } from 'lucide-react'
+import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
@@ -318,7 +319,7 @@ export const ProfileSettingsPage = () => {
           </DialogHeader>
 
           {avatarPreviewUrl ? (
-            <img
+            <Image
               alt={t('app.settings.profile.crop.previewAlt')}
               className='aspect-square w-full rounded-lg object-cover'
               src={avatarPreviewUrl}
