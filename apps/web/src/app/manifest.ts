@@ -7,18 +7,26 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     icons: [
       {
-        sizes: '192x192',
-        src: '/icons/icon-192.png',
-        type: 'image/png',
-      },
-      {
-        sizes: '512x512',
-        src: '/icons/icon-512.png',
+        purpose: 'maskable',
+        sizes: '1024x1024',
+        src: '/icon.png',
         type: 'image/png',
       },
     ],
+    categories: ['finance', 'productivity'],
     name: 'Household Finance',
+    orientation: 'portrait',
     short_name: 'Household Finance',
+    shortcuts: [
+      {
+        name: 'Add Expense',
+        url: '/expenses/new',
+      },
+      {
+        name: 'Overview',
+        url: '/home',
+      },
+    ],
     start_url: '/',
     theme_color: '#ffffff',
   }
