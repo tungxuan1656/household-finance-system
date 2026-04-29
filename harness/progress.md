@@ -1,5 +1,26 @@
 # Progress Log
 
+## 2026-04-29 — Applied review fixes for feat-016 category picker contract alignment
+- Who: Codex
+- Summary: Addressed post-implementation review findings for `feat-016` by updating `CategoryPicker` to render category icons from `iconUrl` and configuring combobox search labeling with translated category labels via `itemToStringLabel`. Extended component tests to assert icon rendering and translated-label search mapping behavior, while keeping source picker behavior unchanged.
+- Files changed: apps/web/src/components/expense/category-picker.tsx, apps/web/src/components/expense/category-picker.test.tsx, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-04-29 — Implemented and closed feat-016 global static expense reference data
+- Who: Codex
+- Summary: Implemented `feat-016` end-to-end as a global immutable reference-data foundation. Worker now serves public/cacheable `GET /api/v1/categories` and `GET /api/v1/sources` from a checked-in catalog with semantic keys and category metadata (`key`, `kind`, `iconUrl`, `color`). Added worker contracts, handlers, route registration, cache-header policy, unit schema tests, and integration tests for unauthenticated access, payload contract, and canonical ordering. Web now includes typed reference-data models, endpoint wiring, API functions, React Query hooks, i18n key-based label mapping, reusable expense components (`category-picker`, `source-picker`), and component/API tests. Feature and plan tracking were moved to completed state with evidence updates.
+- Files changed: apps/worker/src/contracts/reference-data.ts, apps/worker/src/contracts/index.ts, apps/worker/src/lib/reference-data/catalog.ts, apps/worker/src/handlers/reference-data/list-categories.ts, apps/worker/src/handlers/reference-data/list-sources.ts, apps/worker/src/routes/reference-data.ts, apps/worker/src/index.ts, apps/worker/test/unit/dto-reference-data.spec.ts, apps/worker/test/integration/reference-data.spec.ts, apps/web/src/types/reference-data.ts, apps/web/src/api/endpoints.ts, apps/web/src/api/reference-data.ts, apps/web/src/hooks/api/use-reference-data.ts, apps/web/src/lib/reference-data/labels.ts, apps/web/src/components/expense/category-picker.tsx, apps/web/src/components/expense/source-picker.tsx, apps/web/src/components/expense/index.ts, apps/web/src/api/reference-data.test.ts, apps/web/src/components/expense/category-picker.test.tsx, apps/web/src/components/expense/source-picker.test.tsx, apps/web/src/lib/i18n/locales/vi.json, docs/exec-plans/index.md, docs/exec-plans/plans/2026-04-29-feat-016-global-static-expense-reference-data.md, harness/features/feat-016.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: `feat-017` can consume the new hooks/pickers; key-based persistence migration remains deferred tech debt.
+
+## 2026-04-29 — Created active ExecPlan for feat-016 global static expense reference data
+- Who: Codex
+- Summary: Created and registered the active ExecPlan for `feat-016` to deliver a fullstack reference-data foundation for expense categories and sources. The plan locks the runtime source of truth to a checked-in worker catalog, public/cacheable `GET /api/v1/categories` and `GET /api/v1/sources` endpoints, semantic string keys without numeric ids, key-based i18n labels on web, and reusable `category-picker`/`source-picker` components without `/expenses` or quick-add page integration. The plan also records the deferred schema migration away from legacy household-scoped `expense_categories` as explicit tech debt and marks `feat-016` as `in_progress` in harness state.
+- Files changed: docs/exec-plans/plans/2026-04-29-feat-016-global-static-expense-reference-data.md, docs/exec-plans/index.md, docs/exec-plans/tech-debt-tracker.md, harness/features/feat-016.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: implement worker catalog/routes/tests first, then web transport/hooks/pickers/tests, and only mark `feat-016` done after full `./init.sh` verification and harness evidence updates.
+
 ## 2026-04-29 — Aligned quick-add product spec with post-MVP offline queue scope
 - Who: Codex
 - Summary: Resolved a contract conflict where `feat-024` and `feat-025` already treated offline queueing as post-MVP, but `docs/product-specs/quick-add-experience.md` still required queued offline behavior and automatic retry in MVP. Updated the quick-add spec to require manual retry only in MVP and explicitly defer offline queueing/pending-entry recovery to `feat-025`. Also aligned the generic expense-tracking failure-state wording so MVP docs no longer imply offline queue support before the resilience follow-up feature exists.

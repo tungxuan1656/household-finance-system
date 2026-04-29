@@ -5,8 +5,11 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- None currently.
+
 ## Completed
 
+- [2026-04-29-feat-016-global-static-expense-reference-data.md](plans/2026-04-29-feat-016-global-static-expense-reference-data.md) - feat-016 fullstack reference-data foundation: global immutable categories/sources catalog, public/cacheable `/api/v1/categories` + `/api/v1/sources`, typed web transport/hooks, and reusable expense `category-picker`/`source-picker` components with tests.
 - [2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md](plans/2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md) - feat-014 + feat-015b: household detail page role-based UI (admin vs member), member management API (list/remove/leave), Vietnam-market defaults (VND, Asia/Ho_Chi_Minh, household-share visibility).
 - [2026-04-29-feat-013-household-invitations.md](plans/2026-04-29-feat-013-household-invitations.md) - feat-013 fullstack invitation flow: admin invite-link generation (single-use token + TTL preset + role), public token preview validation, authenticated acceptance, invite panel in household detail, and `/invitations/{token}` deep-link accept page with auth return-path handling.
 - [2026-04-29-feat-038-nextjs-app-router-migration.md](plans/2026-04-29-feat-038-nextjs-app-router-migration.md) - feat-038 migration of `apps/web` from React + Vite SPA to Next.js App Router with landing page at `/`, protected home at `/home`, Next-compatible PWA setup, and Vite/env contract cleanup.

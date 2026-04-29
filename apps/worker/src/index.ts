@@ -11,6 +11,7 @@ import { invitationRoutes } from '@/routes/invitations'
 import { mediaRoutes } from '@/routes/media'
 import { profileRoutes } from '@/routes/profile'
 import { protectedRoutes } from '@/routes/protected'
+import { referenceDataRoutes } from '@/routes/reference-data'
 import type { AppBindings } from '@/types'
 
 const app = new Hono<AppBindings>()
@@ -56,6 +57,7 @@ app.notFound((ctx) => {
 app.route('/api/v1', healthRoutes)
 app.route('/api/v1', authRoutes)
 app.route('/api/v1', profileRoutes)
+app.route('/api/v1', referenceDataRoutes)
 app.route('/api/v1', householdRoutes)
 app.route('/api/v1', invitationRoutes)
 app.route('/api/v1', mediaRoutes)

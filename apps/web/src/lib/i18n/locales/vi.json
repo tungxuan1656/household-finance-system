@@ -154,6 +154,49 @@
         "title": "Thêm"
       }
     },
+    "expenseReference": {
+      "categoryPicker": {
+        "ariaLabel": "Chọn danh mục chi tiêu",
+        "empty": "Không tìm thấy danh mục.",
+        "placeholder": "Chọn danh mục"
+      },
+      "categories": {
+        "beauty": "Làm đẹp",
+        "charity": "Từ thiện",
+        "children": "Con cái",
+        "dating": "Tình yêu",
+        "education": "Học tập",
+        "family": "Gia đình",
+        "food": "Ăn uống",
+        "health": "Sức khoẻ",
+        "hobbies": "Sở thích",
+        "investment": "Đầu tư",
+        "lending": "Cho vay",
+        "living-costs": "Sinh hoạt phí",
+        "money-in": "Nhận tiền",
+        "other": "Khác",
+        "pets": "Vật nuôi",
+        "relatives": "Họ hàng",
+        "repairs": "Sửa chữa",
+        "self-development": "Phát triển",
+        "shopping": "Mua sắm",
+        "social": "Xã giao",
+        "sports": "Thể thao",
+        "transport": "Xe cộ",
+        "travel": "Du lịch",
+        "work": "Công việc"
+      },
+      "sourcePicker": {
+        "ariaLabel": "Chọn nguồn chi tiêu"
+      },
+      "sources": {
+        "bank-transfer": "Chuyển khoản ngân hàng",
+        "card": "Thẻ",
+        "cash": "Tiền mặt",
+        "e-wallet": "Ví điện tử",
+        "other": "Khác"
+      }
+    },
     "households": {
       "actions": {
         "create": "Tạo gia đình",

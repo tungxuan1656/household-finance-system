@@ -26,6 +26,10 @@ export const API_ENDPOINTS = {
   media: {
     uploadSignature: '/media/upload-signature',
   },
+  referenceData: {
+    categories: '/categories',
+    sources: '/sources',
+  },
   profile: '/users/me',
   protected: {
     ping: '/protected/ping',
