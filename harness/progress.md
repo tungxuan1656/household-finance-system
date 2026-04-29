@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Implemented and closed feat-014 + feat-015b household membership actions and role-based UI affordances
+- Who: Codex
+- Summary: Implemented member management API (list/remove/leave) and role-based UI for household detail page. Backend: fixed createHousehold defaults (Asia/Ho_Chi_Minh, household-share visibility), added GET/DELETE member endpoints, last-admin leave block. Frontend: HouseholdSettingsCard read-only for members, HouseholdMembersCard with trash icon for admin, HouseholdDetailPage conditional rendering (admin sees DangerZone, member does not).
+- Files changed: apps/worker/src/db/repositories/household-repository.ts (defaults), apps/worker/src/db/repositories/household-membership-repository.ts (member CRUD), apps/worker/src/handlers/households/get-household-members.ts, leave-household.ts, apps/worker/src/routes/households.ts, apps/worker/src/middlewares/household-membership.ts (validateTargetUserIdParam), apps/worker/src/contracts/household.ts, apps/worker/src/types/app.ts, apps/worker/src/lib/i18n/messages.vi.ts, apps/worker/test/index.spec.ts, apps/web/src/types/household.ts, apps/web/src/api/endpoints.ts, apps/web/src/api/household.ts, apps/web/src/stores/household.store.ts, apps/web/src/components/household/household-settings-card.tsx, apps/web/src/components/household/household-members-card.tsx, apps/web/src/views/app/household-detail-page.tsx, apps/web/src/lib/i18n/locales/vi.json, docs/product-specs/household-management.md, docs/product-specs/role-permission.md, harness/features/feat-014.json, harness/features/feat-015b.json, harness/feature_index.json, docs/exec-plans/index.md, docs/exec-plans/plans/2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-04-29 — Fixed protected-route chunk-load resilience for stale service-worker state
 - Who: Codex
 - Summary: Investigated the reported `ChunkLoadError` on the protected layout and reproduced the protected shell on a clean browser session. The app build and browser network path were healthy, so I hardened the service-worker bootstrap to clear any stale registrations and cached static assets in non-production environments before the protected shell loads. This prevents old cached chunks from poisoning the current App Router bundle during local development.
