@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-04-29 — Aligned quick-add product spec with post-MVP offline queue scope
+- Who: Codex
+- Summary: Resolved a contract conflict where `feat-024` and `feat-025` already treated offline queueing as post-MVP, but `docs/product-specs/quick-add-experience.md` still required queued offline behavior and automatic retry in MVP. Updated the quick-add spec to require manual retry only in MVP and explicitly defer offline queueing/pending-entry recovery to `feat-025`. Also aligned the generic expense-tracking failure-state wording so MVP docs no longer imply offline queue support before the resilience follow-up feature exists.
+- Files changed: docs/product-specs/quick-add-experience.md, docs/product-specs/expense-tracking.md, harness/progress.md
+- Blockers: none
+- Next steps: keep future quick-add planning and implementation aligned with `feat-025` as the only source of truth for offline queueing.
+
+## 2026-04-29 — Synchronized docs and harness around the global static category catalog decision
+- Who: Codex
+- Summary: Updated forward-looking product specs and harness feature records so categories/sources are now consistently documented as immutable global reference data served from checked-in code, not household-scoped records. Locked `feat-016` to API/hooks/picker/test scope only, updated downstream expense/budget/analytics features to reference category keys from the shared catalog, clarified that expense creation defaults to personal/private and requires explicit household selection only when sharing, and added superseded notes to historical feat-007/schema docs where the current DB baseline still models `expense_categories` as household-scoped legacy data.
+- Files changed: harness/features/feat-007.json, harness/features/feat-016.json, harness/features/feat-017.json, harness/features/feat-018.json, harness/features/feat-019.json, harness/features/feat-021.json, harness/features/feat-024.json, harness/features/feat-026.json, harness/features/feat-027.json, harness/features/feat-028.json, harness/features/feat-029.json, docs/product-specs/expense-categorization.md, docs/product-specs/expense-tracking.md, docs/product-specs/quick-add-experience.md, docs/product-specs/data-visibility.md, docs/product-specs/budget-management.md, docs/product-specs/expense-querying.md, docs/product-specs/analytics-overview.md, docs/PRODUCT.md, docs/PRODUCT.vi.md, docs/exec-plans/plans/2026-04-22-feat-007-database-schema-local-migrations.md, docs/generated/db-schema.md, harness/progress.md
+- Blockers: none
+- Next steps: implement the actual catalog/runtime/schema migration work in separate feature-scoped sessions; this pass only aligns docs and harness truth and does not close `feat-016`.
+
 ## 2026-04-29 — Guarded member removal against deleting the last household admin
 - Who: Codex
 - Summary: Fixed review finding on `DELETE /households/:id/members/:userId` by adding a last-admin guard in `handleRemoveHouseholdMember`. The handler now loads target membership, counts active admins, and returns `409 CONFLICT` when removal would delete the final admin. Added integration coverage for this specific path (`blocks admin removal when target is the last active admin`).

@@ -1,9 +1,9 @@
 {
   "id": "feat-007",
   "name": "Database schema & local migrations",
-  "description": "Design the initial D1 schema and migration workflow for users, households, memberships, expenses, categories, groups, budgets, sessions, and audit records, including local seed support for development and tests.",
+  "description": "Design the initial D1 schema and migration workflow for users, households, memberships, expenses, groups, budgets, sessions, and audit records, including local seed support for development and tests. Note: the shipped baseline still contains a legacy household-scoped `expense_categories` table; after the global static category-catalog decision, that table is no longer the target product model and must be treated as implementation debt.",
   "dependencies": ["feat-006"],
   "status": "done",
-  "evidence": "Replaced legacy apps/worker D1 baseline with household-finance schema; worker tests passed (47/47), local Wrangler migrate + seed succeeded, and ./init.sh passed on 2026-04-22.",
-  "updated_at": "2026-04-22"
+  "evidence": "Replaced legacy apps/worker D1 baseline with household-finance schema; worker tests passed (47/47), local Wrangler migrate + seed succeeded, and ./init.sh passed on 2026-04-22. Historical note: this baseline models `expense_categories` as household-scoped, which no longer matches the current product truth after the later global static category-catalog decision.",
+  "updated_at": "2026-04-29"
 }

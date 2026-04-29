@@ -17,17 +17,18 @@ Specify clear rules for which users can see which expenses and related metadata 
 ## Rules
 
 1. Each expense has a `visibility` enum field and `household_id` (nullable for personal-only usage).
-2. On create, default visibility uses user preference; explicit selection overrides default.
+2. On create, default visibility is `private`; switching to `household` requires explicit user action and explicit household selection for that submission.
 3. Changing visibility from `private` → `household` requires explicit confirmation and records an audit entry; any attached PII should be reviewed.
 4. Changing `household` → `private` should be allowed but must be audited and may be restricted for expenses with shared reimbursements (future edge case).
 5. API responses must only include expenses the caller is authorized to see; server filters by `visibility` + `household membership` + role.
 6. Search & analytics pipelines must respect visibility: private expenses excluded from household aggregates unless user opts in for personal analytics.
+7. Category selection is orthogonal to visibility. Categories come from the global static catalog and do not imply or determine whether an expense is personal or household-shared.
 
 ## User Flow Examples
 
 - Viewing household feed: server returns expenses where `visibility=household` and `household_id` matches the household explicitly selected by the current view or request.
 - Viewing personal feed: server returns expenses where `creator_id` == user or `visibility=private` for that user.
-- Sharing an expense: UI prompts confirmation and explains impact before flipping visibility.
+- Sharing an expense: UI prompts confirmation, asks for the target household, and explains impact before flipping visibility.
 
 ## Acceptance Criteria
 

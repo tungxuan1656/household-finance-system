@@ -12,7 +12,7 @@ Define querying and filtering semantics for expenses to support UI lists, search
 
 - `date_from`, `date_to` (range)
 - `period` (month, week, custom)
-- `category_id` (single or multiple)
+- `category_key` (single or multiple)
 - `group_id` (single or multiple)
 - `payer_id`, `creator_id`
 - `visibility` (private, household) — server-enforced
@@ -44,5 +44,6 @@ Define querying and filtering semantics for expenses to support UI lists, search
 ---
 
 Notes:
-- Use DB indexes on (`household_id`, `date`, `category_id`) and full-text index on `note`.
+- Category filters reference the global static catalog by stable key. Expense querying only accepts categories whose catalog `kind` is `expense`.
+- Use DB indexes on (`household_id`, `date`, `category_key`) and full-text index on `note`.
 - Prefer cursor pagination for stable feeds. Provide an `/api/expenses/summary` for heavy aggregated queries if needed.

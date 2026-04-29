@@ -53,8 +53,8 @@ The app helps answer key family finance questions:
 Each expense includes:
 
 - Amount
-- Category (food, utilities, education, etc.)
-- Source (cash, account, etc.)
+- Category (selected from an immutable global catalog)
+- Source (selected from an immutable global catalog)
 - Note
 - Timestamp
 
@@ -62,6 +62,12 @@ Ownership model:
 
 - Creator: the person who enters the expense
 - Payer: the person who actually paid (may differ from creator)
+
+Reference-data model:
+
+- Categories and sources are shared reference data for all users and households.
+- End users cannot create, edit, or delete categories/sources.
+- Web maps display labels from i18n using stable category/source keys.
 
 ---
 
@@ -71,6 +77,12 @@ Each expense can be:
 
 - Private → visible only to the creator
 - Household → shared with the household group
+
+Default behavior:
+
+- New expenses start as private/personal by default.
+- If a user wants to share an expense with a household, they must explicitly switch it to household scope and choose the target household for that submission.
+- Category choice does not determine whether an expense is personal or household-shared.
 
 Ensure:
 
@@ -115,7 +127,7 @@ Optional (future-ready):
 Setup:
 
 - Monthly budgets
-- Optional per-category budgets
+- Optional per-category budgets referencing the same global category catalog
 
 Tracking:
 
@@ -160,7 +172,7 @@ Functionality:
 Includes:
 
 - Total spending over time
-- Category breakdowns
+- Category breakdowns based on stable global category keys
 - Comparisons (this month vs last month)
 
 Highlights:
@@ -203,6 +215,7 @@ Flow:
 Includes:
 
 - Auth (Firebase email/password; Google later)
+- Global static category/source catalogs served as reference data
 - CRUD for expenses (amount, category, source, group, payer, creator, visibility)
 - Personal vs household visibility
 - Household model + roles (admin / member)
