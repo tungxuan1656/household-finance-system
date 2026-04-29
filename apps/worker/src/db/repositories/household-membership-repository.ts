@@ -67,7 +67,7 @@ export const listHouseholdMembers = async (
     .prepare(
       `SELECT u.id as user_id,
               u.display_name as name,
-              u.email,
+              COALESCE(u.primary_email, '') as email,
               hm.role,
               hm.joined_at as joinedAt
          FROM household_memberships hm

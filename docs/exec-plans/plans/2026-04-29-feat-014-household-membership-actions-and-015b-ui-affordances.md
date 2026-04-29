@@ -40,18 +40,18 @@ Deliver the household detail page with proper role-based UI (admin vs member) an
 - [x] (2026-04-29) Sync docs/product-specs/household-management.md (Vietnam-market defaults)
 - [x] (2026-04-29) Sync docs/product-specs/role-permission.md (member leave, trimmed matrix)
 - [x] (2026-04-29) Update feat-014.json and feat-015b.json descriptions
-- [ ] (pending) Fix createHouseholdForUser defaults (timezone + visibility)
-- [ ] (pending) Add HouseholdMemberDTO contract + repository methods
-- [ ] (pending) Implement GET /households/:id/members endpoint
-- [ ] (pending) Implement DELETE /households/:id/members/:userId endpoint (admin)
-- [ ] (pending) Implement DELETE /households/:id/members/me endpoint (member self-leave)
-- [ ] (pending) Add frontend HouseholdMemberDTO type
-- [ ] (pending) Add store actions: fetchHouseholdMembers, removeHouseholdMember, leaveHousehold
-- [ ] (pending) Update HouseholdSettingsCard: read-only for members, editable for admins
-- [ ] (pending) Update HouseholdMembersCard: real data + trash icon for admin
-- [ ] (pending) Update HouseholdDetailPage: conditional rendering based on role
-- [ ] (pending) Run verification: `./init.sh`
-- [ ] (pending) Update harness artifacts + exec-plan index
+- [x] (2026-04-29) Fix createHouseholdForUser defaults (timezone + visibility)
+- [x] (2026-04-29) Add HouseholdMemberDTO contract + repository methods
+- [x] (2026-04-29) Implement GET /households/:id/members endpoint
+- [x] (2026-04-29) Implement DELETE /households/:id/members/:userId endpoint (admin)
+- [x] (2026-04-29) Implement DELETE /households/:id/members/me endpoint (member self-leave)
+- [x] (2026-04-29) Add frontend HouseholdMemberDTO type
+- [x] (2026-04-29) Add store actions: fetchHouseholdMembers, removeHouseholdMember, leaveHousehold
+- [x] (2026-04-29) Update HouseholdSettingsCard: read-only for members, editable for admins
+- [x] (2026-04-29) Update HouseholdMembersCard: real data + trash icon for admin
+- [x] (2026-04-29) Update HouseholdDetailPage: conditional rendering based on role
+- [x] (2026-04-29) Run verification: `./init.sh`
+- [x] (2026-04-29) Update harness artifacts + exec-plan index
 
 ## Decision Log
 

@@ -47,9 +47,15 @@ const getResolvedHouseholdContext = (ctx: Context<AppBindings>) => {
 householdRoutes.use('/households/*', authMiddleware)
 householdRoutes.use('/households', authMiddleware)
 householdRoutes.use('/households/:id', validateHouseholdIdParam)
+householdRoutes.use('/households/:id/*', validateHouseholdIdParam)
 
 householdRoutes.use(
   '/households/:id',
+  resolveHouseholdMembership((ctx) => ctx.get('requestHouseholdId')),
+)
+
+householdRoutes.use(
+  '/households/:id/*',
   resolveHouseholdMembership((ctx) => ctx.get('requestHouseholdId')),
 )
 
@@ -133,6 +139,22 @@ householdRoutes.get('/households/:id/members', async (ctx) => {
   return success<ListHouseholdMembersResponse>(ctx, result)
 })
 
+householdRoutes.delete('/households/:id/members/me', async (ctx) => {
+  const locale = ctx.get('locale')
+  const { householdId, membership: _membership } =
+    getResolvedHouseholdContext(ctx)
+  const currentUser = ctx.get('currentUser')
+
+  const result = await handleLeaveHousehold(
+    ctx.env,
+    householdId,
+    currentUser.id,
+    locale,
+  )
+
+  return success(ctx, result)
+})
+
 householdRoutes.delete(
   '/households/:id/members/:userId',
   requireRole(['admin']),
@@ -156,19 +178,3 @@ householdRoutes.delete(
     return success(ctx, result)
   },
 )
-
-householdRoutes.delete('/households/:id/members/me', async (ctx) => {
-  const locale = ctx.get('locale')
-  const { householdId, membership: _membership } =
-    getResolvedHouseholdContext(ctx)
-  const currentUser = ctx.get('currentUser')
-
-  const result = await handleLeaveHousehold(
-    ctx.env,
-    householdId,
-    currentUser.id,
-    locale,
-  )
-
-  return success(ctx, result)
-})

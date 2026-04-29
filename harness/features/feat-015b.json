@@ -4,6 +4,6 @@
   "description": "Surface permission-aware UI so members only see actions they are allowed to perform. Frontend: HouseholdDetailPage reads role from currentHousehold.role and conditionally renders HouseholdSettingsCard (read-only for members, editable for admins), HouseholdMembersCard (no actions for members, invite+delete for admins), and HouseholdDangerZoneCard (admin only, hidden for members). Admin badge shown next to role in settings header. Per docs/product-specs/role-permission.md. Backend enforcement (feat-015a) must already be in place — this feat adds defence-in-depth UX only.",
   "dependencies": ["feat-015a", "feat-014"],
   "status": "done",
-  "evidence": "Committed b3ec2d8. HouseholdDetailPage: isAdmin conditional rendering. HouseholdSettingsCard: isAdmin prop controls editable vs read-only. HouseholdMembersCard: isAdmin controls invite dialog + trash icon visibility. HouseholdDangerZoneCard: wrapped with {isAdmin && ...}. Role badge displayed in settings header. 22 web tests passing.",
+  "evidence": "Committed 21a06fa. HouseholdDetailPage: isAdmin conditional rendering. HouseholdSettingsCard: isAdmin prop controls editable vs read-only. HouseholdMembersCard: isAdmin controls invite dialog + trash icon visibility. HouseholdDangerZoneCard: wrapped with {isAdmin && ...}. Role badge displayed in settings header. Regression coverage added for role-based UI affordances (detail/settings/members). Verification on 2026-04-29: pnpm test:web (39 passing), ./init.sh (Init Done).",
   "updated_at": "2026-04-29"
 }

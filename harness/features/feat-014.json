@@ -4,6 +4,6 @@
   "description": "Implement membership lifecycle actions. Backend: GET /api/v1/households/:id/members (list members), DELETE /api/v1/households/:id/members/:userId (admin-only; remove member), DELETE /api/v1/households/:id/members/me (leave household; blocked for last admin). Frontend: HouseholdSettingsCard read-only for members/editable for admins, HouseholdMembersCard with trash icon (Lucide, no text) for admin delete. Vietnam defaults: VND, Asia/Ho_Chi_Minh, household-share visibility. Per household-management.md and role-permission.md.",
   "dependencies": ["feat-013", "feat-015a"],
   "status": "done",
-  "evidence": "Committed b3ec2d8. Worker: member API (list/remove/leave), Asia/Ho_Chi_Minh + household-share defaults. Web: HouseholdSettingsCard (read-only member), HouseholdMembersCard (trash icon), HouseholdDetailPage (admin sees DangerZone, member does not). Worker tests: 124 passing.",
+  "evidence": "Committed 21a06fa. Worker: member API (list/remove/leave), Asia/Ho_Chi_Minh + household-share defaults. Web: HouseholdSettingsCard (read-only member), HouseholdMembersCard (trash icon), HouseholdDetailPage (admin sees DangerZone, member does not). Regression coverage added for member endpoints and leave/remove edge cases. Verification on 2026-04-29: pnpm test:worker (130 passing), pnpm test:web (39 passing), ./init.sh (Init Done).",
   "updated_at": "2026-04-29"
 }

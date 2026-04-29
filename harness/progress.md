@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-29 — Addressed review findings for feat-013/014/015b closure and added regression coverage
+- Who: Codex
+- Summary: Resolved all four review findings by aligning feat-014/015b plan/harness artifacts and adding missing regression tests. Added explicit worker integration coverage for member endpoints (`GET /households/:id/members`, `DELETE /households/:id/members/:userId`, `DELETE /households/:id/members/me`) and web UI-affordance coverage for admin/member conditional rendering in household detail/settings/members cards. While implementing tests, uncovered real backend regressions and fixed them: route middleware did not apply to `/households/:id/*`, `/members/me` was shadowed by `/members/:userId`, and member-list query selected non-existent `users.email` column.
+- Files changed: apps/worker/src/routes/households.ts, apps/worker/src/db/repositories/household-membership-repository.ts, apps/worker/test/index.spec.ts, apps/web/src/views/app/household-detail-page.test.tsx, apps/web/src/components/household/household-settings-card.test.tsx, apps/web/src/components/household/household-members-card.test.tsx, docs/exec-plans/plans/2026-04-29-feat-014-household-membership-actions-and-015b-ui-affordances.md, harness/features/feat-014.json, harness/features/feat-015b.json, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-04-29 — Implemented and closed feat-014 + feat-015b household membership actions and role-based UI affordances
 - Who: Codex
 - Summary: Implemented member management API (list/remove/leave) and role-based UI for household detail page. Backend: fixed createHousehold defaults (Asia/Ho_Chi_Minh, household-share visibility), added GET/DELETE member endpoints, last-admin leave block. Frontend: HouseholdSettingsCard read-only for members, HouseholdMembersCard with trash icon for admin, HouseholdDetailPage conditional rendering (admin sees DangerZone, member does not).
