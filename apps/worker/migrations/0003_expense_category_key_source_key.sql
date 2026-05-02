@@ -1,5 +1,4 @@
 -- Migration 0003: Add category_key, source_key, and updated visibility CHECK
-BEGIN TRANSACTION;
 
 -- Create a new table with updated schema including category_key and source_key
 CREATE TABLE IF NOT EXISTS expenses_new (
@@ -21,7 +20,8 @@ CREATE TABLE IF NOT EXISTS expenses_new (
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   CHECK (amount_minor > 0),
   CHECK (visibility IN ('private', 'household')),
-  CHECK NOT (visibility = 'household' AND household_id IS NULL),
+  CHECK (visibility != 'household' OR household_id IS NOT NULL),
+  UNIQUE(household_id, id),
   FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
   FOREIGN KEY(created_by_user_id) REFERENCES users(id) ON DELETE RESTRICT,
   FOREIGN KEY(payer_user_id) REFERENCES users(id) ON DELETE RESTRICT,
@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS expenses_new (
 );
 
 -- Migrate data from old table to new table
+-- source_key does not exist in the old table; use the column DEFAULT 'other'
+-- category_key does not exist in the old table; use NULL
 INSERT INTO expenses_new (
   id, household_id, created_by_user_id, payer_user_id, category_id, category_key,
   amount_minor, currency_code, occurred_at, visibility, title, note, source_key,
@@ -36,7 +38,7 @@ INSERT INTO expenses_new (
 )
 SELECT
   id, household_id, created_by_user_id, payer_user_id, category_id, NULL AS category_key,
-  amount_minor, currency_code, occurred_at, visibility, title, note, source_key,
+  amount_minor, currency_code, occurred_at, visibility, title, note, 'other' AS source_key,
   deleted_at, created_at, updated_at
 FROM expenses;
 
@@ -49,5 +51,3 @@ CREATE INDEX IF NOT EXISTS idx_expenses_category_key
   ON expenses(category_key);
 CREATE INDEX IF NOT EXISTS idx_expenses_source_key
   ON expenses(source_key);
-
-COMMIT;

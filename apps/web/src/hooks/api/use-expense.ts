@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { createExpense } from '@/api/expense'
-import type { CreateExpenseRequest, ExpenseDTO } from '@/types/expense'
+import type {
+  CreateExpenseRequest,
+  CreateExpenseResponse,
+} from '@/types/expense'
 
 export const EXPENSE_KEYS = {
   all: ['expenses'] as const,
@@ -11,7 +14,7 @@ export const EXPENSE_KEYS = {
 export const useCreateExpenseMutation = () => {
   const queryClient = useQueryClient()
 
-  return useMutation<ExpenseDTO, Error, CreateExpenseRequest>({
+  return useMutation<CreateExpenseResponse, Error, CreateExpenseRequest>({
     mutationFn: createExpense,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })

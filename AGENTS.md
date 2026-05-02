@@ -246,10 +246,16 @@ Before any UI task in `apps/web` (design, implementation, review), agents/contri
 
 Skipping this pre-read is non-compliant.
 
+--- 
+
+Always consult GitNexus before major code changes. Use it to understand architecture, dependencies, and impact, then design and apply the code edits.
+
+---
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **household-finance-system** (3424 symbols, 5006 relationships, 85 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **household-finance-system** (3423 symbols, 5008 relationships, 85 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 

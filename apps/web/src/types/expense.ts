@@ -12,6 +12,8 @@ export type ExpenseDTO = {
   note: string | null
   visibility: ExpenseVisibility
   householdId: string | null
+  payerUserId: string
+  createdByUserId: string
   createdAt: number
   updatedAt: number
 }
@@ -27,6 +29,5 @@ export type CreateExpenseRequest = {
   householdId?: string
 }
 
-export type CreateExpenseResponse = {
-  data: ExpenseDTO
-}
+// The API client unwraps the envelope, so the response type is just ExpenseDTO
+export type CreateExpenseResponse = ExpenseDTO

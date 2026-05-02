@@ -187,7 +187,8 @@
         "work": "Công việc"
       },
       "sourcePicker": {
-        "ariaLabel": "Chọn nguồn chi tiêu"
+        "ariaLabel": "Chọn nguồn chi tiêu",
+        "placeholder": "Chọn nguồn"
       },
       "sources": {
         "bank-transfer": "Chuyển khoản ngân hàng",
@@ -463,6 +464,9 @@
     "payer": "Người thanh toán",
     "title": "Tiêu đề",
     "success": "Đã thêm chi tiêu thành công",
+    "submitting": "Đang thêm...",
+    "loadError": "Không thể tải dữ liệu. Vui lòng thử lại.",
+    "submitError": "Không thể thêm chi tiêu. Vui lòng thử lại.",
     "error": {
       "amountPositive": "Số tiền phải lớn hơn 0",
       "amountRequired": "Vui lòng nhập số tiền",

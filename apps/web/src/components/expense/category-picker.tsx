@@ -17,6 +17,7 @@ type CategoryPickerProps = {
   value: CategoryKey | null
   onValueChange: (value: CategoryKey | null) => void
   disabled?: boolean
+  id?: string
 }
 
 export const CategoryPicker = ({
@@ -24,6 +25,7 @@ export const CategoryPicker = ({
   value,
   onValueChange,
   disabled = false,
+  id,
 }: CategoryPickerProps) => {
   const expenseCategories = categories.filter(
     (category) => category.kind === 'expense',
@@ -37,6 +39,7 @@ export const CategoryPicker = ({
 
   return (
     <Combobox
+      id={id}
       itemToStringLabel={(categoryKey) => getCategoryLabel(categoryKey)}
       items={expenseCategoryKeys}
       value={value}

@@ -64,19 +64,16 @@ export const createExpenseRequestSchema = () =>
       title: z
         .string()
         .transform((val) => val.trim())
-        .refine(
-          (val) => {
-            if (val.length === 0) return false
-
-            return val.length <= 200
-          },
-          { message: messages.titleTooLong },
-        ),
+        .refine((val) => val.length > 0, {
+          message: messages.titleMustNotBeBlank,
+        })
+        .refine((val) => val.length <= 200, {
+          message: messages.titleTooLong,
+        }),
       occurredAt: z.number().int().positive(messages.occurredAtMustBePositive),
       note: z.string().max(1000, messages.noteTooLong).optional(),
       visibility: expenseVisibilitySchema.default('private'),
-      householdId: z.string().optional(),
-      payerUserId: z.string().optional(),
+      householdId: z.string().trim().min(1).optional(),
     })
     .strict()
     .refine((data) => data.visibility !== 'household' || !!data.householdId, {
@@ -115,9 +112,7 @@ export interface ExpenseDTO {
   updatedAt: number
 }
 
-export interface CreateExpenseResponse {
-  expense: ExpenseDTO
-}
+export type CreateExpenseResponse = ExpenseDTO
 
 export type ExpensePathParams = z.output<typeof expensePathParamsSchema>
 

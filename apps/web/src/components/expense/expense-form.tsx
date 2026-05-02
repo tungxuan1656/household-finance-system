@@ -3,7 +3,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { type z } from 'zod'
+import { toast } from 'sonner'
+import type { z } from 'zod'
 
 import { CategoryPicker } from '@/components/expense/category-picker'
 import { SourcePicker } from '@/components/expense/source-picker'
@@ -53,12 +54,14 @@ type ExpenseFormProps = {
   categories: ReferenceCategoryDTO[]
   households: HouseholdDTO[]
   onSuccess?: () => void
+  onError?: (error: Error) => void
 }
 
 export function ExpenseForm({
   categories,
   households,
   onSuccess,
+  onError,
 }: ExpenseFormProps) {
   const { data: profile } = useCurrentUserProfileQuery()
   const createExpense = useCreateExpenseMutation()
@@ -115,9 +118,13 @@ export function ExpenseForm({
           form.reset()
           onSuccess?.()
         },
+        onError: (error) => {
+          toast.error(t('expense.submitError'))
+          onError?.(error)
+        },
       })
     },
-    [createExpense, form, onSuccess],
+    [createExpense, form, onSuccess, onError],
   )
 
   const isSubmitting = createExpense.isPending
@@ -167,6 +174,7 @@ export function ExpenseForm({
               <CategoryPicker
                 categories={categories}
                 disabled={isSubmitting}
+                id='expense-category'
                 value={field.value}
                 onValueChange={(value) => {
                   field.onChange(value)
@@ -187,6 +195,7 @@ export function ExpenseForm({
               </FieldLabel>
               <SourcePicker
                 disabled={isSubmitting}
+                id='expense-source'
                 value={field.value}
                 onValueChange={(value) => {
                   field.onChange(value)
@@ -342,7 +351,7 @@ export function ExpenseForm({
           {t('common.actions.cancel')}
         </Button>
         <Button disabled={isSubmitting} type='submit'>
-          {isSubmitting ? t('expense.addTitle') : t('expense.addTitle')}
+          {isSubmitting ? t('expense.submitting') : t('expense.addTitle')}
         </Button>
       </div>
     </form>

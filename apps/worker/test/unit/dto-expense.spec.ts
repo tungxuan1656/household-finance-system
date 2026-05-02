@@ -29,14 +29,12 @@ describe('expense contract schema', () => {
         note: 'Includes bus and metro',
         visibility: 'household',
         householdId: 'hh_abc123',
-        payerUserId: 'usr_xyz789',
       })
 
       expect(parsed.success).toBe(true)
       if (parsed.success) {
         expect(parsed.data.visibility).toBe('household')
         expect(parsed.data.householdId).toBe('hh_abc123')
-        expect(parsed.data.payerUserId).toBe('usr_xyz789')
         expect(parsed.data.note).toBe('Includes bus and metro')
       }
     })

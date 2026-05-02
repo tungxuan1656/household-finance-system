@@ -17,6 +17,23 @@ import { newId } from '@/utils/id'
 
 type CreateExpenseHandlerCtx = Context<AppBindings>
 
+// Minor-unit decimal places per currency (ISO 4217)
+const CURRENCY_DECIMALS: Record<string, number> = {
+  VND: 0,
+  USD: 2,
+  EUR: 2,
+  GBP: 2,
+  JPY: 0,
+  KRW: 0,
+}
+
+const getMinorUnits = (amount: number, currencyCode: string): number => {
+  const decimals = CURRENCY_DECIMALS[currencyCode] ?? 2
+  const factor = 10 ** decimals
+
+  return Math.round(amount * factor)
+}
+
 // Note: helper to build repository input removed to keep logic local
 
 export const createExpenseHandler = async (
@@ -68,9 +85,17 @@ export const createExpenseHandler = async (
     currencyCode = 'VND'
   }
 
-  // Resolve payer and createdBy
+  // Payer is always the creating user (no external attribution)
   const createdByUserId = currentUser.id
-  const payerUserId = body.payerUserId ?? createdByUserId
+  const payerUserId = createdByUserId
+
+  // Convert amount to minor units and validate it doesn't round to zero
+  const amountMinor = getMinorUnits(body.amount, currencyCode)
+  if (amountMinor <= 0) {
+    throw invalidInput(locale, 'validation.invalidValue', {
+      path: ['amount'],
+    })
+  }
 
   // Prepare input for repo
   const input: CreateExpenseInput = {
@@ -81,20 +106,13 @@ export const createExpenseHandler = async (
     categoryKey: body.categoryKey,
     sourceKey: body.sourceKey,
     categoryId: null,
-    amountMinor: 0,
+    amountMinor,
     currencyCode,
     occurredAt: body.occurredAt,
     visibility: body.visibility,
     title: body.title,
     note: body.note ?? null,
   }
-
-  // Convert amount to minor based on currency
-  const amountMinor =
-    currencyCode === 'VND'
-      ? Math.round(body.amount)
-      : Math.round(body.amount * 100)
-  input.amountMinor = amountMinor
 
   // Create expense via repository
   const created = await createExpense(db, input)

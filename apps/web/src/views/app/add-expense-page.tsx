@@ -8,10 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useHouseholdsQuery } from '@/hooks/api/use-households'
-import {
-  useReferenceCategoriesQuery,
-  useReferenceSourcesQuery,
-} from '@/hooks/api/use-reference-data'
+import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
 
@@ -25,27 +22,20 @@ function AddExpensePage() {
     refetch: refetchCategories,
   } = useReferenceCategoriesQuery()
   const {
-    isLoading: isSourcesLoading,
-    error: sourcesError,
-    refetch: refetchSources,
-  } = useReferenceSourcesQuery()
-  const {
     data: householdsData,
     isLoading: isHouseholdsLoading,
     error: householdsError,
     refetch: refetchHouseholds,
   } = useHouseholdsQuery()
 
-  const isLoading =
-    isCategoriesLoading || isSourcesLoading || isHouseholdsLoading
-  const error = categoriesError || sourcesError || householdsError
+  const isLoading = isCategoriesLoading || isHouseholdsLoading
+  const error = categoriesError || householdsError
 
   const categories = categoriesData?.items ?? []
   const households = householdsData?.items ?? []
 
   const handleRetry = () => {
     if (categoriesError) refetchCategories()
-    if (sourcesError) refetchSources()
     if (householdsError) refetchHouseholds()
   }
 
@@ -82,9 +72,7 @@ function AddExpensePage() {
       {!isLoading && error ? (
         <Card>
           <CardContent className='flex items-center justify-between gap-2 pt-6'>
-            <p className='text-sm text-destructive'>
-              {t('app.households.loading')}
-            </p>
+            <p className='text-sm text-destructive'>{t('expense.loadError')}</p>
             <Button type='button' variant='outline' onClick={handleRetry}>
               {t('app.householdDetail.actions.retry')}
             </Button>
