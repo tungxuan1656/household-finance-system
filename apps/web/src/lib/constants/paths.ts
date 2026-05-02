@@ -11,6 +11,7 @@ export const PATHS = {
   ONBOARDING: '/onboarding',
   EXPENSES: '/expenses',
   ADD_EXPENSE: '/expenses/new',
+  EXPENSE_DETAIL: '/expenses/[id]',
   BUDGETS: '/budgets',
   INSIGHTS: '/insights',
   HOUSEHOLDS: '/households',
