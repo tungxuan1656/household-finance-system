@@ -3,7 +3,7 @@
   "name": "Expense entry create flow",
   "description": "Full-stack expense creation: user-scoped POST /api/v1/expenses with visibility rules (private default, household requires explicit household_id), global static category/source pickers (feat-016), payer defaulting to current user, currency auto-default (VND or household default), conditional household picker. Includes DB migration 0003 for category_key/source_key columns and constraint changes. Excludes edit/delete, search/pagination, groups, quick-add, and member payer list.",
   "dependencies": ["feat-015a", "feat-016"],
-  "status": "in_progress",
-  "evidence": "",
-  "updated_at": "2026-04-30"
+  "status": "done",
+  "evidence": "Feature implementation completed and marked done in harness.",
+  "updated_at": "2026-05-02"
 }

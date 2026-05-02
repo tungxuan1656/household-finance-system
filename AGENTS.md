@@ -1,68 +1,69 @@
 # AGENTS.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+Behavioral guidelines to reduce common LLM coding mistakes. Merge these baseline rules with project-specific instructions as needed.
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+**Tradeoff:** these guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
 
 Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+- State assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them instead of picking silently.
+- If a simpler approach exists, say so.
+- If something is unclear, stop and name the confusion.
 
 ## 2. Simplicity First
 
-**Minimum code that solves the problem. Nothing speculative.**
+**Use the minimum code that solves the problem. Nothing speculative.**
 
 - No features beyond what was asked.
 - No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
+- No flexibility or configurability that was not requested.
 - No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
+- If 200 lines can be 50, rewrite it.
 
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+Ask: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
 
 ## 3. Surgical Changes
 
 **Touch only what you must. Clean up only your own mess.**
 
 When editing existing code:
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
+- Do not improve adjacent code, comments, or formatting.
+- Do not refactor unrelated code.
+- Match existing style, even if you would choose differently.
+- If you notice unrelated dead code, mention it instead of deleting it.
 
 When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
+- Remove imports, variables, or functions made unused by your changes.
+- Do not remove pre-existing dead code unless asked.
 
-The test: Every changed line should trace directly to the user's request.
+The test: every changed line should trace directly to the request.
 
 ## 4. Goal-Driven Execution
 
 **Define success criteria. Loop until verified.**
 
-Transform tasks into verifiable goals:
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
+Translate vague requests into checks you can prove:
+- "Add validation" -> write tests for invalid inputs, then make them pass.
+- "Fix the bug" -> reproduce it with a test, then make it pass.
+- "Refactor X" -> ensure behavior is unchanged before and after.
 
-For multi-step tasks, state a brief plan:
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
+For multi-step work, state a brief plan:
+
+```text
+1. [Step] -> verify: [check]
+2. [Step] -> verify: [check]
+3. [Step] -> verify: [check]
 ```
 
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+Strong success criteria reduce unnecessary clarification loops.
 
 ---
 
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+**These guidelines are working if:** diffs stay focused, overbuilt solutions decrease, and clarification happens before implementation instead of after mistakes.
 
 ---
 
@@ -70,175 +71,93 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 Personal & Family Expense Management System — Open Source, Long-term Maintenance
 
-This repository is designed for a small team to build and maintain a reliable, clear, and consistent expense management application. The system tracks income and expenses, supports statistics, grouping, templates, habits, recurring deductions, categorization, and family group expense sharing.
+This repository supports a small team building a reliable expense management app for income, expenses, statistics, grouping, templates, habits, recurring deductions, categorization, and family group expense sharing.
 
----
+## Tech Stack
 
-## Tech Stack (current)
+- Frontend (`apps/web`): React 19, TypeScript, Next.js App Router, Tailwind CSS, shadcn UI, sonner, date-fns
+- Backend / Edge (`apps/worker`): Cloudflare Workers, Hono, D1, Wrangler, `zod`, `jose`, `ulid`
+- Tooling: `pnpm` monorepo, ESLint, Prettier, Vitest, TypeScript
 
-- Frontend (`apps/web`): React 19, TypeScript, Next.js App Router, Tailwind CSS, shadcn UI, sonner, date-fns.
-- Backend / Edge (`apps/worker`): Cloudflare Workers, Hono, D1 (SQLite-compatible), Wrangler, `zod` for validation, `jose` for JWT/JWKS handling, `ulid` for ids.
-- Tooling & CI: `pnpm` monorepo, ESLint, Prettier, Vitest, TypeScript.
-
-
-## Startup Workflow
+## Quick Start
 
 Before writing or changing code:
-1. Read this AGENTS.md for agent workflow and rules
-2. Read ARCHITECTURE.md for system map and dependency rules
-3. Run ./init.sh to verify environment and codebase
-4. Review harness/feature_index.json and harness/features/*.json for current feature state
-5. (Optional) Read docs/PLANS.md and docs/product-specs/ for active plans/specs
+1. Read this file and [ARCHITECTURE.md](ARCHITECTURE.md).
+2. Run `./init.sh`.
+3. Review `harness/feature_index.json` and the relevant file in `harness/features/`.
+4. For plan or product-behavior context, read `docs/PLANS.md` and `docs/product-specs/` as needed.
 
----
+## Session Rules
 
-## Working Rules
-
-- One feature at a time: Only work on a single feature or plan per session
-- Verification required: Run all verification steps before claiming a feature is done
-- Update progress: Log work in harness/progress.md after each session
-- Use clear, consistent, and maintainable code
-- Commit with descriptive messages
-- Update harness feature state and harness/progress.md before ending session
-- For frontend work, apply component-splitting strategy early (page orchestrator + feature smart components + shared reusable components) to avoid late large refactors
-
----
+- Work on one feature or plan per session. Do not mix scopes.
+- Run verification before claiming a feature is done.
+- Use clear, consistent, maintainable code.
+- Commit with a descriptive message.
+- Update `harness/progress.md` after each session.
+- Update harness feature state before ending a session.
+- Leave the repository in a clean, restartable state via the standard startup path.
 
 ## Required Artifacts
 
-- `harness/feature_index.json`: Lightweight feature index (id, name, status)
-- `harness/features/*.json`: Per-feature detail records (description, dependencies, evidence, ownership)
-- `harness/progress.md`: Session progress log (who, what, when, blockers) with newest entries first and archived history under `harness/progress/archive/`
-- `init.sh`: Standard initialization and verification script
-- `harness/session-handoff.md`: (If needed) handoff artifact for unfinished sessions
-
----
+- `harness/feature_index.json`: feature index and status
+- `harness/features/*.json`: per-feature records, dependencies, and evidence
+- `harness/progress.md`: newest-first session log with blockers and next steps
+- `harness/session-handoff.md`: handoff file for unfinished sessions when needed
+- `init.sh`: standard repository initialization and verification script
 
 ## Definition of Done
 
-A feature is considered done when:
-- [ ] Implementation is complete and committed
-- [ ] All verification steps pass (lint, type-check, test, build)
-- [ ] Evidence is recorded in `harness/features/*.json` and reflected in `harness/feature_index.json`
-- [ ] Progress is logged in `harness/progress.md`
-- [ ] The repository can be restarted cleanly from the standard startup path
+A feature is done only when:
+- Implementation is complete and committed.
+- All verification steps pass: lint, type-check, tests, build.
+- Evidence is recorded in `harness/features/*.json` and reflected in `harness/feature_index.json`.
+- Progress is logged in `harness/progress.md`.
+- The repository can be restarted cleanly from the standard startup path.
 
----
-
-## End of Session
-
-Before ending a session:
-1. Update harness/progress.md at the top with work done, blockers, next steps
-2. Update harness feature records with status and evidence
-3. Record blockers or risks if any
-4. Commit with a descriptive message
-5. Leave the repository in a clean, restartable state
-
----
-
-## Verification Commands (pnpm mono-repo)
-
-Run the following in the repo root to verify the entire codebase:
+## Commands
 
 ```bash
-./init.sh
-```
-
-Useful dev & verification commands:
-
-```bash
-# Full workspace verification
+# Full workspace initialization and verification
 ./init.sh
 
-# Frontend dev (Next.js)
+# Frontend dev
 pnpm dev:web
 
-# Worker dev (Cloudflare Wrangler)
+# Worker dev
 pnpm dev:worker
 
-# Build frontend
+# Frontend build
 pnpm build:web
 
-# Deploy worker
+# Worker deploy
 pnpm deploy:worker
 ```
 
-This repository uses a pnpm monorepo layout. The root `./init.sh` runs install, harness checks, lint, type-check, tests, and the web build. Each app/package should also expose its own `lint`, `typecheck`, `test`, and `build` scripts so they can be run individually.
+`./init.sh` is the default full-workspace verification path. It runs install, harness checks, lint, type-check, tests, and the web build.
 
----
+## References
 
-## Directory Structure (Recommended)
-- /apps/worker (Cloudflare Worker, Hono, D1, wrangler)
-- /apps/web (React, Next.js, Tailwind, shadcn)
-- /packages (shared libraries)
-- AGENTS.md, ARCHITECTURE.md, PRODUCT.md, harness/, init.sh
+Read these before deeper changes:
+- `ARCHITECTURE.md`: system map, layer model, dependency rules
+- `docs/PLANS.md`: plan lifecycle and execution policy
+- `docs/product-specs/`: product behavior and acceptance targets
+- `docs/FRONTEND.md`: frontend constraints, accessibility, and design system rules
+- `docs/BACKEND.md`: backend API, data, validation, and security rules
+- `docs/design-docs/shadcn-first-ui-web-guide.md`: web UI governance
+- `docs/design-docs/index.md`, `docs/QUALITY_SCORE.md`, `docs/RELIABILITY.md`, `docs/SECURITY.md`: supporting operational guidance
 
----
+## Frontend Requirements
 
-## Routing Map
+All frontend work in `apps/web` must follow `docs/FRONTEND.md` and the shadcn-first UI guide.
 
-- ARCHITECTURE.md: System map, layer model, dependency rules
-- docs/design-docs/index.md: Design decisions and core beliefs
-- docs/product-specs/index.md: Product behaviors and acceptance targets
-- docs/PLANS.md: Plan lifecycle and execution-plan policy
-- docs/QUALITY_SCORE.md: Product-domain and layer health
-- docs/RELIABILITY.md: Runtime signals, benchmarks, and restart expectations
-- docs/SECURITY.md: Secrets, sandbox, data, and external-action rules
-- docs/FRONTEND.md: UI constraints, design system rules, accessibility checks
+Component decomposition is mandatory:
+1. Keep `views/*` pages as orchestrators for route, store, query, and top-level flow.
+2. Put feature-bounded smart components in `apps/web/src/components/<feature>/`.
+3. Put cross-feature reusable components in `apps/web/src/components/shared/`.
+4. Split early when a component grows large or mixes concerns.
+5. Keep abstractions pragmatic and concrete.
 
----
-
-## Further Guidance
-
-- Always follow the one-feature-at-a-time policy
-- Never claim a feature done without running all verification steps
-- Keep documentation and progress up to date
-- Use clear, maintainable, and consistent code style
-
----
-
-For more details, see the Learn Harness Engineering documentation and project docs.
-
----
-
-## Mandatory Guide for Frontend & Backend Code
-
-**All code related to frontend or backend MUST strictly follow the corresponding guide and rules:**
-
-- For frontend code: see [docs/FRONTEND.md](docs/FRONTEND.md)
-- For backend code: see [docs/BACKEND.md](docs/BACKEND.md)
-- For web UI design governance: see [docs/design-docs/shadcn-first-ui-web-guide.md](docs/design-docs/shadcn-first-ui-web-guide.md)
-
-Agents and contributors are required to consult and comply with these documents for:
-- UI/UX, component, and design system standards (frontend)
-- API, data, validation, and security standards (backend)
-- mandatory shadcn-first composition and variant/token usage rules (web UI)
-
-Any code that does not follow these guides will be considered non-compliant and must be revised before acceptance.
-
-## Mandatory Component Decomposition Policy (Frontend)
-
-For UI work in `apps/web`, contributors must design component boundaries from the start:
-
-1. `views/*` pages should act as orchestrators:
-   - keep route/store/query wiring and high-level flow
-   - avoid embedding all feature UI + handlers in one file
-2. Feature-bounded smart components go in `apps/web/src/components/<feature>/`:
-   - each smart component should own one clear concern (for example settings form, invite dialog, avatar upload section)
-3. Cross-feature reusable pieces go in `apps/web/src/components/shared/`:
-   - only promote components that are likely reused across multiple features
-   - avoid moving feature-specific API logic into shared components
-4. Split early:
-   - if a component approaches ~200 lines or mixes multiple concerns, split immediately
-   - do not defer decomposition until after the feature is complete
-5. Keep abstractions pragmatic:
-   - prefer concrete prop contracts used today
-   - avoid over-generic helper frameworks
-
-## Mandatory Pre-Read for UI Work
-
-Before any UI task in `apps/web` (design, implementation, review), agents/contributors MUST read:
-
+Before any UI task in `apps/web`, read:
 1. `.agents/skills/shadcn/SKILL.md`
 2. `.agents/skills/shadcn/rules/styling.md`
 3. `.agents/skills/shadcn/rules/forms.md`
@@ -246,7 +165,7 @@ Before any UI task in `apps/web` (design, implementation, review), agents/contri
 
 Skipping this pre-read is non-compliant.
 
---- 
+---
 
 Always consult GitNexus before major code changes. Use it to understand architecture, dependencies, and impact, then design and apply the code edits.
 
