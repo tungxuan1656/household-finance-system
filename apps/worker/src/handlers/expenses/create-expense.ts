@@ -2,7 +2,10 @@ import type { Context } from 'hono'
 
 import type { CreateExpenseRequest, ExpenseDTO } from '@/contracts'
 import { createExpenseRequestSchema } from '@/contracts'
-import { createExpense } from '@/db/repositories/expense-repository'
+import {
+  createExpense,
+  type CreateExpenseInput,
+} from '@/db/repositories/expense-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
 import { forbidden, invalidInput, notFound } from '@/lib/errors'
@@ -26,7 +29,7 @@ export const createExpenseHandler = async (
   // Read and validate request body
   const body = await readJsonBody<CreateExpenseRequest>(
     ctx.req.raw,
-    createExpenseRequestSchema(locale),
+    createExpenseRequestSchema(),
     locale,
   )
 
@@ -70,8 +73,7 @@ export const createExpenseHandler = async (
   const payerUserId = body.payerUserId ?? createdByUserId
 
   // Prepare input for repo
-  // Build input to repository. Use a loose type to accommodate NULL householdId
-  const input: any = {
+  const input: CreateExpenseInput = {
     id: newId(),
     householdId,
     createdByUserId,
@@ -101,9 +103,9 @@ export const createExpenseHandler = async (
   const dto: ExpenseDTO = {
     id: created.id,
     title: created.title,
-    amount: created.amountMinor,
-    categoryKey: created.categoryKey as any,
-    sourceKey: created.sourceKey as any,
+    amountMinor: created.amountMinor,
+    categoryKey: created.categoryKey as ExpenseDTO['categoryKey'],
+    sourceKey: created.sourceKey as ExpenseDTO['sourceKey'],
     occurredAt: created.occurredAt,
     visibility: created.visibility,
     householdId: created.householdId,

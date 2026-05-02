@@ -51,7 +51,7 @@ const categoryKindMap: {
   other: 'expense',
 }
 
-export const createExpenseRequestSchema = (_locale?: unknown) =>
+export const createExpenseRequestSchema = () =>
   z
     .object({
       amount: z.number().positive(messages.amountMustBePositive),
@@ -102,7 +102,7 @@ export type CreateExpenseRequest = z.output<
 export interface ExpenseDTO {
   id: string
   title: string
-  amount: number
+  amountMinor: number
   categoryKey: (typeof REFERENCE_CATEGORY_KEYS)[number]
   sourceKey: (typeof REFERENCE_SOURCE_KEYS)[number]
   occurredAt: number

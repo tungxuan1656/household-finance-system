@@ -1,7 +1,7 @@
 // Input for creating an expense. This mirrors the handler output shape.
 export interface CreateExpenseInput {
   id: string
-  householdId: string
+  householdId: string | null
   createdByUserId: string
   payerUserId: string
   categoryKey: string
@@ -20,7 +20,7 @@ export interface CreateExpenseInput {
 
 export interface StoredExpense {
   id: string
-  householdId: string
+  householdId: string | null
   createdByUserId: string
   payerUserId: string
   categoryKey: string

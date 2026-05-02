@@ -454,6 +454,7 @@
     "source": "Nguồn",
     "date": "Ngày",
     "note": "Ghi chú",
+    "visibilityLabel": "Chia sẻ",
     "visibility": {
       "private": "Riêng tư",
       "household": "Chung gia đình"

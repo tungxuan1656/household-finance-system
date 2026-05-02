@@ -4,7 +4,7 @@ export type ExpenseVisibility = 'private' | 'household'
 
 export type ExpenseDTO = {
   id: string
-  amount: number
+  amountMinor: number
   categoryKey: CategoryKey
   sourceKey: SourceKey
   title: string

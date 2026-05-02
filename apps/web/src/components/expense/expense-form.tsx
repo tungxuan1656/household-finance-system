@@ -268,7 +268,7 @@ export function ExpenseForm({
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid} orientation='horizontal'>
               <FieldLabel htmlFor='expense-visibility'>
-                {t('expense.visibility.household')}
+                {t('expense.visibilityLabel')}
               </FieldLabel>
               <Switch
                 aria-invalid={fieldState.invalid}

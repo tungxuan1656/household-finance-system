@@ -11,9 +11,7 @@ export const expensesRoutes = new Hono<AppBindings>()
 expensesRoutes.use('/expenses', authMiddleware)
 
 expensesRoutes.post('/expenses', async (ctx) => {
-  // Delegate to handler which uses the same ctx convention
-  // The handler expects to access ctx.req, ctx.env, ctx.get, etc.
-  const dto = await createExpenseHandler(ctx as any)
+  const dto = await createExpenseHandler(ctx)
 
   return success<typeof dto>(ctx, dto, 201)
 })
