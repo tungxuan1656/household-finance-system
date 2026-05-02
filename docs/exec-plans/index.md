@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-04-30-feat-017-expense-entry-create-flow.md](plans/2026-04-30-feat-017-expense-entry-create-flow.md) - feat-017 fullstack expense creation: user-scoped POST /api/v1/expenses, visibility rules (private default, household requires explicit household_id), global static category/source pickers from feat-016, conditional household picker, DB migration 0003 for category_key/source_key columns.
 - None currently.
 
 ## Completed

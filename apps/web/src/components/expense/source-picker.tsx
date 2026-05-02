@@ -6,12 +6,14 @@ import { getSourceLabel } from '@/lib/reference-data/labels'
 import { SOURCE_KEYS, type SourceKey } from '@/types/reference-data'
 
 type SourcePickerProps = {
-  value: SourceKey
+  id?: string
+  value: SourceKey | undefined
   onValueChange: (value: SourceKey) => void
   disabled?: boolean
 }
 
 export const SourcePicker = ({
+  id,
   value,
   onValueChange,
   disabled = false,
@@ -19,10 +21,17 @@ export const SourcePicker = ({
   <NativeSelect
     aria-label={t('app.expenseReference.sourcePicker.ariaLabel')}
     disabled={disabled}
-    value={value}
+    id={id}
+    value={value ?? ''}
     onChange={(event) => {
-      onValueChange(event.target.value as SourceKey)
+      const val = event.target.value
+      if (val) {
+        onValueChange(val as SourceKey)
+      }
     }}>
+    <NativeSelectOption value=''>
+      {t('app.expenseReference.sourcePicker.placeholder')}
+    </NativeSelectOption>
     {SOURCE_KEYS.map((sourceKey) => (
       <NativeSelectOption key={sourceKey} value={sourceKey}>
         {getSourceLabel(sourceKey)}
