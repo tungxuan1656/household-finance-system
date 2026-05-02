@@ -11,6 +11,7 @@ describe('SourcePicker', () => {
     const options = screen.getAllByRole('option')
 
     expect(options.map((option) => option.getAttribute('value'))).toEqual([
+      '',
       'cash',
       'bank-transfer',
       'card',
