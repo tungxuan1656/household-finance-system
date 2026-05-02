@@ -3,7 +3,7 @@
   "name": "Expense detail & activity feed",
   "description": "Implement expense read flows. Backend: GET /api/v1/expenses (paginated feed for personal or household context; cursor-based; filters include date range, category_key, payer_id; server enforces visibility so private expenses stay personal while household feeds show only the explicitly selected household's shared expenses), GET /api/v1/expenses/:id (single expense detail; 403 if caller cannot see it). Expense records reference the global static category/source catalogs by stable key. Frontend: Expense Feed page (chronological list with amount, category icon, payer, date, visibility badge; load-more or infinite scroll), and Expense Detail page/sheet (full metadata: note, group tags, creator vs payer, visibility, timestamps, and explicit household context when shared). Per docs/product-specs/expense-tracking.md and data-visibility.md. Does NOT include search/filter controls (feat-021) or edit/delete (feat-019).",
   "dependencies": ["feat-017"],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-04-29"
+  "status": "in-progress",
+  "evidence": "docs/exec-plans/plans/2026-05-02-feat-018-expense-detail-activity-feed.md",
+  "updated_at": "2026-05-02"
 }
