@@ -1,5 +1,26 @@
 # Progress Log
 
+## 2026-05-02 — Marked feat-017 done in harness
+- Who: Codex
+- Summary: Updated the harness record for `feat-017` from `in_progress` to `done`, refreshed the feature timestamp, and aligned the feature index entry. No code files were changed in this session.
+- Files changed: harness/features/feat-017.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-05-02 — Synced mandatory frontend headings into docs/FRONTEND.md
+- Who: Codex
+- Summary: Checked whether the frontend guide already contained the mandatory AGENTS headings `Mandatory Component Decomposition Policy (Frontend)` and `Mandatory Pre-Read for UI Work`. The guidance already existed in substance, but not under the required headings, so `docs/FRONTEND.md` was updated with the exact section names and the pre-read non-compliance note while preserving the existing shadcn governance content.
+- Files changed: docs/FRONTEND.md, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
+## 2026-05-02 — Refactored AGENTS.md structure for faster scanning
+- Who: Codex
+- Summary: Reorganized `AGENTS.md` to reduce repetition and make the operational rules easier to scan. Consolidated the pre-GitNexus content into shorter sections for behavior, product context, startup workflow, session rules, artifacts, verification, references, and frontend requirements while preserving the auto-generated GitNexus block verbatim.
+- Files changed: AGENTS.md, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-04-30 — Created active ExecPlan for feat-017 expense entry create flow
 - Who: Prometheus
 - Summary: Created and registered the active ExecPlan for `feat-017` covering fullstack expense creation: user-scoped `POST /api/v1/expenses` with visibility rules (private default, household requires explicit `household_id`), global static category/source pickers from feat-016, payer defaulting to current user, currency auto-default (VND for private, household default for shared), conditional household picker appearing only for household-shared expenses, and DB migration 0003 adding `category_key`/`source_key` columns to `expenses` table. Locked decisions: user-scoped route (not household-scoped), category by key (not FK), title auto-populated from category label, group_ids excluded, current-user-only payer (MVP). Marked `feat-017` as `in_progress` in harness state.

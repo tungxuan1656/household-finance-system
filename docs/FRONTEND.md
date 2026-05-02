@@ -18,7 +18,7 @@ patterns unpredictably.
 - Keep copy, keyboard behavior, and visual hierarchy consistent across flows.
 - When a UI bug is fixed, add or update the matching validation step.
 
-## Component Decomposition Strategy (Required)
+## Mandatory Component Decomposition Policy (Frontend)
 
 - Build pages with an **orchestrator-first** pattern from the start:
   - Page-level file owns route params, store/query wiring, and high-level flow only.
@@ -39,7 +39,7 @@ patterns unpredictably.
   - Extract only the prop contracts that are actually reused.
   - Re-check naming/export conventions in `docs/references/frontend/component-structure-pattern.md` and `docs/references/frontend/naming-and-conventions-pattern.md`.
 
-## Mandatory Shadcn Governance
+## Mandatory Pre-Read for UI Work
 
 - UI work in `apps/web` must follow `docs/design-docs/shadcn-first-ui-web-guide.md`.
 - Before any UI task (design/implement/review), contributors must read:
@@ -47,6 +47,10 @@ patterns unpredictably.
   - `.agents/skills/shadcn/rules/styling.md`
   - `.agents/skills/shadcn/rules/forms.md`
   - `.agents/skills/shadcn/rules/composition.md`
+- Skipping this pre-read is non-compliant.
+
+## Mandatory Shadcn Governance
+
 - Base UI primitives must be imported from `@/components/ui/*` and used directly.
 - Do not create wrapper replacements for base primitives (`Button`, `Input`, `Card`, `Dialog`, etc.).
 - Shared feature components are allowed, but they must compose shadcn primitives internally.
