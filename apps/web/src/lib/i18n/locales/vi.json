@@ -477,6 +477,35 @@
       "titleTooLong": "Tiêu đề không được vượt quá 200 ký tự",
       "dateRequired": "Vui lòng chọn ngày",
       "noteTooLong": "Ghi chú không được vượt quá 1000 ký tự"
+    },
+    "feed": {
+      "title": "Chi tiêu gần đây",
+      "empty": "Chưa có chi tiêu nào",
+      "loadMore": "Tải thêm",
+      "loading": "Đang tải...",
+      "error": "Không thể tải chi tiêu"
+    },
+    "detail": {
+      "title": "Chi tiết chi tiêu",
+      "amount": "Số tiền",
+      "category": "Danh mục",
+      "source": "Nguồn",
+      "date": "Ngày",
+      "note": "Ghi chú",
+      "visibility": "Chế độ hiển thị",
+      "visibilityPrivate": "Riêng tư",
+      "visibilityHousehold": "Chung gia đình",
+      "payer": "Người thanh toán",
+      "creator": "Người tạo",
+      "createdAt": "Tạo lúc",
+      "updatedAt": "Cập nhật lúc",
+      "household": "Gia đình",
+      "notFound": "Không tìm thấy chi tiêu",
+      "forbidden": "Bạn không có quyền xem chi tiêu này"
+    },
+    "visibilityBadge": {
+      "private": "Riêng tư",
+      "household": "Chung"
     }
   }
 }

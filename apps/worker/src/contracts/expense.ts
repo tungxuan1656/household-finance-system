@@ -100,6 +100,7 @@ export interface ExpenseDTO {
   id: string
   title: string
   amountMinor: number
+  currencyCode: string
   categoryKey: (typeof REFERENCE_CATEGORY_KEYS)[number]
   sourceKey: (typeof REFERENCE_SOURCE_KEYS)[number]
   occurredAt: number
@@ -122,3 +123,26 @@ export const expensePathParamsSchema = () =>
       id: z.string().trim().min(1, 'Expense ID must not be blank'),
     })
     .strict()
+
+export const expenseListQuerySchema = () =>
+  z
+    .object({
+      cursor: z.string().optional(),
+      limit: z.coerce.number().int().min(1).max(100).default(20),
+      household_id: z.string().trim().min(1).optional(),
+      date_from: z.coerce.number().int().optional(),
+      date_to: z.coerce.number().int().optional(),
+      category_key: z.enum(REFERENCE_CATEGORY_KEYS).optional(),
+      payer_id: z.string().trim().min(1).optional(),
+      visibility: expenseVisibilitySchema.optional(),
+    })
+    .strict()
+
+export type ExpenseListQuery = z.output<
+  ReturnType<typeof expenseListQuerySchema>
+>
+
+export interface ExpenseListResponse {
+  items: ExpenseDTO[]
+  nextCursor: string | null
+}

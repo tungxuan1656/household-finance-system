@@ -1,3 +1,6 @@
 export * from './category-picker'
+export * from './expense-detail-card'
+export * from './expense-feed-item'
+export * from './expense-feed-list'
 export * from './expense-form'
 export * from './source-picker'

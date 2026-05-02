@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-02 — Completed feat-018: Expense detail & activity feed
+- Who: Orchestrator
+- Summary: Implemented full-stack expense read flows for feat-018. Backend: GET /api/v1/expenses (cursor-paginated feed with visibility enforcement, basic filters) and GET /api/v1/expenses/:id (403 for unauthorized). Frontend: Expense Feed page (chronological list with load-more), Expense Detail page (full metadata display). DB migration 0004 for personal feed and soft-delete indexes. 15 integration/unit tests (9 list + 6 detail). Review fixes: payerUserId type mismatch, dead code removal, invalid cursor 400, unsafe enum casts, accessibility, error handling.
+- Files changed: 24 files across worker and web (migration, contracts, repository, handlers, routes, tests, types, API, hooks, components, pages, i18n)
+- Blockers: none
+- Next steps: feat-019 (Expense update, delete & restore lifecycle) or feat-021 (Expense search, filters & pagination).
+
 ## 2026-05-02 — Marked feat-017 done in harness
 - Who: Codex
 - Summary: Updated the harness record for `feat-017` from `in_progress` to `done`, refreshed the feature timestamp, and aligned the feature index entry. No code files were changed in this session.

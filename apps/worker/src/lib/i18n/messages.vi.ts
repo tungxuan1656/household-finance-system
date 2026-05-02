@@ -65,6 +65,8 @@ export const viMessages = {
     'Mã tiền tệ cho hộ gia đình không hợp lệ.',
   'expenses.mustProvideHouseholdIdWhenHouseholdVisible':
     'Cần cung cấp householdId khi hiển thị trong hộ gia đình.',
+  'expenses.expenseNotFound': 'Không tìm thấy chi tiêu.',
+  'expenses.expenseForbidden': 'Bạn không có quyền xem chi tiêu này.',
 } as const
 
 export type MessageKey = keyof typeof viMessages

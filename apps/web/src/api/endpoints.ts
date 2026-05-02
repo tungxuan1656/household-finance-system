@@ -36,5 +36,7 @@ export const API_ENDPOINTS = {
   },
   expenses: {
     create: '/expenses',
+    list: '/expenses',
+    detail: (id: string) => `/expenses/${id}`,
   },
 } as const

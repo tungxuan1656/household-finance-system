@@ -17,18 +17,21 @@ import { newId } from '@/utils/id'
 
 type CreateExpenseHandlerCtx = Context<AppBindings>
 
-// Minor-unit decimal places per currency (ISO 4217)
-const CURRENCY_DECIMALS: Record<string, number> = {
-  VND: 0,
-  USD: 2,
-  EUR: 2,
-  GBP: 2,
-  JPY: 0,
-  KRW: 0,
+const getCurrencyFractionDigits = (currencyCode: string): number => {
+  try {
+    return (
+      new Intl.NumberFormat('en', {
+        style: 'currency',
+        currency: currencyCode,
+      }).resolvedOptions().maximumFractionDigits ?? 2
+    )
+  } catch {
+    return 2
+  }
 }
 
 const getMinorUnits = (amount: number, currencyCode: string): number => {
-  const decimals = CURRENCY_DECIMALS[currencyCode] ?? 2
+  const decimals = getCurrencyFractionDigits(currencyCode)
   const factor = 10 ** decimals
 
   return Math.round(amount * factor)
@@ -122,6 +125,7 @@ export const createExpenseHandler = async (
     id: created.id,
     title: created.title,
     amountMinor: created.amountMinor,
+    currencyCode: created.currencyCode,
     categoryKey: created.categoryKey as ExpenseDTO['categoryKey'],
     sourceKey: created.sourceKey as ExpenseDTO['sourceKey'],
     occurredAt: created.occurredAt,
