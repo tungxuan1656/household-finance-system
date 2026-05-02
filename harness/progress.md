@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-04-30 — Created active ExecPlan for feat-017 expense entry create flow
+- Who: Prometheus
+- Summary: Created and registered the active ExecPlan for `feat-017` covering fullstack expense creation: user-scoped `POST /api/v1/expenses` with visibility rules (private default, household requires explicit `household_id`), global static category/source pickers from feat-016, payer defaulting to current user, currency auto-default (VND for private, household default for shared), conditional household picker appearing only for household-shared expenses, and DB migration 0003 adding `category_key`/`source_key` columns to `expenses` table. Locked decisions: user-scoped route (not household-scoped), category by key (not FK), title auto-populated from category label, group_ids excluded, current-user-only payer (MVP). Marked `feat-017` as `in_progress` in harness state.
+- Files changed: docs/exec-plans/plans/2026-04-30-feat-017-expense-entry-create-flow.md, docs/exec-plans/index.md, harness/features/feat-017.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: execute `feat-017` implementation from the new ExecPlan and capture verification evidence before marking the feature done.
+
 ## 2026-04-29 — Applied review fixes for feat-016 category picker contract alignment
 - Who: Codex
 - Summary: Addressed post-implementation review findings for `feat-016` by updating `CategoryPicker` to render category icons from `iconUrl` and configuring combobox search labeling with translated category labels via `itemToStringLabel`. Extended component tests to assert icon rendering and translated-label search mapping behavior, while keeping source picker behavior unchanged.

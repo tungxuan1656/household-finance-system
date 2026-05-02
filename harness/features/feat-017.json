@@ -1,9 +1,9 @@
 {
   "id": "feat-017",
   "name": "Expense entry create flow",
-  "description": "Implement the expense create flow including the visibility model. Backend: POST /api/v1/expenses (requires: amount, category_key, source, payer_id, date; optional: note, group_ids, visibility, household_id). Expense visibility defaults to `private` for new entries. If the user switches the expense to `household`, the request must include an explicit `household_id` chosen for that submission; category selection remains independent from the household decision. Categories and sources come from the global static catalogs defined in feat-016, and expense create/edit flows may only use categories whose catalog `kind` is `expense`. Frontend: Add Expense page with form (amount-first), category picker, source picker, payer selector, date picker, note, group multi-select, visibility toggle, and explicit household picker that appears only for household-shared expenses. New expense is optimistically appended to the feed. Covers docs/product-specs/expense-tracking.md, expense-ownership.md, and data-visibility.md. Does NOT include edit/delete, search, or quick-add shortcut.",
+  "description": "Full-stack expense creation: user-scoped POST /api/v1/expenses with visibility rules (private default, household requires explicit household_id), global static category/source pickers (feat-016), payer defaulting to current user, currency auto-default (VND or household default), conditional household picker. Includes DB migration 0003 for category_key/source_key columns and constraint changes. Excludes edit/delete, search/pagination, groups, quick-add, and member payer list.",
   "dependencies": ["feat-015a", "feat-016"],
-  "status": "pending",
+  "status": "in_progress",
   "evidence": "",
-  "updated_at": "2026-04-29"
+  "updated_at": "2026-04-30"
 }
