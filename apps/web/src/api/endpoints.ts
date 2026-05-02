@@ -34,4 +34,7 @@ export const API_ENDPOINTS = {
   protected: {
     ping: '/protected/ping',
   },
+  expenses: {
+    create: '/expenses',
+  },
 } as const

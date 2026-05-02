@@ -34,6 +34,9 @@ function MorePage() {
         </CardHeader>
         <CardContent className='flex flex-col gap-2'>
           <Button asChild className='justify-start' variant='outline'>
+            <Link href={PATHS.ADD_EXPENSE}>{t('expense.addTitle')}</Link>
+          </Button>
+          <Button asChild className='justify-start' variant='outline'>
             <Link href={PATHS.HOUSEHOLDS}>
               {t('app.more.links.households')}
             </Link>

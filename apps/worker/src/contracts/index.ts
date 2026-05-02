@@ -1,4 +1,5 @@
 export * from './auth'
+export * from './expense'
 export * from './household'
 export * from './household-invitation'
 export * from './invitation'

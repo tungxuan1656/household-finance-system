@@ -186,7 +186,7 @@ Max Concurrent: 4 (Wave 1)
 
 ## TODOs
 
-- [ ] 1. Database Migration 0003 — category_key, source_key, and constraint changes
+- [x] 1. Database Migration 0003 — category_key, source_key, and constraint changes
 
   **What to do**:
   - Create `apps/worker/migrations/0003_expense_category_key_source_key.sql`
@@ -255,7 +255,7 @@ Max Concurrent: 4 (Wave 1)
   - Files: `apps/worker/migrations/0003_expense_category_key_source_key.sql`
   - Pre-commit: `pnpm --filter worker db:migrate:local`
 
-- [ ] 2. Worker Expense Contract — Zod request/response schemas
+- [x] 2. Worker Expense Contract — Zod request/response schemas
 
   **What to do**:
   - Create `apps/worker/src/contracts/expense.ts`
@@ -324,7 +324,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat(expense): add expense contract schemas and validation`
   - Files: `apps/worker/src/contracts/expense.ts`, `apps/worker/src/contracts/index.ts`, `apps/worker/test/unit/dto-expense.spec.ts`
 
-- [ ] 3. Web Expense Types + Form Schema
+- [x] 3. Web Expense Types + Form Schema
 
   **What to do**:
   - Create `apps/web/src/types/expense.ts`
@@ -392,7 +392,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat(expense): add web expense types and form schema`
   - Files: `apps/web/src/types/expense.ts`, `apps/web/src/lib/forms/expense.schema.ts`
 
-- [ ] 4. Web i18n Labels — Vietnamese strings for expense UI
+- [x] 4. Web i18n Labels — Vietnamese strings for expense UI
 
   **What to do**:
   - Add expense-related Vietnamese labels to `apps/web/src/lib/i18n/locales/vi.json`
@@ -439,7 +439,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat(expense): add Vietnamese i18n labels for expense form`
   - Files: `apps/web/src/lib/i18n/locales/vi.json`
 
-- [ ] 5. Worker Expense Repository — createExpense + findExpenseById
+- [x] 5. Worker Expense Repository — createExpense + findExpenseById
 
   **What to do**:
   - Create `apps/worker/src/db/repositories/expense-repository.ts`
@@ -498,7 +498,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat(expense): add expense repository with create and find operations`
   - Files: `apps/worker/src/db/repositories/expense-repository.ts`
 
-- [ ] 6. Worker Expense Handler + Route — POST /api/v1/expenses
+- [x] 6. Worker Expense Handler + Route — POST /api/v1/expenses
 
   **What to do**:
   - Create `apps/worker/src/handlers/expenses/create-expense.ts`
@@ -582,7 +582,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat(expense): add expense create handler and route`
   - Files: `apps/worker/src/handlers/expenses/create-expense.ts`, `apps/worker/src/routes/expenses.ts`, `apps/worker/src/index.ts`, `apps/worker/src/lib/i18n/messages.vi.ts`
 
-- [ ] 7. Web API Module + Endpoints + React Query Hooks
+- [x] 7. Web API Module + Endpoints + React Query Hooks
 
   **What to do**:
   - Update `apps/web/src/api/endpoints.ts` — add `expenses: { create: '/expenses' }`
@@ -639,7 +639,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat(expense): add web API module, endpoints, and React Query hooks`
   - Files: `apps/web/src/api/expense.ts`, `apps/web/src/api/endpoints.ts`, `apps/web/src/hooks/api/use-expense.ts`
 
-- [ ] 8. Worker Tests — unit + integration for expense creation
+- [x] 8. Worker Tests — unit + integration for expense creation
 
   **What to do**:
   - Create `apps/worker/test/integration/expenses.spec.ts`
@@ -710,7 +710,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat(expense): add worker integration tests for expense creation`
   - Files: `apps/worker/test/integration/expenses.spec.ts`, `apps/worker/src/lib/i18n/messages.vi.ts`
 
-- [ ] 9. Expense Form Component + Visibility Toggle
+- [x] 9. Expense Form Component + Visibility Toggle
 
   **What to do**:
   - Create `apps/web/src/components/expense/expense-form.tsx` — smart component composing the expense entry form
@@ -819,7 +819,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat(expense): add expense form component with visibility toggle`
   - Files: `apps/web/src/components/expense/expense-form.tsx`, `apps/web/src/components/expense/index.ts`
 
-- [ ] 10. Add Expense Page + Route — page orchestrator
+- [x] 10. Add Expense Page + Route — page orchestrator
 
   **What to do**:
   - Create `apps/web/src/views/app/add-expense-page.tsx` — page orchestrator
@@ -919,19 +919,19 @@ Max Concurrent: 4 (Wave 1)
 
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 
-- [ ] F1. **Plan Compliance Audit** — `oracle`
+- [x] F1. **Plan Compliance Audit** — `oracle`
   Read the plan end-to-end. For each "Must Have": verify implementation exists (read file, curl endpoint, run command). For each "Must NOT Have": search codebase for forbidden patterns — reject with file:line if found. Check evidence files exist in harness/features/. Compare deliverables against plan.
   Output: `Must Have [N/N] | Must NOT Have [N/N] | Tasks [N/N] | VERDICT: APPROVE/REJECT`
 
-- [ ] F2. **Code Quality Review** — `unspecified-high`
+- [x] F2. **Code Quality Review** — `unspecified-high`
   Run `pnpm typecheck` + `pnpm lint` + `pnpm test:worker` + `pnpm test:web`. Review all changed files for: `as any`/`@ts-ignore`, empty catches, console.log in prod, commented-out code, unused imports. Check AI slop: excessive comments, over-abstraction, generic names.
   Output: `Build [PASS/FAIL] | Lint [PASS/FAIL] | Tests [N pass/N fail] | Files [N clean/N issues] | VERDICT`
 
-- [ ] F3. **Real Manual QA** — `unspecified-high`
+- [x] F3. **Real Manual QA** — `unspecified-high`
   Start from clean state. Execute EVERY QA scenario from EVERY task — follow exact steps, capture evidence. Test cross-task integration (form submission creates expense via API, visibility rules enforced end-to-end). Test edge cases: private expense, household expense, invalid category, missing fields. Save to `.sisyphus/evidence/`.
   Output: `Scenarios [N/N pass] | Integration [N/N] | Edge Cases [N tested] | VERDICT`
 
-- [ ] F4. **Scope Fidelity Check** — `deep`
+- [x] F4. **Scope Fidelity Check** — `deep`
   For each task: read "What to do", read actual diff (git log/diff). Verify 1:1 — everything in spec was built (no missing), nothing beyond spec was built (no creep). Check "Must NOT do" compliance. Detect cross-task contamination. Flag unaccounted changes.
   Output: `Tasks [N/N compliant] | Contamination [CLEAN/N issues] | Unaccounted [CLEAN/N files] | VERDICT`
 

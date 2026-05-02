@@ -59,6 +59,12 @@ export const viMessages = {
     'Mã lời mời không hợp lệ hoặc không được để trống.',
   'invitations.tokenUnavailable': 'Lời mời đã hết hạn hoặc đã được sử dụng.',
   'invitations.alreadyMember': 'Bạn đã là thành viên của gia đình này.',
+  // Expense related messages (Vietnamese) - retained for future translations
+  'expenses.cannotCreateExpense': 'Không thể tạo chi tiêu.',
+  'expenses.invalidCurrencyForHousehold':
+    'Mã tiền tệ cho hộ gia đình không hợp lệ.',
+  'expenses.mustProvideHouseholdIdWhenHouseholdVisible':
+    'Cần cung cấp householdId khi hiển thị trong hộ gia đình.',
 } as const
 
 export type MessageKey = keyof typeof viMessages

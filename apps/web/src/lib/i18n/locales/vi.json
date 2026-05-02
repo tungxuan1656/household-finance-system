@@ -446,5 +446,32 @@
       },
       "title": "Điều hướng khung ứng dụng"
     }
+  },
+  "expense": {
+    "addTitle": "Thêm chi tiêu",
+    "amount": "Số tiền",
+    "category": "Danh mục",
+    "source": "Nguồn",
+    "date": "Ngày",
+    "note": "Ghi chú",
+    "visibility": {
+      "private": "Riêng tư",
+      "household": "Chung gia đình"
+    },
+    "selectHousehold": "Chọn gia đình",
+    "payer": "Người thanh toán",
+    "title": "Tiêu đề",
+    "success": "Đã thêm chi tiêu thành công",
+    "error": {
+      "amountPositive": "Số tiền phải lớn hơn 0",
+      "amountRequired": "Vui lòng nhập số tiền",
+      "categoryRequired": "Vui lòng chọn danh mục",
+      "sourceRequired": "Vui lòng chọn nguồn",
+      "householdRequired": "Cần chọn gia đình khi chia sẻ chi tiêu",
+      "titleRequired": "Vui lòng nhập tiêu đề",
+      "titleTooLong": "Tiêu đề không được vượt quá 200 ký tự",
+      "dateRequired": "Vui lòng chọn ngày",
+      "noteTooLong": "Ghi chú không được vượt quá 1000 ký tự"
+    }
   }
 }
