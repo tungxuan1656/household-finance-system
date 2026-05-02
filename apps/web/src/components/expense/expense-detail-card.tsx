@@ -5,19 +5,13 @@ import { format } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { formatExpenseAmount } from '@/lib/format-expense-amount'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel, getSourceLabel } from '@/lib/reference-data/labels'
 import type { ExpenseDTO } from '@/types/expense'
 
 type ExpenseDetailCardProps = {
   expense: ExpenseDTO
-}
-
-function formatAmount(amountMinor: number): string {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(amountMinor / 100)
 }
 
 function formatDate(timestamp: number): string {
@@ -64,7 +58,7 @@ export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
           {/* Core financial data */}
           <div className='flex flex-col gap-2'>
             <DetailRow label={t('expense.detail.amount')}>
-              {formatAmount(expense.amountMinor)}
+              {formatExpenseAmount(expense.amountMinor, expense.currencyCode)}
             </DetailRow>
             <DetailRow label={t('expense.detail.category')}>
               {getCategoryLabel(expense.categoryKey)}

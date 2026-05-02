@@ -47,7 +47,12 @@ describe('GET /api/v1/expenses - list expenses', () => {
 
     const payload = await parseJson<
       ApiEnvelope<{
-        items: Array<{ id: string; title: string; visibility: string }>
+        items: Array<{
+          id: string
+          title: string
+          visibility: string
+          currencyCode: string
+        }>
         nextCursor: string | null
       }>
     >(response)
@@ -61,6 +66,7 @@ describe('GET /api/v1/expenses - list expenses', () => {
     expect(payload.data.items.every((i) => i.visibility === 'private')).toBe(
       true,
     )
+    expect(payload.data.items.every((i) => i.currencyCode === 'VND')).toBe(true)
     // nextCursor is null when fewer items than the page limit
     expect(payload.data.nextCursor).toBeNull()
   })
@@ -141,6 +147,7 @@ describe('GET /api/v1/expenses - list expenses', () => {
           title: string
           householdId: string | null
           visibility: string
+          currencyCode: string
         }>
         nextCursor: string | null
       }>
@@ -151,6 +158,7 @@ describe('GET /api/v1/expenses - list expenses', () => {
     expect(payload.data.items[0].title).toBe('Shared dinner')
     expect(payload.data.items[0].householdId).toBe(householdId)
     expect(payload.data.items[0].visibility).toBe('household')
+    expect(payload.data.items[0].currencyCode).toBe('VND')
   })
 
   it('returns 403 when listing with household_id where user is not a member', async () => {
@@ -193,6 +201,209 @@ describe('GET /api/v1/expenses - list expenses', () => {
     const payload = await parseJson<ApiErrorEnvelope>(response)
     expect(payload.success).toBe(false)
     expect(payload.error.code).toBe('FORBIDDEN')
+  })
+
+  it('returns 400 for an invalid cursor', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-list-invalid-cursor:list-invalid-cursor@example.com',
+    )
+
+    const response = await SELF.fetch(
+      'https://example.com/api/v1/expenses?cursor=not-base64',
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(400)
+
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+    expect(payload.success).toBe(false)
+    expect(payload.error.code).toBe('INVALID_INPUT')
+  })
+
+  it('returns paginated results in occurred_at desc then id desc order', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-list-pagination:list-pagination@example.com',
+    )
+
+    const occurredAt = Date.now() - 1000
+    const titles = ['First inserted', 'Second inserted', 'Newest expense']
+    const timestamps = [occurredAt, occurredAt, occurredAt + 1000]
+
+    for (const [index, title] of titles.entries()) {
+      const res = await SELF.fetch('https://example.com/api/v1/expenses', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: 50000 + index,
+          categoryKey: 'food',
+          sourceKey: 'cash',
+          visibility: 'private',
+          title,
+          occurredAt: timestamps[index],
+        }),
+      })
+      expect(res.status).toBe(201)
+    }
+
+    const firstPageResponse = await SELF.fetch(
+      'https://example.com/api/v1/expenses?limit=2',
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(firstPageResponse.status).toBe(200)
+
+    const firstPage = await parseJson<
+      ApiEnvelope<{
+        items: Array<{
+          id: string
+          title: string
+          occurredAt: number
+        }>
+        nextCursor: string | null
+      }>
+    >(firstPageResponse)
+
+    expect(firstPage.success).toBe(true)
+    expect(firstPage.data.items).toHaveLength(2)
+    expect(firstPage.data.items[0].title).toBe('Newest expense')
+    expect(firstPage.data.items[0].occurredAt).toBe(occurredAt + 1000)
+    expect(firstPage.data.items[1].occurredAt).toBe(occurredAt)
+    expect(firstPage.data.nextCursor).not.toBeNull()
+
+    const secondPageResponse = await SELF.fetch(
+      `https://example.com/api/v1/expenses?limit=2&cursor=${encodeURIComponent(firstPage.data.nextCursor ?? '')}`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(secondPageResponse.status).toBe(200)
+
+    const secondPage = await parseJson<
+      ApiEnvelope<{
+        items: Array<{
+          id: string
+          title: string
+          occurredAt: number
+        }>
+        nextCursor: string | null
+      }>
+    >(secondPageResponse)
+
+    expect(secondPage.success).toBe(true)
+    expect(secondPage.data.items).toHaveLength(1)
+    expect(secondPage.data.items[0].occurredAt).toBe(occurredAt)
+    expect(firstPage.data.items[1].id > secondPage.data.items[0].id).toBe(true)
+    expect(secondPage.data.nextCursor).toBeNull()
+  })
+
+  it('does not return household expenses in the personal feed after the creator leaves the household', async () => {
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-list-former-owner:list-former-owner@example.com',
+    )
+    const member = await exchangeAccessToken(
+      'test:firebase-user-list-former-member:list-former-member@example.com',
+    )
+
+    const householdRes = await SELF.fetch(
+      'https://example.com/api/v1/households',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ name: 'Former member list household' }),
+      },
+    )
+    expect(householdRes.status).toBe(201)
+    const householdPayload =
+      await parseJson<ApiEnvelope<{ id: string }>>(householdRes)
+    const householdId = householdPayload.data.id
+
+    const now = Date.now()
+    await env.DB.prepare(
+      `INSERT INTO household_memberships (
+          id, household_id, user_id, role, state, joined_at, created_at, updated_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    )
+      .bind(
+        'hm-list-former-member',
+        householdId,
+        member.user.id,
+        'member',
+        'active',
+        now,
+        now,
+        now,
+      )
+      .run()
+
+    const createRes = await SELF.fetch('https://example.com/api/v1/expenses', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${owner.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 98000,
+        categoryKey: 'food',
+        sourceKey: 'cash',
+        visibility: 'household',
+        householdId,
+        title: 'Former member shared expense',
+        occurredAt: Date.now(),
+      }),
+    })
+    expect(createRes.status).toBe(201)
+
+    await env.DB.prepare(
+      `UPDATE household_memberships
+          SET state = 'left',
+              updated_at = ?
+        WHERE household_id = ?
+          AND user_id = ?`,
+    )
+      .bind(Date.now(), householdId, owner.user.id)
+      .run()
+
+    const response = await SELF.fetch('https://example.com/api/v1/expenses', {
+      headers: {
+        authorization: `Bearer ${owner.accessToken}`,
+      },
+    })
+
+    expect(response.status).toBe(200)
+
+    const payload = await parseJson<
+      ApiEnvelope<{
+        items: Array<{
+          id: string
+          title: string
+          visibility: string
+          currencyCode: string
+        }>
+        nextCursor: string | null
+      }>
+    >(response)
+
+    expect(payload.success).toBe(true)
+    expect(payload.data.items).toHaveLength(0)
+    expect(payload.data.nextCursor).toBeNull()
   })
 
   it('filters expenses by date_from', async () => {

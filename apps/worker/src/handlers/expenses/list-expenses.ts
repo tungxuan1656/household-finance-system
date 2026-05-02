@@ -87,6 +87,7 @@ export const listExpensesHandler = async (
     id: expense.id,
     title: expense.title,
     amountMinor: expense.amountMinor,
+    currencyCode: expense.currencyCode,
     categoryKey: CATEGORY_KEYS.has(expense.categoryKey)
       ? (expense.categoryKey as ExpenseDTO['categoryKey'])
       : 'other',

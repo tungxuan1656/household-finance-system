@@ -100,6 +100,7 @@ export interface ExpenseDTO {
   id: string
   title: string
   amountMinor: number
+  currencyCode: string
   categoryKey: (typeof REFERENCE_CATEGORY_KEYS)[number]
   sourceKey: (typeof REFERENCE_SOURCE_KEYS)[number]
   occurredAt: number

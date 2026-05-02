@@ -39,7 +39,7 @@ export const getExpenseHandler = async (
   const expense = await findExpenseByIdRaw(db, id)
 
   if (!expense) {
-    throw notFound(locale, 'errors.resourceNotFound')
+    throw notFound(locale, 'expenses.expenseNotFound')
   }
 
   // Visibility enforcement:
@@ -47,26 +47,21 @@ export const getExpenseHandler = async (
   // - Household: only members of that household can see it
   if (expense.visibility === 'private') {
     if (expense.createdByUserId !== currentUser.id) {
-      throw forbidden(locale, 'errors.forbidden')
+      throw forbidden(locale, 'expenses.expenseForbidden')
     }
   } else if (expense.visibility === 'household') {
-    if (expense.createdByUserId !== currentUser.id) {
-      // Not the creator — check household membership
-      if (expense.householdId) {
-        const membership = await findActiveHouseholdMembership(
-          db,
-          currentUser.id,
-          expense.householdId,
-        )
+    if (!expense.householdId) {
+      throw forbidden(locale, 'expenses.expenseForbidden')
+    }
 
-        if (!membership) {
-          throw forbidden(locale, 'errors.forbidden')
-        }
-      } else {
-        // Household expense without household_id should not happen,
-        // but treat as forbidden if not the creator
-        throw forbidden(locale, 'errors.forbidden')
-      }
+    const membership = await findActiveHouseholdMembership(
+      db,
+      currentUser.id,
+      expense.householdId,
+    )
+
+    if (!membership) {
+      throw forbidden(locale, 'expenses.expenseForbidden')
     }
   }
 
@@ -75,6 +70,7 @@ export const getExpenseHandler = async (
     id: expense.id,
     title: expense.title,
     amountMinor: expense.amountMinor,
+    currencyCode: expense.currencyCode,
     categoryKey: CATEGORY_KEYS.has(expense.categoryKey)
       ? (expense.categoryKey as ExpenseDTO['categoryKey'])
       : 'other',

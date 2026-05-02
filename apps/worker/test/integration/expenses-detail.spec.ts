@@ -54,6 +54,7 @@ describe('GET /api/v1/expenses/:id - expense detail', () => {
         id: string
         title: string
         amountMinor: number
+        currencyCode: string
         categoryKey: string
         sourceKey: string
         occurredAt: number
@@ -71,6 +72,7 @@ describe('GET /api/v1/expenses/:id - expense detail', () => {
     expect(payload.data.id).toBe(expenseId)
     expect(payload.data.title).toBe('My private lunch')
     expect(payload.data.amountMinor).toBeGreaterThan(0)
+    expect(payload.data.currencyCode).toBe('VND')
     expect(payload.data.categoryKey).toBe('food')
     expect(payload.data.sourceKey).toBe('cash')
     expect(payload.data.visibility).toBe('private')
@@ -83,7 +85,7 @@ describe('GET /api/v1/expenses/:id - expense detail', () => {
     expect(typeof payload.data.updatedAt).toBe('number')
   })
 
-  it('returns household expense when user is a member', async () => {
+  it('returns household expense when user is a member with household currency and correct minor units', async () => {
     const owner = await exchangeAccessToken(
       'test:firebase-user-detail-household-owner:detail-hh-owner@example.com',
     )
@@ -100,7 +102,10 @@ describe('GET /api/v1/expenses/:id - expense detail', () => {
           authorization: `Bearer ${owner.accessToken}`,
           'content-type': 'application/json',
         },
-        body: JSON.stringify({ name: 'Detail Test Household' }),
+        body: JSON.stringify({
+          name: 'Detail Test Household',
+          defaultCurrencyCode: 'BHD',
+        }),
       },
     )
     expect(householdRes.status).toBe(201)
@@ -136,7 +141,7 @@ describe('GET /api/v1/expenses/:id - expense detail', () => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        amount: 120000,
+        amount: 1.234,
         categoryKey: 'food',
         sourceKey: 'bank-transfer',
         visibility: 'household',
@@ -165,6 +170,8 @@ describe('GET /api/v1/expenses/:id - expense detail', () => {
       ApiEnvelope<{
         id: string
         title: string
+        amountMinor: number
+        currencyCode: string
         visibility: string
         householdId: string
       }>
@@ -173,8 +180,98 @@ describe('GET /api/v1/expenses/:id - expense detail', () => {
     expect(payload.success).toBe(true)
     expect(payload.data.id).toBe(expenseId)
     expect(payload.data.title).toBe('Household grocery run')
+    expect(payload.data.amountMinor).toBe(1234)
+    expect(payload.data.currencyCode).toBe('BHD')
     expect(payload.data.visibility).toBe('household')
     expect(payload.data.householdId).toBe(householdId)
+  })
+
+  it('returns 403 when the expense creator is no longer an active household member', async () => {
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-detail-former-owner:detail-former-owner@example.com',
+    )
+    const member = await exchangeAccessToken(
+      'test:firebase-user-detail-former-member:detail-former-member@example.com',
+    )
+
+    const householdRes = await SELF.fetch(
+      'https://example.com/api/v1/households',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ name: 'Former member household' }),
+      },
+    )
+    expect(householdRes.status).toBe(201)
+    const householdPayload =
+      await parseJson<ApiEnvelope<{ id: string }>>(householdRes)
+    const householdId = householdPayload.data.id
+
+    const now = Date.now()
+    await env.DB.prepare(
+      `INSERT INTO household_memberships (
+          id, household_id, user_id, role, state, joined_at, created_at, updated_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    )
+      .bind(
+        'hm-detail-former-member',
+        householdId,
+        member.user.id,
+        'member',
+        'active',
+        now,
+        now,
+        now,
+      )
+      .run()
+
+    const createRes = await SELF.fetch('https://example.com/api/v1/expenses', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${owner.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 98000,
+        categoryKey: 'food',
+        sourceKey: 'cash',
+        visibility: 'household',
+        householdId,
+        title: 'Former creator expense',
+        occurredAt: Date.now(),
+      }),
+    })
+    expect(createRes.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createRes)
+
+    await env.DB.prepare(
+      `UPDATE household_memberships
+          SET state = 'left',
+              updated_at = ?
+        WHERE household_id = ?
+          AND user_id = ?`,
+    )
+      .bind(Date.now(), householdId, owner.user.id)
+      .run()
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/expenses/${created.data.id}`,
+      {
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(403)
+
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+    expect(payload.success).toBe(false)
+    expect(payload.error.code).toBe('FORBIDDEN')
   })
 
   it('returns 403 when accessing a private expense of another user', async () => {
@@ -295,6 +392,54 @@ describe('GET /api/v1/expenses/:id - expense detail', () => {
 
     const response = await SELF.fetch(
       `https://example.com/api/v1/expenses/${fakeId}`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(404)
+
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+    expect(payload.success).toBe(false)
+    expect(payload.error.code).toBe('NOT_FOUND')
+  })
+
+  it('returns 404 for a soft-deleted expense', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-detail-soft-delete:detail-soft-delete@example.com',
+    )
+
+    const createRes = await SELF.fetch('https://example.com/api/v1/expenses', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 42000,
+        categoryKey: 'food',
+        sourceKey: 'cash',
+        visibility: 'private',
+        title: 'Soft deleted expense',
+        occurredAt: Date.now(),
+      }),
+    })
+    expect(createRes.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createRes)
+
+    await env.DB.prepare(
+      `UPDATE expenses
+          SET deleted_at = ?,
+              updated_at = ?
+        WHERE id = ?`,
+    )
+      .bind(Date.now(), Date.now(), created.data.id)
+      .run()
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/expenses/${created.data.id}`,
       {
         headers: {
           authorization: `Bearer ${auth.accessToken}`,

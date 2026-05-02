@@ -4,6 +4,7 @@ import { format } from 'date-fns'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { formatExpenseAmount } from '@/lib/format-expense-amount'
 import type { TranslationKey } from '@/lib/i18n/i18n-init'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
@@ -25,13 +26,6 @@ const VISIBILITY_BADGE_VARIANTS: Record<
 > = {
   private: 'outline',
   household: 'secondary',
-}
-
-function formatAmount(amountMinor: number): string {
-  return Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(amountMinor / 100)
 }
 
 function formatDate(occurredAt: number): string {
@@ -70,7 +64,7 @@ export function ExpenseFeedItem({ expense, onClick }: ExpenseFeedItemProps) {
         </div>
         <div className='flex flex-col items-end gap-1.5'>
           <span className='text-sm font-semibold tabular-nums'>
-            {formatAmount(expense.amountMinor)}
+            {formatExpenseAmount(expense.amountMinor, expense.currencyCode)}
           </span>
           <Badge variant={VISIBILITY_BADGE_VARIANTS[expense.visibility]}>
             {t(VISIBILITY_BADGE_LABELS[expense.visibility])}

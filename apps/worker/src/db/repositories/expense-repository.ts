@@ -271,9 +271,8 @@ export const listExpenses = async (
   } = input
 
   // Build WHERE conditions and bind params.
-  // Personal feed (no householdId): user sees their own expenses
-  //   (private + household they created) plus household expenses
-  //   where they are a member.
+  // Personal feed (no householdId): user sees their own private expenses
+  //   plus household expenses where they are an active member.
   // Household feed (with householdId): only that household's shared expenses.
   const conditions: string[] = ['e.deleted_at IS NULL']
   const params: unknown[] = []
@@ -285,10 +284,13 @@ export const listExpenses = async (
     conditions.push('e.household_id = ?')
     params.push(householdId)
   } else {
-    // Personal feed: expenses where user is creator OR
-    // household expenses where user is a member of that household.
+    // Personal feed: own private expenses OR household expenses
+    // where user is an active member of that household.
     conditions.push(`(
-      e.created_by_user_id = ?
+      (
+        e.visibility = 'private'
+        AND e.created_by_user_id = ?
+      )
       OR (
         e.visibility = 'household'
         AND e.household_id IN (
