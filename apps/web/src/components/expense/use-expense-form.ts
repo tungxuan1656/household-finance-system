@@ -19,21 +19,6 @@ import type { ExpenseDTO } from '@/types/expense'
 import type { CreateExpenseRequest } from '@/types/expense'
 import type { UpdateExpenseMutationInput } from '@/types/expense'
 
-export function timestampToLocalDate(ts: number): string {
-  const d = new Date(ts)
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
-
-export function localDateToTimestamp(dateStr: string): number {
-  const [year, month, day] = dateStr.split('-').map(Number)
-
-  return new Date(year, month - 1, day).getTime()
-}
-
 export function buildDefaultValues(
   initialValues?: ExpenseFormInputValues,
 ): Partial<ExpenseFormInputValues> {
@@ -101,27 +86,19 @@ export function useExpenseForm({
 
   const onSubmit = useCallback(
     (values: ExpenseFormInputValues) => {
-      const parsedValues = expenseFormSchema.safeParse(values)
-
-      if (!parsedValues.success) {
-        return
-      }
-
       const payload: CreateExpenseRequest = {
-        amount: parsedValues.data.amount,
-        categoryKey: parsedValues.data.categoryKey,
-        sourceKey: parsedValues.data.sourceKey,
-        title: parsedValues.data.title,
-        occurredAt: parsedValues.data.occurredAt,
-        ...(parsedValues.data.note ? { note: parsedValues.data.note } : {}),
-        visibility: parsedValues.data.visibility,
-        ...(parsedValues.data.visibility === 'household' &&
-        parsedValues.data.payerUserId
-          ? { payerUserId: parsedValues.data.payerUserId }
+        amount: values.amount,
+        categoryKey: values.categoryKey,
+        sourceKey: values.sourceKey,
+        title: values.title,
+        occurredAt: values.occurredAt,
+        ...(values.note ? { note: values.note } : {}),
+        visibility: values.visibility ?? 'private',
+        ...(values.visibility === 'household' && values.payerUserId
+          ? { payerUserId: values.payerUserId }
           : {}),
-        ...(parsedValues.data.visibility === 'household' &&
-        parsedValues.data.householdId
-          ? { householdId: parsedValues.data.householdId }
+        ...(values.visibility === 'household' && values.householdId
+          ? { householdId: values.householdId }
           : {}),
       }
 

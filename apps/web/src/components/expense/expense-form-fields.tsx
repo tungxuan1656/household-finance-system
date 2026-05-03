@@ -14,14 +14,13 @@ import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { localDateToTimestamp, timestampToLocalDate } from '@/lib/date-utils'
 import type { ExpenseFormInputValues } from '@/lib/forms/expense.schema'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import type { HouseholdDTO, HouseholdMemberDTO } from '@/types/household'
 import type { CurrentUserProfileDTO } from '@/types/profile'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
-
-import { localDateToTimestamp, timestampToLocalDate } from './use-expense-form'
 
 type FieldProps = {
   control: Control<ExpenseFormInputValues>
