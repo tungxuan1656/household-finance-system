@@ -1,30 +1,14 @@
 'use client'
 
-import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import { GroupForm } from '@/components/group/group-form'
+import {
+  ArchiveGroupDialog,
+  CreateGroupDialog,
+  EditGroupDialog,
+} from '@/components/group'
 import { GroupList } from '@/components/group/group-list'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 import {
   useArchiveExpenseGroupMutation,
   useCreateExpenseGroupMutation,
@@ -64,7 +48,6 @@ function GroupsPage() {
   ) => {
     try {
       await createMutation.mutateAsync(values as CreateExpenseGroupRequest)
-
       toast.success(t('groups.feedback.createSuccess'))
       setIsCreateDialogOpen(false)
     } catch {
@@ -73,16 +56,9 @@ function GroupsPage() {
   }
 
   const handleUpdate = async (values: UpdateExpenseGroupRequest) => {
-    if (!editingGroup) {
-      return
-    }
-
+    if (!editingGroup) return
     try {
-      await updateMutation.mutateAsync({
-        id: editingGroup.id,
-        payload: values,
-      })
-
+      await updateMutation.mutateAsync({ id: editingGroup.id, payload: values })
       toast.success(t('groups.feedback.updateSuccess'))
       setEditingGroup(null)
     } catch {
@@ -91,10 +67,7 @@ function GroupsPage() {
   }
 
   const handleArchive = async () => {
-    if (!archivingGroup) {
-      return
-    }
-
+    if (!archivingGroup) return
     try {
       await archiveMutation.mutateAsync(archivingGroup.id)
       toast.success(t('groups.feedback.archiveSuccess'))
@@ -116,31 +89,13 @@ function GroupsPage() {
           </p>
         </div>
         {selectedHouseholdId && (
-          <Dialog
+          <CreateGroupDialog
+            householdId={selectedHouseholdId}
+            isSubmitting={createMutation.isPending}
             open={isCreateDialogOpen}
-            onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button type='button' variant='outline'>
-                <Plus data-icon='inline-start' />
-                {t('groups.actions.addNew')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className='sm:max-w-md' showCloseButton={false}>
-              <DialogHeader>
-                <DialogTitle>{t('groups.create.title')}</DialogTitle>
-                <DialogDescription>
-                  {t('groups.create.description')}
-                </DialogDescription>
-              </DialogHeader>
-              <GroupForm
-                householdId={selectedHouseholdId}
-                isSubmitting={createMutation.isPending}
-                mode='create'
-                onCancel={() => setIsCreateDialogOpen(false)}
-                onSubmit={handleCreate}
-              />
-            </DialogContent>
-          </Dialog>
+            onOpenChange={setIsCreateDialogOpen}
+            onSubmit={handleCreate}
+          />
         )}
       </header>
 
@@ -156,70 +111,23 @@ function GroupsPage() {
         </p>
       )}
 
-      <Dialog
-        open={!!editingGroup}
+      <EditGroupDialog
+        group={editingGroup}
+        isSubmitting={updateMutation.isPending}
         onOpenChange={(open) => {
-          if (!open) {
-            setEditingGroup(null)
-          }
-        }}>
-        <DialogContent className='sm:max-w-md' showCloseButton={false}>
-          <DialogHeader>
-            <DialogTitle>{t('groups.edit.title')}</DialogTitle>
-            <DialogDescription>
-              {t('groups.edit.description')}
-            </DialogDescription>
-          </DialogHeader>
-          {editingGroup && (
-            <GroupForm
-              householdId={editingGroup.householdId}
-              initialValues={{
-                name: editingGroup.name,
-                description: editingGroup.description ?? undefined,
-                startDate: editingGroup.startDate ?? undefined,
-                endDate: editingGroup.endDate ?? undefined,
-                eventBudget: editingGroup.eventBudgetMinor ?? undefined,
-              }}
-              isSubmitting={updateMutation.isPending}
-              mode='edit'
-              onCancel={() => setEditingGroup(null)}
-              onSubmit={handleUpdate}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+          if (!open) setEditingGroup(null)
+        }}
+        onSubmit={handleUpdate}
+      />
 
-      <AlertDialog
-        open={!!archivingGroup}
+      <ArchiveGroupDialog
+        group={archivingGroup}
+        isSubmitting={archiveMutation.isPending}
+        onConfirm={() => void handleArchive()}
         onOpenChange={(open) => {
-          if (!open) {
-            setArchivingGroup(null)
-          }
-        }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('groups.archive.title')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('groups.archive.description')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={archiveMutation.isPending}>
-              {t('common.actions.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              disabled={archiveMutation.isPending}
-              onClick={(e) => {
-                e.preventDefault()
-                void handleArchive()
-              }}>
-              {archiveMutation.isPending
-                ? t('groups.actions.archiving')
-                : t('groups.actions.archive')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          if (!open) setArchivingGroup(null)
+        }}
+      />
     </div>
   )
 }

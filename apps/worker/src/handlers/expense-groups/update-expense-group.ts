@@ -1,56 +1,95 @@
+import type { Context } from 'hono'
+
 import type { ExpenseGroupDTO, UpdateExpenseGroupRequest } from '@/contracts'
+import {
+  expenseGroupPathParamsSchema,
+  updateExpenseGroupRequestSchema,
+} from '@/contracts'
 import {
   findExpenseGroupById,
   updateExpenseGroup as updateExpenseGroupRepo,
 } from '@/db/repositories/expense-group-repository'
-import { forbidden, notFound } from '@/lib/errors'
-import type { SupportedLocale } from '@/lib/i18n'
+import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
+import { forbidden, invalidInput, notFound } from '@/lib/errors'
+import { defaultLocale, formatValidationDetails } from '@/lib/i18n'
 import { canManageGroups } from '@/lib/permissions/household-policy'
-import type { AppBindings, HouseholdRole } from '@/types'
+import { readJsonBody } from '@/lib/validation'
+import type { AppBindings } from '@/types'
 
-export const updateExpenseGroup = async (
-  env: AppBindings['Bindings'],
-  groupId: string,
-  role: HouseholdRole,
-  locale: SupportedLocale,
-  input: UpdateExpenseGroupRequest,
+type UpdateExpenseGroupHandlerCtx = Context<AppBindings>
+
+export const updateExpenseGroupHandler = async (
+  ctx: UpdateExpenseGroupHandlerCtx,
 ): Promise<ExpenseGroupDTO> => {
-  if (!canManageGroups(role)) {
+  const locale = ctx.get('locale') ?? defaultLocale
+  const currentUser = ctx.get('currentUser')
+  const db = ctx.env.DB
+
+  const groupId = ctx.req.param('id')
+
+  const params = expenseGroupPathParamsSchema().safeParse({ id: groupId })
+  if (!params.success) {
+    throw invalidInput(
+      locale,
+      'errors.invalidRequestBody',
+      formatValidationDetails(params.error.issues, locale),
+    )
+  }
+
+  const group = await findExpenseGroupById(db, params.data.id)
+  if (!group) {
+    throw notFound(locale, 'errors.resourceNotFound')
+  }
+
+  const membership = await findActiveHouseholdMembership(
+    db,
+    currentUser.id,
+    group.householdId,
+  )
+  if (!membership) {
+    throw notFound(locale, 'errors.resourceNotFound')
+  }
+
+  if (!canManageGroups(membership.role)) {
     throw forbidden(locale, 'errors.forbidden')
   }
 
-  const updated = await updateExpenseGroupRepo(env.DB, groupId, {
-    name: input.name,
-    description:
-      input.description !== undefined ? input.description : undefined,
-    startDate: input.startDate !== undefined ? input.startDate : undefined,
-    endDate: input.endDate !== undefined ? input.endDate : undefined,
+  const body = await readJsonBody<UpdateExpenseGroupRequest>(
+    ctx.req.raw,
+    updateExpenseGroupRequestSchema(),
+    locale,
+  )
+
+  const updated = await updateExpenseGroupRepo(db, params.data.id, {
+    name: body.name,
+    description: body.description !== undefined ? body.description : undefined,
+    startDate: body.startDate !== undefined ? body.startDate : undefined,
+    endDate: body.endDate !== undefined ? body.endDate : undefined,
     eventBudgetMinor:
-      input.eventBudget !== undefined ? input.eventBudget : undefined,
+      body.eventBudget !== undefined ? body.eventBudget : undefined,
   })
 
   if (!updated) {
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  const group = await findExpenseGroupById(env.DB, groupId)
-
-  if (!group) {
+  const refreshed = await findExpenseGroupById(db, params.data.id)
+  if (!refreshed) {
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
   return {
-    id: group.id,
-    name: group.name,
-    description: group.description,
-    status: group.status,
-    startDate: group.startDate,
-    endDate: group.endDate,
-    eventBudgetMinor: group.eventBudgetMinor,
-    totalSpendMinor: group.totalSpendMinor,
-    householdId: group.householdId,
-    createdByUserId: group.createdByUserId,
-    createdAt: group.createdAt,
-    updatedAt: group.updatedAt,
+    id: refreshed.id,
+    name: refreshed.name,
+    description: refreshed.description,
+    status: refreshed.status,
+    startDate: refreshed.startDate,
+    endDate: refreshed.endDate,
+    eventBudgetMinor: refreshed.eventBudgetMinor,
+    totalSpendMinor: refreshed.totalSpendMinor,
+    householdId: refreshed.householdId,
+    createdByUserId: refreshed.createdByUserId,
+    createdAt: refreshed.createdAt,
+    updatedAt: refreshed.updatedAt,
   }
 }
