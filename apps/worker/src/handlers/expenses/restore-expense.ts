@@ -7,7 +7,7 @@ import {
   restoreExpense,
   softDeleteExpense,
 } from '@/db/repositories/expense-repository'
-import { notFound } from '@/lib/errors'
+import { forbidden, internalError, notFound } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
 import type { AppBindings } from '@/types'
 
@@ -41,11 +41,17 @@ export const restoreExpenseHandler = async (
     { includeDeleted: true },
   )
 
-  if (!expense.deletedAt || !expense.householdId) {
+  if (!expense.deletedAt) {
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  await authorizeAdminForHouseholdExpense(db, expense, currentUser.id, locale)
+  if (expense.visibility === 'private') {
+    if (expense.createdByUserId !== currentUser.id) {
+      throw forbidden(locale, 'expenses.expenseForbidden')
+    }
+  } else {
+    await authorizeAdminForHouseholdExpense(db, expense, currentUser.id, locale)
+  }
 
   const restoredExpense = await restoreExpense(db, expense.id)
   if (!restoredExpense) {
@@ -65,7 +71,11 @@ export const restoreExpenseHandler = async (
       }),
     })
   } catch (error) {
-    await softDeleteExpense(db, expense.id)
+    const rollback = await softDeleteExpense(db, expense.id)
+
+    if (!rollback) {
+      throw internalError(locale, 'errors.rollbackFailed')
+    }
 
     throw error
   }

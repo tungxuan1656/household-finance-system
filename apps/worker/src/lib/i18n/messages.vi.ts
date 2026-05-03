@@ -20,6 +20,7 @@ export const viMessages = {
   'errors.forbidden': 'Bạn không có quyền thực hiện hành động này.',
   'errors.resourceNotFound': 'Không tìm thấy tài nguyên.',
   'errors.conflict': 'Dữ liệu đã tồn tại.',
+  'errors.rollbackFailed': 'Không thể khôi phục dữ liệu sau lỗi.',
   'validation.invalidType': 'Kiểu dữ liệu không hợp lệ.',
   'validation.invalidValue': 'Giá trị không hợp lệ.',
   'validation.invalidFormat': 'Định dạng không hợp lệ.',

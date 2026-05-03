@@ -621,4 +621,322 @@ describe('expense lifecycle routes', () => {
 
     expect(detailResponse.status).toBe(404)
   })
+
+  it('rejects update of non-existent expense with 404', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-expense-update-nonexistent:update-nonexistent@example.com',
+    )
+
+    const response = await SELF.fetch(
+      'https://example.com/api/v1/expenses/non-existent-id',
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: 10000,
+          categoryKey: 'food',
+          sourceKey: 'cash',
+          visibility: 'private',
+          title: 'Non-existent',
+          occurredAt: Date.now(),
+        }),
+      },
+    )
+
+    expect(response.status).toBe(404)
+
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+
+    expect(payload.error.code).toBe('NOT_FOUND')
+  })
+
+  it('rejects unauthorized update of private expense (non-owner)', async () => {
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-expense-update-private-owner:update-private-owner@example.com',
+    )
+    const other = await exchangeAccessToken(
+      'test:firebase-user-expense-update-private-other:update-private-other@example.com',
+    )
+
+    const created = await createExpense(owner.accessToken, {
+      amount: 50000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      visibility: 'private',
+      title: 'Private expense',
+      occurredAt: Date.now(),
+    })
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/expenses/${created.data.id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${other.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: 60000,
+          categoryKey: 'food',
+          sourceKey: 'cash',
+          visibility: 'private',
+          title: 'Updated private expense',
+          occurredAt: Date.now(),
+        }),
+      },
+    )
+
+    expect(response.status).toBe(403)
+
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+
+    expect(payload.error.code).toBe('FORBIDDEN')
+  })
+
+  it('rejects unauthorized restore of household expense (non-admin)', async () => {
+    const admin = await exchangeAccessToken(
+      'test:firebase-user-expense-restore-nonadmin-admin:restore-nonadmin-admin@example.com',
+    )
+    const member = await exchangeAccessToken(
+      'test:firebase-user-expense-restore-nonadmin-member:restore-nonadmin-member@example.com',
+    )
+    const otherMember = await exchangeAccessToken(
+      'test:firebase-user-expense-restore-nonadmin-other:restore-nonadmin-other@example.com',
+    )
+
+    const householdId = await createHousehold(
+      admin.accessToken,
+      'Restore non-admin household',
+    )
+
+    await addMemberToHousehold(householdId, member.user.id, 'member')
+    await addMemberToHousehold(householdId, otherMember.user.id, 'member')
+
+    const created = await createExpense(member.accessToken, {
+      amount: 75000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      visibility: 'household',
+      householdId,
+      title: 'Non-admin restore test',
+      occurredAt: Date.now(),
+    })
+
+    // The creator (member) soft-deletes the expense
+    const deleteResponse = await SELF.fetch(
+      `https://example.com/api/v1/expenses/${created.data.id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${member.accessToken}`,
+        },
+      },
+    )
+
+    expect(deleteResponse.status).toBe(200)
+
+    // otherMember (member, not admin) attempts to restore — should be forbidden
+    const restoreResponse = await SELF.fetch(
+      `https://example.com/api/v1/expenses/${created.data.id}/restore`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${otherMember.accessToken}`,
+        },
+      },
+    )
+
+    expect(restoreResponse.status).toBe(403)
+
+    const payload = await parseJson<ApiErrorEnvelope>(restoreResponse)
+
+    expect(payload.error.code).toBe('FORBIDDEN')
+  })
+
+  it('rejects update with invalid category', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-expense-update-invalidcat:update-invalidcat@example.com',
+    )
+
+    const created = await createExpense(auth.accessToken, {
+      amount: 30000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      visibility: 'private',
+      title: 'Valid expense',
+      occurredAt: Date.now(),
+    })
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/expenses/${created.data.id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: 30000,
+          categoryKey: 'invalid-category',
+          sourceKey: 'cash',
+          visibility: 'private',
+          title: 'Updated',
+          occurredAt: Date.now(),
+        }),
+      },
+    )
+
+    expect(response.status).toBe(400)
+
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+
+    expect(payload.error.code).toBe('INVALID_INPUT')
+  })
+
+  it('audits a private expense update', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-expense-audit-update-private:audit-update-private@example.com',
+    )
+
+    const created = await createExpense(auth.accessToken, {
+      amount: 45000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      visibility: 'private',
+      title: 'Private audit update',
+      occurredAt: Date.now(),
+    })
+
+    await SELF.fetch(`https://example.com/api/v1/expenses/${created.data.id}`, {
+      method: 'PATCH',
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 55000,
+        categoryKey: 'food',
+        sourceKey: 'cash',
+        visibility: 'private',
+        title: 'Updated private audit',
+        occurredAt: Date.now(),
+        note: 'updated note',
+      }),
+    })
+
+    const auditRow = await env.DB.prepare(
+      `SELECT action_type, target_type, target_id, household_id
+         FROM audit_logs
+        WHERE target_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1`,
+    )
+      .bind(created.data.id)
+      .first<{
+        action_type: string
+        target_type: string
+        target_id: string
+        household_id: string | null
+      }>()
+
+    expect(auditRow).not.toBeNull()
+    expect(auditRow?.action_type).toBe('expense.updated')
+    expect(auditRow?.target_type).toBe('expense')
+    expect(auditRow?.target_id).toBe(created.data.id)
+    expect(auditRow?.household_id).toBeNull()
+  })
+
+  it('audits a private expense delete', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-expense-audit-delete-private:audit-delete-private@example.com',
+    )
+
+    const created = await createExpense(auth.accessToken, {
+      amount: 22000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      visibility: 'private',
+      title: 'Private audit delete',
+      occurredAt: Date.now(),
+    })
+
+    await SELF.fetch(`https://example.com/api/v1/expenses/${created.data.id}`, {
+      method: 'DELETE',
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+      },
+    })
+
+    const auditRow = await env.DB.prepare(
+      `SELECT action_type, target_type, target_id, household_id
+         FROM audit_logs
+        WHERE target_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1`,
+    )
+      .bind(created.data.id)
+      .first<{
+        action_type: string
+        target_type: string
+        target_id: string
+        household_id: string | null
+      }>()
+
+    expect(auditRow).not.toBeNull()
+    expect(auditRow?.action_type).toBe('expense.deleted')
+    expect(auditRow?.target_type).toBe('expense')
+    expect(auditRow?.target_id).toBe(created.data.id)
+    expect(auditRow?.household_id).toBeNull()
+  })
+
+  it('private expense owner can restore their own deleted expense', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-expense-private-restore-owner:private-restore-owner@example.com',
+    )
+
+    const created = await createExpense(auth.accessToken, {
+      amount: 40000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      visibility: 'private',
+      title: 'Private restore test',
+      occurredAt: Date.now(),
+    })
+
+    const deleteResponse = await SELF.fetch(
+      `https://example.com/api/v1/expenses/${created.data.id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(deleteResponse.status).toBe(200)
+
+    const restoreResponse = await SELF.fetch(
+      `https://example.com/api/v1/expenses/${created.data.id}/restore`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(restoreResponse.status).toBe(200)
+
+    const restorePayload =
+      await parseJson<
+        ApiEnvelope<{ id: string; title: string; visibility: string }>
+      >(restoreResponse)
+
+    expect(restorePayload.data.id).toBe(created.data.id)
+    expect(restorePayload.data.title).toBe('Private restore test')
+    expect(restorePayload.data.visibility).toBe('private')
+  })
 })

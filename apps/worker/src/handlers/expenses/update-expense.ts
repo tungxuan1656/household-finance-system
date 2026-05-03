@@ -12,9 +12,8 @@ import {
 } from '@/db/repositories/expense-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
-import { forbidden, invalidInput, notFound } from '@/lib/errors'
+import { forbidden, internalError, invalidInput, notFound } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
-import { canCreateExpense } from '@/lib/permissions/household-policy'
 import { readJsonBody } from '@/lib/validation'
 import type { AppBindings } from '@/types'
 
@@ -78,7 +77,7 @@ export const updateExpenseHandler = async (
       nextHouseholdId,
     )
 
-    if (!targetMembership || !canCreateExpense(targetMembership.role)) {
+    if (!targetMembership) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
 
@@ -105,6 +104,11 @@ export const updateExpenseHandler = async (
   } else {
     nextHouseholdId = null
     currencyCode = 'VND'
+    if (body.payerUserId && body.payerUserId !== currentUser.id) {
+      throw invalidInput(locale, 'validation.invalidValue', {
+        path: ['payerUserId'],
+      })
+    }
     payerUserId = currentUser.id
   }
 
@@ -137,39 +141,41 @@ export const updateExpenseHandler = async (
   const auditHouseholdId =
     updatedExpense.householdId ?? existingExpense.householdId
 
-  if (auditHouseholdId) {
-    const changes = buildExpenseChangeSet(existingExpense, updatedExpense)
+  const changes = buildExpenseChangeSet(existingExpense, updatedExpense)
 
-    try {
-      await createAuditLogEntry(db, {
-        householdId: auditHouseholdId,
-        actorUserId: currentUser.id,
-        actionType: 'expense.updated',
-        targetType: 'expense',
-        targetId: updatedExpense.id,
-        payloadJson: JSON.stringify({
-          changes,
-          visibilityBefore: existingExpense.visibility,
-          visibilityAfter: updatedExpense.visibility,
-        }),
-      })
-    } catch (error) {
-      await updateExpense(db, {
-        expenseId: existingExpense.id,
-        householdId: existingExpense.householdId,
-        payerUserId: existingExpense.payerUserId,
-        categoryKey: existingExpense.categoryKey,
-        sourceKey: existingExpense.sourceKey,
-        amountMinor: existingExpense.amountMinor,
-        currencyCode: existingExpense.currencyCode,
-        occurredAt: existingExpense.occurredAt,
-        visibility: existingExpense.visibility,
-        title: existingExpense.title,
-        note: existingExpense.note,
-      })
+  try {
+    await createAuditLogEntry(db, {
+      householdId: auditHouseholdId,
+      actorUserId: currentUser.id,
+      actionType: 'expense.updated',
+      targetType: 'expense',
+      targetId: updatedExpense.id,
+      payloadJson: JSON.stringify({
+        changes,
+        visibilityBefore: existingExpense.visibility,
+        visibilityAfter: updatedExpense.visibility,
+      }),
+    })
+  } catch (error) {
+    const rollback = await updateExpense(db, {
+      expenseId: existingExpense.id,
+      householdId: existingExpense.householdId,
+      payerUserId: existingExpense.payerUserId,
+      categoryKey: existingExpense.categoryKey,
+      sourceKey: existingExpense.sourceKey,
+      amountMinor: existingExpense.amountMinor,
+      currencyCode: existingExpense.currencyCode,
+      occurredAt: existingExpense.occurredAt,
+      visibility: existingExpense.visibility,
+      title: existingExpense.title,
+      note: existingExpense.note,
+    })
 
-      throw error
+    if (!rollback) {
+      throw internalError(locale, 'errors.rollbackFailed')
     }
+
+    throw error
   }
 
   return mapStoredExpenseToDto(updatedExpense)

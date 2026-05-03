@@ -7,7 +7,7 @@ import {
   restoreExpense,
   softDeleteExpense,
 } from '@/db/repositories/expense-repository'
-import { notFound } from '@/lib/errors'
+import { internalError, notFound } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
 import type { AppBindings } from '@/types'
 
@@ -46,25 +46,27 @@ export const deleteExpenseHandler = async (
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  if (expense.householdId) {
-    try {
-      await createAuditLogEntry(db, {
-        householdId: expense.householdId,
-        actorUserId: currentUser.id,
-        actionType: 'expense.deleted',
-        targetType: 'expense',
-        targetId: expense.id,
-        payloadJson: JSON.stringify({
-          title: expense.title,
-          visibility: expense.visibility,
-          amountMinor: expense.amountMinor,
-        }),
-      })
-    } catch (error) {
-      await restoreExpense(db, expense.id)
+  try {
+    await createAuditLogEntry(db, {
+      householdId: expense.householdId,
+      actorUserId: currentUser.id,
+      actionType: 'expense.deleted',
+      targetType: 'expense',
+      targetId: expense.id,
+      payloadJson: JSON.stringify({
+        title: expense.title,
+        visibility: expense.visibility,
+        amountMinor: expense.amountMinor,
+      }),
+    })
+  } catch (error) {
+    const rollback = await restoreExpense(db, expense.id)
 
-      throw error
+    if (!rollback) {
+      throw internalError(locale, 'errors.rollbackFailed')
     }
+
+    throw error
   }
 
   return { deleted: true }
