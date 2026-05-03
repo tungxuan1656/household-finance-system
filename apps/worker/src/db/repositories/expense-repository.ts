@@ -40,7 +40,7 @@ export interface StoredExpense {
 // Internal shape for mapping DB rows to StoredExpense
 type ExpenseRow = {
   id: string
-  household_id: string
+  household_id: string | null
   created_by_user_id: string
   payer_user_id: string
   category_key: string
@@ -192,6 +192,128 @@ export const findExpenseByIdRaw = async (
   return mapRow(row)
 }
 
+export const findExpenseByIdIncludingDeleted = async (
+  db: D1Database,
+  expenseId: string,
+): Promise<StoredExpense | null> => {
+  const row = await db
+    .prepare(
+      `SELECT id,
+              household_id,
+              created_by_user_id,
+              payer_user_id,
+              category_key,
+              source_key,
+              category_id,
+              amount_minor,
+              currency_code,
+              occurred_at,
+              visibility,
+              title,
+              note,
+              deleted_at,
+              created_at,
+              updated_at
+         FROM expenses
+        WHERE id = ?
+        LIMIT 1`,
+    )
+    .bind(expenseId)
+    .first<ExpenseRow>()
+
+  if (!row) return null
+
+  return mapRow(row)
+}
+
+export const updateExpense = async (
+  db: D1Database,
+  input: UpdateExpenseInput,
+): Promise<StoredExpense | null> => {
+  const now = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE expenses
+          SET household_id = ?,
+              payer_user_id = ?,
+              category_key = ?,
+              source_key = ?,
+              category_id = NULL,
+              amount_minor = ?,
+              currency_code = ?,
+              occurred_at = ?,
+              visibility = ?,
+              title = ?,
+              note = ?,
+              updated_at = ?
+        WHERE id = ?
+          AND deleted_at IS NULL`,
+    )
+    .bind(
+      input.householdId,
+      input.payerUserId,
+      input.categoryKey,
+      input.sourceKey,
+      input.amountMinor,
+      input.currencyCode,
+      input.occurredAt,
+      input.visibility,
+      input.title,
+      input.note,
+      now,
+      input.expenseId,
+    )
+    .run()
+
+  if (Number(result.meta.changes ?? 0) !== 1) {
+    return null
+  }
+
+  return findExpenseByIdRaw(db, input.expenseId)
+}
+
+export const softDeleteExpense = async (
+  db: D1Database,
+  expenseId: string,
+): Promise<boolean> => {
+  const now = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE expenses
+          SET deleted_at = ?,
+              updated_at = ?
+        WHERE id = ?
+          AND deleted_at IS NULL`,
+    )
+    .bind(now, now, expenseId)
+    .run()
+
+  return Number(result.meta.changes ?? 0) === 1
+}
+
+export const restoreExpense = async (
+  db: D1Database,
+  expenseId: string,
+): Promise<StoredExpense | null> => {
+  const now = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE expenses
+          SET deleted_at = NULL,
+              updated_at = ?
+        WHERE id = ?
+          AND deleted_at IS NOT NULL`,
+    )
+    .bind(now, expenseId)
+    .run()
+
+  if (Number(result.meta.changes ?? 0) !== 1) {
+    return null
+  }
+
+  return findExpenseByIdRaw(db, expenseId)
+}
+
 export interface ListExpensesInput {
   userId: string
   householdId?: string
@@ -207,6 +329,20 @@ export interface ListExpensesInput {
 export interface ListExpensesResult {
   items: StoredExpense[]
   nextCursor: string | null
+}
+
+export interface UpdateExpenseInput {
+  expenseId: string
+  householdId: string | null
+  payerUserId: string
+  categoryKey: string
+  sourceKey: string
+  amountMinor: number
+  currencyCode: string
+  occurredAt: number
+  visibility: 'private' | 'household'
+  title: string
+  note: string | null
 }
 
 // Decode a composite cursor (base64 of "occurred_at:id") into its parts.
@@ -372,4 +508,23 @@ export const listExpenses = async (
       : null
 
   return { items, nextCursor }
+}
+
+export const listDeletedExpensesByHousehold = async (
+  db: D1Database,
+  householdId: string,
+): Promise<StoredExpense[]> => {
+  const result = await db
+    .prepare(
+      `SELECT ${EXPENSE_COLUMNS}
+         FROM expenses
+        WHERE household_id = ?
+          AND visibility = 'household'
+          AND deleted_at IS NOT NULL
+        ORDER BY deleted_at DESC, id DESC`,
+    )
+    .bind(householdId)
+    .all<ExpenseRow>()
+
+  return result.results.map(mapRow)
 }

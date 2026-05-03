@@ -1,7 +1,7 @@
 import { newId } from '@/utils/id'
 
 export interface CreateAuditLogInput {
-  householdId: string
+  householdId: string | null
   actorUserId: string | null
   actionType: string
   targetType: string

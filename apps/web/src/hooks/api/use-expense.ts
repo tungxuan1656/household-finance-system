@@ -5,17 +5,32 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
-import { createExpense, getExpenseDetail, listExpenses } from '@/api/expense'
+import {
+  createExpense,
+  deleteExpense as deleteExpenseApi,
+  getExpenseDetail,
+  listDeletedExpenses,
+  listExpenses,
+  restoreExpense,
+  updateExpense,
+} from '@/api/expense'
 import type {
   CreateExpenseRequest,
   CreateExpenseResponse,
+  DeleteExpenseResponse,
+  ExpenseDTO,
   ExpenseListParams,
   ExpenseListResponse,
+  RestoreExpenseResponse,
+  UpdateExpenseMutationInput,
+  UpdateExpenseResponse,
 } from '@/types/expense'
-import type { ExpenseDTO } from '@/types/expense'
 
 export const EXPENSE_KEYS = {
   all: ['expenses'] as const,
+  deletedLists: () => [...EXPENSE_KEYS.all, 'deleted-list'] as const,
+  deletedList: (householdId: string) =>
+    [...EXPENSE_KEYS.deletedLists(), householdId] as const,
   lists: () => [...EXPENSE_KEYS.all, 'list'] as const,
   list: (filters?: ExpenseListParams) =>
     [...EXPENSE_KEYS.lists(), filters].filter(
@@ -30,6 +45,41 @@ export const useCreateExpenseMutation = () => {
   return useMutation<CreateExpenseResponse, Error, CreateExpenseRequest>({
     mutationFn: createExpense,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
+    },
+  })
+}
+
+export const useUpdateExpenseMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation<UpdateExpenseResponse, Error, UpdateExpenseMutationInput>({
+    mutationFn: updateExpense,
+    onSuccess: (expense) => {
+      queryClient.setQueryData(EXPENSE_KEYS.detail(expense.id), expense)
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
+    },
+  })
+}
+
+export const useDeleteExpenseMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation<DeleteExpenseResponse, Error, string>({
+    mutationFn: deleteExpenseApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
+    },
+  })
+}
+
+export const useRestoreExpenseMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation<RestoreExpenseResponse, Error, string>({
+    mutationFn: restoreExpense,
+    onSuccess: (expense) => {
+      queryClient.setQueryData(EXPENSE_KEYS.detail(expense.id), expense)
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
     },
   })
@@ -50,5 +100,13 @@ export const useExpenseDetailQuery = (id: string | undefined) => {
     queryKey: EXPENSE_KEYS.detail(id!),
     queryFn: () => getExpenseDetail(id!),
     enabled: !!id,
+  })
+}
+
+export const useDeletedExpenseListQuery = (householdId: string | undefined) => {
+  return useQuery<ExpenseListResponse, Error>({
+    queryKey: EXPENSE_KEYS.deletedList(householdId ?? 'unknown'),
+    queryFn: () => listDeletedExpenses(householdId!),
+    enabled: !!householdId,
   })
 }

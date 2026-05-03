@@ -28,10 +28,21 @@ export type CreateExpenseRequest = {
   note?: string
   visibility: ExpenseVisibility
   householdId?: string
+  payerUserId?: string
 }
 
 // The API client unwraps the envelope, so the response type is just ExpenseDTO
 export type CreateExpenseResponse = ExpenseDTO
+
+export type UpdateExpenseRequest = CreateExpenseRequest
+
+export type UpdateExpenseResponse = ExpenseDTO
+
+export type DeleteExpenseResponse = {
+  deleted: true
+}
+
+export type RestoreExpenseResponse = ExpenseDTO
 
 export type ExpenseListParams = {
   cursor?: string
@@ -47,4 +58,9 @@ export type ExpenseListParams = {
 export type ExpenseListResponse = {
   items: ExpenseDTO[]
   nextCursor: string | null
+}
+
+export type UpdateExpenseMutationInput = {
+  id: string
+  payload: UpdateExpenseRequest
 }

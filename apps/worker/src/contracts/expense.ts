@@ -96,6 +96,52 @@ export type CreateExpenseRequest = z.output<
   ReturnType<typeof createExpenseRequestSchema>
 >
 
+export const updateExpenseRequestSchema = () =>
+  z
+    .object({
+      amount: z.number().positive(messages.amountMustBePositive),
+      categoryKey: z.enum(REFERENCE_CATEGORY_KEYS, {
+        message: messages.categoryKeyInvalid,
+      }),
+      sourceKey: z.enum(REFERENCE_SOURCE_KEYS, {
+        message: messages.sourceKeyInvalid,
+      }),
+      title: z
+        .string()
+        .transform((val) => val.trim())
+        .refine((val) => val.length > 0, {
+          message: messages.titleMustNotBeBlank,
+        })
+        .refine((val) => val.length <= 200, {
+          message: messages.titleTooLong,
+        }),
+      occurredAt: z.number().int().positive(messages.occurredAtMustBePositive),
+      note: z.string().max(1000, messages.noteTooLong).optional(),
+      visibility: expenseVisibilitySchema,
+      householdId: z.string().trim().min(1).optional(),
+      payerUserId: z.string().trim().min(1).optional(),
+    })
+    .strict()
+    .refine((data) => data.visibility !== 'household' || !!data.householdId, {
+      message: messages.householdIdRequiredWhenHouseholdVisibility,
+      path: ['householdId'],
+    })
+    .refine(
+      (data) => {
+        const kind = categoryKindMap[data.categoryKey]
+
+        return kind === 'expense'
+      },
+      {
+        message: messages.categoryMustBeExpenseKind,
+        path: ['categoryKey'],
+      },
+    )
+
+export type UpdateExpenseRequest = z.output<
+  ReturnType<typeof updateExpenseRequestSchema>
+>
+
 export interface ExpenseDTO {
   id: string
   title: string
@@ -114,6 +160,14 @@ export interface ExpenseDTO {
 }
 
 export type CreateExpenseResponse = ExpenseDTO
+
+export type UpdateExpenseResponse = ExpenseDTO
+
+export interface DeleteExpenseResponse {
+  deleted: true
+}
+
+export type RestoreExpenseResponse = ExpenseDTO
 
 export type ExpensePathParams = z.output<typeof expensePathParamsSchema>
 
@@ -140,6 +194,17 @@ export const expenseListQuerySchema = () =>
 
 export type ExpenseListQuery = z.output<
   ReturnType<typeof expenseListQuerySchema>
+>
+
+export const deletedExpenseListQuerySchema = () =>
+  z
+    .object({
+      household_id: z.string().trim().min(1),
+    })
+    .strict()
+
+export type DeletedExpenseListQuery = z.output<
+  ReturnType<typeof deletedExpenseListQuerySchema>
 >
 
 export interface ExpenseListResponse {

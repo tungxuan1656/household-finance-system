@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useCallback, useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import type { z } from 'zod'
 
 import { CategoryPicker } from '@/components/expense/category-picker'
 import { SourcePicker } from '@/components/expense/source-picker'
@@ -20,20 +19,21 @@ import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { useCreateExpenseMutation } from '@/hooks/api/use-expense'
+import {
+  useCreateExpenseMutation,
+  useUpdateExpenseMutation,
+} from '@/hooks/api/use-expense'
 import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
-import { expenseFormSchema } from '@/lib/forms/expense.schema'
+import {
+  type ExpenseFormInputValues,
+  expenseFormSchema,
+} from '@/lib/forms/expense.schema'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
+import type { ExpenseDTO, UpdateExpenseMutationInput } from '@/types/expense'
 import type { CreateExpenseRequest } from '@/types/expense'
-import type { HouseholdDTO } from '@/types/household'
-import type {
-  CategoryKey,
-  ReferenceCategoryDTO,
-  SourceKey,
-} from '@/types/reference-data'
-
-type ExpenseFormInput = z.input<typeof expenseFormSchema>
+import type { HouseholdDTO, HouseholdMemberDTO } from '@/types/household'
+import type { ReferenceCategoryDTO } from '@/types/reference-data'
 
 function timestampToLocalDate(ts: number): string {
   const d = new Date(ts)
@@ -50,36 +50,63 @@ function localDateToTimestamp(dateStr: string): number {
   return new Date(year, month - 1, day).getTime()
 }
 
+type ExpenseFormMode = 'create' | 'edit'
+
 type ExpenseFormProps = {
   categories: ReferenceCategoryDTO[]
   households: HouseholdDTO[]
-  onSuccess?: () => void
+  expenseId?: string
+  initialValues?: ExpenseFormInputValues
+  mode?: ExpenseFormMode
+  onCancel?: () => void
   onError?: (error: Error) => void
+  payerOptions?: HouseholdMemberDTO[]
+  onSuccess?: (expense: ExpenseDTO) => void
 }
+
+const buildDefaultValues = (
+  initialValues?: ExpenseFormInputValues,
+): Partial<ExpenseFormInputValues> => ({
+  amount: initialValues?.amount,
+  categoryKey: initialValues?.categoryKey,
+  sourceKey: initialValues?.sourceKey,
+  title: initialValues?.title ?? '',
+  occurredAt: initialValues?.occurredAt ?? Date.now(),
+  note: initialValues?.note ?? '',
+  payerUserId: initialValues?.payerUserId,
+  visibility: initialValues?.visibility ?? 'private',
+  householdId: initialValues?.householdId,
+})
 
 export function ExpenseForm({
   categories,
   households,
-  onSuccess,
+  expenseId,
+  initialValues,
+  mode = 'create',
+  onCancel,
   onError,
+  payerOptions = [],
+  onSuccess,
 }: ExpenseFormProps) {
   const { data: profile } = useCurrentUserProfileQuery()
   const createExpense = useCreateExpenseMutation()
+  const updateExpense = useUpdateExpenseMutation()
 
-  const form = useForm<ExpenseFormInput>({
+  const defaultValues = useMemo(
+    () => buildDefaultValues(initialValues),
+    [initialValues],
+  )
+
+  const form = useForm<ExpenseFormInputValues>({
     resolver: zodResolver(expenseFormSchema),
-    defaultValues: {
-      amount: undefined as unknown as number,
-      categoryKey: undefined as unknown as CategoryKey,
-      sourceKey: undefined as unknown as SourceKey,
-      title: '',
-      occurredAt: Date.now(),
-      note: '',
-      visibility: 'private',
-      householdId: undefined,
-    },
+    defaultValues,
     mode: 'onSubmit',
   })
+
+  useEffect(() => {
+    form.reset(defaultValues)
+  }, [defaultValues, form])
 
   const watchedCategoryKey = form.watch('categoryKey')
   const watchedVisibility = form.watch('visibility')
@@ -91,32 +118,61 @@ export function ExpenseForm({
     return getCategoryLabel(watchedCategoryKey)
   }, [watchedCategoryKey])
 
-  // Smart default: populate title from category label when title is empty
   useEffect(() => {
-    if (categoryLabel && !watchedTitle) {
+    if (mode === 'create' && categoryLabel && !watchedTitle) {
       form.setValue('title', categoryLabel, { shouldValidate: true })
     }
-  }, [categoryLabel, watchedTitle, form])
+  }, [categoryLabel, watchedTitle, form, mode])
 
   const onSubmit = useCallback(
-    (values: ExpenseFormInput) => {
+    (values: ExpenseFormInputValues) => {
+      const parsedValues = expenseFormSchema.safeParse(values)
+
+      if (!parsedValues.success) {
+        return
+      }
+
       const payload: CreateExpenseRequest = {
-        amount: values.amount,
-        categoryKey: values.categoryKey,
-        sourceKey: values.sourceKey,
-        title: values.title,
-        occurredAt: values.occurredAt,
-        ...(values.note ? { note: values.note } : {}),
-        visibility: values.visibility ?? 'private',
-        ...(values.visibility === 'household' && values.householdId
-          ? { householdId: values.householdId }
+        amount: parsedValues.data.amount,
+        categoryKey: parsedValues.data.categoryKey,
+        sourceKey: parsedValues.data.sourceKey,
+        title: parsedValues.data.title,
+        occurredAt: parsedValues.data.occurredAt,
+        ...(parsedValues.data.note ? { note: parsedValues.data.note } : {}),
+        visibility: parsedValues.data.visibility,
+        ...(parsedValues.data.visibility === 'household' &&
+        parsedValues.data.payerUserId
+          ? { payerUserId: parsedValues.data.payerUserId }
+          : {}),
+        ...(parsedValues.data.visibility === 'household' &&
+        parsedValues.data.householdId
+          ? { householdId: parsedValues.data.householdId }
           : {}),
       }
 
+      if (mode === 'edit' && expenseId) {
+        const input: UpdateExpenseMutationInput = {
+          id: expenseId,
+          payload,
+        }
+
+        updateExpense.mutate(input, {
+          onSuccess: (expense) => {
+            onSuccess?.(expense)
+          },
+          onError: (error) => {
+            toast.error(t('expense.updateError'))
+            onError?.(error)
+          },
+        })
+
+        return
+      }
+
       createExpense.mutate(payload, {
-        onSuccess: () => {
-          form.reset()
-          onSuccess?.()
+        onSuccess: (expense) => {
+          form.reset(buildDefaultValues())
+          onSuccess?.(expense)
         },
         onError: (error) => {
           toast.error(t('expense.submitError'))
@@ -124,10 +180,10 @@ export function ExpenseForm({
         },
       })
     },
-    [createExpense, form, onSuccess, onError],
+    [createExpense, expenseId, form, mode, onError, onSuccess, updateExpense],
   )
 
-  const isSubmitting = createExpense.isPending
+  const isSubmitting = createExpense.isPending || updateExpense.isPending
 
   return (
     <form
@@ -146,6 +202,7 @@ export function ExpenseForm({
                 {...field}
                 aria-invalid={fieldState.invalid}
                 className='h-12 text-2xl font-semibold'
+                disabled={isSubmitting}
                 id='expense-amount'
                 inputMode='decimal'
                 min='0'
@@ -176,9 +233,7 @@ export function ExpenseForm({
                 disabled={isSubmitting}
                 id='expense-category'
                 value={field.value}
-                onValueChange={(value) => {
-                  field.onChange(value)
-                }}
+                onValueChange={(value) => field.onChange(value)}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -197,9 +252,7 @@ export function ExpenseForm({
                 disabled={isSubmitting}
                 id='expense-source'
                 value={field.value}
-                onValueChange={(value) => {
-                  field.onChange(value)
-                }}
+                onValueChange={(value) => field.onChange(value)}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -334,11 +387,40 @@ export function ExpenseForm({
 
         <Field>
           <FieldLabel>{t('expense.payer')}</FieldLabel>
-          <Input
-            readOnly
-            className='cursor-default bg-muted'
-            value={profile?.displayName ?? ''}
-          />
+          {watchedVisibility === 'household' && payerOptions.length > 0 ? (
+            <Controller
+              control={form.control}
+              name='payerUserId'
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <NativeSelect
+                    aria-invalid={fieldState.invalid}
+                    disabled={isSubmitting}
+                    value={field.value ?? profile?.id ?? ''}
+                    onChange={(event) => {
+                      field.onChange(event.target.value || undefined)
+                    }}>
+                    {payerOptions.map((member) => (
+                      <NativeSelectOption
+                        key={member.userId}
+                        value={member.userId}>
+                        {member.name}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                  {fieldState.invalid ? (
+                    <FieldError errors={[fieldState.error]} />
+                  ) : null}
+                </Field>
+              )}
+            />
+          ) : (
+            <Input
+              readOnly
+              className='cursor-default bg-muted'
+              value={profile?.displayName ?? ''}
+            />
+          )}
         </Field>
       </FieldGroup>
 
@@ -347,11 +429,25 @@ export function ExpenseForm({
           disabled={isSubmitting}
           type='button'
           variant='outline'
-          onClick={() => form.reset()}>
+          onClick={() => {
+            if (onCancel) {
+              onCancel()
+
+              return
+            }
+
+            form.reset(defaultValues)
+          }}>
           {t('common.actions.cancel')}
         </Button>
         <Button disabled={isSubmitting} type='submit'>
-          {isSubmitting ? t('expense.submitting') : t('expense.addTitle')}
+          {mode === 'edit'
+            ? isSubmitting
+              ? t('expense.updating')
+              : t('expense.saveChanges')
+            : isSubmitting
+              ? t('expense.submitting')
+              : t('expense.addTitle')}
         </Button>
       </div>
     </form>

@@ -36,7 +36,9 @@ export const API_ENDPOINTS = {
   },
   expenses: {
     create: '/expenses',
+    deleted: '/expenses/deleted',
     list: '/expenses',
     detail: (id: string) => `/expenses/${id}`,
+    restore: (id: string) => `/expenses/${id}/restore`,
   },
 } as const
