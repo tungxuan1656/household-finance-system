@@ -104,6 +104,30 @@ export const createExpenseHandler = async (
     })
   }
 
+  // Validate group assignments before creation
+  let groupIds: string[] = []
+  if (body.groupIds && body.groupIds.length > 0) {
+    if (body.visibility === 'private') {
+      throw conflict(locale, 'expenses.cannotAssignGroupToPrivateExpense')
+    }
+
+    if (!householdId) {
+      throw conflict(locale, 'expenses.cannotAssignGroupToPrivateExpense')
+    }
+
+    for (const groupId of body.groupIds) {
+      const group = await findExpenseGroupById(db, groupId)
+      if (!group) {
+        throw notFound(locale, 'errors.resourceNotFound')
+      }
+      if (group.householdId !== householdId) {
+        throw conflict(locale, 'errors.conflict')
+      }
+    }
+
+    groupIds = body.groupIds
+  }
+
   // Prepare input for repo
   const input: CreateExpenseInput = {
     id: newId(),
@@ -124,28 +148,15 @@ export const createExpenseHandler = async (
   // Create expense via repository
   const created = await createExpense(db, input)
 
-  // Wire group assignments if provided
-  let groupIds: string[] = []
-  if (body.groupIds && body.groupIds.length > 0 && created.householdId) {
-    for (const groupId of body.groupIds) {
-      const group = await findExpenseGroupById(db, groupId)
-      if (!group) {
-        throw notFound(locale, 'errors.resourceNotFound')
-      }
-      if (group.householdId !== created.householdId) {
-        throw conflict(locale, 'errors.conflict')
-      }
-    }
-
+  // Wire group assignments after successful creation
+  if (groupIds.length > 0 && created.householdId) {
     await replaceExpenseGroupAssignments(
       db,
       created.id,
       created.householdId,
-      body.groupIds,
+      groupIds,
       currentUser.id,
     )
-
-    groupIds = body.groupIds
   }
 
   // Map to DTO

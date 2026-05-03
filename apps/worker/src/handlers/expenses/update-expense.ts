@@ -134,7 +134,7 @@ export const updateExpenseHandler = async (
     occurredAt: body.occurredAt ?? existingExpense.occurredAt,
     visibility: body.visibility ?? existingExpense.visibility,
     title: body.title ?? existingExpense.title,
-    note: body.note ?? null,
+    note: body.note !== undefined ? body.note : existingExpense.note,
   }
 
   const updatedExpense = await updateExpense(db, updateInput)
