@@ -4,18 +4,17 @@ import type { DeleteExpenseResponse } from '@/contracts'
 import { expensePathParamsSchema } from '@/contracts'
 import { createAuditLogEntry } from '@/db/repositories/audit-log-repository'
 import {
-  findExpenseByIdRaw,
   restoreExpense,
   softDeleteExpense,
 } from '@/db/repositories/expense-repository'
-import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
-import { forbidden, notFound } from '@/lib/errors'
+import { notFound } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
-import {
-  canEditAnyExpense,
-  canEditOwnExpense,
-} from '@/lib/permissions/household-policy'
 import type { AppBindings } from '@/types'
+
+import {
+  authorizeExpenseAccess,
+  authorizeExpenseMutation,
+} from './expense-authorization'
 
 type DeleteExpenseHandlerCtx = Context<AppBindings>
 
@@ -33,39 +32,14 @@ export const deleteExpenseHandler = async (
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  const expense = await findExpenseByIdRaw(db, parsedParams.data.id)
-  if (!expense) {
-    throw notFound(locale, 'expenses.expenseNotFound')
-  }
+  const expense = await authorizeExpenseAccess(
+    db,
+    parsedParams.data.id,
+    currentUser.id,
+    locale,
+  )
 
-  if (expense.visibility === 'private') {
-    if (expense.createdByUserId !== currentUser.id) {
-      throw forbidden(locale, 'expenses.expenseForbidden')
-    }
-  } else {
-    if (!expense.householdId) {
-      throw forbidden(locale, 'expenses.expenseForbidden')
-    }
-
-    const membership = await findActiveHouseholdMembership(
-      db,
-      currentUser.id,
-      expense.householdId,
-    )
-
-    if (!membership) {
-      throw forbidden(locale, 'expenses.expenseForbidden')
-    }
-
-    const canDelete =
-      (expense.createdByUserId === currentUser.id &&
-        canEditOwnExpense(membership.role)) ||
-      canEditAnyExpense(membership.role)
-
-    if (!canDelete) {
-      throw forbidden(locale, 'expenses.expenseForbidden')
-    }
-  }
+  await authorizeExpenseMutation(db, expense, currentUser.id, locale)
 
   const deleted = await softDeleteExpense(db, expense.id)
   if (!deleted) {

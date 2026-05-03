@@ -2,7 +2,7 @@ import type { Context } from 'hono'
 
 import type { ExpenseListResponse } from '@/contracts'
 import { deletedExpenseListQuerySchema } from '@/contracts'
-import { listDeletedExpensesByHousehold } from '@/db/repositories/expense-repository'
+import { listDeletedExpensesByHousehold } from '@/db/repositories/expense-query-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { forbidden, invalidInput } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'

@@ -4,16 +4,17 @@ import type { RestoreExpenseResponse } from '@/contracts'
 import { expensePathParamsSchema } from '@/contracts'
 import { createAuditLogEntry } from '@/db/repositories/audit-log-repository'
 import {
-  findExpenseByIdIncludingDeleted,
   restoreExpense,
   softDeleteExpense,
 } from '@/db/repositories/expense-repository'
-import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
-import { forbidden, notFound } from '@/lib/errors'
+import { notFound } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
-import { canEditAnyExpense } from '@/lib/permissions/household-policy'
 import type { AppBindings } from '@/types'
 
+import {
+  authorizeAdminForHouseholdExpense,
+  authorizeExpenseAccess,
+} from './expense-authorization'
 import { mapStoredExpenseToDto } from './shared'
 
 type RestoreExpenseHandlerCtx = Context<AppBindings>
@@ -32,23 +33,19 @@ export const restoreExpenseHandler = async (
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  const expense = await findExpenseByIdIncludingDeleted(
+  const expense = await authorizeExpenseAccess(
     db,
     parsedParams.data.id,
+    currentUser.id,
+    locale,
+    { includeDeleted: true },
   )
-  if (!expense || !expense.deletedAt || !expense.householdId) {
+
+  if (!expense.deletedAt || !expense.householdId) {
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  const membership = await findActiveHouseholdMembership(
-    db,
-    currentUser.id,
-    expense.householdId,
-  )
-
-  if (!membership || !canEditAnyExpense(membership.role)) {
-    throw forbidden(locale, 'expenses.expenseForbidden')
-  }
+  await authorizeAdminForHouseholdExpense(db, expense, currentUser.id, locale)
 
   const restoredExpense = await restoreExpense(db, expense.id)
   if (!restoredExpense) {

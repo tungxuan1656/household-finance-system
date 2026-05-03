@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
+import { ExpenseDetailActions } from '@/components/expense/expense-detail-actions'
 import { ExpenseDetailCard } from '@/components/expense/expense-detail-card'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -137,19 +138,15 @@ function ExpenseDetailPage() {
     )
   }
 
-  const canManageExpense =
-    currentUser?.id === expense.createdByUserId ||
-    (expense.householdId != null &&
-      households?.items.some(
-        (household) =>
-          household.id === expense.householdId && household.role === 'admin',
-      ))
+  const isAdmin =
+    expense.householdId != null &&
+    (households?.items.some(
+      (household) =>
+        household.id === expense.householdId && household.role === 'admin',
+    ) ??
+      false)
 
   const handleDelete = () => {
-    if (!window.confirm(t('expense.deleteConfirm'))) {
-      return
-    }
-
     deleteExpense.mutate(expense.id, {
       onSuccess: () => {
         toast.success(t('expense.deleteSuccess'))
@@ -173,23 +170,14 @@ function ExpenseDetailPage() {
           </h1>
         </div>
 
-        {canManageExpense ? (
-          <div className='flex items-center gap-2'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => router.push(`/expenses/${expense.id}/edit`)}>
-              {t('expense.editAction')}
-            </Button>
-            <Button
-              disabled={deleteExpense.isPending}
-              type='button'
-              variant='destructive'
-              onClick={handleDelete}>
-              {t('expense.deleteAction')}
-            </Button>
-          </div>
-        ) : null}
+        <ExpenseDetailActions
+          currentUserId={currentUser?.id}
+          expense={expense}
+          isAdmin={isAdmin}
+          isDeleting={deleteExpense.isPending}
+          onDelete={handleDelete}
+          onEdit={() => router.push(`/expenses/${expense.id}/edit`)}
+        />
       </header>
 
       <ExpenseDetailCard expense={expense} />

@@ -7,7 +7,6 @@ import {
 } from '@/contracts'
 import { createAuditLogEntry } from '@/db/repositories/audit-log-repository'
 import {
-  findExpenseByIdRaw,
   updateExpense,
   type UpdateExpenseInput,
 } from '@/db/repositories/expense-repository'
@@ -15,14 +14,14 @@ import { findActiveHouseholdMembership } from '@/db/repositories/household-membe
 import { findHouseholdById } from '@/db/repositories/household-repository'
 import { forbidden, invalidInput, notFound } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
-import {
-  canCreateExpense,
-  canEditAnyExpense,
-  canEditOwnExpense,
-} from '@/lib/permissions/household-policy'
+import { canCreateExpense } from '@/lib/permissions/household-policy'
 import { readJsonBody } from '@/lib/validation'
 import type { AppBindings } from '@/types'
 
+import {
+  authorizeExpenseAccess,
+  authorizeExpenseMutation,
+} from './expense-authorization'
 import {
   buildExpenseChangeSet,
   getMinorUnits,
@@ -51,39 +50,14 @@ export const updateExpenseHandler = async (
     locale,
   )
 
-  const existingExpense = await findExpenseByIdRaw(db, parsedParams.data.id)
-  if (!existingExpense) {
-    throw notFound(locale, 'expenses.expenseNotFound')
-  }
+  const existingExpense = await authorizeExpenseAccess(
+    db,
+    parsedParams.data.id,
+    currentUser.id,
+    locale,
+  )
 
-  if (existingExpense.visibility === 'private') {
-    if (existingExpense.createdByUserId !== currentUser.id) {
-      throw forbidden(locale, 'expenses.expenseForbidden')
-    }
-  } else {
-    if (!existingExpense.householdId) {
-      throw forbidden(locale, 'expenses.expenseForbidden')
-    }
-
-    const sourceMembership = await findActiveHouseholdMembership(
-      db,
-      currentUser.id,
-      existingExpense.householdId,
-    )
-
-    if (!sourceMembership) {
-      throw forbidden(locale, 'expenses.expenseForbidden')
-    }
-
-    const canEdit =
-      (existingExpense.createdByUserId === currentUser.id &&
-        canEditOwnExpense(sourceMembership.role)) ||
-      canEditAnyExpense(sourceMembership.role)
-
-    if (!canEdit) {
-      throw forbidden(locale, 'expenses.expenseForbidden')
-    }
-  }
+  await authorizeExpenseMutation(db, existingExpense, currentUser.id, locale)
 
   let nextHouseholdId: string | null = null
   let currencyCode = 'VND'
