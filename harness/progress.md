@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-03 — Created active ExecPlan for feat-023 expense-to-group assignment & summaries
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-023` covering fullstack expense-to-group assignment and group summaries. Backend scope: add `groupIds` to expense create/update schemas and handlers (prerequisite discovery: not currently wired), `PATCH /api/v1/expenses/:id/groups` for bulk replace group assignments, `GET /api/v1/groups/:id/summary` for aggregated metrics with member contribution breakdown, repository methods for junction-table management, unit/integration tests. Frontend scope: group multi-select in expense form, Group Detail page at `/groups/[id]` with summary card and filtered expense list, bulk-assign modal for retroactive tagging, React Query hooks, API functions, i18n keys, component/hook tests. Explicitly out of scope: group analytics charts (feat-028/029), offline queueing, bulk expense creation, budget-exceeded notifications.
+- Files changed: docs/exec-plans/plans/2026-05-03-feat-023-expense-to-group-assignment-and-summaries.md, docs/exec-plans/index.md, harness/features/feat-023.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: execute Step 1 (backend contracts, repository methods), then Step 2 (handlers, routes), then Step 3 (tests), then frontend Steps 4-7, then run `./init.sh` and capture evidence before marking `feat-023` done.
+
 ## 2026-05-03 — Post-implementation code review fixes for feat-022
 - Who: Orchestrator
 - Summary: Addressed all issues from code review: (1) listExpenseGroupsByHousehold now computes totalSpendMinor via LEFT JOIN with expense_group_items/expenses instead of hardcoding 0; (2) updateExpenseGroupRequestSchema rejects empty PATCH bodies; (3) group-card status labels use i18n keys instead of hardcoded Vietnamese; (4) group-list error state shows error message instead of loading text; (5) group-form allows clearing optional fields in edit mode; (6) groups-page hides create button when no household selected; (7) added 2 integration tests: non-zero totalSpendMinor from linked expenses, and 401 unauthenticated coverage across all 5 endpoints. All verification passed.
