@@ -37,6 +37,7 @@ export const expenseFormSchema = z
       .trim()
       .max(1000, t('expense.error.noteTooLong'))
       .optional(),
+    payerUserId: z.string().optional(),
     visibility: z.enum(['private', 'household']).default('private'),
     householdId: z.string().optional(),
   })
@@ -54,4 +55,5 @@ export const expenseFormSchema = z
     },
   )
 
+export type ExpenseFormInputValues = z.input<typeof expenseFormSchema>
 export type ExpenseFormValues = z.infer<typeof expenseFormSchema>

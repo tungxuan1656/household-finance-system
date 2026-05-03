@@ -10,8 +10,10 @@ import {
   REFERENCE_CATEGORY_KEYS,
   REFERENCE_SOURCE_KEYS,
 } from '@/contracts'
-import { decodeCursor } from '@/db/repositories/expense-repository'
-import { listExpenses } from '@/db/repositories/expense-repository'
+import {
+  decodeCursor,
+  listExpenses,
+} from '@/db/repositories/expense-query-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { forbidden, invalidInput } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'

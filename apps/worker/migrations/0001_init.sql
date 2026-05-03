@@ -198,15 +198,14 @@ CREATE TABLE IF NOT EXISTS budget_limits (
 
 CREATE TABLE IF NOT EXISTS audit_logs (
   id TEXT PRIMARY KEY,
-  household_id TEXT NOT NULL,
+  household_id TEXT,
   actor_user_id TEXT,
   action_type TEXT NOT NULL,
   target_type TEXT NOT NULL,
   target_id TEXT NOT NULL,
   payload_json TEXT NOT NULL,
   created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
-  UNIQUE(household_id, id),
-  FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
+  FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE SET NULL,
   FOREIGN KEY(actor_user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 

@@ -7,6 +7,7 @@ Do not move files between folders; update sections below to reflect status.
 
 - [2026-04-30-feat-017-expense-entry-create-flow.md](plans/2026-04-30-feat-017-expense-entry-create-flow.md) - feat-017 fullstack expense creation: user-scoped POST /api/v1/expenses, visibility rules (private default, household requires explicit household_id), global static category/source pickers from feat-016, conditional household picker, DB migration 0003 for category_key/source_key columns.
 - [2026-05-02-feat-018-expense-detail-activity-feed.md](plans/2026-05-02-feat-018-expense-detail-activity-feed.md) - feat-018 fullstack expense read flows: GET /api/v1/expenses (cursor-paginated feed with visibility enforcement and basic filters), GET /api/v1/expenses/:id (detail with 403 for unauthorized), Expense Feed page (chronological list with infinite scroll), Expense Detail page (full metadata display), DB migration 0004 for feed query indexes.
+- [2026-05-03-feat-019-expense-update-delete-restore-lifecycle.md](plans/2026-05-03-feat-019-expense-update-delete-restore-lifecycle.md) - feat-019 fullstack expense lifecycle management: PATCH /api/v1/expenses/:id for mutable-field edits with immutable audit entries, DELETE /api/v1/expenses/:id for soft-delete, admin restore flow for deleted expenses, and web edit/delete/restore UI. Permanent delete remains explicitly out of scope pending product clarification.
 
 ## Completed
 

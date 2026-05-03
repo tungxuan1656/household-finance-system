@@ -1,14 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { listHouseholds } from '@/api/household'
+import { getHouseholdMembers, listHouseholds } from '@/api/household'
 
 export const HOUSEHOLD_KEYS = {
   all: ['households'] as const,
   list: () => [...HOUSEHOLD_KEYS.all, 'list'] as const,
+  members: (householdId: string) =>
+    [...HOUSEHOLD_KEYS.all, 'members', householdId] as const,
 }
 
 export const useHouseholdsQuery = () =>
   useQuery({
     queryKey: HOUSEHOLD_KEYS.list(),
     queryFn: listHouseholds,
+  })
+
+export const useHouseholdMembersQuery = (householdId: string | undefined) =>
+  useQuery({
+    queryKey: HOUSEHOLD_KEYS.members(householdId ?? 'unknown'),
+    queryFn: () => getHouseholdMembers(householdId!),
+    enabled: !!householdId,
   })
