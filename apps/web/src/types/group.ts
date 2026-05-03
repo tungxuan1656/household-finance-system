@@ -42,3 +42,22 @@ export type UpdateExpenseGroupMutationInput = {
   id: string
   payload: UpdateExpenseGroupRequest
 }
+
+export type MemberContributionDTO = {
+  userId: string
+  displayName: string
+  totalSpendMinor: number
+  expenseCount: number
+}
+
+export type GroupSummaryDTO = {
+  group: ExpenseGroupDTO
+  totalSpendMinor: number
+  expenseCount: number
+  budgetRemainingMinor: number | null
+  memberContributions: MemberContributionDTO[]
+}
+
+export type ReplaceExpenseGroupsRequest = {
+  groupIds: string[]
+}

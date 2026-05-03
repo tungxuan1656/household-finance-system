@@ -2,6 +2,7 @@ import type { Context } from 'hono'
 
 import type { ExpenseListResponse } from '@/contracts'
 import { deletedExpenseListQuerySchema } from '@/contracts'
+import { findGroupIdsForExpenses } from '@/db/repositories/expense-group-repository'
 import { listDeletedExpensesByHousehold } from '@/db/repositories/expense-query-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { forbidden, invalidInput } from '@/lib/errors'
@@ -47,8 +48,13 @@ export const listDeletedExpensesHandler = async (
     parsed.data.household_id,
   )
 
+  const expenseIds = items.map((e) => e.id)
+  const groupIdsMap = await findGroupIdsForExpenses(db, expenseIds)
+
   return {
-    items: items.map(mapStoredExpenseToDto),
+    items: items.map((expense) =>
+      mapStoredExpenseToDto(expense, groupIdsMap.get(expense.id) ?? []),
+    ),
     nextCursor: null,
   }
 }

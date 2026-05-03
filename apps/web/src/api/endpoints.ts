@@ -40,11 +40,13 @@ export const API_ENDPOINTS = {
     list: '/expenses',
     detail: (id: string) => `/expenses/${id}`,
     restore: (id: string) => `/expenses/${id}/restore`,
+    replaceGroups: (id: string) => `/expenses/${id}/groups`,
   },
   groups: {
     create: '/groups',
     list: '/groups',
     detail: (id: string) => `/groups/${id}`,
     archive: (id: string) => `/groups/${id}/archive`,
+    summary: (id: string) => `/groups/${id}/summary`,
   },
 } as const

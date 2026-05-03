@@ -352,14 +352,14 @@ Expected: Next.js build completes without errors.
 
 ## Progress
 
-- [ ] (2026-05-03) Step 1 — Backend contracts & repository methods
-- [ ] (2026-05-03) Step 2 — Backend handlers & route registration
-- [ ] (2026-05-03) Step 3 — Backend unit + integration tests
-- [ ] (2026-05-03) Step 4 — Frontend types & API layer
-- [ ] (2026-05-03) Step 5 — Frontend React Query hooks
-- [ ] (2026-05-03) Step 6 — Frontend components & views
-- [ ] (2026-05-03) Step 7 — Frontend i18n & tests
-- [ ] (2026-05-03) Step 8 — Full verification & harness updates
+- [x] (2026-05-03) Step 1 — Backend contracts & repository methods
+- [x] (2026-05-03) Step 2 — Backend handlers & route registration
+- [x] (2026-05-03) Step 3 — Backend unit + integration tests
+- [x] (2026-05-03) Step 4 — Frontend types & API layer
+- [x] (2026-05-03) Step 5 — Frontend React Query hooks
+- [x] (2026-05-03) Step 6 — Frontend components & views
+- [x] (2026-05-03) Step 7 — Frontend i18n & tests
+- [x] (2026-05-03) Step 8 — Full verification & harness updates
 
 ## Surprises & Discoveries
 

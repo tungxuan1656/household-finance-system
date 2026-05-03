@@ -11,6 +11,7 @@ import {
   getExpenseDetail,
   listDeletedExpenses,
   listExpenses,
+  replaceExpenseGroups,
   restoreExpense,
   updateExpense,
 } from '@/api/expense'
@@ -25,6 +26,10 @@ import type {
   UpdateExpenseMutationInput,
   UpdateExpenseResponse,
 } from '@/types/expense'
+import type {
+  ExpenseGroupDTO,
+  ReplaceExpenseGroupsRequest,
+} from '@/types/group'
 
 export const EXPENSE_KEYS = {
   all: ['expenses'] as const,
@@ -109,4 +114,24 @@ export const useDeletedExpenseListQuery = (householdId: string | undefined) => {
     queryFn: () => listDeletedExpenses(householdId!),
     enabled: !!householdId,
   })
+}
+
+type ReplaceExpenseGroupsMutationInput = {
+  expenseId: string
+  payload: ReplaceExpenseGroupsRequest
+}
+
+export const useReplaceExpenseGroupsMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation<ExpenseGroupDTO, Error, ReplaceExpenseGroupsMutationInput>(
+    {
+      mutationFn: ({ expenseId, payload }) =>
+        replaceExpenseGroups(expenseId, payload),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
+        queryClient.invalidateQueries({ queryKey: ['groups'] })
+      },
+    },
+  )
 }

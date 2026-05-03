@@ -74,6 +74,7 @@ export const createExpenseRequestSchema = () =>
       note: z.string().max(1000, messages.noteTooLong).optional(),
       visibility: expenseVisibilitySchema.default('private'),
       householdId: z.string().trim().min(1).optional(),
+      groupIds: z.array(z.string().trim().min(1)).optional(),
     })
     .strict()
     .refine((data) => data.visibility !== 'household' || !!data.householdId, {
@@ -95,13 +96,17 @@ export const createExpenseRequestSchema = () =>
 export const updateExpenseRequestSchema = () =>
   z
     .object({
-      amount: z.number().positive(messages.amountMustBePositive),
-      categoryKey: z.enum(REFERENCE_CATEGORY_KEYS, {
-        message: messages.categoryKeyInvalid,
-      }),
-      sourceKey: z.enum(REFERENCE_SOURCE_KEYS, {
-        message: messages.sourceKeyInvalid,
-      }),
+      amount: z.number().positive(messages.amountMustBePositive).optional(),
+      categoryKey: z
+        .enum(REFERENCE_CATEGORY_KEYS, {
+          message: messages.categoryKeyInvalid,
+        })
+        .optional(),
+      sourceKey: z
+        .enum(REFERENCE_SOURCE_KEYS, {
+          message: messages.sourceKeyInvalid,
+        })
+        .optional(),
       title: z
         .string()
         .transform((val) => val.trim())
@@ -110,12 +115,18 @@ export const updateExpenseRequestSchema = () =>
         })
         .refine((val) => val.length <= 200, {
           message: messages.titleTooLong,
-        }),
-      occurredAt: z.number().int().positive(messages.occurredAtMustBePositive),
+        })
+        .optional(),
+      occurredAt: z
+        .number()
+        .int()
+        .positive(messages.occurredAtMustBePositive)
+        .optional(),
       note: z.string().max(1000, messages.noteTooLong).optional(),
-      visibility: expenseVisibilitySchema,
+      visibility: expenseVisibilitySchema.optional(),
       householdId: z.string().trim().min(1).optional(),
       payerUserId: z.string().trim().min(1).optional(),
+      groupIds: z.array(z.string().trim().min(1)).optional(),
     })
     .strict()
     .refine((data) => data.visibility !== 'household' || !!data.householdId, {
@@ -124,6 +135,8 @@ export const updateExpenseRequestSchema = () =>
     })
     .refine(
       (data) => {
+        if (data.categoryKey === undefined) return true
+
         const kind = categoryKindMap[data.categoryKey]
 
         return kind === 'expense'
@@ -152,6 +165,7 @@ export const expenseListQuerySchema = () =>
       category_key: z.enum(REFERENCE_CATEGORY_KEYS).optional(),
       payer_id: z.string().trim().min(1).optional(),
       visibility: expenseVisibilitySchema.optional(),
+      group_id: z.string().trim().min(1).optional(),
     })
     .strict()
 

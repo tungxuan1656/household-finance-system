@@ -2,6 +2,7 @@ import type { Context } from 'hono'
 
 import type { CreateExpenseRequest, ExpenseDTO } from '@/contracts'
 import { createExpenseRequestSchema } from '@/contracts'
+import { replaceExpenseGroupAssignments } from '@/db/repositories/expense-group-repository'
 import {
   createExpense,
   type CreateExpenseInput,
@@ -120,6 +121,19 @@ export const createExpenseHandler = async (
   // Create expense via repository
   const created = await createExpense(db, input)
 
+  // Wire group assignments if provided
+  let groupIds: string[] = []
+  if (body.groupIds && body.groupIds.length > 0 && created.householdId) {
+    await replaceExpenseGroupAssignments(
+      db,
+      created.id,
+      created.householdId,
+      body.groupIds,
+    )
+
+    groupIds = body.groupIds
+  }
+
   // Map to DTO
   const dto: ExpenseDTO = {
     id: created.id,
@@ -133,6 +147,7 @@ export const createExpenseHandler = async (
     householdId: created.householdId,
     payerUserId: created.payerUserId,
     note: created.note,
+    groupIds,
     createdByUserId: created.createdByUserId,
     createdAt: created.createdAt,
     updatedAt: created.updatedAt,

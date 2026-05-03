@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 
+import { replaceExpenseGroupsHandler } from '@/handlers/expense-groups/replace-expense-groups'
 import { createExpenseHandler } from '@/handlers/expenses/create-expense'
 import { deleteExpenseHandler } from '@/handlers/expenses/delete-expense'
 import { getExpenseHandler } from '@/handlers/expenses/get-expense'
@@ -18,6 +19,7 @@ expensesRoutes.use('/expenses', authMiddleware)
 expensesRoutes.use('/expenses/deleted', authMiddleware)
 expensesRoutes.use('/expenses/:id', authMiddleware)
 expensesRoutes.use('/expenses/:id/restore', authMiddleware)
+expensesRoutes.use('/expenses/:id/groups', authMiddleware)
 
 // POST /api/v1/expenses
 expensesRoutes.post('/expenses', async (ctx) => {
@@ -64,6 +66,13 @@ expensesRoutes.delete('/expenses/:id', async (ctx) => {
 // POST /api/v1/expenses/:id/restore
 expensesRoutes.post('/expenses/:id/restore', async (ctx) => {
   const dto = await restoreExpenseHandler(ctx)
+
+  return success<typeof dto>(ctx, dto)
+})
+
+// PATCH /api/v1/expenses/:id/groups
+expensesRoutes.patch('/expenses/:id/groups', async (ctx) => {
+  const dto = await replaceExpenseGroupsHandler(ctx)
 
   return success<typeof dto>(ctx, dto)
 })

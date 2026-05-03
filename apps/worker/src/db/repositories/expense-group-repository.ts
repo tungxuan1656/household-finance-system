@@ -305,3 +305,263 @@ export const getExpenseGroupTotalSpend = async (
 
   return row?.total ?? 0
 }
+
+export const findGroupIdsForExpense = async (
+  db: D1Database,
+  expenseId: string,
+): Promise<string[]> => {
+  const rows = await db
+    .prepare(
+      `SELECT group_id
+         FROM expense_group_items
+        WHERE expense_id = ?`,
+    )
+    .bind(expenseId)
+    .all<{ group_id: string }>()
+
+  return rows.results.map((r) => r.group_id)
+}
+
+export const findGroupIdsForExpenses = async (
+  db: D1Database,
+  expenseIds: string[],
+): Promise<Map<string, string[]>> => {
+  if (expenseIds.length === 0) {
+    return new Map()
+  }
+
+  const placeholders = expenseIds.map(() => '?').join(',')
+  const rows = await db
+    .prepare(
+      `SELECT expense_id, group_id
+         FROM expense_group_items
+        WHERE expense_id IN (${placeholders})`,
+    )
+    .bind(...expenseIds)
+    .all<{ expense_id: string; group_id: string }>()
+
+  const map = new Map<string, string[]>()
+  for (const r of rows.results) {
+    const arr = map.get(r.expense_id) ?? []
+    arr.push(r.group_id)
+    map.set(r.expense_id, arr)
+  }
+
+  return map
+}
+
+// Replace all group assignments for an expense. This is idempotent (delete then insert).
+export const replaceExpenseGroupAssignments = async (
+  db: D1Database,
+  expenseId: string,
+  householdId: string,
+  groupIds: string[],
+): Promise<void> => {
+  const statements: D1PreparedStatement[] = []
+
+  // Delete existing assignments for this expense+household
+  statements.push(
+    db
+      .prepare(
+        `DELETE FROM expense_group_items
+          WHERE expense_id = ? AND household_id = ?`,
+      )
+      .bind(expenseId, householdId),
+  )
+
+  // Insert new assignments
+  const now = Date.now()
+  for (const groupId of groupIds) {
+    statements.push(
+      db
+        .prepare(
+          `INSERT INTO expense_group_items (
+            id, household_id, expense_id, group_id, assigned_by_user_id, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?)`,
+        )
+        .bind(
+          newId(),
+          householdId,
+          expenseId,
+          groupId,
+          '', // assignedByUserId is filled by caller if needed; kept for schema compat
+          now,
+        ),
+    )
+  }
+
+  await db.batch(statements)
+}
+
+export interface GroupSummaryResult {
+  totalSpendMinor: number
+  expenseCount: number
+  budgetRemainingMinor: number | null
+  memberContributions: Array<{
+    userId: string
+    displayName: string | null
+    totalSpendMinor: number
+    expenseCount: number
+  }>
+}
+
+export const getGroupSummary = async (
+  db: D1Database,
+  groupId: string,
+  eventBudgetMinor: number | null,
+): Promise<GroupSummaryResult> => {
+  const totalRow = await db
+    .prepare(
+      `SELECT COALESCE(SUM(e.amount_minor), 0) AS total_spend,
+              COUNT(DISTINCT e.id) AS expense_count
+         FROM expense_group_items egi
+         JOIN expenses e ON e.id = egi.expense_id AND e.deleted_at IS NULL
+        WHERE egi.group_id = ?`,
+    )
+    .bind(groupId)
+    .first<{ total_spend: number; expense_count: number }>()
+
+  const totalSpendMinor = Number(totalRow?.total_spend ?? 0)
+  const expenseCount = Number(totalRow?.expense_count ?? 0)
+
+  const memberRows = await db
+    .prepare(
+      `SELECT e.payer_user_id AS user_id,
+              COALESCE(u.display_name, e.payer_user_id) AS display_name,
+              COALESCE(SUM(e.amount_minor), 0) AS total_spend,
+              COUNT(DISTINCT e.id) AS expense_count
+         FROM expense_group_items egi
+         JOIN expenses e ON e.id = egi.expense_id AND e.deleted_at IS NULL
+         LEFT JOIN users u ON u.id = e.payer_user_id
+        WHERE egi.group_id = ?
+        GROUP BY e.payer_user_id`,
+    )
+    .bind(groupId)
+    .all<{
+      user_id: string
+      display_name: string | null
+      total_spend: number
+      expense_count: number
+    }>()
+
+  const memberContributions = memberRows.results.map((r) => ({
+    userId: r.user_id,
+    displayName: r.display_name,
+    totalSpendMinor: Number(r.total_spend),
+    expenseCount: Number(r.expense_count),
+  }))
+
+  return {
+    totalSpendMinor,
+    expenseCount,
+    budgetRemainingMinor:
+      eventBudgetMinor !== null ? eventBudgetMinor - totalSpendMinor : null,
+    memberContributions,
+  }
+}
+
+export interface ListExpensesByGroupInput {
+  groupId: string
+  cursor?: string
+  limit: number
+}
+
+export interface ListExpensesByGroupResult {
+  items: Array<{
+    id: string
+    title: string
+    amountMinor: number
+    currencyCode: string
+    categoryKey: string
+    sourceKey: string
+    occurredAt: number
+    visibility: 'private' | 'household'
+    payerUserId: string
+    note: string | null
+    createdAt: number
+    updatedAt: number
+  }>
+  nextCursor: string | null
+}
+
+export const listExpensesByGroup = async (
+  db: D1Database,
+  input: ListExpensesByGroupInput,
+): Promise<ListExpensesByGroupResult> => {
+  const limit = Math.min(input.limit, 100)
+
+  let cursorClause = ''
+  let cursorValue: number | null = null
+  if (input.cursor) {
+    try {
+      cursorValue = Number(atob(input.cursor))
+      cursorClause = 'AND e.occurred_at < ?3'
+    } catch {
+      // Invalid cursor ignored; will return first page
+    }
+  }
+
+  const rows = await db
+    .prepare(
+      `SELECT e.id,
+              e.title,
+              e.amount_minor,
+              e.currency_code,
+              e.category_key,
+              e.source_key,
+              e.occurred_at,
+              e.visibility,
+              e.payer_user_id,
+              e.note,
+              e.created_at,
+              e.updated_at
+         FROM expense_group_items egi
+         JOIN expenses e ON e.id = egi.expense_id AND e.deleted_at IS NULL
+        WHERE egi.group_id = ?1
+          ${cursorClause}
+        ORDER BY e.occurred_at DESC
+        LIMIT ?2`,
+    )
+    .bind(
+      input.groupId,
+      limit + 1,
+      ...(cursorValue !== null ? [cursorValue] : []),
+    )
+    .all<{
+      id: string
+      title: string
+      amount_minor: number
+      currency_code: string
+      category_key: string
+      source_key: string
+      occurred_at: number
+      visibility: 'private' | 'household'
+      payer_user_id: string
+      note: string | null
+      created_at: number
+      updated_at: number
+    }>()
+
+  const items = rows.results.slice(0, limit).map((r) => ({
+    id: r.id,
+    title: r.title,
+    amountMinor: r.amount_minor,
+    currencyCode: r.currency_code,
+    categoryKey: r.category_key,
+    sourceKey: r.source_key,
+    occurredAt: r.occurred_at,
+    visibility: r.visibility,
+    payerUserId: r.payer_user_id,
+    note: r.note,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  }))
+
+  let nextCursor: string | null = null
+  if (rows.results.length > limit) {
+    const last = items[items.length - 1]
+    nextCursor = btoa(String(last.occurredAt))
+  }
+
+  return { items, nextCursor }
+}

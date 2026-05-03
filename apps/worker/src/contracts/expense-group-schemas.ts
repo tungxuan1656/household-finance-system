@@ -121,3 +121,12 @@ export const expenseGroupPathParamsSchema = () =>
       id: z.string().trim().min(1, 'Expense group ID must not be blank'),
     })
     .strict()
+
+export const replaceExpenseGroupsRequestSchema = () =>
+  z
+    .object({
+      groupIds: z
+        .array(z.string().trim().min(1, 'Group ID must not be blank'))
+        .min(0, 'Group IDs must be an array'),
+    })
+    .strict()

@@ -65,6 +65,7 @@ export const listExpenses = async (
     categoryKey,
     payerId,
     visibility,
+    groupId,
   } = input
 
   // Build WHERE conditions and bind params.
@@ -126,6 +127,18 @@ export const listExpenses = async (
   if (visibility !== undefined) {
     conditions.push('e.visibility = ?')
     params.push(visibility)
+  }
+
+  if (groupId !== undefined) {
+    conditions.push(
+      `e.id IN (
+        SELECT eg.expense_id
+          FROM expense_group_items eg
+         WHERE eg.group_id = ?
+      )`,
+    )
+
+    params.push(groupId)
   }
 
   // Cursor pagination: occurred_at DESC, id DESC for tie-breaking.

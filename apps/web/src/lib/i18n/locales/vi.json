@@ -504,6 +504,7 @@
       "title": "Chi tiêu gần đây",
       "empty": "Chưa có chi tiêu nào",
       "loadMore": "Tải thêm",
+      "loadingMore": "Đang tải thêm...",
       "loading": "Đang tải...",
       "error": "Không thể tải chi tiêu"
     },
@@ -517,17 +518,23 @@
       "visibility": "Chế độ hiển thị",
       "visibilityPrivate": "Riêng tư",
       "visibilityHousehold": "Chung gia đình",
-      "payer": "Người thanh toán",
-      "creator": "Người tạo",
+      "payer": "Ngườithanhtoán",
+      "creator": "Ngườitạo",
       "createdAt": "Tạo lúc",
-      "updatedAt": "Cập nhật lúc",
-      "household": "Gia đình",
-      "notFound": "Không tìm thấy chi tiêu",
-      "forbidden": "Bạn không có quyền xem chi tiêu này"
+      "updatedAt": "Cậpnhậtlúc",
+      "household": "Giađình",
+      "notFound": "Khôngtìmthấychitiêu",
+      "forbidden": "Bạnkhôngcóquyềnxemchitiêunày"
     },
     "visibilityBadge": {
-      "private": "Riêng tư",
+      "private": "Riêngtư",
       "household": "Chung"
+    },
+    "groupPicker": {
+      "label": "Nhómchi tiêu",
+      "placeholder": "Chọnnhóm",
+      "ariaLabel": "Chọnnhómchi tiêu",
+      "empty": "Khôngcónhómnao"
     }
   },
   "groups": {
@@ -596,6 +603,23 @@
       "noBudget": "Chưa đặt ngân sách",
       "statusActive": "Đang hoạt động",
       "statusArchived": "Đã lưu trữ"
+    },
+    "summary": {
+      "title": "Tổng quan nhóm",
+      "totalSpend": "Tổng chi",
+      "expenseCount": "Số khoản chi",
+      "budget": "Ngân sách",
+      "remaining": "Còn lại",
+      "progress": "Tiến độ",
+      "memberContributions": "Đóng góp theo thành viên",
+      "expenses": "khoản chi"
+    },
+    "detail": {
+      "title": "Chi tiết nhóm",
+      "loadFailed": "Không thể tải thông tin nhóm. Vui lòng thử lại.",
+      "expensesTitle": "Chi tiêu trong nhóm",
+      "noHousehold": "Vui lòng chọn gia đình để xem chi tiêu.",
+      "emptyExpenses": "Chưa có chi tiêu nào trong nhóm này."
     },
     "error": {
       "loadFailed": "Không thể tải danh sách nhóm. Vui lòng thử lại."

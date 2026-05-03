@@ -18,9 +18,12 @@ import { localDateToTimestamp, timestampToLocalDate } from '@/lib/date-utils'
 import type { ExpenseFormInputValues } from '@/lib/forms/expense.schema'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
+import type { ExpenseGroupDTO } from '@/types/group'
 import type { HouseholdDTO, HouseholdMemberDTO } from '@/types/household'
 import type { CurrentUserProfileDTO } from '@/types/profile'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
+
+import { GroupPicker } from './group-picker'
 
 type FieldProps = {
   control: Control<ExpenseFormInputValues>
@@ -190,6 +193,30 @@ function VisibilityField({ control, isSubmitting }: FieldProps) {
   )
 }
 
+type GroupFieldProps = FieldProps & {
+  groups: ExpenseGroupDTO[]
+}
+
+function GroupField({ control, isSubmitting, groups }: GroupFieldProps) {
+  const { field, fieldState } = useController({ control, name: 'groupIds' })
+
+  return (
+    <Field data-invalid={fieldState.invalid}>
+      <FieldLabel htmlFor='expense-groups'>
+        {t('expense.groupPicker.label')}
+      </FieldLabel>
+      <GroupPicker
+        disabled={isSubmitting}
+        groups={groups}
+        id='expense-groups'
+        value={field.value ?? []}
+        onValueChange={(value) => field.onChange(value)}
+      />
+      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+    </Field>
+  )
+}
+
 type HouseholdFieldProps = FieldProps & {
   households: HouseholdDTO[]
 }
@@ -280,6 +307,7 @@ export {
   AmountField,
   CategoryField,
   DateField,
+  GroupField,
   HouseholdField,
   NoteField,
   PayerField,
