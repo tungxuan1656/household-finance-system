@@ -11,14 +11,11 @@ import {
   useGroupSummaryQuery,
 } from '@/hooks/api/use-groups'
 import { t } from '@/lib/i18n/t'
-import { useHouseholdStore } from '@/stores/household.store'
 
 export function GroupDetailPage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
   const groupId = params?.id
-  const currentHousehold = useHouseholdStore((state) => state.currentHousehold)
-  const householdId = currentHousehold?.id
 
   const {
     data: group,
@@ -34,6 +31,7 @@ export function GroupDetailPage() {
 
   const isLoading = isGroupLoading || isSummaryLoading
   const isError = isGroupError || isSummaryError
+  const householdId = group?.householdId
 
   if (isLoading) {
     return (

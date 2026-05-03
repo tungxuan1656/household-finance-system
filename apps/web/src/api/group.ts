@@ -1,5 +1,6 @@
 import { client } from '@/api/client'
 import { API_ENDPOINTS } from '@/api/endpoints'
+import type { ExpenseDTO } from '@/types/expense'
 import type {
   ArchiveExpenseGroupResponse,
   CreateExpenseGroupRequest,
@@ -72,7 +73,7 @@ export const replaceExpenseGroups = async (
   expenseId: string,
   payload: ReplaceExpenseGroupsRequest,
 ) => {
-  const response = await client.patch<ExpenseGroupDTO>(
+  const response = await client.patch<ExpenseDTO>(
     API_ENDPOINTS.expenses.replaceGroups(expenseId),
     payload,
   )

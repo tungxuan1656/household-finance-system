@@ -15,7 +15,7 @@ import {
   replaceExpenseGroups,
   updateExpenseGroup,
 } from '@/api/group'
-import type { ExpenseListResponse } from '@/types/expense'
+import type { ExpenseDTO, ExpenseListResponse } from '@/types/expense'
 import type {
   ArchiveExpenseGroupResponse,
   CreateExpenseGroupRequest,
@@ -99,16 +99,14 @@ type ReplaceExpenseGroupsMutationInput = {
 export const useReplaceExpenseGroupsMutation = () => {
   const queryClient = useQueryClient()
 
-  return useMutation<ExpenseGroupDTO, Error, ReplaceExpenseGroupsMutationInput>(
-    {
-      mutationFn: ({ expenseId, payload }) =>
-        replaceExpenseGroups(expenseId, payload),
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: GROUP_KEYS.all })
-        queryClient.invalidateQueries({ queryKey: ['expenses'] })
-      },
+  return useMutation<ExpenseDTO, Error, ReplaceExpenseGroupsMutationInput>({
+    mutationFn: ({ expenseId, payload }) =>
+      replaceExpenseGroups(expenseId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: GROUP_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ['expenses'] })
     },
-  )
+  })
 }
 
 export const useGroupExpenseListQuery = (
@@ -116,7 +114,12 @@ export const useGroupExpenseListQuery = (
   householdId: string | undefined,
 ) => {
   return useInfiniteQuery<ExpenseListResponse, Error>({
-    queryKey: [...GROUP_KEYS.all, 'expenses', groupId ?? 'unknown'],
+    queryKey: [
+      ...GROUP_KEYS.all,
+      'expenses',
+      groupId ?? 'unknown',
+      householdId ?? 'unknown',
+    ],
     queryFn: ({ pageParam }) =>
       listExpenses({
         household_id: householdId,

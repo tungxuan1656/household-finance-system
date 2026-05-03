@@ -356,6 +356,7 @@ export const replaceExpenseGroupAssignments = async (
   expenseId: string,
   householdId: string,
   groupIds: string[],
+  assignedByUserId: string,
 ): Promise<void> => {
   const statements: D1PreparedStatement[] = []
 
@@ -379,14 +380,7 @@ export const replaceExpenseGroupAssignments = async (
             id, household_id, expense_id, group_id, assigned_by_user_id, created_at
           ) VALUES (?, ?, ?, ?, ?, ?)`,
         )
-        .bind(
-          newId(),
-          householdId,
-          expenseId,
-          groupId,
-          '', // assignedByUserId is filled by caller if needed; kept for schema compat
-          now,
-        ),
+        .bind(newId(), householdId, expenseId, groupId, assignedByUserId, now),
     )
   }
 

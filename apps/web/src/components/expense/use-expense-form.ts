@@ -101,7 +101,7 @@ export function useExpenseForm({
         ...(values.visibility === 'household' && values.householdId
           ? { householdId: values.householdId }
           : {}),
-        ...(values.groupIds && values.groupIds.length > 0
+        ...(mode === 'create' && values.groupIds && values.groupIds.length > 0
           ? { groupIds: values.groupIds }
           : {}),
       }

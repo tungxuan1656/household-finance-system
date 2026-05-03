@@ -26,10 +26,7 @@ import type {
   UpdateExpenseMutationInput,
   UpdateExpenseResponse,
 } from '@/types/expense'
-import type {
-  ExpenseGroupDTO,
-  ReplaceExpenseGroupsRequest,
-} from '@/types/group'
+import type { ReplaceExpenseGroupsRequest } from '@/types/group'
 
 export const EXPENSE_KEYS = {
   all: ['expenses'] as const,
@@ -124,14 +121,12 @@ type ReplaceExpenseGroupsMutationInput = {
 export const useReplaceExpenseGroupsMutation = () => {
   const queryClient = useQueryClient()
 
-  return useMutation<ExpenseGroupDTO, Error, ReplaceExpenseGroupsMutationInput>(
-    {
-      mutationFn: ({ expenseId, payload }) =>
-        replaceExpenseGroups(expenseId, payload),
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
-        queryClient.invalidateQueries({ queryKey: ['groups'] })
-      },
+  return useMutation<ExpenseDTO, Error, ReplaceExpenseGroupsMutationInput>({
+    mutationFn: ({ expenseId, payload }) =>
+      replaceExpenseGroups(expenseId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ['groups'] })
     },
-  )
+  })
 }

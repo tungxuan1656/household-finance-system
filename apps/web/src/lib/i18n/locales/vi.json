@@ -332,7 +332,7 @@
         },
         "description": "Danh sách thành viên trong gia đình.",
         "empty": "Chưa có thành viên nào.",
-        "title": "Thành viên",
+        "title": "Thành viên gia đình",
         "invite": {
           "actions": {
             "copy": "Sao chép liên kết",
@@ -373,8 +373,7 @@
         "placeholders": {
           "member": "Thành viên (placeholder)",
           "owner": "Chủ gia đình (placeholder)"
-        },
-        "title": "Thành viên gia đình"
+        }
       },
       "meta": {
         "defaultCurrency": "Tiền tệ mặc định"
@@ -504,9 +503,9 @@
       "title": "Chi tiêu gần đây",
       "empty": "Chưa có chi tiêu nào",
       "loadMore": "Tải thêm",
-      "loadingMore": "Đang tải thêm...",
       "loading": "Đang tải...",
-      "error": "Không thể tải chi tiêu"
+      "error": "Không thể tải chi tiêu",
+      "loadingMore": "Đang tải thêm..."
     },
     "detail": {
       "title": "Chi tiết chi tiêu",
@@ -518,23 +517,23 @@
       "visibility": "Chế độ hiển thị",
       "visibilityPrivate": "Riêng tư",
       "visibilityHousehold": "Chung gia đình",
-      "payer": "Ngườithanhtoán",
-      "creator": "Ngườitạo",
+      "payer": "Người thanh toán",
+      "creator": "Người tạo",
       "createdAt": "Tạo lúc",
-      "updatedAt": "Cậpnhậtlúc",
-      "household": "Giađình",
-      "notFound": "Khôngtìmthấychitiêu",
-      "forbidden": "Bạnkhôngcóquyềnxemchitiêunày"
+      "updatedAt": "Cập nhật lúc",
+      "household": "Gia đình",
+      "notFound": "Không tìm thấy chi tiêu",
+      "forbidden": "Bạn không có quyền xem chi tiêu này"
     },
     "visibilityBadge": {
-      "private": "Riêngtư",
+      "private": "Riêng tư",
       "household": "Chung"
     },
     "groupPicker": {
-      "label": "Nhómchi tiêu",
-      "placeholder": "Chọnnhóm",
-      "ariaLabel": "Chọnnhómchi tiêu",
-      "empty": "Khôngcónhómnao"
+      "label": "Nhóm chi tiêu",
+      "placeholder": "Chọn nhóm",
+      "ariaLabel": "Chọn nhóm chi tiêu",
+      "empty": "Không có nhóm nào"
     }
   },
   "groups": {

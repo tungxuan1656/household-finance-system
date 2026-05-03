@@ -87,13 +87,15 @@ export function ExpenseForm({
           />
         )}
 
-        {watchedVisibility === 'household' && groups.length > 0 && (
-          <GroupField
-            control={form.control}
-            groups={groups}
-            isSubmitting={isSubmitting}
-          />
-        )}
+        {mode === 'create' &&
+          watchedVisibility === 'household' &&
+          groups.length > 0 && (
+            <GroupField
+              control={form.control}
+              groups={groups}
+              isSubmitting={isSubmitting}
+            />
+          )}
 
         <PayerField
           control={form.control}

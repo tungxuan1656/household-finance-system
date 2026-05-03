@@ -100,6 +100,7 @@ export const replaceExpenseGroupsHandler = async (
       expenseId,
       expense.householdId,
       body.groupIds,
+      currentUser.id,
     )
   } else {
     // Clear all assignments
@@ -109,6 +110,7 @@ export const replaceExpenseGroupsHandler = async (
         expenseId,
         expense.householdId,
         [],
+        currentUser.id,
       )
     }
   }

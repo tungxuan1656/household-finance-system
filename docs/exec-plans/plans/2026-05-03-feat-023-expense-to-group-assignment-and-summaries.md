@@ -45,7 +45,6 @@ Users create expense groups (e.g., "Vacation", "Tet shopping") in `feat-022`. Th
 - Add a group multi-select field to the expense form (`expense-form-fields.tsx`) using the existing group list hook.
 - Create `GroupDetailPage` view component and Next.js route at `/groups/[id]`.
 - Create `GroupSummaryCard` component showing aggregates and member breakdown.
-- Create `BulkAssignExpensesModal` dialog component for tagging multiple expenses to a group.
 - Wire group cards in `GroupList` to navigate to `/groups/[id]`.
 - i18n keys for all new UI copy (`vi.json`).
 - Component and hook tests.
@@ -58,6 +57,7 @@ Users create expense groups (e.g., "Vacation", "Tet shopping") in `feat-022`. Th
 - Group-level budget editing (already in feat-022).
 - Notification/alerts when group budget is exceeded.
 - Advanced filtering/sorting inside the group expense list beyond chronological order.
+- Bulk-assign modal for tagging multiple existing expenses to a group (de-scoped; can be added later as a dedicated UX enhancement).
 - Permanent delete of group-item assignments (assignments are junction rows; removing the expense or archiving the group cascades via FK).
 - Offline queueing for group assignment mutations.
 
@@ -231,15 +231,11 @@ Using `Types -> Config -> Repo -> Service -> Runtime -> UI`:
    - Field is optional; default to empty array.
 20. **Create GroupSummaryCard** (`apps/web/src/components/group/group-summary-card.tsx`):
    - Display total spend, expense count, budget remaining (with progress bar if budget set), and a list/table of member contributions.
-21. **Create BulkAssignExpensesModal** (`apps/web/src/components/group/bulk-assign-expenses-modal.tsx`):
-   - Dialog (ref pattern) that shows a checklist of recent expenses for the household.
-   - Submit replaces group assignments for selected expenses.
-22. **Create GroupDetailPage** (`apps/web/src/views/app/group-detail-page.tsx`):
-   - Load group detail and summary via hooks.
-   - Render `GroupSummaryCard`.
-   - Render filtered expense list for the group (reuse expense list components if possible).
-   - Include a "Bulk assign" button that opens the modal.
-23. **Update GroupCard** (`apps/web/src/components/group/group-card.tsx`):
+21. **Create GroupDetailPage** (`apps/web/src/views/app/group-detail-page.tsx`):
+    - Load group detail and summary via hooks.
+    - Render `GroupSummaryCard`.
+    - Render filtered expense list for the group (reuse expense list components if possible).
+22. **Update GroupCard** (`apps/web/src/components/group/group-card.tsx`):
    - Wrap card in a link/button that navigates to `/groups/${group.id}`.
 24. **Create route** (`apps/web/src/app/(protected)/groups/[id]/page.tsx`):
    - Render `GroupDetailPage`.
@@ -247,11 +243,10 @@ Using `Types -> Config -> Repo -> Service -> Runtime -> UI`:
 ### Step 7 — Frontend i18n & Tests
 
 25. **Add i18n keys** (`apps/web/src/lib/i18n/locales/vi.json`):
-   - Keys for summary labels, member contributions, bulk assign modal, form field label, empty states.
+    - Keys for summary labels, member contributions, form field label, empty states.
 26. **Add component tests**:
-   - `group-summary-card.test.tsx` — renders aggregates and member list.
-   - `bulk-assign-expenses-modal.test.tsx` — opens via ref, checks items, submits mutation.
-   - Update `expense-form-fields.test.tsx` if it exists, or add assertions in `expense-form.test.tsx` for group field.
+    - `group-summary-card.test.tsx` — renders aggregates and member list.
+    - Update `expense-form-fields.test.tsx` if it exists, or add assertions in `expense-form.test.tsx` for group field.
 
 ### Step 8 — Verification & Harness
 

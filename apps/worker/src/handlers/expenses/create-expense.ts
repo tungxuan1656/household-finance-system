@@ -2,14 +2,17 @@ import type { Context } from 'hono'
 
 import type { CreateExpenseRequest, ExpenseDTO } from '@/contracts'
 import { createExpenseRequestSchema } from '@/contracts'
-import { replaceExpenseGroupAssignments } from '@/db/repositories/expense-group-repository'
+import {
+  findExpenseGroupById,
+  replaceExpenseGroupAssignments,
+} from '@/db/repositories/expense-group-repository'
 import {
   createExpense,
   type CreateExpenseInput,
 } from '@/db/repositories/expense-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
-import { forbidden, invalidInput, notFound } from '@/lib/errors'
+import { conflict, forbidden, invalidInput, notFound } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
 import { canCreateExpense } from '@/lib/permissions/household-policy'
 import { readJsonBody } from '@/lib/validation'
@@ -124,11 +127,22 @@ export const createExpenseHandler = async (
   // Wire group assignments if provided
   let groupIds: string[] = []
   if (body.groupIds && body.groupIds.length > 0 && created.householdId) {
+    for (const groupId of body.groupIds) {
+      const group = await findExpenseGroupById(db, groupId)
+      if (!group) {
+        throw notFound(locale, 'errors.resourceNotFound')
+      }
+      if (group.householdId !== created.householdId) {
+        throw conflict(locale, 'errors.conflict')
+      }
+    }
+
     await replaceExpenseGroupAssignments(
       db,
       created.id,
       created.householdId,
       body.groupIds,
+      currentUser.id,
     )
 
     groupIds = body.groupIds
