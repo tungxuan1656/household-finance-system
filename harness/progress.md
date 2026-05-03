@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-03 — Created active ExecPlan for feat-019 expense update/delete/restore lifecycle
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-019` covering fullstack expense lifecycle management. The plan scopes worker-side mutable expense updates, soft-delete, admin restore, immutable audit-log writes, and web edit/delete/restore flows, while explicitly keeping permanent delete out of scope until the harness feature definition changes. The plan also records current constraints: GitNexus is unavailable for this repo in the current environment, the existing expense form is already oversized and should be decomposed before edit-mode expansion, and concurrent edit conflict handling remains an open decision because no versioning primitive was discovered.
+- Files changed: docs/exec-plans/plans/2026-05-03-feat-019-expense-update-delete-restore-lifecycle.md, docs/exec-plans/index.md, harness/features/feat-019.json, harness/feature_index.json, harness/progress.md
+- Blockers: permanent delete / retention-window product decision remains open but does not block the scoped plan.
+- Next steps: execute backend-first implementation for update/delete/restore routes and tests, then add web edit/delete/restore flows, run `./init.sh`, and capture evidence before marking `feat-019` done.
+
 ## 2026-05-02 — Completed feat-018: Expense detail & activity feed
 - Who: Orchestrator
 - Summary: Implemented full-stack expense read flows for feat-018. Backend: GET /api/v1/expenses (cursor-paginated feed with visibility enforcement, basic filters) and GET /api/v1/expenses/:id (403 for unauthorized). Frontend: Expense Feed page (chronological list with load-more), Expense Detail page (full metadata display). DB migration 0004 for personal feed and soft-delete indexes. 15 integration/unit tests (9 list + 6 detail). Review fixes: payerUserId type mismatch, dead code removal, invalid cursor 400, unsafe enum casts, accessibility, error handling.

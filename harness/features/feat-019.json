@@ -3,7 +3,9 @@
   "name": "Expense update, delete & restore lifecycle",
   "description": "Implement expense edit, soft-delete, and restore lifecycle. Backend: PATCH /api/v1/expenses/:id (edit mutable fields: amount, category_key, source, payer_id, date, note, visibility, and household_id when the expense is shared; writes an immutable audit entry recording actor, changed fields, old/new values, timestamp), DELETE /api/v1/expenses/:id (soft-delete; sets deleted_at; expense hidden from feeds but queryable by admin), POST /api/v1/expenses/:id/restore (admin-only; clears deleted_at within retention window). Expense category/source values continue to reference the global static catalogs by stable key; expense edit flows may only use categories whose catalog `kind` is `expense`. Permission rules: member can edit/soft-delete own expenses; admin can edit/delete any. Frontend: Edit Expense page (pre-filled form), Delete confirmation dialog, Restore action in admin trash view. Derived budget and analytics aggregates update after edit/delete. Per docs/product-specs/expense-management.md.",
   "dependencies": ["feat-018", "feat-015a"],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-04-29"
+  "status": "in_progress",
+  "evidence": [
+    "docs/exec-plans/plans/2026-05-03-feat-019-expense-update-delete-restore-lifecycle.md"
+  ],
+  "updated_at": "2026-05-03"
 }
