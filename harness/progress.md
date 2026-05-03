@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-03 — Second round code review fixes for feat-023
+- Who: Orchestrator
+- Summary: Fixed three issues from follow-up review: (1) CRITICAL — moved groupIds validation before `createExpense` call so validation failures no longer leave orphaned expense rows; (2) MAJOR — reject `groupIds` with explicit 409 when visibility is `private` instead of silently ignoring them; (3) MAJOR — preserve existing `note` on partial update by using `body.note !== undefined ? body.note : existingExpense.note` instead of `body.note ?? null`.
+- Files changed: apps/worker/src/handlers/expenses/create-expense.ts, apps/worker/src/handlers/expenses/update-expense.ts
+- Blockers: none
+- Next steps: commit review fixes
+
 ## 2026-05-03 — Code review fixes for feat-023
 - Who: Orchestrator
 - Summary: Addressed all issues from code review: (1) removed group picker from edit mode since general PATCH does not persist groupIds — create mode only; (2) added `assignedByUserId` parameter to `replaceExpenseGroupAssignments` and passed `currentUser.id` from all callers (create-expense, replace-expense-groups); (3) added group validation to create-expense handler (checks group exists and belongs to same household); (4) fixed group-detail-page to use `group.householdId` instead of store state and included it in query key; (5) formally de-scoped `BulkAssignExpensesModal` from feat-023 and updated plan; (6) added 5 integration tests for new endpoints (`groups-assignment.spec.ts`: replace happy path, 401, 409 cross-household, summary happy path, summary 404); (7) restored Vietnamese copy from HEAD~1 and re-added new keys with proper spacing; (8) fixed `replaceExpenseGroups` return type from `ExpenseGroupDTO` to `ExpenseDTO` across API and hooks; (9) removed unused `ExpenseGroupDTO` imports. All verification passes.
