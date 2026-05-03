@@ -8,6 +8,12 @@ vi.mock('@/lib/i18n/t', () => ({
   t: (key: string) => key,
 }))
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}))
+
 const baseGroup = {
   id: 'group-1',
   name: 'Test Group',
@@ -61,10 +67,16 @@ describe('GroupCard', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not render action buttons when callbacks not provided', () => {
+  it('does not render edit/archive buttons when callbacks not provided', () => {
     render(<GroupCard group={baseGroup} />)
 
-    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /common\.actions\.edit/ }),
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('button', { name: /groups\.actions\.archive/ }),
+    ).not.toBeInTheDocument()
   })
 
   it('calls onEdit when edit button clicked', async () => {

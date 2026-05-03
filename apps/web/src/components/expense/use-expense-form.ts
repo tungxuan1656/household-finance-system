@@ -32,6 +32,7 @@ export function buildDefaultValues(
     payerUserId: initialValues?.payerUserId,
     visibility: initialValues?.visibility ?? 'private',
     householdId: initialValues?.householdId,
+    groupIds: initialValues?.groupIds ?? [],
   }
 }
 
@@ -99,6 +100,9 @@ export function useExpenseForm({
           : {}),
         ...(values.visibility === 'household' && values.householdId
           ? { householdId: values.householdId }
+          : {}),
+        ...(mode === 'create' && values.groupIds && values.groupIds.length > 0
+          ? { groupIds: values.groupIds }
           : {}),
       }
 

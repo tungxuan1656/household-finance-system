@@ -1,7 +1,8 @@
 'use client'
 
 import { format } from 'date-fns'
-import { Archive, Edit } from 'lucide-react'
+import { Archive, Edit, Eye } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -49,6 +50,7 @@ type GroupCardProps = {
 }
 
 function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
+  const router = useRouter()
   const hasBudget = group.eventBudgetMinor != null && group.eventBudgetMinor > 0
   const spendRatio = hasBudget
     ? Math.min((group.totalSpendMinor / group.eventBudgetMinor!) * 100, 100)
@@ -60,7 +62,9 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
   const endDateStr = formatDate(group.endDate)
 
   return (
-    <Card>
+    <Card
+      className='cursor-pointer'
+      onClick={() => router.push(`/groups/${group.id}`)}>
       <CardHeader>
         <div className='flex items-start justify-between gap-2'>
           <div className='flex flex-col gap-1'>
@@ -110,8 +114,26 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
         )}
 
         <div className='flex items-center gap-2'>
+          <Button
+            size='sm'
+            type='button'
+            variant='outline'
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/groups/${group.id}`)
+            }}>
+            <Eye data-icon='inline-start' />
+            {t('groups.actions.viewDetail')}
+          </Button>
           {onEdit && (
-            <Button size='sm' type='button' variant='outline' onClick={onEdit}>
+            <Button
+              size='sm'
+              type='button'
+              variant='outline'
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit()
+              }}>
               <Edit data-icon='inline-start' />
               {t('common.actions.edit')}
             </Button>
@@ -121,7 +143,10 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
               size='sm'
               type='button'
               variant='outline'
-              onClick={onArchive}>
+              onClick={(e) => {
+                e.stopPropagation()
+                onArchive()
+              }}>
               <Archive data-icon='inline-start' />
               {t('groups.actions.archive')}
             </Button>

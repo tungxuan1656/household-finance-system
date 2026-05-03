@@ -10,6 +10,7 @@ import {
   REFERENCE_CATEGORY_KEYS,
   REFERENCE_SOURCE_KEYS,
 } from '@/contracts'
+import { findGroupIdsForExpenses } from '@/db/repositories/expense-group-repository'
 import {
   decodeCursor,
   listExpenses,
@@ -82,7 +83,12 @@ export const listExpensesHandler = async (
     categoryKey: query.category_key,
     payerId: query.payer_id,
     visibility: query.visibility,
+    groupId: query.group_id,
   })
+
+  // Batch fetch group IDs for all expenses
+  const expenseIds = result.items.map((e) => e.id)
+  const groupIdsMap = await findGroupIdsForExpenses(db, expenseIds)
 
   // Map stored expenses to DTOs
   const items: ExpenseDTO[] = result.items.map((expense) => ({
@@ -101,6 +107,7 @@ export const listExpensesHandler = async (
     householdId: expense.householdId,
     payerUserId: expense.payerUserId,
     note: expense.note,
+    groupIds: groupIdsMap.get(expense.id) ?? [],
     createdByUserId: expense.createdByUserId,
     createdAt: expense.createdAt,
     updatedAt: expense.updatedAt,

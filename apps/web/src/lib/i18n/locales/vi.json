@@ -332,7 +332,7 @@
         },
         "description": "Danh sách thành viên trong gia đình.",
         "empty": "Chưa có thành viên nào.",
-        "title": "Thành viên",
+        "title": "Thành viên gia đình",
         "invite": {
           "actions": {
             "copy": "Sao chép liên kết",
@@ -373,8 +373,7 @@
         "placeholders": {
           "member": "Thành viên (placeholder)",
           "owner": "Chủ gia đình (placeholder)"
-        },
-        "title": "Thành viên gia đình"
+        }
       },
       "meta": {
         "defaultCurrency": "Tiền tệ mặc định"
@@ -505,7 +504,8 @@
       "empty": "Chưa có chi tiêu nào",
       "loadMore": "Tải thêm",
       "loading": "Đang tải...",
-      "error": "Không thể tải chi tiêu"
+      "error": "Không thể tải chi tiêu",
+      "loadingMore": "Đang tải thêm..."
     },
     "detail": {
       "title": "Chi tiết chi tiêu",
@@ -528,6 +528,12 @@
     "visibilityBadge": {
       "private": "Riêng tư",
       "household": "Chung"
+    },
+    "groupPicker": {
+      "label": "Nhóm chi tiêu",
+      "placeholder": "Chọn nhóm",
+      "ariaLabel": "Chọn nhóm chi tiêu",
+      "empty": "Không có nhóm nào"
     }
   },
   "groups": {
@@ -596,6 +602,23 @@
       "noBudget": "Chưa đặt ngân sách",
       "statusActive": "Đang hoạt động",
       "statusArchived": "Đã lưu trữ"
+    },
+    "summary": {
+      "title": "Tổng quan nhóm",
+      "totalSpend": "Tổng chi",
+      "expenseCount": "Số khoản chi",
+      "budget": "Ngân sách",
+      "remaining": "Còn lại",
+      "progress": "Tiến độ",
+      "memberContributions": "Đóng góp theo thành viên",
+      "expenses": "khoản chi"
+    },
+    "detail": {
+      "title": "Chi tiết nhóm",
+      "loadFailed": "Không thể tải thông tin nhóm. Vui lòng thử lại.",
+      "expensesTitle": "Chi tiêu trong nhóm",
+      "noHousehold": "Vui lòng chọn gia đình để xem chi tiêu.",
+      "emptyExpenses": "Chưa có chi tiêu nào trong nhóm này."
     },
     "error": {
       "loadFailed": "Không thể tải danh sách nhóm. Vui lòng thử lại."

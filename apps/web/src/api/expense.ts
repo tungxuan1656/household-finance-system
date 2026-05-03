@@ -10,6 +10,7 @@ import type {
   UpdateExpenseMutationInput,
   UpdateExpenseResponse,
 } from '@/types/expense'
+import type { ReplaceExpenseGroupsRequest } from '@/types/group'
 
 export const createExpense = async (payload: CreateExpenseRequest) => {
   const response = await client.post<ExpenseDTO>(
@@ -73,6 +74,18 @@ export const listDeletedExpenses = async (householdId: string) => {
         household_id: householdId,
       },
     },
+  )
+
+  return response.data
+}
+
+export const replaceExpenseGroups = async (
+  expenseId: string,
+  payload: ReplaceExpenseGroupsRequest,
+) => {
+  const response = await client.patch<ExpenseDTO>(
+    API_ENDPOINTS.expenses.replaceGroups(expenseId),
+    payload,
   )
 
   return response.data

@@ -14,6 +14,7 @@ export type ExpenseDTO = {
   visibility: ExpenseVisibility
   householdId: string | null
   payerUserId: string | null
+  groupIds?: string[]
   createdByUserId: string
   createdAt: number
   updatedAt: number
@@ -29,6 +30,7 @@ export type CreateExpenseRequest = {
   visibility: ExpenseVisibility
   householdId?: string
   payerUserId?: string
+  groupIds?: string[]
 }
 
 // The API client unwraps the envelope, so the response type is just ExpenseDTO
@@ -53,6 +55,7 @@ export type ExpenseListParams = {
   category_key?: string
   payer_id?: string
   visibility?: ExpenseVisibility
+  group_id?: string
 }
 
 export type ExpenseListResponse = {

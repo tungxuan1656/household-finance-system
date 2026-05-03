@@ -6,6 +6,7 @@ import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
 import type { ExpenseFormInputValues } from '@/lib/forms/expense.schema'
 import { t } from '@/lib/i18n/t'
 import type { ExpenseDTO } from '@/types/expense'
+import type { ExpenseGroupDTO } from '@/types/group'
 import type { HouseholdDTO, HouseholdMemberDTO } from '@/types/household'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
 
@@ -13,6 +14,7 @@ import {
   AmountField,
   CategoryField,
   DateField,
+  GroupField,
   HouseholdField,
   NoteField,
   PayerField,
@@ -27,6 +29,7 @@ type ExpenseFormMode = 'create' | 'edit'
 type ExpenseFormProps = {
   categories: ReferenceCategoryDTO[]
   households: HouseholdDTO[]
+  groups?: ExpenseGroupDTO[]
   expenseId?: string
   initialValues?: ExpenseFormInputValues
   mode?: ExpenseFormMode
@@ -39,6 +42,7 @@ type ExpenseFormProps = {
 export function ExpenseForm({
   categories,
   households,
+  groups = [],
   expenseId,
   initialValues,
   mode = 'create',
@@ -82,6 +86,16 @@ export function ExpenseForm({
             isSubmitting={isSubmitting}
           />
         )}
+
+        {mode === 'create' &&
+          watchedVisibility === 'household' &&
+          groups.length > 0 && (
+            <GroupField
+              control={form.control}
+              groups={groups}
+              isSubmitting={isSubmitting}
+            />
+          )}
 
         <PayerField
           control={form.control}

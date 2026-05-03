@@ -40,6 +40,7 @@ export const expenseFormSchema = z
     payerUserId: z.string().optional(),
     visibility: z.enum(['private', 'household']).default('private'),
     householdId: z.string().optional(),
+    groupIds: z.array(z.string().trim().min(1)).optional(),
   })
   .refine(
     (data) => {

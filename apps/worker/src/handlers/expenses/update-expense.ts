@@ -6,6 +6,7 @@ import {
   updateExpenseRequestSchema,
 } from '@/contracts'
 import { createAuditLogEntry } from '@/db/repositories/audit-log-repository'
+import { findGroupIdsForExpense } from '@/db/repositories/expense-group-repository'
 import {
   updateExpense,
   type UpdateExpenseInput,
@@ -112,7 +113,10 @@ export const updateExpenseHandler = async (
     payerUserId = currentUser.id
   }
 
-  const amountMinor = getMinorUnits(body.amount, currencyCode)
+  const amountMinor =
+    body.amount !== undefined
+      ? getMinorUnits(body.amount, currencyCode)
+      : existingExpense.amountMinor
   if (amountMinor <= 0) {
     throw invalidInput(locale, 'validation.invalidValue', {
       path: ['amount'],
@@ -123,14 +127,14 @@ export const updateExpenseHandler = async (
     expenseId: existingExpense.id,
     householdId: nextHouseholdId,
     payerUserId,
-    categoryKey: body.categoryKey,
-    sourceKey: body.sourceKey,
+    categoryKey: body.categoryKey ?? existingExpense.categoryKey,
+    sourceKey: body.sourceKey ?? existingExpense.sourceKey,
     amountMinor,
     currencyCode,
-    occurredAt: body.occurredAt,
-    visibility: body.visibility,
-    title: body.title,
-    note: body.note ?? null,
+    occurredAt: body.occurredAt ?? existingExpense.occurredAt,
+    visibility: body.visibility ?? existingExpense.visibility,
+    title: body.title ?? existingExpense.title,
+    note: body.note !== undefined ? body.note : existingExpense.note,
   }
 
   const updatedExpense = await updateExpense(db, updateInput)
@@ -178,5 +182,7 @@ export const updateExpenseHandler = async (
     throw error
   }
 
-  return mapStoredExpenseToDto(updatedExpense)
+  const groupIds = await findGroupIdsForExpense(db, updatedExpense.id)
+
+  return mapStoredExpenseToDto(updatedExpense, groupIds)
 }

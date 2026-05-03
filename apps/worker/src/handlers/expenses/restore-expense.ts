@@ -3,6 +3,7 @@ import type { Context } from 'hono'
 import type { RestoreExpenseResponse } from '@/contracts'
 import { expensePathParamsSchema } from '@/contracts'
 import { createAuditLogEntry } from '@/db/repositories/audit-log-repository'
+import { findGroupIdsForExpense } from '@/db/repositories/expense-group-repository'
 import {
   restoreExpense,
   softDeleteExpense,
@@ -80,5 +81,7 @@ export const restoreExpenseHandler = async (
     throw error
   }
 
-  return mapStoredExpenseToDto(restoredExpense)
+  const groupIds = await findGroupIdsForExpense(db, restoredExpense.id)
+
+  return mapStoredExpenseToDto(restoredExpense, groupIds)
 }

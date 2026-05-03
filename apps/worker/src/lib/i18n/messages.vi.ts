@@ -68,6 +68,8 @@ export const viMessages = {
     'Cần cung cấp householdId khi hiển thị trong hộ gia đình.',
   'expenses.expenseNotFound': 'Không tìm thấy chi tiêu.',
   'expenses.expenseForbidden': 'Bạn không có quyền xem chi tiêu này.',
+  'expenses.cannotAssignGroupToPrivateExpense':
+    'Không thể gán nhóm cho chi tiêu cá nhân.',
 } as const
 
 export type MessageKey = keyof typeof viMessages

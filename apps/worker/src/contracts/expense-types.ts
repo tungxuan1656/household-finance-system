@@ -30,8 +30,9 @@ export interface ExpenseDTO {
   occurredAt: number
   visibility: 'private' | 'household'
   householdId: string | null
-  payerUserId: string | null
+  payerUserId: string
   note: string | null
+  groupIds: string[]
   createdByUserId: string
   createdAt: number
   updatedAt: number

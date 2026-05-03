@@ -25,7 +25,10 @@ export const getMinorUnits = (amount: number, currencyCode: string): number => {
   return Math.round(amount * factor)
 }
 
-export const mapStoredExpenseToDto = (expense: StoredExpense): ExpenseDTO => ({
+export const mapStoredExpenseToDto = (
+  expense: StoredExpense,
+  groupIds: string[] = [],
+): ExpenseDTO => ({
   id: expense.id,
   title: expense.title,
   amountMinor: expense.amountMinor,
@@ -41,6 +44,7 @@ export const mapStoredExpenseToDto = (expense: StoredExpense): ExpenseDTO => ({
   householdId: expense.householdId,
   payerUserId: expense.payerUserId,
   note: expense.note,
+  groupIds,
   createdByUserId: expense.createdByUserId,
   createdAt: expense.createdAt,
   updatedAt: expense.updatedAt,

@@ -6,6 +6,7 @@ import {
   REFERENCE_CATEGORY_KEYS,
   REFERENCE_SOURCE_KEYS,
 } from '@/contracts'
+import { findGroupIdsForExpense } from '@/db/repositories/expense-group-repository'
 import { findExpenseByIdRaw } from '@/db/repositories/expense-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { forbidden, notFound } from '@/lib/errors'
@@ -65,6 +66,9 @@ export const getExpenseHandler = async (
     }
   }
 
+  // Fetch group assignments
+  const groupIds = await findGroupIdsForExpense(db, expense.id)
+
   // Map to DTO
   const dto: ExpenseDTO = {
     id: expense.id,
@@ -82,6 +86,7 @@ export const getExpenseHandler = async (
     householdId: expense.householdId,
     payerUserId: expense.payerUserId,
     note: expense.note,
+    groupIds,
     createdByUserId: expense.createdByUserId,
     createdAt: expense.createdAt,
     updatedAt: expense.updatedAt,

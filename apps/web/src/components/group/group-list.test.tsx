@@ -14,6 +14,12 @@ vi.mock('@/lib/i18n/t', () => ({
   t: (key: string) => key,
 }))
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}))
+
 const baseGroup: ExpenseGroupDTO = {
   id: 'group-1',
   name: 'Test Group',
