@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-05-03 — Implemented feat-022: Expense group management (fullstack)
+- Who: Orchestrator + parallel fixer agents
+- Summary: Implemented complete fullstack expense group management per ExecPlan. Backend: group CRUD + archive API (POST/GET/PATCH/POST /api/v1/groups...) with household membership enforcement, repository with computed total spend, 8 integration tests. Frontend: Groups list page with cards and budget progress bar, create/edit dialog forms, React Query hooks, i18n keys, navigation updates, 11 component tests. The `expense_groups` table already existed in `0001_init.sql`, so no new migration was needed.
+- Files changed (backend): apps/worker/src/contracts/expense-group-schemas.ts, expense-group-types.ts, contracts/index.ts, db/repositories/expense-group-repository.ts, handlers/expense-groups/create-expense-group.ts, list-expense-groups.ts, get-expense-group.ts, update-expense-group.ts, archive-expense-group.ts, routes/groups.ts, index.ts, test/integration/groups-crud.spec.ts
+- Files changed (frontend): apps/web/src/types/group.ts, api/group.ts, api/endpoints.ts, hooks/api/use-groups.ts, components/group/group-card.tsx, group-list.tsx, group-form.tsx, group-form-fields.tsx, views/app/groups-page.tsx, app/(protected)/groups/page.tsx, lib/constants/paths.ts, lib/constants/navigation.ts, lib/i18n/locales/vi.json, components/group/group-card.test.tsx, group-list.test.tsx
+- Verification: ./init.sh passed (install, harness, lint, type-check, tests, build all OK)
+- Blockers: none
+- Next steps: feat-023 (Expense-to-group assignment & summaries)
+
 ## 2026-05-03 — Created active ExecPlan for feat-022 expense group management
 - Who: Orchestrator
 - Summary: Created and registered the active ExecPlan for `feat-022` covering fullstack expense group management. Backend scope: group CRUD + archive API (`POST /api/v1/groups`, `GET /api/v1/groups`, `PATCH /api/v1/groups/:id`, `POST /api/v1/groups/:id/archive`) with household membership enforcement, repository queries with computed total spend, schema/unit tests, and integration tests. Frontend scope: Groups list page with group cards and budget progress bar, Create/Edit Group dialog forms, React Query hooks, i18n keys, navigation updates, and component/hook tests. Key constraint: the `expense_groups` table already exists in `0001_init.sql`, so no new migration is required. Explicitly out of scope: expense-to-group assignment (feat-023), group-level analytics, permanent delete, and household settings for member edit permissions.

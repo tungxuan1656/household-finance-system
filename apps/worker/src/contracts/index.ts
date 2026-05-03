@@ -1,5 +1,7 @@
 export * from './auth'
 export * from './expense'
+export * from './expense-group-schemas'
+export * from './expense-group-types'
 export * from './household'
 export * from './household-invitation'
 export * from './invitation'
