@@ -14,6 +14,7 @@ export const PATHS = {
   EXPENSE_DETAIL: '/expenses/[id]',
   EDIT_EXPENSE: '/expenses/[id]/edit',
   EXPENSE_TRASH: '/expenses/deleted',
+  GROUPS: '/groups',
   BUDGETS: '/budgets',
   INSIGHTS: '/insights',
   HOUSEHOLDS: '/households',

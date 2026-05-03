@@ -3,7 +3,7 @@
   "name": "Expense group management",
   "description": "Implement expense group (event) CRUD. Backend: POST /api/v1/groups (create; name required, optional description, optional budget amount, optional start/end dates), GET /api/v1/groups (list active groups for household), PATCH /api/v1/groups/:id (update; admin or member if settings allow), POST /api/v1/groups/:id/archive (admin-only). Frontend: Groups list page with group cards (name, total spend, budget progress bar if budget set), Create Group form, Edit Group form. Per docs/product-specs/expense-grouping.md. Does NOT include assigning expenses to groups (feat-023) or group-level analytics.",
   "dependencies": ["feat-015a", "feat-011"],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-04-21"
+  "status": "done",
+  "evidence": "ExecPlan created at docs/exec-plans/plans/2026-05-03-feat-022-expense-group-management.md. Backend: contracts/expense-group-schemas.ts (with empty-PATCH rejection), contracts/expense-group-types.ts, db/repositories/expense-group-repository.ts (list computes totalSpendMinor via LEFT JOIN), handlers/expense-groups/*, routes/groups.ts, index.ts registration, test/integration/groups-crud.spec.ts (10 tests: +non-zero totalSpendMinor, +401). Frontend: types/group.ts, api/group.ts, api/endpoints.ts, hooks/api/use-groups.ts, components/group/* (card i18n labels, list error text, form clearing fix, page create button guard), views/app/groups-page.tsx, app/(protected)/groups/page.tsx, lib/constants/paths.ts, lib/constants/navigation.ts, lib/i18n/locales/vi.json, components/group/group-card.test.tsx (6 tests), components/group/group-list.test.tsx (5 tests). All verification passed: lint, type-check, tests, build.",
+  "updated_at": "2026-05-03"
 }

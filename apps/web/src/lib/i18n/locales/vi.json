@@ -441,6 +441,7 @@
         "ariaLabel": "Các mục ứng dụng",
         "budgets": "Ngân sách",
         "expenses": "Chi tiêu",
+        "groups": "Nhóm chi tiêu",
         "households": "Gia đình",
         "insights": "Phân tích",
         "onboarding": "Thiết lập",
@@ -527,6 +528,77 @@
     "visibilityBadge": {
       "private": "Riêng tư",
       "household": "Chung"
+    }
+  },
+  "groups": {
+    "title": "Nhóm chi tiêu",
+    "description": "Quản lý các nhóm chi tiêu theo sự kiện hoặc mục đích",
+    "actions": {
+      "create": "Tạo nhóm",
+      "creating": "Đang tạo...",
+      "update": "Cập nhật",
+      "updating": "Đang cập nhật...",
+      "archive": "Lưu trữ",
+      "archiving": "Đang lưu trữ...",
+      "retry": "Thử lại",
+      "viewDetail": "Xem chi tiết",
+      "addNew": "Tạo nhóm mới"
+    },
+    "fields": {
+      "name": {
+        "label": "Tên nhóm",
+        "placeholder": "Ví dụ: Du lịch Đà Nẵng"
+      },
+      "description": {
+        "label": "Mô tả",
+        "placeholder": "Mô tả ngắn về nhóm chi tiêu"
+      },
+      "startDate": {
+        "label": "Ngày bắt đầu"
+      },
+      "endDate": {
+        "label": "Ngày kết thúc"
+      },
+      "eventBudget": {
+        "label": "Ngân sách dự kiến",
+        "placeholder": "Nhập số tiền"
+      }
+    },
+    "create": {
+      "title": "Tạo nhóm chi tiêu",
+      "description": "Tạo nhóm để theo dõi các khoản chi tiêu cho một sự kiện hoặc mục đích cụ thể."
+    },
+    "edit": {
+      "title": "Chỉnh sửa nhóm",
+      "description": "Cập nhật thông tin nhóm chi tiêu."
+    },
+    "archive": {
+      "title": "Lưu trữ nhóm",
+      "description": "Nhóm đã lưu trữ sẽ không còn hiển thị trong danh sách chính."
+    },
+    "empty": {
+      "title": "Chưa có nhóm chi tiêu",
+      "description": "Tạo nhóm đầu tiên để bắt đầu theo dõi chi tiêu theo sự kiện."
+    },
+    "loading": "Đang tải danh sách nhóm...",
+    "feedback": {
+      "createSuccess": "Đã tạo nhóm chi tiêu thành công",
+      "createFailed": "Không thể tạo nhóm chi tiêu. Vui lòng thử lại.",
+      "updateSuccess": "Đã cập nhật nhóm chi tiêu",
+      "updateFailed": "Không thể cập nhật nhóm chi tiêu. Vui lòng thử lại.",
+      "archiveSuccess": "Đã lưu trữ nhóm chi tiêu",
+      "archiveFailed": "Không thể lưu trữ nhóm chi tiêu. Vui lòng thử lại."
+    },
+    "card": {
+      "budgetLabel": "Ngân sách",
+      "spentLabel": "Đã chi",
+      "remainingLabel": "Còn lại",
+      "noBudget": "Chưa đặt ngân sách",
+      "statusActive": "Đang hoạt động",
+      "statusArchived": "Đã lưu trữ"
+    },
+    "error": {
+      "loadFailed": "Không thể tải danh sách nhóm. Vui lòng thử lại."
     }
   }
 }

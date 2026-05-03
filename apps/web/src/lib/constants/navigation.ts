@@ -6,6 +6,7 @@ import {
   Menu,
   PiggyBank,
   Settings,
+  Tags,
 } from 'lucide-react'
 
 import { PATHS } from './paths'
@@ -16,6 +17,11 @@ export const APP_MENU_ITEMS = [
     to: PATHS.EXPENSES,
     labelKey: 'shell.protected.nav.expenses',
     icon: Banknote,
+  },
+  {
+    to: PATHS.GROUPS,
+    labelKey: 'shell.protected.nav.groups',
+    icon: Tags,
   },
   {
     to: PATHS.BUDGETS,
@@ -50,6 +56,11 @@ export const BOTTOM_TAB_ITEMS = [
     to: PATHS.EXPENSES,
     labelKey: 'shell.protected.nav.expenses',
     icon: Banknote,
+  },
+  {
+    to: PATHS.GROUPS,
+    labelKey: 'shell.protected.nav.groups',
+    icon: Tags,
   },
   {
     to: PATHS.BUDGETS,
