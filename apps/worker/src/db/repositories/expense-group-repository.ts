@@ -145,17 +145,21 @@ export const listExpenseGroupsByHousehold = async (
 ): Promise<StoredExpenseGroup[]> => {
   const result = await db
     .prepare(
-      `SELECT ${BASE_COLUMNS}
+      `SELECT ${BASE_COLUMNS},
+              COALESCE(SUM(e.amount_minor), 0) AS total_spend_minor
          FROM expense_groups eg
+         LEFT JOIN expense_group_items egi ON egi.group_id = eg.id
+         LEFT JOIN expenses e ON e.id = egi.expense_id AND e.deleted_at IS NULL
         WHERE eg.household_id = ?
           AND eg.status = 'active'
           AND eg.archived_at IS NULL
+        GROUP BY eg.id
         ORDER BY eg.created_at DESC`,
     )
     .bind(householdId)
     .all<ExpenseGroupRow>()
 
-  return result.results.map((row) => mapRow({ ...row, total_spend_minor: 0 }))
+  return result.results.map((row) => mapRow(row))
 }
 
 export const findExpenseGroupById = async (

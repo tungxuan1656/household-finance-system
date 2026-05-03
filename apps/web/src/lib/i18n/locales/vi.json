@@ -593,7 +593,12 @@
       "budgetLabel": "Ngân sách",
       "spentLabel": "Đã chi",
       "remainingLabel": "Còn lại",
-      "noBudget": "Chưa đặt ngân sách"
+      "noBudget": "Chưa đặt ngân sách",
+      "statusActive": "Đang hoạt động",
+      "statusArchived": "Đã lưu trữ"
+    },
+    "error": {
+      "loadFailed": "Không thể tải danh sách nhóm. Vui lòng thử lại."
     }
   }
 }

@@ -115,29 +115,33 @@ function GroupsPage() {
             {t('groups.description')}
           </p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button type='button' variant='outline'>
-              <Plus data-icon='inline-start' />
-              {t('groups.actions.addNew')}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='sm:max-w-md' showCloseButton={false}>
-            <DialogHeader>
-              <DialogTitle>{t('groups.create.title')}</DialogTitle>
-              <DialogDescription>
-                {t('groups.create.description')}
-              </DialogDescription>
-            </DialogHeader>
-            <GroupForm
-              householdId={selectedHouseholdId}
-              isSubmitting={createMutation.isPending}
-              mode='create'
-              onCancel={() => setIsCreateDialogOpen(false)}
-              onSubmit={handleCreate}
-            />
-          </DialogContent>
-        </Dialog>
+        {selectedHouseholdId && (
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button type='button' variant='outline'>
+                <Plus data-icon='inline-start' />
+                {t('groups.actions.addNew')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className='sm:max-w-md' showCloseButton={false}>
+              <DialogHeader>
+                <DialogTitle>{t('groups.create.title')}</DialogTitle>
+                <DialogDescription>
+                  {t('groups.create.description')}
+                </DialogDescription>
+              </DialogHeader>
+              <GroupForm
+                householdId={selectedHouseholdId}
+                isSubmitting={createMutation.isPending}
+                mode='create'
+                onCancel={() => setIsCreateDialogOpen(false)}
+                onSubmit={handleCreate}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </header>
 
       {selectedHouseholdId ? (

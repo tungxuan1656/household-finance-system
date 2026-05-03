@@ -53,23 +53,27 @@ function GroupForm({
   })
 
   const handleSubmit = (values: GroupFormValues) => {
-    const payload = {
-      name: values.name,
-      ...(values.description ? { description: values.description } : {}),
-      ...(values.startDate != null ? { startDate: values.startDate } : {}),
-      ...(values.endDate != null ? { endDate: values.endDate } : {}),
-      ...(values.eventBudget != null
-        ? { eventBudget: values.eventBudget }
-        : {}),
-    }
-
     if (mode === 'create') {
-      onSubmit({
+      const payload: CreateExpenseGroupRequest = {
         householdId,
-        ...payload,
-      } satisfies CreateExpenseGroupRequest)
+        name: values.name,
+        description: values.description,
+        startDate: values.startDate,
+        endDate: values.endDate,
+        eventBudget: values.eventBudget,
+      }
+
+      onSubmit(payload)
     } else {
-      onSubmit(payload satisfies UpdateExpenseGroupRequest)
+      const payload: UpdateExpenseGroupRequest = {
+        name: values.name,
+        description: values.description,
+        startDate: values.startDate,
+        endDate: values.endDate,
+        eventBudget: values.eventBudget,
+      }
+
+      onSubmit(payload)
     }
   }
 

@@ -82,6 +82,14 @@ export const updateExpenseGroupRequestSchema = () =>
     .strict()
     .refine(
       (data) => {
+        return Object.keys(data).length > 0
+      },
+      {
+        message: 'At least one field must be provided for update',
+      },
+    )
+    .refine(
+      (data) => {
         if (data.startDate !== undefined && data.endDate !== undefined) {
           return data.endDate >= data.startDate
         }

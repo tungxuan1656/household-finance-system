@@ -1,13 +1,11 @@
 # Progress Log
 
-## 2026-05-03 — Implemented feat-022: Expense group management (fullstack)
-- Who: Orchestrator + parallel fixer agents
-- Summary: Implemented complete fullstack expense group management per ExecPlan. Backend: group CRUD + archive API (POST/GET/PATCH/POST /api/v1/groups...) with household membership enforcement, repository with computed total spend, 8 integration tests. Frontend: Groups list page with cards and budget progress bar, create/edit dialog forms, React Query hooks, i18n keys, navigation updates, 11 component tests. The `expense_groups` table already existed in `0001_init.sql`, so no new migration was needed.
-- Files changed (backend): apps/worker/src/contracts/expense-group-schemas.ts, expense-group-types.ts, contracts/index.ts, db/repositories/expense-group-repository.ts, handlers/expense-groups/create-expense-group.ts, list-expense-groups.ts, get-expense-group.ts, update-expense-group.ts, archive-expense-group.ts, routes/groups.ts, index.ts, test/integration/groups-crud.spec.ts
-- Files changed (frontend): apps/web/src/types/group.ts, api/group.ts, api/endpoints.ts, hooks/api/use-groups.ts, components/group/group-card.tsx, group-list.tsx, group-form.tsx, group-form-fields.tsx, views/app/groups-page.tsx, app/(protected)/groups/page.tsx, lib/constants/paths.ts, lib/constants/navigation.ts, lib/i18n/locales/vi.json, components/group/group-card.test.tsx, group-list.test.tsx
-- Verification: ./init.sh passed (install, harness, lint, type-check, tests, build all OK)
+## 2026-05-03 — Post-implementation code review fixes for feat-022
+- Who: Orchestrator
+- Summary: Addressed all issues from code review: (1) listExpenseGroupsByHousehold now computes totalSpendMinor via LEFT JOIN with expense_group_items/expenses instead of hardcoding 0; (2) updateExpenseGroupRequestSchema rejects empty PATCH bodies; (3) group-card status labels use i18n keys instead of hardcoded Vietnamese; (4) group-list error state shows error message instead of loading text; (5) group-form allows clearing optional fields in edit mode; (6) groups-page hides create button when no household selected; (7) added 2 integration tests: non-zero totalSpendMinor from linked expenses, and 401 unauthenticated coverage across all 5 endpoints. All verification passed.
+- Files changed: apps/worker/src/db/repositories/expense-group-repository.ts, apps/worker/src/handlers/expense-groups/list-expense-groups.ts, apps/worker/src/contracts/expense-group-schemas.ts, apps/worker/test/integration/groups-crud.spec.ts, apps/web/src/components/group/group-card.tsx, apps/web/src/components/group/group-form.tsx, apps/web/src/components/group/group-list.tsx, apps/web/src/views/app/groups-page.tsx, apps/web/src/lib/i18n/locales/vi.json, harness/features/feat-022.json, harness/progress.md
 - Blockers: none
-- Next steps: feat-023 (Expense-to-group assignment & summaries)
+- Next steps: create PR to main
 
 ## 2026-05-03 — Created active ExecPlan for feat-022 expense group management
 - Who: Orchestrator

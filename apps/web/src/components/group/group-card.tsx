@@ -15,9 +15,16 @@ import {
 import { t } from '@/lib/i18n/t'
 import type { ExpenseGroupDTO } from '@/types/group'
 
-const STATUS_LABELS: Record<string, string> = {
-  active: 'Đang hoạt động',
-  archived: 'Đã lưu trữ',
+function statusLabel(status: string): string {
+  if (status === 'active') {
+    return t('groups.card.statusActive')
+  }
+
+  if (status === 'archived') {
+    return t('groups.card.statusArchived')
+  }
+
+  return status
 }
 
 function formatCurrency(amount: number): string {
@@ -65,7 +72,7 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
             )}
           </div>
           <Badge variant={group.status === 'active' ? 'default' : 'secondary'}>
-            {STATUS_LABELS[group.status] ?? group.status}
+            {statusLabel(group.status)}
           </Badge>
         </div>
       </CardHeader>

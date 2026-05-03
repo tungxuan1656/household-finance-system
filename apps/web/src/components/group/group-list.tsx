@@ -49,7 +49,9 @@ function GroupList({ householdId, onEdit, onArchive }: GroupListProps) {
     return (
       <Card>
         <CardContent className='flex items-center justify-between gap-2 pt-1'>
-          <p className='text-sm text-destructive'>{t('groups.loading')}</p>
+          <p className='text-sm text-destructive'>
+            {t('groups.error.loadFailed')}
+          </p>
           <Button
             type='button'
             variant='outline'

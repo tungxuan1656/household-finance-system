@@ -18,7 +18,7 @@ export const listExpenseGroups = async (
         startDate: g.startDate,
         endDate: g.endDate,
         eventBudgetMinor: g.eventBudgetMinor,
-        totalSpendMinor: 0,
+        totalSpendMinor: g.totalSpendMinor,
         householdId: g.householdId,
         createdByUserId: g.createdByUserId,
         createdAt: g.createdAt,
