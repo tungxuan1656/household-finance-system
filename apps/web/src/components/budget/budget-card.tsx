@@ -1,0 +1,93 @@
+'use client'
+
+import { Edit } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
+import { t } from '@/lib/i18n/t'
+import type { BudgetDTO } from '@/types/budget'
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount)
+}
+
+type BudgetCardProps = {
+  budget: BudgetDTO
+  onEdit?: () => void
+}
+
+function BudgetCard({ budget, onEdit }: BudgetCardProps) {
+  const { data: categoriesData } = useReferenceCategoriesQuery()
+  const categories = categoriesData?.items ?? []
+
+  const categoryMap = new Map<string, (typeof categories)[number]>(
+    categories.map((cat) => [cat.key, cat]),
+  )
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className='flex items-start justify-between gap-2'>
+          <div className='flex flex-col gap-1'>
+            <CardTitle>
+              {t('budgets.card.periodLabel')}: {budget.period}
+            </CardTitle>
+            <CardDescription>
+              {t('budgets.card.totalLabel')}:{' '}
+              {formatCurrency(budget.totalLimitMinor)}
+            </CardDescription>
+          </div>
+          {onEdit && (
+            <Button size='sm' type='button' variant='outline' onClick={onEdit}>
+              <Edit data-icon='inline-start' />
+              {t('common.actions.edit')}
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      {budget.categoryLimits.length > 0 && (
+        <CardContent className='flex flex-col gap-2'>
+          <p className='text-sm font-medium'>
+            {t('budgets.card.categoryBreakdown')}
+          </p>
+          <div className='flex flex-col gap-1'>
+            {budget.categoryLimits.map((cl) => {
+              const category = categoryMap.get(cl.categoryKey)
+
+              return (
+                <div
+                  key={cl.categoryKey}
+                  className='flex items-center justify-between text-sm'>
+                  <div className='flex items-center gap-2'>
+                    {category && (
+                      <span
+                        className='inline-block h-2.5 w-2.5 rounded-full'
+                        style={{ backgroundColor: category.color }}
+                      />
+                    )}
+                    <span>{cl.categoryKey}</span>
+                  </div>
+                  <span className='text-muted-foreground'>
+                    {formatCurrency(cl.limitMinor)}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </CardContent>
+      )}
+    </Card>
+  )
+}
+
+export { BudgetCard }

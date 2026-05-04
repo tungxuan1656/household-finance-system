@@ -1,13 +1,7 @@
 'use client'
 
-import { t } from '@/lib/i18n/t'
-import { PlaceholderPage } from '@/views/app/placeholder-page'
+import { BudgetsPage } from '@/views/app/budgets-page'
 
 export default function BudgetsRoutePage() {
-  return (
-    <PlaceholderPage
-      description={t('app.placeholder.budgets.description')}
-      title={t('app.placeholder.budgets.title')}
-    />
-  )
+  return <BudgetsPage />
 }

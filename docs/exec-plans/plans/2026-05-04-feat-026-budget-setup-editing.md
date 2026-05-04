@@ -48,20 +48,20 @@ Allow household admins to create and edit monthly budgets with a total spending 
 
 ## Progress
 
-- [ ] Step 1: Migration 0006 — add `category_key` to `budget_limits`, update constraints
-- [ ] Step 2: Backend contracts — `budget-schemas.ts`, `budget-types.ts`
-- [ ] Step 3: Backend repository — `budget-repository.ts`
-- [ ] Step 4: Backend handlers — create, get, list-by-period, update
-- [ ] Step 5: Backend routes — `budgets.ts`, register in `index.ts`
-- [ ] Step 6: Backend tests — unit schema tests, integration tests
-- [ ] Step 7: Frontend types — `budget.ts`
-- [ ] Step 8: Frontend API + endpoints — `budget.ts`, `endpoints.ts`
-- [ ] Step 9: Frontend hooks — `use-budgets.ts`
-- [ ] Step 10: Frontend components — budget form, period selector, category rows, summary card
-- [ ] Step 11: Frontend views — replace `budgets/page.tsx` placeholder
-- [ ] Step 12: Frontend i18n — Vietnamese labels
-- [ ] Step 13: Frontend tests — component tests
-- [ ] Step 14: Full verification — `./init.sh`
+- [x] Step 1: Migration 0006 — add `category_key` to `budget_limits`, update constraints
+- [x] Step 2: Backend contracts — `budget-schemas.ts`, `budget-types.ts`
+- [x] Step 3: Backend repository — `budget-repository.ts`
+- [x] Step 4: Backend handlers — create, get, list-by-period, update
+- [x] Step 5: Backend routes — `budgets.ts`, register in `index.ts`
+- [x] Step 6: Backend tests — unit schema tests, integration tests
+- [x] Step 7: Frontend types — `budget.ts`
+- [x] Step 8: Frontend API + endpoints — `budget.ts`, `endpoints.ts`
+- [x] Step 9: Frontend hooks — `use-budgets.ts`
+- [x] Step 10: Frontend components — budget form, period selector, category rows, summary card
+- [x] Step 11: Frontend views — replace `budgets/page.tsx` placeholder
+- [x] Step 12: Frontend i18n — Vietnamese labels
+- [ ] Step 13: Frontend tests — component tests (deferred)
+- [x] Step 14: Full verification — `./init.sh` passes
 
 ## Surprises & Discoveries
 

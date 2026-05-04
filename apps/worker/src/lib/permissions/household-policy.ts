@@ -6,6 +6,7 @@ export type HouseholdPermission =
   | 'manageMembers'
   | 'inviteMembers'
   | 'manageGroups'
+  | 'manageBudgets'
   | 'createExpense'
   | 'editOwnExpense'
   | 'editAnyExpense'
@@ -24,6 +25,8 @@ export const canManageMembers = (role: HouseholdRole): boolean => isAdmin(role)
 export const canInviteMembers = (role: HouseholdRole): boolean => isAdmin(role)
 
 export const canManageGroups = (role: HouseholdRole): boolean => isAdmin(role)
+
+export const canManageBudgets = (role: HouseholdRole): boolean => isAdmin(role)
 
 export const canCreateExpense = (role: HouseholdRole): boolean =>
   isAdmin(role) || role === 'member'
@@ -50,6 +53,8 @@ export const hasHouseholdPermission = (
       return canInviteMembers(role)
     case 'manageGroups':
       return canManageGroups(role)
+    case 'manageBudgets':
+      return canManageBudgets(role)
     case 'createExpense':
       return canCreateExpense(role)
     case 'editOwnExpense':
