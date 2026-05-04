@@ -663,6 +663,7 @@
     "feedback": {
       "createSuccess": "Đã tạo ngân sách thành công",
       "createFailed": "Không thể tạo ngân sách. Vui lòng thử lại.",
+      "duplicatePeriod": "Ngân sách cho tháng này đã tồn tại.",
       "updateSuccess": "Đã cập nhật ngân sách",
       "updateFailed": "Không thể cập nhật ngân sách. Vui lòng thử lại."
     },

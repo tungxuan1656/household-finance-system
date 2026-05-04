@@ -14,10 +14,10 @@ import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
 import type { BudgetDTO } from '@/types/budget'
 
-function formatCurrency(amount: number): string {
+function formatCurrency(amount: number, currencyCode: string): string {
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
-    currency: 'VND',
+    currency: currencyCode,
   }).format(amount)
 }
 
@@ -44,7 +44,7 @@ function BudgetCard({ budget, onEdit }: BudgetCardProps) {
             </CardTitle>
             <CardDescription>
               {t('budgets.card.totalLabel')}:{' '}
-              {formatCurrency(budget.totalLimitMinor)}
+              {formatCurrency(budget.totalLimitMinor, budget.currencyCode)}
             </CardDescription>
           </div>
           {onEdit && (
@@ -78,7 +78,7 @@ function BudgetCard({ budget, onEdit }: BudgetCardProps) {
                     <span>{cl.categoryKey}</span>
                   </div>
                   <span className='text-muted-foreground'>
-                    {formatCurrency(cl.limitMinor)}
+                    {formatCurrency(cl.limitMinor, budget.currencyCode)}
                   </span>
                 </div>
               )

@@ -11,10 +11,10 @@ import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
 import type { BudgetDTO } from '@/types/budget'
 
-function formatCurrency(amount: number): string {
+function formatCurrency(amount: number, currencyCode: string): string {
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
-    currency: 'VND',
+    currency: currencyCode,
   }).format(amount)
 }
 
@@ -49,7 +49,7 @@ function BudgetSummaryCard({ budget }: BudgetSummaryCardProps) {
             {t('budgets.summary.totalBudget')}
           </span>
           <span className='text-sm'>
-            {formatCurrency(budget.totalLimitMinor)}
+            {formatCurrency(budget.totalLimitMinor, budget.currencyCode)}
           </span>
         </div>
 
@@ -75,7 +75,7 @@ function BudgetSummaryCard({ budget }: BudgetSummaryCardProps) {
                     <span>{cl.categoryKey}</span>
                   </div>
                   <span className='text-muted-foreground'>
-                    {formatCurrency(cl.limitMinor)}
+                    {formatCurrency(cl.limitMinor, budget.currencyCode)}
                   </span>
                 </div>
               )
@@ -89,7 +89,7 @@ function BudgetSummaryCard({ budget }: BudgetSummaryCardProps) {
               {t('budgets.summary.unallocated')}
             </span>
             <span className='text-muted-foreground'>
-              {formatCurrency(unallocated)}
+              {formatCurrency(unallocated, budget.currencyCode)}
             </span>
           </div>
         )}

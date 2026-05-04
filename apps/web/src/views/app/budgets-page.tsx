@@ -3,9 +3,15 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import { CreateBudgetDialog, EditBudgetDialog } from '@/components/budget'
+import { ApiClientError } from '@/api/client'
+import {
+  BudgetSummaryCard,
+  CreateBudgetDialog,
+  EditBudgetDialog,
+} from '@/components/budget'
 import { BudgetList } from '@/components/budget/budget-list'
 import {
+  useBudgetListQuery,
   useCreateBudgetMutation,
   useUpdateBudgetMutation,
 } from '@/hooks/api/use-budgets'
@@ -27,6 +33,8 @@ function BudgetsPage() {
 
   const createMutation = useCreateBudgetMutation()
   const updateMutation = useUpdateBudgetMutation()
+  const { data: budgetsData } = useBudgetListQuery(selectedHouseholdId)
+  const latestBudget = budgetsData?.items[0] ?? null
 
   useEffect(() => {
     if (households.length === 0) {
@@ -41,7 +49,13 @@ function BudgetsPage() {
       await createMutation.mutateAsync(values as CreateBudgetRequest)
       toast.success(t('budgets.feedback.createSuccess'))
       setIsCreateDialogOpen(false)
-    } catch {
+    } catch (error) {
+      if (error instanceof ApiClientError && error.status === 409) {
+        toast.error(t('budgets.feedback.duplicatePeriod'))
+
+        return
+      }
+
       toast.error(t('budgets.feedback.createFailed'))
     }
   }
@@ -82,6 +96,8 @@ function BudgetsPage() {
           />
         )}
       </header>
+
+      {latestBudget && <BudgetSummaryCard budget={latestBudget} />}
 
       {selectedHouseholdId ? (
         <BudgetList

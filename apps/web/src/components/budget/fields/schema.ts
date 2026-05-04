@@ -1,7 +1,9 @@
 import { z } from 'zod'
 
 export const budgetFormSchema = z.object({
-  period: z.string().regex(/^\d{4}-\d{2}$/, 'Period must be in YYYY-MM format'),
+  period: z
+    .string()
+    .regex(/^\d{4}-(?:0[1-9]|1[0-2])$/, 'Period must be in YYYY-MM format'),
   totalLimit: z
     .number()
     .positive('Total budget must be a positive number')
