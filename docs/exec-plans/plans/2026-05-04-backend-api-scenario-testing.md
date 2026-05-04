@@ -45,12 +45,12 @@ Create a maintainable scenario-style backend test layer that verifies API behavi
 
 ## Progress Log
 
-- [ ] Plan written
-- [ ] Helper extensions added
-- [ ] Auth/profile scenario implemented
-- [ ] Household/expense scenario implemented
-- [ ] Group expense scenario implemented
-- [ ] Worker tests and typecheck verified
+- [x] Plan written
+- [x] Helper extensions added
+- [x] Auth/profile scenario implemented
+- [x] Household/expense scenario implemented
+- [x] Group expense scenario implemented
+- [x] Worker tests and typecheck verified
 
 ## Open Decisions
 
