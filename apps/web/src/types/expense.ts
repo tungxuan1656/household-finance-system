@@ -56,11 +56,22 @@ export type ExpenseListParams = {
   payer_id?: string
   visibility?: ExpenseVisibility
   group_id?: string
+  query?: string
+  amount_min?: number
+  amount_max?: number
+  creator_id?: string
+  sort?: 'occurred_at_desc' | 'amount_desc'
 }
 
 export type ExpenseListResponse = {
   items: ExpenseDTO[]
   nextCursor: string | null
+}
+
+export type ExpenseSummaryResponse = {
+  totalSpendMinor: number
+  expenseCount: number
+  currencyCode: string
 }
 
 export type UpdateExpenseMutationInput = {

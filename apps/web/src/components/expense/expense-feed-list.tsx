@@ -9,8 +9,14 @@ import { Empty, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useInfiniteExpenseListQuery } from '@/hooks/api/use-expense'
 import { t } from '@/lib/i18n/t'
+import type { ExpenseListParams } from '@/types/expense'
 
-export function ExpenseFeedList() {
+type ExpenseFeedListProps = {
+  filters?: ExpenseListParams
+  search?: string
+}
+
+export function ExpenseFeedList({ filters, search }: ExpenseFeedListProps) {
   const router = useRouter()
   const {
     data,
@@ -20,7 +26,10 @@ export function ExpenseFeedList() {
     hasNextPage,
     isFetchingNextPage,
     refetch,
-  } = useInfiniteExpenseListQuery()
+  } = useInfiniteExpenseListQuery({
+    ...filters,
+    query: search?.trim() || undefined,
+  })
 
   const handleExpenseClick = (id: string) => {
     router.push(`/expenses/${id}`)

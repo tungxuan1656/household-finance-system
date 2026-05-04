@@ -336,9 +336,20 @@ export interface ListExpensesInput {
   payerId?: string
   visibility?: 'private' | 'household'
   groupId?: string
+  query?: string
+  amountMin?: number
+  amountMax?: number
+  creatorId?: string
+  sort?: 'occurred_at_desc' | 'amount_desc'
 }
 
 export interface ListExpensesResult {
   items: StoredExpense[]
   nextCursor: string | null
+}
+
+export interface ExpenseSummaryResult {
+  totalSpendMinor: number
+  expenseCount: number
+  currencyCode: string
 }

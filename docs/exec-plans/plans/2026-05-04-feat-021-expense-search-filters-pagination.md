@@ -252,14 +252,13 @@ build succeeds
 ## Harness Integration
 
 - Update `harness/features/feat-021.json`:
-  - set `status` to `in_progress`
+  - set `status` to `done` after full verification passes
   - refresh `updated_at`
   - align the description with the final scoped contract if wording changes during implementation
 - Update `harness/feature_index.json`:
-  - move `feat-021` into the active/in-progress workflow record
+  - move `feat-021` into the completed workflow record
 - Update `harness/progress.md`:
-  - add a new newest-first session entry for plan creation
-  - record the next implementation step as backend query contract work
+  - add a newest-first completion entry with final verification evidence
 - If implementation defers anything, log it in `docs/exec-plans/tech-debt-tracker.md`.
 
 ## Decision Log
@@ -279,15 +278,21 @@ build succeeds
 - [x] (2026-05-04) Identify `feat-021` as the next pending feature.
 - [x] (2026-05-04) Read product specs, harness state, and scope standards.
 - [x] (2026-05-04) Draft the active ExecPlan and register it in repo docs.
-- [ ] (Owner: Orchestrator, Status: pending) Implement backend query contract and repository support.
-- [ ] Implement backend handlers/routes/tests and verify worker coverage.
-- [ ] Implement frontend filter bar/hooks/tests and verify web coverage.
-- [ ] Run `./init.sh` and capture final evidence.
+- [x] (2026-05-04) Implement backend query contract and repository support.
+- [x] (2026-05-04) Implement backend handlers/routes/tests and verify worker coverage.
+- [x] (2026-05-04) Implement frontend filter/search/summary wiring and verify web coverage.
+- [x] (2026-05-04) Run `PATH="$HOME/.nvm/versions/node/v24.15.0/bin:$PATH" ./init.sh` and capture final evidence.
 
 ## Surprises & Discoveries
 
-- None yet.
+- Local shell defaulted to Node 18, but Vite 7 in this repo requires a newer runtime (`crypto.hash` unavailable on Node 18). Session verification used explicit Node 24 PATH overrides.
+- Worker sort typing needed a final widening in `ListExpensesInput` so the repository contract matched the validated query schema and existing default ordering behavior.
+- Post-implementation review surfaced contract-boundary bugs that mocked frontend tests had missed: frontend `search` needed to align to backend `query`, summary field names had to match backend DTOs, and `amount_desc` pagination required sort-aware cursor encoding plus matching WHERE semantics.
 
 ## Outcomes & Retrospective
 
-- Pending implementation.
+- Completed the scoped fullstack expense querying slice with filtered list + summary support.
+- Backend delivered validated filters (`query`, amount bounds, creator/category/payer/visibility/date/group/sort/limit/cursor`) plus `GET /api/v1/expenses/summary`, with post-review fixes ensuring summary/list filter parity and stable sort-aware cursor pagination for `amount_desc`.
+- Frontend delivered page-local query, visibility, and category controls wired into both summary and feed queries, with post-review fixes aligning list/summary request and response contracts to backend behavior; richer filter matrix and URL-synced state remain future enhancements, not blockers for this feature.
+- Final evidence: `PATH="$HOME/.nvm/versions/node/v24.15.0/bin:$PATH" ./init.sh` => `pnpm install: OK`, `Harness checks: OK`, `Linting: OK`, `Type checking: OK`, `Running tests: OK`, `Init Done`.
+- Additional regression evidence after review fixes: `PATH="$HOME/.nvm/versions/node/v24.15.0/bin:$PATH" pnpm --filter worker test -- --runInBand "test/integration/expenses-summary.spec.ts" "test/integration/expenses-list.spec.ts"` and `PATH="$HOME/.nvm/versions/node/v24.15.0/bin:$PATH" pnpm --filter web test -- --runInBand "src/components/expense/expense-feed-summary.test.tsx" "src/components/expense/expense-feed-list.test.tsx" "src/views/app/expenses-page.test.tsx"`.

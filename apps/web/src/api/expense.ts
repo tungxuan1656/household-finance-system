@@ -6,6 +6,7 @@ import type {
   ExpenseDTO,
   ExpenseListParams,
   ExpenseListResponse,
+  ExpenseSummaryResponse,
   RestoreExpenseResponse,
   UpdateExpenseMutationInput,
   UpdateExpenseResponse,
@@ -24,6 +25,15 @@ export const createExpense = async (payload: CreateExpenseRequest) => {
 export const listExpenses = async (params?: ExpenseListParams) => {
   const response = await client.get<ExpenseListResponse>(
     API_ENDPOINTS.expenses.list,
+    { params },
+  )
+
+  return response.data
+}
+
+export const getExpenseSummary = async (params?: ExpenseListParams) => {
+  const response = await client.get<ExpenseSummaryResponse>(
+    API_ENDPOINTS.expenses.summary,
     { params },
   )
 

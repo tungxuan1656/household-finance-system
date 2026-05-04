@@ -166,6 +166,11 @@ export const expenseListQuerySchema = () =>
       payer_id: z.string().trim().min(1).optional(),
       visibility: expenseVisibilitySchema.optional(),
       group_id: z.string().trim().min(1).optional(),
+      query: z.string().trim().min(1).optional(),
+      amount_min: z.coerce.number().int().nonnegative().optional(),
+      amount_max: z.coerce.number().int().nonnegative().optional(),
+      creator_id: z.string().trim().min(1).optional(),
+      sort: z.enum(['occurred_at_desc', 'amount_desc']).optional(),
     })
     .strict()
 

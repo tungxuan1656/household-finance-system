@@ -4,6 +4,7 @@ import { replaceExpenseGroupsHandler } from '@/handlers/expense-groups/replace-e
 import { createExpenseHandler } from '@/handlers/expenses/create-expense'
 import { deleteExpenseHandler } from '@/handlers/expenses/delete-expense'
 import { getExpenseHandler } from '@/handlers/expenses/get-expense'
+import { getExpenseSummaryHandler } from '@/handlers/expenses/get-expense-summary'
 import { listDeletedExpensesHandler } from '@/handlers/expenses/list-deleted-expenses'
 import { listExpensesHandler } from '@/handlers/expenses/list-expenses'
 import { restoreExpenseHandler } from '@/handlers/expenses/restore-expense'
@@ -31,6 +32,13 @@ expensesRoutes.post('/expenses', async (ctx) => {
 // GET /api/v1/expenses
 expensesRoutes.get('/expenses', async (ctx) => {
   const result = await listExpensesHandler(ctx)
+
+  return success<typeof result>(ctx, result)
+})
+
+// GET /api/v1/expenses/summary
+expensesRoutes.get('/expenses/summary', async (ctx) => {
+  const result = await getExpenseSummaryHandler(ctx)
 
   return success<typeof result>(ctx, result)
 })

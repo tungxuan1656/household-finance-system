@@ -1,9 +1,9 @@
 {
   "id": "feat-021",
   "name": "Expense search, filters & pagination",
-  "description": "Extend the expense feed with search, filters, and pagination controls. Backend: extends GET /api/v1/expenses with additional query params — query (full-text search on note field, partial-match), amount_min/amount_max, group_id, category_key, visibility (scoped to caller), sort (date|amount|created_at), and limit+cursor pagination; plus GET /api/v1/expenses/summary returning aggregated totals (sum, count) for the filtered set. Category filters use the global static catalog from feat-016, referenced by stable key rather than household-owned category records. Frontend: Filter bar component (date-range picker, category multi-select, payer select, amount range), search input, sort toggle, and pagination/infinite-scroll wiring. Per docs/product-specs/expense-querying.md. Does NOT include analytics charts (feat-028).",
+  "description": "Completed fullstack expense querying improvements for the feed. Backend extends GET /api/v1/expenses with validated filters for note search (`query`), amount_min/amount_max, group_id, category_key, payer_id, creator_id, visibility, date range, sort, limit, and sort-aware cursor pagination; adds GET /api/v1/expenses/summary for filtered totals using the same effective filter set as the list endpoint; and preserves server-side visibility plus household membership enforcement. Frontend adds page-local query, visibility, and category filters wired into both the feed list and a summary card, plus typed query hooks/client support aligned to the backend summary contract. Analytics charts and broader budgeting remain out of scope.",
   "dependencies": ["feat-018"],
-  "status": "in_progress",
-  "evidence": "",
+  "status": "done",
+  "evidence": "Verified with PATH=\"$HOME/.nvm/versions/node/v24.15.0/bin:$PATH\" ./init.sh (pnpm install OK, harness checks OK, linting OK, type checking OK, running tests OK). Post-review regression coverage also passed with PATH=\"$HOME/.nvm/versions/node/v24.15.0/bin:$PATH\" pnpm --filter worker test -- --runInBand \"test/integration/expenses-summary.spec.ts\" \"test/integration/expenses-list.spec.ts\" and PATH=\"$HOME/.nvm/versions/node/v24.15.0/bin:$PATH\" pnpm --filter web test -- --runInBand \"src/components/expense/expense-feed-summary.test.tsx\" \"src/components/expense/expense-feed-list.test.tsx\" \"src/views/app/expenses-page.test.tsx\".",
   "updated_at": "2026-05-04"
 }

@@ -9,6 +9,7 @@ import {
   createExpense,
   deleteExpense as deleteExpenseApi,
   getExpenseDetail,
+  getExpenseSummary,
   listDeletedExpenses,
   listExpenses,
   replaceExpenseGroups,
@@ -22,6 +23,7 @@ import type {
   ExpenseDTO,
   ExpenseListParams,
   ExpenseListResponse,
+  ExpenseSummaryResponse,
   RestoreExpenseResponse,
   UpdateExpenseMutationInput,
   UpdateExpenseResponse,
@@ -36,6 +38,10 @@ export const EXPENSE_KEYS = {
   lists: () => [...EXPENSE_KEYS.all, 'list'] as const,
   list: (filters?: ExpenseListParams) =>
     [...EXPENSE_KEYS.lists(), filters].filter(
+      (x) => x != null,
+    ) as unknown as readonly unknown[],
+  summary: (filters?: ExpenseListParams) =>
+    [...EXPENSE_KEYS.all, 'summary', filters].filter(
       (x) => x != null,
     ) as unknown as readonly unknown[],
   detail: (id: string) => [...EXPENSE_KEYS.all, id] as const,
@@ -94,6 +100,13 @@ export const useInfiniteExpenseListQuery = (params?: ExpenseListParams) => {
       listExpenses({ ...params, cursor: pageParam as string | undefined }),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+  })
+}
+
+export const useExpenseSummaryQuery = (params?: ExpenseListParams) => {
+  return useQuery<ExpenseSummaryResponse, Error>({
+    queryKey: EXPENSE_KEYS.summary(params),
+    queryFn: () => getExpenseSummary(params),
   })
 }
 

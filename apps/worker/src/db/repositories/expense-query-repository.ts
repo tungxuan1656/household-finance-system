@@ -1,36 +1,60 @@
 import type {
   ExpenseRow,
+  ExpenseSummaryResult,
   ListExpensesInput,
   ListExpensesResult,
   StoredExpense,
 } from './expense-repository'
 import { mapRow } from './expense-repository'
 
-// Decode a composite cursor (base64 of "occurred_at:id") into its parts.
+type ExpenseCursor =
+  | { sort: 'occurred_at_desc'; occurredAt: number; id: string }
+  | {
+      sort: 'amount_desc'
+      amountMinor: number
+      occurredAt: number
+      id: string
+    }
+
+// Decode a composite cursor into its parts.
 // Returns null if the cursor format is invalid.
-export const decodeCursor = (
-  cursor: string,
-): { occurredAt: number; id: string } | null => {
+export const decodeCursor = (cursor: string): ExpenseCursor | null => {
   try {
     const decoded = atob(cursor)
-    const separatorIndex = decoded.indexOf(':')
+    const parts = decoded.split(':')
 
-    if (separatorIndex === -1) return null
+    if (parts.length === 2) {
+      const occurredAt = Number(parts[0])
+      const id = parts[1]
 
-    const occurredAt = Number(decoded.slice(0, separatorIndex))
-    const id = decoded.slice(separatorIndex + 1)
+      if (!occurredAt || !id) return null
 
-    if (!occurredAt || !id) return null
+      return { sort: 'occurred_at_desc', occurredAt, id }
+    }
 
-    return { occurredAt, id }
+    if (parts.length === 3) {
+      const amountMinor = Number(parts[0])
+      const occurredAt = Number(parts[1])
+      const id = parts[2]
+
+      if (Number.isNaN(amountMinor) || !occurredAt || !id) return null
+
+      return { sort: 'amount_desc', amountMinor, occurredAt, id }
+    }
+
+    return null
   } catch {
     return null
   }
 }
 
-// Encode occurred_at and id into a composite cursor.
-const encodeCursor = (occurredAt: number, id: string): string =>
-  btoa(`${occurredAt}:${id}`)
+const encodeCursor = (
+  sort: ListExpensesInput['sort'],
+  expense: Pick<ExpenseRow, 'amount_minor' | 'occurred_at' | 'id'>,
+): string =>
+  sort === 'amount_desc'
+    ? btoa(`${expense.amount_minor}:${expense.occurred_at}:${expense.id}`)
+    : btoa(`${expense.occurred_at}:${expense.id}`)
 
 // Explicit column list for SELECT queries (no SELECT *).
 const EXPENSE_COLUMNS = `
@@ -66,6 +90,11 @@ export const listExpenses = async (
     payerId,
     visibility,
     groupId,
+    query,
+    amountMin,
+    amountMax,
+    creatorId,
+    sort,
   } = input
 
   // Build WHERE conditions and bind params.
@@ -141,14 +170,58 @@ export const listExpenses = async (
     params.push(groupId)
   }
 
+  if (query !== undefined) {
+    conditions.push("LOWER(COALESCE(e.note, '')) LIKE ?")
+    params.push(`%${query.toLowerCase()}%`)
+  }
+
+  if (amountMin !== undefined) {
+    conditions.push('e.amount_minor >= ?')
+    params.push(amountMin)
+  }
+
+  if (amountMax !== undefined) {
+    conditions.push('e.amount_minor <= ?')
+    params.push(amountMax)
+  }
+
+  if (creatorId !== undefined) {
+    conditions.push('e.created_by_user_id = ?')
+    params.push(creatorId)
+  }
+
   // Cursor pagination: occurred_at DESC, id DESC for tie-breaking.
   // Cursor encodes "occurred_at:id" — we want rows BEFORE this cursor.
   if (cursor) {
     const decoded = decodeCursor(cursor)
 
     if (decoded) {
-      conditions.push('(e.occurred_at < ? OR (e.occurred_at = ? AND e.id < ?))')
-      params.push(decoded.occurredAt, decoded.occurredAt, decoded.id)
+      if (sort === 'amount_desc') {
+        if (decoded.sort !== 'amount_desc') {
+          conditions.push('1 = 0')
+        } else {
+          conditions.push(`(
+            e.amount_minor < ?
+            OR (e.amount_minor = ? AND e.occurred_at < ?)
+            OR (e.amount_minor = ? AND e.occurred_at = ? AND e.id < ?)
+          )`)
+
+          params.push(
+            decoded.amountMinor,
+            decoded.amountMinor,
+            decoded.occurredAt,
+            decoded.amountMinor,
+            decoded.occurredAt,
+            decoded.id,
+          )
+        }
+      } else {
+        conditions.push(
+          '(e.occurred_at < ? OR (e.occurred_at = ? AND e.id < ?))',
+        )
+
+        params.push(decoded.occurredAt, decoded.occurredAt, decoded.id)
+      }
     }
   }
 
@@ -157,16 +230,21 @@ export const listExpenses = async (
   // Fetch limit + 1 to determine if there's a next page.
   const fetchLimit = limit + 1
 
-  const query = `SELECT ${EXPENSE_COLUMNS}
-    FROM expenses e
-   WHERE ${whereClause}
-   ORDER BY e.occurred_at DESC, e.id DESC
-   LIMIT ?`
+  const orderBy =
+    sort === 'amount_desc'
+      ? 'ORDER BY e.amount_minor DESC, e.occurred_at DESC, e.id DESC'
+      : 'ORDER BY e.occurred_at DESC, e.id DESC'
+
+  const querySql = `SELECT ${EXPENSE_COLUMNS}
+     FROM expenses e
+    WHERE ${whereClause}
+    ${orderBy}
+    LIMIT ?`
 
   params.push(fetchLimit)
 
   const result = await db
-    .prepare(query)
+    .prepare(querySql)
     .bind(...params)
     .all<ExpenseRow>()
 
@@ -175,13 +253,135 @@ export const listExpenses = async (
   const items = hasMore ? rows.slice(0, limit) : rows
   const nextCursor =
     hasMore && items.length > 0
-      ? encodeCursor(
-          items[items.length - 1].occurredAt,
-          items[items.length - 1].id,
-        )
+      ? encodeCursor(sort, {
+          amount_minor: items[items.length - 1].amountMinor,
+          occurred_at: items[items.length - 1].occurredAt,
+          id: items[items.length - 1].id,
+        })
       : null
 
   return { items, nextCursor }
+}
+
+export const summarizeExpenses = async (
+  db: D1Database,
+  input: Pick<
+    ListExpensesInput,
+    | 'userId'
+    | 'householdId'
+    | 'dateFrom'
+    | 'dateTo'
+    | 'categoryKey'
+    | 'payerId'
+    | 'visibility'
+    | 'groupId'
+    | 'query'
+    | 'amountMin'
+    | 'amountMax'
+    | 'creatorId'
+  >,
+): Promise<ExpenseSummaryResult> => {
+  const conditions: string[] = ['e.deleted_at IS NULL']
+  const params: unknown[] = []
+
+  if (input.householdId) {
+    conditions.push('e.visibility = ?')
+    params.push('household')
+    conditions.push('e.household_id = ?')
+    params.push(input.householdId)
+  } else {
+    conditions.push(`(
+      (
+        e.visibility = 'private'
+        AND e.created_by_user_id = ?
+      )
+      OR (
+        e.visibility = 'household'
+        AND e.household_id IN (
+          SELECT hm.household_id
+            FROM household_memberships hm
+           WHERE hm.user_id = ?
+             AND hm.state = 'active'
+        )
+      )
+    )`)
+
+    params.push(input.userId, input.userId)
+  }
+
+  if (input.query !== undefined) {
+    conditions.push("LOWER(COALESCE(e.note, '')) LIKE ?")
+    params.push(`%${input.query.toLowerCase()}%`)
+  }
+
+  if (input.dateFrom !== undefined) {
+    conditions.push('e.occurred_at >= ?')
+    params.push(input.dateFrom)
+  }
+
+  if (input.dateTo !== undefined) {
+    conditions.push('e.occurred_at <= ?')
+    params.push(input.dateTo)
+  }
+
+  if (input.categoryKey !== undefined) {
+    conditions.push('e.category_key = ?')
+    params.push(input.categoryKey)
+  }
+
+  if (input.payerId !== undefined) {
+    conditions.push('e.payer_user_id = ?')
+    params.push(input.payerId)
+  }
+
+  if (input.visibility !== undefined) {
+    conditions.push('e.visibility = ?')
+    params.push(input.visibility)
+  }
+
+  if (input.groupId !== undefined) {
+    conditions.push(
+      `e.id IN (
+        SELECT eg.expense_id
+          FROM expense_group_items eg
+         WHERE eg.group_id = ?
+      )`,
+    )
+
+    params.push(input.groupId)
+  }
+
+  if (input.amountMin !== undefined) {
+    conditions.push('e.amount_minor >= ?')
+    params.push(input.amountMin)
+  }
+
+  if (input.amountMax !== undefined) {
+    conditions.push('e.amount_minor <= ?')
+    params.push(input.amountMax)
+  }
+
+  if (input.creatorId !== undefined) {
+    conditions.push('e.created_by_user_id = ?')
+    params.push(input.creatorId)
+  }
+
+  const row = await db
+    .prepare(
+      `SELECT COUNT(*) AS expenseCount, COALESCE(SUM(e.amount_minor), 0) AS totalSpendMinor, MIN(e.currency_code) AS currencyCode FROM expenses e WHERE ${conditions.join(' AND ')}`,
+    )
+    .bind(...params)
+    .first<{
+      expenseCount: number
+      totalSpendMinor: number
+      currencyCode: string | null
+    }>()
+
+  return {
+    expenseCount: Number(row?.expenseCount ?? 0),
+    totalSpendMinor: Number(row?.totalSpendMinor ?? 0),
+    currencyCode: row?.currencyCode ?? 'VND',
+  }
 }
 
 export const listDeletedExpensesByHousehold = async (
