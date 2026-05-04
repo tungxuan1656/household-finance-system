@@ -56,23 +56,23 @@ function BudgetForm({
   })
 
   const handleSubmit = (values: BudgetFormValues) => {
-    const payloadCategoryLimits =
-      categoryLimits.length > 0
-        ? categoryLimits.filter((cl) => cl.limitMinor > 0)
-        : undefined
+    const activeCategoryLimits = categoryLimits.filter(
+      (cl) => cl.limitMinor > 0,
+    )
 
     if (mode === 'create') {
       const payload: CreateBudgetRequest = {
         householdId,
         period: values.period,
         totalLimit: values.totalLimit,
-        categoryLimits: payloadCategoryLimits,
+        categoryLimits:
+          activeCategoryLimits.length > 0 ? activeCategoryLimits : undefined,
       }
       onSubmit(payload)
     } else {
       const payload: UpdateBudgetRequest = {
         totalLimit: values.totalLimit,
-        categoryLimits: payloadCategoryLimits,
+        categoryLimits: activeCategoryLimits,
       }
       onSubmit(payload)
     }
