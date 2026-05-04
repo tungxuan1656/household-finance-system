@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-04 — Created active ExecPlan for feat-021 expense search, filters & pagination
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-021` covering fullstack expense search/filtering/pagination. Backend scope: extend `GET /api/v1/expenses` with validated filters (`query`, amount range, group/category/payer/creator/visibility, date range, sort, limit, cursor) and add `GET /api/v1/expenses/summary` for filtered totals. Frontend scope: feed filter bar, search input, sort control, summary totals, and cursor-paginated refetch wiring. Explicitly out of scope: analytics charts and offline queueing.
+- Files changed: docs/exec-plans/plans/2026-05-04-feat-021-expense-search-filters-pagination.md, docs/exec-plans/index.md, harness/features/feat-021.json, harness/feature_index.json, harness/progress.md
+- Blockers: none
+- Next steps: implement backend query contract/repository support first, then handlers/routes/tests, then frontend filter UI and hook wiring.
+
 ## 2026-05-04 — Backend API scenario testing coverage
 - Who: Orchestrator
 - Summary: Added three backend-only scenario integration tests to validate real worker HTTP flows end to end: auth/profile, household expense lifecycle, and group expense assignment/summary. Also introduced shared worker test helpers for authenticated JSON requests plus reusable household/expense setup, then refactored the existing expense lifecycle suite to consume the new helper return shapes. Verified the full worker suite passes (`pnpm --filter worker test`, 242 tests).
