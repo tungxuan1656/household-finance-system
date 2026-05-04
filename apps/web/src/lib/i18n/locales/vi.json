@@ -570,12 +570,12 @@
       "description": "Top 5 danh mục theo tổng chi tiêu"
     },
     "empty": {
-      "title": "insights.empty.title",
-      "description": "insights.empty.description"
+      "title": "Chưa có dữ liệu chi tiêu",
+      "description": "Hãy thêm khoản chi trong tháng đã chọn để xem tổng quan."
     },
     "error": {
-      "title": "insights.error.title",
-      "description": "insights.error.description"
+      "title": "Không thể tải tổng quan chi tiêu",
+      "description": "Vui lòng thử lại sau hoặc chuyển sang tháng khác."
     }
   },
   "groups": {

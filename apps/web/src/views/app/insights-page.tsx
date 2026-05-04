@@ -63,8 +63,7 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
   const selectedHouseholdId = currentHousehold?.id ?? households[0]?.id
   const shouldLoadHouseholds = households.length === 0 && !currentHousehold
   const shouldFetchAnalytics =
-    Boolean(selectedHouseholdId) ||
-    (hasRequestedHouseholds && !shouldLoadHouseholds)
+    Boolean(selectedHouseholdId) || hasRequestedHouseholds
 
   useEffect(() => {
     if (shouldLoadHouseholds) {
