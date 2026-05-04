@@ -38,8 +38,33 @@ export interface BudgetDTO {
   updatedAt: number
 }
 
+export type BudgetThresholdStatus = 'ok' | 'warning' | 'exceeded'
+
+export interface BudgetCategoryStatusDTO {
+  categoryKey: string
+  plannedLimitMinor: number
+  actualSpendMinor: number
+  remainingMinor: number
+  percentUsed: number
+  status: BudgetThresholdStatus
+}
+
+export interface BudgetStatusDTO {
+  budgetId: string
+  householdId: string
+  period: string
+  currencyCode: string
+  totalPlannedMinor: number
+  totalActualMinor: number
+  totalRemainingMinor: number
+  totalPercentUsed: number
+  totalStatus: BudgetThresholdStatus
+  categoryStatuses: BudgetCategoryStatusDTO[]
+}
+
 export type CreateBudgetResponse = BudgetDTO
 export type UpdateBudgetResponse = BudgetDTO
+export type GetBudgetStatusResponse = BudgetStatusDTO
 
 export interface ListBudgetsResponse {
   items: BudgetDTO[]

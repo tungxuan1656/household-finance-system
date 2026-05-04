@@ -54,5 +54,6 @@ export const API_ENDPOINTS = {
     create: '/budgets',
     list: '/budgets',
     detail: (id: string) => `/budgets/${id}`,
+    status: (id: string) => `/budgets/${id}/status`,
   },
 } as const

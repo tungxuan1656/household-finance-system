@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
 import {
+  BudgetStatusPanel,
   BudgetSummaryCard,
   CreateBudgetDialog,
   EditBudgetDialog,
@@ -12,6 +13,7 @@ import {
 import { BudgetList } from '@/components/budget/budget-list'
 import {
   useBudgetListQuery,
+  useBudgetStatusQuery,
   useCreateBudgetMutation,
   useUpdateBudgetMutation,
 } from '@/hooks/api/use-budgets'
@@ -34,7 +36,19 @@ function BudgetsPage() {
   const createMutation = useCreateBudgetMutation()
   const updateMutation = useUpdateBudgetMutation()
   const { data: budgetsData } = useBudgetListQuery(selectedHouseholdId)
-  const latestBudget = budgetsData?.items[0] ?? null
+  const latestBudget = budgetsData?.items.reduce<BudgetDTO | null>(
+    (latest, budget) => {
+      if (!latest) return budget
+
+      return budget.period > latest.period ? budget : latest
+    },
+    null,
+  )
+  const {
+    data: budgetStatus,
+    isLoading: isStatusLoading,
+    error: statusError,
+  } = useBudgetStatusQuery(latestBudget?.id)
 
   useEffect(() => {
     if (households.length === 0) {
@@ -98,6 +112,12 @@ function BudgetsPage() {
       </header>
 
       {latestBudget && <BudgetSummaryCard budget={latestBudget} />}
+
+      <BudgetStatusPanel
+        errorMessage={statusError ? 'budgets.status.error.loadFailed' : null}
+        isLoading={isStatusLoading}
+        status={budgetStatus ?? null}
+      />
 
       {selectedHouseholdId ? (
         <BudgetList
