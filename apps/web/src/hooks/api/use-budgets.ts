@@ -3,12 +3,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createBudget,
   getBudget,
+  getBudgetStatus,
   listBudgets,
   updateBudget,
 } from '@/api/budget'
 import type {
   BudgetDTO,
   CreateBudgetRequest,
+  GetBudgetStatusResponse,
   ListBudgetsResponse,
   UpdateBudgetMutationInput,
 } from '@/types/budget'
@@ -21,6 +23,7 @@ export const BUDGET_KEYS = {
       (x) => x != null,
     ) as unknown as readonly unknown[],
   detail: (id: string) => [...BUDGET_KEYS.all, id] as const,
+  status: (id: string) => [...BUDGET_KEYS.detail(id), 'status'] as const,
 }
 
 export const useCreateBudgetMutation = () => {
@@ -60,6 +63,14 @@ export const useBudgetDetailQuery = (id: string | undefined) => {
   return useQuery<BudgetDTO, Error>({
     queryKey: BUDGET_KEYS.detail(id!),
     queryFn: () => getBudget(id!),
+    enabled: !!id,
+  })
+}
+
+export const useBudgetStatusQuery = (id: string | undefined) => {
+  return useQuery<GetBudgetStatusResponse, Error>({
+    queryKey: BUDGET_KEYS.status(id!),
+    queryFn: () => getBudgetStatus(id!),
     enabled: !!id,
   })
 }

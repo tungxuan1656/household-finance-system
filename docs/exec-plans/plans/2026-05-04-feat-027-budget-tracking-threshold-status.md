@@ -50,20 +50,21 @@ Enable household members to see whether the current budget is on track by compar
 
 ## Progress
 
-- [ ] (2026-05-04) Create and register ExecPlan for `feat-027`; mark harness feature `in_progress`.
-- [ ] (2026-05-04) Confirm budget status contract shape and threshold semantics from existing budget + expense flows.
-- [ ] (2026-05-04) Add backend contract/repository support for planned-vs-actual aggregates and threshold calculation.
-- [ ] (2026-05-04) Add `GET /api/v1/budgets/:id/status` handler, route, and tests.
-- [ ] (2026-05-04) Add frontend types/API/hooks for budget status and current-period fetch orchestration.
-- [ ] (2026-05-04) Add budget tracking UI states: total summary, warning banner, per-category progress, loading/empty/error.
-- [ ] (2026-05-04) Add or update i18n + frontend tests.
-- [ ] (2026-05-04) Run full verification (`./init.sh`) and capture evidence in harness artifacts.
+- [x] (2026-05-04) Create and register ExecPlan for `feat-027`; mark harness feature `in_progress`.
+- [x] (2026-05-04) Confirm budget status contract shape and threshold semantics from existing budget + expense flows.
+- [x] (2026-05-04) Add backend contract/repository support for planned-vs-actual aggregates and threshold calculation.
+- [x] (2026-05-04) Add `GET /api/v1/budgets/:id/status` handler, route, and tests.
+- [x] (2026-05-04) Add frontend types/API/hooks for budget status and current-period fetch orchestration.
+- [x] (2026-05-04) Add budget tracking UI states: total summary, warning banner, per-category progress, loading/empty/error.
+- [x] (2026-05-04) Add or update i18n + frontend tests.
+- [x] (2026-05-04) Run full verification (`./init.sh`) and capture evidence in harness artifacts.
 
 ## Surprises & Discoveries
 
 - The current `apps/web/src/views/app/budgets-page.tsx` is still a setup/list view from `feat-026`; `feat-027` should extend it instead of creating a second budgets entry point.
 - The current budget summary UI shows planned values only. Status work should prefer additive status-specific components rather than overloading setup/edit components.
 - `docs/product-specs/budget-management.md` mentions a spend timeline, but `harness/features/feat-027.json` does not. This plan treats timeline/chart work as deferred to analytics follow-ups.
+- Initial delegated frontend implementation used status labels (`under`/`near`/`over`) that drifted from the real backend contract (`ok`/`warning`/`exceeded`). This was corrected before final verification, along with category label rendering through the reference catalog helper.
 
 ## Decision Log
 
@@ -89,7 +90,13 @@ Enable household members to see whether the current budget is on track by compar
 
 ## Outcomes & Retrospective
 
-_(Fill after implementation completion.)_
+- Added a dedicated budget status read model and `GET /api/v1/budgets/:id/status` endpoint that computes household-visible planned-vs-actual totals and per-category threshold states for configured budget categories only.
+- Extended the budgets page into a tracking view that defaults to the latest budget month, fetches status separately from setup/edit DTOs, and renders summary/status UI with category metadata from the reference catalog.
+- Verification evidence captured from:
+  - `pnpm --filter worker test -- budgets-status.spec.ts`
+  - `pnpm --filter web test -- apps/web/src/components/budget/budget-status-panel.test.tsx apps/web/src/components/budget/budget-status-card.test.tsx apps/web/src/views/app/budgets-page.test.tsx`
+  - `pnpm --filter web typecheck`
+  - `./init.sh`
 
 ## Context and Orientation
 

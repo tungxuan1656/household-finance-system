@@ -679,6 +679,24 @@
       "categoryBreakdown": "Phân bổ theo danh mục",
       "unallocated": "Chưa phân bổ"
     },
+    "status": {
+      "title": "Trạng thái ngân sách",
+      "period": "Kỳ",
+      "totalPlanned": "Tổng dự kiến",
+      "totalActual": "Tổng thực chi",
+      "totalRemaining": "Còn lại",
+      "totalStatus": "Trạng thái tổng",
+      "categoryBreakdown": "Trạng thái theo danh mục",
+      "empty": {
+        "title": "Chưa có trạng thái ngân sách",
+        "description": "Chọn một ngân sách để xem tiến độ theo danh mục."
+      },
+      "labels": {
+        "ok": "Đúng kế hoạch",
+        "warning": "Gần chạm mức",
+        "exceeded": "Vượt mức"
+      }
+    },
     "empty": {
       "title": "Chưa có ngân sách",
       "description": "Tạo ngân sách đầu tiên để bắt đầu quản lý chi tiêu hàng tháng."
