@@ -10,7 +10,11 @@ import {
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
-import type { BudgetStatusDTO, BudgetTotalStatus } from '@/types/budget'
+import type {
+  BudgetStatusCategoryKey,
+  BudgetStatusDTO,
+  BudgetTotalStatus,
+} from '@/types/budget'
 
 function formatCurrency(amount: number, currencyCode: string): string {
   return new Intl.NumberFormat('vi-VN', {
@@ -25,8 +29,8 @@ function statusLabel(status: BudgetTotalStatus) {
   return t(`budgets.status.labels.${status}`)
 }
 
-function categoryStatusLabel(status: string) {
-  return t(`budgets.status.labels.${status as BudgetTotalStatus}`)
+function categoryStatusLabel(status: BudgetTotalStatus) {
+  return t(`budgets.status.labels.${status}`)
 }
 
 function BudgetStatusCard({ status }: BudgetStatusCardProps) {
@@ -82,7 +86,7 @@ function BudgetStatusCard({ status }: BudgetStatusCardProps) {
               {t('budgets.status.categoryBreakdown')}
             </p>
             {status.categoryStatuses.map((category) => {
-              const meta = categoryMap.get(category.categoryKey as never)
+              const meta = categoryMap.get(category.categoryKey)
 
               return (
                 <div
@@ -96,7 +100,9 @@ function BudgetStatusCard({ status }: BudgetStatusCardProps) {
                       />
                     )}
                     <span>
-                      {getCategoryLabel(category.categoryKey as never)}
+                      {getCategoryLabel(
+                        category.categoryKey as BudgetStatusCategoryKey,
+                      )}
                     </span>
                   </div>
                   <span className='text-muted-foreground'>

@@ -691,6 +691,10 @@
         "title": "Chưa có trạng thái ngân sách",
         "description": "Chọn một ngân sách để xem tiến độ theo danh mục."
       },
+      "error": {
+        "title": "Không thể tải trạng thái ngân sách",
+        "loadFailed": "Không thể tải trạng thái ngân sách. Vui lòng thử lại."
+      },
       "labels": {
         "ok": "Đúng kế hoạch",
         "warning": "Gần chạm mức",

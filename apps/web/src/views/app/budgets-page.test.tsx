@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { BudgetsPage } from '@/views/app/budgets-page'
 
 const statusMock = vi.fn()
 const summaryMock = vi.fn()
+const useBudgetListQueryMock = vi.fn()
+const useBudgetStatusQueryMock = vi.fn()
 
 vi.mock('@/components/budget', () => ({
   BudgetSummaryCard: (props: unknown) => {
@@ -37,11 +39,9 @@ vi.mock('@/components/budget/budget-summary-card', () => ({
 vi.mock('@/hooks/api/use-budgets', () => ({
   useCreateBudgetMutation: () => ({ isPending: false, mutateAsync: vi.fn() }),
   useUpdateBudgetMutation: () => ({ isPending: false, mutateAsync: vi.fn() }),
-  useBudgetListQuery: () => ({ data: { items: [{ id: 'budget-1' }] } }),
-  useBudgetStatusQuery: () => ({
-    data: { period: '2026-05' },
-    isLoading: false,
-  }),
+  useBudgetListQuery: (...args: unknown[]) => useBudgetListQueryMock(...args),
+  useBudgetStatusQuery: (...args: unknown[]) =>
+    useBudgetStatusQueryMock(...args),
 }))
 
 vi.mock('@/lib/i18n/t', () => ({ t: (key: string) => key }))
@@ -57,6 +57,41 @@ vi.mock('@/stores/household.store', () => ({
 }))
 
 describe('BudgetsPage', () => {
+  const budgetOne = {
+    id: 'budget-1',
+    householdId: 'hh-1',
+    period: '2026-04',
+    totalLimitMinor: 1000,
+    currencyCode: 'VND',
+    categoryLimits: [],
+    createdByUserId: 'u1',
+    createdAt: 1,
+    updatedAt: 1,
+  }
+
+  const budgetTwo = {
+    ...budgetOne,
+    id: 'budget-2',
+    period: '2026-05',
+  }
+
+  const defaultStatusResult = {
+    data: { period: '2026-05' },
+    isLoading: false,
+    error: null,
+  }
+
+  beforeEach(() => {
+    statusMock.mockClear()
+    summaryMock.mockClear()
+
+    useBudgetListQueryMock.mockReturnValue({
+      data: { items: [budgetOne, budgetTwo] },
+    })
+
+    useBudgetStatusQueryMock.mockReturnValue(defaultStatusResult)
+  })
+
   it('passes latest budget status into tracking panel', () => {
     render(<BudgetsPage />)
 
@@ -70,5 +105,22 @@ describe('BudgetsPage', () => {
     )
 
     expect(summaryMock).toHaveBeenCalled()
+    expect(useBudgetStatusQueryMock).toHaveBeenCalledWith('budget-2')
+  })
+
+  it('passes an error message when status loading fails', () => {
+    useBudgetStatusQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('boom'),
+    })
+
+    render(<BudgetsPage />)
+
+    expect(statusMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        errorMessage: 'budgets.status.error.loadFailed',
+      }),
+    )
   })
 })

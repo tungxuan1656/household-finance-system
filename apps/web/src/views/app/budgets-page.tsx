@@ -44,8 +44,11 @@ function BudgetsPage() {
     },
     null,
   )
-  const { data: budgetStatus, isLoading: isStatusLoading } =
-    useBudgetStatusQuery(latestBudget?.id)
+  const {
+    data: budgetStatus,
+    isLoading: isStatusLoading,
+    error: statusError,
+  } = useBudgetStatusQuery(latestBudget?.id)
 
   useEffect(() => {
     if (households.length === 0) {
@@ -111,6 +114,7 @@ function BudgetsPage() {
       {latestBudget && <BudgetSummaryCard budget={latestBudget} />}
 
       <BudgetStatusPanel
+        errorMessage={statusError ? 'budgets.status.error.loadFailed' : null}
         isLoading={isStatusLoading}
         status={budgetStatus ?? null}
       />

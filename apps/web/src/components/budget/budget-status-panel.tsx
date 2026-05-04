@@ -10,16 +10,21 @@ import {
 } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
-import type { BudgetStatusDTO } from '@/types/budget'
+import type { BudgetStatusDTO, BudgetStatusErrorMessage } from '@/types/budget'
 
 import { BudgetStatusCard } from './budget-status-card'
 
 type BudgetStatusPanelProps = {
   status?: BudgetStatusDTO | null
   isLoading?: boolean
+  errorMessage?: BudgetStatusErrorMessage | null
 }
 
-function BudgetStatusPanel({ status, isLoading }: BudgetStatusPanelProps) {
+function BudgetStatusPanel({
+  status,
+  isLoading,
+  errorMessage,
+}: BudgetStatusPanelProps) {
   if (isLoading) {
     return (
       <Card>
@@ -28,6 +33,20 @@ function BudgetStatusPanel({ status, isLoading }: BudgetStatusPanelProps) {
           <Skeleton className='mt-4 h-24 w-full' />
         </CardContent>
       </Card>
+    )
+  }
+
+  if (errorMessage) {
+    return (
+      <Empty className='border'>
+        <EmptyHeader>
+          <EmptyMedia variant='icon'>
+            <span aria-hidden='true'>⚠️</span>
+          </EmptyMedia>
+          <EmptyTitle>{t('budgets.status.error.title')}</EmptyTitle>
+          <EmptyDescription>{t(errorMessage)}</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     )
   }
 

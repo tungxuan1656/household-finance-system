@@ -36,6 +36,224 @@ type BudgetStatusDTO = {
 }
 
 describe('GET /api/v1/budgets/:id/status', () => {
+  it('includes unconfigured-category spend in total status while keeping category rows configured-only', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-budget-status-unconfigured:budget-status-unconfigured@example.com',
+    )
+
+    const householdResponse = await createHousehold(
+      auth.accessToken,
+      'Budget status unconfigured household',
+    )
+    expect(householdResponse.status).toBe(201)
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
+
+    const createBudgetResponse = await SELF.fetch(
+      'https://example.com/api/v1/budgets',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          householdId,
+          period: '2026-04',
+          totalLimit: 100000,
+          categoryLimits: [{ categoryKey: 'food', limitMinor: 40000 }],
+        }),
+      },
+    )
+    expect(createBudgetResponse.status).toBe(201)
+    const budgetId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(createBudgetResponse)
+    ).data.id
+
+    await createExpense(auth.accessToken, {
+      amount: 20000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      visibility: 'household',
+      householdId,
+      title: 'Food spend',
+      occurredAt: Date.UTC(2026, 3, 10),
+    })
+
+    await createExpense(auth.accessToken, {
+      amount: 30000,
+      categoryKey: 'travel',
+      sourceKey: 'cash',
+      visibility: 'household',
+      householdId,
+      title: 'Travel spend',
+      occurredAt: Date.UTC(2026, 3, 11),
+    })
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/budgets/${budgetId}/status`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(200)
+
+    const payload = await parseJson<ApiEnvelope<BudgetStatusDTO>>(response)
+
+    expect(payload.data.totalActualMinor).toBe(50000)
+    expect(payload.data.totalRemainingMinor).toBe(50000)
+    expect(payload.data.totalPercentUsed).toBe(50)
+    expect(payload.data.categoryStatuses).toEqual([
+      {
+        categoryKey: 'food',
+        plannedLimitMinor: 40000,
+        actualSpendMinor: 20000,
+        remainingMinor: 20000,
+        percentUsed: 50,
+        status: 'ok',
+      },
+    ])
+  })
+
+  it('tracks total actual spend even when the budget has no configured category limits', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-budget-status-no-categories:budget-status-no-categories@example.com',
+    )
+
+    const householdResponse = await createHousehold(
+      auth.accessToken,
+      'Budget status no categories household',
+    )
+    expect(householdResponse.status).toBe(201)
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
+
+    const createBudgetResponse = await SELF.fetch(
+      'https://example.com/api/v1/budgets',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          householdId,
+          period: '2026-04',
+          totalLimit: 100000,
+        }),
+      },
+    )
+    expect(createBudgetResponse.status).toBe(201)
+    const budgetId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(createBudgetResponse)
+    ).data.id
+
+    await createExpense(auth.accessToken, {
+      amount: 81000,
+      categoryKey: 'travel',
+      sourceKey: 'cash',
+      visibility: 'household',
+      householdId,
+      title: 'Trip booking',
+      occurredAt: Date.UTC(2026, 3, 20),
+    })
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/budgets/${budgetId}/status`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(200)
+
+    const payload = await parseJson<ApiEnvelope<BudgetStatusDTO>>(response)
+
+    expect(payload.data.totalActualMinor).toBe(81000)
+    expect(payload.data.totalRemainingMinor).toBe(19000)
+    expect(payload.data.totalPercentUsed).toBe(81)
+    expect(payload.data.totalStatus).toBe('warning')
+    expect(payload.data.categoryStatuses).toEqual([])
+  })
+
+  it.each([
+    { amount: 79000, totalStatus: 'ok' },
+    { amount: 80000, totalStatus: 'warning' },
+    { amount: 99000, totalStatus: 'warning' },
+    { amount: 100000, totalStatus: 'exceeded' },
+    { amount: 120000, totalStatus: 'exceeded' },
+  ] as const)(
+    'applies total threshold boundaries for amount=$amount',
+    async ({ amount, totalStatus }) => {
+      const auth = await exchangeAccessToken(
+        `test:firebase-user-budget-status-threshold-${amount}:budget-status-threshold-${amount}@example.com`,
+      )
+
+      const householdResponse = await createHousehold(
+        auth.accessToken,
+        `Budget threshold ${amount}`,
+      )
+      expect(householdResponse.status).toBe(201)
+      const householdId = (
+        await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+      ).data.id
+
+      const createBudgetResponse = await SELF.fetch(
+        'https://example.com/api/v1/budgets',
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${auth.accessToken}`,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            householdId,
+            period: '2026-04',
+            totalLimit: 100000,
+            categoryLimits: [{ categoryKey: 'food', limitMinor: 100000 }],
+          }),
+        },
+      )
+      expect(createBudgetResponse.status).toBe(201)
+      const budgetId = (
+        await parseJson<ApiEnvelope<{ id: string }>>(createBudgetResponse)
+      ).data.id
+
+      await createExpense(auth.accessToken, {
+        amount,
+        categoryKey: 'food',
+        sourceKey: 'cash',
+        visibility: 'household',
+        householdId,
+        title: 'Threshold expense',
+        occurredAt: Date.UTC(2026, 3, 18),
+      })
+
+      const response = await SELF.fetch(
+        `https://example.com/api/v1/budgets/${budgetId}/status`,
+        {
+          headers: {
+            authorization: `Bearer ${auth.accessToken}`,
+          },
+        },
+      )
+
+      expect(response.status).toBe(200)
+
+      const payload = await parseJson<ApiEnvelope<BudgetStatusDTO>>(response)
+
+      expect(payload.data.totalStatus).toBe(totalStatus)
+      expect(payload.data.categoryStatuses[0]?.status).toBe(totalStatus)
+    },
+  )
+
   it('returns planned vs actual totals and excludes private expenses from household aggregates', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-budget-status-happy:budget-status-happy@example.com',

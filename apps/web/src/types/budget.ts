@@ -1,5 +1,8 @@
+import type { TranslationKey } from '@/lib/i18n/i18n-init'
+import type { CategoryKey } from '@/types/reference-data'
+
 export type BudgetCategoryLimitDTO = {
-  categoryKey: string
+  categoryKey: CategoryKey
   limitMinor: number
 }
 
@@ -17,8 +20,15 @@ export type BudgetDTO = {
 
 export type BudgetTotalStatus = 'ok' | 'warning' | 'exceeded'
 
+export type BudgetStatusCategoryKey = BudgetCategoryLimitDTO['categoryKey']
+
+export type BudgetStatusErrorMessage = Extract<
+  TranslationKey,
+  'budgets.status.error.loadFailed'
+>
+
 export type BudgetCategoryStatus = {
-  categoryKey: string
+  categoryKey: BudgetStatusCategoryKey
   plannedLimitMinor: number
   actualSpendMinor: number
   remainingMinor: number

@@ -397,20 +397,7 @@ export const getBudgetSpendSummary = async (
     categoryKeys: string[]
   },
 ): Promise<StoredBudgetSpendSummary> => {
-  if (input.categoryKeys.length === 0) {
-    return {
-      totalActualMinor: 0,
-      categoryActualMinorByKey: {},
-    }
-  }
-
-  const placeholders = input.categoryKeys.map(() => '?').join(', ')
-  const params = [
-    input.householdId,
-    input.startDate,
-    input.endDate,
-    ...input.categoryKeys,
-  ]
+  const baseParams = [input.householdId, input.startDate, input.endDate]
 
   const totalRow = await db
     .prepare(
@@ -420,11 +407,20 @@ export const getBudgetSpendSummary = async (
           AND e.visibility = 'household'
           AND e.household_id = ?
           AND date(e.occurred_at / 1000, 'unixepoch') >= ?
-          AND date(e.occurred_at / 1000, 'unixepoch') <= ?
-          AND e.category_key IN (${placeholders})`,
+          AND date(e.occurred_at / 1000, 'unixepoch') <= ?`,
     )
-    .bind(...params)
+    .bind(...baseParams)
     .first<{ totalActualMinor: number | null }>()
+
+  if (input.categoryKeys.length === 0) {
+    return {
+      totalActualMinor: Number(totalRow?.totalActualMinor ?? 0),
+      categoryActualMinorByKey: {},
+    }
+  }
+
+  const placeholders = input.categoryKeys.map(() => '?').join(', ')
+  const categoryParams = [...baseParams, ...input.categoryKeys]
 
   const categoryRows = await db
     .prepare(
@@ -439,7 +435,7 @@ export const getBudgetSpendSummary = async (
         GROUP BY e.category_key
         ORDER BY e.category_key`,
     )
-    .bind(...params)
+    .bind(...categoryParams)
     .all<{ categoryKey: string | null; totalActualMinor: number | null }>()
 
   return {
