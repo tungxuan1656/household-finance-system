@@ -5,6 +5,11 @@ import { InsightsPage } from '@/views/app/insights-page'
 
 const useAnalyticsOverviewQueryMock = vi.fn()
 const useReferenceCategoriesQueryMock = vi.fn()
+const fetchHouseholdsMock = vi.fn()
+const householdStoreState = {
+  currentHousehold: { id: 'hh-1' } as { id: string } | null,
+  households: [{ id: 'hh-1' }] as Array<{ id: string }>,
+}
 
 vi.mock('@/hooks/api/use-analytics', () => ({
   useAnalyticsOverviewQuery: (...args: unknown[]) =>
@@ -18,17 +23,22 @@ vi.mock('@/hooks/api/use-reference-data', () => ({
 vi.mock('@/lib/i18n/t', () => ({ t: (key: string) => key }))
 
 vi.mock('@/stores/household.store', () => ({
-  householdActions: { fetchHouseholds: vi.fn() },
+  householdActions: { fetchHouseholds: () => fetchHouseholdsMock() },
   useHouseholdStore: {
     use: {
-      currentHousehold: () => ({ id: 'hh-1' }),
-      households: () => [{ id: 'hh-1' }],
+      currentHousehold: () => householdStoreState.currentHousehold,
+      households: () => householdStoreState.households,
     },
   },
 }))
 
 describe('InsightsPage', () => {
   beforeEach(() => {
+    fetchHouseholdsMock.mockReset()
+    useAnalyticsOverviewQueryMock.mockReset()
+    householdStoreState.currentHousehold = { id: 'hh-1' }
+    householdStoreState.households = [{ id: 'hh-1' }]
+
     useReferenceCategoriesQueryMock.mockReturnValue({
       data: {
         items: [
@@ -42,6 +52,26 @@ describe('InsightsPage', () => {
         ],
       },
     })
+  })
+
+  it('waits for household context before fetching analytics', () => {
+    householdStoreState.currentHousehold = null
+    householdStoreState.households = []
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(useAnalyticsOverviewQueryMock).toHaveBeenCalledWith(
+      { period: '2026-05' },
+      { enabled: false },
+    )
+
+    expect(fetchHouseholdsMock).toHaveBeenCalledTimes(1)
   })
 
   it('requests analytics for selected household and current month', () => {
@@ -77,10 +107,13 @@ describe('InsightsPage', () => {
 
     render(<InsightsPage initialPeriod='2026-05' />)
 
-    expect(useAnalyticsOverviewQueryMock).toHaveBeenCalledWith({
-      household_id: 'hh-1',
-      period: '2026-05',
-    })
+    expect(useAnalyticsOverviewQueryMock).toHaveBeenCalledWith(
+      {
+        household_id: 'hh-1',
+        period: '2026-05',
+      },
+      { enabled: true },
+    )
 
     expect(screen.getByText('59000')).toBeInTheDocument()
     expect(screen.getByText('3')).toBeInTheDocument()
@@ -109,6 +142,7 @@ describe('InsightsPage', () => {
 
     expect(screen.getByText('insights.empty.title')).toBeInTheDocument()
     expect(screen.getByText('insights.empty.description')).toBeInTheDocument()
+    expect(screen.getByLabelText('insights.periodLabel')).toBeInTheDocument()
   })
 
   it('shows error state when analytics query fails', () => {
@@ -122,5 +156,18 @@ describe('InsightsPage', () => {
 
     expect(screen.getByText('insights.error.title')).toBeInTheDocument()
     expect(screen.getByText('insights.error.description')).toBeInTheDocument()
+    expect(screen.getByLabelText('insights.periodLabel')).toBeInTheDocument()
+  })
+
+  it('shows loading skeleton while analytics query is loading', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(screen.getByTestId('insights-loading')).toBeInTheDocument()
   })
 })

@@ -12,8 +12,16 @@ export const ANALYTICS_KEYS = {
     [...ANALYTICS_KEYS.all, 'overview', params] as const,
 }
 
-export const useAnalyticsOverviewQuery = (params: AnalyticsOverviewParams) =>
+type UseAnalyticsOverviewQueryOptions = {
+  enabled?: boolean
+}
+
+export const useAnalyticsOverviewQuery = (
+  params: AnalyticsOverviewParams,
+  options?: UseAnalyticsOverviewQueryOptions,
+) =>
   useQuery<AnalyticsOverviewDTO, Error>({
     queryKey: ANALYTICS_KEYS.overview(params),
     queryFn: () => getAnalyticsOverview(params),
+    enabled: options?.enabled,
   })

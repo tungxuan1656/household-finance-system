@@ -32,6 +32,14 @@ type AnalyticsOverviewDTO = {
 }
 
 describe('GET /api/v1/analytics/overview', () => {
+  it('returns 401 when request is unauthenticated', async () => {
+    const response = await SELF.fetch(
+      'https://example.com/api/v1/analytics/overview?period=2026-05',
+    )
+
+    expect(response.status).toBe(401)
+  })
+
   it('returns household analytics and excludes private expenses from household totals', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-analytics-overview-happy:analytics-overview-happy@example.com',
@@ -234,5 +242,34 @@ describe('GET /api/v1/analytics/overview', () => {
     )
 
     expect(response.status).toBe(403)
+  })
+
+  it('returns empty analytics for valid month with no visible expenses', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-analytics-overview-empty:analytics-overview-empty@example.com',
+    )
+
+    const response = await SELF.fetch(
+      'https://example.com/api/v1/analytics/overview?period=2026-05',
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(200)
+
+    const payload = await parseJson<ApiEnvelope<AnalyticsOverviewDTO>>(response)
+
+    expect(payload.data).toEqual({
+      period: '2026-05',
+      householdId: null,
+      currencyCode: 'VND',
+      totalSpendMinor: 0,
+      expenseCount: 0,
+      dailySpend: [],
+      topCategories: [],
+    })
   })
 })

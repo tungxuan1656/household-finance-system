@@ -31,7 +31,7 @@ export const getAnalyticsOverviewHandler = async (
   if (!parsed.success) {
     throw invalidInput(
       locale,
-      'errors.invalidRequestBody',
+      undefined,
       parsed.error.issues.map((issue) => ({
         path: issue.path.join('.'),
         message: issue.message,
