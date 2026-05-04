@@ -8,6 +8,14 @@
 - Blockers: none
 - Next steps: feat-025 can extend this path with offline queueing and smarter durable defaults without changing feat-024 scope.
 
+## 2026-05-04 — Review-fix feat-024: header trigger, failure UX, timing metric, fields, tests
+- Who: Orchestrator
+- Summary: Applied code-review fixes to `feat-024` addressing all issues found by oracle review: (1) added header quick-add button alongside existing FAB in `quick-add-expense-trigger.tsx`, (2) added inline error banner for network errors (retry guidance) and household permission errors (save-as-private fallback CTA) with `suppressCreateErrorToast` option on `useExpenseForm` to avoid duplicate toast noise, (3) added timing metric via `reportQuickAddTiming` CustomEvent helper in `apps/web/src/lib/metrics/quick-add-metrics.ts`, (4) added `NoteField` and `GroupField` to quick-add dialog for household visibility flow, (5) expanded test suite (88 total, +10 new) for header trigger, timing (private + household), network error, permission fallback, and note/group fields. Captured submitted form values in `onSuccess` callback to avoid reading reset form state after mutation completes.
+- Files changed: apps/web/src/components/expense/quick-add-expense-trigger.tsx, apps/web/src/components/expense/quick-add-expense-dialog.tsx, apps/web/src/components/expense/quick-add-expense-trigger.test.tsx, apps/web/src/components/expense/quick-add-expense-dialog.test.tsx, apps/web/src/components/expense/use-expense-form.ts, apps/web/src/lib/metrics/quick-add-metrics.ts, apps/web/src/lib/i18n/locales/vi.json, harness/features/feat-024.json, harness/progress.md
+- Verification: `pnpm --filter web typecheck`; `pnpm --filter web test -- quick-add-expense-dialog quick-add-expense-trigger` (88/88 pass); `pnpm --filter web lint`
+- Blockers: none
+- Next steps: none
+
 ## 2026-05-04 — Created active ExecPlan for feat-024 quick-add expense basic flow
 - Who: Orchestrator
 - Summary: Created and registered the active ExecPlan for `feat-024` covering the frontend MVP quick-add expense flow. Scope: add a protected-shell global trigger (floating action button + keyboard shortcut), a compact quick-add overlay with immediate amount focus and explicit visibility handling, reuse the existing expense create API from `feat-017`, and reuse delete support from `feat-019` for a 5-second Undo toast action. Locked scope decisions: “last used source” is session-local only in MVP, household-shared quick-add must never rely on hidden active-household state, and offline queueing/durable smart defaults remain deferred to `feat-025`.
