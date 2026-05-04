@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import { notFound } from '@/lib/errors'
 import { fromUnknownError } from '@/lib/response'
 import { requestContextMiddleware } from '@/middlewares/request-context'
+import { analyticsRoutes } from '@/routes/analytics'
 import { authRoutes } from '@/routes/auth'
 import { budgetsRoutes } from '@/routes/budgets'
 import { expensesRoutes } from '@/routes/expenses'
@@ -65,6 +66,7 @@ app.route('/api/v1', householdRoutes)
 app.route('/api/v1', invitationRoutes)
 app.route('/api/v1', mediaRoutes)
 app.route('/api/v1', protectedRoutes)
+app.route('/api/v1', analyticsRoutes)
 app.route('/api/v1', expensesRoutes)
 app.route('/api/v1', groupsRoutes)
 app.route('/api/v1', budgetsRoutes)

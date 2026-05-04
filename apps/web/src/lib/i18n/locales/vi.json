@@ -550,6 +550,34 @@
       "empty": "Không có nhóm nào"
     }
   },
+  "insights": {
+    "title": "Tổng quan chi tiêu",
+    "description": "Theo dõi chi tiêu theo tháng, theo ngày và theo danh mục.",
+    "periodLabel": "Tháng",
+    "summary": {
+      "totalSpend": "Tổng chi",
+      "expenseCount": "Số khoản chi",
+      "entriesDescription": "Tổng số khoản chi trong kỳ đã chọn",
+      "averageSpend": "Chi trung bình",
+      "averageDescription": "Chi tiêu trung bình trên mỗi khoản"
+    },
+    "dailySpend": {
+      "title": "Chi tiêu theo ngày",
+      "description": "Biến động tổng chi tiêu trong tháng đã chọn"
+    },
+    "topCategories": {
+      "title": "Danh mục chi nhiều nhất",
+      "description": "Top 5 danh mục theo tổng chi tiêu"
+    },
+    "empty": {
+      "title": "insights.empty.title",
+      "description": "insights.empty.description"
+    },
+    "error": {
+      "title": "insights.error.title",
+      "description": "insights.error.description"
+    }
+  },
   "groups": {
     "title": "Nhóm chi tiêu",
     "description": "Quản lý các nhóm chi tiêu theo sự kiện hoặc mục đích",
