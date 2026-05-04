@@ -2,6 +2,9 @@ export const API_BASE_PATH: string =
   process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1'
 
 export const API_ENDPOINTS = {
+  analytics: {
+    overview: '/analytics/overview',
+  },
   auth: {
     logout: '/auth/logout',
     exchange: '/auth/provider/exchange',

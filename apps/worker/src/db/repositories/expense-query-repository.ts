@@ -1,3 +1,5 @@
+import type { ReferenceCategoryKey } from '@/contracts/reference-data'
+
 import type {
   ExpenseRow,
   ExpenseSummaryResult,
@@ -6,6 +8,75 @@ import type {
   StoredExpense,
 } from './expense-repository'
 import { mapRow } from './expense-repository'
+
+type AnalyticsQueryInput = {
+  userId: string
+  householdId?: string
+  periodStart: number
+  periodEnd: number
+  period: string
+}
+
+type AnalyticsDailySpendPointDTO = {
+  date: string
+  totalSpendMinor: number
+}
+
+type AnalyticsTopCategoryRow = {
+  categoryKey: ReferenceCategoryKey
+  totalSpendMinor: number
+  expenseCount: number
+}
+
+type AnalyticsOverviewDTO = {
+  period: string
+  householdId: string | null
+  currencyCode: string
+  totalSpendMinor: number
+  expenseCount: number
+  dailySpend: AnalyticsDailySpendPointDTO[]
+  topCategories: Array<{
+    categoryKey: ReferenceCategoryKey
+    totalSpendMinor: number
+    percentOfTotal: number
+    expenseCount: number
+  }>
+}
+
+const buildVisibleExpenseConditions = (
+  userId: string,
+  householdId?: string,
+): { conditions: string[]; params: unknown[] } => {
+  const conditions: string[] = ['e.deleted_at IS NULL']
+  const params: unknown[] = []
+
+  if (householdId) {
+    conditions.push('e.visibility = ?')
+    params.push('household')
+    conditions.push('e.household_id = ?')
+    params.push(householdId)
+  } else {
+    conditions.push(`(
+      (
+        e.visibility = 'private'
+        AND e.created_by_user_id = ?
+      )
+      OR (
+        e.visibility = 'household'
+        AND e.household_id IN (
+          SELECT hm.household_id
+            FROM household_memberships hm
+           WHERE hm.user_id = ?
+             AND hm.state = 'active'
+        )
+      )
+    )`)
+
+    params.push(userId, userId)
+  }
+
+  return { conditions, params }
+}
 
 type ExpenseCursor =
   | { sort: 'occurred_at_desc'; occurredAt: number; id: string }
@@ -281,33 +352,10 @@ export const summarizeExpenses = async (
     | 'creatorId'
   >,
 ): Promise<ExpenseSummaryResult> => {
-  const conditions: string[] = ['e.deleted_at IS NULL']
-  const params: unknown[] = []
-
-  if (input.householdId) {
-    conditions.push('e.visibility = ?')
-    params.push('household')
-    conditions.push('e.household_id = ?')
-    params.push(input.householdId)
-  } else {
-    conditions.push(`(
-      (
-        e.visibility = 'private'
-        AND e.created_by_user_id = ?
-      )
-      OR (
-        e.visibility = 'household'
-        AND e.household_id IN (
-          SELECT hm.household_id
-            FROM household_memberships hm
-           WHERE hm.user_id = ?
-             AND hm.state = 'active'
-        )
-      )
-    )`)
-
-    params.push(input.userId, input.userId)
-  }
+  const { conditions, params } = buildVisibleExpenseConditions(
+    input.userId,
+    input.householdId,
+  )
 
   if (input.query !== undefined) {
     conditions.push("LOWER(COALESCE(e.note, '')) LIKE ?")
@@ -381,6 +429,80 @@ export const summarizeExpenses = async (
     expenseCount: Number(row?.expenseCount ?? 0),
     totalSpendMinor: Number(row?.totalSpendMinor ?? 0),
     currencyCode: row?.currencyCode ?? 'VND',
+  }
+}
+
+export const getAnalyticsOverview = async (
+  db: D1Database,
+  input: AnalyticsQueryInput,
+): Promise<AnalyticsOverviewDTO> => {
+  const { conditions, params } = buildVisibleExpenseConditions(
+    input.userId,
+    input.householdId,
+  )
+
+  conditions.push('e.occurred_at >= ?')
+  params.push(input.periodStart)
+  conditions.push('e.occurred_at < ?')
+  params.push(input.periodEnd)
+
+  const whereClause = conditions.join(' AND ')
+
+  const summaryRow = await db
+    .prepare(
+      `SELECT COUNT(*) AS expenseCount, COALESCE(SUM(e.amount_minor), 0) AS totalSpendMinor, MIN(e.currency_code) AS currencyCode FROM expenses e WHERE ${whereClause}`,
+    )
+    .bind(...params)
+    .first<{
+      expenseCount: number
+      totalSpendMinor: number
+      currencyCode: string | null
+    }>()
+
+  const dailyResult = await db
+    .prepare(
+      `SELECT strftime('%Y-%m-%d', e.occurred_at / 1000, 'unixepoch') AS date, COALESCE(SUM(e.amount_minor), 0) AS totalSpendMinor
+         FROM expenses e
+        WHERE ${whereClause}
+        GROUP BY strftime('%Y-%m-%d', e.occurred_at / 1000, 'unixepoch')
+        ORDER BY date ASC`,
+    )
+    .bind(...params)
+    .all<AnalyticsDailySpendPointDTO>()
+
+  const topCategoriesResult = await db
+    .prepare(
+      `SELECT e.category_key AS categoryKey, COALESCE(SUM(e.amount_minor), 0) AS totalSpendMinor, COUNT(*) AS expenseCount
+         FROM expenses e
+        WHERE ${whereClause}
+        GROUP BY e.category_key
+        ORDER BY totalSpendMinor DESC, expenseCount DESC, categoryKey ASC
+        LIMIT 5`,
+    )
+    .bind(...params)
+    .all<AnalyticsTopCategoryRow>()
+
+  const totalSpendMinor = Number(summaryRow?.totalSpendMinor ?? 0)
+
+  return {
+    period: input.period,
+    householdId: input.householdId ?? null,
+    currencyCode: summaryRow?.currencyCode ?? 'VND',
+    totalSpendMinor,
+    expenseCount: Number(summaryRow?.expenseCount ?? 0),
+    dailySpend: dailyResult.results.map((row) => ({
+      date: row.date,
+      totalSpendMinor: Number(row.totalSpendMinor),
+    })),
+    topCategories: topCategoriesResult.results.map((row) => ({
+      categoryKey: row.categoryKey,
+      totalSpendMinor: Number(row.totalSpendMinor),
+      percentOfTotal:
+        totalSpendMinor > 0
+          ? Math.round((Number(row.totalSpendMinor) / totalSpendMinor) * 100)
+          : 0,
+      expenseCount: Number(row.expenseCount),
+    })),
   }
 }
 

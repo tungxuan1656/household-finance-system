@@ -174,7 +174,7 @@ Always consult GitNexus before major code changes. Use it to understand architec
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **household-finance-system** (4896 symbols, 7335 relationships, 143 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **household-finance-system** (5253 symbols, 7859 relationships, 151 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
