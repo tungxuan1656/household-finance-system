@@ -310,6 +310,82 @@ describe('GET /api/v1/expenses - list expenses', () => {
     expect(secondPage.data.nextCursor).toBeNull()
   })
 
+  it('keeps amount_desc pagination stable across pages', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-list-amount-sort:list-amount-sort@example.com',
+    )
+
+    const timestamps = [Date.now() - 3000, Date.now() - 2000, Date.now() - 1000]
+    const amounts = [1000, 3000, 2000]
+    const titles = ['Low', 'High', 'Middle']
+
+    for (let index = 0; index < titles.length; index += 1) {
+      const res = await SELF.fetch('https://example.com/api/v1/expenses', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amounts[index],
+          categoryKey: 'food',
+          sourceKey: 'cash',
+          visibility: 'private',
+          title: titles[index],
+          occurredAt: timestamps[index],
+        }),
+      })
+      expect(res.status).toBe(201)
+    }
+
+    const firstPageResponse = await SELF.fetch(
+      'https://example.com/api/v1/expenses?limit=2&sort=amount_desc',
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(firstPageResponse.status).toBe(200)
+
+    const firstPage = await parseJson<
+      ApiEnvelope<{
+        items: Array<{ id: string; title: string; amountMinor: number }>
+        nextCursor: string | null
+      }>
+    >(firstPageResponse)
+
+    expect(firstPage.success).toBe(true)
+    expect(firstPage.data.items.map((item) => item.amountMinor)).toEqual([
+      3000, 2000,
+    ])
+    expect(firstPage.data.nextCursor).not.toBeNull()
+
+    const secondPageResponse = await SELF.fetch(
+      `https://example.com/api/v1/expenses?limit=2&sort=amount_desc&cursor=${encodeURIComponent(firstPage.data.nextCursor ?? '')}`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(secondPageResponse.status).toBe(200)
+
+    const secondPage = await parseJson<
+      ApiEnvelope<{
+        items: Array<{ id: string; title: string; amountMinor: number }>
+        nextCursor: string | null
+      }>
+    >(secondPageResponse)
+
+    expect(secondPage.success).toBe(true)
+    expect(secondPage.data.items).toHaveLength(1)
+    expect(secondPage.data.items[0].amountMinor).toBe(1000)
+    expect(secondPage.data.nextCursor).toBeNull()
+  })
+
   it('does not return household expenses in the personal feed after the creator leaves the household', async () => {
     const owner = await exchangeAccessToken(
       'test:firebase-user-list-former-owner:list-former-owner@example.com',
@@ -534,6 +610,75 @@ describe('GET /api/v1/expenses - list expenses', () => {
     expect(payload.data.items).toHaveLength(1)
     expect(payload.data.items[0].title).toBe('Lunch')
     expect(payload.data.items[0].categoryKey).toBe('food')
+  })
+
+  it('filters expenses by note substring, amount range, creator_id, and sort', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-list-new-filters:list-new-filters@example.com',
+    )
+
+    await SELF.fetch('https://example.com/api/v1/expenses', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 15000,
+        categoryKey: 'food',
+        sourceKey: 'cash',
+        visibility: 'private',
+        title: 'Match note',
+        note: 'shared groceries receipt',
+        occurredAt: Date.now() - 1000,
+      }),
+    })
+
+    await SELF.fetch('https://example.com/api/v1/expenses', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 25000,
+        categoryKey: 'transport',
+        sourceKey: 'cash',
+        visibility: 'private',
+        title: 'Wrong note',
+        note: 'commute receipt',
+        occurredAt: Date.now(),
+      }),
+    })
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/expenses?query=groceries&amount_min=10000&amount_max=20000&creator_id=${auth.user.id}&sort=amount_desc`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(200)
+
+    const payload = await parseJson<
+      ApiEnvelope<{
+        items: Array<{
+          title: string
+          note: string | null
+          amountMinor: number
+          createdByUserId: string
+        }>
+      }>
+    >(response)
+
+    expect(payload.success).toBe(true)
+    expect(payload.data.items).toHaveLength(1)
+    expect(payload.data.items[0].title).toBe('Match note')
+    expect(payload.data.items[0].note).toBe('shared groceries receipt')
+    expect(payload.data.items[0].amountMinor).toBe(15000)
+    expect(payload.data.items[0].createdByUserId).toBe(auth.user.id)
   })
 
   it('excludes soft-deleted expenses from list results', async () => {

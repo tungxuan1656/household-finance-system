@@ -84,6 +84,11 @@ export const listExpensesHandler = async (
     payerId: query.payer_id,
     visibility: query.visibility,
     groupId: query.group_id,
+    query: query.query,
+    amountMin: query.amount_min,
+    amountMax: query.amount_max,
+    creatorId: query.creator_id,
+    sort: query.sort,
   })
 
   // Batch fetch group IDs for all expenses

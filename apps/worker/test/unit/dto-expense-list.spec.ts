@@ -111,6 +111,61 @@ describe('expense list query schema', () => {
       }
     })
 
+    it('parses a query with note substring filter', () => {
+      const parsed = expenseListQuerySchema().safeParse({
+        query: 'groceries',
+      })
+
+      expect(parsed.success).toBe(true)
+      if (parsed.success) {
+        expect(parsed.data.query).toBe('groceries')
+      }
+    })
+
+    it('parses a query with amount_min filter', () => {
+      const parsed = expenseListQuerySchema().safeParse({
+        amount_min: '1000',
+      })
+
+      expect(parsed.success).toBe(true)
+      if (parsed.success) {
+        expect(parsed.data.amount_min).toBe(1000)
+      }
+    })
+
+    it('parses a query with amount_max filter', () => {
+      const parsed = expenseListQuerySchema().safeParse({
+        amount_max: '5000',
+      })
+
+      expect(parsed.success).toBe(true)
+      if (parsed.success) {
+        expect(parsed.data.amount_max).toBe(5000)
+      }
+    })
+
+    it('parses a query with creator_id filter', () => {
+      const parsed = expenseListQuerySchema().safeParse({
+        creator_id: 'user_abc123',
+      })
+
+      expect(parsed.success).toBe(true)
+      if (parsed.success) {
+        expect(parsed.data.creator_id).toBe('user_abc123')
+      }
+    })
+
+    it('parses a query with sort filter', () => {
+      const parsed = expenseListQuerySchema().safeParse({
+        sort: 'amount_desc',
+      })
+
+      expect(parsed.success).toBe(true)
+      if (parsed.success) {
+        expect(parsed.data.sort).toBe('amount_desc')
+      }
+    })
+
     it('parses a query with all filters combined', () => {
       const parsed = expenseListQuerySchema().safeParse({
         cursor: 'eyJvZmZzZXQiOjB9',
@@ -120,6 +175,11 @@ describe('expense list query schema', () => {
         date_to: '1750100000000',
         category_key: 'transport',
         payer_id: 'user_def456',
+        creator_id: 'user_creator123',
+        query: 'rent',
+        amount_min: '1000',
+        amount_max: '5000',
+        sort: 'occurred_at_desc',
         visibility: 'private',
       })
 
@@ -132,6 +192,11 @@ describe('expense list query schema', () => {
         expect(parsed.data.date_to).toBe(1750100000000)
         expect(parsed.data.category_key).toBe('transport')
         expect(parsed.data.payer_id).toBe('user_def456')
+        expect(parsed.data.creator_id).toBe('user_creator123')
+        expect(parsed.data.query).toBe('rent')
+        expect(parsed.data.amount_min).toBe(1000)
+        expect(parsed.data.amount_max).toBe(5000)
+        expect(parsed.data.sort).toBe('occurred_at_desc')
         expect(parsed.data.visibility).toBe('private')
       }
     })
@@ -216,6 +281,30 @@ describe('expense list query schema', () => {
     it('rejects unknown fields in strict mode', () => {
       const parsed = expenseListQuerySchema().safeParse({
         unknown_field: 'should fail',
+      })
+
+      expect(parsed.success).toBe(false)
+    })
+
+    it('rejects invalid amount_min', () => {
+      const parsed = expenseListQuerySchema().safeParse({
+        amount_min: 'abc',
+      })
+
+      expect(parsed.success).toBe(false)
+    })
+
+    it('rejects invalid amount_max', () => {
+      const parsed = expenseListQuerySchema().safeParse({
+        amount_max: 'abc',
+      })
+
+      expect(parsed.success).toBe(false)
+    })
+
+    it('rejects invalid sort option', () => {
+      const parsed = expenseListQuerySchema().safeParse({
+        sort: 'randomized',
       })
 
       expect(parsed.success).toBe(false)
