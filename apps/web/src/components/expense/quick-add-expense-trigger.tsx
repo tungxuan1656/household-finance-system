@@ -29,6 +29,10 @@ export function QuickAddExpenseTrigger() {
         return
       }
 
+      if (open) {
+        return
+      }
+
       if (isEditableTarget(event.target)) {
         return
       }
@@ -45,7 +49,7 @@ export function QuickAddExpenseTrigger() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [])
+  }, [open])
 
   return (
     <>

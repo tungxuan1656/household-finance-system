@@ -61,13 +61,28 @@ vi.mock('@/hooks/api/use-households', () => ({
           role: 'admin',
           createdAt: Date.now(),
         },
+        {
+          id: 'household-2',
+          name: 'Friends',
+          slug: 'friends',
+          defaultCurrencyCode: 'VND',
+          timezone: 'Asia/Ho_Chi_Minh',
+          defaultVisibility: 'household',
+          role: 'member',
+          createdAt: Date.now(),
+        },
       ],
     },
   }),
-  useHouseholdMembersQuery: () => ({
-    data: {
-      items: [{ userId: 'user-1', name: 'Owner', role: 'admin' }],
-    },
+  useHouseholdMembersQuery: (householdId?: string) => ({
+    data:
+      householdId === 'household-2'
+        ? {
+            items: [{ userId: 'user-2', name: 'Friend', role: 'member' }],
+          }
+        : {
+            items: [{ userId: 'user-1', name: 'Owner', role: 'admin' }],
+          },
   }),
 }))
 
@@ -234,6 +249,49 @@ describe('QuickAddExpenseDialog', () => {
       expect.objectContaining({
         householdId: 'household-1',
         payerUserId: 'user-1',
+        visibility: 'household',
+      }),
+      expect.any(Object),
+    )
+  })
+
+  it('resets stale payer selection when household changes', async () => {
+    const user = userEvent.setup()
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    await user.type(screen.getByLabelText('expense.amount'), '75000')
+    await user.selectOptions(screen.getByLabelText('quick-add-source'), 'cash')
+
+    await user.selectOptions(
+      screen.getByLabelText('quick-add-category'),
+      'food',
+    )
+
+    await user.click(
+      screen.getByRole('switch', { name: 'expense.visibilityLabel' }),
+    )
+
+    const householdSelect = screen.getByLabelText('expense.selectHousehold')
+    await user.selectOptions(householdSelect, 'household-1')
+
+    const payerSelect = screen.getByLabelText('expense.payer')
+    await user.selectOptions(payerSelect, 'user-1')
+
+    await user.selectOptions(householdSelect, 'household-2')
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('expense.payer')).toHaveValue('user-2')
+    })
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.submit' }),
+    )
+
+    expect(createMutateMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        householdId: 'household-2',
+        payerUserId: 'user-2',
         visibility: 'household',
       }),
       expect.any(Object),

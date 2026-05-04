@@ -121,10 +121,34 @@ export function QuickAddExpenseDialog({
       return
     }
 
-    if (profile?.id && !form.getValues('payerUserId')) {
-      form.setValue('payerUserId', profile.id)
+    const payerUserId = form.getValues('payerUserId')
+    const hasMatchingPayer = payerOptions.some(
+      (member) => member.userId === payerUserId,
+    )
+
+    if (hasMatchingPayer) {
+      return
     }
-  }, [form, profile?.id, watchedVisibility])
+
+    const defaultPayerUserId = payerOptions.some(
+      (member) => member.userId === profile?.id,
+    )
+      ? profile?.id
+      : payerOptions[0]?.userId
+
+    form.setValue('payerUserId', defaultPayerUserId, {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+  }, [form, payerOptions, profile?.id, watchedVisibility])
+
+  useEffect(() => {
+    if (watchedVisibility !== 'household' || !watchedHouseholdId) {
+      return
+    }
+
+    form.clearErrors('payerUserId')
+  }, [form, watchedHouseholdId, watchedVisibility])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -201,10 +225,18 @@ function showUndoToast(
     options?: { onError?: (error: Error) => void },
   ) => void,
 ) {
+  let hasUndone = false
+
   toast.success(t('expense.quickAdd.success'), {
     action: {
       label: t('expense.quickAdd.undo'),
       onClick: () => {
+        if (hasUndone) {
+          return
+        }
+
+        hasUndone = true
+
         deleteExpense(expense.id, {
           onError: () => {
             toast.error(t('expense.quickAdd.undoError'))

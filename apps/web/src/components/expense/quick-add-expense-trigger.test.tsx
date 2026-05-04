@@ -4,6 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { QuickAddExpenseTrigger } from '@/components/expense/quick-add-expense-trigger'
 
+const { dialogRenderMock } = vi.hoisted(() => ({
+  dialogRenderMock: vi.fn(),
+}))
+
 vi.mock('@/lib/i18n/t', () => ({
   t: (key: string) => key,
 }))
@@ -15,19 +19,23 @@ vi.mock('@/components/expense/quick-add-expense-dialog', () => ({
   }: {
     open: boolean
     onOpenChange: (open: boolean) => void
-  }) =>
-    open ? (
+  }) => {
+    dialogRenderMock(open)
+
+    return open ? (
       <div aria-modal='true' role='dialog'>
         <button type='button' onClick={() => onOpenChange(false)}>
           Close quick add
         </button>
       </div>
-    ) : null,
+    ) : null
+  },
 }))
 
 describe('QuickAddExpenseTrigger', () => {
   beforeEach(() => {
     window.localStorage.clear()
+    dialogRenderMock.mockReset()
   })
 
   it('opens from button click and from keyboard shortcut outside editable targets', async () => {
@@ -56,5 +64,19 @@ describe('QuickAddExpenseTrigger', () => {
     await user.keyboard('q')
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('does not re-open when shortcut fires while dialog is already open', async () => {
+    const user = userEvent.setup()
+
+    render(<QuickAddExpenseTrigger />)
+
+    await user.keyboard('q')
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    dialogRenderMock.mockClear()
+    await user.keyboard('q')
+
+    expect(dialogRenderMock).not.toHaveBeenCalledWith(true)
   })
 })
