@@ -23,13 +23,20 @@ const calculatePercentUsed = (actualMinor: number, plannedMinor: number) => {
 }
 
 const calculateThresholdStatus = (
-  percentUsed: number,
+  actualMinor: number,
+  plannedMinor: number,
 ): BudgetThresholdStatus => {
-  if (percentUsed >= 100) {
+  if (plannedMinor <= 0) {
+    return 'ok'
+  }
+
+  const rawRatio = actualMinor / plannedMinor
+
+  if (rawRatio >= 1) {
     return 'exceeded'
   }
 
-  if (percentUsed >= 80) {
+  if (rawRatio >= 0.8) {
     return 'warning'
   }
 
@@ -100,7 +107,10 @@ export const getBudgetStatusHandler = async (
     totalActualMinor: spendSummary.totalActualMinor,
     totalRemainingMinor: budget.totalLimitMinor - spendSummary.totalActualMinor,
     totalPercentUsed,
-    totalStatus: calculateThresholdStatus(totalPercentUsed),
+    totalStatus: calculateThresholdStatus(
+      spendSummary.totalActualMinor,
+      budget.totalLimitMinor,
+    ),
     categoryStatuses: limits
       .filter(
         (limit): limit is typeof limit & { categoryKey: string } =>
@@ -120,7 +130,7 @@ export const getBudgetStatusHandler = async (
           actualSpendMinor,
           remainingMinor: limit.limitMinor - actualSpendMinor,
           percentUsed,
-          status: calculateThresholdStatus(percentUsed),
+          status: calculateThresholdStatus(actualSpendMinor, limit.limitMinor),
         }
       }),
   }
