@@ -25,7 +25,7 @@ EVERYTHING_SKILLS=(
   browser-qa
   backend-patterns
   database-migrations
-  api-design
+  # api-design
   api-connector-builder
   nodejs-keccak256
   deployment-patterns
@@ -52,10 +52,10 @@ EVERYTHING_SKILLS=(
 EVERYTHING_AGENTS=(
   architect
   database-reviewer
-  planner
   security-reviewer
   type-design-analyzer
   typescript-reviewer
+  # planner
   # build-error-resolver
   # code-explorer
   # code-simplifier
@@ -72,9 +72,9 @@ EVERYTHING_AGENTS=(
 
 ANTIGRAVITY_SKILLS=(
   # concise-planning
+  # tailwind-design-system
   react-component-performance
   i18n-localization
-  tailwind-design-system
   tailwind-patterns
   shadcn
   monorepo-architect
@@ -93,19 +93,19 @@ ANTIGRAVITY_SKILLS=(
 
 SUPERPOWERS_SKILLS=(
   brainstorming
-  dispatching-parallel-agents
   executing-plans
-  finishing-a-development-branch
   receiving-code-review
   requesting-code-review
   subagent-driven-development
   systematic-debugging
   test-driven-development
-  using-git-worktrees
-  using-superpowers
   verification-before-completion
-  writing-plans
   writing-skills
+  # writing-plans
+  # using-superpowers
+  # dispatching-parallel-agents
+  # finishing-a-development-branch
+  # using-git-worktrees
 )
 
 COPIED_SKILLS=0
