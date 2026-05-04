@@ -28,9 +28,10 @@ import { GroupPicker } from './group-picker'
 type FieldProps = {
   control: Control<ExpenseFormInputValues>
   isSubmitting: boolean
+  inputRef?: (node: HTMLInputElement | null) => void
 }
 
-function AmountField({ control, isSubmitting }: FieldProps) {
+function AmountField({ control, isSubmitting, inputRef }: FieldProps) {
   const { field, fieldState } = useController({ control, name: 'amount' })
 
   return (
@@ -38,6 +39,10 @@ function AmountField({ control, isSubmitting }: FieldProps) {
       <FieldLabel htmlFor='expense-amount'>{t('expense.amount')}</FieldLabel>
       <Input
         {...field}
+        ref={(node) => {
+          field.ref(node)
+          inputRef?.(node)
+        }}
         aria-invalid={fieldState.invalid}
         className='h-12 text-2xl font-semibold'
         disabled={isSubmitting}
@@ -269,15 +274,17 @@ function PayerField({
   watchedVisibility,
 }: PayerFieldProps) {
   const { field, fieldState } = useController({ control, name: 'payerUserId' })
+  const payerFieldId = 'expense-payer'
 
   return (
     <Field>
-      <FieldLabel>{t('expense.payer')}</FieldLabel>
+      <FieldLabel htmlFor={payerFieldId}>{t('expense.payer')}</FieldLabel>
       {watchedVisibility === 'household' && payerOptions.length > 0 ? (
         <Field data-invalid={fieldState.invalid}>
           <NativeSelect
             aria-invalid={fieldState.invalid}
             disabled={isSubmitting}
+            id={payerFieldId}
             value={field.value ?? profile?.id ?? ''}
             onChange={(event) => {
               field.onChange(event.target.value || undefined)
@@ -296,6 +303,7 @@ function PayerField({
         <Input
           readOnly
           className='cursor-default bg-muted'
+          id={payerFieldId}
           value={profile?.displayName ?? ''}
         />
       )}

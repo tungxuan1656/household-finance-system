@@ -40,8 +40,9 @@ type UseExpenseFormOptions = {
   initialValues?: ExpenseFormInputValues
   mode: 'create' | 'edit'
   expenseId?: string
-  onSuccess?: (expense: ExpenseDTO) => void
+  onSuccess?: (expense: ExpenseDTO, values: ExpenseFormInputValues) => void
   onError?: (error: Error) => void
+  suppressCreateErrorToast?: boolean
 }
 
 export function useExpenseForm({
@@ -50,6 +51,7 @@ export function useExpenseForm({
   expenseId,
   onSuccess,
   onError,
+  suppressCreateErrorToast = false,
 }: UseExpenseFormOptions) {
   const createExpense = useCreateExpenseMutation()
   const updateExpense = useUpdateExpenseMutation()
@@ -95,6 +97,10 @@ export function useExpenseForm({
         occurredAt: values.occurredAt,
         ...(values.note ? { note: values.note } : {}),
         visibility: values.visibility ?? 'private',
+        householdId:
+          values.visibility === 'household' ? values.householdId : undefined,
+        payerUserId:
+          values.visibility === 'household' ? values.payerUserId : undefined,
         ...(values.visibility === 'household' && values.payerUserId
           ? { payerUserId: values.payerUserId }
           : {}),
@@ -114,7 +120,7 @@ export function useExpenseForm({
 
         updateExpense.mutate(input, {
           onSuccess: (expense) => {
-            onSuccess?.(expense)
+            onSuccess?.(expense, values)
           },
           onError: (error) => {
             toast.error(t('expense.updateError'))
@@ -128,15 +134,27 @@ export function useExpenseForm({
       createExpense.mutate(payload, {
         onSuccess: (expense) => {
           form.reset(buildDefaultValues())
-          onSuccess?.(expense)
+          onSuccess?.(expense, values)
         },
         onError: (error) => {
-          toast.error(t('expense.submitError'))
+          if (!suppressCreateErrorToast) {
+            toast.error(t('expense.submitError'))
+          }
+
           onError?.(error)
         },
       })
     },
-    [createExpense, expenseId, form, mode, onError, onSuccess, updateExpense],
+    [
+      createExpense,
+      expenseId,
+      form,
+      mode,
+      onError,
+      onSuccess,
+      suppressCreateErrorToast,
+      updateExpense,
+    ],
   )
 
   const isSubmitting = createExpense.isPending || updateExpense.isPending

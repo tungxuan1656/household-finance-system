@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import type { ReactNode } from 'react'
 
+import { QuickAddExpenseTrigger } from '@/components/expense/quick-add-expense-trigger'
 import { AppSidebar } from '@/components/layouts/app-sidebar'
 import { BottomTab } from '@/components/layouts/bottom-tab'
 import { useIsMobile } from '@/hooks/shared/use-mobile'
@@ -41,6 +42,8 @@ function MainLayout({ children }: { children: ReactNode }) {
 
       {/* Mobile Bottom Tab (hidden on desktop) */}
       {isMobile && <BottomTab />}
+
+      <QuickAddExpenseTrigger />
     </div>
   )
 }
