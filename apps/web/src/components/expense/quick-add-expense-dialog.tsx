@@ -1,13 +1,16 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import { ApiClientError } from '@/api/client'
 import {
   AmountField,
   CategoryField,
   DateField,
+  GroupField,
   HouseholdField,
+  NoteField,
   PayerField,
   SourceField,
   VisibilityField,
@@ -22,6 +25,7 @@ import {
 } from '@/components/ui/dialog'
 import { FieldGroup } from '@/components/ui/field'
 import { useDeleteExpenseMutation } from '@/hooks/api/use-expense'
+import { useExpenseGroupListQuery } from '@/hooks/api/use-groups'
 import {
   useHouseholdMembersQuery,
   useHouseholdsQuery,
@@ -30,6 +34,7 @@ import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import type { ExpenseFormInputValues } from '@/lib/forms/expense.schema'
 import { t } from '@/lib/i18n/t'
+import { reportQuickAddTiming } from '@/lib/metrics/quick-add-metrics'
 import {
   readSessionStorageItem,
   writeSessionStorageItem,
@@ -65,29 +70,46 @@ export function QuickAddExpenseDialog({
   onOpenChange,
 }: QuickAddExpenseDialogProps) {
   const amountInputRef = useRef<HTMLInputElement | null>(null)
+  const openedAtRef = useRef<number | null>(null)
   const deleteExpense = useDeleteExpenseMutation()
   const { data: categoriesResponse } = useReferenceCategoriesQuery()
   const { data: householdsResponse } = useHouseholdsQuery()
   const { data: profile } = useCurrentUserProfileQuery()
+  const [submitError, setSubmitError] = useState<QuickAddSubmitError | null>(
+    null,
+  )
 
   const initialValues = useMemo(() => buildQuickAddInitialValues(), [open])
 
   const { form, onSubmit, isSubmitting, watchedVisibility } = useExpenseForm({
     initialValues: initialValues as ExpenseFormInputValues,
     mode: 'create',
-    onSuccess: (expense) => {
-      const sourceKey = form.getValues('sourceKey')
+    onSuccess: (expense, values) => {
+      reportTiming({
+        openedAt: openedAtRef.current,
+        visibility: values.visibility ?? 'private',
+      })
+
+      const sourceKey = values.sourceKey
       if (sourceKey) {
         writeSessionStorageItem(QUICK_ADD_LAST_SOURCE_KEY, sourceKey)
       }
 
-      onOpenChange(false)
+      setSubmitError(null)
+      handleOpenChange(false)
       showUndoToast(expense, deleteExpense.mutate)
     },
+    onError: (error) => {
+      setSubmitError(buildQuickAddSubmitError(error))
+    },
+    suppressCreateErrorToast: true,
   })
 
   const watchedHouseholdId = form.watch('householdId')
   const { data: householdMembersResponse } = useHouseholdMembersQuery(
+    watchedVisibility === 'household' ? watchedHouseholdId : undefined,
+  )
+  const { data: groupListResponse } = useExpenseGroupListQuery(
     watchedVisibility === 'household' ? watchedHouseholdId : undefined,
   )
 
@@ -100,11 +122,15 @@ export function QuickAddExpenseDialog({
   )
   const households = householdsResponse?.items ?? []
   const payerOptions = householdMembersResponse?.items ?? []
+  const groups = groupListResponse?.items ?? []
 
   useEffect(() => {
     if (!open) {
       return
     }
+
+    openedAtRef.current = performance.now()
+    setSubmitError(null)
 
     const focusTimer = window.setTimeout(() => {
       amountInputRef.current?.focus()
@@ -150,8 +176,29 @@ export function QuickAddExpenseDialog({
     form.clearErrors('payerUserId')
   }, [form, watchedHouseholdId, watchedVisibility])
 
+  function handleOpenChange(nextOpen: boolean) {
+    if (!nextOpen) {
+      setSubmitError(null)
+      openedAtRef.current = null
+    }
+
+    onOpenChange(nextOpen)
+  }
+
+  const handleSaveAsPrivate = () => {
+    form.setValue('visibility', 'private', {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
+
+    form.setValue('householdId', undefined)
+    form.setValue('payerUserId', undefined)
+    setSubmitError(null)
+    void form.handleSubmit(onSubmit)()
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle>{t('expense.quickAdd.title')}</DialogTitle>
@@ -163,6 +210,23 @@ export function QuickAddExpenseDialog({
         <form
           className='flex flex-col gap-5'
           onSubmit={form.handleSubmit(onSubmit)}>
+          {submitError ? (
+            <div className='rounded-md border border-border bg-muted/50 p-3 text-sm'>
+              <div>{submitError.message}</div>
+              <div className='text-muted-foreground'>{submitError.hint}</div>
+              {submitError.kind === 'permission' ? (
+                <Button
+                  className='mt-3'
+                  disabled={isSubmitting}
+                  type='button'
+                  variant='outline'
+                  onClick={handleSaveAsPrivate}>
+                  {t('expense.quickAdd.saveAsPrivate')}
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+
           <FieldGroup>
             <AmountField
               control={form.control}
@@ -178,6 +242,7 @@ export function QuickAddExpenseDialog({
               isSubmitting={isSubmitting}
             />
             <DateField control={form.control} isSubmitting={isSubmitting} />
+            <NoteField control={form.control} isSubmitting={isSubmitting} />
             <VisibilityField
               control={form.control}
               isSubmitting={isSubmitting}
@@ -197,6 +262,11 @@ export function QuickAddExpenseDialog({
                   profile={profile}
                   watchedVisibility={watchedVisibility}
                 />
+                <GroupField
+                  control={form.control}
+                  groups={groups}
+                  isSubmitting={isSubmitting}
+                />
               </>
             ) : null}
           </FieldGroup>
@@ -205,7 +275,7 @@ export function QuickAddExpenseDialog({
             <Button
               type='button'
               variant='outline'
-              onClick={() => onOpenChange(false)}>
+              onClick={() => handleOpenChange(false)}>
               {t('common.actions.cancel')}
             </Button>
             <Button disabled={isSubmitting} type='submit'>
@@ -216,6 +286,56 @@ export function QuickAddExpenseDialog({
       </DialogContent>
     </Dialog>
   )
+}
+
+type QuickAddSubmitError = {
+  kind: 'network' | 'permission' | 'generic'
+  message: string
+  hint: string
+}
+
+function buildQuickAddSubmitError(error: Error): QuickAddSubmitError {
+  if (error instanceof ApiClientError) {
+    if (error.code === 'NETWORK_ERROR' || error.status === 0) {
+      return {
+        kind: 'network',
+        message: t('expense.quickAdd.networkError'),
+        hint: t('expense.quickAdd.retryHint'),
+      }
+    }
+
+    if (error.code === 'FORBIDDEN' || error.status === 403) {
+      return {
+        kind: 'permission',
+        message: t('expense.quickAdd.permissionError'),
+        hint: t('expense.quickAdd.retryHint'),
+      }
+    }
+  }
+
+  return {
+    kind: 'generic',
+    message: t('expense.submitError'),
+    hint: t('expense.quickAdd.retryHint'),
+  }
+}
+
+function reportTiming({
+  openedAt,
+  visibility,
+}: {
+  openedAt: number | null
+  visibility: 'private' | 'household'
+}) {
+  if (openedAt === null) {
+    return
+  }
+
+  reportQuickAddTiming({
+    durationMs: Math.max(0, performance.now() - openedAt),
+    visibility,
+    wasHousehold: visibility === 'household',
+  })
 }
 
 function showUndoToast(

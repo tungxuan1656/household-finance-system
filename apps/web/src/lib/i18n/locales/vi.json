@@ -475,10 +475,15 @@
     "title": "Tiêu đề",
     "quickAdd": {
       "open": "Mở thêm nhanh chi tiêu",
+      "headerOpen": "Thêm nhanh",
       "title": "Thêm nhanh chi tiêu",
       "description": "Ghi lại một khoản chi với các trường tối thiểu và mặc định hợp lý.",
       "submit": "Lưu nhanh",
       "success": "Đã thêm nhanh khoản chi.",
+      "networkError": "Không thể gửi khoản chi do kết nối mạng bị gián đoạn.",
+      "permissionError": "Bạn không có quyền lưu khoản chi này vào gia đình đã chọn.",
+      "retryHint": "Kiểm tra lại thông tin rồi thử lại.",
+      "saveAsPrivate": "Lưu dưới dạng riêng tư",
       "undo": "Hoàn tác",
       "undoError": "Không thể hoàn tác khoản chi vừa tạo."
     },

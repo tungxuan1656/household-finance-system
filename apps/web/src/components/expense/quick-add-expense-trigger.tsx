@@ -23,6 +23,10 @@ function isEditableTarget(target: EventTarget | null) {
 export function QuickAddExpenseTrigger() {
   const [open, setOpen] = useState(false)
 
+  const handleOpen = () => {
+    setOpen(true)
+  }
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) {
@@ -41,7 +45,7 @@ export function QuickAddExpenseTrigger() {
         return
       }
 
-      setOpen(true)
+      handleOpen()
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -53,12 +57,17 @@ export function QuickAddExpenseTrigger() {
 
   return (
     <>
+      <Button type='button' variant='outline' onClick={handleOpen}>
+        <PlusIcon data-icon='inline-start' />
+        {t('expense.quickAdd.headerOpen')}
+      </Button>
+
       <Button
         aria-label={t('expense.quickAdd.open')}
         className='fixed right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-40 rounded-full shadow-lg md:right-8 md:bottom-8'
         size='icon-lg'
         type='button'
-        onClick={() => setOpen(true)}>
+        onClick={handleOpen}>
         <PlusIcon />
         <span className='sr-only'>{t('expense.quickAdd.open')}</span>
       </Button>

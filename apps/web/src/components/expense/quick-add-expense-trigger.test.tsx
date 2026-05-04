@@ -48,6 +48,10 @@ describe('QuickAddExpenseTrigger', () => {
       </div>,
     )
 
+    expect(
+      screen.getByRole('button', { name: 'expense.quickAdd.headerOpen' }),
+    ).toBeInTheDocument()
+
     await user.click(
       screen.getByRole('button', { name: 'expense.quickAdd.open' }),
     )
@@ -64,6 +68,18 @@ describe('QuickAddExpenseTrigger', () => {
     await user.keyboard('q')
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('opens from header trigger click', async () => {
+    const user = userEvent.setup()
+
+    render(<QuickAddExpenseTrigger />)
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.headerOpen' }),
+    )
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
   it('does not re-open when shortcut fires while dialog is already open', async () => {

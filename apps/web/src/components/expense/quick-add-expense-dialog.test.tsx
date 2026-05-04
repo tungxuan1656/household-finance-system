@@ -2,15 +2,22 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { ApiClientError } from '@/api/client'
 import { QuickAddExpenseDialog } from '@/components/expense/quick-add-expense-dialog'
 
-const { createMutateMock, deleteMutateMock, toastSuccessMock, toastErrorMock } =
-  vi.hoisted(() => ({
-    createMutateMock: vi.fn(),
-    deleteMutateMock: vi.fn(),
-    toastSuccessMock: vi.fn(),
-    toastErrorMock: vi.fn(),
-  }))
+const {
+  createMutateMock,
+  deleteMutateMock,
+  toastSuccessMock,
+  toastErrorMock,
+  quickAddMetricSpy,
+} = vi.hoisted(() => ({
+  createMutateMock: vi.fn(),
+  deleteMutateMock: vi.fn(),
+  toastSuccessMock: vi.fn(),
+  toastErrorMock: vi.fn(),
+  quickAddMetricSpy: vi.fn(),
+}))
 
 vi.mock('sonner', () => ({
   toast: { success: toastSuccessMock, error: toastErrorMock },
@@ -101,6 +108,36 @@ vi.mock('@/hooks/api/use-reference-data', () => ({
   }),
 }))
 
+vi.mock('@/hooks/api/use-groups', () => ({
+  useExpenseGroupListQuery: (householdId?: string) => ({
+    data:
+      householdId === 'household-1'
+        ? {
+            items: [
+              {
+                id: 'group-1',
+                name: 'Trip',
+                description: 'Trip fund',
+                status: 'active',
+                startDate: Date.now(),
+                endDate: Date.now(),
+                eventBudgetMinor: null,
+                totalSpendMinor: 0,
+                householdId: 'household-1',
+                createdByUserId: 'user-1',
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+              },
+            ],
+          }
+        : { items: [] },
+  }),
+}))
+
+vi.mock('@/lib/metrics/quick-add-metrics', () => ({
+  reportQuickAddTiming: quickAddMetricSpy,
+}))
+
 vi.mock('@/components/expense/category-picker', () => ({
   CategoryPicker: ({
     id,
@@ -150,6 +187,7 @@ describe('QuickAddExpenseDialog', () => {
     deleteMutateMock.mockReset()
     toastSuccessMock.mockReset()
     toastErrorMock.mockReset()
+    quickAddMetricSpy.mockReset()
     window.localStorage.clear()
     window.sessionStorage.clear()
   })
@@ -255,6 +293,27 @@ describe('QuickAddExpenseDialog', () => {
     )
   })
 
+  it('shows note and group fields for household quick add', async () => {
+    const user = userEvent.setup()
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    await user.click(
+      screen.getByRole('switch', { name: 'expense.visibilityLabel' }),
+    )
+
+    await user.selectOptions(
+      screen.getByLabelText('expense.selectHousehold'),
+      'household-1',
+    )
+
+    expect(screen.getByLabelText('expense.note')).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('expense.groupPicker.ariaLabel'),
+    ).toBeInTheDocument()
+  })
+
   it('resets stale payer selection when household changes', async () => {
     const user = userEvent.setup()
 
@@ -339,6 +398,174 @@ describe('QuickAddExpenseDialog', () => {
         expect.objectContaining({ onError: expect.any(Function) }),
       )
     })
+  })
+
+  it('reports quick-add timing on successful create', async () => {
+    const user = userEvent.setup()
+
+    vi.spyOn(performance, 'now')
+      .mockReturnValueOnce(100)
+      .mockReturnValueOnce(1600)
+
+    createMutateMock.mockImplementation((_payload, options) => {
+      options.onSuccess({ id: 'expense-1' })
+    })
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    await user.type(screen.getByLabelText('expense.amount'), '10000')
+    await user.selectOptions(screen.getByLabelText('quick-add-source'), 'cash')
+
+    await user.selectOptions(
+      screen.getByLabelText('quick-add-category'),
+      'food',
+    )
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.submit' }),
+    )
+
+    expect(quickAddMetricSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        visibility: 'private',
+        wasHousehold: false,
+      }),
+    )
+
+    expect(quickAddMetricSpy.mock.calls[0]?.[0].durationMs).toBeGreaterThan(0)
+  })
+
+  it('reports household visibility in quick-add timing on shared success', async () => {
+    const user = userEvent.setup()
+
+    createMutateMock.mockImplementation((_payload, options) => {
+      options.onSuccess({ id: 'expense-1' })
+    })
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    await user.type(screen.getByLabelText('expense.amount'), '10000')
+    await user.selectOptions(screen.getByLabelText('quick-add-source'), 'cash')
+
+    await user.selectOptions(
+      screen.getByLabelText('quick-add-category'),
+      'food',
+    )
+
+    await user.click(
+      screen.getByRole('switch', { name: 'expense.visibilityLabel' }),
+    )
+
+    await user.selectOptions(
+      screen.getByLabelText('expense.selectHousehold'),
+      'household-1',
+    )
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.submit' }),
+    )
+
+    expect(quickAddMetricSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        visibility: 'household',
+        wasHousehold: true,
+      }),
+    )
+  })
+
+  it('keeps dialog open and shows retry guidance on network failure', async () => {
+    const user = userEvent.setup()
+
+    createMutateMock.mockImplementation((_payload, options) => {
+      options.onError(
+        new ApiClientError({
+          code: 'NETWORK_ERROR',
+          message: 'Network request failed.',
+          status: 0,
+        }),
+      )
+    })
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    await user.type(screen.getByLabelText('expense.amount'), '10000')
+    await user.selectOptions(screen.getByLabelText('quick-add-source'), 'cash')
+
+    await user.selectOptions(
+      screen.getByLabelText('quick-add-category'),
+      'food',
+    )
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.submit' }),
+    )
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    expect(
+      screen.getByText('expense.quickAdd.networkError'),
+    ).toBeInTheDocument()
+
+    expect(screen.getByText('expense.quickAdd.retryHint')).toBeInTheDocument()
+  })
+
+  it('offers save-as-private fallback on household permission error', async () => {
+    const user = userEvent.setup()
+
+    createMutateMock.mockImplementation((payload, options) => {
+      if (payload.visibility === 'household') {
+        options.onError(
+          new ApiClientError({
+            code: 'FORBIDDEN',
+            message: 'Forbidden',
+            status: 403,
+          }),
+        )
+
+        return
+      }
+
+      options.onSuccess({ id: 'expense-1' })
+    })
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    await user.type(screen.getByLabelText('expense.amount'), '50000')
+    await user.selectOptions(screen.getByLabelText('quick-add-source'), 'cash')
+
+    await user.selectOptions(
+      screen.getByLabelText('quick-add-category'),
+      'food',
+    )
+
+    await user.click(
+      screen.getByRole('switch', { name: 'expense.visibilityLabel' }),
+    )
+
+    await user.selectOptions(
+      screen.getByLabelText('expense.selectHousehold'),
+      'household-1',
+    )
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.submit' }),
+    )
+
+    expect(
+      screen.getByText('expense.quickAdd.permissionError'),
+    ).toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.saveAsPrivate' }),
+    )
+
+    expect(createMutateMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        visibility: 'private',
+        householdId: undefined,
+      }),
+      expect.any(Object),
+    )
   })
 
   it('restores the last used source from session storage only', () => {
