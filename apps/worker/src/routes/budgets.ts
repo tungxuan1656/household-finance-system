@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 
 import { createBudgetHandler } from '@/handlers/budgets/create-budget'
 import { getBudgetHandler } from '@/handlers/budgets/get-budget'
+import { getBudgetStatusHandler } from '@/handlers/budgets/get-budget-status'
 import { listBudgetsHandler } from '@/handlers/budgets/list-budgets'
 import { updateBudgetHandler } from '@/handlers/budgets/update-budget'
 import { success } from '@/lib/response'
@@ -31,6 +32,13 @@ budgetsRoutes.get('/budgets', async (ctx) => {
 // GET /api/v1/budgets/:id
 budgetsRoutes.get('/budgets/:id', async (ctx) => {
   const dto = await getBudgetHandler(ctx)
+
+  return success<typeof dto>(ctx, dto)
+})
+
+// GET /api/v1/budgets/:id/status
+budgetsRoutes.get('/budgets/:id/status', async (ctx) => {
+  const dto = await getBudgetStatusHandler(ctx)
 
   return success<typeof dto>(ctx, dto)
 })
