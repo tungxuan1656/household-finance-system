@@ -1,22 +1,24 @@
 type BrowserStorageMethod = 'clear' | 'getItem' | 'removeItem' | 'setItem'
+type BrowserStorageKind = 'local' | 'session'
 
-const getBrowserStorage = (): Storage | null => {
+const getBrowserStorage = (kind: BrowserStorageKind): Storage | null => {
   if (typeof window === 'undefined') {
     return null
   }
 
   try {
-    return window.localStorage
+    return kind === 'session' ? window.sessionStorage : window.localStorage
   } catch {
     return null
   }
 }
 
 const callStorageMethod = <ReturnType>(
+  kind: BrowserStorageKind,
   method: BrowserStorageMethod,
   args: unknown[],
 ): ReturnType | null => {
-  const storage = getBrowserStorage()
+  const storage = getBrowserStorage(kind)
 
   if (!storage) {
     return null
@@ -57,16 +59,23 @@ const callStorageMethod = <ReturnType>(
 }
 
 export const readLocalStorageItem = (key: string) =>
-  callStorageMethod<string | null>('getItem', [key])
+  callStorageMethod<string | null>('local', 'getItem', [key])
 
 export const writeLocalStorageItem = (key: string, value: string) => {
-  callStorageMethod<void>('setItem', [key, value])
+  callStorageMethod<void>('local', 'setItem', [key, value])
 }
 
 export const removeLocalStorageItem = (key: string) => {
-  callStorageMethod<void>('removeItem', [key])
+  callStorageMethod<void>('local', 'removeItem', [key])
 }
 
 export const clearLocalStorage = () => {
-  callStorageMethod<void>('clear', [])
+  callStorageMethod<void>('local', 'clear', [])
+}
+
+export const readSessionStorageItem = (key: string) =>
+  callStorageMethod<string | null>('session', 'getItem', [key])
+
+export const writeSessionStorageItem = (key: string, value: string) => {
+  callStorageMethod<void>('session', 'setItem', [key, value])
 }

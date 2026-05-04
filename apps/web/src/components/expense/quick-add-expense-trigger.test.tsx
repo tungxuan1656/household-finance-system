@@ -1,0 +1,60 @@
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { QuickAddExpenseTrigger } from '@/components/expense/quick-add-expense-trigger'
+
+vi.mock('@/lib/i18n/t', () => ({
+  t: (key: string) => key,
+}))
+
+vi.mock('@/components/expense/quick-add-expense-dialog', () => ({
+  QuickAddExpenseDialog: ({
+    open,
+    onOpenChange,
+  }: {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+  }) =>
+    open ? (
+      <div aria-modal='true' role='dialog'>
+        <button type='button' onClick={() => onOpenChange(false)}>
+          Close quick add
+        </button>
+      </div>
+    ) : null,
+}))
+
+describe('QuickAddExpenseTrigger', () => {
+  beforeEach(() => {
+    window.localStorage.clear()
+  })
+
+  it('opens from button click and from keyboard shortcut outside editable targets', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <div>
+        <QuickAddExpenseTrigger />
+        <input aria-label='editable-input' />
+      </div>,
+    )
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.open' }),
+    )
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Close quick add' }))
+
+    await user.keyboard('q')
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Close quick add' }))
+    await user.click(screen.getByLabelText('editable-input'))
+    await user.keyboard('q')
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+})

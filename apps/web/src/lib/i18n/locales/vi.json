@@ -473,6 +473,15 @@
     "selectHousehold": "Chọn gia đình",
     "payer": "Người thanh toán",
     "title": "Tiêu đề",
+    "quickAdd": {
+      "open": "Mở thêm nhanh chi tiêu",
+      "title": "Thêm nhanh chi tiêu",
+      "description": "Ghi lại một khoản chi với các trường tối thiểu và mặc định hợp lý.",
+      "submit": "Lưu nhanh",
+      "success": "Đã thêm nhanh khoản chi.",
+      "undo": "Hoàn tác",
+      "undoError": "Không thể hoàn tác khoản chi vừa tạo."
+    },
     "success": "Đã thêm chi tiêu thành công",
     "saveChanges": "Lưu thay đổi",
     "restoreAction": "Khôi phục",

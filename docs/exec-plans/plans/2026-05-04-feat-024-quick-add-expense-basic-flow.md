@@ -65,10 +65,10 @@ Out of scope for this plan:
 
 - [x] 2026-05-04 15:05 UTC — Reviewed required planning documents, harness state, product specs, and prior expense exec plans for `feat-017`, `feat-018`, and `feat-019`. Owner: Orchestrator.
 - [x] 2026-05-04 15:18 UTC — Locked scope decisions for MVP quick-add: session-local source default only, Undo depends on existing delete support from `feat-019`, and offline/resilience work remains deferred to `feat-025`. Owner: Orchestrator.
-- [ ] Create the quick-add surface execution checklist covering trigger placement, keyboard behavior, and compact overlay component choice. Owner: Implementation session.
-- [ ] Implement compact quick-add form wiring, explicit visibility/household behavior, and create mutation success/error flows. Owner: Implementation session.
-- [ ] Implement Undo toast behavior with delete mutation reuse and regression tests. Owner: Implementation session.
-- [ ] Run full verification, update harness evidence, and move the plan entry to Completed after implementation passes. Owner: Implementation session.
+- [x] 2026-05-04 16:13 UTC — Implemented the quick-add trigger and compact dialog at the protected-shell level using a floating action button plus guarded `q` shortcut handling in `main-layout.tsx` and new expense-scoped quick-add components. Owner: Orchestrator.
+- [x] 2026-05-04 16:13 UTC — Implemented compact quick-add form wiring with amount autofocus, session-scoped last-used-source memory, explicit household validation, and current-user payer defaulting for household submissions. Owner: Orchestrator.
+- [x] 2026-05-04 16:13 UTC — Implemented 5-second Undo toast behavior by reusing the existing delete mutation and added regression coverage for quick-add submit, household validation, payer defaulting, session source restore, and Undo delete behavior. Owner: Orchestrator.
+- [x] 2026-05-04 16:14 UTC — Ran full verification via `./init.sh`, updated harness evidence, and moved the plan entry to Completed. Owner: Orchestrator.
 
 ## Surprises & Discoveries
 
@@ -101,9 +101,9 @@ Out of scope for this plan:
 
 ## Outcomes & Retrospective
 
-- Pending implementation.
-- Expected outcome: users can create a private expense quickly from anywhere in the protected app with minimal inputs, optionally switch to explicit household-sharing, and immediately undo a mistaken submission.
-- Revisit after implementation to capture whether a follow-up is needed for drawer/mobile ergonomics, quick-add telemetry granularity, and stronger local-session defaults before `feat-025`.
+- Outcome: users can create a private expense quickly from anywhere in the protected app through a global floating trigger or `q` shortcut, optionally switch to explicit household-sharing, and immediately undo a mistaken submission within 5 seconds.
+- Verification completed: `pnpm --filter web test -- quick-add-expense-dialog quick-add-expense-trigger`; `./init.sh`.
+- Follow-up note: the MVP ships on the existing `Dialog` primitive and intentionally uses session storage for last-used source memory; richer drawer ergonomics and durable/smarter defaults remain appropriate follow-up work for `feat-025` or a future UX-focused feature.
 
 ## Context and Orientation
 
@@ -331,6 +331,6 @@ Expected short outputs to compare against:
 
 ## Open Decisions
 
-- Should the final UI remain on `Dialog`, or is there enough value and existing support to switch to a drawer-like mobile-first overlay without scope creep?
-- Should session-local “last used source” live purely in component memory, in a small session-storage helper, or in React Query/local cache tied to successful submissions?
-- Should any launch surfaces beyond the global shell pass local household context into quick-add during this MVP, or should the first implementation require explicit in-form household selection everywhere for simplicity?
+- Resolved in implementation: the MVP remains on `Dialog` to avoid scope creep and reuse an existing compliant primitive.
+- Resolved in implementation: session-local “last used source” uses `sessionStorage` via shared browser-storage helpers.
+- Resolved in implementation: the first MVP requires explicit in-form household selection for shared entries and does not pass household context from additional launch surfaces.

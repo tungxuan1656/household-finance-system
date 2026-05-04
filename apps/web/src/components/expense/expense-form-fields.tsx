@@ -28,9 +28,10 @@ import { GroupPicker } from './group-picker'
 type FieldProps = {
   control: Control<ExpenseFormInputValues>
   isSubmitting: boolean
+  inputRef?: (node: HTMLInputElement | null) => void
 }
 
-function AmountField({ control, isSubmitting }: FieldProps) {
+function AmountField({ control, isSubmitting, inputRef }: FieldProps) {
   const { field, fieldState } = useController({ control, name: 'amount' })
 
   return (
@@ -38,6 +39,10 @@ function AmountField({ control, isSubmitting }: FieldProps) {
       <FieldLabel htmlFor='expense-amount'>{t('expense.amount')}</FieldLabel>
       <Input
         {...field}
+        ref={(node) => {
+          field.ref(node)
+          inputRef?.(node)
+        }}
         aria-invalid={fieldState.invalid}
         className='h-12 text-2xl font-semibold'
         disabled={isSubmitting}

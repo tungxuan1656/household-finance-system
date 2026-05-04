@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-05-04 — Completed feat-024: Quick-add expense basic flow
+- Who: Orchestrator
+- Summary: Implemented the frontend MVP quick-add expense flow for `feat-024`. Added a protected-shell floating action button and guarded `q` keyboard shortcut, a compact quick-add dialog with amount autofocus, session-scoped last-used-source memory, private-by-default visibility, explicit household selection for shared entries, current-user payer defaulting for household submissions, and a 5-second Undo toast that reuses the existing delete mutation. Added targeted web regression tests for trigger behavior, minimal private submit, household validation, household payer defaulting, session source restore, and Undo deletion. Kept scope aligned to the plan by reusing existing expense create/delete APIs, avoiding hidden active-household state, and leaving offline queueing/durable smart defaults to `feat-025`.
+- Files changed: apps/web/src/components/layouts/main-layout.tsx, apps/web/src/components/expense/expense-form-fields.tsx, apps/web/src/components/expense/index.ts, apps/web/src/components/expense/quick-add-expense-dialog.tsx, apps/web/src/components/expense/quick-add-expense-dialog.test.tsx, apps/web/src/components/expense/quick-add-expense-trigger.tsx, apps/web/src/components/expense/quick-add-expense-trigger.test.tsx, apps/web/src/lib/storages/browser-storage.ts, apps/web/src/lib/i18n/locales/vi.json, docs/exec-plans/plans/2026-05-04-feat-024-quick-add-expense-basic-flow.md, docs/exec-plans/index.md, harness/features/feat-024.json, harness/feature_index.json, harness/progress.md
+- Verification: `pnpm --filter web test -- quick-add-expense-dialog quick-add-expense-trigger`; `./init.sh`
+- Blockers: none
+- Next steps: feat-025 can extend this path with offline queueing and smarter durable defaults without changing feat-024 scope.
+
 ## 2026-05-04 — Created active ExecPlan for feat-024 quick-add expense basic flow
 - Who: Orchestrator
 - Summary: Created and registered the active ExecPlan for `feat-024` covering the frontend MVP quick-add expense flow. Scope: add a protected-shell global trigger (floating action button + keyboard shortcut), a compact quick-add overlay with immediate amount focus and explicit visibility handling, reuse the existing expense create API from `feat-017`, and reuse delete support from `feat-019` for a 5-second Undo toast action. Locked scope decisions: “last used source” is session-local only in MVP, household-shared quick-add must never rely on hidden active-household state, and offline queueing/durable smart defaults remain deferred to `feat-025`.
