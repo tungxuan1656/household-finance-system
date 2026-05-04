@@ -5,6 +5,8 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-04-feat-028-analytics-overview-dashboard.md](plans/2026-05-04-feat-028-analytics-overview-dashboard.md) - feat-028 fullstack analytics overview dashboard: backend adds `GET /api/v1/analytics/overview?period=YYYY-MM&household_id=...` returning total spend, expense count, spend-by-day series, and top-5 expense categories by spend keyed by global category catalog; frontend replaces `/insights` placeholder with period selector, hero metrics, spend-over-time chart, category breakdown chart, and ranked list. Budget joins, month-over-month comparison, group/payer breakdowns, and CSV export remain out of scope.
+
 ## Completed
 
 - [2026-05-04-feat-024-quick-add-expense-basic-flow.md](plans/2026-05-04-feat-024-quick-add-expense-basic-flow.md) - feat-024 frontend quick-add expense MVP: protected-shell floating trigger plus `q` shortcut, compact dialog with amount-first entry, session-scoped last-source defaulting, explicit household selection for shared expenses, current-user payer default for household entries, and a 5-second Undo action that reuses the existing delete mutation. Offline queueing, durable smart defaults, and hidden active-household state remain out of scope.

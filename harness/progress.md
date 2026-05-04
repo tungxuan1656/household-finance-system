@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-04 — Created active ExecPlan for feat-028 analytics overview dashboard
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-028` covering a fullstack analytics overview dashboard. Backend scope: add `GET /api/v1/analytics/overview?period=YYYY-MM&household_id=...` with period total spend, total expense count, spend-by-day series, and top-5 expense categories by spend, all respecting current visibility rules so private expenses are excluded from household analytics. Frontend scope: replace `/insights` placeholder with analytics page orchestration, current-month period selector, hero metrics, spend-over-time chart, category breakdown chart, ranked list, typed transport/hooks, i18n keys, and focused tests. Locked scope boundary: feat-028 stays pure expense analytics and does not depend on budget data; month-over-month comparison, group/payer breakdowns, and CSV export remain out of scope.
+- Files changed: docs/exec-plans/plans/2026-05-04-feat-028-analytics-overview-dashboard.md, docs/exec-plans/index.md, harness/features/feat-028.json, harness/feature_index.json, harness/progress.md
+- Blockers: repo has no charting library yet, so implementation must start with a short dependency decision/research step; `docs/product-specs/analytics-overview.md` is broader than current harness feature scope.
+- Next steps: confirm reusable expense aggregation paths from `feat-021`, choose chart approach, implement backend analytics endpoint/tests first, then replace `/insights` placeholder with page UI and run `./init.sh`.
+
 ## 2026-05-04 — Completed feat-024: Quick-add expense basic flow
 - Who: Orchestrator
 - Summary: Implemented the frontend MVP quick-add expense flow for `feat-024`. Added a protected-shell floating action button and guarded `q` keyboard shortcut, a compact quick-add dialog with amount autofocus, session-scoped last-used-source memory, private-by-default visibility, explicit household selection for shared entries, current-user payer defaulting for household submissions, and a 5-second Undo toast that reuses the existing delete mutation. Added targeted web regression tests for trigger behavior, minimal private submit, household validation, household payer defaulting, session source restore, and Undo deletion. Kept scope aligned to the plan by reusing existing expense create/delete APIs, avoiding hidden active-household state, and leaving offline queueing/durable smart defaults to `feat-025`.
