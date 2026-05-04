@@ -5,6 +5,7 @@ import { notFound } from '@/lib/errors'
 import { fromUnknownError } from '@/lib/response'
 import { requestContextMiddleware } from '@/middlewares/request-context'
 import { authRoutes } from '@/routes/auth'
+import { budgetsRoutes } from '@/routes/budgets'
 import { expensesRoutes } from '@/routes/expenses'
 import { groupsRoutes } from '@/routes/groups'
 import { healthRoutes } from '@/routes/health'
@@ -66,6 +67,7 @@ app.route('/api/v1', mediaRoutes)
 app.route('/api/v1', protectedRoutes)
 app.route('/api/v1', expensesRoutes)
 app.route('/api/v1', groupsRoutes)
+app.route('/api/v1', budgetsRoutes)
 
 export default {
   fetch: app.fetch,

@@ -623,5 +623,68 @@
     "error": {
       "loadFailed": "Không thể tải danh sách nhóm. Vui lòng thử lại."
     }
+  },
+  "budgets": {
+    "title": "Ngân sách",
+    "description": "Quản lý ngân sách hàng tháng cho gia đình của bạn.",
+    "actions": {
+      "addNew": "Tạo ngân sách",
+      "create": "Tạo",
+      "creating": "Đang tạo...",
+      "update": "Cập nhật",
+      "updating": "Đang cập nhật...",
+      "retry": "Thử lại"
+    },
+    "create": {
+      "title": "Tạo ngân sách mới",
+      "description": "Thiết lập ngân sách cho một tháng cụ thể."
+    },
+    "edit": {
+      "title": "Chỉnh sửa ngân sách",
+      "description": "Cập nhật tổng ngân sách hoặc phân bổ theo danh mục."
+    },
+    "fields": {
+      "period": {
+        "label": "Kỳ ngân sách",
+        "placeholder": "Chọn tháng"
+      },
+      "totalLimit": {
+        "label": "Tổng ngân sách",
+        "placeholder": "Nhập tổng ngân sách"
+      },
+      "categoryLimits": {
+        "label": "Phân bổ theo danh mục",
+        "selectCategory": "Chọn danh mục",
+        "add": "Thêm",
+        "empty": "Chưa có phân bổ danh mục nào. Thêm danh mục để chia nhỏ ngân sách.",
+        "placeholder": "Giới hạn"
+      }
+    },
+    "feedback": {
+      "createSuccess": "Đã tạo ngân sách thành công",
+      "createFailed": "Không thể tạo ngân sách. Vui lòng thử lại.",
+      "duplicatePeriod": "Ngân sách cho tháng này đã tồn tại.",
+      "updateSuccess": "Đã cập nhật ngân sách",
+      "updateFailed": "Không thể cập nhật ngân sách. Vui lòng thử lại."
+    },
+    "card": {
+      "periodLabel": "Kỳ",
+      "totalLabel": "Tổng ngân sách",
+      "categoryBreakdown": "Phân bổ theo danh mục"
+    },
+    "summary": {
+      "title": "Tổng quan ngân sách",
+      "period": "Kỳ",
+      "totalBudget": "Tổng ngân sách",
+      "categoryBreakdown": "Phân bổ theo danh mục",
+      "unallocated": "Chưa phân bổ"
+    },
+    "empty": {
+      "title": "Chưa có ngân sách",
+      "description": "Tạo ngân sách đầu tiên để bắt đầu quản lý chi tiêu hàng tháng."
+    },
+    "error": {
+      "loadFailed": "Không thể tải danh sách ngân sách. Vui lòng thử lại."
+    }
   }
 }
