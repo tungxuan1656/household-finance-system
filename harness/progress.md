@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-04 — Created active ExecPlan for feat-024 quick-add expense basic flow
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-024` covering the frontend MVP quick-add expense flow. Scope: add a protected-shell global trigger (floating action button + keyboard shortcut), a compact quick-add overlay with immediate amount focus and explicit visibility handling, reuse the existing expense create API from `feat-017`, and reuse delete support from `feat-019` for a 5-second Undo toast action. Locked scope decisions: “last used source” is session-local only in MVP, household-shared quick-add must never rely on hidden active-household state, and offline queueing/durable smart defaults remain deferred to `feat-025`.
+- Files changed: docs/exec-plans/plans/2026-05-04-feat-024-quick-add-expense-basic-flow.md, docs/exec-plans/index.md, harness/features/feat-024.json, harness/feature_index.json, harness/progress.md
+- Blockers: overlay choice (`Dialog` vs a drawer-like mobile surface) and the exact session-local persistence mechanism for last-used source remain open implementation decisions, but do not block plan creation.
+- Next steps: implement the global trigger and compact quick-add surface first, then wire create success/error/Undo behavior, then run `./init.sh` and capture evidence before marking `feat-024` done.
+
 ## 2026-05-04 — Completed feat-027: Budget tracking & threshold status (fullstack)
 - Who: Orchestrator
 - Summary: Implemented the fullstack budget tracking feature for `feat-027`. Backend: added budget status DTOs, household-visible spend aggregation in the budget repository, and `GET /api/v1/budgets/:id/status` with fixed threshold states (`ok`, `warning`, `exceeded`) for total and configured per-category budgets while excluding private expenses from household aggregates. Frontend: extended budget transport/hooks with status fetching, updated the budgets page to default to the latest budget and load tracking data separately, and added dedicated tracking UI/test coverage for loading, empty, and rendered status states. Also corrected frontend/backend contract drift during review so web status values and locale keys match the real API, and category labels now resolve through the reference-data helper instead of raw keys.
