@@ -4,29 +4,15 @@ import { describe, expect, it } from 'vitest'
 import {
   type ApiEnvelope,
   type ApiErrorEnvelope,
+  authorizedJsonRequest,
+  createExpense,
+  createHousehold,
   exchangeAccessToken,
   parseJson,
   registerWorkerIntegrationSetup,
 } from '../helpers/test-context'
 
 registerWorkerIntegrationSetup()
-
-const createHousehold = async (accessToken: string, name: string) => {
-  const response = await SELF.fetch('https://example.com/api/v1/households', {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${accessToken}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ name }),
-  })
-
-  expect(response.status).toBe(201)
-
-  const payload = await parseJson<ApiEnvelope<{ id: string }>>(response)
-
-  return payload.data.id
-}
 
 const addMemberToHousehold = async (
   householdId: string,
@@ -53,36 +39,23 @@ const addMemberToHousehold = async (
     .run()
 }
 
-const createExpense = async (
-  accessToken: string,
-  body: Record<string, unknown>,
-) => {
-  const response = await SELF.fetch('https://example.com/api/v1/expenses', {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${accessToken}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-
-  expect(response.status).toBe(201)
-
-  return parseJson<ApiEnvelope<{ id: string }>>(response)
-}
-
 describe('expense lifecycle routes', () => {
   it('updates an owned household expense and writes an audit entry', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-expense-update-owner:update-owner@example.com',
     )
 
-    const householdId = await createHousehold(
+    const householdResponse = await createHousehold(
       auth.accessToken,
       'Expense update household',
     )
+    expect(householdResponse.status).toBe(201)
 
-    const created = await createExpense(auth.accessToken, {
+    const householdPayload =
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    const householdId = householdPayload.data.id
+
+    const createResponse = await createExpense(auth.accessToken, {
       amount: 125000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -92,27 +65,24 @@ describe('expense lifecycle routes', () => {
       occurredAt: Date.now() - 1_000,
       note: 'before update',
     })
+    expect(createResponse.status).toBe(201)
 
-    const updateResponse = await SELF.fetch(
-      `https://example.com/api/v1/expenses/${created.data.id}`,
-      {
-        method: 'PATCH',
-        headers: {
-          authorization: `Bearer ${auth.accessToken}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: 155000,
-          categoryKey: 'travel',
-          sourceKey: 'bank-transfer',
-          visibility: 'household',
-          householdId,
-          title: 'Updated lunch',
-          occurredAt: Date.now(),
-          note: 'after update',
-        }),
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
+
+    const updateResponse = await authorizedJsonRequest(auth.accessToken, {
+      method: 'PATCH',
+      path: `/api/v1/expenses/${created.data.id}`,
+      body: {
+        amount: 155000,
+        categoryKey: 'travel',
+        sourceKey: 'bank-transfer',
+        visibility: 'household',
+        householdId,
+        title: 'Updated lunch',
+        occurredAt: Date.now(),
+        note: 'after update',
       },
-    )
+    })
 
     expect(updateResponse.status).toBe(200)
 
@@ -186,12 +156,17 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-private-transition:private-transition@example.com',
     )
 
-    const householdId = await createHousehold(
+    const householdResponse = await createHousehold(
       auth.accessToken,
       'Visibility transition household',
     )
+    expect(householdResponse.status).toBe(201)
 
-    const created = await createExpense(auth.accessToken, {
+    const householdPayload =
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    const householdId = householdPayload.data.id
+
+    const createResponse = await createExpense(auth.accessToken, {
       amount: 99000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -200,25 +175,22 @@ describe('expense lifecycle routes', () => {
       title: 'Shared dinner',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
 
-    const response = await SELF.fetch(
-      `https://example.com/api/v1/expenses/${created.data.id}`,
-      {
-        method: 'PATCH',
-        headers: {
-          authorization: `Bearer ${auth.accessToken}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: 99000,
-          categoryKey: 'food',
-          sourceKey: 'cash',
-          visibility: 'private',
-          title: 'Private dinner',
-          occurredAt: Date.now(),
-        }),
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
+
+    const response = await authorizedJsonRequest(auth.accessToken, {
+      method: 'PATCH',
+      path: `/api/v1/expenses/${created.data.id}`,
+      body: {
+        amount: 99000,
+        categoryKey: 'food',
+        sourceKey: 'cash',
+        visibility: 'private',
+        title: 'Private dinner',
+        occurredAt: Date.now(),
       },
-    )
+    })
 
     expect(response.status).toBe(200)
 
@@ -248,12 +220,16 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-update-audit-fail:update-audit-fail@example.com',
     )
 
-    const householdId = await createHousehold(
+    const householdResponse = await createHousehold(
       auth.accessToken,
       'Update rollback household',
     )
+    expect(householdResponse.status).toBe(201)
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
 
-    const created = await createExpense(auth.accessToken, {
+    const createResponse = await createExpense(auth.accessToken, {
       amount: 45000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -262,6 +238,8 @@ describe('expense lifecycle routes', () => {
       title: 'Rollback lunch',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     await env.DB.prepare('DROP TABLE audit_logs').run()
 
@@ -316,14 +294,18 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-lifecycle-member:lifecycle-member@example.com',
     )
 
-    const householdId = await createHousehold(
+    const householdResponse = await createHousehold(
       admin.accessToken,
       'Expense lifecycle household',
     )
+    expect(householdResponse.status).toBe(201)
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
 
     await addMemberToHousehold(householdId, member.user.id, 'member')
 
-    const created = await createExpense(member.accessToken, {
+    const createResponse = await createExpense(member.accessToken, {
       amount: 84000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -332,6 +314,8 @@ describe('expense lifecycle routes', () => {
       title: 'Shared groceries',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     const deleteResponse = await SELF.fetch(
       `https://example.com/api/v1/expenses/${created.data.id}`,
@@ -461,10 +445,14 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-trash-member:trash-member@example.com',
     )
 
-    const householdId = await createHousehold(
+    const householdResponse = await createHousehold(
       admin.accessToken,
       'Expense deleted list household',
     )
+    expect(householdResponse.status).toBe(201)
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
 
     await addMemberToHousehold(householdId, member.user.id, 'member')
 
@@ -492,7 +480,7 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-private-other:private-other@example.com',
     )
 
-    const created = await createExpense(owner.accessToken, {
+    const createResponse = await createExpense(owner.accessToken, {
       amount: 33000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -500,6 +488,8 @@ describe('expense lifecycle routes', () => {
       title: 'Private snack',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     const response = await SELF.fetch(
       `https://example.com/api/v1/expenses/${created.data.id}`,
@@ -523,12 +513,16 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-delete-audit-fail:delete-audit-fail@example.com',
     )
 
-    const householdId = await createHousehold(
+    const householdResponse = await createHousehold(
       auth.accessToken,
       'Delete rollback household',
     )
+    expect(householdResponse.status).toBe(201)
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
 
-    const created = await createExpense(auth.accessToken, {
+    const createResponse = await createExpense(auth.accessToken, {
       amount: 12000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -537,6 +531,8 @@ describe('expense lifecycle routes', () => {
       title: 'Delete rollback',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     await env.DB.prepare('DROP TABLE audit_logs').run()
 
@@ -569,12 +565,16 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-restore-audit-fail:restore-audit-fail@example.com',
     )
 
-    const householdId = await createHousehold(
+    const householdResponse = await createHousehold(
       auth.accessToken,
       'Restore rollback household',
     )
+    expect(householdResponse.status).toBe(201)
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
 
-    const created = await createExpense(auth.accessToken, {
+    const createResponse = await createExpense(auth.accessToken, {
       amount: 67000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -583,6 +583,8 @@ describe('expense lifecycle routes', () => {
       title: 'Restore rollback',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     const deleteResponse = await SELF.fetch(
       `https://example.com/api/v1/expenses/${created.data.id}`,
@@ -661,7 +663,7 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-update-private-other:update-private-other@example.com',
     )
 
-    const created = await createExpense(owner.accessToken, {
+    const createResponse = await createExpense(owner.accessToken, {
       amount: 50000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -669,6 +671,8 @@ describe('expense lifecycle routes', () => {
       title: 'Private expense',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     const response = await SELF.fetch(
       `https://example.com/api/v1/expenses/${created.data.id}`,
@@ -707,15 +711,19 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-restore-nonadmin-other:restore-nonadmin-other@example.com',
     )
 
-    const householdId = await createHousehold(
+    const householdResponse = await createHousehold(
       admin.accessToken,
       'Restore non-admin household',
     )
+    expect(householdResponse.status).toBe(201)
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
 
     await addMemberToHousehold(householdId, member.user.id, 'member')
     await addMemberToHousehold(householdId, otherMember.user.id, 'member')
 
-    const created = await createExpense(member.accessToken, {
+    const createResponse = await createExpense(member.accessToken, {
       amount: 75000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -724,6 +732,8 @@ describe('expense lifecycle routes', () => {
       title: 'Non-admin restore test',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     // The creator (member) soft-deletes the expense
     const deleteResponse = await SELF.fetch(
@@ -761,7 +771,7 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-update-invalidcat:update-invalidcat@example.com',
     )
 
-    const created = await createExpense(auth.accessToken, {
+    const createResponse = await createExpense(auth.accessToken, {
       amount: 30000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -769,6 +779,8 @@ describe('expense lifecycle routes', () => {
       title: 'Valid expense',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     const response = await SELF.fetch(
       `https://example.com/api/v1/expenses/${created.data.id}`,
@@ -801,7 +813,7 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-audit-update-private:audit-update-private@example.com',
     )
 
-    const created = await createExpense(auth.accessToken, {
+    const createResponse = await createExpense(auth.accessToken, {
       amount: 45000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -809,6 +821,8 @@ describe('expense lifecycle routes', () => {
       title: 'Private audit update',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     await SELF.fetch(`https://example.com/api/v1/expenses/${created.data.id}`, {
       method: 'PATCH',
@@ -854,7 +868,7 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-audit-delete-private:audit-delete-private@example.com',
     )
 
-    const created = await createExpense(auth.accessToken, {
+    const createResponse = await createExpense(auth.accessToken, {
       amount: 22000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -862,6 +876,8 @@ describe('expense lifecycle routes', () => {
       title: 'Private audit delete',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     await SELF.fetch(`https://example.com/api/v1/expenses/${created.data.id}`, {
       method: 'DELETE',
@@ -897,7 +913,7 @@ describe('expense lifecycle routes', () => {
       'test:firebase-user-expense-private-restore-owner:private-restore-owner@example.com',
     )
 
-    const created = await createExpense(auth.accessToken, {
+    const createResponse = await createExpense(auth.accessToken, {
       amount: 40000,
       categoryKey: 'food',
       sourceKey: 'cash',
@@ -905,6 +921,8 @@ describe('expense lifecycle routes', () => {
       title: 'Private restore test',
       occurredAt: Date.now(),
     })
+    expect(createResponse.status).toBe(201)
+    const created = await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
 
     const deleteResponse = await SELF.fetch(
       `https://example.com/api/v1/expenses/${created.data.id}`,

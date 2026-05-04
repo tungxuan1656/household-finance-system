@@ -48,6 +48,7 @@ export const exchangeAccessToken = async (
   idToken: string,
 ): Promise<{
   accessToken: string
+  refreshToken: string
   user: {
     id: string
   }
@@ -69,6 +70,7 @@ export const exchangeAccessToken = async (
   const exchangePayload = await parseJson<
     ApiEnvelope<{
       accessToken: string
+      refreshToken: string
       user: {
         id: string
       }
@@ -76,6 +78,50 @@ export const exchangeAccessToken = async (
   >(exchangeResponse)
 
   return exchangePayload.data
+}
+
+export const authorizedJsonRequest = async (
+  accessToken: string,
+  {
+    method,
+    path,
+    body,
+  }: {
+    method: 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT'
+    path: string
+    body?: unknown
+  },
+) =>
+  SELF.fetch(`https://example.com${path}`, {
+    method,
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      ...(body ? { 'content-type': 'application/json' } : {}),
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  })
+
+export const createHousehold = async (accessToken: string, name: string) => {
+  const response = await authorizedJsonRequest(accessToken, {
+    method: 'POST',
+    path: '/api/v1/households',
+    body: { name },
+  })
+
+  return response
+}
+
+export const createExpense = async (
+  accessToken: string,
+  body: Record<string, unknown>,
+) => {
+  const response = await authorizedJsonRequest(accessToken, {
+    method: 'POST',
+    path: '/api/v1/expenses',
+    body,
+  })
+
+  return response
 }
 
 export const registerWorkerIntegrationSetup = () => {

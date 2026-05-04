@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-04 — Backend API scenario testing coverage
+- Who: Orchestrator
+- Summary: Added three backend-only scenario integration tests to validate real worker HTTP flows end to end: auth/profile, household expense lifecycle, and group expense assignment/summary. Also introduced shared worker test helpers for authenticated JSON requests plus reusable household/expense setup, then refactored the existing expense lifecycle suite to consume the new helper return shapes. Verified the full worker suite passes (`pnpm --filter worker test`, 242 tests).
+- Files changed: apps/worker/test/helpers/test-context.ts, apps/worker/test/integration/scenario-auth-profile.spec.ts, apps/worker/test/integration/scenario-household-expense.spec.ts, apps/worker/test/integration/scenario-group-expense.spec.ts, apps/worker/test/integration/expenses-lifecycle.spec.ts, harness/progress.md
+- Blockers: none
+- Next steps: none.
+
 ## 2026-05-03 — Second round code review fixes for feat-023
 - Who: Orchestrator
 - Summary: Fixed three issues from follow-up review: (1) CRITICAL — moved groupIds validation before `createExpense` call so validation failures no longer leave orphaned expense rows; (2) MAJOR — reject `groupIds` with explicit 409 when visibility is `private` instead of silently ignoring them; (3) MAJOR — preserve existing `note` on partial update by using `body.note !== undefined ? body.note : existingExpense.note` instead of `body.note ?? null`.
