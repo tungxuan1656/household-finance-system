@@ -9,3 +9,7 @@ export const analyticsOverviewQuerySchema = () =>
       household_id: z.string().trim().min(1).optional(),
     })
     .strict()
+
+export const analyticsComparisonQuerySchema = analyticsOverviewQuerySchema
+
+export const analyticsGroupsQuerySchema = analyticsOverviewQuerySchema

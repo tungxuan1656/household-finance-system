@@ -569,6 +569,21 @@
       "title": "Danh mục chi nhiều nhất",
       "description": "Top 5 danh mục theo tổng chi tiêu"
     },
+    "comparison": {
+      "title": "So sánh theo tháng",
+      "description": "Đối chiếu chi tiêu tháng hiện tại với tháng trước",
+      "currentPeriod": "Tổng chi tháng này",
+      "previousPeriod": "Tổng chi tháng trước"
+    },
+    "payers": {
+      "title": "Đóng góp theo người trả",
+      "description": "Ai đang chi nhiều nhất trong kỳ đã chọn"
+    },
+    "groups": {
+      "title": "Chi tiêu theo nhóm",
+      "description": "Tổng hợp chi tiêu đã gán nhóm trong tháng",
+      "tabLabel": "Nhóm"
+    },
     "empty": {
       "title": "Chưa có dữ liệu chi tiêu",
       "description": "Hãy thêm khoản chi trong tháng đã chọn để xem tổng quan."

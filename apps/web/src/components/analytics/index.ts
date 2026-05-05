@@ -1,3 +1,5 @@
 export { InsightsChartsSection } from './insights-charts-section'
+export { InsightsComparisonSection } from './insights-comparison-section'
+export { InsightsGroupsSection } from './insights-groups-section'
 export { InsightsLoadingState } from './insights-loading-state'
 export { InsightsSummaryCards } from './insights-summary-cards'

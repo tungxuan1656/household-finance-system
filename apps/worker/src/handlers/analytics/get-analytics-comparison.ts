@@ -1,23 +1,23 @@
 import type { Context } from 'hono'
 
-import type { AnalyticsOverviewDTO } from '@/contracts'
-import { analyticsOverviewQuerySchema } from '@/contracts'
-import { getAnalyticsOverview } from '@/db/repositories/expense-query-repository'
+import type { AnalyticsComparisonDTO } from '@/contracts'
+import { analyticsComparisonQuerySchema } from '@/contracts'
+import { getAnalyticsComparison } from '@/db/repositories/expense-query-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { forbidden, invalidInput } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
 import type { AppBindings } from '@/types'
 
-import { toPeriodRange } from './period'
+import { toPeriodRange, toPreviousPeriod } from './period'
 
-type GetAnalyticsOverviewHandlerCtx = Context<AppBindings>
+type GetAnalyticsComparisonHandlerCtx = Context<AppBindings>
 
-export const getAnalyticsOverviewHandler = async (
-  ctx: GetAnalyticsOverviewHandlerCtx,
-): Promise<AnalyticsOverviewDTO> => {
+export const getAnalyticsComparisonHandler = async (
+  ctx: GetAnalyticsComparisonHandlerCtx,
+): Promise<AnalyticsComparisonDTO> => {
   const locale = ctx.get('locale') ?? defaultLocale
   const currentUser = ctx.get('currentUser')
-  const parsed = analyticsOverviewQuerySchema().safeParse(ctx.req.query())
+  const parsed = analyticsComparisonQuerySchema().safeParse(ctx.req.query())
 
   if (!parsed.success) {
     throw invalidInput(
@@ -44,13 +44,18 @@ export const getAnalyticsOverviewHandler = async (
     }
   }
 
-  const periodRange = toPeriodRange(query.period)
+  const currentPeriodRange = toPeriodRange(query.period)
+  const previousPeriod = toPreviousPeriod(query.period)
+  const previousPeriodRange = toPeriodRange(previousPeriod)
 
-  return getAnalyticsOverview(ctx.env.DB, {
+  return getAnalyticsComparison(ctx.env.DB, {
     userId: currentUser.id,
     householdId: query.household_id,
     period: query.period,
-    periodStart: periodRange.start,
-    periodEnd: periodRange.end,
+    periodStart: currentPeriodRange.start,
+    periodEnd: currentPeriodRange.end,
+    previousPeriod,
+    previousPeriodStart: previousPeriodRange.start,
+    previousPeriodEnd: previousPeriodRange.end,
   })
 }

@@ -3,6 +3,8 @@ export const API_BASE_PATH: string =
 
 export const API_ENDPOINTS = {
   analytics: {
+    comparison: '/analytics/comparison',
+    groups: '/analytics/groups',
     overview: '/analytics/overview',
   },
   auth: {
