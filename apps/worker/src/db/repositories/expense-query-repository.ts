@@ -8,6 +8,7 @@ import type {
   StoredExpense,
 } from './expense-repository'
 import { mapRow } from './expense-repository'
+import { findHouseholdById } from './household-repository'
 
 type AnalyticsQueryInput = {
   userId: string
@@ -164,7 +165,7 @@ const getAnalyticsSummary = async (
   return {
     expenseCount: Number(row?.expenseCount ?? 0),
     totalSpendMinor: Number(row?.totalSpendMinor ?? 0),
-    currencyCode: row?.currencyCode ?? 'VND',
+    currencyCode: row?.currencyCode ?? null,
   }
 }
 
@@ -822,24 +823,32 @@ export const getAnalyticsGroups = async (
     groupedSummaryResult?.totalGroupedSpendMinor ?? 0,
   )
 
+  const household = input.householdId
+    ? await findHouseholdById(db, input.householdId)
+    : null
+
+  const currencyCode =
+    household?.defaultCurrencyCode ?? groupedSummary.currencyCode ?? 'VND'
+
   return {
     period: input.period,
     householdId: input.householdId ?? null,
-    currencyCode: groupedSummary.currencyCode ?? 'VND',
+    currencyCode,
     totalGroupedSpendMinor,
-    groups: groups.map((group) => ({
-      ...group,
-      overlapPercentOfTotal:
+    groups: groups.map((group) => {
+      const overlapPercentOfTotal =
         totalGroupedSpendMinor > 0
           ? Math.round((group.totalSpendMinor / totalGroupedSpendMinor) * 100)
-          : 0,
-      // Deprecated compatibility alias. Same overlap semantics as
-      // overlapPercentOfTotal until all clients migrate.
-      percentOfTotal:
-        totalGroupedSpendMinor > 0
-          ? Math.round((group.totalSpendMinor / totalGroupedSpendMinor) * 100)
-          : 0,
-    })),
+          : 0
+
+      return {
+        ...group,
+        overlapPercentOfTotal,
+        // Deprecated compatibility alias. Same overlap semantics as
+        // overlapPercentOfTotal until all clients migrate.
+        percentOfTotal: overlapPercentOfTotal,
+      }
+    }),
   }
 }
 

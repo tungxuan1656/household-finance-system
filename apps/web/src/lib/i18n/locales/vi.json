@@ -582,6 +582,7 @@
     "groups": {
       "title": "Chi tiêu theo nhóm",
       "description": "Tổng hợp chi tiêu đã gán nhóm trong tháng; một khoản chi có thể xuất hiện ở nhiều nhóm",
+      "overlapShareLabel": "tỷ lệ chồng lấp",
       "tabLabel": "Nhóm"
     },
     "empty": {

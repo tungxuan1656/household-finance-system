@@ -218,6 +218,7 @@ describe('InsightsPage', () => {
             groupName: 'Trip group',
             totalSpendMinor: 45000,
             expenseCount: 1,
+            overlapPercentOfTotal: 100,
             percentOfTotal: 100,
           },
         ],
@@ -286,6 +287,10 @@ describe('InsightsPage', () => {
     expect(screen.getAllByText('3').length).toBeGreaterThan(0)
     expect(screen.getByText('insights.comparison.title')).toBeInTheDocument()
     expect(screen.getByText('insights.groups.title')).toBeInTheDocument()
+
+    expect(
+      screen.getByText('1 · 100% insights.groups.overlapShareLabel'),
+    ).toBeInTheDocument()
 
     expect(
       screen.getByText('app.expenseReference.categories.transport'),

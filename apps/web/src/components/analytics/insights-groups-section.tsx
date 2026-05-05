@@ -33,7 +33,8 @@ function InsightsGroupsSection({
             <div className='flex flex-col gap-1'>
               <span>{group.groupName}</span>
               <span className='text-sm text-muted-foreground'>
-                {group.expenseCount} · {group.overlapPercentOfTotal}%
+                {group.expenseCount} · {group.overlapPercentOfTotal}%{' '}
+                {t('insights.groups.overlapShareLabel')}
               </span>
             </div>
             <span className='font-medium'>

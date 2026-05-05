@@ -730,6 +730,55 @@ describe('GET /api/v1/analytics/groups', () => {
     })
   })
 
+  it('returns household default currency for month with no grouped expenses', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-analytics-groups-empty-currency:analytics-groups-empty-currency@example.com',
+    )
+
+    const householdResponse = await createHousehold(
+      auth.accessToken,
+      'Empty grouped currency household',
+    )
+    expect(householdResponse.status).toBe(201)
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
+
+    const updateHouseholdResponse = await SELF.fetch(
+      `https://example.com/api/v1/households/${householdId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ defaultCurrencyCode: 'USD' }),
+      },
+    )
+    expect(updateHouseholdResponse.status).toBe(200)
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/analytics/groups?period=2026-05&household_id=${householdId}`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(200)
+
+    const payload = await parseJson<ApiEnvelope<AnalyticsGroupsDTO>>(response)
+
+    expect(payload.data).toEqual({
+      period: '2026-05',
+      householdId,
+      currencyCode: 'USD',
+      totalGroupedSpendMinor: 0,
+      groups: [],
+    })
+  })
+
   it('returns 403 for non-member household analytics', async () => {
     const owner = await exchangeAccessToken(
       'test:firebase-user-analytics-groups-owner-403:analytics-groups-owner-403@example.com',
