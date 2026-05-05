@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-05 — Completed feat-029: Analytics comparisons & breakdowns
+- Who: Orchestrator
+- Summary: Implemented analytics comparison endpoint (`GET /api/v1/analytics/comparison`) and groups breakdown endpoint (`GET /api/v1/analytics/groups`) with household-membership enforcement, payer display-name enrichment, de-duplicated grouped spend totals for overlapping group assignments, and category delta computation. Extended web `/insights` page with month-over-month comparison section (current/previous totals, delta badge, trend direction, top category deltas, payer attribution bars), groups spend list, updated loading skeleton, and removed raw minor amount clutter from summary cards. All tests, typechecks, lint, and build pass via `./init.sh`.
+- Evidence: `6cbf210`
+- Blockers: None resolved.
+- Next steps: none.
+
 ## 2026-05-05 — Created active ExecPlan for feat-029 analytics comparisons & breakdowns
 - Who: Orchestrator
 - Summary: Created and registered the active ExecPlan for `feat-029` covering fullstack analytics comparison and breakdown work on top of the completed `feat-028` insights dashboard. Backend scope: add `GET /api/v1/analytics/comparison?period=YYYY-MM&household_id=...` for current-vs-previous month totals, category deltas keyed by the global category catalog, and payer attribution; add `GET /api/v1/analytics/groups?period=YYYY-MM&household_id=...` for per-group spend totals; preserve existing visibility and household-membership rules so private expenses never leak into household analytics. Frontend scope: extend `/insights` with month-over-month comparison UI, delta/trend indicators, payer attribution section, and Groups tab while keeping the existing route/page orchestration, typed transport/hooks, i18n, and regression coverage aligned to feat-028 patterns. Explicitly out of scope: CSV export, arbitrary date ranges, forecasting, budget coupling, and broad refactors of the overview contract.
