@@ -69,6 +69,8 @@ export type AnalyticsGroupSpendDTO = {
   groupName: string
   totalSpendMinor: number
   expenseCount: number
+  overlapPercentOfTotal: number
+  /** Deprecated compatibility alias for overlapPercentOfTotal. */
   percentOfTotal: number
 }
 

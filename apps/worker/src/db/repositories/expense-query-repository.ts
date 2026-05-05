@@ -84,6 +84,7 @@ type AnalyticsGroupsDTO = {
     groupName: string
     totalSpendMinor: number
     expenseCount: number
+    overlapPercentOfTotal: number
     percentOfTotal: number
   }>
 }
@@ -798,8 +799,11 @@ export const getAnalyticsGroups = async (
     groupName: row.groupName,
     totalSpendMinor: Number(row.totalSpendMinor),
     expenseCount: Number(row.expenseCount),
+    overlapPercentOfTotal: 0,
     percentOfTotal: 0,
   }))
+
+  const groupedSummary = await getAnalyticsSummary(db, whereClause, params)
 
   const groupedSummaryResult = await db
     .prepare(
@@ -821,10 +825,16 @@ export const getAnalyticsGroups = async (
   return {
     period: input.period,
     householdId: input.householdId ?? null,
-    currencyCode: 'VND',
+    currencyCode: groupedSummary.currencyCode ?? 'VND',
     totalGroupedSpendMinor,
     groups: groups.map((group) => ({
       ...group,
+      overlapPercentOfTotal:
+        totalGroupedSpendMinor > 0
+          ? Math.round((group.totalSpendMinor / totalGroupedSpendMinor) * 100)
+          : 0,
+      // Deprecated compatibility alias. Same overlap semantics as
+      // overlapPercentOfTotal until all clients migrate.
       percentOfTotal:
         totalGroupedSpendMinor > 0
           ? Math.round((group.totalSpendMinor / totalGroupedSpendMinor) * 100)
