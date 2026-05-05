@@ -3,7 +3,7 @@
   "name": "Analytics comparisons & breakdowns",
   "description": "Extend analytics with comparison and breakdown views. Backend: GET /api/v1/analytics/comparison?period=YYYY-MM (returns current month vs previous month: total spend delta, top-category deltas keyed by the global category catalog, and payer attribution — who paid most and percent of total), GET /api/v1/analytics/groups?period=YYYY-MM (per-group spend aggregation for the period). Frontend: adds Month-over-Month comparison section to the analytics page (delta badges, trend arrow), Payer Attribution bar chart (stacked by member), and a Groups tab showing spend per group. Category labels/icon/color resolve from the static catalog by key. Per docs/product-specs/analytics-overview.md.",
   "dependencies": ["feat-023", "feat-028"],
-  "status": "pending",
+  "status": "in_progress",
   "evidence": "",
-  "updated_at": "2026-04-29"
+  "updated_at": "2026-05-05"
 }
