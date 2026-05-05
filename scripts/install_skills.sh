@@ -101,10 +101,10 @@ SUPERPOWERS_SKILLS=(
   test-driven-development
   verification-before-completion
   writing-skills
-  # writing-plans
-  # using-superpowers
-  # dispatching-parallel-agents
-  # finishing-a-development-branch
+  writing-plans
+  using-superpowers
+  dispatching-parallel-agents
+  finishing-a-development-branch
   # using-git-worktrees
 )
 

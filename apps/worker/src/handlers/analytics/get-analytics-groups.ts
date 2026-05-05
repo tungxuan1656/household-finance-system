@@ -1,8 +1,8 @@
 import type { Context } from 'hono'
 
-import type { AnalyticsOverviewDTO } from '@/contracts'
-import { analyticsOverviewQuerySchema } from '@/contracts'
-import { getAnalyticsOverview } from '@/db/repositories/expense-query-repository'
+import type { AnalyticsGroupsDTO } from '@/contracts'
+import { analyticsGroupsQuerySchema } from '@/contracts'
+import { getAnalyticsGroups } from '@/db/repositories/expense-query-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { forbidden, invalidInput } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
@@ -10,14 +10,14 @@ import type { AppBindings } from '@/types'
 
 import { toPeriodRange } from './period'
 
-type GetAnalyticsOverviewHandlerCtx = Context<AppBindings>
+type GetAnalyticsGroupsHandlerCtx = Context<AppBindings>
 
-export const getAnalyticsOverviewHandler = async (
-  ctx: GetAnalyticsOverviewHandlerCtx,
-): Promise<AnalyticsOverviewDTO> => {
+export const getAnalyticsGroupsHandler = async (
+  ctx: GetAnalyticsGroupsHandlerCtx,
+): Promise<AnalyticsGroupsDTO> => {
   const locale = ctx.get('locale') ?? defaultLocale
   const currentUser = ctx.get('currentUser')
-  const parsed = analyticsOverviewQuerySchema().safeParse(ctx.req.query())
+  const parsed = analyticsGroupsQuerySchema().safeParse(ctx.req.query())
 
   if (!parsed.success) {
     throw invalidInput(
@@ -46,7 +46,7 @@ export const getAnalyticsOverviewHandler = async (
 
   const periodRange = toPeriodRange(query.period)
 
-  return getAnalyticsOverview(ctx.env.DB, {
+  return getAnalyticsGroups(ctx.env.DB, {
     userId: currentUser.id,
     householdId: query.household_id,
     period: query.period,

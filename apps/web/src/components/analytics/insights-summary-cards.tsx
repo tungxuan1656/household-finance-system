@@ -30,9 +30,6 @@ function InsightsSummaryCards({
           <div className='font-heading text-3xl tracking-tight'>
             {formatCurrency(data.totalSpendMinor, data.currencyCode)}
           </div>
-          <div className='text-sm text-muted-foreground'>
-            {data.totalSpendMinor}
-          </div>
         </CardContent>
       </Card>
       <Card>

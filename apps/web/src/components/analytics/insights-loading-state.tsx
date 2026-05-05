@@ -5,18 +5,20 @@ import { Skeleton } from '@/components/ui/skeleton'
 function InsightsLoadingState() {
   return (
     <div className='flex flex-col gap-6' data-testid='insights-loading'>
-      <div className='flex items-end justify-between gap-4'>
-        <div className='flex flex-col gap-2'>
-          <Skeleton className='h-8 w-48' />
-          <Skeleton className='h-4 w-72' />
-        </div>
-        <Skeleton className='h-8 w-32' />
-      </div>
-      <div className='grid gap-4 md:grid-cols-2'>
+      <div className='grid gap-4 xl:grid-cols-3'>
+        <Skeleton className='h-32 rounded-xl' />
         <Skeleton className='h-32 rounded-xl' />
         <Skeleton className='h-32 rounded-xl' />
       </div>
-      <Skeleton className='h-72 rounded-xl' />
+      <div className='grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]'>
+        <Skeleton className='h-32 rounded-xl' />
+        <Skeleton className='h-32 rounded-xl' />
+      </div>
+      <div className='grid gap-4 xl:grid-cols-2'>
+        <Skeleton className='h-72 rounded-xl' />
+        <Skeleton className='h-72 rounded-xl' />
+      </div>
+      <Skeleton className='h-64 rounded-xl' />
     </div>
   )
 }

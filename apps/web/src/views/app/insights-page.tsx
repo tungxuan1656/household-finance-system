@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 
 import {
   InsightsChartsSection,
+  InsightsComparisonSection,
+  InsightsGroupsSection,
   InsightsLoadingState,
   InsightsSummaryCards,
 } from '@/components/analytics'
@@ -14,7 +16,11 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
-import { useAnalyticsOverviewQuery } from '@/hooks/api/use-analytics'
+import {
+  useAnalyticsComparisonQuery,
+  useAnalyticsGroupsQuery,
+  useAnalyticsOverviewQuery,
+} from '@/hooks/api/use-analytics'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
@@ -86,6 +92,20 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
       enabled: shouldFetchAnalytics,
     },
   )
+  const {
+    data: comparisonData,
+    isLoading: isComparisonLoading,
+    error: comparisonError,
+  } = useAnalyticsComparisonQuery(analyticsParams, {
+    enabled: shouldFetchAnalytics,
+  })
+  const {
+    data: groupsData,
+    isLoading: isGroupsLoading,
+    error: groupsError,
+  } = useAnalyticsGroupsQuery(analyticsParams, {
+    enabled: shouldFetchAnalytics,
+  })
   const { data: categoriesData } = useReferenceCategoriesQuery()
 
   const categoryMap = useMemo(
@@ -99,6 +119,9 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
     [categoriesData?.items],
   )
   const periodOptions = useMemo(() => buildPeriodOptions(period), [period])
+
+  const isAnyLoading = isLoading || isComparisonLoading || isGroupsLoading
+  const pageError = error ?? comparisonError ?? groupsError
 
   return (
     <div className='flex flex-col gap-6'>
@@ -126,9 +149,9 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
         </label>
       </header>
 
-      {isLoading ? <InsightsLoadingState /> : null}
+      {isAnyLoading ? <InsightsLoadingState /> : null}
 
-      {!isLoading && error ? (
+      {!isAnyLoading && pageError ? (
         <Empty className='min-h-80 border'>
           <EmptyHeader>
             <EmptyTitle>{t('insights.error.title')}</EmptyTitle>
@@ -139,7 +162,7 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
         </Empty>
       ) : null}
 
-      {!isLoading && data && data.expenseCount === 0 ? (
+      {!isAnyLoading && data && data.expenseCount === 0 ? (
         <Empty className='min-h-80 border'>
           <EmptyHeader>
             <EmptyTitle>{t('insights.empty.title')}</EmptyTitle>
@@ -150,12 +173,24 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
         </Empty>
       ) : null}
 
-      {!isLoading && data && data.expenseCount > 0 ? (
+      {!isAnyLoading &&
+      data &&
+      comparisonData &&
+      groupsData &&
+      data.expenseCount > 0 ? (
         <>
           <InsightsSummaryCards data={data} formatCurrency={formatCurrency} />
+          <InsightsComparisonSection
+            data={comparisonData}
+            formatCurrency={formatCurrency}
+          />
           <InsightsChartsSection
             categoryMap={categoryMap}
             data={data}
+            formatCurrency={formatCurrency}
+          />
+          <InsightsGroupsSection
+            data={groupsData}
             formatCurrency={formatCurrency}
           />
         </>

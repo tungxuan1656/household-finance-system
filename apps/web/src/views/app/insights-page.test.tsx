@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { InsightsPage } from '@/views/app/insights-page'
 
 const useAnalyticsOverviewQueryMock = vi.fn()
+const useAnalyticsComparisonQueryMock = vi.fn()
+const useAnalyticsGroupsQueryMock = vi.fn()
 const useReferenceCategoriesQueryMock = vi.fn()
 const fetchHouseholdsMock = vi.fn()
 const householdStoreState = {
@@ -14,6 +16,10 @@ const householdStoreState = {
 vi.mock('@/hooks/api/use-analytics', () => ({
   useAnalyticsOverviewQuery: (...args: unknown[]) =>
     useAnalyticsOverviewQueryMock(...args),
+  useAnalyticsComparisonQuery: (...args: unknown[]) =>
+    useAnalyticsComparisonQueryMock(...args),
+  useAnalyticsGroupsQuery: (...args: unknown[]) =>
+    useAnalyticsGroupsQueryMock(...args),
 }))
 
 vi.mock('@/hooks/api/use-reference-data', () => ({
@@ -36,6 +42,8 @@ describe('InsightsPage', () => {
   beforeEach(() => {
     fetchHouseholdsMock.mockReset()
     useAnalyticsOverviewQueryMock.mockReset()
+    useAnalyticsComparisonQueryMock.mockReset()
+    useAnalyticsGroupsQueryMock.mockReset()
     householdStoreState.currentHousehold = { id: 'hh-1' }
     householdStoreState.households = [{ id: 'hh-1' }]
 
@@ -52,6 +60,18 @@ describe('InsightsPage', () => {
         ],
       },
     })
+
+    useAnalyticsComparisonQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsGroupsQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    })
   })
 
   it('waits for household context before fetching analytics', () => {
@@ -67,6 +87,16 @@ describe('InsightsPage', () => {
     render(<InsightsPage initialPeriod='2026-05' />)
 
     expect(useAnalyticsOverviewQueryMock).toHaveBeenCalledWith(
+      { period: '2026-05' },
+      { enabled: false },
+    )
+
+    expect(useAnalyticsComparisonQueryMock).toHaveBeenCalledWith(
+      { period: '2026-05' },
+      { enabled: false },
+    )
+
+    expect(useAnalyticsGroupsQueryMock).toHaveBeenCalledWith(
       { period: '2026-05' },
       { enabled: false },
     )
@@ -123,9 +153,80 @@ describe('InsightsPage', () => {
       { period: '2026-05' },
       { enabled: true },
     )
+
+    expect(useAnalyticsComparisonQueryMock).toHaveBeenNthCalledWith(
+      2,
+      { period: '2026-05' },
+      { enabled: true },
+    )
+
+    expect(useAnalyticsGroupsQueryMock).toHaveBeenNthCalledWith(
+      2,
+      { period: '2026-05' },
+      { enabled: true },
+    )
   })
 
   it('requests analytics for selected household and current month', () => {
+    useAnalyticsComparisonQueryMock.mockReturnValue({
+      data: {
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        currentPeriod: {
+          period: '2026-05',
+          totalSpendMinor: 59000,
+          expenseCount: 3,
+        },
+        previousPeriod: {
+          period: '2026-04',
+          totalSpendMinor: 40000,
+          expenseCount: 2,
+        },
+        totalDeltaSpendMinor: 19000,
+        totalDeltaPercent: 48,
+        topCategoryDeltas: [
+          {
+            categoryKey: 'food',
+            currentTotalSpendMinor: 21000,
+            previousTotalSpendMinor: 10000,
+            deltaSpendMinor: 11000,
+            deltaPercent: 110,
+          },
+        ],
+        payerAttribution: [
+          {
+            payerUserId: 'user-1',
+            totalSpendMinor: 59000,
+            percentOfTotal: 100,
+            expenseCount: 3,
+          },
+        ],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsGroupsQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalGroupedSpendMinor: 45000,
+        groups: [
+          {
+            groupId: 'g-1',
+            groupName: 'Trip group',
+            totalSpendMinor: 45000,
+            expenseCount: 1,
+            overlapPercentOfTotal: 100,
+            percentOfTotal: 100,
+          },
+        ],
+      },
+      isLoading: false,
+      error: null,
+    })
+
     useAnalyticsOverviewQueryMock.mockReturnValue({
       data: {
         period: '2026-05',
@@ -166,8 +267,30 @@ describe('InsightsPage', () => {
       { enabled: true },
     )
 
-    expect(screen.getByText('59000')).toBeInTheDocument()
-    expect(screen.getByText('3')).toBeInTheDocument()
+    expect(useAnalyticsComparisonQueryMock).toHaveBeenCalledWith(
+      {
+        household_id: 'hh-1',
+        period: '2026-05',
+      },
+      { enabled: true },
+    )
+
+    expect(useAnalyticsGroupsQueryMock).toHaveBeenCalledWith(
+      {
+        household_id: 'hh-1',
+        period: '2026-05',
+      },
+      { enabled: true },
+    )
+
+    expect(screen.getAllByText(/59[,.]000/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText('3').length).toBeGreaterThan(0)
+    expect(screen.getByText('insights.comparison.title')).toBeInTheDocument()
+    expect(screen.getByText('insights.groups.title')).toBeInTheDocument()
+
+    expect(
+      screen.getByText('1 · 100% insights.groups.overlapShareLabel'),
+    ).toBeInTheDocument()
 
     expect(
       screen.getByText('app.expenseReference.categories.transport'),
@@ -220,5 +343,41 @@ describe('InsightsPage', () => {
     render(<InsightsPage initialPeriod='2026-05' />)
 
     expect(screen.getByTestId('insights-loading')).toBeInTheDocument()
+  })
+
+  it('shows comparison error state when secondary analytics query fails', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [
+          { date: '2026-05-02', totalSpendMinor: 50000 },
+          { date: '2026-05-14', totalSpendMinor: 9000 },
+        ],
+        topCategories: [
+          {
+            categoryKey: 'transport',
+            totalSpendMinor: 38000,
+            percentOfTotal: 64,
+            expenseCount: 1,
+          },
+        ],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsComparisonQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('boom'),
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(screen.getByText('insights.error.title')).toBeInTheDocument()
   })
 })
