@@ -39,6 +39,22 @@ import type { InvitationPreviewResponse } from '@/types/invitation'
 type OnboardingMode = 'create' | 'join'
 type OnboardingStage = 'setup' | 'complete'
 
+function normalizeInviteToken(value: string) {
+  const trimmedValue = value.trim()
+
+  if (!trimmedValue) {
+    return ''
+  }
+
+  const invitationPathMatch = trimmedValue.match(/\/invitations\/([^/?#]+)/)
+
+  if (invitationPathMatch) {
+    return invitationPathMatch[1]
+  }
+
+  return trimmedValue
+}
+
 function OnboardingPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -77,7 +93,9 @@ function OnboardingPage() {
   }, [households.length, router, stage])
 
   useEffect(() => {
-    const deepLinkInviteToken = searchParams.get('inviteToken')?.trim()
+    const deepLinkInviteToken = normalizeInviteToken(
+      searchParams.get('inviteToken') || searchParams.get('from') || '',
+    )
 
     if (!deepLinkInviteToken) {
       return
@@ -104,9 +122,11 @@ function OnboardingPage() {
     try {
       setIsPreviewLoading(true)
 
-      const preview = await getInvitationPreview(inviteToken)
+      const normalizedInviteToken = normalizeInviteToken(inviteToken)
+
+      const preview = await getInvitationPreview(normalizedInviteToken)
       setInvitePreview(preview)
-      setPreviewToken(inviteToken.trim())
+      setPreviewToken(normalizedInviteToken)
     } catch {
       setInvitePreview(null)
       setPreviewToken('')
@@ -120,7 +140,9 @@ function OnboardingPage() {
     try {
       setIsAcceptingInvite(true)
 
-      const result = await acceptInvitation(inviteToken)
+      const normalizedInviteToken = normalizeInviteToken(inviteToken)
+
+      const result = await acceptInvitation(normalizedInviteToken)
       setCompletedHouseholdId(result.householdId)
       setStage('complete')
       toast.success(t('app.invitationAccept.feedback.acceptSuccess'))
@@ -287,7 +309,8 @@ function OnboardingPage() {
               </Button>
             </div>
 
-            {invitePreview && previewToken === inviteToken.trim() ? (
+            {invitePreview &&
+            previewToken === normalizeInviteToken(inviteToken) ? (
               <Card>
                 <CardHeader>
                   <CardTitle>{invitePreview.household.name}</CardTitle>
