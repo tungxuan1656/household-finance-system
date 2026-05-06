@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-06-feat-030-new-user-onboarding-flow.md](plans/2026-05-06-feat-030-new-user-onboarding-flow.md) - feat-030 frontend onboarding flow for authenticated users with no household: guided `/onboarding` route with welcome/choice/create-or-join steps, name-only household creation on existing `POST /api/v1/households`, invite-token join via existing preview/accept contracts, completion CTAs for invite members / budget setup / quick-add, auto-skip for users who already belong to a household, and minimal retry-safe resume behavior. Optional tour, onboarding-only household fields, and new backend contracts remain out of scope.
 - [2026-05-05-feat-029-analytics-comparisons-breakdowns.md](plans/2026-05-05-feat-029-analytics-comparisons-breakdowns.md) - feat-029 fullstack analytics comparisons & breakdowns: backend adds `GET /api/v1/analytics/comparison?period=YYYY-MM&household_id=...` for current-vs-previous month totals, category deltas, and payer attribution plus `GET /api/v1/analytics/groups?period=YYYY-MM&household_id=...` for per-group spend totals; frontend extends `/insights` with month-over-month comparison, payer attribution, and groups tab while preserving existing visibility rules and analytics overview contract.
 
 ## Completed
