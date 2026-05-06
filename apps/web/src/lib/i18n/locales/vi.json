@@ -87,10 +87,22 @@
   "app": {
     "onboarding": {
       "actions": {
+        "acceptInvite": "Tham gia bằng lời mời",
         "create": "Tạo gia đình",
-        "creating": "Đang tạo..."
+        "createPath": "Tạo gia đình mới",
+        "creating": "Đang tạo...",
+        "finish": "Đi đến gia đình",
+        "joinPath": "Tham gia bằng lời mời",
+        "openBudgetSetup": "Thiết lập ngân sách tháng",
+        "openInviteMembers": "Mời thành viên",
+        "openQuickAdd": "Thêm chi tiêu đầu tiên",
+        "previewInvite": "Xem trước lời mời"
       },
-      "description": "Tạo gia đình đầu tiên để bắt đầu theo dõi chi tiêu và ngân sách.",
+      "complete": {
+        "description": "Gia đình đã sẵn sàng. Bạn có thể mời thêm thành viên, thiết lập ngân sách hoặc ghi khoản chi đầu tiên ngay bây giờ.",
+        "title": "Thiết lập ban đầu đã xong"
+      },
+      "description": "Tạo gia đình đầu tiên hoặc tham gia bằng lời mời để bắt đầu theo dõi chi tiêu và ngân sách.",
       "errors": {
         "currencyInvalid": "Mã tiền tệ phải gồm đúng 3 ký tự chữ cái.",
         "nameRequired": "Tên gia đình không được để trống.",
@@ -109,7 +121,17 @@
           "description": "Tên này sẽ hiển thị trong các màn hình liên quan.",
           "label": "Tên gia đình",
           "placeholder": "Ví dụ: Gia đình Nguyễn"
+        },
+        "inviteToken": {
+          "description": "Dán mã hoặc liên kết mời để xem trước gia đình bạn sắp tham gia.",
+          "label": "Mã lời mời",
+          "placeholder": "Ví dụ: invite-token-123"
         }
+      },
+      "join": {
+        "description": "Nhập mã mời để xem trước và tham gia gia đình có sẵn.",
+        "previewDescription": "Kiểm tra thông tin lời mời trước khi tham gia.",
+        "title": "Tham gia gia đình"
       },
       "title": "Thiết lập gia đình"
     },
