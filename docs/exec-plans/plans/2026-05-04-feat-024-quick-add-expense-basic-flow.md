@@ -8,7 +8,7 @@ Add the MVP quick-add expense flow with global trigger, compact create UI, and U
 
 Implement a frontend-first quick-add expense flow so authenticated users can capture an expense in roughly 2–3 seconds without navigating to the full add-expense screen. Users will observe this through a globally accessible trigger (floating action button plus keyboard shortcut), a compact modal or bottom-sheet style entry surface with the amount field focused immediately, sensible defaults for the minimum required fields, and a success toast that offers a 5-second Undo action.
 
-This plan keeps the scope tightly aligned to `harness/features/feat-024.json` and `docs/product-specs/quick-add-experience.md`: it reuses the existing expense create API from `feat-017`, reuses delete support from `feat-019` for Undo, and explicitly excludes offline queuing, durable smart defaults, and ML-like suggestion behavior that belong to `feat-025`.
+This plan keeps the scope tightly aligned to `harness/features/feat-024.json` and `docs/product-specs/quick-add-experience.md`: it reuses the existing expense create API from `feat-017`, reuses delete support from `feat-019` for Undo, and explicitly excludes offline or no-internet capture, durable smart defaults, and ML-like suggestion behavior.
 
 ## Scope
 
@@ -42,7 +42,7 @@ This plan keeps the scope tightly aligned to `harness/features/feat-024.json` an
 
 Out of scope for this plan:
 
-- Offline queuing, background sync, pending-entry recovery, and automatic retry behavior from `feat-025`.
+- Offline queueing, background sync, pending-entry recovery, and automatic retry behavior.
 - Durable cross-session persistence of “last used source”; MVP uses session-local or launch-context-local defaulting only.
 - ML/smart category defaults, heuristics, or analytics-driven suggestions.
 - New backend routes, D1 schema changes, or worker contract expansion unless implementation discovery proves a missing existing contract; if that happens, stop and amend the plan instead of expanding silently.
@@ -64,7 +64,7 @@ Out of scope for this plan:
 ## Progress
 
 - [x] 2026-05-04 15:05 UTC — Reviewed required planning documents, harness state, product specs, and prior expense exec plans for `feat-017`, `feat-018`, and `feat-019`. Owner: Orchestrator.
-- [x] 2026-05-04 15:18 UTC — Locked scope decisions for MVP quick-add: session-local source default only, Undo depends on existing delete support from `feat-019`, and offline/resilience work remains deferred to `feat-025`. Owner: Orchestrator.
+- [x] 2026-05-04 15:18 UTC — Locked scope decisions for MVP quick-add: session-local source default only, Undo depends on existing delete support from `feat-019`, and offline/no-internet flows remain out of scope. Owner: Orchestrator.
 - [x] 2026-05-04 16:13 UTC — Implemented the quick-add trigger and compact dialog at the protected-shell level using a floating action button plus guarded `q` shortcut handling in `main-layout.tsx` and new expense-scoped quick-add components. Owner: Orchestrator.
 - [x] 2026-05-04 16:13 UTC — Implemented compact quick-add form wiring with amount autofocus, session-scoped last-used-source memory, explicit household validation, and current-user payer defaulting for household submissions. Owner: Orchestrator.
 - [x] 2026-05-04 16:13 UTC — Implemented 5-second Undo toast behavior by reusing the existing delete mutation and added regression coverage for quick-add submit, household validation, payer defaulting, session source restore, and Undo delete behavior. Owner: Orchestrator.
@@ -84,7 +84,7 @@ Out of scope for this plan:
   Date/Author: 2026-05-04 / Orchestrator.
 
 - Decision: MVP “last used source” behavior is session-local or launch-context-local only.
-  Rationale: The user explicitly chose the recommended interpretation, and durable cross-session persistence belongs to `feat-025` per harness and product-spec language.
+  Rationale: The user explicitly chose the recommended interpretation, and durable cross-session persistence belongs in post-MVP smart-defaults follow-up work rather than the MVP quick-add surface.
   Date/Author: 2026-05-04 / Orchestrator.
 
 - Decision: Undo is in scope and depends explicitly on `feat-019` delete support.
@@ -103,7 +103,7 @@ Out of scope for this plan:
 
 - Outcome: users can create a private expense quickly from anywhere in the protected app through a global floating trigger or `q` shortcut, optionally switch to explicit household-sharing, and immediately undo a mistaken submission within 5 seconds.
 - Verification completed: `pnpm --filter web test -- quick-add-expense-dialog quick-add-expense-trigger`; `./init.sh`.
-- Follow-up note: the MVP ships on the existing `Dialog` primitive and intentionally uses session storage for last-used source memory; richer drawer ergonomics and durable/smarter defaults remain appropriate follow-up work for `feat-025` or a future UX-focused feature.
+- Follow-up note: the MVP ships on the existing `Dialog` primitive and intentionally uses session storage for last-used source memory; richer drawer ergonomics and durable/smarter defaults remain appropriate follow-up work for `feat-025` or a future UX-focused feature, while offline capture remains out of product scope.
 
 ## Context and Orientation
 
@@ -117,7 +117,7 @@ Out of scope for this plan:
   - `harness/features/feat-017.json` — expense create flow and visibility-aware create API.
   - `harness/features/feat-018.json` — expense feed/detail read behavior and cache consumers.
   - `harness/features/feat-019.json` — delete support required for Undo.
-  - `harness/features/feat-025.json` — post-MVP resilience/smart-defaults work that must stay out of scope.
+  - `harness/features/feat-025.json` — post-MVP smart-defaults work that must stay out of scope.
   - `harness/features/feat-030.json` — onboarding depends on feat-024 and will later surface quick-add as a CTA.
 - Existing web integration baseline:
   - `apps/web/src/components/layouts/main-layout.tsx` — best global app shell insertion point for quick-add trigger/UI.
@@ -183,7 +183,7 @@ Out of scope for this plan:
   - `frontend-patterns`
   - `verification-loop`
 - Common pitfalls to avoid:
-  - Do not silently add `feat-025` durability or offline logic.
+  - Do not silently add durable preferences, offline logic, or queued-save behavior.
   - Do not infer a household from hidden global app state.
   - Do not expand the quick-add surface into a second full add-expense page.
   - Do not forget that Undo can fail with authorization/network errors; the UI must surface a clear error and leave the feed consistent.
@@ -268,7 +268,7 @@ Expected short outputs to compare against:
 ### Validation and error-path checks
 
 - Invalid amount prevents submission and shows inline validation.
-- Network failure on create shows a clear retryable error state; no offline queueing behavior is implied.
+- Network failure on create shows a clear retryable error state; no offline queueing behavior is implied or supported.
 - If the user switches visibility to household without selecting a household, submission is blocked with clear validation.
 - If delete fails during Undo, the app shows an error toast and leaves the created expense present.
 

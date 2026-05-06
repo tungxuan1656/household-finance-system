@@ -96,7 +96,7 @@ Enable authenticated users to view their expense feed (personal or household con
 ### Must NOT Have (Guardrails)
 - Filter UI controls (feat-021 scope)
 - Expense edit/delete/restore endpoints (feat-019)
-- Quick-add UI or offline queueing (feat-024/025)
+- Quick-add UI or offline/no-internet capture behavior (feat-024 plus out-of-scope follow-up work)
 - Group assignment display (feat-022/023)
 - Full-text search on notes (future enhancement)
 - Aggregated totals/summary endpoint (future enhancement)

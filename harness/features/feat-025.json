@@ -1,9 +1,9 @@
 {
   "id": "feat-025",
-  "name": "Quick-add resilience & smart defaults",
-  "description": "POST-MVP — extend quick-add with offline-queue (IndexedDB-backed pending queue synced on reconnect), smart category defaults via recent-usage heuristics, and per-user last-used-source persistence in user preferences. Moved out of MVP scope on 2026-04-22 because offline-first and heuristic logic add significant complexity that is not required for initial launch. Implement after feat-024 is stable in production. Per docs/product-specs/quick-add-experience.md.",
+  "name": "Quick-add smart defaults",
+  "description": "POST-MVP — extend quick-add with smart category defaults via recent-usage heuristics and per-user last-used-source persistence in user preferences. Offline queueing was removed from this feature because the product does not support no-internet flows. Implement after feat-024 is stable in production. Per docs/product-specs/quick-add-experience.md.",
   "dependencies": ["feat-024", "feat-021"],
-  "status": "post-mvp",
+  "status": "in_progress",
   "evidence": "",
-  "updated_at": "2026-04-22"
+  "updated_at": "2026-05-06"
 }

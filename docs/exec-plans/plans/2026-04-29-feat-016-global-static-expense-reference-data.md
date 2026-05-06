@@ -38,7 +38,7 @@ Deliver `feat-016` as a fullstack reference-data foundation that:
 - Add Expense page or any route-level integration in `/expenses`.
 - Quick-add modal or keyboard shortcut work.
 - Category CRUD, user customization, recent/default/last-used behavior.
-- Offline queueing/resilience work (`feat-025`).
+- Offline/no-internet capture behavior and related resilience work.
 - DB migration that removes or rewires the existing `expense_categories` table.
 - Budget, analytics, or expense-write schema migrations to replace legacy `category_id` persistence.
 - New shared workspace/package extraction for catalog types.

@@ -29,7 +29,7 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 ## Failure States
 
 - Input validation error (invalid amount/date): show inline feedback.
-- Network error saving expense: surface retry UI. Offline queuing, pending entries, and background retry are deferred to quick-add resilience follow-up work (`feat-025`) rather than required in MVP.
+- Network error saving expense: surface retry UI. Do not imply offline queuing, pending entries, or background retry because no-internet flows are not supported.
 - Permission error when saving to household: inform user they lack permission.
 
 ---
