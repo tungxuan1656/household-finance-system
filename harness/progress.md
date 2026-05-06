@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-05-06 — Completed feat-030: New user onboarding flow
+- Who: Orchestrator
+- Summary: Implemented frontend onboarding for authenticated users with no household. `/onboarding` now supports name-only household creation, join-via-invite token preview + accept reuse from the invitation flow, deep-link invite-token auto-fill, completion CTAs for invite members, budget setup, quick-add, and finish, plus auto-skip redirect for users who already belong to a household. Added focused regression coverage for create/join/completion states, deep-link stale-preview reset, and existing-household redirect; localized new onboarding copy; and kept scope aligned by reusing existing backend contracts while leaving optional tour/settings IA expansion out of scope.
+- Files changed: apps/web/src/views/app/onboarding-page.tsx, apps/web/src/views/app/onboarding-page.test.tsx, apps/web/src/lib/i18n/locales/vi.json, docs/exec-plans/index.md, harness/feature_index.json, harness/features/feat-030.json, harness/progress.md
+- Verification: `pnpm --filter web test -- src/views/app/onboarding-page.test.tsx`; `pnpm typecheck`; `pnpm --filter web lint`; `./init.sh`
+- Blockers: none.
+- Next steps: none.
+
 ## 2026-05-06 — Created active ExecPlan for feat-030 new user onboarding flow
 - Who: Orchestrator
 - Summary: Created and registered active ExecPlan for `feat-030` covering frontend onboarding for authenticated users who belong to no household. Scope: guided `/onboarding` flow with welcome/choice/create-or-join states, name-only household creation on existing `POST /api/v1/households`, invite-token join via existing preview/accept contracts from `feat-013`, completion CTAs for invite members / monthly budget / quick-add, auto-skip for existing-household users, and minimal retry-safe resume behavior. Locked scope decisions: household creation remains name-only using MVP defaults, optional tour stays out of scope, and any account-settings resume affordance must stay smallest-safe or become explicit follow-up if missing.
