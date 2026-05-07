@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-07 — Created active ExecPlan for feat-040 harness audit alignment & stale record cleanup
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-040` covering tooling/docs-only harness cleanup after the repository audit. Scope: refresh stale feature descriptions whose wording no longer matches implemented product reality, normalize completed-status vocabulary across touched harness records, and strengthen weak evidence fields using already-completed ExecPlans and progress entries as canonical proof. Explicitly out of scope: any frontend/backend product behavior changes, broad feature reordering, or speculative harness redesign.
+- Files changed: docs/exec-plans/plans/2026-05-07-feat-040-harness-audit-alignment-and-stale-record-cleanup.md, docs/exec-plans/index.md, harness/progress.md
+- Blockers: open implementation choice on whether `feat-040` should only touch the audit-named stale records (`feat-011`, `feat-029`, `feat-037`) or may opportunistically strengthen additional weak evidence strings discovered during execution; plan recommends staying surgical unless new drift is directly proven.
+- Next steps: execute the audit-to-evidence pass first, then update touched harness records/status semantics, run `./init.sh`, and capture the resulting proof before marking `feat-040` done.
+
 ## 2026-05-07 — Added post-audit gap-closure feature batch (feat-040 → feat-045)
 - Who: Orchestrator
 - Summary: Reviewed the implemented product surface against harness records and product-spec intent, then added a new ordered batch of follow-up harness features to close the remaining gaps from easiest to hardest. The new roadmap starts with harness/governance cleanup (`feat-040`), then moves through settings/profile expansion (`feat-041`), household overview enrichment (`feat-042`), expense filter surface expansion (`feat-043`), analytics export and hardening (`feat-044`), and finally a unified home dashboard rebuild (`feat-045`). Each feature description was written to capture product state, direction, and solution intent at a roadmap level rather than as a file-by-file implementation checklist.
