@@ -254,12 +254,14 @@ describe('HouseholdsPage', () => {
     ).toHaveLength(2)
   })
 
-  it('renders an accessible retry state when loading households fails', () => {
-    householdStoreState.error = 'Load households failed'
+  it('renders an accessible retry state when loading households fails', async () => {
+    fetchHouseholdsMock.mockImplementationOnce(async () => {
+      throw new Error('Load households failed')
+    })
 
     render(<HouseholdsPage />)
 
-    expect(screen.getByRole('alert')).toHaveTextContent(
+    expect(await screen.findByRole('alert')).toHaveTextContent(
       'Load households failed',
     )
 
@@ -369,6 +371,96 @@ describe('HouseholdsPage', () => {
     await act(async () => {
       resolveCreateHousehold?.()
     })
+  })
+
+  it('keeps the existing household list visible when create fails with a shared store error', async () => {
+    householdStoreState.households = [
+      {
+        createdAt: 1,
+        defaultCurrencyCode: 'VND',
+        defaultVisibility: 'private',
+        id: 'household-1',
+        name: 'Gia đình Một',
+        role: 'admin',
+        slug: 'gia-dinh-mot',
+        timezone: 'Asia/Ho_Chi_Minh',
+      },
+    ]
+
+    const createHouseholdMock = vi
+      .mocked(householdActions.createHousehold)
+      .mockImplementation(async () => {
+        householdStoreState.error = 'Create household failed'
+        throw new Error('Create household failed')
+      })
+
+    render(<HouseholdsPage />)
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: t('app.households.actions.create'),
+      }),
+    )
+
+    fireEvent.change(
+      screen.getByLabelText(t('app.households.fields.householdName.label')),
+      {
+        target: { value: 'Nhà mới' },
+      },
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: t('app.households.actions.create'),
+      }),
+    )
+
+    await waitFor(() => {
+      expect(createHouseholdMock).toHaveBeenCalledTimes(1)
+    })
+
+    expect(screen.getByText('Gia đình Một')).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('keeps the empty state visible when create fails with a shared store error', async () => {
+    const createHouseholdMock = vi
+      .mocked(householdActions.createHousehold)
+      .mockImplementation(async () => {
+        householdStoreState.error = 'Create household failed'
+        throw new Error('Create household failed')
+      })
+
+    render(<HouseholdsPage />)
+
+    fireEvent.click(
+      screen.getAllByRole('button', {
+        name: t('app.households.actions.create'),
+      })[0],
+    )
+
+    fireEvent.change(
+      screen.getByLabelText(t('app.households.fields.householdName.label')),
+      {
+        target: { value: 'Nhà mới' },
+      },
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: t('app.households.actions.create'),
+      }),
+    )
+
+    await waitFor(() => {
+      expect(createHouseholdMock).toHaveBeenCalledTimes(1)
+    })
+
+    expect(
+      screen.getByText(t('app.households.empty.title')),
+    ).toBeInTheDocument()
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('keeps the create dialog coherent in empty state while create toggles shared loading', async () => {

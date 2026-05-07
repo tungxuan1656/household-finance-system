@@ -25,18 +25,34 @@ import { householdActions, useHouseholdStore } from '@/stores/household.store'
 function HouseholdsPage() {
   const households = useHouseholdStore.use.households()
   const isLoading = useHouseholdStore.use.isLoading()
-  const error = useHouseholdStore.use.error()
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [listLoadError, setListLoadError] = useState<string | null>(null)
 
   const shouldShowLoadingState =
     isInitialLoading && isLoading && households.length === 0
+  const shouldShowBlockingError =
+    !shouldShowLoadingState && listLoadError && households.length === 0
+
+  const loadHouseholds = async () => {
+    try {
+      setListLoadError(null)
+
+      await householdActions.fetchHouseholds()
+    } catch (loadError) {
+      setListLoadError(
+        loadError instanceof Error
+          ? loadError.message
+          : 'Load households failed',
+      )
+    }
+  }
 
   useEffect(() => {
     let isMounted = true
 
-    void householdActions.fetchHouseholds().finally(() => {
+    void loadHouseholds().finally(() => {
       if (isMounted) {
         setIsInitialLoading(false)
       }
@@ -87,11 +103,11 @@ function HouseholdsPage() {
 
       {shouldShowLoadingState ? <HouseholdsLoadingState /> : null}
 
-      {!shouldShowLoadingState && error ? (
+      {shouldShowBlockingError ? (
         <Card>
           <CardContent className='flex flex-wrap items-center justify-between gap-2 pt-4'>
             <p className='text-sm text-destructive' role='alert'>
-              {error}
+              {listLoadError}
             </p>
             <Button
               type='button'
@@ -99,7 +115,7 @@ function HouseholdsPage() {
               onClick={() => {
                 setIsInitialLoading(true)
 
-                void householdActions.fetchHouseholds().finally(() => {
+                void loadHouseholds().finally(() => {
                   setIsInitialLoading(false)
                 })
               }}>
@@ -109,7 +125,9 @@ function HouseholdsPage() {
         </Card>
       ) : null}
 
-      {!shouldShowLoadingState && !error && households.length === 0 ? (
+      {!shouldShowLoadingState &&
+      !shouldShowBlockingError &&
+      households.length === 0 ? (
         <Empty className='border'>
           <EmptyHeader>
             <EmptyMedia variant='icon'>
@@ -128,7 +146,7 @@ function HouseholdsPage() {
         </Empty>
       ) : null}
 
-      {!shouldShowLoadingState && !error && households.length > 0 ? (
+      {!shouldShowLoadingState && households.length > 0 ? (
         <div className='grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3'>
           {households.map((household) => (
             <HouseholdSummaryCard key={household.id} household={household} />
