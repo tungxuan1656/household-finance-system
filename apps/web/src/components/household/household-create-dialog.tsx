@@ -56,7 +56,7 @@ export const HouseholdCreateDialog = ({
           {t('app.households.actions.create')}
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-md' showCloseButton={false}>
+      <DialogContent className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle>{t('app.households.create.title')}</DialogTitle>
           <DialogDescription>
@@ -100,7 +100,7 @@ export const HouseholdCreateDialog = ({
               )}
             />
           </FieldGroup>
-          <DialogFooter>
+          <DialogFooter className='flex-col sm:flex-row'>
             <Button
               type='button'
               variant='ghost'

@@ -42,8 +42,13 @@ const getCurrentPeriod = () => {
   return `${year}-${month}`
 }
 
+const getLocale = () =>
+  typeof navigator !== 'undefined' && navigator.language
+    ? navigator.language
+    : 'vi-VN'
+
 const formatCurrency = (amountMinor: number, currencyCode: string) =>
-  new Intl.NumberFormat('vi-VN', {
+  new Intl.NumberFormat(getLocale(), {
     style: 'currency',
     currency: currencyCode,
   }).format(amountMinor / 100)
@@ -74,23 +79,28 @@ export const HouseholdSummaryCard = ({
         <div className='flex items-start justify-between gap-2'>
           <div className='flex flex-col gap-1'>
             <CardTitle>{household.name}</CardTitle>
-            <CardDescription>
-              {household.defaultCurrencyCode} · {household.timezone}
+            <CardDescription className='flex flex-wrap gap-x-2 gap-y-1 text-xs'>
+              <span>{household.defaultCurrencyCode}</span>
+              <span aria-hidden='true'>·</span>
+              <span>{household.timezone}</span>
+              {memberQuery.data ? (
+                <>
+                  <span aria-hidden='true'>·</span>
+                  <span>
+                    {t('app.householdDetail.memberCount', {
+                      count: memberQuery.data.items.length,
+                    })}
+                  </span>
+                </>
+              ) : null}
             </CardDescription>
-            {memberQuery.data ? (
-              <CardDescription>
-                {t('app.householdDetail.memberCount', {
-                  count: memberQuery.data.items.length,
-                })}
-              </CardDescription>
-            ) : null}
           </div>
           <Badge variant='secondary'>
             {getHouseholdRoleLabel(household.role)}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className='flex flex-col gap-2'>
+      <CardContent className='flex flex-col gap-3'>
         <p className='text-sm text-muted-foreground'>
           {getHouseholdVisibilityLabel(household.defaultVisibility)}
         </p>
@@ -103,7 +113,7 @@ export const HouseholdSummaryCard = ({
           </p>
         ) : null}
         {analyticsQuery.data ? (
-          <p className='text-sm text-muted-foreground'>
+          <p className='text-sm font-medium text-foreground'>
             {t('groups.card.spentLabel')} ·{' '}
             {formatCurrency(
               analyticsQuery.data.totalSpendMinor,

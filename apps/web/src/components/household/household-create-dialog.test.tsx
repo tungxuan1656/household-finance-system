@@ -38,4 +38,31 @@ describe('HouseholdCreateDialog', () => {
 
     expect(input).toHaveValue('Gia đình thử nghiệm')
   })
+
+  it('keeps the close button available and keeps the primary action last in a non-reversed footer', () => {
+    render(
+      <HouseholdCreateDialog
+        isOpen
+        isSubmitting={false}
+        onOpenChange={onOpenChangeMock}
+        onSubmit={vi.fn(async () => true)}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: /close/i })).toBeInTheDocument()
+
+    const footer = screen
+      .getByRole('button', { name: t('app.households.actions.create') })
+      .closest('[data-slot="dialog-footer"]')
+
+    const buttons = footer?.querySelectorAll('button')
+
+    expect(footer).toHaveClass('flex-col')
+
+    expect(footer).not.toHaveClass('flex-col-reverse')
+
+    expect(buttons?.[buttons.length - 1]).toHaveTextContent(
+      t('app.households.actions.create'),
+    )
+  })
 })

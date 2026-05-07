@@ -27,12 +27,29 @@ function HouseholdsPage() {
   const isLoading = useHouseholdStore.use.isLoading()
   const error = useHouseholdStore.use.error()
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+
+  const shouldShowLoadingState =
+    isInitialLoading && isLoading && households.length === 0
 
   useEffect(() => {
-    void householdActions.fetchHouseholds()
+    let isMounted = true
+
+    void householdActions.fetchHouseholds().finally(() => {
+      if (isMounted) {
+        setIsInitialLoading(false)
+      }
+    })
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const onSubmit = async (values: CreateHouseholdFormValues) => {
+    setIsCreating(true)
+
     try {
       await householdActions.createHousehold(values)
 
@@ -44,6 +61,8 @@ function HouseholdsPage() {
       toast.error(t('app.households.feedback.createFailed'))
 
       return false
+    } finally {
+      setIsCreating(false)
     }
   }
 
@@ -60,31 +79,37 @@ function HouseholdsPage() {
         </div>
         <HouseholdCreateDialog
           isOpen={isCreateDialogOpen}
-          isSubmitting={isLoading}
+          isSubmitting={isCreating}
           onOpenChange={setIsCreateDialogOpen}
           onSubmit={onSubmit}
         />
       </header>
 
-      {isLoading ? <HouseholdsLoadingState /> : null}
+      {shouldShowLoadingState ? <HouseholdsLoadingState /> : null}
 
-      {!isLoading && error ? (
+      {!shouldShowLoadingState && error ? (
         <Card>
-          <CardContent className='flex flex-wrap items-center justify-between gap-2 pt-1'>
+          <CardContent className='flex flex-wrap items-center justify-between gap-2 pt-4'>
             <p className='text-sm text-destructive' role='alert'>
               {error}
             </p>
             <Button
               type='button'
               variant='outline'
-              onClick={() => void householdActions.fetchHouseholds()}>
+              onClick={() => {
+                setIsInitialLoading(true)
+
+                void householdActions.fetchHouseholds().finally(() => {
+                  setIsInitialLoading(false)
+                })
+              }}>
               {t('app.households.actions.retry')}
             </Button>
           </CardContent>
         </Card>
       ) : null}
 
-      {!isLoading && !error && households.length === 0 ? (
+      {!shouldShowLoadingState && !error && households.length === 0 ? (
         <Empty className='border'>
           <EmptyHeader>
             <EmptyMedia variant='icon'>
@@ -103,7 +128,7 @@ function HouseholdsPage() {
         </Empty>
       ) : null}
 
-      {!isLoading && !error && households.length > 0 ? (
+      {!shouldShowLoadingState && !error && households.length > 0 ? (
         <div className='grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3'>
           {households.map((household) => (
             <HouseholdSummaryCard key={household.id} household={household} />
