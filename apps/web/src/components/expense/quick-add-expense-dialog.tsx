@@ -152,6 +152,8 @@ export function QuickAddExpenseDialog({
     suppressCreateErrorToast: true,
   })
 
+  const isSaving = isSubmitting || updateProfile.isPending
+
   const watchedHouseholdId = form.watch('householdId')
   const watchedSourceKey = form.watch('sourceKey')
   const watchedCategoryKey = form.watch('categoryKey')
@@ -337,7 +339,7 @@ export function QuickAddExpenseDialog({
               {submitError.kind === 'permission' ? (
                 <Button
                   className='mt-3'
-                  disabled={isSubmitting}
+                  disabled={isSaving}
                   type='button'
                   variant='outline'
                   onClick={handleSaveAsPrivate}>
@@ -398,7 +400,7 @@ export function QuickAddExpenseDialog({
               onClick={() => handleOpenChange(false)}>
               {t('common.actions.cancel')}
             </Button>
-            <Button disabled={isSubmitting} type='submit'>
+            <Button disabled={isSaving} type='submit'>
               {t('expense.quickAdd.submit')}
             </Button>
           </div>
