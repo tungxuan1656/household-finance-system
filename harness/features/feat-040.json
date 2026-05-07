@@ -1,0 +1,16 @@
+{
+  "id": "feat-040",
+  "name": "Harness audit alignment & stale feature record cleanup",
+  "description": "Align the harness with the actual current state of the product after the broad feature implementation wave. This follow-up is intentionally documentation-and-governance focused: refresh stale feature descriptions whose historical wording no longer matches the implemented product, normalize status vocabulary across feature records and the feature index, and tighten evidence quality so 'done' means the harness accurately describes what exists today rather than only what existed at the moment an older feature first landed. The goal is to make the harness trustworthy again as an operational roadmap before deeper product-gap work continues.",
+  "dependencies": [
+    "feat-011",
+    "feat-013",
+    "feat-014",
+    "feat-029",
+    "feat-030",
+    "feat-037"
+  ],
+  "status": "done",
+  "evidence": "Completed on 2026-05-07 by realigning stale harness records flagged during the repository audit. `feat-011` was updated so its description no longer implies missing invitation/member APIs after later completed household follow-ups; `feat-029` was normalized from `completed` to `done` and given concrete evidence; `feat-037` evidence was strengthened from a vague one-line claim to a verification-backed summary. Planning continuity was kept in sync through the active ExecPlan, `docs/exec-plans/index.md`, and `harness/progress.md`, with final verification via `./init.sh`.",
+  "updated_at": "2026-05-07"
+}

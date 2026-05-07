@@ -1,5 +1,27 @@
 # Progress Log
 
+## 2026-05-07 — Completed feat-040 harness audit alignment & stale record cleanup
+
+- Summary: Completed the tooling/docs-only cleanup planned in `feat-040` to realign harness truth with the implemented product. Refreshed `feat-011` so it no longer implies invitation/member APIs are still missing after later completed household follow-ups, normalized `feat-029` from `completed` to the repository-wide `done` vocabulary, strengthened stale/weak evidence for `feat-029` and `feat-037`, and marked `feat-040` done with explicit cleanup evidence. No product code was changed.
+- Files changed: harness/features/feat-011.json, harness/features/feat-029.json, harness/features/feat-037.json, harness/features/feat-040.json, harness/feature_index.json, harness/progress.md
+- Verification: `./init.sh`
+- Blockers: none
+- Next steps: proceed to the next roadmap feature (`feat-041`) or another requested product-gap follow-up from the post-audit batch.
+
+## 2026-05-07 — Created active ExecPlan for feat-040 harness audit alignment & stale record cleanup
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-040` covering tooling/docs-only harness cleanup after the repository audit. Scope: refresh stale feature descriptions whose wording no longer matches implemented product reality, normalize completed-status vocabulary across touched harness records, and strengthen weak evidence fields using already-completed ExecPlans and progress entries as canonical proof. Explicitly out of scope: any frontend/backend product behavior changes, broad feature reordering, or speculative harness redesign.
+- Files changed: docs/exec-plans/plans/2026-05-07-feat-040-harness-audit-alignment-and-stale-record-cleanup.md, docs/exec-plans/index.md, harness/progress.md
+- Blockers: open implementation choice on whether `feat-040` should only touch the audit-named stale records (`feat-011`, `feat-029`, `feat-037`) or may opportunistically strengthen additional weak evidence strings discovered during execution; plan recommends staying surgical unless new drift is directly proven.
+- Next steps: execute the audit-to-evidence pass first, then update touched harness records/status semantics, run `./init.sh`, and capture the resulting proof before marking `feat-040` done.
+
+## 2026-05-07 — Added post-audit gap-closure feature batch (feat-040 → feat-045)
+- Who: Orchestrator
+- Summary: Reviewed the implemented product surface against harness records and product-spec intent, then added a new ordered batch of follow-up harness features to close the remaining gaps from easiest to hardest. The new roadmap starts with harness/governance cleanup (`feat-040`), then moves through settings/profile expansion (`feat-041`), household overview enrichment (`feat-042`), expense filter surface expansion (`feat-043`), analytics export and hardening (`feat-044`), and finally a unified home dashboard rebuild (`feat-045`). Each feature description was written to capture product state, direction, and solution intent at a roadmap level rather than as a file-by-file implementation checklist.
+- Files changed: harness/features/feat-040.json, harness/features/feat-041.json, harness/features/feat-042.json, harness/features/feat-043.json, harness/features/feat-044.json, harness/features/feat-045.json, harness/feature_index.json, harness/progress.md
+- Blockers: none.
+- Next steps: execute `feat-040` first to realign stale harness records and status semantics before starting product-surface follow-up implementation work.
+
 ## 2026-05-06 — Completed feat-025: Quick-add smart defaults
 - Who: Orchestrator
 - Summary: Implemented the fullstack `feat-025` quick-add smart-default follow-up. Backend: added migration `0007_user_quick_add_last_source.sql`, extended `/api/v1/users/me` GET/PATCH profile contract with additive `quickAddLastSourceKey`, and updated repository/handler coverage so durable last-used-source preference persists per authenticated user. Frontend: replaced session-only quick-add source restore with profile-backed persistence, added recent-expense query reuse for deterministic category prefilling, preserved smart defaults after submit reset, and added focused regression tests for profile restore, profile persistence, source-reactive heuristic updates, and post-submit default retention. Offline/no-internet capture remains explicitly unsupported.

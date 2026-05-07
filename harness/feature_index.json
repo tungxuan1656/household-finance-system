@@ -121,6 +121,36 @@
       "status": "done"
     },
     {
+      "id": "feat-040",
+      "name": "Harness audit alignment & stale feature record cleanup",
+      "status": "done"
+    },
+    {
+      "id": "feat-041",
+      "name": "Profile/settings hub expansion for membership overview and user preferences",
+      "status": "pending"
+    },
+    {
+      "id": "feat-042",
+      "name": "Household overview enrichment and actionable list summaries",
+      "status": "pending"
+    },
+    {
+      "id": "feat-043",
+      "name": "Expense filter surface expansion to match backend querying capabilities",
+      "status": "pending"
+    },
+    {
+      "id": "feat-044",
+      "name": "Analytics export path and product hardening follow-up",
+      "status": "pending"
+    },
+    {
+      "id": "feat-045",
+      "name": "Home overview dashboard unification across spending, budgets, and household activity",
+      "status": "pending"
+    },
+    {
       "id": "feat-013",
       "name": "Household invitations",
       "status": "done"

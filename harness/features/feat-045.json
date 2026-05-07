@@ -1,0 +1,18 @@
+{
+  "id": "feat-045",
+  "name": "Home overview dashboard unification across spending, budgets, and household activity",
+  "description": "Rebuild the current lightweight home/overview page into the real top-level dashboard of the application. This is the broadest and highest-impact gap-closure feature because it needs to unify information that already exists across expenses, budgets, analytics, onboarding, and household management into one coherent first screen. The target outcome is a dashboard that helps users understand current financial state, take the next obvious action quickly, and navigate household context without hunting across separate pages. This work should stay intentionally integrative: reuse existing domain surfaces where possible, but raise the quality of the app's primary entry experience to match the maturity of the underlying feature set.",
+  "dependencies": [
+    "feat-024",
+    "feat-027",
+    "feat-028",
+    "feat-029",
+    "feat-030",
+    "feat-042",
+    "feat-043",
+    "feat-044"
+  ],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-05-07"
+}

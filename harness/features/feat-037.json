@@ -4,6 +4,6 @@
   "description": "Revamp profile settings layout and integrate Cloudinary upload flow.",
   "dependencies": ["feat-010", "feat-036"],
   "status": "done",
-  "evidence": "profile-settings-page.tsx refactored and uses Cloudinary",
-  "updated_at": "2026-04-25"
+  "evidence": "Completed on 2026-04-25 and recorded in progress with commit evidence for the profile settings UI refresh and Cloudinary avatar migration. `profile-settings-page.tsx` was redesigned into a more polished layout, i18n locale copy was updated, and avatar upload now uses the signed Cloudinary flow established by `feat-036`. Verification captured in progress includes lint cleanup plus `pnpm --filter @app/web lint`, `pnpm --filter @app/web typecheck`, and `./init.sh` passing.",
+  "updated_at": "2026-05-07"
 }
