@@ -22,6 +22,7 @@ describe('Worker integration: auth/profile scenario', () => {
       path: '/api/v1/users/me',
       body: {
         displayName: 'Scenario Auth Profile',
+        quickAddLastSourceKey: 'cash',
       },
     })
 
@@ -32,6 +33,7 @@ describe('Worker integration: auth/profile scenario', () => {
         email: string | null
         displayName: string | null
         avatarUrl: string | null
+        quickAddLastSourceKey: string | null
       }>
     >(updateResponse)
 
@@ -47,19 +49,24 @@ describe('Worker integration: auth/profile scenario', () => {
         email: string | null
         displayName: string | null
         avatarUrl: string | null
+        quickAddLastSourceKey: string | null
       }>
     >(readResponse)
 
     const storedUser = await env.DB.prepare(
-      `SELECT display_name
+      `SELECT display_name, quick_add_last_source_key
        FROM users
        WHERE id = ?`,
     )
       .bind(session.user.id)
-      .first<{ display_name: string | null }>()
+      .first<{
+        display_name: string | null
+        quick_add_last_source_key: string | null
+      }>()
 
     expect(updateResponse.status).toBe(200)
     expect(updatePayload.data.displayName).toBe('Scenario Auth Profile')
+    expect(updatePayload.data.quickAddLastSourceKey).toBe('cash')
     expect(readResponse.status).toBe(200)
     expect(typeof readPayload.data.createdAt).toBe('number')
     expect(readPayload.data).toEqual({
@@ -68,9 +75,11 @@ describe('Worker integration: auth/profile scenario', () => {
       email: 'user-scenario-auth-profile@example.com',
       displayName: 'Scenario Auth Profile',
       avatarUrl: null,
+      quickAddLastSourceKey: 'cash',
     })
     expect(storedUser).toEqual({
       display_name: 'Scenario Auth Profile',
+      quick_add_last_source_key: 'cash',
     })
   })
 })

@@ -3,7 +3,7 @@
   "name": "Quick-add smart defaults",
   "description": "POST-MVP — extend quick-add with smart category defaults via recent-usage heuristics and per-user last-used-source persistence in user preferences. Offline queueing was removed from this feature because the product does not support no-internet flows. Implement after feat-024 is stable in production. Per docs/product-specs/quick-add-experience.md.",
   "dependencies": ["feat-024", "feat-021"],
-  "status": "in_progress",
-  "evidence": "",
+  "status": "done",
+  "evidence": "Backend profile persistence + web quick-add heuristic and regression coverage completed on 2026-05-06; verification: pnpm --filter worker test -- --run test/integration/core.spec.ts test/integration/scenario-auth-profile.spec.ts test/integration/media-profile.spec.ts test/unit/dto-profile.spec.ts test/unit/user-repository.spec.ts, pnpm --filter web test -- --run src/components/expense/quick-add-expense-dialog.test.tsx, pnpm --filter web typecheck, pnpm --filter web lint, ./init.sh",
   "updated_at": "2026-05-06"
 }

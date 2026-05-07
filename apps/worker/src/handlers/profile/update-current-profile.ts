@@ -15,6 +15,7 @@ export const updateCurrentProfile = async (
     {
       displayName: input.displayName,
       avatarUrl: input.avatarUrl,
+      quickAddLastSourceKey: input.quickAddLastSourceKey,
     },
     locale,
   )
@@ -25,5 +26,6 @@ export const updateCurrentProfile = async (
     email: user.primaryEmail,
     displayName: user.displayName,
     avatarUrl: user.avatarUrl,
+    quickAddLastSourceKey: user.quickAddLastSourceKey,
   }
 }

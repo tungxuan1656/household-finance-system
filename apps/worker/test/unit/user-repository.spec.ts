@@ -11,6 +11,7 @@ type UserRow = {
   display_name: string | null
   primary_email: string | null
   avatar_url: string | null
+  quick_add_last_source_key?: string | null
 }
 
 type AuthIdentityRow = {
@@ -245,7 +246,7 @@ class FakeD1Database {
     }
 
     if (
-      /^SELECT\s+id,\s*created_at,\s*display_name,\s*primary_email,\s*avatar_url\s+FROM\s+users/i.test(
+      /^SELECT\s+id,\s*created_at,\s*display_name,\s*primary_email,\s*avatar_url(?:,\s*quick_add_last_source_key)?\s+FROM\s+users/i.test(
         sql,
       )
     ) {
@@ -368,6 +369,7 @@ describe('user repository', () => {
       display_name: 'Original Winner',
       primary_email: 'winner@example.com',
       avatar_url: null,
+      quick_add_last_source_key: null,
     })
 
     const createdUser = await upsertUserByFirebaseIdentity(
@@ -386,6 +388,7 @@ describe('user repository', () => {
       displayName: 'New Name',
       primaryEmail: 'new@example.com',
       avatarUrl: 'https://example.com/avatar.png',
+      quickAddLastSourceKey: null,
     })
     expect(db.getUserCount()).toBe(1)
     expect(db.getAuthIdentityCount()).toBe(1)
@@ -395,6 +398,7 @@ describe('user repository', () => {
       display_name: 'New Name',
       primary_email: 'new@example.com',
       avatar_url: 'https://example.com/avatar.png',
+      quick_add_last_source_key: null,
     })
   })
 

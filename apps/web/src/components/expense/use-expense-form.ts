@@ -133,7 +133,7 @@ export function useExpenseForm({
 
       createExpense.mutate(payload, {
         onSuccess: (expense) => {
-          form.reset(buildDefaultValues())
+          form.reset(buildDefaultValues(initialValues))
           onSuccess?.(expense, values)
         },
         onError: (error) => {
@@ -149,6 +149,7 @@ export function useExpenseForm({
       createExpense,
       expenseId,
       form,
+      initialValues,
       mode,
       onError,
       onSuccess,

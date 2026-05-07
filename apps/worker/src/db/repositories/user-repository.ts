@@ -1,3 +1,4 @@
+import type { ReferenceSourceKey } from '@/contracts/reference-data'
 import { notFound } from '@/lib/errors'
 import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import { newId } from '@/utils/id'
@@ -8,6 +9,7 @@ export interface StoredUser {
   displayName: string | null
   primaryEmail: string | null
   avatarUrl: string | null
+  quickAddLastSourceKey: ReferenceSourceKey | null
 }
 
 interface FirebaseIdentityInput {
@@ -23,12 +25,14 @@ const toStoredUser = (row: {
   display_name: string | null
   primary_email: string | null
   avatar_url: string | null
+  quick_add_last_source_key: ReferenceSourceKey | null
 }): StoredUser => ({
   createdAt: row.created_at,
   id: row.id,
   displayName: row.display_name,
   primaryEmail: row.primary_email,
   avatarUrl: row.avatar_url,
+  quickAddLastSourceKey: row.quick_add_last_source_key,
 })
 
 const findIdentityUserId = async (
@@ -68,7 +72,7 @@ export const findUserById = async (
 ): Promise<StoredUser | null> => {
   const user = await db
     .prepare(
-      `SELECT id, created_at, display_name, primary_email, avatar_url
+      `SELECT id, created_at, display_name, primary_email, avatar_url, quick_add_last_source_key
        FROM users
        WHERE id = ?
        LIMIT 1`,
@@ -80,6 +84,7 @@ export const findUserById = async (
       display_name: string | null
       primary_email: string | null
       avatar_url: string | null
+      quick_add_last_source_key: ReferenceSourceKey | null
     }>()
 
   return user ? toStoredUser(user) : null
@@ -88,6 +93,7 @@ export const findUserById = async (
 export interface UpdateUserProfileInput {
   displayName?: string | null
   avatarUrl?: string | null
+  quickAddLastSourceKey?: ReferenceSourceKey | null
 }
 
 export const updateUserProfile = async (
@@ -99,6 +105,10 @@ export const updateUserProfile = async (
   const displayName =
     input.displayName === undefined ? undefined : input.displayName
   const avatarUrl = input.avatarUrl === undefined ? undefined : input.avatarUrl
+  const quickAddLastSourceKey =
+    input.quickAddLastSourceKey === undefined
+      ? undefined
+      : input.quickAddLastSourceKey
 
   await db
     .prepare(
@@ -111,14 +121,20 @@ export const updateUserProfile = async (
              WHEN ?3 THEN ?4
              ELSE avatar_url
            END,
-           updated_at = ?
-       WHERE id = ?`,
+           quick_add_last_source_key = CASE
+             WHEN ?5 THEN ?6
+             ELSE quick_add_last_source_key
+           END,
+           updated_at = ?7
+        WHERE id = ?`,
     )
     .bind(
       displayName !== undefined ? 1 : 0,
       displayName ?? null,
       avatarUrl !== undefined ? 1 : 0,
       avatarUrl ?? null,
+      quickAddLastSourceKey !== undefined ? 1 : 0,
+      quickAddLastSourceKey ?? null,
       Date.now(),
       userId,
     )

@@ -8,16 +8,44 @@ import { QuickAddExpenseDialog } from '@/components/expense/quick-add-expense-di
 const {
   createMutateMock,
   deleteMutateMock,
+  updateProfileMutateMock,
   toastSuccessMock,
   toastErrorMock,
   quickAddMetricSpy,
 } = vi.hoisted(() => ({
   createMutateMock: vi.fn(),
   deleteMutateMock: vi.fn(),
+  updateProfileMutateMock: vi.fn(),
   toastSuccessMock: vi.fn(),
   toastErrorMock: vi.fn(),
   quickAddMetricSpy: vi.fn(),
 }))
+
+let currentProfile = {
+  id: 'user-1',
+  displayName: 'Owner',
+  email: 'owner@example.com',
+  avatarUrl: null,
+  quickAddLastSourceKey: null as 'cash' | 'bank-transfer' | null,
+  createdAt: 1,
+}
+
+let recentExpenses = [] as Array<{
+  id: string
+  amountMinor: number
+  currencyCode: string
+  categoryKey: 'food'
+  sourceKey: 'cash' | 'bank-transfer'
+  title: string
+  occurredAt: number
+  note: string | null
+  visibility: 'private' | 'household'
+  householdId: string | null
+  payerUserId: string | null
+  createdByUserId: string
+  createdAt: number
+  updatedAt: number
+}>
 
 vi.mock('sonner', () => ({
   toast: { success: toastSuccessMock, error: toastErrorMock },
@@ -29,13 +57,11 @@ vi.mock('@/lib/i18n/t', () => ({
 
 vi.mock('@/hooks/api/use-profile', () => ({
   useCurrentUserProfileQuery: () => ({
-    data: {
-      id: 'user-1',
-      displayName: 'Owner',
-      email: 'owner@example.com',
-      avatarUrl: null,
-      createdAt: Date.now(),
-    },
+    data: currentProfile,
+  }),
+  useUpdateCurrentUserProfileMutation: () => ({
+    isPending: false,
+    mutate: updateProfileMutateMock,
   }),
 }))
 
@@ -51,6 +77,12 @@ vi.mock('@/hooks/api/use-expense', () => ({
   useUpdateExpenseMutation: () => ({
     isPending: false,
     mutate: vi.fn(),
+  }),
+  useRecentQuickAddExpensesQuery: () => ({
+    data: {
+      items: recentExpenses,
+      nextCursor: null,
+    },
   }),
 }))
 
@@ -185,9 +217,26 @@ describe('QuickAddExpenseDialog', () => {
   beforeEach(() => {
     createMutateMock.mockReset()
     deleteMutateMock.mockReset()
+    updateProfileMutateMock.mockReset()
+
+    updateProfileMutateMock.mockImplementation((_payload, options) => {
+      options?.onSettled?.()
+    })
+
     toastSuccessMock.mockReset()
     toastErrorMock.mockReset()
     quickAddMetricSpy.mockReset()
+
+    currentProfile = {
+      id: 'user-1',
+      displayName: 'Owner',
+      email: 'owner@example.com',
+      avatarUrl: null,
+      quickAddLastSourceKey: null,
+      createdAt: 1,
+    }
+
+    recentExpenses = []
     window.localStorage.clear()
     window.sessionStorage.clear()
   })
@@ -568,16 +617,161 @@ describe('QuickAddExpenseDialog', () => {
     )
   })
 
-  it('restores the last used source from session storage only', () => {
-    window.sessionStorage.setItem(
-      'expense-quick-add-last-source',
-      'bank-transfer',
-    )
+  it('restores the last used source from profile preference', () => {
+    currentProfile.quickAddLastSourceKey = 'bank-transfer'
+
+    window.sessionStorage.setItem('expense-quick-add-last-source', 'cash')
 
     render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
 
     expect(screen.getByLabelText('quick-add-source')).toHaveValue(
       'bank-transfer',
     )
+  })
+
+  it('persists the last used source to profile after create success', async () => {
+    const user = userEvent.setup()
+
+    createMutateMock.mockImplementation((_payload, options) => {
+      options.onSuccess({ id: 'expense-1' })
+    })
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    await user.type(screen.getByLabelText('expense.amount'), '10000')
+    await user.selectOptions(screen.getByLabelText('quick-add-source'), 'cash')
+
+    await user.selectOptions(
+      screen.getByLabelText('quick-add-category'),
+      'food',
+    )
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.submit' }),
+    )
+
+    expect(updateProfileMutateMock).toHaveBeenCalledWith(
+      {
+        quickAddLastSourceKey: 'cash',
+      },
+      expect.any(Object),
+    )
+  })
+
+  it('prefills category from most recent expense with matching source', () => {
+    recentExpenses = [
+      {
+        id: 'expense-1',
+        amountMinor: 10000,
+        categoryKey: 'food',
+        createdAt: 10,
+        createdByUserId: 'user-1',
+        currencyCode: 'VND',
+        householdId: null,
+        note: null,
+        occurredAt: 10,
+        payerUserId: null,
+        sourceKey: 'bank-transfer',
+        title: 'Lunch',
+        updatedAt: 10,
+        visibility: 'private',
+      },
+    ]
+
+    currentProfile.quickAddLastSourceKey = 'bank-transfer'
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    expect(screen.getByLabelText('quick-add-category')).toHaveValue('food')
+  })
+
+  it('updates category heuristic when source changes and category is empty', async () => {
+    const user = userEvent.setup()
+
+    recentExpenses = [
+      {
+        id: 'expense-1',
+        amountMinor: 10000,
+        categoryKey: 'food',
+        createdAt: 20,
+        createdByUserId: 'user-1',
+        currencyCode: 'VND',
+        householdId: null,
+        note: null,
+        occurredAt: 20,
+        payerUserId: null,
+        sourceKey: 'cash',
+        title: 'Lunch',
+        updatedAt: 20,
+        visibility: 'private',
+      },
+      {
+        id: 'expense-2',
+        amountMinor: 20000,
+        categoryKey: 'food',
+        createdAt: 10,
+        createdByUserId: 'user-1',
+        currencyCode: 'VND',
+        householdId: null,
+        note: null,
+        occurredAt: 10,
+        payerUserId: null,
+        sourceKey: 'bank-transfer',
+        title: 'Dinner',
+        updatedAt: 10,
+        visibility: 'private',
+      },
+    ]
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    const categorySelect = screen.getByLabelText('quick-add-category')
+    await user.selectOptions(categorySelect, '')
+    await user.selectOptions(screen.getByLabelText('quick-add-source'), 'cash')
+
+    expect(categorySelect).toHaveValue('food')
+  })
+
+  it('keeps smart defaults after successful submit reset', async () => {
+    const user = userEvent.setup()
+
+    currentProfile.quickAddLastSourceKey = 'bank-transfer'
+
+    recentExpenses = [
+      {
+        id: 'expense-1',
+        amountMinor: 10000,
+        categoryKey: 'food',
+        createdAt: 10,
+        createdByUserId: 'user-1',
+        currencyCode: 'VND',
+        householdId: null,
+        note: null,
+        occurredAt: 10,
+        payerUserId: null,
+        sourceKey: 'bank-transfer',
+        title: 'Lunch',
+        updatedAt: 10,
+        visibility: 'private',
+      },
+    ]
+
+    createMutateMock.mockImplementation((_payload, options) => {
+      options.onSuccess({ id: 'expense-1' })
+    })
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    await user.type(screen.getByLabelText('expense.amount'), '10000')
+
+    await user.click(
+      screen.getByRole('button', { name: 'expense.quickAdd.submit' }),
+    )
+
+    expect(screen.getByLabelText('quick-add-source')).toHaveValue(
+      'bank-transfer',
+    )
+
+    expect(screen.getByLabelText('quick-add-category')).toHaveValue('food')
   })
 })
