@@ -66,6 +66,7 @@ Out of scope for this plan:
 - User-facing text must remain fully i18n-backed; no hardcoded labels may be introduced.
 - The implementation must follow the repository’s orchestrator-first view/component split and shadcn composition rules.
 - Any per-household summary shown in the overview must be derived from existing supported APIs and degrade gracefully when one supporting query fails.
+- UI/UX quality is part of the feature outcome, not a polish-only follow-up: the enriched overview must improve hierarchy, scanability, responsiveness, and accessibility while staying within the existing shadcn-first design system.
 - No new dependencies may be introduced unless implementation proves an existing project dependency cannot satisfy the UI composition need; any new dependency must be justified in the plan before adoption.
 - The implementation must add or update automated tests for the enriched `/households` states because the current page is lightweight and under-covered.
 
@@ -75,8 +76,9 @@ Out of scope for this plan:
 - [x] 2026-05-07 00:00 UTC — Mapped the current household overview surface, related detail routes, and reusable household/analytics/budget/expense data sources. Owner: Orchestrator.
 - [x] 2026-05-07 00:00 UTC — Locked scope to a frontend-first `/households` enrichment plan that composes existing APIs rather than adding new backend household summary contracts in the first pass. Owner: Orchestrator.
 - [x] 2026-05-07 00:00 UTC — Created and registered the active ExecPlan for `feat-042`. Owner: Orchestrator.
-- [ ] 2026-05-07 00:00 UTC — Define the exact summary contract rendered on each household card (member count, budget signal, recent spend/activity, and quick actions) using only currently supported data. Owner: Implementation agent. Status: current step.
-- [ ] 2026-05-07 00:00 UTC — Refactor `/households` into a thin orchestrator plus feature-bounded overview components with explicit loading, partial-error, empty, and success states. Owner: Implementation agent.
+- [x] 2026-05-07 00:00 UTC — Reviewed current household frontend surfaces against UI/UX guidance and confirmed that the active plan must explicitly cover hierarchy, skeleton loading, responsive card layout, localized role/status labels, and accessible error/action treatment. Owner: Orchestrator.
+- [ ] 2026-05-07 00:00 UTC — Define the exact summary contract and UI hierarchy rendered on each household card (member count, budget signal, recent spend/activity, localized status labels, and quick actions) using only currently supported data. Owner: Implementation agent. Status: current step.
+- [ ] 2026-05-07 00:00 UTC — Refactor `/households` into a thin orchestrator plus feature-bounded overview components with improved UI/UX, explicit loading, partial-error, empty, and success states. Owner: Implementation agent.
 - [ ] 2026-05-07 00:00 UTC — Add or update focused tests for multi-household rendering, no-household empty state, summary data states, action visibility, and retry/error handling. Owner: Implementation agent.
 - [ ] 2026-05-07 00:00 UTC — Run frontend verification plus `./init.sh`, then update harness evidence and move the plan to Completed. Owner: Implementation agent.
 
@@ -86,6 +88,7 @@ Out of scope for this plan:
 - The current households overview is built on a Zustand async store, while several reusable summary signals already live behind React Query hooks in other domains. The implementation should prefer focused composition over a broad store-vs-query rewrite.
 - Current `HouseholdDTO` list items are intentionally thin and do not include summary aggregates, so the first-pass design must be careful about N+1 client composition and should keep the card contents high-value but limited.
 - The product spec already expects a household dashboard to surface members, recent expenses, budgets, and quick actions, which means the current list page is under-delivering relative to documented intent even though deeper surfaces exist.
+- A dedicated UI/UX review confirmed the current overview under-delivers not only on data but also on hierarchy and interaction quality: it uses text-only loading, a generic non-semantic error card, a single-column flat list, inline dialog complexity, and untranslated raw role labels.
 
 ## Decision Log
 
@@ -199,6 +202,7 @@ Out of scope for this plan:
 - Companion skills recommended for implementation:
   - `test-driven-development` for adding households overview regressions before or alongside behavior changes.
   - `frontend-patterns` for React/Next component architecture decisions.
+  - `ui-ux-pro-max` for hierarchy, responsiveness, accessibility, and shadcn-friendly dashboard-card decisions during implementation review.
   - `verification-before-completion` for final evidence gathering.
   - `requesting-code-review` for implementation review before merge.
   - `security-reviewer` only if implementation expands privileged actions or exposes user-sensitive data in a new way.
@@ -209,6 +213,18 @@ Out of scope for this plan:
   - Do not silently add backend endpoints if the frontend-first composition gets awkward; log that as a follow-up decision.
   - Do not introduce a hidden active-household assumption for quick actions or sorting.
   - Do not leave `/households` with only manual QA; add direct regression coverage.
+  - Do not treat UI/UX quality as optional polish; loading, error, layout, copy, and action affordances are part of the acceptance bar for this feature.
+
+### UI/UX implementation constraints for this scope
+
+- Replace text-only list loading with shadcn `Skeleton` states that roughly preserve final card layout and reduce content jumping.
+- Replace the generic error `Card` treatment with an accessible error surface such as shadcn `Alert` or an equivalent `role="alert"` pattern.
+- Render the enriched household list as a responsive grid (`grid-cols-1`, then multi-column at larger breakpoints) so multi-household users can scan and compare cards more efficiently.
+- Mirror the stronger card hierarchy already present in `HouseholdSettingsCard`: use `CardHeader` for title/description, `CardContent` for summary signals, and `CardFooter` for quick actions.
+- Localize role/status labels instead of rendering raw backend values like `admin` and `member` directly.
+- Keep each card compact and scannable by limiting the summary to at most three high-value signals plus bounded actions.
+- Preserve visible focus states, minimum touch-target sizes, and non-color-only status communication for any budget or activity indicators.
+- Extract the create-household dialog into a feature component so the page remains an orchestrator and the interaction flow stays easier to maintain and test.
 
 ## Interfaces & Dependencies
 
@@ -242,17 +258,19 @@ Out of scope for this plan:
 
 1. **Lock the summary content to a small truthful set of signals.** Replace the current placeholder-only household cards with an explicit card contract that prioritizes operational usefulness over breadth. The planned minimum set should include the user’s role, a real member count, one budget signal (for example active budget presence or latest budget threshold status when directly discoverable), one recent expense or spend signal, and a bounded set of next actions that deep-link into existing routes.
 
-2. **Restructure `/households` into a thin orchestrator plus bounded overview components.** Keep `apps/web/src/app/(protected)/households/page.tsx` thin and move page composition into `apps/web/src/views/app/households-page.tsx`. Split the current large page file early so create dialog handling, overview summary rendering, and card-level quick actions live in feature-bounded `apps/web/src/components/household/*` components rather than accumulating in one view.
+2. **Decompose the current page before enriching it further.** Extract the inline create-household dialog into a dedicated `apps/web/src/components/household/household-create-dialog.tsx` component and introduce a bounded overview card component such as `apps/web/src/components/household/household-summary-card.tsx`. Keep `apps/web/src/views/app/households-page.tsx` under tight control as an orchestrator for state wiring, high-level layout, and composition.
 
-3. **Choose the smallest safe data composition strategy.** Start from the already-fetched household list, then layer in additive summary sources only where they are high value and maintainable. Prefer reuse of existing hooks over new API utilities, and avoid fan-out for low-value data. If the store-based household list becomes awkward to compose with React Query summary hooks, make the smallest additive state-boundary adjustment needed rather than a broad migration.
+3. **Restructure `/households` into a scan-friendly overview with explicit UI hierarchy.** Use a responsive card grid, preserve strong card structure (`CardHeader` / `CardContent` / `CardFooter`), and make quick actions easy to discover without overpowering the summary content. Reuse the detail-page card composition patterns rather than inventing a second household UI language.
 
-4. **Design for partial, empty, and retry-safe states.** The page must explicitly cover loading, empty, success, and error/retry states as required by `docs/FRONTEND.md`. For per-card summary sources, partial failures should degrade individual summaries to fallback text or subdued indicators while preserving the household card and its core actions.
+4. **Choose the smallest safe data composition strategy.** Start from the already-fetched household list, then layer in additive summary sources only where they are high value and maintainable. Prefer reuse of existing hooks over new API utilities, and avoid fan-out for low-value data. If the store-based household list becomes awkward to compose with React Query summary hooks, make the smallest additive state-boundary adjustment needed rather than a broad migration.
 
-5. **Improve discoverability of existing household operations.** Add quick actions that connect overview cards to routes users already need, such as household detail, budgets, or insights, but only when the current route and role model make those actions truthful. Do not replicate downstream settings/member-management UIs inside the overview.
+5. **Design for partial, empty, and retry-safe states.** The page must explicitly cover loading, empty, success, and error/retry states as required by `docs/FRONTEND.md`. For per-card summary sources, partial failures should degrade individual summaries to fallback text or subdued indicators while preserving the household card and its core actions.
 
-6. **Preserve create-household and multi-household safety.** Keep the existing create dialog or a bounded replacement path intact. Ensure the enriched overview remains explicit for users with multiple households and never assumes one global active household for subsequent flows.
+6. **Improve discoverability of existing household operations.** Add quick actions that connect overview cards to routes users already need, such as household detail, budgets, or insights, but only when the current route and role model make those actions truthful. Prefer `Button asChild` + `Link` for primary actions, and only consider a compact action menu if the number of truthful actions becomes too large for the card footer. Do not replicate downstream settings/member-management UIs inside the overview.
 
-7. **Localize all new copy and add direct regression coverage.** Add i18n keys for headings, card labels, fallback states, quick actions, and summary text. Add tests for one-household and multi-household rendering, no-household empty state, role/action visibility, partial summary failure behavior, and retry handling. Finish with the standard frontend verification flow and full `./init.sh`.
+7. **Preserve create-household and multi-household safety.** Keep the existing create dialog or a bounded replacement path intact. Ensure the enriched overview remains explicit for users with multiple households and never assumes one global active household for subsequent flows.
+
+8. **Localize all new copy and add direct regression coverage.** Add i18n keys for headings, card labels, localized role/status labels, fallback states, quick actions, and summary text. Add tests for one-household and multi-household rendering, no-household empty state, action visibility, responsive card behavior where practical, partial summary failure behavior, and retry handling. Finish with the standard frontend verification flow and full `./init.sh`.
 
 ## Concrete Steps (Commands)
 
@@ -295,6 +313,13 @@ Expected short outputs to compare against:
   - Initial household-list load failure renders a retry action.
   - If one additive per-household summary source fails, the page still renders the household card and degrades only the affected sub-section.
   - Create-household submission success and failure behavior remain intact after page restructuring.
+- UI/UX acceptance:
+  - Loading state uses shadcn `Skeleton` components or an equivalent layout-preserving placeholder, not a text-only loading card.
+  - The placeholder member-count experience is fully removed; the card shows a real value, a loading placeholder, or a graceful fallback only.
+  - List-level errors render with an accessible alert treatment (`Alert` or equivalent `role="alert"` pattern) and keep retry obvious.
+  - Household cards follow clear hierarchy with header, summary content, and footer actions; quick actions are visible without overwhelming the card.
+  - The overview uses a responsive multi-column layout at larger breakpoints and remains readable without horizontal scrolling on mobile.
+  - Role and status labels are localized and do not rely on color alone to communicate meaning.
 - Unauthorized/forbidden:
   - The protected route remains protected through existing app auth gating.
   - Admin-only or member-specific action affordances must only appear when current role/data make them truthful; no fabricated privilege escalation in the overview.
@@ -330,6 +355,10 @@ Expected short outputs to compare against:
   - Mitigation: keep the overview action layer link-based and summary-focused.
 - Risk: mixed Zustand + React Query data sourcing may tempt a broad architectural rewrite.
   - Mitigation: choose the smallest additive boundary change that keeps `/households` maintainable.
+- Risk: UI improvements may drift into a broad visual redesign or add low-value decorative elements.
+  - Mitigation: keep the UI/UX bar focused on hierarchy, scanability, accessibility, responsive layout, and truthful action affordances within the current design system.
+- Risk: shared loading and error state in the current household store may produce confusing overview interactions when list loading and create-household submission overlap.
+  - Mitigation: separate list-level and dialog-level interaction handling where needed without rewriting the whole store architecture.
 
 ## Verification Path
 
@@ -343,6 +372,7 @@ Expected short outputs to compare against:
 - Should the enriched overview continue to use the Zustand household list as the primary source, or should it switch `/households` to React Query for easier composition with existing summary hooks?
 - If no active budget exists for a household, should the quick-action emphasis point to `/budgets` setup first, or should the card prioritize household detail as the canonical next step?
 - If additive summary queries create noticeable UX latency for many households, is a staged rendering pattern sufficient, or should a later backend summary contract be proposed explicitly?
+- If truthful quick actions exceed comfortable card-footer space, should the implementation keep all actions visible or collapse secondary actions into a compact shadcn `DropdownMenu`?
 
 ## Harness Integration
 
