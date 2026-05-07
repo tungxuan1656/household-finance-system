@@ -341,7 +341,7 @@
       },
       "invalidId": "Đường dẫn gia đình không hợp lệ.",
       "loading": "Đang tải chi tiết gia đình...",
-      "memberCount": "{count} thành viên",
+      "memberCount": "{{count}} thành viên",
       "memberReadOnly": "Chỉ quản trị viên mới có thể chỉnh sửa thông tin gia đình.",
       "members": {
         "actions": {

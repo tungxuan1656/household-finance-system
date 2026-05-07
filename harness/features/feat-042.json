@@ -10,7 +10,7 @@
     "feat-015b",
     "feat-027"
   ],
-  "status": "pending",
-  "evidence": "",
+  "status": "done",
+  "evidence": "Active ExecPlan: docs/exec-plans/plans/2026-05-07-feat-042-household-overview-enrichment.md; Implemented enriched `/households` overview with extracted `HouseholdCreateDialog` and `HouseholdSummaryCard`, truthful member count / budget presence / spend activity signals, localized role and visibility labels, skeleton loading, responsive grid cards, and focused regressions in apps/web/src/views/app/households-page.test.tsx plus apps/web/src/components/household/household-create-dialog.test.tsx; Verification: pnpm --filter web exec vitest run src/views/app/households-page.test.tsx src/components/household/household-create-dialog.test.tsx src/views/app/household-detail-page.test.tsx src/components/household/household-settings-card.test.tsx; pnpm --filter web typecheck; pnpm --filter web lint (passes with one pre-existing warning in apps/web/src/components/expense/category-picker.tsx)",
   "updated_at": "2026-05-07"
 }
