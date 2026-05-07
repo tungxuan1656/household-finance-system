@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-05-07 — Completed feat-040 harness audit alignment & stale record cleanup
+
+- Summary: Completed the tooling/docs-only cleanup planned in `feat-040` to realign harness truth with the implemented product. Refreshed `feat-011` so it no longer implies invitation/member APIs are still missing after later completed household follow-ups, normalized `feat-029` from `completed` to the repository-wide `done` vocabulary, strengthened stale/weak evidence for `feat-029` and `feat-037`, and marked `feat-040` done with explicit cleanup evidence. No product code was changed.
+- Files changed: harness/features/feat-011.json, harness/features/feat-029.json, harness/features/feat-037.json, harness/features/feat-040.json, harness/feature_index.json, harness/progress.md
+- Verification: `./init.sh`
+- Blockers: none
+- Next steps: proceed to the next roadmap feature (`feat-041`) or another requested product-gap follow-up from the post-audit batch.
+
 ## 2026-05-07 — Created active ExecPlan for feat-040 harness audit alignment & stale record cleanup
 - Who: Orchestrator
 - Summary: Created and registered the active ExecPlan for `feat-040` covering tooling/docs-only harness cleanup after the repository audit. Scope: refresh stale feature descriptions whose wording no longer matches implemented product reality, normalize completed-status vocabulary across touched harness records, and strengthen weak evidence fields using already-completed ExecPlans and progress entries as canonical proof. Explicitly out of scope: any frontend/backend product behavior changes, broad feature reordering, or speculative harness redesign.

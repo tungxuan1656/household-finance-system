@@ -54,10 +54,10 @@ Out of scope for this plan:
 
 - [x] 2026-05-07 00:00 UTC — Reviewed audit findings, planning docs, harness state, and related feature records (`feat-011`, `feat-029`, `feat-030`, `feat-037`, `feat-040`). Owner: Orchestrator.
 - [x] 2026-05-07 00:00 UTC — Locked scope as `tooling/docs` only with no frontend/backend implementation work. Owner: Orchestrator.
-- [ ] 2026-05-07 00:00 UTC — Register active ExecPlan and leave implementation-ready current step for `feat-040`. Owner: Orchestrator. **Current step**.
-- [ ] Audit all candidate stale harness records affected by the repository review and confirm which ones need wording, evidence, or status normalization updates.
-- [ ] Update selected harness feature files and `harness/feature_index.json` so descriptions, statuses, and evidence reflect current implemented reality.
-- [ ] Run harness verification plus full repo verification, then record evidence and mark plan/index status complete.
+- [x] 2026-05-07 00:00 UTC — Register active ExecPlan and leave implementation-ready current step for `feat-040`. Owner: Orchestrator.
+- [x] 2026-05-07 00:00 UTC — Audit candidate stale harness records affected by the repository review and confirm that `feat-011`, `feat-029`, and `feat-037` need wording/evidence/status normalization updates. Owner: Orchestrator.
+- [x] 2026-05-07 00:00 UTC — Update selected harness feature files and `harness/feature_index.json` so descriptions, statuses, and evidence reflect current implemented reality. Owner: Orchestrator.
+- [x] 2026-05-07 00:00 UTC — Run harness verification plus full repo verification, then record evidence and mark plan/index status complete. Owner: Orchestrator.
 
 ## Surprises & Discoveries
 
@@ -83,7 +83,8 @@ Out of scope for this plan:
 ## Outcomes & Retrospective
 
 - Target outcome: the harness once again acts as reliable repository truth for feature status, dependencies, and evidence, especially for areas surfaced as stale during the audit.
-- Verification target: touched feature records describe the implemented product accurately, touched statuses are semantically aligned, `docs/exec-plans/index.md` tracks this plan under Active, and full repository verification still passes.
+- Verification target: touched feature records describe the implemented product accurately, touched statuses are semantically aligned, `docs/exec-plans/index.md` tracks this plan under Completed after execution, and full repository verification still passes.
+- Completed result: `feat-011` no longer implies invitation/member APIs are missing, `feat-029` now uses `done` with concrete evidence, `feat-037` evidence now points to recorded verification, `feat-040` and `harness/feature_index.json` are marked done, and `./init.sh` passed after the docs/harness-only cleanup.
 - Expected follow-up: once `feat-040` is complete, subsequent roadmap work (`feat-041` onward) can rely on the harness without first re-auditing stale descriptions.
 
 ## Context and Orientation
