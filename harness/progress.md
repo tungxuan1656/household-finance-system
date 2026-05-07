@@ -961,3 +961,24 @@ Keep `harness/progress.md` as a short index with newest entries first to avoid l
 - Files changed: <list>
 - Blockers: <list or none>
 - Next steps: <next actions>
+
+## 2026-05-07 — UI/UX fixes for profile settings hub
+
+**Session:** fix UI/UX issues found in review of profile-settings-page.tsx
+
+**Changes:**
+- Made membership rows clickable `<Link>` elements navigating to household detail
+- Collapsed shortcut keys to only truthful `viewHousehold`; removed misleading `manageMembers`, `openHouseholdSettings`, `inviteMembers`
+- Added household name labels to shortcut groups
+- Removed `householdsError` from fetch guard to fix stale-error blocking
+- Translated household error state with retry button and `role="alert"`
+- Upgraded empty-state onboarding CTA to button-style link
+- Removed dead i18n keys (`leaveHousehold`, etc.) from `vi.json`
+- Added `memberships.errors.loadFailed` and `memberships.actions.retry` to Vietnamese locale
+- Synced `feat-041` to `done` in `harness/feature_index.json`
+
+**Files changed:** `apps/web/src/views/app/profile-settings-page.tsx`, `apps/web/src/views/app/profile-settings-page.test.tsx`, `apps/web/src/lib/i18n/locales/vi.json`, `harness/feature_index.json`, `docs/superpowers/plans/2026-05-07-profile-settings-ui-fixes.md`
+
+**Verification:** all 118 web + 346 worker tests passed; typecheck clean; lint clean; GitNexus low risk
+
+**Outcome:** feature complete.
