@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-07-feat-041-settings-hub-expansion.md](plans/2026-05-07-feat-041-settings-hub-expansion.md) - feat-041 frontend settings hub expansion: upgrade `/settings` from a profile-only form into a frontend-first account hub that preserves avatar/display-name editing, surfaces household membership context, and provides role-aware shortcuts to existing household-management flows without adding new backend preference contracts.
 - [2026-05-05-feat-029-analytics-comparisons-breakdowns.md](plans/2026-05-05-feat-029-analytics-comparisons-breakdowns.md) - feat-029 fullstack analytics comparisons & breakdowns: backend adds `GET /api/v1/analytics/comparison?period=YYYY-MM&household_id=...` for current-vs-previous month totals, category deltas, and payer attribution plus `GET /api/v1/analytics/groups?period=YYYY-MM&household_id=...` for per-group spend totals; frontend extends `/insights` with month-over-month comparison, payer attribution, and groups tab while preserving existing visibility rules and analytics overview contract.
 
 ## Completed

@@ -3,7 +3,7 @@
   "name": "Profile/settings hub expansion for membership overview and user preferences",
   "description": "Expand the current profile-only settings surface into a small but meaningful settings hub that better matches the product intent. This feature should keep the existing avatar/display-name path intact while adding the missing account-management context around household memberships, navigational shortcuts to household-specific actions, and a pragmatic MVP layer of user preferences where appropriate. The purpose is not to build a massive settings platform, but to close the gap where Settings exists in navigation yet behaves like a narrowly scoped profile form rather than a reliable user-control center.",
   "dependencies": ["feat-010", "feat-011", "feat-014", "feat-037"],
-  "status": "pending",
-  "evidence": "",
+  "status": "in_progress",
+  "evidence": "Active ExecPlan: docs/exec-plans/plans/2026-05-07-feat-041-settings-hub-expansion.md",
   "updated_at": "2026-05-07"
 }

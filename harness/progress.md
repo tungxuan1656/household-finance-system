@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-05-07 — Created active ExecPlan for feat-041 profile/settings hub expansion
+
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-041` covering a frontend-first expansion of `/settings`. Locked scope: preserve the existing avatar/display-name profile flow, add household membership overview and role-aware shortcuts to existing household-management paths, and avoid any new backend preference fields or API changes. Explicitly out of scope: a generalized settings platform, duplicated household-management screens inside Settings, and speculative new preference categories without current persistence support.
+- Files changed: docs/exec-plans/plans/2026-05-07-feat-041-settings-hub-expansion.md, docs/exec-plans/index.md, harness/features/feat-041.json, harness/feature_index.json, harness/progress.md
+- Blockers: none at planning time; implementation must stop only if an intended shortcut lacks an existing truthful route target or current household data cannot support the planned membership summary.
+- Next steps: implement the locked single-page settings hub with account summary, household membership summary, role-aware shortcuts, and preserved profile editing; add focused web tests; run `./init.sh`; and capture evidence before marking `feat-041` done.
+
 ## 2026-05-07 — Completed feat-040 harness audit alignment & stale record cleanup
 
 - Summary: Completed the tooling/docs-only cleanup planned in `feat-040` to realign harness truth with the implemented product. Refreshed `feat-011` so it no longer implies invitation/member APIs are still missing after later completed household follow-ups, normalized `feat-029` from `completed` to the repository-wide `done` vocabulary, strengthened stale/weak evidence for `feat-029` and `feat-037`, and marked `feat-040` done with explicit cleanup evidence. No product code was changed.
