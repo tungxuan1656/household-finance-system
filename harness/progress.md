@@ -1,13 +1,22 @@
 # Progress Log
 
+## 2026-05-07 — Review-fix completed for feat-041 settings hub
+
+- Who: Orchestrator
+- Summary: Applied the post-review fix pass for `feat-041` on `/settings`. Tightened household fetching so the page only hydrates memberships when the shared store is empty and not already loading or erroring, suppressed the onboarding CTA when membership loading fails, and expanded focused test coverage to cover guarded fetch behavior, household error rendering, role badges, and multi-household rendering. The settings hub remains frontend-only and still preserves the existing profile editing flow alongside account and membership context.
+- Files changed: apps/web/src/views/app/profile-settings-page.tsx, apps/web/src/views/app/profile-settings-page.test.tsx, harness/features/feat-041.json, harness/progress.md
+- Verification: `pnpm --filter web test -- --run src/views/app/profile-settings-page.test.tsx`; `pnpm --filter web typecheck`; `pnpm --filter web lint` (passes with one pre-existing warning in `apps/web/src/components/expense/category-picker.tsx`); `./init.sh`
+- Blockers: none.
+- Next steps: request one more code review on the current diff, then commit the review-fix pass if no further issues are found.
+
 ## 2026-05-07 — Implemented feat-041 settings hub first pass
 
 - Who: Orchestrator
 - Summary: Implemented the first pass of `feat-041` on `/settings` by expanding the existing profile-only view into a single long-form settings hub. The page now shows an account summary, a household membership summary with truthful role badges for every current membership, role-aware shortcut links that reuse existing household detail surfaces, and the preserved avatar/display-name profile editing section. Scope stayed frontend-only and reused the current profile React Query hooks plus household Zustand selectors without adding backend contracts.
 - Files changed: apps/web/src/views/app/profile-settings-page.tsx, apps/web/src/views/app/profile-settings-page.test.tsx, apps/web/src/lib/i18n/locales/vi.json, harness/features/feat-041.json, harness/progress.md
 - Verification: `pnpm --filter web test -- --run src/views/app/profile-settings-page.test.tsx`; `pnpm --filter web typecheck`; `pnpm --filter web lint` (passes with one pre-existing warning in `apps/web/src/components/expense/category-picker.tsx`)
-- Blockers: none for the implemented first pass; full feature completion still needs broader verification and final branch review before marking the feature done.
-- Next steps: run broader required verification (including `./init.sh` per repo workflow), review the full diff, decide whether any remaining `feat-041` scope from the ExecPlan still needs implementation, then finish the branch workflow.
+- Blockers: resolved in the later review-fix entry above.
+- Next steps: completed in the later review-fix entry above.
 
 ## 2026-05-07 — Created active ExecPlan for feat-041 profile/settings hub expansion
 

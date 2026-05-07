@@ -44,10 +44,16 @@ export const ProfileSettingsPage = () => {
   const households = useHouseholdStore.use.households()
   const householdsError = useHouseholdStore.use.error()
   const isHouseholdsLoading = useHouseholdStore.use.isLoading()
+  const shouldFetchHouseholds =
+    households.length === 0 && !isHouseholdsLoading && !householdsError
 
   useEffect(() => {
+    if (!shouldFetchHouseholds) {
+      return
+    }
+
     void householdActions.fetchHouseholds()
-  }, [])
+  }, [shouldFetchHouseholds])
 
   if (profileQuery.isLoading && !profileQuery.data) {
     return <p>{t('app.settings.profile.loading')}</p>
@@ -142,7 +148,9 @@ export const ProfileSettingsPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className='flex flex-col gap-3'>
-          {!isHouseholdsLoading && households.length === 0 ? (
+          {!isHouseholdsLoading &&
+          !householdsError &&
+          households.length === 0 ? (
             <Link
               className='text-sm underline underline-offset-4'
               href={PATHS.ONBOARDING}>

@@ -142,6 +142,12 @@ describe('ProfileSettingsPage settings hub', () => {
         name: t('app.settings.shortcuts.actions.leaveHousehold'),
       }),
     ).not.toBeInTheDocument()
+
+    expect(
+      screen.getByText(
+        t('app.householdDetail.members.invite.fields.role.options.member'),
+      ),
+    ).toBeInTheDocument()
   })
 
   it('shows admin-only shortcuts for an admin household membership', () => {
@@ -172,6 +178,12 @@ describe('ProfileSettingsPage settings hub', () => {
         name: t('app.settings.shortcuts.actions.inviteMembers'),
       }),
     ).toHaveAttribute('href', `${PATHS.HOUSEHOLDS}/household-2`)
+
+    expect(
+      screen.getByText(
+        t('app.householdDetail.members.invite.fields.role.options.admin'),
+      ),
+    ).toBeInTheDocument()
   })
 
   it('shows loading membership state without premature onboarding CTA', () => {
@@ -188,5 +200,53 @@ describe('ProfileSettingsPage settings hub', () => {
         name: t('common.actions.openOnboarding'),
       }),
     ).not.toBeInTheDocument()
+  })
+
+  it('does not refetch households when memberships are already loaded', () => {
+    householdStoreState.households = [
+      {
+        id: 'household-3',
+        name: 'Loaded Household',
+        role: 'member',
+      },
+    ]
+
+    render(<ProfileSettingsPage />)
+
+    expect(fetchHouseholds).not.toHaveBeenCalled()
+  })
+
+  it('renders household error without onboarding CTA when list loading failed', () => {
+    householdStoreState.error = 'Load households failed'
+
+    render(<ProfileSettingsPage />)
+
+    expect(screen.getByText('Load households failed')).toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('link', {
+        name: t('common.actions.openOnboarding'),
+      }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('renders every current household membership', () => {
+    householdStoreState.households = [
+      {
+        id: 'household-4',
+        name: 'Family One',
+        role: 'member',
+      },
+      {
+        id: 'household-5',
+        name: 'Family Two',
+        role: 'admin',
+      },
+    ]
+
+    render(<ProfileSettingsPage />)
+
+    expect(screen.getByText('Family One')).toBeInTheDocument()
+    expect(screen.getByText('Family Two')).toBeInTheDocument()
   })
 })
