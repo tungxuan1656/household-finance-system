@@ -427,17 +427,19 @@
       "memberships": {
         "title": "Gia đình đang tham gia",
         "description": "Tổng hợp các gia đình hiện tại và vai trò của bạn.",
+        "actions": {
+          "retry": "Thử lại"
+        },
         "empty": "Bạn chưa tham gia gia đình nào.",
+        "errors": {
+          "loadFailed": "Không thể tải danh sách gia đình. Vui lòng thử lại."
+        },
         "loading": "Đang tải thông tin gia đình..."
       },
       "shortcuts": {
         "title": "Lối tắt thao tác",
         "description": "Mở nhanh các khu vực quản lý đã có sẵn.",
         "actions": {
-          "inviteMembers": "Mời thành viên",
-          "leaveHousehold": "Rời gia đình",
-          "manageMembers": "Quản lý thành viên",
-          "openHouseholdSettings": "Mở cài đặt gia đình",
           "viewHousehold": "Xem gia đình"
         }
       },

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { PATHS } from '@/lib/constants/paths'
@@ -123,7 +123,11 @@ describe('ProfileSettingsPage settings hub', () => {
 
     render(<ProfileSettingsPage />)
 
-    expect(screen.getByText('Family One')).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', {
+        name: 'Family One',
+      }),
+    ).toHaveAttribute('href', `${PATHS.HOUSEHOLDS}/household-1`)
 
     expect(
       screen.getByRole('link', {
@@ -131,17 +135,9 @@ describe('ProfileSettingsPage settings hub', () => {
       }),
     ).toHaveAttribute('href', `${PATHS.HOUSEHOLDS}/household-1`)
 
-    expect(
-      screen.queryByRole('link', {
-        name: t('app.settings.shortcuts.actions.manageMembers'),
-      }),
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByRole('link', {
-        name: t('app.settings.shortcuts.actions.leaveHousehold'),
-      }),
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Quản lý thành viên')).not.toBeInTheDocument()
+    expect(screen.queryByText('Mở cài đặt gia đình')).not.toBeInTheDocument()
+    expect(screen.queryByText('Mời thành viên')).not.toBeInTheDocument()
 
     expect(
       screen.getByText(
@@ -163,21 +159,19 @@ describe('ProfileSettingsPage settings hub', () => {
 
     expect(
       screen.getByRole('link', {
-        name: t('app.settings.shortcuts.actions.manageMembers'),
+        name: 'Admin Family',
       }),
     ).toHaveAttribute('href', `${PATHS.HOUSEHOLDS}/household-2`)
 
     expect(
       screen.getByRole('link', {
-        name: t('app.settings.shortcuts.actions.openHouseholdSettings'),
+        name: t('app.settings.shortcuts.actions.viewHousehold'),
       }),
     ).toHaveAttribute('href', `${PATHS.HOUSEHOLDS}/household-2`)
 
-    expect(
-      screen.getByRole('link', {
-        name: t('app.settings.shortcuts.actions.inviteMembers'),
-      }),
-    ).toHaveAttribute('href', `${PATHS.HOUSEHOLDS}/household-2`)
+    expect(screen.queryByText('Quản lý thành viên')).not.toBeInTheDocument()
+    expect(screen.queryByText('Mở cài đặt gia đình')).not.toBeInTheDocument()
+    expect(screen.queryByText('Mời thành viên')).not.toBeInTheDocument()
 
     expect(
       screen.getByText(
@@ -221,13 +215,43 @@ describe('ProfileSettingsPage settings hub', () => {
 
     render(<ProfileSettingsPage />)
 
-    expect(screen.getByText('Load households failed')).toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      t('app.settings.memberships.errors.loadFailed'),
+    )
+
+    expect(
+      screen.getByRole('button', {
+        name: t('app.settings.memberships.actions.retry'),
+      }),
+    ).toBeInTheDocument()
 
     expect(
       screen.queryByRole('link', {
         name: t('common.actions.openOnboarding'),
       }),
     ).not.toBeInTheDocument()
+  })
+
+  it('refetches households on mount even when a stale store error exists', () => {
+    householdStoreState.error = 'Some older household error'
+
+    render(<ProfileSettingsPage />)
+
+    expect(fetchHouseholds).toHaveBeenCalledTimes(1)
+  })
+
+  it('retries household loading from the memberships error state', () => {
+    householdStoreState.error = 'Load households failed'
+
+    render(<ProfileSettingsPage />)
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: t('app.settings.memberships.actions.retry'),
+      }),
+    )
+
+    expect(fetchHouseholds).toHaveBeenCalledTimes(2)
   })
 
   it('renders every current household membership', () => {
@@ -246,7 +270,47 @@ describe('ProfileSettingsPage settings hub', () => {
 
     render(<ProfileSettingsPage />)
 
-    expect(screen.getByText('Family One')).toBeInTheDocument()
-    expect(screen.getByText('Family Two')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Family One' })).toHaveAttribute(
+      'href',
+      `${PATHS.HOUSEHOLDS}/household-4`,
+    )
+
+    expect(screen.getByRole('link', { name: 'Family Two' })).toHaveAttribute(
+      'href',
+      `${PATHS.HOUSEHOLDS}/household-5`,
+    )
+
+    expect(screen.getAllByText('Family One')).toHaveLength(2)
+    expect(screen.getAllByText('Family Two')).toHaveLength(2)
+  })
+
+  it('labels each shortcut group with the household name and only shows truthful actions', () => {
+    householdStoreState.households = [
+      {
+        id: 'household-4',
+        name: 'Family One',
+        role: 'member',
+      },
+      {
+        id: 'household-5',
+        name: 'Family Two',
+        role: 'admin',
+      },
+    ]
+
+    render(<ProfileSettingsPage />)
+
+    expect(
+      screen.getAllByRole('link', {
+        name: t('app.settings.shortcuts.actions.viewHousehold'),
+      }),
+    ).toHaveLength(2)
+
+    expect(screen.getAllByText('Family One')).toHaveLength(2)
+    expect(screen.getAllByText('Family Two')).toHaveLength(2)
+
+    expect(screen.queryByText('Quản lý thành viên')).not.toBeInTheDocument()
+    expect(screen.queryByText('Mở cài đặt gia đình')).not.toBeInTheDocument()
+    expect(screen.queryByText('Mời thành viên')).not.toBeInTheDocument()
   })
 })

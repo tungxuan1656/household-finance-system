@@ -26,12 +26,7 @@ import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 const householdShortcutKeyByRole = {
-  admin: [
-    'viewHousehold',
-    'manageMembers',
-    'openHouseholdSettings',
-    'inviteMembers',
-  ],
+  admin: ['viewHousehold'],
   member: ['viewHousehold'],
 } as const
 
@@ -44,15 +39,18 @@ export const ProfileSettingsPage = () => {
   const households = useHouseholdStore.use.households()
   const householdsError = useHouseholdStore.use.error()
   const isHouseholdsLoading = useHouseholdStore.use.isLoading()
-  const shouldFetchHouseholds =
-    households.length === 0 && !isHouseholdsLoading && !householdsError
+  const shouldFetchHouseholds = households.length === 0 && !isHouseholdsLoading
+
+  const handleRetryHouseholds = () => {
+    void householdActions.fetchHouseholds()
+  }
 
   useEffect(() => {
     if (!shouldFetchHouseholds) {
       return
     }
 
-    void householdActions.fetchHouseholds()
+    handleRetryHouseholds()
   }, [shouldFetchHouseholds])
 
   if (profileQuery.isLoading && !profileQuery.data) {
@@ -114,7 +112,14 @@ export const ProfileSettingsPage = () => {
           {!isHouseholdsLoading &&
           householdsError &&
           households.length === 0 ? (
-            <p className='text-sm text-destructive'>{householdsError}</p>
+            <div className='flex flex-col gap-3'>
+              <p className='text-sm text-destructive' role='alert'>
+                {t('app.settings.memberships.errors.loadFailed')}
+              </p>
+              <Button variant='outline' onClick={handleRetryHouseholds}>
+                {t('app.settings.memberships.actions.retry')}
+              </Button>
+            </div>
           ) : null}
 
           {!isHouseholdsLoading &&
@@ -126,16 +131,18 @@ export const ProfileSettingsPage = () => {
           ) : null}
 
           {households.map((household) => (
-            <div
+            <Link
               key={household.id}
-              className='flex items-center justify-between gap-3 rounded-lg border p-3'>
-              <span>{household.name}</span>
-              <Badge variant='secondary'>
+              aria-label={household.name}
+              className='flex items-center justify-between gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none'
+              href={getHouseholdShortcutHref(household.id)}>
+              <span className='min-w-0 flex-1 truncate'>{household.name}</span>
+              <Badge aria-hidden='true' variant='secondary'>
                 {t(
                   `app.householdDetail.members.invite.fields.role.options.${household.role}`,
                 )}
               </Badge>
-            </div>
+            </Link>
           ))}
         </CardContent>
       </Card>
@@ -152,14 +159,15 @@ export const ProfileSettingsPage = () => {
           !householdsError &&
           households.length === 0 ? (
             <Link
-              className='text-sm underline underline-offset-4'
+              className='inline-flex items-center rounded-md border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none'
               href={PATHS.ONBOARDING}>
               {t('common.actions.openOnboarding')}
             </Link>
           ) : null}
 
           {households.map((household) => (
-            <div key={household.id} className='flex flex-wrap gap-3'>
+            <div key={household.id} className='flex flex-col gap-3'>
+              <p className='text-sm font-medium'>{household.name}</p>
               {householdShortcutKeyByRole[household.role].map((shortcutKey) => (
                 <Link
                   key={`${household.id}-${shortcutKey}`}
