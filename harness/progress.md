@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-05-07 — Created active ExecPlan for feat-042 household overview enrichment
+
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-042` covering a frontend-first upgrade of `/households`. Locked scope: replace placeholder overview metadata with truthful household signals using existing APIs, add bounded quick actions that connect the list to current detail/budget/insight flows, preserve create-household behavior, and avoid introducing any backend summary contract or hidden active-household model in the first pass.
+- Files changed: docs/exec-plans/plans/2026-05-07-feat-042-household-overview-enrichment.md, docs/exec-plans/index.md, harness/progress.md
+- Blockers: exact first-pass card summary mix is still an implementation decision; if existing APIs cannot support a chosen signal truthfully or cheaply, the implementation must reduce scope or log a follow-up instead of adding backend work silently.
+- Next steps: define the smallest high-value summary contract for each household card, split `/households` into bounded overview components, add focused web regression coverage, run `./init.sh`, and capture evidence before marking `feat-042` done.
+
 ## 2026-05-07 — Review-fix completed for feat-041 settings hub
 
 - Who: Orchestrator
