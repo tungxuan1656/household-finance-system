@@ -88,6 +88,10 @@ export function QuickAddExpenseDialog({
 }: QuickAddExpenseDialogProps) {
   const amountInputRef = useRef<HTMLInputElement | null>(null)
   const openedAtRef = useRef<number | null>(null)
+  const wasOpenRef = useRef(false)
+  const didApplyInitialDefaultsRef = useRef(false)
+  const allowCategoryAutofillRef = useRef(true)
+  const previousCategoryKeyRef = useRef<string | undefined>(undefined)
   const deleteExpense = useDeleteExpenseMutation()
   const updateProfile = useUpdateCurrentUserProfileMutation()
   const { data: categoriesResponse } = useReferenceCategoriesQuery()
@@ -112,6 +116,7 @@ export function QuickAddExpenseDialog({
   const { form, onSubmit, isSubmitting, watchedVisibility } = useExpenseForm({
     initialValues: initialValues as ExpenseFormInputValues,
     mode: 'create',
+    resetOnInitialValuesChange: false,
     onSuccess: (expense, values) => {
       reportTiming({
         openedAt: openedAtRef.current,
@@ -149,6 +154,7 @@ export function QuickAddExpenseDialog({
 
   const watchedHouseholdId = form.watch('householdId')
   const watchedSourceKey = form.watch('sourceKey')
+  const watchedCategoryKey = form.watch('categoryKey')
   const { data: householdMembersResponse } = useHouseholdMembersQuery(
     watchedVisibility === 'household' ? watchedHouseholdId : undefined,
   )
@@ -169,18 +175,43 @@ export function QuickAddExpenseDialog({
 
   useEffect(() => {
     if (!open) {
+      wasOpenRef.current = false
+      didApplyInitialDefaultsRef.current = false
+      allowCategoryAutofillRef.current = true
+      previousCategoryKeyRef.current = undefined
+
       return
     }
 
+    if (wasOpenRef.current) {
+      return
+    }
+
+    wasOpenRef.current = true
     openedAtRef.current = performance.now()
     setSubmitError(null)
+    didApplyInitialDefaultsRef.current = false
+    allowCategoryAutofillRef.current = true
+    form.reset(initialValues as ExpenseFormInputValues)
 
     const focusTimer = window.setTimeout(() => {
       amountInputRef.current?.focus()
     }, 0)
 
     return () => window.clearTimeout(focusTimer)
-  }, [open])
+  }, [form, initialValues, open])
+
+  useEffect(() => {
+    if (!open || didApplyInitialDefaultsRef.current || form.formState.isDirty) {
+      return
+    }
+
+    form.reset(initialValues as ExpenseFormInputValues)
+
+    if (initialValues.sourceKey || initialValues.categoryKey) {
+      didApplyInitialDefaultsRef.current = true
+    }
+  }, [form, form.formState.isDirty, initialValues, open])
 
   useEffect(() => {
     if (watchedVisibility !== 'household') {
@@ -219,7 +250,11 @@ export function QuickAddExpenseDialog({
       householdId: watchedHouseholdId,
     })
 
-    if (!nextCategoryKey || form.getValues('categoryKey')) {
+    if (
+      !allowCategoryAutofillRef.current ||
+      !nextCategoryKey ||
+      form.getValues('categoryKey')
+    ) {
       return
     }
 
@@ -234,6 +269,24 @@ export function QuickAddExpenseDialog({
     watchedSourceKey,
     watchedVisibility,
   ])
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    const previousCategoryKey = previousCategoryKeyRef.current
+
+    if (
+      form.formState.dirtyFields.categoryKey &&
+      previousCategoryKey &&
+      !watchedCategoryKey
+    ) {
+      allowCategoryAutofillRef.current = false
+    }
+
+    previousCategoryKeyRef.current = watchedCategoryKey
+  }, [form.formState.dirtyFields.categoryKey, open, watchedCategoryKey])
 
   useEffect(() => {
     if (watchedVisibility !== 'household' || !watchedHouseholdId) {

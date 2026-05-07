@@ -700,25 +700,9 @@ describe('QuickAddExpenseDialog', () => {
         note: null,
         occurredAt: 20,
         payerUserId: null,
-        sourceKey: 'cash',
+        sourceKey: 'bank-transfer',
         title: 'Lunch',
         updatedAt: 20,
-        visibility: 'private',
-      },
-      {
-        id: 'expense-2',
-        amountMinor: 20000,
-        categoryKey: 'food',
-        createdAt: 10,
-        createdByUserId: 'user-1',
-        currencyCode: 'VND',
-        householdId: null,
-        note: null,
-        occurredAt: 10,
-        payerUserId: null,
-        sourceKey: 'bank-transfer',
-        title: 'Dinner',
-        updatedAt: 10,
         visibility: 'private',
       },
     ]
@@ -726,7 +710,6 @@ describe('QuickAddExpenseDialog', () => {
     render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
 
     const categorySelect = screen.getByLabelText('quick-add-category')
-    await user.selectOptions(categorySelect, '')
     await user.selectOptions(screen.getByLabelText('quick-add-source'), 'cash')
 
     expect(categorySelect).toHaveValue('food')
@@ -773,5 +756,79 @@ describe('QuickAddExpenseDialog', () => {
     )
 
     expect(screen.getByLabelText('quick-add-category')).toHaveValue('food')
+  })
+
+  it('keeps typed values when async smart defaults arrive after open', async () => {
+    const user = userEvent.setup()
+
+    currentProfile.quickAddLastSourceKey = null
+    recentExpenses = []
+
+    const view = render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    const amountInput = screen.getByLabelText('expense.amount')
+
+    await user.type(amountInput, '125000')
+
+    currentProfile.quickAddLastSourceKey = 'bank-transfer'
+
+    recentExpenses = [
+      {
+        id: 'expense-1',
+        amountMinor: 10000,
+        categoryKey: 'food',
+        createdAt: 10,
+        createdByUserId: 'user-1',
+        currencyCode: 'VND',
+        householdId: null,
+        note: null,
+        occurredAt: 10,
+        payerUserId: null,
+        sourceKey: 'bank-transfer',
+        title: 'Lunch',
+        updatedAt: 10,
+        visibility: 'private',
+      },
+    ]
+
+    view.rerender(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    expect(amountInput).toHaveValue(125000)
+
+    expect(screen.getByLabelText('quick-add-source')).toHaveValue('')
+  })
+
+  it('does not repopulate category after user clears it', async () => {
+    const user = userEvent.setup()
+
+    recentExpenses = [
+      {
+        id: 'expense-1',
+        amountMinor: 10000,
+        categoryKey: 'food',
+        createdAt: 20,
+        createdByUserId: 'user-1',
+        currencyCode: 'VND',
+        householdId: null,
+        note: null,
+        occurredAt: 20,
+        payerUserId: null,
+        sourceKey: 'cash',
+        title: 'Lunch',
+        updatedAt: 20,
+        visibility: 'private',
+      },
+    ]
+
+    render(<QuickAddExpenseDialog open onOpenChange={vi.fn()} />)
+
+    const categorySelect = screen.getByLabelText('quick-add-category')
+
+    expect(categorySelect).toHaveValue('food')
+
+    await user.selectOptions(categorySelect, '')
+    await user.selectOptions(screen.getByLabelText('quick-add-source'), 'cash')
+
+    expect(categorySelect).toHaveValue('')
   })
 })
