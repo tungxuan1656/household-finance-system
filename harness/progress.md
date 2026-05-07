@@ -1,5 +1,31 @@
 # Progress Log
 
+## 2026-05-07 — Review-fix completed for feat-041 settings hub
+
+- Who: Orchestrator
+- Summary: Applied the post-review fix pass for `feat-041` on `/settings`. Tightened household fetching so the page only hydrates memberships when the shared store is empty and not already loading or erroring, suppressed the onboarding CTA when membership loading fails, and expanded focused test coverage to cover guarded fetch behavior, household error rendering, role badges, and multi-household rendering. The settings hub remains frontend-only and still preserves the existing profile editing flow alongside account and membership context.
+- Files changed: apps/web/src/views/app/profile-settings-page.tsx, apps/web/src/views/app/profile-settings-page.test.tsx, harness/features/feat-041.json, harness/progress.md
+- Verification: `pnpm --filter web test -- --run src/views/app/profile-settings-page.test.tsx`; `pnpm --filter web typecheck`; `pnpm --filter web lint` (passes with one pre-existing warning in `apps/web/src/components/expense/category-picker.tsx`); `./init.sh`
+- Blockers: none.
+- Next steps: request one more code review on the current diff, then commit the review-fix pass if no further issues are found.
+
+## 2026-05-07 — Implemented feat-041 settings hub first pass
+
+- Who: Orchestrator
+- Summary: Implemented the first pass of `feat-041` on `/settings` by expanding the existing profile-only view into a single long-form settings hub. The page now shows an account summary, a household membership summary with truthful role badges for every current membership, role-aware shortcut links that reuse existing household detail surfaces, and the preserved avatar/display-name profile editing section. Scope stayed frontend-only and reused the current profile React Query hooks plus household Zustand selectors without adding backend contracts.
+- Files changed: apps/web/src/views/app/profile-settings-page.tsx, apps/web/src/views/app/profile-settings-page.test.tsx, apps/web/src/lib/i18n/locales/vi.json, harness/features/feat-041.json, harness/progress.md
+- Verification: `pnpm --filter web test -- --run src/views/app/profile-settings-page.test.tsx`; `pnpm --filter web typecheck`; `pnpm --filter web lint` (passes with one pre-existing warning in `apps/web/src/components/expense/category-picker.tsx`)
+- Blockers: resolved in the later review-fix entry above.
+- Next steps: completed in the later review-fix entry above.
+
+## 2026-05-07 — Created active ExecPlan for feat-041 profile/settings hub expansion
+
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-041` covering a frontend-first expansion of `/settings`. Locked scope: preserve the existing avatar/display-name profile flow, add household membership overview and role-aware shortcuts to existing household-management paths, and avoid any new backend preference fields or API changes. Explicitly out of scope: a generalized settings platform, duplicated household-management screens inside Settings, and speculative new preference categories without current persistence support.
+- Files changed: docs/exec-plans/plans/2026-05-07-feat-041-settings-hub-expansion.md, docs/exec-plans/index.md, harness/features/feat-041.json, harness/feature_index.json, harness/progress.md
+- Blockers: none at planning time; implementation must stop only if an intended shortcut lacks an existing truthful route target or current household data cannot support the planned membership summary.
+- Next steps: implement the locked single-page settings hub with account summary, household membership summary, role-aware shortcuts, and preserved profile editing; add focused web tests; run `./init.sh`; and capture evidence before marking `feat-041` done.
+
 ## 2026-05-07 — Completed feat-040 harness audit alignment & stale record cleanup
 
 - Summary: Completed the tooling/docs-only cleanup planned in `feat-040` to realign harness truth with the implemented product. Refreshed `feat-011` so it no longer implies invitation/member APIs are still missing after later completed household follow-ups, normalized `feat-029` from `completed` to the repository-wide `done` vocabulary, strengthened stale/weak evidence for `feat-029` and `feat-037`, and marked `feat-040` done with explicit cleanup evidence. No product code was changed.
@@ -935,3 +961,24 @@ Keep `harness/progress.md` as a short index with newest entries first to avoid l
 - Files changed: <list>
 - Blockers: <list or none>
 - Next steps: <next actions>
+
+## 2026-05-07 — UI/UX fixes for profile settings hub
+
+**Session:** fix UI/UX issues found in review of profile-settings-page.tsx
+
+**Changes:**
+- Made membership rows clickable `<Link>` elements navigating to household detail
+- Collapsed shortcut keys to only truthful `viewHousehold`; removed misleading `manageMembers`, `openHouseholdSettings`, `inviteMembers`
+- Added household name labels to shortcut groups
+- Removed `householdsError` from fetch guard to fix stale-error blocking
+- Translated household error state with retry button and `role="alert"`
+- Upgraded empty-state onboarding CTA to button-style link
+- Removed dead i18n keys (`leaveHousehold`, etc.) from `vi.json`
+- Added `memberships.errors.loadFailed` and `memberships.actions.retry` to Vietnamese locale
+- Synced `feat-041` to `done` in `harness/feature_index.json`
+
+**Files changed:** `apps/web/src/views/app/profile-settings-page.tsx`, `apps/web/src/views/app/profile-settings-page.test.tsx`, `apps/web/src/lib/i18n/locales/vi.json`, `harness/feature_index.json`, `docs/superpowers/plans/2026-05-07-profile-settings-ui-fixes.md`
+
+**Verification:** all 118 web + 346 worker tests passed; typecheck clean; lint clean; GitNexus low risk
+
+**Outcome:** feature complete.
