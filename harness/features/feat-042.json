@@ -1,0 +1,16 @@
+{
+  "id": "feat-042",
+  "name": "Household overview enrichment and actionable list summaries",
+  "description": "Upgrade the household overview/list experience from a thin navigation surface into a useful operational summary for users who belong to one or more households. This follow-up should replace placeholder information with real household signals, surface the minimum set of high-value summaries and quick actions, and better connect the household list to the richer detail flows that already exist. The aim is to reduce the current mismatch where household detail is reasonably mature but the overview layer still feels unfinished and under-informative.",
+  "dependencies": [
+    "feat-011",
+    "feat-012",
+    "feat-013",
+    "feat-014",
+    "feat-015b",
+    "feat-027"
+  ],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-05-07"
+}

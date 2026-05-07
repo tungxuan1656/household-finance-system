@@ -1,0 +1,16 @@
+{
+  "id": "feat-040",
+  "name": "Harness audit alignment & stale feature record cleanup",
+  "description": "Align the harness with the actual current state of the product after the broad feature implementation wave. This follow-up is intentionally documentation-and-governance focused: refresh stale feature descriptions whose historical wording no longer matches the implemented product, normalize status vocabulary across feature records and the feature index, and tighten evidence quality so 'done' means the harness accurately describes what exists today rather than only what existed at the moment an older feature first landed. The goal is to make the harness trustworthy again as an operational roadmap before deeper product-gap work continues.",
+  "dependencies": [
+    "feat-011",
+    "feat-013",
+    "feat-014",
+    "feat-029",
+    "feat-030",
+    "feat-037"
+  ],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-05-07"
+}

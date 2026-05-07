@@ -1,0 +1,9 @@
+{
+  "id": "feat-043",
+  "name": "Expense filter surface expansion to match backend querying capabilities",
+  "description": "Broaden the expense exploration UI so it exposes more of the filtering and sorting power that already exists in the backend contracts and repositories. The focus is practical querying depth rather than feature sprawl: help users slice expense data by time, amount, payer, grouping, and sort direction in a way that remains mobile-friendly and consistent with the existing feed architecture. This feature exists to close the current product gap where the backend can answer richer questions than the frontend makes discoverable.",
+  "dependencies": ["feat-021", "feat-023", "feat-024", "feat-025"],
+  "status": "pending",
+  "evidence": "",
+  "updated_at": "2026-05-07"
+}

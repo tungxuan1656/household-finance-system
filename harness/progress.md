@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-05-07 — Added post-audit gap-closure feature batch (feat-040 → feat-045)
+- Who: Orchestrator
+- Summary: Reviewed the implemented product surface against harness records and product-spec intent, then added a new ordered batch of follow-up harness features to close the remaining gaps from easiest to hardest. The new roadmap starts with harness/governance cleanup (`feat-040`), then moves through settings/profile expansion (`feat-041`), household overview enrichment (`feat-042`), expense filter surface expansion (`feat-043`), analytics export and hardening (`feat-044`), and finally a unified home dashboard rebuild (`feat-045`). Each feature description was written to capture product state, direction, and solution intent at a roadmap level rather than as a file-by-file implementation checklist.
+- Files changed: harness/features/feat-040.json, harness/features/feat-041.json, harness/features/feat-042.json, harness/features/feat-043.json, harness/features/feat-044.json, harness/features/feat-045.json, harness/feature_index.json, harness/progress.md
+- Blockers: none.
+- Next steps: execute `feat-040` first to realign stale harness records and status semantics before starting product-surface follow-up implementation work.
+
 ## 2026-05-06 — Completed feat-025: Quick-add smart defaults
 - Who: Orchestrator
 - Summary: Implemented the fullstack `feat-025` quick-add smart-default follow-up. Backend: added migration `0007_user_quick_add_last_source.sql`, extended `/api/v1/users/me` GET/PATCH profile contract with additive `quickAddLastSourceKey`, and updated repository/handler coverage so durable last-used-source preference persists per authenticated user. Frontend: replaced session-only quick-add source restore with profile-backed persistence, added recent-expense query reuse for deterministic category prefilling, preserved smart defaults after submit reset, and added focused regression tests for profile restore, profile persistence, source-reactive heuristic updates, and post-submit default retention. Offline/no-internet capture remains explicitly unsupported.
