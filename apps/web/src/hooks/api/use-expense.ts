@@ -126,6 +126,13 @@ export const useDeletedExpenseListQuery = (householdId: string | undefined) => {
   })
 }
 
+export const useRecentQuickAddExpensesQuery = () => {
+  return useQuery<ExpenseListResponse, Error>({
+    queryKey: EXPENSE_KEYS.list({ limit: 20, sort: 'occurred_at_desc' }),
+    queryFn: () => listExpenses({ limit: 20, sort: 'occurred_at_desc' }),
+  })
+}
+
 type ReplaceExpenseGroupsMutationInput = {
   expenseId: string
   payload: ReplaceExpenseGroupsRequest

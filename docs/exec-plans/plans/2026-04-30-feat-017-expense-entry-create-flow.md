@@ -96,7 +96,7 @@ Enable authenticated users to create expense entries with proper visibility rule
 ### Must NOT Have (Guardrails)
 - Expense edit/delete/restore endpoints (feat-019)
 - Expense list/search/filter/pagination (feat-021)
-- Quick-add UI or offline queueing (feat-024/025)
+- Quick-add UI or offline/no-internet capture behavior (feat-024 plus out-of-scope follow-up work)
 - Group assignment in create payload (feat-022/023)
 - Household member list as payer options (deferred enhancement)
 - Currency picker in form (auto-defaulted)

@@ -202,8 +202,8 @@
     },
     {
       "id": "feat-025",
-      "name": "Quick-add resilience & smart defaults",
-      "status": "post-mvp"
+      "name": "Quick-add smart defaults",
+      "status": "done"
     },
     {
       "id": "feat-015",

@@ -180,6 +180,7 @@ describe('Worker integration: media signatures and profile patch', () => {
       },
       body: JSON.stringify({
         displayName: 'Updated Name',
+        quickAddLastSourceKey: 'cash',
       }),
     })
 
@@ -190,6 +191,7 @@ describe('Worker integration: media signatures and profile patch', () => {
         email: string | null
         displayName: string | null
         avatarUrl: string | null
+        quickAddLastSourceKey: string | null
       }>
     >(response)
 
@@ -197,18 +199,24 @@ describe('Worker integration: media signatures and profile patch', () => {
     expect(typeof payload.data.createdAt).toBe('number')
     expect(payload.data.displayName).toBe('Updated Name')
     expect(payload.data.avatarUrl).toBeNull()
+    expect(payload.data.quickAddLastSourceKey).toBe('cash')
 
     const storedUser = await env.DB.prepare(
-      `SELECT display_name, avatar_url
-       FROM users
-       WHERE id = ?`,
+      `SELECT display_name, avatar_url, quick_add_last_source_key
+        FROM users
+        WHERE id = ?`,
     )
       .bind(exchangePayload.data.user.id)
-      .first<{ display_name: string | null; avatar_url: string | null }>()
+      .first<{
+        display_name: string | null
+        avatar_url: string | null
+        quick_add_last_source_key: string | null
+      }>()
 
     expect(storedUser).toEqual({
       display_name: 'Updated Name',
       avatar_url: null,
+      quick_add_last_source_key: 'cash',
     })
   })
 

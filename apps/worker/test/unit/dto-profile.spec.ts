@@ -37,4 +37,20 @@ describe('profile contract schema', () => {
 
     expect(parsed.success).toBe(false)
   })
+
+  it('accepts quick-add last source key when provided', () => {
+    const parsed = createUpdateProfileRequestSchema().safeParse({
+      quickAddLastSourceKey: 'cash',
+    })
+
+    expect(parsed.success).toBe(true)
+  })
+
+  it('rejects quick-add last source key outside known source keys', () => {
+    const parsed = createUpdateProfileRequestSchema().safeParse({
+      quickAddLastSourceKey: 'wire',
+    })
+
+    expect(parsed.success).toBe(false)
+  })
 })

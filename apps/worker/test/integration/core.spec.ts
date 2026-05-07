@@ -149,6 +149,7 @@ describe('Worker integration: core', () => {
         email: string | null
         displayName: string | null
         avatarUrl: string | null
+        quickAddLastSourceKey: string | null
       }>
     >(profileResponse)
 
@@ -160,6 +161,7 @@ describe('Worker integration: core', () => {
       email: 'user-profile@example.com',
       displayName: null,
       avatarUrl: null,
+      quickAddLastSourceKey: null,
     })
   })
 

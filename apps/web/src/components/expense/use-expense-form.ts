@@ -43,6 +43,7 @@ type UseExpenseFormOptions = {
   onSuccess?: (expense: ExpenseDTO, values: ExpenseFormInputValues) => void
   onError?: (error: Error) => void
   suppressCreateErrorToast?: boolean
+  resetOnInitialValuesChange?: boolean
 }
 
 export function useExpenseForm({
@@ -52,6 +53,7 @@ export function useExpenseForm({
   onSuccess,
   onError,
   suppressCreateErrorToast = false,
+  resetOnInitialValuesChange = true,
 }: UseExpenseFormOptions) {
   const createExpense = useCreateExpenseMutation()
   const updateExpense = useUpdateExpenseMutation()
@@ -68,8 +70,12 @@ export function useExpenseForm({
   })
 
   useEffect(() => {
+    if (!resetOnInitialValuesChange) {
+      return
+    }
+
     form.reset(defaultValues)
-  }, [defaultValues, form])
+  }, [defaultValues, form, resetOnInitialValuesChange])
 
   const watchedCategoryKey = form.watch('categoryKey')
   const watchedVisibility = form.watch('visibility')
@@ -133,7 +139,7 @@ export function useExpenseForm({
 
       createExpense.mutate(payload, {
         onSuccess: (expense) => {
-          form.reset(buildDefaultValues())
+          form.reset(buildDefaultValues(initialValues))
           onSuccess?.(expense, values)
         },
         onError: (error) => {
@@ -149,6 +155,7 @@ export function useExpenseForm({
       createExpense,
       expenseId,
       form,
+      initialValues,
       mode,
       onError,
       onSuccess,

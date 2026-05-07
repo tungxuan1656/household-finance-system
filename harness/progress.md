@@ -1,5 +1,27 @@
 # Progress Log
 
+## 2026-05-06 — Completed feat-025: Quick-add smart defaults
+- Who: Orchestrator
+- Summary: Implemented the fullstack `feat-025` quick-add smart-default follow-up. Backend: added migration `0007_user_quick_add_last_source.sql`, extended `/api/v1/users/me` GET/PATCH profile contract with additive `quickAddLastSourceKey`, and updated repository/handler coverage so durable last-used-source preference persists per authenticated user. Frontend: replaced session-only quick-add source restore with profile-backed persistence, added recent-expense query reuse for deterministic category prefilling, preserved smart defaults after submit reset, and added focused regression tests for profile restore, profile persistence, source-reactive heuristic updates, and post-submit default retention. Offline/no-internet capture remains explicitly unsupported.
+- Files changed: apps/worker/migrations/0007_user_quick_add_last_source.sql, apps/worker/src/contracts/profile.ts, apps/worker/src/db/repositories/user-repository.ts, apps/worker/src/handlers/profile/get-current-profile.ts, apps/worker/src/handlers/profile/update-current-profile.ts, apps/worker/test/unit/dto-profile.spec.ts, apps/worker/test/unit/user-repository.spec.ts, apps/worker/test/integration/core.spec.ts, apps/worker/test/integration/scenario-auth-profile.spec.ts, apps/worker/test/integration/media-profile.spec.ts, apps/web/src/types/profile.ts, apps/web/src/hooks/api/use-profile.ts, apps/web/src/hooks/api/use-expense.ts, apps/web/src/components/expense/quick-add-expense-dialog.tsx, apps/web/src/components/expense/quick-add-expense-dialog.test.tsx, apps/web/src/components/expense/use-expense-form.ts, docs/exec-plans/index.md, harness/features/feat-025.json, harness/feature_index.json, harness/progress.md
+- Verification: `pnpm --filter worker test -- --run test/integration/core.spec.ts test/integration/scenario-auth-profile.spec.ts test/integration/media-profile.spec.ts test/unit/dto-profile.spec.ts test/unit/user-repository.spec.ts`; `pnpm --filter web test -- --run src/components/expense/quick-add-expense-dialog.test.tsx`; `pnpm --filter web typecheck`; `pnpm --filter web lint`; `./init.sh`
+- Blockers: none.
+- Next steps: none.
+
+## 2026-05-06 — Created active ExecPlan for feat-025 quick-add smart defaults
+- Who: Orchestrator
+- Summary: Created and registered active ExecPlan for `feat-025` covering narrowed fullstack smart-default follow-up work on top of `feat-024`. Scope: durable per-user last-used-source persistence through additive profile preference storage plus deterministic quick-add category prefilling from recent expense usage heuristics. Explicitly out of scope: offline queueing, background sync, pending-entry recovery, trigger redesign, and broad settings-platform work.
+- Files changed: docs/exec-plans/plans/2026-05-06-feat-025-quick-add-smart-defaults.md, docs/exec-plans/index.md, harness/features/feat-025.json, harness/feature_index.json, harness/progress.md
+- Blockers: open implementation choice on exact persistence shape (`users` additive field vs dedicated preferences storage) and exact heuristic rule order; plan recommends additive profile field plus frontend-first deterministic matching.
+- Next steps: implement backend preference persistence/tests first, then wire quick-add durable source bootstrap and category heuristics with focused web regression coverage before `./init.sh`.
+
+## 2026-05-06 — Removed offline queue scope from feat-025 and aligned docs
+- Who: Orchestrator
+- Summary: Updated roadmap and product docs so `feat-025` no longer includes offline queueing or no-internet capture. `feat-025` is now scoped to smart defaults only: recent-usage category suggestions plus durable last-used-source preferences. Aligned quick-add and expense-tracking specs to state clearly that offline/background-sync/pending-entry flows are not supported by this product.
+- Files changed: harness/feature_index.json, harness/features/feat-025.json, docs/product-specs/quick-add-experience.md, docs/product-specs/expense-tracking.md, docs/exec-plans/index.md, docs/exec-plans/plans/2026-05-04-feat-024-quick-add-expense-basic-flow.md, docs/exec-plans/plans/2026-05-02-feat-018-expense-detail-activity-feed.md, docs/exec-plans/plans/2026-04-30-feat-017-expense-entry-create-flow.md, docs/exec-plans/plans/2026-04-29-feat-016-global-static-expense-reference-data.md, harness/progress.md
+- Blockers: none.
+- Next steps: create new ExecPlan for narrowed `feat-025` smart-defaults scope if still desired.
+
 ## 2026-05-06 — Completed feat-030: New user onboarding flow
 - Who: Orchestrator
 - Summary: Implemented frontend onboarding for authenticated users with no household. `/onboarding` now supports name-only household creation, join-via-invite token preview + accept reuse from the invitation flow, deep-link invite-token auto-fill, completion CTAs for invite members, budget setup, quick-add, and finish, plus auto-skip redirect for users who already belong to a household. Added focused regression coverage for create/join/completion states, deep-link stale-preview reset, and existing-household redirect; localized new onboarding copy; and kept scope aligned by reusing existing backend contracts while leaving optional tour/settings IA expansion out of scope.

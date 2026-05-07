@@ -16,5 +16,6 @@ export const getCurrentProfile = async (
     email: user.primaryEmail,
     displayName: user.displayName,
     avatarUrl: user.avatarUrl,
+    quickAddLastSourceKey: user.quickAddLastSourceKey,
   }
 }

@@ -35,6 +35,10 @@ const applyOptimisticUpdate = (
         patch.displayName !== undefined
           ? patch.displayName
           : previousProfile.displayName,
+      quickAddLastSourceKey:
+        patch.quickAddLastSourceKey !== undefined
+          ? patch.quickAddLastSourceKey
+          : previousProfile.quickAddLastSourceKey,
     })
   }
 

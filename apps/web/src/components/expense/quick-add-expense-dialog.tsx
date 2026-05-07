@@ -24,27 +24,30 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { FieldGroup } from '@/components/ui/field'
-import { useDeleteExpenseMutation } from '@/hooks/api/use-expense'
+import {
+  useDeleteExpenseMutation,
+  useRecentQuickAddExpensesQuery,
+} from '@/hooks/api/use-expense'
 import { useExpenseGroupListQuery } from '@/hooks/api/use-groups'
 import {
   useHouseholdMembersQuery,
   useHouseholdsQuery,
 } from '@/hooks/api/use-households'
-import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
+import {
+  useCurrentUserProfileQuery,
+  useUpdateCurrentUserProfileMutation,
+} from '@/hooks/api/use-profile'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import type { ExpenseFormInputValues } from '@/lib/forms/expense.schema'
 import { t } from '@/lib/i18n/t'
 import { reportQuickAddTiming } from '@/lib/metrics/quick-add-metrics'
-import {
-  readSessionStorageItem,
-  writeSessionStorageItem,
-} from '@/lib/storages/browser-storage'
 import type { ExpenseDTO } from '@/types/expense'
+import type { ExpenseVisibility } from '@/types/expense'
+import type { CurrentUserProfileDTO } from '@/types/profile'
+import type { CategoryKey } from '@/types/reference-data'
 import { SOURCE_KEYS, type SourceKey } from '@/types/reference-data'
 
 import { useExpenseForm } from './use-expense-form'
-
-const QUICK_ADD_LAST_SOURCE_KEY = 'expense-quick-add-last-source'
 
 const isSourceKey = (value: string | null): value is SourceKey =>
   value !== null && SOURCE_KEYS.includes(value as SourceKey)
@@ -54,11 +57,25 @@ type QuickAddExpenseDialogProps = {
   onOpenChange: (open: boolean) => void
 }
 
-const buildQuickAddInitialValues = (): Partial<ExpenseFormInputValues> => {
-  const storedSource = readSessionStorageItem(QUICK_ADD_LAST_SOURCE_KEY)
-  const lastSource = isSourceKey(storedSource) ? storedSource : undefined
+const buildQuickAddInitialValues = ({
+  profile,
+  recentExpenses,
+}: {
+  profile?: CurrentUserProfileDTO
+  recentExpenses?: ExpenseDTO[]
+}): Partial<ExpenseFormInputValues> => {
+  const profileSourceKey = profile?.quickAddLastSourceKey
+  const lastSource =
+    profileSourceKey && isSourceKey(profileSourceKey)
+      ? profileSourceKey
+      : undefined
 
   return {
+    categoryKey: getQuickAddDefaultCategory({
+      recentExpenses,
+      sourceKey: lastSource,
+      visibility: 'private',
+    }),
     occurredAt: Date.now(),
     visibility: 'private',
     sourceKey: lastSource,
@@ -71,33 +88,63 @@ export function QuickAddExpenseDialog({
 }: QuickAddExpenseDialogProps) {
   const amountInputRef = useRef<HTMLInputElement | null>(null)
   const openedAtRef = useRef<number | null>(null)
+  const wasOpenRef = useRef(false)
+  const didApplyInitialDefaultsRef = useRef(false)
+  const allowCategoryAutofillRef = useRef(true)
+  const previousCategoryKeyRef = useRef<string | undefined>(undefined)
   const deleteExpense = useDeleteExpenseMutation()
+  const updateProfile = useUpdateCurrentUserProfileMutation()
   const { data: categoriesResponse } = useReferenceCategoriesQuery()
   const { data: householdsResponse } = useHouseholdsQuery()
   const { data: profile } = useCurrentUserProfileQuery()
+  const { data: recentExpensesResponse } = useRecentQuickAddExpensesQuery()
   const [submitError, setSubmitError] = useState<QuickAddSubmitError | null>(
     null,
   )
 
-  const initialValues = useMemo(() => buildQuickAddInitialValues(), [open])
+  const recentExpenses = recentExpensesResponse?.items
+
+  const initialValues = useMemo(
+    () =>
+      buildQuickAddInitialValues({
+        profile,
+        recentExpenses,
+      }),
+    [profile, recentExpenses, open],
+  )
 
   const { form, onSubmit, isSubmitting, watchedVisibility } = useExpenseForm({
     initialValues: initialValues as ExpenseFormInputValues,
     mode: 'create',
+    resetOnInitialValuesChange: false,
     onSuccess: (expense, values) => {
       reportTiming({
         openedAt: openedAtRef.current,
         visibility: values.visibility ?? 'private',
       })
 
-      const sourceKey = values.sourceKey
-      if (sourceKey) {
-        writeSessionStorageItem(QUICK_ADD_LAST_SOURCE_KEY, sourceKey)
+      const finishSuccess = () => {
+        setSubmitError(null)
+        handleOpenChange(false)
+        showUndoToast(expense, deleteExpense.mutate)
       }
 
-      setSubmitError(null)
-      handleOpenChange(false)
-      showUndoToast(expense, deleteExpense.mutate)
+      const sourceKey = values.sourceKey
+      if (sourceKey) {
+        updateProfile.mutate(
+          { quickAddLastSourceKey: sourceKey },
+          {
+            onError: () => {
+              toast.error(t('expense.quickAdd.retryHint'))
+            },
+            onSettled: finishSuccess,
+          },
+        )
+
+        return
+      }
+
+      finishSuccess()
     },
     onError: (error) => {
       setSubmitError(buildQuickAddSubmitError(error))
@@ -105,7 +152,11 @@ export function QuickAddExpenseDialog({
     suppressCreateErrorToast: true,
   })
 
+  const isSaving = isSubmitting || updateProfile.isPending
+
   const watchedHouseholdId = form.watch('householdId')
+  const watchedSourceKey = form.watch('sourceKey')
+  const watchedCategoryKey = form.watch('categoryKey')
   const { data: householdMembersResponse } = useHouseholdMembersQuery(
     watchedVisibility === 'household' ? watchedHouseholdId : undefined,
   )
@@ -126,18 +177,43 @@ export function QuickAddExpenseDialog({
 
   useEffect(() => {
     if (!open) {
+      wasOpenRef.current = false
+      didApplyInitialDefaultsRef.current = false
+      allowCategoryAutofillRef.current = true
+      previousCategoryKeyRef.current = undefined
+
       return
     }
 
+    if (wasOpenRef.current) {
+      return
+    }
+
+    wasOpenRef.current = true
     openedAtRef.current = performance.now()
     setSubmitError(null)
+    didApplyInitialDefaultsRef.current = false
+    allowCategoryAutofillRef.current = true
+    form.reset(initialValues as ExpenseFormInputValues)
 
     const focusTimer = window.setTimeout(() => {
       amountInputRef.current?.focus()
     }, 0)
 
     return () => window.clearTimeout(focusTimer)
-  }, [open])
+  }, [form, initialValues, open])
+
+  useEffect(() => {
+    if (!open || didApplyInitialDefaultsRef.current || form.formState.isDirty) {
+      return
+    }
+
+    form.reset(initialValues as ExpenseFormInputValues)
+
+    if (initialValues.sourceKey || initialValues.categoryKey) {
+      didApplyInitialDefaultsRef.current = true
+    }
+  }, [form, form.formState.isDirty, initialValues, open])
 
   useEffect(() => {
     if (watchedVisibility !== 'household') {
@@ -167,6 +243,52 @@ export function QuickAddExpenseDialog({
       shouldValidate: true,
     })
   }, [form, payerOptions, profile?.id, watchedVisibility])
+
+  useEffect(() => {
+    const nextCategoryKey = getQuickAddDefaultCategory({
+      recentExpenses,
+      sourceKey: watchedSourceKey,
+      visibility: watchedVisibility ?? 'private',
+      householdId: watchedHouseholdId,
+    })
+
+    if (
+      !allowCategoryAutofillRef.current ||
+      !nextCategoryKey ||
+      form.getValues('categoryKey')
+    ) {
+      return
+    }
+
+    form.setValue('categoryKey', nextCategoryKey, {
+      shouldDirty: false,
+      shouldValidate: false,
+    })
+  }, [
+    form,
+    recentExpenses,
+    watchedHouseholdId,
+    watchedSourceKey,
+    watchedVisibility,
+  ])
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    const previousCategoryKey = previousCategoryKeyRef.current
+
+    if (
+      form.formState.dirtyFields.categoryKey &&
+      previousCategoryKey &&
+      !watchedCategoryKey
+    ) {
+      allowCategoryAutofillRef.current = false
+    }
+
+    previousCategoryKeyRef.current = watchedCategoryKey
+  }, [form.formState.dirtyFields.categoryKey, open, watchedCategoryKey])
 
   useEffect(() => {
     if (watchedVisibility !== 'household' || !watchedHouseholdId) {
@@ -217,7 +339,7 @@ export function QuickAddExpenseDialog({
               {submitError.kind === 'permission' ? (
                 <Button
                   className='mt-3'
-                  disabled={isSubmitting}
+                  disabled={isSaving}
                   type='button'
                   variant='outline'
                   onClick={handleSaveAsPrivate}>
@@ -278,7 +400,7 @@ export function QuickAddExpenseDialog({
               onClick={() => handleOpenChange(false)}>
               {t('common.actions.cancel')}
             </Button>
-            <Button disabled={isSubmitting} type='submit'>
+            <Button disabled={isSaving} type='submit'>
               {t('expense.quickAdd.submit')}
             </Button>
           </div>
@@ -286,6 +408,56 @@ export function QuickAddExpenseDialog({
       </DialogContent>
     </Dialog>
   )
+}
+
+function getQuickAddDefaultCategory({
+  recentExpenses,
+  sourceKey,
+  visibility,
+  householdId,
+}: {
+  recentExpenses?: ExpenseDTO[]
+  sourceKey?: SourceKey
+  visibility: ExpenseVisibility
+  householdId?: string
+}): CategoryKey | undefined {
+  if (!recentExpenses || recentExpenses.length === 0) {
+    return undefined
+  }
+
+  const sameSourceMatch = recentExpenses.find((expense) => {
+    if (sourceKey && expense.sourceKey !== sourceKey) {
+      return false
+    }
+
+    if (expense.visibility !== visibility) {
+      return false
+    }
+
+    if (visibility === 'household') {
+      return expense.householdId === householdId
+    }
+
+    return true
+  })
+
+  if (sameSourceMatch) {
+    return sameSourceMatch.categoryKey
+  }
+
+  const fallbackMatch = recentExpenses.find((expense) => {
+    if (expense.visibility !== visibility) {
+      return false
+    }
+
+    if (visibility === 'household') {
+      return expense.householdId === householdId
+    }
+
+    return true
+  })
+
+  return fallbackMatch?.categoryKey
 }
 
 type QuickAddSubmitError = {
