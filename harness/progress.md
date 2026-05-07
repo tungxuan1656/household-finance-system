@@ -1,5 +1,22 @@
 # Progress Log
 
+## 2026-05-07 — Completed feat-042 household overview enrichment
+
+- Who: Orchestrator
+- Summary: Implemented the frontend-first `feat-042` upgrade for `/households`. Replaced placeholder metadata with truthful household signals by extracting a dedicated `HouseholdCreateDialog` and `HouseholdSummaryCard`, localizing role and visibility labels, adding responsive skeleton-based loading and accessible error treatment, and composing three existing API-backed summary signals per household card: member count, budget presence, and recent spend/activity. The page now stays a thin orchestrator while preserving existing create-household behavior and current household-detail navigation without inventing unsupported household-scoped deep links.
+- Files changed: apps/web/src/views/app/households-page.tsx, apps/web/src/views/app/households-page.test.tsx, apps/web/src/components/household/household-create-dialog.tsx, apps/web/src/components/household/household-create-dialog.test.tsx, apps/web/src/components/household/household-summary-card.tsx, apps/web/src/components/household/index.ts, apps/web/src/lib/i18n/locales/vi.json, docs/exec-plans/index.md, harness/features/feat-042.json, harness/feature_index.json, harness/progress.md
+- Verification: `pnpm --filter web exec vitest run src/views/app/households-page.test.tsx src/components/household/household-create-dialog.test.tsx src/views/app/household-detail-page.test.tsx src/components/household/household-settings-card.test.tsx`; `pnpm --filter web typecheck`; `pnpm --filter web lint` (passes with one pre-existing warning in `apps/web/src/components/expense/category-picker.tsx`)
+- Blockers: none.
+- Next steps: commit the feat-042 implementation and, if requested, continue with the next pending roadmap feature.
+
+## 2026-05-07 — Created active ExecPlan for feat-042 household overview enrichment
+
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-042` covering a frontend-first upgrade of `/households`. Locked scope: replace placeholder overview metadata with truthful household signals using existing APIs, add bounded quick actions that connect the list to current detail/budget/insight flows, preserve create-household behavior, and avoid introducing any backend summary contract or hidden active-household model in the first pass.
+- Files changed: docs/exec-plans/plans/2026-05-07-feat-042-household-overview-enrichment.md, docs/exec-plans/index.md, harness/progress.md
+- Blockers: exact first-pass card summary mix is still an implementation decision; if existing APIs cannot support a chosen signal truthfully or cheaply, the implementation must reduce scope or log a follow-up instead of adding backend work silently.
+- Next steps: define the smallest high-value summary contract for each household card, split `/households` into bounded overview components, add focused web regression coverage, run `./init.sh`, and capture evidence before marking `feat-042` done.
+
 ## 2026-05-07 — Review-fix completed for feat-041 settings hub
 
 - Who: Orchestrator

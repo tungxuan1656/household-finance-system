@@ -13,6 +13,7 @@ import {
 } from '@/components/household'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { PATHS } from '@/lib/constants/paths'
 import type { UpdateHouseholdSettingsFormValues } from '@/lib/forms/household.schema'
 import { t } from '@/lib/i18n/t'
@@ -91,18 +92,22 @@ function HouseholdDetailPage() {
     <div className='flex flex-col gap-6'>
       <HouseholdDetailHeader />
 
-      {isLoading ? (
+      {isLoading && !currentHousehold ? (
         <Card>
-          <CardContent className='pt-1 text-sm text-muted-foreground'>
-            {t('app.householdDetail.loading')}
+          <CardContent className='flex flex-col gap-4 pt-4'>
+            <Skeleton className='h-8 w-40' />
+            <Skeleton className='h-24 w-full' />
+            <Skeleton className='h-32 w-full' />
           </CardContent>
         </Card>
       ) : null}
 
-      {!isLoading && error ? (
+      {!isLoading && error && !currentHousehold ? (
         <Card>
-          <CardContent className='flex items-center justify-between gap-2 pt-1'>
-            <p className='text-sm text-destructive'>{error}</p>
+          <CardContent className='flex items-center justify-between gap-2 pt-4'>
+            <p className='text-sm text-destructive' role='alert'>
+              {error}
+            </p>
             <Button
               type='button'
               variant='outline'
@@ -113,8 +118,8 @@ function HouseholdDetailPage() {
         </Card>
       ) : null}
 
-      {!isLoading && !error && currentHousehold ? (
-        <>
+      {currentHousehold ? (
+        <div className='grid gap-4'>
           <HouseholdSettingsCard
             household={currentHousehold}
             isAdmin={isAdmin}
@@ -127,7 +132,7 @@ function HouseholdDetailPage() {
             isAdmin={isAdmin}
           />
           {isAdmin && <HouseholdDangerZoneCard onArchive={handleArchive} />}
-        </>
+        </div>
       ) : null}
     </div>
   )

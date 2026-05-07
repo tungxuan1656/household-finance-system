@@ -62,7 +62,7 @@ export const HouseholdDangerZoneCard = ({
                 {t('app.householdDetail.deleteDialog.description')}
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
+            <AlertDialogFooter className='flex-col sm:flex-row'>
               <AlertDialogCancel>
                 {t('common.actions.cancel')}
               </AlertDialogCancel>

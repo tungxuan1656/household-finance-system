@@ -1,24 +1,15 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus } from 'lucide-react'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+  HouseholdCreateDialog,
+  HouseholdsLoadingState,
+  HouseholdSummaryCard,
+} from '@/components/household'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Empty,
   EmptyContent,
@@ -27,50 +18,67 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import {
-  type CreateHouseholdFormValues,
-  createHouseholdSchema,
-} from '@/lib/forms/household.schema'
+import type { CreateHouseholdFormValues } from '@/lib/forms/household.schema'
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 function HouseholdsPage() {
   const households = useHouseholdStore.use.households()
   const isLoading = useHouseholdStore.use.isLoading()
-  const error = useHouseholdStore.use.error()
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [listLoadError, setListLoadError] = useState<string | null>(null)
 
-  const form = useForm<CreateHouseholdFormValues>({
-    defaultValues: {
-      name: '',
-    },
-    resolver: zodResolver(createHouseholdSchema),
-  })
+  const shouldShowLoadingState =
+    isInitialLoading && isLoading && households.length === 0
+  const shouldShowBlockingError =
+    !shouldShowLoadingState && listLoadError && households.length === 0
+
+  const loadHouseholds = async () => {
+    try {
+      setListLoadError(null)
+
+      await householdActions.fetchHouseholds()
+    } catch (loadError) {
+      setListLoadError(
+        loadError instanceof Error
+          ? loadError.message
+          : 'Load households failed',
+      )
+    }
+  }
 
   useEffect(() => {
-    void householdActions.fetchHouseholds()
+    let isMounted = true
+
+    void loadHouseholds().finally(() => {
+      if (isMounted) {
+        setIsInitialLoading(false)
+      }
+    })
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const onSubmit = async (values: CreateHouseholdFormValues) => {
+    setIsCreating(true)
+
     try {
       await householdActions.createHousehold(values)
 
-      form.reset({
-        name: '',
-      })
-
       setIsCreateDialogOpen(false)
       toast.success(t('app.households.feedback.createSuccess'))
+
+      return true
     } catch {
       toast.error(t('app.households.feedback.createFailed'))
+
+      return false
+    } finally {
+      setIsCreating(false)
     }
   }
 
@@ -85,90 +93,41 @@ function HouseholdsPage() {
             {t('app.households.description')}
           </p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button type='button' variant='outline'>
-              <Plus data-icon='inline-start' />
-              {t('app.households.actions.create')}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='sm:max-w-md' showCloseButton={false}>
-            <DialogHeader>
-              <DialogTitle>{t('app.households.create.title')}</DialogTitle>
-              <DialogDescription>
-                {t('app.households.create.description')}
-              </DialogDescription>
-            </DialogHeader>
-            <form
-              className='flex flex-col gap-5'
-              onSubmit={form.handleSubmit(onSubmit)}>
-              <FieldGroup>
-                <Controller
-                  control={form.control}
-                  name='name'
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor='household-name'>
-                        {t('app.households.fields.householdName.label')}
-                      </FieldLabel>
-                      <FieldContent>
-                        <Input
-                          {...field}
-                          aria-invalid={fieldState.invalid}
-                          id='household-name'
-                          placeholder={t(
-                            'app.households.fields.householdName.placeholder',
-                          )}
-                        />
-                        {fieldState.invalid ? (
-                          <FieldError errors={[fieldState.error]} />
-                        ) : null}
-                      </FieldContent>
-                    </Field>
-                  )}
-                />
-              </FieldGroup>
-              <DialogFooter>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  onClick={() => setIsCreateDialogOpen(false)}>
-                  {t('common.actions.cancel')}
-                </Button>
-                <Button disabled={isLoading} type='submit'>
-                  {isLoading
-                    ? t('app.households.actions.creating')
-                    : t('app.households.actions.create')}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <HouseholdCreateDialog
+          isOpen={isCreateDialogOpen}
+          isSubmitting={isCreating}
+          onOpenChange={setIsCreateDialogOpen}
+          onSubmit={onSubmit}
+        />
       </header>
 
-      {isLoading ? (
-        <Card>
-          <CardContent className='pt-1 text-sm text-muted-foreground'>
-            {t('app.households.loading')}
-          </CardContent>
-        </Card>
-      ) : null}
+      {shouldShowLoadingState ? <HouseholdsLoadingState /> : null}
 
-      {!isLoading && error ? (
+      {shouldShowBlockingError ? (
         <Card>
-          <CardContent className='flex items-center justify-between gap-2 pt-1'>
-            <p className='text-sm text-destructive'>{error}</p>
+          <CardContent className='flex flex-wrap items-center justify-between gap-2 pt-4'>
+            <p className='text-sm text-destructive' role='alert'>
+              {listLoadError}
+            </p>
             <Button
               type='button'
               variant='outline'
-              onClick={() => void householdActions.fetchHouseholds()}>
+              onClick={() => {
+                setIsInitialLoading(true)
+
+                void loadHouseholds().finally(() => {
+                  setIsInitialLoading(false)
+                })
+              }}>
               {t('app.households.actions.retry')}
             </Button>
           </CardContent>
         </Card>
       ) : null}
 
-      {!isLoading && !error && households.length === 0 ? (
+      {!shouldShowLoadingState &&
+      !shouldShowBlockingError &&
+      households.length === 0 ? (
         <Empty className='border'>
           <EmptyHeader>
             <EmptyMedia variant='icon'>
@@ -187,29 +146,10 @@ function HouseholdsPage() {
         </Empty>
       ) : null}
 
-      {!isLoading && !error && households.length > 0 ? (
-        <div className='flex flex-col gap-3'>
+      {!shouldShowLoadingState && households.length > 0 ? (
+        <div className='grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3'>
           {households.map((household) => (
-            <Card key={household.id}>
-              <CardHeader>
-                <div className='flex items-start justify-between gap-2'>
-                  <div className='flex flex-col gap-1'>
-                    <CardTitle>{household.name}</CardTitle>
-                  </div>
-                  <Badge variant='secondary'>{household.role}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className='flex items-center justify-between gap-3'>
-                <p className='text-sm text-muted-foreground'>
-                  {t('app.households.memberCountPlaceholder')}
-                </p>
-                <Button asChild variant='outline'>
-                  <Link href={`/households/${household.id}`}>
-                    {t('app.households.actions.viewDetail')}
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <HouseholdSummaryCard key={household.id} household={household} />
           ))}
         </div>
       ) : null}

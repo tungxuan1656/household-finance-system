@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HouseholdMembersCard } from '@/components/household/household-members-card'
+import { t } from '@/lib/i18n/t'
 
 const fetchHouseholdMembersMock = vi.fn(
   async (_householdId: string): Promise<unknown[]> => [],
@@ -86,5 +87,157 @@ describe('HouseholdMembersCard', () => {
     expect(fetchHouseholdMembersMock).toHaveBeenCalledWith('h-1')
     expect(screen.queryByTestId('invite-dialog')).not.toBeInTheDocument()
     expect(screen.queryAllByRole('button')).toHaveLength(0)
+  })
+
+  it('renders members as a stacked list with confirmation dialog for removal', async () => {
+    render(<HouseholdMembersCard householdId='h-1' isAdmin={true} />)
+
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+    expect(screen.getByText('Admin User')).toBeInTheDocument()
+    expect(screen.getByText('member@example.com')).toBeInTheDocument()
+
+    expect(
+      screen.getAllByRole('button', {
+        name: t('app.householdDetail.members.actions.remove'),
+      })[0],
+    ).toBeInTheDocument()
+
+    fireEvent.click(
+      screen.getAllByRole('button', {
+        name: t('app.householdDetail.members.actions.remove'),
+      })[0],
+    )
+
+    expect(
+      screen.getByRole('alertdialog', {
+        name: t('app.householdDetail.members.removeDialog.title'),
+      }),
+    ).toBeInTheDocument()
+
+    const footer = screen
+      .getByRole('button', {
+        name: t('app.householdDetail.members.removeDialog.confirm'),
+      })
+      .closest('[data-slot="alert-dialog-footer"]')
+
+    expect(footer).toHaveClass('flex-col')
+    expect(footer).not.toHaveClass('flex-col-reverse')
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: t('app.householdDetail.members.removeDialog.confirm'),
+      }),
+    )
+
+    expect(removeHouseholdMemberMock).toHaveBeenCalledWith('h-1', 'u-admin')
+  })
+
+  it('shows a retry action when loading members fails', () => {
+    storeState.members = []
+    storeState.error = 'Unable to load members'
+
+    render(<HouseholdMembersCard householdId='h-1' isAdmin={true} />)
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: t('app.households.actions.retry'),
+      }),
+    )
+
+    expect(fetchHouseholdMembersMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('keeps existing members visible when member removal fails', async () => {
+    const removeFailedMessage = t(
+      'app.householdDetail.feedback.removeMemberFailed',
+    )
+
+    removeHouseholdMemberMock.mockImplementationOnce(async () => {
+      storeState.error = 'Unable to remove member'
+      throw new Error('remove failed')
+    })
+
+    const { rerender } = render(
+      <HouseholdMembersCard householdId='h-1' isAdmin={true} />,
+    )
+
+    fireEvent.click(
+      screen.getAllByRole('button', {
+        name: t('app.householdDetail.members.actions.remove'),
+      })[0],
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: t('app.householdDetail.members.removeDialog.confirm'),
+      }),
+    )
+
+    rerender(<HouseholdMembersCard householdId='h-1' isAdmin={true} />)
+
+    expect(screen.getByText('Admin User')).toBeInTheDocument()
+    expect(screen.getByText('member@example.com')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText(removeFailedMessage)).toBeInTheDocument()
+    })
+
+    expect(
+      screen.getByRole('button', { name: t('app.households.actions.retry') }),
+    ).toBeInTheDocument()
+  })
+
+  it('does not replace the remove-member banner with an unrelated shared store error', async () => {
+    const removeFailedMessage = t(
+      'app.householdDetail.feedback.removeMemberFailed',
+    )
+
+    removeHouseholdMemberMock.mockImplementationOnce(async () => {
+      storeState.error = 'Unable to remove member'
+      throw new Error('remove failed')
+    })
+
+    const { rerender } = render(
+      <HouseholdMembersCard householdId='h-1' isAdmin={true} />,
+    )
+
+    fireEvent.click(
+      screen.getAllByRole('button', {
+        name: t('app.householdDetail.members.actions.remove'),
+      })[0],
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: t('app.householdDetail.members.removeDialog.confirm'),
+      }),
+    )
+
+    rerender(<HouseholdMembersCard householdId='h-1' isAdmin={true} />)
+
+    await waitFor(() => {
+      expect(screen.getByText(removeFailedMessage)).toBeInTheDocument()
+    })
+
+    storeState.error = 'Update household failed'
+    rerender(<HouseholdMembersCard householdId='h-1' isAdmin={true} />)
+
+    expect(screen.getByText(removeFailedMessage)).toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Update household failed'),
+    ).not.toBeInTheDocument()
+  })
+
+  it('keeps existing members visible while shared loading flips during a background member action', () => {
+    storeState.isLoading = true
+
+    const { container } = render(
+      <HouseholdMembersCard householdId='h-1' isAdmin={true} />,
+    )
+
+    expect(screen.getByText('Admin User')).toBeInTheDocument()
+    expect(screen.getByText('member@example.com')).toBeInTheDocument()
+    expect(container.querySelectorAll('[data-slot="skeleton"]').length).toBe(0)
   })
 })

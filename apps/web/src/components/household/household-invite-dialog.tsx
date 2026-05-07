@@ -165,6 +165,7 @@ export const HouseholdInviteDialog = ({
               </FieldLabel>
               <Input
                 readOnly
+                className='bg-muted text-muted-foreground'
                 id='invite-link'
                 placeholder={t(
                   'app.householdDetail.members.invite.fields.link.placeholder',
@@ -175,7 +176,7 @@ export const HouseholdInviteDialog = ({
           </FieldGroup>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className='flex-col sm:flex-row'>
           <Button
             disabled={!inviteLink}
             type='button'
