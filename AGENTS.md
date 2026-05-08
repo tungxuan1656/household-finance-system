@@ -82,10 +82,11 @@ This repository supports a small team building a reliable expense management app
 ## Quick Start
 
 Before writing or changing code:
-1. Read this file and [ARCHITECTURE.md](ARCHITECTURE.md).
-2. Run `./init.sh`.
-3. Review `harness/feature_index.json` and the relevant file in `harness/features/`.
-4. For plan or product-behavior context, read `docs/PLANS.md` and `docs/product-specs/` as needed.
+1. Always read the `skill-router` skill first to choose the right skill for the task.
+2. Read this file and [ARCHITECTURE.md](ARCHITECTURE.md).
+3. Run `./init.sh`.
+4. Review `harness/feature_index.json` and the relevant file in `harness/features/`.
+5. For plan or product-behavior context, read `docs/PLANS.md` and `docs/product-specs/` as needed.
 
 ## Session Rules
 
