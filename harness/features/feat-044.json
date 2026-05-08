@@ -3,7 +3,7 @@
   "name": "Analytics export path and product hardening follow-up",
   "description": "Extend the analytics surface beyond an on-screen dashboard by adding a deliberate export/snapshot path and the surrounding product hardening needed for users to trust analytics outputs operationally. This follow-up should align the analytics experience more closely with the product spec by treating the dashboard as a source for both insight consumption and portable reporting. Scope should remain disciplined: strengthen exportability, consistency, and user-facing completeness without drifting into forecasting or second-phase analytics ambitions.",
   "dependencies": ["feat-028", "feat-029"],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-05-07"
+  "status": "done",
+  "evidence": "Implemented `/api/v1/analytics/export` CSV flow with overview/comparison/group aggregates plus raw expense rows, added `/insights` export action with truthful gating and filename handling, and verified with worker/web focused tests, typechecks, and `./init.sh` on 2026-05-08.",
+  "updated_at": "2026-05-08"
 }

@@ -30,14 +30,14 @@ function InsightsGroupsSection({
           <div
             key={group.groupId}
             className='flex items-center justify-between gap-4 rounded-lg border p-3'>
-            <div className='flex flex-col gap-1'>
-              <span>{group.groupName}</span>
+            <div className='flex min-w-0 flex-col gap-1'>
+              <span className='truncate'>{group.groupName}</span>
               <span className='text-sm text-muted-foreground'>
                 {group.expenseCount} · {group.overlapPercentOfTotal}%{' '}
                 {t('insights.groups.overlapShareLabel')}
               </span>
             </div>
-            <span className='font-medium'>
+            <span className='min-w-0 font-medium break-words'>
               {formatCurrency(group.totalSpendMinor, data.currencyCode)}
             </span>
           </div>

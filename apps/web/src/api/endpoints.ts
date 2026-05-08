@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
     comparison: '/analytics/comparison',
     groups: '/analytics/groups',
     overview: '/analytics/overview',
+    export: '/analytics/export',
   },
   auth: {
     logout: '/auth/logout',

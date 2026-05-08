@@ -1,3 +1,4 @@
+export { AnalyticsExportAction } from './analytics-export-action'
 export { InsightsChartsSection } from './insights-charts-section'
 export { InsightsComparisonSection } from './insights-comparison-section'
 export { InsightsGroupsSection } from './insights-groups-section'

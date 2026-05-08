@@ -1,4 +1,6 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { InsightsPage } from '@/views/app/insights-page'
@@ -6,6 +8,7 @@ import { InsightsPage } from '@/views/app/insights-page'
 const useAnalyticsOverviewQueryMock = vi.fn()
 const useAnalyticsComparisonQueryMock = vi.fn()
 const useAnalyticsGroupsQueryMock = vi.fn()
+const exportAnalyticsCsvMock = vi.fn()
 const useReferenceCategoriesQueryMock = vi.fn()
 const fetchHouseholdsMock = vi.fn()
 const householdStoreState = {
@@ -20,6 +23,7 @@ vi.mock('@/hooks/api/use-analytics', () => ({
     useAnalyticsComparisonQueryMock(...args),
   useAnalyticsGroupsQuery: (...args: unknown[]) =>
     useAnalyticsGroupsQueryMock(...args),
+  exportAnalyticsCsv: (...args: unknown[]) => exportAnalyticsCsvMock(...args),
 }))
 
 vi.mock('@/hooks/api/use-reference-data', () => ({
@@ -38,12 +42,24 @@ vi.mock('@/stores/household.store', () => ({
   },
 }))
 
+vi.mock('recharts', async () => {
+  const actual = await vi.importActual<typeof import('recharts')>('recharts')
+
+  return {
+    ...actual,
+    ResponsiveContainer: ({ children }: { children: ReactNode }) => (
+      <div style={{ height: 320, width: 640 }}>{children}</div>
+    ),
+  }
+})
+
 describe('InsightsPage', () => {
   beforeEach(() => {
     fetchHouseholdsMock.mockReset()
     useAnalyticsOverviewQueryMock.mockReset()
     useAnalyticsComparisonQueryMock.mockReset()
     useAnalyticsGroupsQueryMock.mockReset()
+    exportAnalyticsCsvMock.mockReset()
     householdStoreState.currentHousehold = { id: 'hh-1' }
     householdStoreState.households = [{ id: 'hh-1' }]
 
@@ -333,6 +349,25 @@ describe('InsightsPage', () => {
     expect(screen.getByLabelText('insights.periodLabel')).toBeInTheDocument()
   })
 
+  it('allows retrying a failed overview query', async () => {
+    const refetchMock = vi.fn()
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('boom'),
+      refetch: refetchMock,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'insights.actions.retry' }),
+    )
+
+    expect(refetchMock).toHaveBeenCalledTimes(1)
+  })
+
   it('shows loading skeleton while analytics query is loading', () => {
     useAnalyticsOverviewQueryMock.mockReturnValue({
       data: undefined,
@@ -342,10 +377,18 @@ describe('InsightsPage', () => {
 
     render(<InsightsPage initialPeriod='2026-05' />)
 
-    expect(screen.getByTestId('insights-loading')).toBeInTheDocument()
+    expect(screen.getByTestId('insights-summary-skeleton')).toBeInTheDocument()
+
+    expect(
+      screen.queryByTestId('insights-comparison-skeleton'),
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByTestId('insights-groups-skeleton'),
+    ).not.toBeInTheDocument()
   })
 
-  it('shows comparison error state when secondary analytics query fails', () => {
+  it('shows comparison error state while keeping overview visible', () => {
     useAnalyticsOverviewQueryMock.mockReturnValue({
       data: {
         period: '2026-05',
@@ -378,6 +421,260 @@ describe('InsightsPage', () => {
 
     render(<InsightsPage initialPeriod='2026-05' />)
 
-    expect(screen.getByText('insights.error.title')).toBeInTheDocument()
+    // Overview still visible
+    expect(screen.getAllByText(/59[,.]000/).length).toBeGreaterThan(0)
+
+    // Comparison error visible with retry button
+    expect(
+      screen.getByText('insights.error.comparisonTitle'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: 'insights.actions.retryComparison' }),
+    ).toBeInTheDocument()
+  })
+
+  it('shows comparison skeleton while keeping overview visible', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsComparisonQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(screen.getAllByText(/59[,.]000/).length).toBeGreaterThan(0)
+
+    expect(
+      screen.getByTestId('insights-comparison-skeleton'),
+    ).toBeInTheDocument()
+  })
+
+  it('allows retrying a failed groups query', async () => {
+    const refetchGroupsMock = vi.fn()
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsGroupsQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('boom'),
+      refetch: refetchGroupsMock,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'insights.actions.retryGroups' }),
+    )
+
+    expect(refetchGroupsMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows distinct partial failure actions for comparison and groups', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsComparisonQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('comparison failed'),
+    })
+
+    useAnalyticsGroupsQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('groups failed'),
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.getByText('insights.error.comparisonTitle'),
+    ).toBeInTheDocument()
+
+    expect(screen.getByText('insights.error.groupsTitle')).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: 'insights.actions.retryComparison' }),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: 'insights.actions.retryGroups' }),
+    ).toBeInTheDocument()
+  })
+
+  it('keeps header controls stacked on small screens and charts expose summaries', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [{ date: '2026-05-02', totalSpendMinor: 50000 }],
+        topCategories: [
+          {
+            categoryKey: 'transport',
+            totalSpendMinor: 38000,
+            percentOfTotal: 64,
+            expenseCount: 1,
+          },
+        ],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.getByLabelText('insights.periodLabel').closest('label'),
+    ).toHaveClass('w-full')
+
+    expect(
+      screen.getByText(/insights.dailySpend.description: 2026-05-02/i),
+    ).toHaveClass('sr-only')
+
+    expect(
+      screen.getByText(/insights.topCategories.description:/i),
+    ).toHaveClass('sr-only')
+  })
+
+  it('shows export action only when analytics data is ready', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    ).toBeEnabled()
+  })
+
+  it('disables export action when page loading, empty, or error', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+    })
+
+    const { rerender } = render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    ).toBeDisabled()
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 0,
+        expenseCount: 0,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    rerender(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    ).toBeDisabled()
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('boom'),
+    })
+
+    rerender(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    ).toBeDisabled()
+  })
+
+  it('exports current period csv with household context', async () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    exportAnalyticsCsvMock.mockResolvedValue({
+      blob: new Blob(['date,total\n']),
+      filename: 'analytics-2026-05-household.csv',
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    )
+
+    expect(exportAnalyticsCsvMock).toHaveBeenCalledWith({
+      household_id: 'hh-1',
+      period: '2026-05',
+    })
   })
 })

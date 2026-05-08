@@ -9,6 +9,13 @@ export type AnalyticsComparisonParams = AnalyticsOverviewParams
 
 export type AnalyticsGroupsParams = AnalyticsOverviewParams
 
+export type AnalyticsExportParams = AnalyticsOverviewParams
+
+export type AnalyticsExportResult = {
+  blob: Blob
+  filename: string | null
+}
+
 export type AnalyticsDailySpendPointDTO = {
   date: string
   totalSpendMinor: number

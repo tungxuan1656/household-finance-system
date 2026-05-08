@@ -10,6 +10,23 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-08 — Completed feat-044 analytics export path and product hardening follow-up
+
+- Who: Orchestrator
+- Summary: Implemented `feat-044` across worker and web. Added authenticated `GET /api/v1/analytics/export` that reuses existing visibility and membership rules, emits a spreadsheet-friendly CSV with overview, comparison, group, and raw expense sections, and preserves JSON error envelopes on failures. Upgraded `/insights` with an explicit export action that uses current month and household context, respects truthful gating for loading/error/empty states, parses server-provided filenames, and avoids the JSON-envelope client path for raw CSV downloads while preserving auth behavior.
+- Files changed: worker analytics route/handler/repository and integration tests, web analytics transport/types/export action/page tests/i18n, feat-044 harness records, and plan index status.
+- Verification: `pnpm --filter worker test -- --run test/integration/analytics-overview.spec.ts`; `pnpm --filter worker typecheck`; `pnpm --filter web exec vitest run src/views/app/insights-page.test.tsx`; `pnpm --filter web typecheck`; `./init.sh`.
+- Blockers: none.
+- Next steps: if requested, commit feat-044 implementation artifacts and move to next pending feature (`feat-045`).
+
+## 2026-05-08 — Created active ExecPlan for feat-044 analytics export path and product hardening follow-up
+
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-044` as the next pending roadmap feature after `feat-043`. Locked scope around a truthful monthly CSV export from `/insights` using the existing analytics period + household context, plus bounded product hardening so export availability and analytics state handling remain trustworthy. The plan keeps work intentionally within the current analytics slice: additive worker export endpoint, reuse of current analytics visibility/membership rules, raw-row + aggregate CSV output, export gating/error messaging on the web page, and focused regression coverage without drifting into async reporting, PDF/XLSX formats, or feat-045 dashboard unification.
+- Files changed: docs/exec-plans/plans/2026-05-08-feat-044-analytics-export-path-and-product-hardening-follow-up.md, docs/exec-plans/index.md, harness/features/feat-044.json, harness/feature_index.json, harness/progress.md
+- Blockers: exact single-file CSV row schema still needs implementation-time decision; if synchronous CSV size or Worker response constraints prove unsafe for household-sized datasets, implementation must verify current Cloudflare limits before narrowing approach.
+- Next steps: lock CSV row model and empty-export contract, add worker export endpoint + tests, add `/insights` export trigger and truthful gating/error UX, run focused analytics verification plus `./init.sh`, then capture implementation evidence before marking `feat-044` done.
+
 ## 2026-05-08 — Completed feat-043 expense filter surface expansion
 
 - Who: Orchestrator

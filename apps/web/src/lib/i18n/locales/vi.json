@@ -656,13 +656,28 @@
       "overlapShareLabel": "tỷ lệ chồng lấp",
       "tabLabel": "Nhóm"
     },
+    "actions": {
+      "retry": "Thử lại",
+      "retryComparison": "Thử lại phần so sánh",
+      "retryGroups": "Thử lại phần nhóm"
+    },
     "empty": {
       "title": "Chưa có dữ liệu chi tiêu",
       "description": "Hãy thêm khoản chi trong tháng đã chọn để xem tổng quan."
     },
     "error": {
       "title": "Không thể tải tổng quan chi tiêu",
-      "description": "Vui lòng thử lại sau hoặc chuyển sang tháng khác."
+      "description": "Vui lòng thử lại sau hoặc chuyển sang tháng khác.",
+      "comparisonTitle": "Không thể tải phần so sánh theo tháng",
+      "comparisonDescription": "Dữ liệu tổng quan vẫn sẵn sàng. Hãy thử tải lại phần so sánh để xem chênh lệch với tháng trước.",
+      "groupsTitle": "Không thể tải phần chi tiêu theo nhóm",
+      "groupsDescription": "Dữ liệu tổng quan vẫn sẵn sàng. Hãy thử tải lại phần nhóm để xem phân bổ chi tiêu."
+    },
+    "export": {
+      "action": "Xuất CSV",
+      "failed": "Không thể xuất dữ liệu phân tích.",
+      "loading": "Đang xuất...",
+      "success": "Đã tải CSV phân tích."
     }
   },
   "groups": {
