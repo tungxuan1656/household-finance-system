@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-08 — Created active ExecPlan for full repo TypeScript file-size architecture refactor
+
+- Who: Orchestrator
+- Summary: Ran `./scripts/check_ts_length.sh`, confirmed repo-wide TypeScript size pressure across frontend views/components, backend repositories, and integration/component tests, then created an architecture-first ExecPlan for a multi-session refactor. Plan prioritizes safer boundaries over raw line-count reduction: thin web pages/dialogs into feature-local sections and helpers, split worker repositories by query/use-case family plus explicit mappers, and break oversized tests into focused behavior suites while preserving current product behavior and full verification requirements.
+- Files changed: new repo-wide exec plan, exec plan index, and progress log.
+- Verification: `./scripts/check_ts_length.sh` → `Errors: 20`, `Warnings: 8`, `❌ Refactor required`.
+- Blockers: none yet; implementation phase must still map each oversized file to exact split shape before editing.
+- Next steps: execute Phase 0 baseline + slice mapping, then start frontend hot spots (`quick-add-expense-dialog`, `expense-form-fields`, `overview-page`, `onboarding-page`, `insights-page`) before backend repository and test refactor waves.
+
 ## 2026-05-08 — Hardened feat-045 overview dashboard before PR
 
 - Who: Orchestrator
