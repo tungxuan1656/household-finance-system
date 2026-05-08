@@ -16,6 +16,9 @@ ANTIGRAVITY_REPO_DIR="$TMP_ROOT/antigravity-awesome-skills"
 SUPERPOWERS_REPO_URL="https://github.com/obra/superpowers.git"
 SUPERPOWERS_REPO_DIR="$TMP_ROOT/superpowers"
 
+CAVEMAN_REPO_URL="https://github.com/JuliusBrussee/caveman.git"
+CAVEMAN_REPO_DIR="$TMP_ROOT/caveman"
+
 EVERYTHING_SKILLS=(
   frontend-patterns
   frontend-design
@@ -107,6 +110,16 @@ SUPERPOWERS_SKILLS=(
   dispatching-parallel-agents
   finishing-a-development-branch
   # using-git-worktrees
+)
+
+CAVEMAN_SKILLS=(
+  cavecrew
+  caveman-commit
+  caveman-help
+  caveman-review
+  caveman-stats
+  caveman
+  compress
 )
 
 COPIED_SKILLS=0
@@ -251,12 +264,14 @@ main() {
   clone_repo_async "everything-claude-code" "$EVERYTHING_REPO_URL" "$EVERYTHING_REPO_DIR"
   clone_repo_async "antigravity-awesome-skills" "$ANTIGRAVITY_REPO_URL" "$ANTIGRAVITY_REPO_DIR"
   clone_repo_async "superpowers" "$SUPERPOWERS_REPO_URL" "$SUPERPOWERS_REPO_DIR"
+  clone_repo_async "caveman" "$CAVEMAN_REPO_URL" "$CAVEMAN_REPO_DIR"
   wait_for_clones
 
   install_skill_batch "everything-claude-code" "$EVERYTHING_REPO_DIR/skills" "${EVERYTHING_SKILLS[@]}"
   convert_EVERYTHING_agents "$EVERYTHING_REPO_DIR/agents"
   install_skill_batch "antigravity-awesome-skills" "$ANTIGRAVITY_REPO_DIR/skills" "${ANTIGRAVITY_SKILLS[@]}"
   install_skill_batch "superpowers" "$SUPERPOWERS_REPO_DIR/skills" "${SUPERPOWERS_SKILLS[@]}"
+  install_skill_batch "caveman" "$CAVEMAN_REPO_DIR/skills" "${CAVEMAN_SKILLS[@]}"
 
   ./scripts/install_harness_skills.sh
 
