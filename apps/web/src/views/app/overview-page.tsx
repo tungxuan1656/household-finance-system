@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -26,7 +27,7 @@ import { useHouseholdMembersQuery } from '@/hooks/api/use-households'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
 import { useAuthStore } from '@/stores/auth.store'
-import { useHouseholdStore } from '@/stores/household.store'
+import { householdActions, useHouseholdStore } from '@/stores/household.store'
 import type { HouseholdDTO } from '@/types/household'
 
 function getCurrentPeriod() {
@@ -194,12 +195,40 @@ function OverviewPage() {
   const user = useAuthStore.use.user()
   const households = useHouseholdStore.use.households()
   const currentHousehold = useHouseholdStore.use.currentHousehold()
+  const isHouseholdLoading = useHouseholdStore.use.isLoading()
   const period = getCurrentPeriod()
+  const [isInitialHouseholdLoad, setIsInitialHouseholdLoad] = useState(true)
+
+  const shouldLoadHouseholds = households.length === 0 && !currentHousehold
+
+  useEffect(() => {
+    let isMounted = true
+
+    if (!shouldLoadHouseholds) {
+      setIsInitialHouseholdLoad(false)
+
+      return () => {
+        isMounted = false
+      }
+    }
+
+    void householdActions.fetchHouseholds().finally(() => {
+      if (isMounted) {
+        setIsInitialHouseholdLoad(false)
+      }
+    })
+
+    return () => {
+      isMounted = false
+    }
+  }, [shouldLoadHouseholds])
 
   const expenseSummaryQuery = useExpenseSummaryQuery()
   const budgetSummaryQuery = useBudgetListQuery(currentHousehold?.id)
 
-  const showEmptyState = households.length === 0
+  const showInitialHouseholdLoading =
+    isInitialHouseholdLoad && isHouseholdLoading && households.length === 0
+  const showEmptyState = !showInitialHouseholdLoading && households.length === 0
   const canInviteMembers = households.some(
     (household) => household.role === 'admin',
   )
@@ -223,7 +252,39 @@ function OverviewPage() {
         </p>
       </header>
 
-      {showEmptyState ? (
+      {showInitialHouseholdLoading ? (
+        <div className='space-y-6'>
+          <div className='grid gap-4 md:grid-cols-3'>
+            <Card>
+              <CardContent className='pt-6'>
+                <Skeleton className='h-10 w-32' />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className='pt-6'>
+                <Skeleton className='h-10 w-20' />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className='pt-6'>
+                <Skeleton className='h-10 w-20' />
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className='grid gap-4 md:grid-cols-2'>
+            {Array.from({ length: 2 }).map((_, index) => (
+              <Card key={index}>
+                <CardContent className='space-y-2 pt-6'>
+                  <Skeleton className='h-4 w-32' />
+                  <Skeleton className='h-4 w-24' />
+                  <Skeleton className='h-4 w-20' />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      ) : showEmptyState ? (
         <Empty className='border bg-card'>
           <EmptyHeader>
             <EmptyTitle>{t('app.overview.empty.title')}</EmptyTitle>

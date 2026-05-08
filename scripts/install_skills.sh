@@ -276,6 +276,8 @@ main() {
 
   ./scripts/install_harness_skills.sh
 
+  # install ui-ux-pro-max skill
+  npm install -g uipro-cli
   uipro init --ai opencode
   cp -R ".opencode/skills"/* "$DEST_DIR/"
   rm -rf ".opencode"

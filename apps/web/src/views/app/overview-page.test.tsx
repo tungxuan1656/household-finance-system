@@ -7,6 +7,7 @@ const useAnalyticsOverviewQueryMock = vi.fn()
 const useBudgetListQueryMock = vi.fn()
 const useHouseholdMembersQueryMock = vi.fn()
 const useExpenseSummaryQueryMock = vi.fn()
+const fetchHouseholdsMock = vi.fn()
 
 const authStoreState = {
   user: {
@@ -27,6 +28,7 @@ const householdStoreState = {
     slug: string
     timezone: string
   }>,
+  isLoading: false,
 }
 
 vi.mock('next/link', () => ({
@@ -56,11 +58,12 @@ vi.mock('@/stores/auth.store', () => ({
 }))
 
 vi.mock('@/stores/household.store', () => ({
-  householdActions: { fetchHouseholds: vi.fn() },
+  householdActions: { fetchHouseholds: () => fetchHouseholdsMock() },
   useHouseholdStore: {
     use: {
       currentHousehold: () => householdStoreState.currentHousehold,
       households: () => householdStoreState.households,
+      isLoading: () => householdStoreState.isLoading,
     },
   },
 }))
@@ -93,11 +96,14 @@ describe('OverviewPage', () => {
 
     householdStoreState.currentHousehold = null
     householdStoreState.households = []
+    householdStoreState.isLoading = false
 
     useAnalyticsOverviewQueryMock.mockReset()
     useBudgetListQueryMock.mockReset()
     useHouseholdMembersQueryMock.mockReset()
     useExpenseSummaryQueryMock.mockReset()
+    fetchHouseholdsMock.mockReset()
+    fetchHouseholdsMock.mockResolvedValue([])
 
     useAnalyticsOverviewQueryMock.mockReturnValue({
       data: undefined,
@@ -143,6 +149,20 @@ describe('OverviewPage', () => {
     expect(
       screen.getByRole('link', { name: 'app.overview.empty.joinHousehold' }),
     ).toHaveAttribute('href', '/onboarding')
+  })
+
+  it('loads households on mount and does not show empty state while initial household load is pending', () => {
+    householdStoreState.isLoading = true
+
+    render(<OverviewPage />)
+
+    expect(fetchHouseholdsMock).toHaveBeenCalledTimes(1)
+
+    expect(
+      screen.queryByText('app.overview.empty.title'),
+    ).not.toBeInTheDocument()
+
+    expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0)
   })
 
   it('renders household summary cards and scoped links for multiple households', () => {
