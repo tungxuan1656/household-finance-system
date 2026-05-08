@@ -43,6 +43,7 @@ vi.mock('@/stores/household.store', () => ({
 }))
 
 vi.mock('recharts', async () => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const actual = await vi.importActual<typeof import('recharts')>('recharts')
 
   return {
