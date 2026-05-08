@@ -41,6 +41,12 @@ vi.mock('next/link', () => ({
 
 vi.mock('@/lib/i18n/t', () => ({ t: (key: string) => key }))
 
+vi.mock('@/components/ui/skeleton', () => ({
+  Skeleton: (props: React.ComponentProps<'div'>) => (
+    <div data-testid='skeleton' {...props} />
+  ),
+}))
+
 vi.mock('@/stores/auth.store', () => ({
   useAuthStore: {
     use: {
@@ -237,6 +243,18 @@ describe('OverviewPage', () => {
     expect(
       screen.getByRole('link', { name: 'app.overview.actions.viewInsights' }),
     ).toHaveAttribute('href', '/insights')
+
+    expect(
+      screen.getByText(
+        'app.householdDetail.members.invite.fields.role.options.admin',
+      ),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByText(
+        'app.householdDetail.members.invite.fields.role.options.member',
+      ),
+    ).toBeInTheDocument()
   })
 
   it('keeps healthy summary sections visible when budget slice fails', () => {
@@ -365,5 +383,169 @@ describe('OverviewPage', () => {
         name: 'app.overview.actions.inviteMembers',
       }),
     ).not.toBeInTheDocument()
+  })
+
+  it('links invite-members action to households flow for admin household context', () => {
+    householdStoreState.households = [
+      {
+        createdAt: 1,
+        defaultCurrencyCode: 'VND',
+        defaultVisibility: 'private',
+        id: 'household-1',
+        name: 'Gia đình Một',
+        role: 'admin',
+        slug: 'gia-dinh-mot',
+        timezone: 'Asia/Ho_Chi_Minh',
+      },
+    ]
+
+    useHouseholdMembersQueryMock.mockReturnValue({
+      data: { items: [{}] },
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        currencyCode: 'VND',
+        dailySpend: [],
+        expenseCount: 2,
+        householdId: 'household-1',
+        period: '2026-05',
+        topCategories: [],
+        totalSpendMinor: 250000,
+      },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    useBudgetListQueryMock.mockReturnValue({
+      data: { items: [] },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    useExpenseSummaryQueryMock.mockReturnValue({
+      data: {
+        currencyCode: 'VND',
+        expenseCount: 2,
+        totalSpendMinor: 250000,
+      },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    render(<OverviewPage />)
+
+    expect(
+      screen.getByRole('link', { name: 'app.overview.actions.inviteMembers' }),
+    ).toHaveAttribute('href', '/households')
+  })
+
+  it('shows loading placeholders instead of misleading zero values', () => {
+    householdStoreState.households = [
+      {
+        createdAt: 1,
+        defaultCurrencyCode: 'VND',
+        defaultVisibility: 'private',
+        id: 'household-1',
+        name: 'Gia đình Một',
+        role: 'admin',
+        slug: 'gia-dinh-mot',
+        timezone: 'Asia/Ho_Chi_Minh',
+      },
+    ]
+
+    useHouseholdMembersQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+    })
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    useBudgetListQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    useExpenseSummaryQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    render(<OverviewPage />)
+
+    expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0)
+    expect(screen.queryByText('0')).not.toBeInTheDocument()
+    expect(screen.queryByText('—')).not.toBeInTheDocument()
+  })
+
+  it('shows retry actions when summary slices fail', () => {
+    householdStoreState.households = [
+      {
+        createdAt: 1,
+        defaultCurrencyCode: 'VND',
+        defaultVisibility: 'private',
+        id: 'household-1',
+        name: 'Gia đình Một',
+        role: 'admin',
+        slug: 'gia-dinh-mot',
+        timezone: 'Asia/Ho_Chi_Minh',
+      },
+    ]
+
+    useHouseholdMembersQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('members boom'),
+    })
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('analytics boom'),
+      refetch: vi.fn(),
+    })
+
+    useBudgetListQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    useExpenseSummaryQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('summary boom'),
+      refetch: vi.fn(),
+    })
+
+    render(<OverviewPage />)
+
+    expect(
+      screen.getAllByRole('button', {
+        name: 'app.overview.actions.retrySummary',
+      }),
+    ).toHaveLength(2)
+
+    expect(
+      screen.getByRole('button', {
+        name: 'app.overview.actions.retryHouseholdCard',
+      }),
+    ).toBeInTheDocument()
   })
 })

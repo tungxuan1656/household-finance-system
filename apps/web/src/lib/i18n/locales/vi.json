@@ -138,7 +138,7 @@
     "overview": {
       "badge": "Khung đã đăng nhập",
       "budget": {
-        "availableBudgets": "ngân sách đang hiển thị",
+        "availableBudgets": "Đang hiển thị {{count}} ngân sách",
         "description": "Theo dõi nhanh số ngân sách hiện có cho bối cảnh gia đình đang chọn.",
         "errorDescription": "Bạn vẫn có thể xem các phần khác trong khi tải lại ngân sách.",
         "errorTitle": "Không thể tải phần ngân sách",
@@ -158,6 +158,8 @@
         "openBudgetSetup": "Thiết lập ngân sách tháng",
         "openExpenses": "Mở chi tiêu",
         "retryBudget": "Tải lại phần ngân sách",
+        "retryHouseholdCard": "Tải lại thẻ gia đình",
+        "retrySummary": "Tải lại phần tổng quan",
         "viewBudgets": "Xem ngân sách",
         "viewHouseholds": "Xem gia đình",
         "viewInsights": "Xem phân tích"
@@ -167,6 +169,8 @@
         "button": "Mở danh sách gia đình",
         "cardTitle": "Gia đình",
         "description": "Tạo, xem chi tiết và quản lý các gia đình bạn tham gia.",
+        "errorDescription": "Thẻ này đang tạm thiếu dữ liệu. Hãy thử tải lại để xem thành viên, ngân sách, và chi tiêu.",
+        "errorTitle": "Không thể tải thẻ gia đình",
         "expenseCount": "Số khoản chi",
         "memberCount": "Số thành viên",
         "title": "Gia đình của bạn",
@@ -191,6 +195,9 @@
         "description": "Tóm tắt nhanh chi tiêu và số gia đình trước khi đi sâu vào từng khu vực.",
         "expenseCount": "Số khoản chi",
         "householdCount": "Số gia đình",
+        "errorDescription": "Dữ liệu tổng quan đang tạm thời không khả dụng. Hãy thử tải lại phần này.",
+        "errorTitle": "Không thể tải tổng quan",
+        "period": "Tháng {{month}}/{{year}}",
         "title": "Tổng quan hôm nay",
         "totalSpend": "Tổng chi"
       },

@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-08 — Hardened feat-045 overview dashboard before PR
+
+- Who: Orchestrator
+- Summary: Applied pre-PR code-review and UI/UX review fixes to the new `/home` dashboard. Corrected the broken invite-members route for existing-household admins, replaced misleading loading fallbacks with truthful skeleton/error/retry states across summary and household slices, localized household role labels, surfaced visible month context, and raised key mobile actions to larger tap targets. Kept scope tight by reverting unrelated script changes before verification.
+- Files changed: overview page behavior/state handling, overview regression tests, overview locale copy, feat-045 evidence, and progress log.
+- Verification: `pnpm --filter web test -- --run src/views/app/overview-page.test.tsx`; `pnpm --filter web typecheck`; `./init.sh`; `gitnexus_detect_changes` (scope `all`) → low risk, 0 affected processes.
+- Blockers: none.
+- Next steps: commit feat-045 hardening changes and open PR.
+
 ## 2026-05-08 — Completed feat-045 home overview dashboard unification
 
 - Who: Orchestrator
