@@ -137,17 +137,53 @@
     },
     "overview": {
       "badge": "Khung đã đăng nhập",
+      "budget": {
+        "availableBudgets": "Đang hiển thị {{count}} ngân sách",
+        "description": "Theo dõi nhanh số ngân sách hiện có cho bối cảnh gia đình đang chọn.",
+        "errorDescription": "Bạn vẫn có thể xem các phần khác trong khi tải lại ngân sách.",
+        "errorTitle": "Không thể tải phần ngân sách",
+        "selectHousehold": "Chọn một gia đình để xem ngân sách phù hợp.",
+        "title": "Ngân sách"
+      },
       "description": "Trang đích này là nền cho trạng thái đã xác thực. Nó giữ bố cục, điều hướng, và hành vi trạng thái trống ổn định trước khi dữ liệu thật xuất hiện.",
       "demoFamily": "Gia đình mẫu",
+      "empty": {
+        "createHousehold": "Tạo gia đình đầu tiên",
+        "description": "Bắt đầu bằng cách tạo gia đình mới hoặc tham gia bằng lời mời để xem tổng quan chi tiêu, ngân sách, và hoạt động.",
+        "joinHousehold": "Tham gia bằng lời mời",
+        "title": "Bạn chưa có gia đình nào"
+      },
+      "actions": {
+        "inviteMembers": "Mời thành viên",
+        "openBudgetSetup": "Thiết lập ngân sách tháng",
+        "openExpenses": "Mở chi tiêu",
+        "retryBudget": "Tải lại phần ngân sách",
+        "retryHouseholdCard": "Tải lại thẻ gia đình",
+        "retrySummary": "Tải lại phần tổng quan",
+        "viewBudgets": "Xem ngân sách",
+        "viewHouseholds": "Xem gia đình",
+        "viewInsights": "Xem phân tích"
+      },
       "households": {
+        "budgetCount": "Số ngân sách",
         "button": "Mở danh sách gia đình",
         "cardTitle": "Gia đình",
-        "description": "Tạo, xem chi tiết và quản lý các gia đình bạn tham gia."
+        "description": "Tạo, xem chi tiết và quản lý các gia đình bạn tham gia.",
+        "errorDescription": "Thẻ này đang tạm thiếu dữ liệu. Hãy thử tải lại để xem thành viên, ngân sách, và chi tiêu.",
+        "errorTitle": "Không thể tải thẻ gia đình",
+        "expenseCount": "Số khoản chi",
+        "memberCount": "Số thành viên",
+        "title": "Gia đình của bạn",
+        "totalSpend": "Tổng chi"
       },
       "nextAction": {
         "button": "Mở hướng dẫn thiết lập",
         "cardTitle": "Bước tiếp theo",
         "description": "Dẫn người dùng đến tuyến bắt đầu phù hợp."
+      },
+      "nextSteps": {
+        "description": "Đi tiếp đến các luồng thường dùng mà không cần rời màn hình tổng quan.",
+        "title": "Bước tiếp theo"
       },
       "shellCoverage": {
         "body": "Trang công khai auth, onboarding, bảng điều khiển, chi tiêu, ngân sách, phân tích và cài đặt.",
@@ -155,6 +191,16 @@
         "description": "Các tuyến mà các feat sau sẽ thay thế."
       },
       "signedInAs": "Đã đăng nhập với vai trò",
+      "summary": {
+        "description": "Tóm tắt nhanh chi tiêu và số gia đình trước khi đi sâu vào từng khu vực.",
+        "expenseCount": "Số khoản chi",
+        "householdCount": "Số gia đình",
+        "errorDescription": "Dữ liệu tổng quan đang tạm thời không khả dụng. Hãy thử tải lại phần này.",
+        "errorTitle": "Không thể tải tổng quan",
+        "period": "Tháng {{month}}/{{year}}",
+        "title": "Tổng quan hôm nay",
+        "totalSpend": "Tổng chi"
+      },
       "title": "Không gian làm việc gia đình"
     },
     "placeholder": {

@@ -10,6 +10,32 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-08 — Hardened feat-045 overview dashboard before PR
+
+- Who: Orchestrator
+- Summary: Applied pre-PR code-review and UI/UX review fixes to the new `/home` dashboard. Corrected the broken invite-members route for existing-household admins, replaced misleading loading fallbacks with truthful skeleton/error/retry states across summary and household slices, localized household role labels, surfaced visible month context, and raised key mobile actions to larger tap targets. Kept scope tight by reverting unrelated script changes before verification.
+- Files changed: overview page behavior/state handling, overview regression tests, overview locale copy, feat-045 evidence, and progress log.
+- Verification: `pnpm --filter web test -- --run src/views/app/overview-page.test.tsx`; `pnpm --filter web typecheck`; `./init.sh`; `gitnexus_detect_changes` (scope `all`) → low risk, 0 affected processes.
+- Blockers: none.
+- Next steps: commit feat-045 hardening changes and open PR.
+
+## 2026-05-08 — Completed feat-045 home overview dashboard unification
+
+- Who: Orchestrator
+- Summary: Implemented the frontend-first `feat-045` upgrade for `/home`. Replaced the placeholder overview shell with a truthful dashboard that now distinguishes the no-household onboarding path from active household usage, surfaces top-level summary metrics, renders per-household cards with existing household/budget/analytics/member signals, exposes role-aware navigation actions, and keeps healthy sections visible when the budget slice fails. The first pass stayed within existing frontend contracts after focused verification showed backend summary support was unnecessary.
+- Files changed: home overview page, focused overview page tests, overview locale labels, feat-045 plan notes/status tracking, plan index, feature state, and progress log.
+- Verification: `pnpm --filter web test -- --run src/views/app/overview-page.test.tsx src/views/app/households-page.test.tsx src/views/app/budgets-page.test.tsx src/views/app/insights-page.test.tsx`; `pnpm --filter web typecheck`; `./init.sh`.
+- Blockers: none.
+- Next steps: if requested, commit feat-045 implementation artifacts.
+
+## 2026-05-08 — Created active ExecPlan for feat-045 home overview dashboard unification
+
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-045` as next pending roadmap feature after `feat-044`. Locked scope around a frontend-first rebuild of `/home` from placeholder shell into truthful top-level dashboard that composes existing household, budget, analytics, expense, and onboarding surfaces, preserves explicit household context without inventing hidden active-household state, and uses a stop-and-log decision gate before any additive backend summary contract. Plan requires explicit handling for no-household onboarding state, multi-household summary state, partial-failure degradation, role-aware quick actions, focused dashboard tests, and final full verification with `./init.sh`.
+- Files changed: docs exec plan for feat-045, exec plan index, feat-045 harness state, and progress log.
+- Blockers: current implementation path still needs one early decision on whether existing frontend hook composition is responsive and maintainable enough for dashboard-quality summary cards, or whether smallest safe backend summary contract is required.
+- Next steps: define exact `/home` dashboard hierarchy and state model, implement frontend-first overview sections and tests, add backend summary support only if verified necessary, then run focused verification plus `./init.sh` before marking `feat-045` done.
+
 ## 2026-05-08 — Completed feat-044 analytics export path and product hardening follow-up
 
 - Who: Orchestrator
