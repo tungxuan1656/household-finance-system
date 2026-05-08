@@ -41,15 +41,18 @@ export function ExpenseFeedFilters({
 }: ExpenseFeedFiltersProps) {
   return (
     <div className='flex flex-col gap-4'>
-      <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
+      <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
         <Input
           aria-label='expense feed search'
+          className='h-10 md:h-8'
           placeholder={t('expense.feed.filters.searchPlaceholder')}
+          type='search'
           value={values.search}
           onChange={(event) => onChange('search', event.target.value)}
         />
         <NativeSelect
           aria-label='expense feed visibility'
+          className='w-full'
           value={values.visibility}
           onChange={(event) => onChange('visibility', event.target.value)}>
           <NativeSelectOption value=''>
@@ -64,6 +67,7 @@ export function ExpenseFeedFilters({
         </NativeSelect>
         <NativeSelect
           aria-label='expense feed category'
+          className='w-full'
           value={values.categoryKey}
           onChange={(event) => onChange('categoryKey', event.target.value)}>
           <NativeSelectOption value=''>
@@ -77,11 +81,9 @@ export function ExpenseFeedFilters({
         </NativeSelect>
         <NativeSelect
           aria-label='expense feed sort'
+          className='w-full'
           value={values.sort}
           onChange={(event) => onChange('sort', event.target.value)}>
-          <NativeSelectOption value=''>
-            {t('expense.feed.filters.sortLatest')}
-          </NativeSelectOption>
           <NativeSelectOption value='occurred_at_desc'>
             {t('expense.feed.filters.sortLatest')}
           </NativeSelectOption>
@@ -91,16 +93,18 @@ export function ExpenseFeedFilters({
         </NativeSelect>
       </div>
 
-      <div className='rounded-lg border border-border bg-card'>
-        <div className='flex flex-col gap-1 border-b border-border px-4 py-3'>
-          <h2 className='text-sm font-medium'>
-            {t('expense.feed.filters.advancedTitle')}
-          </h2>
-          <p className='text-sm text-muted-foreground'>
-            {t('expense.feed.filters.advancedDescription')}
-          </p>
-        </div>
-        <div className='px-4 py-4'>
+      <details className='rounded-lg border border-border bg-card'>
+        <summary className='cursor-pointer list-none px-4 py-3 marker:hidden'>
+          <span className='flex flex-col gap-1'>
+            <span className='text-sm font-medium'>
+              {t('expense.feed.filters.advancedTitle')}
+            </span>
+            <span className='text-sm text-muted-foreground'>
+              {t('expense.feed.filters.advancedDescription')}
+            </span>
+          </span>
+        </summary>
+        <div className='border-t border-border px-4 py-4'>
           <FieldGroup>
             <FieldGroup className='grid gap-4 lg:grid-cols-2'>
               <Field>
@@ -109,7 +113,7 @@ export function ExpenseFeedFilters({
                 </FieldLabel>
                 <FieldContent>
                   <Input
-                    aria-label='expense feed date from'
+                    className='h-10 md:h-8'
                     id='expense-feed-date-from'
                     type='date'
                     value={values.dateFrom}
@@ -125,7 +129,7 @@ export function ExpenseFeedFilters({
                 </FieldLabel>
                 <FieldContent>
                   <Input
-                    aria-label='expense feed date to'
+                    className='h-10 md:h-8'
                     id='expense-feed-date-to'
                     type='date'
                     value={values.dateTo}
@@ -141,7 +145,7 @@ export function ExpenseFeedFilters({
                 </FieldLabel>
                 <FieldContent>
                   <Input
-                    aria-label='expense feed amount min'
+                    className='h-10 md:h-8'
                     id='expense-feed-amount-min'
                     inputMode='numeric'
                     type='number'
@@ -158,7 +162,7 @@ export function ExpenseFeedFilters({
                 </FieldLabel>
                 <FieldContent>
                   <Input
-                    aria-label='expense feed amount max'
+                    className='h-10 md:h-8'
                     id='expense-feed-amount-max'
                     inputMode='numeric'
                     type='number'
@@ -175,7 +179,7 @@ export function ExpenseFeedFilters({
                 </FieldLabel>
                 <FieldContent>
                   <NativeSelect
-                    aria-label='expense feed group'
+                    className='w-full'
                     id='expense-feed-group'
                     value={values.groupId}
                     onChange={(event) =>
@@ -195,7 +199,7 @@ export function ExpenseFeedFilters({
             </FieldGroup>
           </FieldGroup>
         </div>
-      </div>
+      </details>
     </div>
   )
 }

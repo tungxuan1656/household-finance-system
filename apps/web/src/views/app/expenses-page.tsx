@@ -27,8 +27,8 @@ const DEFAULT_FILTER_VALUES: ExpenseFeedFilterValues = {
   dateTo: '',
   groupId: '',
   search: '',
-  sort: '',
-  visibility: 'household',
+  sort: 'occurred_at_desc',
+  visibility: '',
 }
 
 const toTimestamp = (value: string, endOfDay: boolean) => {
@@ -136,14 +136,14 @@ function ExpensesPage() {
   }
 
   return (
-    <div className='flex flex-col gap-6'>
-      <header className='flex items-center justify-between'>
+    <div className='flex flex-col gap-4 sm:gap-6'>
+      <header className='flex flex-wrap items-center justify-between gap-4'>
         <div className='flex flex-col gap-1'>
           <h1 className='font-heading text-2xl tracking-tight'>
             {t('expense.feed.title')}
           </h1>
         </div>
-        <Button asChild>
+        <Button asChild className='w-full sm:w-auto' size='lg'>
           <Link href={PATHS.ADD_EXPENSE}>{t('expense.addTitle')}</Link>
         </Button>
       </header>

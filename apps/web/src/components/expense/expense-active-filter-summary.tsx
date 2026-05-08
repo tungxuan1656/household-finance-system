@@ -25,13 +25,19 @@ export function ExpenseActiveFilterSummary({
         </p>
         <div className='flex flex-wrap gap-2'>
           {labels.map((label) => (
-            <Badge key={label} variant='secondary'>
+            <Badge
+              key={label}
+              className='h-6 text-sm sm:h-5 sm:text-xs'
+              variant='secondary'>
               {label}
             </Badge>
           ))}
         </div>
       </div>
-      <Button variant='outline' onClick={onReset}>
+      <Button
+        className='h-10 w-full sm:h-8 sm:w-auto'
+        variant='outline'
+        onClick={onReset}>
         {t('expense.feed.filters.reset')}
       </Button>
     </div>

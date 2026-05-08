@@ -100,11 +100,32 @@ describe('ExpensesPage', () => {
     expect(screen.getByLabelText('expense feed visibility')).toBeInTheDocument()
     expect(screen.getByLabelText('expense feed category')).toBeInTheDocument()
     expect(screen.getByLabelText('expense feed sort')).toBeInTheDocument()
-    expect(screen.getByLabelText('expense feed date from')).toBeInTheDocument()
-    expect(screen.getByLabelText('expense feed date to')).toBeInTheDocument()
-    expect(screen.getByLabelText('expense feed amount min')).toBeInTheDocument()
-    expect(screen.getByLabelText('expense feed amount max')).toBeInTheDocument()
-    expect(screen.getByLabelText('expense feed group')).toBeInTheDocument()
+
+    expect(
+      screen.queryByText('expense.feed.filters.activeTitle'),
+    ).not.toBeInTheDocument()
+
+    await user.click(screen.getByText('expense.feed.filters.advancedTitle'))
+
+    expect(
+      screen.getByLabelText('expense.feed.filters.dateFrom'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('expense.feed.filters.dateTo'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('expense.feed.filters.amountMin'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('expense.feed.filters.amountMax'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('expense.groupPicker.label'),
+    ).toBeInTheDocument()
 
     await user.type(screen.getByLabelText('expense feed search'), ' lunch ')
 
@@ -124,16 +145,27 @@ describe('ExpensesPage', () => {
     )
 
     await user.type(
-      screen.getByLabelText('expense feed date from'),
+      screen.getByLabelText('expense.feed.filters.dateFrom'),
       '2026-05-01',
     )
 
-    await user.type(screen.getByLabelText('expense feed date to'), '2026-05-31')
-    await user.type(screen.getByLabelText('expense feed amount min'), '100')
-    await user.type(screen.getByLabelText('expense feed amount max'), '500')
+    await user.type(
+      screen.getByLabelText('expense.feed.filters.dateTo'),
+      '2026-05-31',
+    )
+
+    await user.type(
+      screen.getByLabelText('expense.feed.filters.amountMin'),
+      '100',
+    )
+
+    await user.type(
+      screen.getByLabelText('expense.feed.filters.amountMax'),
+      '500',
+    )
 
     await user.selectOptions(
-      screen.getByLabelText('expense feed group'),
+      screen.getByLabelText('expense.groupPicker.label'),
       'group-1',
     )
 
