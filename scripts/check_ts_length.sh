@@ -41,6 +41,9 @@ detect_type_and_limit() {
   if [[ "$file" == *.test.ts || "$file" == *.spec.ts ]]; then
     echo "TEST $MAX_TEST"
 
+  elif [[ "$file" == *"/repositories/"* || "$file" == *"-repository.ts" ]]; then
+    echo "REPOSITORY $MAX_REPOSITORY"
+
   elif [[ "$file" == *"/components/"* || "$file" == *.tsx ]]; then
     echo "COMPONENT $MAX_COMPONENT"
 
@@ -52,9 +55,6 @@ detect_type_and_limit() {
 
   elif [[ "$file" == *"/services/"* ]]; then
     echo "SERVICE $MAX_SERVICE"
-
-  elif [[ "$file" == *"/repositories/"* || "$file" == *"-repository.ts" ]]; then
-    echo "REPOSITORY $MAX_REPOSITORY"
 
   elif [[ "$file" == *"/controllers/"* ]]; then
     echo "CONTROLLER $MAX_CONTROLLER"
