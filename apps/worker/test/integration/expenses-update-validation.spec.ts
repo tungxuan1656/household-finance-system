@@ -51,9 +51,7 @@ describe('PATCH /api/v1/expenses validation', () => {
       occurredAt: Date.now(),
     })
     expect(createResponse.status).toBe(201)
-    const created = await parseJson<{ data: { id: string } }>(
-      createResponse as never,
-    )
+    const created = await parseJson<{ data: { id: string } }>(createResponse)
 
     const response = await SELF.fetch(
       `https://example.com/api/v1/expenses/${created.data.id}`,

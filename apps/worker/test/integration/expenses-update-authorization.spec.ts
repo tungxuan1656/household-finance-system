@@ -48,9 +48,7 @@ describe('PATCH /api/v1/expenses authorization', () => {
     )
 
     expect(response.status).toBe(403)
-    const payload = await parseJson<{ error: { code: string } }>(
-      response as never,
-    )
+    const payload = await parseJson<{ error: { code: string } }>(response)
     expect(payload.error.code).toBe('FORBIDDEN')
   })
 })
