@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-05-08 — Created active ExecPlan for feat-043 expense filter surface expansion
+
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-043` covering a frontend-first, mobile-first expansion of `/expenses`. Locked scope: preserve the current card-based feed/detail flow and cursor pagination, keep the summary/list on one truthful filter model, expose more of the already-supported expense query power through a responsive filter surface, and avoid silently broadening backend semantics unless implementation proves a specific user-visible gap. The plan explicitly calls for shadcn-governed responsive controls, bounded advanced-filter UI, focused regression coverage, and a stop-and-log decision if broader search semantics or additional backend work become necessary.
+- Files changed: docs/exec-plans/plans/2026-05-08-feat-043-expense-filter-surface-expansion.md, docs/exec-plans/index.md, harness/progress.md
+- Blockers: no confirmed blocker yet; first implementation step must decide the smallest high-value first-pass filter set and confirm whether payer/group and search semantics can stay frontend-first and truthful with current contracts.
+- Next steps: define the exact first-pass filter set, split `/expenses` into bounded filter components, add focused page/list/summary regressions, run frontend verification plus `./init.sh`, and capture harness evidence before marking `feat-043` done.
+
 ## 2026-05-07 — Completed feat-042 household overview enrichment
 
 - Who: Orchestrator
