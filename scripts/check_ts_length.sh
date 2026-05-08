@@ -14,8 +14,6 @@ MAX_UTIL=250
 MAX_TEST=500
 MAX_DEFAULT=300
 
-WARN_OFFSET=50
-
 # ------------------------
 # Temp storage (portable, no declare -A)
 # ------------------------
@@ -23,7 +21,6 @@ TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 found_error=0
-found_warn=0
 
 # ------------------------
 # Count raw lines
@@ -123,17 +120,11 @@ while IFS= read -r -d '' file; do
   [[ ! -f "$file" ]] && continue
 
   read -r type max <<< "$(detect_type_and_limit "$file")"
-  warn=$((max - WARN_OFFSET))
-
   lines=$(count_lines "$file")
 
   if (( lines > max )); then
     printf "ERROR  %5s lines  %s\n" "$lines" "$file" >> "$TMP_DIR/$type"
     found_error=$((found_error + 1))
-
-  elif (( lines > warn )); then
-    printf "WARN   %5s lines  %s\n" "$lines" "$file" >> "$TMP_DIR/$type"
-    found_warn=$((found_warn + 1))
   fi
 
 done < <(git ls-files -z "*.ts" "*.tsx")
@@ -172,7 +163,6 @@ done
 echo "========================"
 echo "Summary:"
 echo "  Errors:   $found_error"
-echo "  Warnings: $found_warn"
 echo "========================"
 echo ""
 
@@ -182,10 +172,6 @@ echo ""
 if (( found_error > 0 )); then
   echo "❌ Refactor required"
   exit 1
-fi
-
-if (( found_warn > 0 )); then
-  echo "⚠️  Consider refactoring"
 fi
 
 echo "✅ All good"
