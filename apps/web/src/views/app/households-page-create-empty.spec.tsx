@@ -12,7 +12,7 @@ import {
   resetHouseholdsPageTestState,
 } from './households-page.test-setup'
 
-describe('HouseholdsPage create flow', () => {
+describe('HouseholdsPage create flow in empty state', () => {
   beforeEach(() => {
     resetHouseholdsPageTestState()
     vi.mocked(householdActions.createHousehold).mockReset()
@@ -29,131 +29,6 @@ describe('HouseholdsPage create flow', () => {
         timezone: 'Asia/Ho_Chi_Minh',
       }),
     )
-  })
-
-  it('keeps existing household list visible while creating a household', async () => {
-    householdStoreState.households = [
-      {
-        createdAt: 1,
-        defaultCurrencyCode: 'VND',
-        defaultVisibility: 'private',
-        id: 'household-1',
-        name: 'Gia đình Một',
-        role: 'admin',
-        slug: 'gia-dinh-mot',
-        timezone: 'Asia/Ho_Chi_Minh',
-      },
-    ]
-
-    let resolveCreateHousehold: (() => void) | undefined
-    const createHouseholdMock = vi
-      .mocked(householdActions.createHousehold)
-      .mockImplementation(async () => {
-        householdStoreState.isLoading = true
-        rerender(<HouseholdsPage />)
-
-        return await new Promise((resolve) => {
-          resolveCreateHousehold = () => {
-            householdStoreState.isLoading = false
-            rerender(<HouseholdsPage />)
-
-            resolve({
-              createdAt: 3,
-              defaultCurrencyCode: 'VND',
-              defaultVisibility: 'private',
-              id: 'household-3',
-              name: 'Nhà mới',
-              role: 'admin',
-              slug: 'nha-moi',
-              timezone: 'Asia/Ho_Chi_Minh',
-            })
-          }
-        })
-      })
-
-    const { container, rerender } = render(<HouseholdsPage />)
-
-    fireEvent.click(
-      screen.getByRole('button', { name: t('app.households.actions.create') }),
-    )
-
-    fireEvent.change(
-      screen.getByLabelText(t('app.households.fields.householdName.label')),
-      {
-        target: { value: 'Nhà mới' },
-      },
-    )
-
-    fireEvent.click(
-      screen.getByRole('button', { name: t('app.households.actions.create') }),
-    )
-
-    await waitFor(() => {
-      expect(createHouseholdMock).toHaveBeenCalledTimes(1)
-    })
-
-    expect(screen.getByText('Gia đình Một')).toBeInTheDocument()
-    expect(container.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(0)
-
-    expect(
-      screen.getByRole('dialog', { name: t('app.households.create.title') }),
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByRole('button', {
-        name: t('app.households.actions.creating'),
-      }),
-    ).toBeDisabled()
-
-    await act(async () => {
-      resolveCreateHousehold?.()
-    })
-  })
-
-  it('keeps existing household list visible when create fails with a shared store error', async () => {
-    householdStoreState.households = [
-      {
-        createdAt: 1,
-        defaultCurrencyCode: 'VND',
-        defaultVisibility: 'private',
-        id: 'household-1',
-        name: 'Gia đình Một',
-        role: 'admin',
-        slug: 'gia-dinh-mot',
-        timezone: 'Asia/Ho_Chi_Minh',
-      },
-    ]
-
-    const createHouseholdMock = vi
-      .mocked(householdActions.createHousehold)
-      .mockImplementation(async () => {
-        householdStoreState.error = 'Create household failed'
-        throw new Error('Create household failed')
-      })
-
-    render(<HouseholdsPage />)
-
-    fireEvent.click(
-      screen.getByRole('button', { name: t('app.households.actions.create') }),
-    )
-
-    fireEvent.change(
-      screen.getByLabelText(t('app.households.fields.householdName.label')),
-      {
-        target: { value: 'Nhà mới' },
-      },
-    )
-
-    fireEvent.click(
-      screen.getByRole('button', { name: t('app.households.actions.create') }),
-    )
-
-    await waitFor(() => {
-      expect(createHouseholdMock).toHaveBeenCalledTimes(1)
-    })
-
-    expect(screen.getByText('Gia đình Một')).toBeInTheDocument()
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('keeps empty state visible when create fails with a shared store error', async () => {

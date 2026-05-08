@@ -4,107 +4,19 @@ import {
   calculateDeltaPercent,
   getAnalyticsSummary,
 } from './expense-analytics-helpers'
+import type {
+  AnalyticsCategoryTotalRow,
+  AnalyticsComparisonDTO,
+  AnalyticsDailySpendPointDTO,
+  AnalyticsGroupsDTO,
+  AnalyticsGroupSpendRow,
+  AnalyticsOverviewDTO,
+  AnalyticsPayerAttributionRow,
+  AnalyticsQueryInput,
+  AnalyticsTopCategoryRow,
+} from './expense-analytics-types'
 import { buildPeriodWhereClause } from './expense-query-scope'
 import { findHouseholdById } from './household-repository'
-
-type AnalyticsQueryInput = {
-  userId: string
-  householdId?: string
-  periodStart: number
-  periodEnd: number
-  period: string
-}
-
-type AnalyticsDailySpendPointDTO = {
-  date: string
-  totalSpendMinor: number
-}
-
-type AnalyticsTopCategoryRow = {
-  categoryKey: ReferenceCategoryKey
-  totalSpendMinor: number
-  expenseCount: number
-}
-
-export type AnalyticsOverviewDTO = {
-  period: string
-  householdId: string | null
-  currencyCode: string
-  totalSpendMinor: number
-  expenseCount: number
-  dailySpend: AnalyticsDailySpendPointDTO[]
-  topCategories: Array<{
-    categoryKey: ReferenceCategoryKey
-    totalSpendMinor: number
-    percentOfTotal: number
-    expenseCount: number
-  }>
-}
-
-export type AnalyticsComparisonDTO = {
-  householdId: string | null
-  currencyCode: string
-  currentPeriod: {
-    period: string
-    totalSpendMinor: number
-    expenseCount: number
-  }
-  previousPeriod: {
-    period: string
-    totalSpendMinor: number
-    expenseCount: number
-  }
-  totalDeltaSpendMinor: number
-  totalDeltaPercent: number | null
-  topCategoryDeltas: Array<{
-    categoryKey: ReferenceCategoryKey
-    currentTotalSpendMinor: number
-    previousTotalSpendMinor: number
-    deltaSpendMinor: number
-    deltaPercent: number | null
-  }>
-  payerAttribution: Array<{
-    payerDisplayName: string | null
-    payerUserId: string
-    totalSpendMinor: number
-    percentOfTotal: number
-    expenseCount: number
-  }>
-}
-
-export type AnalyticsGroupsDTO = {
-  period: string
-  householdId: string | null
-  currencyCode: string
-  totalGroupedSpendMinor: number
-  groups: Array<{
-    groupId: string
-    groupName: string
-    totalSpendMinor: number
-    expenseCount: number
-    overlapPercentOfTotal: number
-    percentOfTotal: number
-  }>
-}
-
-type AnalyticsCategoryTotalRow = {
-  categoryKey: ReferenceCategoryKey
-  totalSpendMinor: number
-}
-
-type AnalyticsPayerAttributionRow = {
-  payerDisplayName: string | null
-  payerUserId: string
-  totalSpendMinor: number
-  expenseCount: number
-}
-
-type AnalyticsGroupSpendRow = {
-  groupId: string
-  groupName: string
-  totalSpendMinor: number
-  expenseCount: number
-}
 
 export { calculateDeltaPercent } from './expense-analytics-helpers'
 
