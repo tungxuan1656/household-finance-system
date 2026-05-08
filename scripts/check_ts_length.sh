@@ -120,6 +120,7 @@ while IFS= read -r -d '' file; do
   [[ "$file" == *.d.ts ]] && continue
   [[ "$file" == *"/dist/"* ]] && continue
   [[ "$file" == *"/build/"* ]] && continue
+  [[ ! -f "$file" ]] && continue
 
   read -r type max <<< "$(detect_type_and_limit "$file")"
   warn=$((max - WARN_OFFSET))

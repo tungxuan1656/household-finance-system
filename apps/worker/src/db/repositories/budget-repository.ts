@@ -1,5 +1,12 @@
 import { newId } from '@/utils/id'
 
+import { computeDateRange } from './budget-period'
+
+export {
+  getBudgetSpendSummary,
+  type StoredBudgetSpendSummary,
+} from './budget-spend-summary-repository'
+
 export interface StoredBudget {
   id: string
   householdId: string
@@ -25,11 +32,6 @@ export interface StoredBudgetLimit {
   limitMinor: number
   createdAt: number
   updatedAt: number
-}
-
-export interface StoredBudgetSpendSummary {
-  totalActualMinor: number
-  categoryActualMinorByKey: Record<string, number>
 }
 
 export interface CreateBudgetInput {
@@ -126,27 +128,6 @@ const BUDGET_LIMIT_COLUMNS = `
   bl.created_at,
   bl.updated_at
 `
-
-/**
- * Compute start_date and end_date from a YYYY-MM period string.
- * start_date = first day of month (YYYY-MM-01)
- * end_date = last day of month (YYYY-MM-DD where DD depends on month)
- */
-const computeDateRange = (
-  period: string,
-): { startDate: string; endDate: string } => {
-  const [yearStr, monthStr] = period.split('-')
-  const year = parseInt(yearStr, 10)
-  const month = parseInt(monthStr, 10)
-  const startDate = `${yearStr}-${monthStr}-01`
-  // Last day of month: day 0 of next month
-  const nextMonth = month === 12 ? 1 : month + 1
-  const nextYear = month === 12 ? year + 1 : year
-  const lastDay = new Date(nextYear, nextMonth - 1, 0).getDate()
-  const endDate = `${yearStr}-${monthStr}-${String(lastDay).padStart(2, '0')}`
-
-  return { startDate, endDate }
-}
 
 export const createBudget = async (
   db: D1Database,
@@ -386,69 +367,4 @@ export const deleteBudgetLimits = async (
     .prepare(`DELETE FROM budget_limits WHERE budget_id = ?`)
     .bind(budgetId)
     .run()
-}
-
-export const getBudgetSpendSummary = async (
-  db: D1Database,
-  input: {
-    householdId: string
-    startDate: string
-    endDate: string
-    categoryKeys: string[]
-  },
-): Promise<StoredBudgetSpendSummary> => {
-  const baseParams = [input.householdId, input.startDate, input.endDate]
-
-  const totalRow = await db
-    .prepare(
-      `SELECT COALESCE(SUM(e.amount_minor), 0) AS totalActualMinor
-         FROM expenses e
-        WHERE e.deleted_at IS NULL
-          AND e.visibility = 'household'
-          AND e.household_id = ?
-          AND date(e.occurred_at / 1000, 'unixepoch') >= ?
-          AND date(e.occurred_at / 1000, 'unixepoch') <= ?`,
-    )
-    .bind(...baseParams)
-    .first<{ totalActualMinor: number | null }>()
-
-  if (input.categoryKeys.length === 0) {
-    return {
-      totalActualMinor: Number(totalRow?.totalActualMinor ?? 0),
-      categoryActualMinorByKey: {},
-    }
-  }
-
-  const placeholders = input.categoryKeys.map(() => '?').join(', ')
-  const categoryParams = [...baseParams, ...input.categoryKeys]
-
-  const categoryRows = await db
-    .prepare(
-      `SELECT e.category_key AS categoryKey, COALESCE(SUM(e.amount_minor), 0) AS totalActualMinor
-         FROM expenses e
-        WHERE e.deleted_at IS NULL
-          AND e.visibility = 'household'
-          AND e.household_id = ?
-          AND date(e.occurred_at / 1000, 'unixepoch') >= ?
-          AND date(e.occurred_at / 1000, 'unixepoch') <= ?
-          AND e.category_key IN (${placeholders})
-        GROUP BY e.category_key
-        ORDER BY e.category_key`,
-    )
-    .bind(...categoryParams)
-    .all<{ categoryKey: string | null; totalActualMinor: number | null }>()
-
-  return {
-    totalActualMinor: Number(totalRow?.totalActualMinor ?? 0),
-    categoryActualMinorByKey: Object.fromEntries(
-      categoryRows.results
-        .filter(
-          (
-            row,
-          ): row is { categoryKey: string; totalActualMinor: number | null } =>
-            typeof row.categoryKey === 'string',
-        )
-        .map((row) => [row.categoryKey, Number(row.totalActualMinor ?? 0)]),
-    ),
-  }
 }
