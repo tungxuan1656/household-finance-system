@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-08 — Completed feat-044 analytics export path and product hardening follow-up
+
+- Who: Orchestrator
+- Summary: Implemented `feat-044` across worker and web. Added authenticated `GET /api/v1/analytics/export` that reuses existing visibility and membership rules, emits a spreadsheet-friendly CSV with overview, comparison, group, and raw expense sections, and preserves JSON error envelopes on failures. Upgraded `/insights` with an explicit export action that uses current month and household context, respects truthful gating for loading/error/empty states, parses server-provided filenames, and avoids the JSON-envelope client path for raw CSV downloads while preserving auth behavior.
+- Files changed: worker analytics route/handler/repository and integration tests, web analytics transport/types/export action/page tests/i18n, feat-044 harness records, and plan index status.
+- Verification: `pnpm --filter worker test -- --run test/integration/analytics-overview.spec.ts`; `pnpm --filter worker typecheck`; `pnpm --filter web exec vitest run src/views/app/insights-page.test.tsx`; `pnpm --filter web typecheck`; `./init.sh`.
+- Blockers: none.
+- Next steps: if requested, commit feat-044 implementation artifacts and move to next pending feature (`feat-045`).
+
 ## 2026-05-08 — Created active ExecPlan for feat-044 analytics export path and product hardening follow-up
 
 - Who: Orchestrator

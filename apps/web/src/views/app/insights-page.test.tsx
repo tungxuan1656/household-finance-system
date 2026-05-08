@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { InsightsPage } from '@/views/app/insights-page'
@@ -6,6 +7,7 @@ import { InsightsPage } from '@/views/app/insights-page'
 const useAnalyticsOverviewQueryMock = vi.fn()
 const useAnalyticsComparisonQueryMock = vi.fn()
 const useAnalyticsGroupsQueryMock = vi.fn()
+const exportAnalyticsCsvMock = vi.fn()
 const useReferenceCategoriesQueryMock = vi.fn()
 const fetchHouseholdsMock = vi.fn()
 const householdStoreState = {
@@ -20,6 +22,7 @@ vi.mock('@/hooks/api/use-analytics', () => ({
     useAnalyticsComparisonQueryMock(...args),
   useAnalyticsGroupsQuery: (...args: unknown[]) =>
     useAnalyticsGroupsQueryMock(...args),
+  exportAnalyticsCsv: (...args: unknown[]) => exportAnalyticsCsvMock(...args),
 }))
 
 vi.mock('@/hooks/api/use-reference-data', () => ({
@@ -44,6 +47,7 @@ describe('InsightsPage', () => {
     useAnalyticsOverviewQueryMock.mockReset()
     useAnalyticsComparisonQueryMock.mockReset()
     useAnalyticsGroupsQueryMock.mockReset()
+    exportAnalyticsCsvMock.mockReset()
     householdStoreState.currentHousehold = { id: 'hh-1' }
     householdStoreState.households = [{ id: 'hh-1' }]
 
@@ -379,5 +383,105 @@ describe('InsightsPage', () => {
     render(<InsightsPage initialPeriod='2026-05' />)
 
     expect(screen.getByText('insights.error.title')).toBeInTheDocument()
+  })
+
+  it('shows export action only when analytics data is ready', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    ).toBeEnabled()
+  })
+
+  it('hides export action when page loading, empty, or error', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+    })
+
+    const { rerender } = render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.queryByRole('button', { name: 'insights.export.action' }),
+    ).toBeNull()
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 0,
+        expenseCount: 0,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    rerender(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.queryByRole('button', { name: 'insights.export.action' }),
+    ).toBeNull()
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('boom'),
+    })
+
+    rerender(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.queryByRole('button', { name: 'insights.export.action' }),
+    ).toBeNull()
+  })
+
+  it('exports current period csv with household context', async () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    exportAnalyticsCsvMock.mockResolvedValue({
+      blob: new Blob(['date,total\n']),
+      filename: 'analytics-2026-05-household.csv',
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    )
+
+    expect(exportAnalyticsCsvMock).toHaveBeenCalledWith({
+      household_id: 'hh-1',
+      period: '2026-05',
+    })
   })
 })

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import {
+  AnalyticsExportAction,
   InsightsChartsSection,
   InsightsComparisonSection,
   InsightsGroupsSection,
@@ -147,6 +148,16 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
             ))}
           </NativeSelect>
         </label>
+        <AnalyticsExportAction
+          disabled={false}
+          hidden={
+            isAnyLoading ||
+            Boolean(pageError) ||
+            !data ||
+            data.expenseCount === 0
+          }
+          params={analyticsParams}
+        />
       </header>
 
       {isAnyLoading ? <InsightsLoadingState /> : null}

@@ -51,12 +51,12 @@ Enable signed-in users to export a truthful CSV snapshot from `/insights` for se
 ## Progress
 
 - [x] (2026-05-08) Create and register ExecPlan for `feat-044`; mark harness feature `in_progress`.
-- [ ] (owner: implementation agent) Lock export contract shape and filename strategy, including whether one CSV contains multi-section rows plus raw expenses.
-- [ ] (owner: implementation agent) Add backend schema/handler/repository support for export query and CSV serialization.
-- [ ] (owner: implementation agent) Add worker integration coverage for export headers, auth, validation, visibility, and empty-period behavior.
-- [ ] (owner: implementation agent) Add web export trigger, download helper, and truthful gating/error UX on `/insights`.
-- [ ] (owner: implementation agent) Add or update i18n keys and frontend tests for export availability and hardened analytics states.
-- [ ] (owner: implementation agent) Run focused verification, full `./init.sh`, and capture evidence in harness artifacts.
+- [x] (2026-05-08) Locked export contract to single CSV with multi-section aggregate rows plus raw expense rows, and server-driven `analytics-<period>-<scope>.csv` filenames.
+- [x] (2026-05-08) Added backend schema/handler/repository support for export query and CSV serialization.
+- [x] (2026-05-08) Added worker integration coverage for export headers, auth, validation, visibility, and empty-period behavior.
+- [x] (2026-05-08) Added web export trigger, download helper, and truthful gating/error UX on `/insights`.
+- [x] (2026-05-08) Added i18n keys and frontend tests for export availability and hardened analytics states.
+- [x] (2026-05-08) Ran focused verification, full `./init.sh`, and captured evidence in harness artifacts.
 
 ## Surprises & Discoveries
 
@@ -90,12 +90,14 @@ Enable signed-in users to export a truthful CSV snapshot from `/insights` for se
 
 ## Outcomes & Retrospective
 
-- Pending implementation.
-- Expected acceptance artifacts:
-  - Worker integration test transcript for `GET /api/v1/analytics/export`.
-  - Web test transcript covering export button availability/gating and hardened analytics states.
-  - Evidence that downloaded CSV content/header matches selected month and context.
-  - Full `./init.sh` transcript.
+- Implemented authenticated `GET /api/v1/analytics/export` with stable CSV section rows for overview, comparison deltas, payer attribution, group breakdowns, and raw expenses under existing visibility rules.
+- Implemented `/insights` export action with state gating, filename parsing from `Content-Disposition`, CSV transport outside JSON envelope handling, and fallback filename strategy matching plan contract.
+- Acceptance artifacts captured through:
+  - `pnpm --filter worker test -- --run test/integration/analytics-overview.spec.ts`
+  - `pnpm --filter worker typecheck`
+  - `pnpm --filter web exec vitest run src/views/app/insights-page.test.tsx`
+  - `pnpm --filter web typecheck`
+  - `./init.sh`
 
 ## Context and Orientation
 

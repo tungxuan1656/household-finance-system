@@ -663,6 +663,12 @@
     "error": {
       "title": "Không thể tải tổng quan chi tiêu",
       "description": "Vui lòng thử lại sau hoặc chuyển sang tháng khác."
+    },
+    "export": {
+      "action": "Xuất CSV",
+      "failed": "Không thể xuất dữ liệu phân tích.",
+      "loading": "Đang xuất...",
+      "success": "Đã tải CSV phân tích."
     }
   },
   "groups": {

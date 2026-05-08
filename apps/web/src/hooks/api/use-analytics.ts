@@ -2,12 +2,14 @@ import { useQuery } from '@tanstack/react-query'
 
 import {
   getAnalyticsComparison,
+  getAnalyticsExport,
   getAnalyticsGroups,
   getAnalyticsOverview,
 } from '@/api/analytics'
 import type {
   AnalyticsComparisonDTO,
   AnalyticsComparisonParams,
+  AnalyticsExportParams,
   AnalyticsGroupsDTO,
   AnalyticsGroupsParams,
   AnalyticsOverviewDTO,
@@ -22,6 +24,8 @@ export const ANALYTICS_KEYS = {
     [...ANALYTICS_KEYS.all, 'comparison', params] as const,
   groups: (params: AnalyticsGroupsParams) =>
     [...ANALYTICS_KEYS.all, 'groups', params] as const,
+  export: (params: AnalyticsExportParams) =>
+    [...ANALYTICS_KEYS.all, 'export', params] as const,
 }
 
 type UseAnalyticsOverviewQueryOptions = {
@@ -65,3 +69,6 @@ export const useAnalyticsGroupsQuery = (
     queryFn: () => getAnalyticsGroups(params),
     enabled: options?.enabled,
   })
+
+export const exportAnalyticsCsv = (params: AnalyticsExportParams) =>
+  getAnalyticsExport(params)
