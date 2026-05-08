@@ -11,6 +11,6 @@
     "feat-037"
   ],
   "status": "done",
-  "evidence": "Completed on 2026-05-07 by realigning stale harness records flagged during the repository audit. `feat-011` was updated so its description no longer implies missing invitation/member APIs after later completed household follow-ups; `feat-029` was normalized from `completed` to `done` and given concrete evidence; `feat-037` evidence was strengthened from a vague one-line claim to a verification-backed summary. Planning continuity was kept in sync through the active ExecPlan, `docs/exec-plans/index.md`, and `harness/progress.md`, with final verification via `./init.sh`.",
-  "updated_at": "2026-05-07"
+  "evidence": "Completed on 2026-05-07 by realigning stale harness records flagged during the repository audit. `feat-011` was updated so its description no longer implies missing invitation/member APIs after later completed household follow-ups; `feat-029` was normalized from `completed` to `done` and given concrete evidence; `feat-037` evidence was strengthened from a vague one-line claim to a verification-backed summary. Planning continuity was kept in sync through the active ExecPlan, `docs/exec-plans/index.md`, and `harness/progress.md`, with final verification via `./init.sh`. Follow-up governance work on 2026-05-09 added `docs/testing/` policy and audit docs, normalized touched web test suffixes toward `.test.tsx`, split multiple oversized worker integration suites into semantic shards below repository thresholds, and refreshed the test-structure backlog to match completed cleanup.",
+  "updated_at": "2026-05-09"
 }
