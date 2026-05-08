@@ -170,3 +170,4 @@ Reference:
 - `.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md` for rename/extract/split work.
 - `.agents/skills/gitnexus/gitnexus-guide/SKILL.md` for tool and schema reference.
 - `.agents/skills/gitnexus/gitnexus-cli/SKILL.md` for index/status/clean/wiki commands.
+
