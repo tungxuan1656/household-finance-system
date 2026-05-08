@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { ExpenseActiveFilterSummary } from '@/components/expense/expense-active-filter-summary'
 import {
@@ -16,6 +16,7 @@ import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
+import { householdActions, useHouseholdStore } from '@/stores/household.store'
 import type { ExpenseListParams } from '@/types/expense'
 
 const DEFAULT_FILTER_VALUES: ExpenseFeedFilterValues = {
@@ -53,12 +54,22 @@ const toNumber = (value: string) => {
 }
 
 function ExpensesPage() {
+  const currentHousehold = useHouseholdStore.use.currentHousehold()
+  const households = useHouseholdStore.use.households()
+  const selectedHouseholdId = currentHousehold?.id ?? households[0]?.id
   const [filterValues, setFilterValues] = useState<ExpenseFeedFilterValues>(
     DEFAULT_FILTER_VALUES,
   )
 
   const { data: referenceCategories } = useReferenceCategoriesQuery()
-  const { data: expenseGroupsResponse } = useExpenseGroupListQuery(undefined)
+  const { data: expenseGroupsResponse } =
+    useExpenseGroupListQuery(selectedHouseholdId)
+
+  useEffect(() => {
+    if (households.length === 0) {
+      void householdActions.fetchHouseholds()
+    }
+  }, [households.length])
 
   const categories = useMemo(
     () =>

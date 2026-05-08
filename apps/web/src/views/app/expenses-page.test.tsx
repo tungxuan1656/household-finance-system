@@ -1,12 +1,17 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ExpensesPage } from '@/views/app/expenses-page'
 
 const expenseFeedListMock = vi.fn()
 const expenseFeedSummaryMock = vi.fn()
 const useExpenseGroupListQueryMock = vi.fn()
+const fetchHouseholdsMock = vi.fn()
+const householdStoreState = {
+  currentHousehold: { id: 'household-1' } as { id: string } | null,
+  households: [{ id: 'household-1' }] as Array<{ id: string }>,
+}
 
 vi.mock('@/components/expense/expense-feed-list', () => ({
   ExpenseFeedList: (props: unknown) => {
@@ -49,17 +54,43 @@ vi.mock('@/lib/i18n/t', () => ({
   t: (key: string) => key,
 }))
 
+vi.mock('@/stores/household.store', () => ({
+  householdActions: { fetchHouseholds: () => fetchHouseholdsMock() },
+  useHouseholdStore: {
+    use: {
+      currentHousehold: () => householdStoreState.currentHousehold,
+      households: () => householdStoreState.households,
+    },
+  },
+}))
+
 describe('ExpensesPage', () => {
+  beforeEach(() => {
+    expenseFeedListMock.mockReset()
+    expenseFeedSummaryMock.mockReset()
+    useExpenseGroupListQueryMock.mockReset()
+    fetchHouseholdsMock.mockReset()
+    householdStoreState.currentHousehold = { id: 'household-1' }
+    householdStoreState.households = [{ id: 'household-1' }]
+  })
+
   it('owns expanded feed filter state and passes the same filters to summary and list', async () => {
     const user = userEvent.setup()
 
-    useExpenseGroupListQueryMock.mockReturnValue({
-      data: {
-        items: [{ id: 'group-1', name: 'Trip', householdId: 'household-1' }],
-      },
-    })
+    useExpenseGroupListQueryMock.mockImplementation((householdId?: string) => ({
+      data:
+        householdId === 'household-1'
+          ? {
+              items: [
+                { id: 'group-1', name: 'Trip', householdId: 'household-1' },
+              ],
+            }
+          : undefined,
+    }))
 
     render(<ExpensesPage />)
+
+    expect(useExpenseGroupListQueryMock).toHaveBeenCalledWith('household-1')
 
     expect(
       screen.getByRole('heading', { name: 'expense.feed.title' }),

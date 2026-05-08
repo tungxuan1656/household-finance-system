@@ -92,6 +92,7 @@ Before writing or changing code:
 
 - Work on one feature or plan per session. Do not mix scopes.
 - Run verification before claiming a feature is done.
+- Always run lint with `--fix` when you are linting code, or use `pnpm lint:fix` from the repo root. Do not use lint-only commands when the goal is to apply fixes.
 - Use clear, consistent, maintainable code.
 - Commit with a descriptive message.
 - Update `harness/progress.md` after each session.
