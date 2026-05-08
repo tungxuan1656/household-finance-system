@@ -425,10 +425,12 @@ describe('InsightsPage', () => {
     expect(screen.getAllByText(/59[,.]000/).length).toBeGreaterThan(0)
 
     // Comparison error visible with retry button
-    expect(screen.getByText('insights.error.title')).toBeInTheDocument()
+    expect(
+      screen.getByText('insights.error.comparisonTitle'),
+    ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('button', { name: 'insights.actions.retry' }),
+      screen.getByRole('button', { name: 'insights.actions.retryComparison' }),
     ).toBeInTheDocument()
   })
 
@@ -489,10 +491,91 @@ describe('InsightsPage', () => {
     render(<InsightsPage initialPeriod='2026-05' />)
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'insights.actions.retry' }),
+      screen.getByRole('button', { name: 'insights.actions.retryGroups' }),
     )
 
     expect(refetchGroupsMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows distinct partial failure actions for comparison and groups', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsComparisonQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('comparison failed'),
+    })
+
+    useAnalyticsGroupsQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('groups failed'),
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.getByText('insights.error.comparisonTitle'),
+    ).toBeInTheDocument()
+
+    expect(screen.getByText('insights.error.groupsTitle')).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: 'insights.actions.retryComparison' }),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: 'insights.actions.retryGroups' }),
+    ).toBeInTheDocument()
+  })
+
+  it('keeps header controls stacked on small screens and charts expose summaries', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [{ date: '2026-05-02', totalSpendMinor: 50000 }],
+        topCategories: [
+          {
+            categoryKey: 'transport',
+            totalSpendMinor: 38000,
+            percentOfTotal: 64,
+            expenseCount: 1,
+          },
+        ],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(
+      screen.getByLabelText('insights.periodLabel').closest('label'),
+    ).toHaveClass('w-full')
+
+    expect(
+      screen.getByText(/insights.dailySpend.description: 2026-05-02/i),
+    ).toHaveClass('sr-only')
+
+    expect(
+      screen.getByText(/insights.topCategories.description:/i),
+    ).toHaveClass('sr-only')
   })
 
   it('shows export action only when analytics data is ready', () => {

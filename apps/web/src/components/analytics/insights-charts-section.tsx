@@ -36,6 +36,17 @@ function InsightsChartsSection({
   categoryMap,
   formatCurrency,
 }: InsightsChartsSectionProps) {
+  const dailySpendSummary = data.dailySpend.length
+    ? t('insights.dailySpend.description') +
+      ': ' +
+      data.dailySpend
+        .map(
+          (entry) =>
+            `${entry.date} ${formatCurrency(entry.totalSpendMinor, data.currencyCode)}`,
+        )
+        .join(', ')
+    : t('insights.empty.description')
+
   return (
     <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]'>
       <Card>
@@ -46,6 +57,7 @@ function InsightsChartsSection({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <p className='sr-only'>{dailySpendSummary}</p>
           <div
             aria-label={t('insights.dailySpend.title')}
             className='h-[288px] w-full'
@@ -95,6 +107,18 @@ function InsightsChartsSection({
           </CardDescription>
         </CardHeader>
         <CardContent className='flex flex-col gap-4'>
+          <p className='sr-only'>
+            {data.topCategories.length
+              ? t('insights.topCategories.description') +
+                ': ' +
+                data.topCategories
+                  .map(
+                    (category) =>
+                      `${getCategoryLabel(category.categoryKey)} ${formatCurrency(category.totalSpendMinor, data.currencyCode)} ${category.percentOfTotal}%`,
+                  )
+                  .join(', ')
+              : t('insights.empty.description')}
+          </p>
           <div
             aria-label={t('insights.topCategories.title')}
             className='h-[224px] w-full'

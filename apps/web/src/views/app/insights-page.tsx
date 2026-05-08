@@ -147,8 +147,8 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
             {t('insights.description')}
           </p>
         </div>
-        <div className='flex flex-wrap items-end gap-4'>
-          <label className='flex flex-1 flex-col gap-1 text-sm text-muted-foreground'>
+        <div className='flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:flex-wrap sm:items-end'>
+          <label className='flex w-full flex-col gap-1 text-sm text-muted-foreground sm:min-w-56 sm:flex-1'>
             <span>{t('insights.periodLabel')}</span>
             <NativeSelect
               aria-label={t('insights.periodLabel')}
@@ -224,15 +224,15 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
           ) : comparisonError ? (
             <Empty className='min-h-64 border'>
               <EmptyHeader>
-                <EmptyTitle>{t('insights.error.title')}</EmptyTitle>
+                <EmptyTitle>{t('insights.error.comparisonTitle')}</EmptyTitle>
                 <EmptyDescription>
-                  {t('insights.error.description')}
+                  {t('insights.error.comparisonDescription')}
                 </EmptyDescription>
               </EmptyHeader>
               <Button
                 variant='outline'
                 onClick={() => void refetchComparison()}>
-                {t('insights.actions.retry')}
+                {t('insights.actions.retryComparison')}
               </Button>
             </Empty>
           ) : !comparisonData ? (
@@ -265,13 +265,13 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
           ) : groupsError ? (
             <Empty className='min-h-64 border'>
               <EmptyHeader>
-                <EmptyTitle>{t('insights.error.title')}</EmptyTitle>
+                <EmptyTitle>{t('insights.error.groupsTitle')}</EmptyTitle>
                 <EmptyDescription>
-                  {t('insights.error.description')}
+                  {t('insights.error.groupsDescription')}
                 </EmptyDescription>
               </EmptyHeader>
               <Button variant='outline' onClick={() => void refetchGroups()}>
-                {t('insights.actions.retry')}
+                {t('insights.actions.retryGroups')}
               </Button>
             </Empty>
           ) : !groupsData ? (
