@@ -10,6 +10,24 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-08 — Completed full repo TypeScript file-size architecture refactor
+
+- Who: Orchestrator
+- Summary: Finished the repo-wide architecture-first refactor for oversized TypeScript files. Split large web orchestrators and test suites into focused feature-local modules and setup/spec files, decomposed worker repository hot spots into smaller helper/query-family files with import-compatible re-exports, fixed `scripts/check_ts_length.sh` repository classification and deleted-file scanning edge cases, and reduced the length report from `20` errors / `8` warnings to `0` errors / `10` warnings without changing product behavior.
+- Files changed: repo-wide web page/dialog/test refactors, worker repository/helper/test refactors, TypeScript length script fixes, active exec plan status updates, and progress tracking.
+- Verification: `pnpm test src/views/app/households-page-display.spec.tsx src/views/app/households-page-create.spec.tsx` (web); `pnpm test src/views/app/profile-settings-page-memberships.spec.tsx src/views/app/profile-settings-page-shortcuts.spec.tsx` (web); `pnpm test src/views/app/overview-page-empty-loading.spec.tsx src/views/app/overview-page-content.spec.tsx src/views/app/overview-page-errors.spec.tsx` (web); `pnpm test src/views/app/insights-page-bootstrap.spec.tsx src/views/app/insights-page-states.spec.tsx src/views/app/insights-page-actions.spec.tsx` (web); `pnpm test test/integration/expenses-delete.spec.ts test/integration/expenses-restore.spec.ts` (worker); `pnpm typecheck` in `apps/web`; `pnpm typecheck` in `apps/worker`; `./scripts/check_ts_length.sh` → `Errors: 0`, `Warnings: 10`, `✅ All good`.
+- Blockers: none.
+- Next steps: run full repo verification path `./init.sh`, then commit remaining artifact updates or open PR if requested.
+
+## 2026-05-08 — Created active ExecPlan for full repo TypeScript file-size architecture refactor
+
+- Who: Orchestrator
+- Summary: Ran `./scripts/check_ts_length.sh`, confirmed repo-wide TypeScript size pressure across frontend views/components, backend repositories, and integration/component tests, then created an architecture-first ExecPlan for a multi-session refactor. Plan prioritizes safer boundaries over raw line-count reduction: thin web pages/dialogs into feature-local sections and helpers, split worker repositories by query/use-case family plus explicit mappers, and break oversized tests into focused behavior suites while preserving current product behavior and full verification requirements.
+- Files changed: new repo-wide exec plan, exec plan index, and progress log.
+- Verification: `./scripts/check_ts_length.sh` → `Errors: 20`, `Warnings: 8`, `❌ Refactor required`.
+- Blockers: none yet; implementation phase must still map each oversized file to exact split shape before editing.
+- Next steps: execute Phase 0 baseline + slice mapping, then start frontend hot spots (`quick-add-expense-dialog`, `expense-form-fields`, `overview-page`, `onboarding-page`, `insights-page`) before backend repository and test refactor waves.
+
 ## 2026-05-08 — Hardened feat-045 overview dashboard before PR
 
 - Who: Orchestrator

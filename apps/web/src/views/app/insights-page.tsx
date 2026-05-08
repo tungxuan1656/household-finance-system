@@ -2,65 +2,26 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
-import {
-  AnalyticsExportAction,
-  InsightsChartsSection,
-  InsightsComparisonSection,
-  InsightsGroupsSection,
-  InsightsSummaryCards,
-} from '@/components/analytics'
-import { Button } from '@/components/ui/button'
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from '@/components/ui/empty'
-import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
-import { Skeleton } from '@/components/ui/skeleton'
+import { InsightsChartsSection } from '@/components/analytics'
 import {
   useAnalyticsComparisonQuery,
   useAnalyticsGroupsQuery,
   useAnalyticsOverviewQuery,
 } from '@/hooks/api/use-analytics'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
-import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
+import { InsightsComparisonPanel } from '@/views/app/insights/insights-comparison-panel'
+import { InsightsGroupsPanel } from '@/views/app/insights/insights-groups-panel'
+import { InsightsHeader } from '@/views/app/insights/insights-header'
+import { InsightsOverviewPanel } from '@/views/app/insights/insights-overview-panel'
+import {
+  buildPeriodOptions,
+  formatCurrency,
+  getDefaultPeriod,
+} from '@/views/app/insights/insights-period'
 
 type InsightsPageProps = {
   initialPeriod?: string
-}
-
-const getDefaultPeriod = () => {
-  const now = new Date()
-  const year = now.getUTCFullYear()
-  const month = String(now.getUTCMonth() + 1).padStart(2, '0')
-
-  return `${year}-${month}`
-}
-
-const formatCurrency = (amount: number, currencyCode: string) =>
-  new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amount)
-
-const buildPeriodOptions = (selectedPeriod: string) => {
-  const [yearValue, monthValue] = selectedPeriod.split('-')
-  const year = Number(yearValue)
-  const month = Number(monthValue) - 1
-  const baseDate = new Date(Date.UTC(year, month, 1))
-
-  return Array.from({ length: 6 }, (_, index) => {
-    const optionDate = new Date(baseDate)
-    optionDate.setUTCMonth(baseDate.getUTCMonth() - index)
-
-    const optionYear = optionDate.getUTCFullYear()
-    const optionMonth = String(optionDate.getUTCMonth() + 1).padStart(2, '0')
-    const value = `${optionYear}-${optionMonth}`
-
-    return { value, label: value }
-  })
 }
 
 function InsightsPage({ initialPeriod }: InsightsPageProps) {
@@ -138,153 +99,46 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
 
   return (
     <div className='flex flex-col gap-6'>
-      <header className='flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between'>
-        <div className='flex flex-col gap-1'>
-          <h1 className='font-heading text-2xl tracking-tight'>
-            {t('insights.title')}
-          </h1>
-          <p className='text-sm text-muted-foreground'>
-            {t('insights.description')}
-          </p>
-        </div>
-        <div className='flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:flex-wrap sm:items-end'>
-          <label className='flex w-full flex-col gap-1 text-sm text-muted-foreground sm:min-w-56 sm:flex-1'>
-            <span>{t('insights.periodLabel')}</span>
-            <NativeSelect
-              aria-label={t('insights.periodLabel')}
-              value={period}
-              onChange={(event) => setPeriod(event.target.value)}>
-              {periodOptions.map((option) => (
-                <NativeSelectOption key={option.value} value={option.value}>
-                  {option.label}
-                </NativeSelectOption>
-              ))}
-            </NativeSelect>
-          </label>
-          <AnalyticsExportAction
-            disabled={isExportDisabled}
-            params={analyticsParams}
-          />
-        </div>
-      </header>
+      <InsightsHeader
+        isExportDisabled={isExportDisabled}
+        params={analyticsParams}
+        period={period}
+        periodOptions={periodOptions}
+        onPeriodChange={setPeriod}
+      />
 
-      {/* Summary Cards */}
-      {isLoading ? (
-        <div
-          className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'
-          data-testid='insights-summary-skeleton'>
-          <Skeleton className='h-32 rounded-xl' />
-          <Skeleton className='h-32 rounded-xl' />
-          <Skeleton className='h-32 rounded-xl' />
-        </div>
-      ) : error ? (
-        <Empty className='min-h-32 border'>
-          <EmptyHeader>
-            <EmptyTitle>{t('insights.error.title')}</EmptyTitle>
-            <EmptyDescription>
-              {t('insights.error.description')}
-            </EmptyDescription>
-          </EmptyHeader>
-          <Button variant='outline' onClick={() => void refetchOverview()}>
-            {t('insights.actions.retry')}
-          </Button>
-        </Empty>
-      ) : !data ? (
-        <div
-          className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'
-          data-testid='insights-summary-skeleton'>
-          <Skeleton className='h-32 rounded-xl' />
-          <Skeleton className='h-32 rounded-xl' />
-          <Skeleton className='h-32 rounded-xl' />
-        </div>
-      ) : data.expenseCount === 0 ? (
-        <Empty className='min-h-80 border'>
-          <EmptyHeader>
-            <EmptyTitle>{t('insights.empty.title')}</EmptyTitle>
-            <EmptyDescription>
-              {t('insights.empty.description')}
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <InsightsSummaryCards data={data} formatCurrency={formatCurrency} />
-      )}
+      <InsightsOverviewPanel
+        data={data}
+        error={error}
+        formatCurrency={formatCurrency}
+        isLoading={isLoading}
+        onRetry={() => void refetchOverview()}
+      />
 
       {/* Render remaining sections only when overview data is available and has expenses */}
       {!isLoading && !error && data && data.expenseCount > 0 ? (
         <>
-          {/* Comparison */}
-          {isComparisonLoading ? (
-            <div
-              className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]'
-              data-testid='insights-comparison-skeleton'>
-              <Skeleton className='h-64 rounded-xl' />
-              <Skeleton className='h-64 rounded-xl' />
-            </div>
-          ) : comparisonError ? (
-            <Empty className='min-h-64 border'>
-              <EmptyHeader>
-                <EmptyTitle>{t('insights.error.comparisonTitle')}</EmptyTitle>
-                <EmptyDescription>
-                  {t('insights.error.comparisonDescription')}
-                </EmptyDescription>
-              </EmptyHeader>
-              <Button
-                variant='outline'
-                onClick={() => void refetchComparison()}>
-                {t('insights.actions.retryComparison')}
-              </Button>
-            </Empty>
-          ) : !comparisonData ? (
-            <div
-              className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]'
-              data-testid='insights-comparison-skeleton'>
-              <Skeleton className='h-64 rounded-xl' />
-              <Skeleton className='h-64 rounded-xl' />
-            </div>
-          ) : (
-            <InsightsComparisonSection
-              data={comparisonData}
-              formatCurrency={formatCurrency}
-            />
-          )}
+          <InsightsComparisonPanel
+            data={comparisonData}
+            error={comparisonError}
+            formatCurrency={formatCurrency}
+            isLoading={isComparisonLoading}
+            onRetry={() => void refetchComparison()}
+          />
 
-          {/* Charts */}
           <InsightsChartsSection
             categoryMap={categoryMap}
             data={data}
             formatCurrency={formatCurrency}
           />
 
-          {/* Groups */}
-          {isGroupsLoading ? (
-            <Skeleton
-              className='h-64 rounded-xl'
-              data-testid='insights-groups-skeleton'
-            />
-          ) : groupsError ? (
-            <Empty className='min-h-64 border'>
-              <EmptyHeader>
-                <EmptyTitle>{t('insights.error.groupsTitle')}</EmptyTitle>
-                <EmptyDescription>
-                  {t('insights.error.groupsDescription')}
-                </EmptyDescription>
-              </EmptyHeader>
-              <Button variant='outline' onClick={() => void refetchGroups()}>
-                {t('insights.actions.retryGroups')}
-              </Button>
-            </Empty>
-          ) : !groupsData ? (
-            <Skeleton
-              className='h-64 rounded-xl'
-              data-testid='insights-groups-skeleton'
-            />
-          ) : (
-            <InsightsGroupsSection
-              data={groupsData}
-              formatCurrency={formatCurrency}
-            />
-          )}
+          <InsightsGroupsPanel
+            data={groupsData}
+            error={groupsError}
+            formatCurrency={formatCurrency}
+            isLoading={isGroupsLoading}
+            onRetry={() => void refetchGroups()}
+          />
         </>
       ) : null}
     </div>

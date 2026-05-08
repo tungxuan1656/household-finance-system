@@ -133,15 +133,14 @@ export const useRecentQuickAddExpensesQuery = () => {
   })
 }
 
-type ReplaceExpenseGroupsMutationInput = {
-  expenseId: string
-  payload: ReplaceExpenseGroupsRequest
-}
-
 export const useReplaceExpenseGroupsMutation = () => {
   const queryClient = useQueryClient()
 
-  return useMutation<ExpenseDTO, Error, ReplaceExpenseGroupsMutationInput>({
+  return useMutation<
+    ExpenseDTO,
+    Error,
+    { expenseId: string; payload: ReplaceExpenseGroupsRequest }
+  >({
     mutationFn: ({ expenseId, payload }) =>
       replaceExpenseGroups(expenseId, payload),
     onSuccess: () => {

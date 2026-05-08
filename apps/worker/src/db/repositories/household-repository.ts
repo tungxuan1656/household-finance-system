@@ -2,26 +2,21 @@ import { conflict, notFound } from '@/lib/errors'
 import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import { newId } from '@/utils/id'
 
-export interface StoredHousehold {
-  id: string
-  name: string
-  slug: string
-  defaultCurrencyCode: string
-  timezone: string
-  defaultVisibility: 'private' | 'household'
-  role: 'admin' | 'member'
-  createdAt: number
-}
+import {
+  type StoredHousehold,
+  type StoredHouseholdDetail,
+  toStoredHousehold,
+  toStoredHouseholdDetail,
+} from './household-row-mapper'
+import { createHouseholdSlug } from './household-slug'
 
-export interface StoredHouseholdDetail {
-  id: string
-  name: string
-  slug: string
-  defaultCurrencyCode: string
-  timezone: string
-  defaultVisibility: 'private' | 'household'
-  createdAt: number
-}
+export {
+  type StoredHousehold,
+  type StoredHouseholdDetail,
+  toStoredHousehold,
+  toStoredHouseholdDetail,
+} from './household-row-mapper'
+export { createHouseholdSlug } from './household-slug'
 
 export interface CreateHouseholdInput {
   name: string
@@ -41,62 +36,6 @@ const isSlugConflictError = (error: unknown): boolean => {
   }
 
   return /UNIQUE constraint failed: households\.slug/i.test(error.message)
-}
-
-const toStoredHousehold = (row: {
-  id: string
-  name: string
-  slug: string
-  default_currency_code: string
-  timezone: string
-  default_visibility: 'private' | 'household'
-  role: 'admin' | 'member'
-  created_at: number
-}): StoredHousehold => ({
-  id: row.id,
-  name: row.name,
-  slug: row.slug,
-  defaultCurrencyCode: row.default_currency_code,
-  timezone: row.timezone,
-  defaultVisibility: row.default_visibility,
-  role: row.role,
-  createdAt: row.created_at,
-})
-
-const toStoredHouseholdDetail = (row: {
-  id: string
-  name: string
-  slug: string
-  default_currency_code: string
-  timezone: string
-  default_visibility: 'private' | 'household'
-  created_at: number
-}): StoredHouseholdDetail => ({
-  id: row.id,
-  name: row.name,
-  slug: row.slug,
-  defaultCurrencyCode: row.default_currency_code,
-  timezone: row.timezone,
-  defaultVisibility: row.default_visibility,
-  createdAt: row.created_at,
-})
-
-const createSlug = (value: string): string => {
-  const normalized = value
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-
-  const slug = normalized
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .replace(/-{2,}/g, '-')
-
-  if (slug.length > 0) {
-    return slug
-  }
-
-  return 'household'
 }
 
 export const listUserHouseholds = async (
@@ -183,7 +122,7 @@ export const createHouseholdForUser = async (
   input: CreateHouseholdInput,
   locale: SupportedLocale = defaultLocale,
 ): Promise<StoredHousehold> => {
-  const baseSlug = createSlug(input.name)
+  const baseSlug = createHouseholdSlug(input.name)
 
   for (let attempt = 0; attempt < 25; attempt += 1) {
     const householdId = newId()

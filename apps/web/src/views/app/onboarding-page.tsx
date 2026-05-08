@@ -1,32 +1,13 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import { acceptInvitation, getInvitationPreview } from '@/api/invitation'
-import { QuickAddExpenseDialog } from '@/components/expense/quick-add-expense-dialog'
-import { HouseholdInviteDialog } from '@/components/household/household-invite-dialog'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
 import { PATHS } from '@/lib/constants/paths'
 import {
   type CreateHouseholdFormValues,
@@ -35,25 +16,13 @@ import {
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 import type { InvitationPreviewResponse } from '@/types/invitation'
+import { CreateHouseholdForm } from '@/views/app/onboarding/create-household-form'
+import { normalizeInviteToken } from '@/views/app/onboarding/invite-token'
+import { JoinHouseholdCard } from '@/views/app/onboarding/join-household-card'
+import { OnboardingCompleteCard } from '@/views/app/onboarding/onboarding-complete-card'
 
 type OnboardingMode = 'create' | 'join'
 type OnboardingStage = 'setup' | 'complete'
-
-function normalizeInviteToken(value: string) {
-  const trimmedValue = value.trim()
-
-  if (!trimmedValue) {
-    return ''
-  }
-
-  const invitationPathMatch = trimmedValue.match(/\/invitations\/([^/?#]+)/)
-
-  if (invitationPathMatch) {
-    return invitationPathMatch[1]
-  }
-
-  return trimmedValue
-}
 
 function OnboardingPage() {
   const router = useRouter()
@@ -155,46 +124,11 @@ function OnboardingPage() {
 
   if (stage === 'complete') {
     return (
-      <div className='mx-auto flex w-full max-w-2xl flex-col gap-4'>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('app.onboarding.complete.title')}</CardTitle>
-            <CardDescription>
-              {t('app.onboarding.complete.description')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className='flex flex-col gap-3'>
-            {activeHouseholdId ? (
-              <HouseholdInviteDialog householdId={activeHouseholdId} />
-            ) : (
-              <Button disabled type='button' variant='outline'>
-                {t('app.onboarding.actions.openInviteMembers')}
-              </Button>
-            )}
-            <Button asChild type='button' variant='outline'>
-              <Link href={PATHS.BUDGETS}>
-                {t('app.onboarding.actions.openBudgetSetup')}
-              </Link>
-            </Button>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => setQuickAddOpen(true)}>
-              {t('app.onboarding.actions.openQuickAdd')}
-            </Button>
-            <Button asChild type='button'>
-              <Link href={PATHS.HOUSEHOLDS}>
-                {t('app.onboarding.actions.finish')}
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <QuickAddExpenseDialog
-          open={quickAddOpen}
-          onOpenChange={setQuickAddOpen}
-        />
-      </div>
+      <OnboardingCompleteCard
+        activeHouseholdId={activeHouseholdId}
+        quickAddOpen={quickAddOpen}
+        setQuickAddOpen={setQuickAddOpen}
+      />
     )
   }
 
@@ -225,113 +159,25 @@ function OnboardingPage() {
       </div>
 
       {mode === 'create' ? (
-        <form
-          className='rounded-none border border-border/70 bg-background/70 p-4 backdrop-blur sm:p-5'
-          onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldGroup>
-            <Controller
-              control={form.control}
-              name='name'
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor='household-name'>
-                    {t('app.onboarding.fields.householdName.label')}
-                  </FieldLabel>
-                  <FieldContent>
-                    <FieldDescription>
-                      {t('app.onboarding.fields.householdName.description')}
-                    </FieldDescription>
-                    <Input
-                      {...field}
-                      aria-invalid={fieldState.invalid}
-                      id='household-name'
-                      placeholder={t(
-                        'app.onboarding.fields.householdName.placeholder',
-                      )}
-                    />
-                    {fieldState.invalid ? (
-                      <FieldError errors={[fieldState.error]} />
-                    ) : null}
-                  </FieldContent>
-                </Field>
-              )}
-            />
-          </FieldGroup>
-
-          <div className='mt-5 flex items-center justify-end gap-3'>
-            <Button disabled={isLoading} type='submit'>
-              {isLoading
-                ? t('app.onboarding.actions.creating')
-                : t('app.onboarding.actions.create')}
-            </Button>
-          </div>
-        </form>
+        <CreateHouseholdForm
+          form={form}
+          isLoading={isLoading}
+          onSubmit={onSubmit}
+        />
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('app.onboarding.join.title')}</CardTitle>
-            <CardDescription>
-              {t('app.onboarding.join.description')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className='flex flex-col gap-4'>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor='invite-token'>
-                  {t('app.onboarding.fields.inviteToken.label')}
-                </FieldLabel>
-                <FieldContent>
-                  <FieldDescription>
-                    {t('app.onboarding.fields.inviteToken.description')}
-                  </FieldDescription>
-                  <Input
-                    aria-invalid={false}
-                    id='invite-token'
-                    placeholder={t(
-                      'app.onboarding.fields.inviteToken.placeholder',
-                    )}
-                    value={inviteToken}
-                    onChange={(event) => {
-                      setInviteToken(event.target.value)
-                      setInvitePreview(null)
-                    }}
-                  />
-                </FieldContent>
-              </Field>
-            </FieldGroup>
-
-            <div className='flex justify-end'>
-              <Button
-                disabled={isPreviewLoading || inviteToken.trim().length === 0}
-                type='button'
-                onClick={() => void handlePreviewInvite()}>
-                {t('app.onboarding.actions.previewInvite')}
-              </Button>
-            </div>
-
-            {invitePreview &&
-            previewToken === normalizeInviteToken(inviteToken) ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>{invitePreview.household.name}</CardTitle>
-                  <CardDescription>
-                    {t('app.onboarding.join.previewDescription')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    disabled={isAcceptingInvite}
-                    type='button'
-                    onClick={() => void handleAcceptInvite()}>
-                    {isAcceptingInvite
-                      ? t('app.invitationAccept.actions.accepting')
-                      : t('app.onboarding.actions.acceptInvite')}
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : null}
-          </CardContent>
-        </Card>
+        <JoinHouseholdCard
+          invitePreview={invitePreview}
+          inviteToken={inviteToken}
+          isAcceptingInvite={isAcceptingInvite}
+          isPreviewLoading={isPreviewLoading}
+          previewToken={previewToken}
+          onAcceptInvite={() => void handleAcceptInvite()}
+          onInviteTokenChange={(value) => {
+            setInviteToken(value)
+            setInvitePreview(null)
+          }}
+          onPreviewInvite={() => void handlePreviewInvite()}
+        />
       )}
     </div>
   )

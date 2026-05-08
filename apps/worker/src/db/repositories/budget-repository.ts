@@ -1,36 +1,31 @@
 import { newId } from '@/utils/id'
 
-export interface StoredBudget {
-  id: string
-  householdId: string
-  scope: 'household'
-  budgetMonth: string
-  startDate: string | null
-  endDate: string | null
-  currencyCode: string
-  totalLimitMinor: number
-  categoryId: string | null
-  createdByUserId: string
-  archivedAt: number | null
-  createdAt: number
-  updatedAt: number
-}
+import { computeDateRange } from './budget-period'
+import {
+  BUDGET_COLUMNS,
+  BUDGET_LIMIT_COLUMNS,
+  type BudgetLimitRow,
+  type BudgetRow,
+  mapBudgetLimitRow,
+  mapBudgetRow,
+  type StoredBudget,
+  type StoredBudgetLimit,
+} from './budget-row-mapper'
 
-export interface StoredBudgetLimit {
-  id: string
-  budgetId: string
-  householdId: string
-  categoryId: string | null
-  categoryKey: string | null
-  limitMinor: number
-  createdAt: number
-  updatedAt: number
-}
-
-export interface StoredBudgetSpendSummary {
-  totalActualMinor: number
-  categoryActualMinorByKey: Record<string, number>
-}
+export {
+  BUDGET_COLUMNS,
+  BUDGET_LIMIT_COLUMNS,
+  type BudgetLimitRow,
+  type BudgetRow,
+  mapBudgetLimitRow,
+  mapBudgetRow,
+  type StoredBudget,
+  type StoredBudgetLimit,
+} from './budget-row-mapper'
+export {
+  getBudgetSpendSummary,
+  type StoredBudgetSpendSummary,
+} from './budget-spend-summary-repository'
 
 export interface CreateBudgetInput {
   householdId: string
@@ -44,108 +39,6 @@ export interface CreateBudgetInput {
 export interface UpdateBudgetInput {
   totalLimitMinor?: number
   categoryLimits?: Array<{ categoryKey: string; limitMinor: number }>
-}
-
-type BudgetRow = {
-  id: string
-  household_id: string
-  scope: 'household'
-  budget_month: string
-  start_date: string | null
-  end_date: string | null
-  currency_code: string
-  total_limit_minor: number
-  category_id: string | null
-  created_by_user_id: string
-  archived_at: number | null
-  created_at: number
-  updated_at: number
-}
-
-type BudgetLimitRow = {
-  id: string
-  budget_id: string
-  household_id: string
-  category_id: string | null
-  category_key: string | null
-  limit_minor: number
-  created_at: number
-  updated_at: number
-}
-
-const mapBudgetRow = (r: BudgetRow): StoredBudget => ({
-  id: r.id,
-  householdId: r.household_id,
-  scope: r.scope,
-  budgetMonth: r.budget_month,
-  startDate: r.start_date,
-  endDate: r.end_date,
-  currencyCode: r.currency_code,
-  totalLimitMinor: r.total_limit_minor,
-  categoryId: r.category_id,
-  createdByUserId: r.created_by_user_id,
-  archivedAt: r.archived_at,
-  createdAt: r.created_at,
-  updatedAt: r.updated_at,
-})
-
-const mapBudgetLimitRow = (r: BudgetLimitRow): StoredBudgetLimit => ({
-  id: r.id,
-  budgetId: r.budget_id,
-  householdId: r.household_id,
-  categoryId: r.category_id,
-  categoryKey: r.category_key,
-  limitMinor: r.limit_minor,
-  createdAt: r.created_at,
-  updatedAt: r.updated_at,
-})
-
-const BUDGET_COLUMNS = `
-  b.id,
-  b.household_id,
-  b.scope,
-  b.budget_month,
-  b.start_date,
-  b.end_date,
-  b.currency_code,
-  b.total_limit_minor,
-  b.category_id,
-  b.created_by_user_id,
-  b.archived_at,
-  b.created_at,
-  b.updated_at
-`
-
-const BUDGET_LIMIT_COLUMNS = `
-  bl.id,
-  bl.budget_id,
-  bl.household_id,
-  bl.category_id,
-  bl.category_key,
-  bl.limit_minor,
-  bl.created_at,
-  bl.updated_at
-`
-
-/**
- * Compute start_date and end_date from a YYYY-MM period string.
- * start_date = first day of month (YYYY-MM-01)
- * end_date = last day of month (YYYY-MM-DD where DD depends on month)
- */
-const computeDateRange = (
-  period: string,
-): { startDate: string; endDate: string } => {
-  const [yearStr, monthStr] = period.split('-')
-  const year = parseInt(yearStr, 10)
-  const month = parseInt(monthStr, 10)
-  const startDate = `${yearStr}-${monthStr}-01`
-  // Last day of month: day 0 of next month
-  const nextMonth = month === 12 ? 1 : month + 1
-  const nextYear = month === 12 ? year + 1 : year
-  const lastDay = new Date(nextYear, nextMonth - 1, 0).getDate()
-  const endDate = `${yearStr}-${monthStr}-${String(lastDay).padStart(2, '0')}`
-
-  return { startDate, endDate }
 }
 
 export const createBudget = async (
@@ -386,69 +279,4 @@ export const deleteBudgetLimits = async (
     .prepare(`DELETE FROM budget_limits WHERE budget_id = ?`)
     .bind(budgetId)
     .run()
-}
-
-export const getBudgetSpendSummary = async (
-  db: D1Database,
-  input: {
-    householdId: string
-    startDate: string
-    endDate: string
-    categoryKeys: string[]
-  },
-): Promise<StoredBudgetSpendSummary> => {
-  const baseParams = [input.householdId, input.startDate, input.endDate]
-
-  const totalRow = await db
-    .prepare(
-      `SELECT COALESCE(SUM(e.amount_minor), 0) AS totalActualMinor
-         FROM expenses e
-        WHERE e.deleted_at IS NULL
-          AND e.visibility = 'household'
-          AND e.household_id = ?
-          AND date(e.occurred_at / 1000, 'unixepoch') >= ?
-          AND date(e.occurred_at / 1000, 'unixepoch') <= ?`,
-    )
-    .bind(...baseParams)
-    .first<{ totalActualMinor: number | null }>()
-
-  if (input.categoryKeys.length === 0) {
-    return {
-      totalActualMinor: Number(totalRow?.totalActualMinor ?? 0),
-      categoryActualMinorByKey: {},
-    }
-  }
-
-  const placeholders = input.categoryKeys.map(() => '?').join(', ')
-  const categoryParams = [...baseParams, ...input.categoryKeys]
-
-  const categoryRows = await db
-    .prepare(
-      `SELECT e.category_key AS categoryKey, COALESCE(SUM(e.amount_minor), 0) AS totalActualMinor
-         FROM expenses e
-        WHERE e.deleted_at IS NULL
-          AND e.visibility = 'household'
-          AND e.household_id = ?
-          AND date(e.occurred_at / 1000, 'unixepoch') >= ?
-          AND date(e.occurred_at / 1000, 'unixepoch') <= ?
-          AND e.category_key IN (${placeholders})
-        GROUP BY e.category_key
-        ORDER BY e.category_key`,
-    )
-    .bind(...categoryParams)
-    .all<{ categoryKey: string | null; totalActualMinor: number | null }>()
-
-  return {
-    totalActualMinor: Number(totalRow?.totalActualMinor ?? 0),
-    categoryActualMinorByKey: Object.fromEntries(
-      categoryRows.results
-        .filter(
-          (
-            row,
-          ): row is { categoryKey: string; totalActualMinor: number | null } =>
-            typeof row.categoryKey === 'string',
-        )
-        .map((row) => [row.categoryKey, Number(row.totalActualMinor ?? 0)]),
-    ),
-  }
 }
