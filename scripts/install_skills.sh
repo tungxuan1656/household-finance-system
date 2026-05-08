@@ -81,7 +81,7 @@ ANTIGRAVITY_SKILLS=(
   tailwind-patterns
   shadcn
   monorepo-architect
-  ui-ux-pro-max
+  # ui-ux-pro-max
   # systematic-debugging
   # lint-and-validate
   # verification-before-completion
@@ -104,11 +104,11 @@ SUPERPOWERS_SKILLS=(
   systematic-debugging
   test-driven-development
   verification-before-completion
-  writing-skills
   writing-plans
   using-superpowers
   dispatching-parallel-agents
   finishing-a-development-branch
+  # writing-skills
   # using-git-worktrees
 )
 
@@ -275,6 +275,11 @@ main() {
   find "$DEST_DIR" -type f -exec perl -0pi -e 's#\.claude/skills#\.agents/skills#g' {} +
 
   ./scripts/install_harness_skills.sh
+
+  uipro init --ai opencode
+  cp -R ".opencode/skills"/* "$DEST_DIR/"
+  rm -rf ".opencode"
+  perl -0pi -e 's#python3 skills#python3 .agents/skills#g' "$DEST_DIR/ui-ux-pro-max/SKILL.md"
 
   echo ""
   echo "Done."

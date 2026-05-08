@@ -58,6 +58,7 @@ This feature is intentionally integrative, not greenfield. First pass should pre
 - Dashboard must stay truthful: shown summaries, quick actions, and empty/error states must map to current real data and permissions.
 - Product rule from `household-management.md` remains intact: no global active household assumption; household-scoped actions require explicit household context.
 - User-facing copy must remain i18n-backed; no hardcoded labels.
+- UI/UX quality bar for this feature is mobile-first responsive first, then larger-breakpoint enhancement; section order, tap targets, typography, and loading/error states must remain usable at small-phone widths before desktop polish.
 - Implementation must respect `ARCHITECTURE.md` layer model `Types -> Config -> Repo -> Service -> Runtime -> UI`.
 - UI must reuse existing API boundaries first; no component may bypass typed hooks/API modules for ad hoc fetch logic.
 - If implementation introduces backend summary work, routes must stay thin, validation explicit, auth enforced before aggregation, and repository boundaries preserved.
@@ -100,6 +101,10 @@ This feature is intentionally integrative, not greenfield. First pass should pre
 
 - **Decision**: Keep quick actions explicit and route-owned rather than embedding full editing or management flows inside `/home`.
   - Rationale: Surgical dashboard upgrade improves discoverability without creating second copies of existing domain workflows.
+  - Date/Author: 2026-05-08 / Orchestrator
+
+- **Decision**: Treat mobile-first responsive usability as primary dashboard layout constraint and use `ui-ux-pro-max` guidance during planning and code review.
+  - Rationale: `/home` is top-level daily surface and must stay fast, readable, and actionable on narrow mobile widths before scaling up for tablet/desktop.
   - Date/Author: 2026-05-08 / Orchestrator
 
 - **Decision**: If frontend fan-out cannot produce truthful, responsive summary cards, implementation may add one small backend summary contract but must stop and record that scope shift explicitly before proceeding.
@@ -176,6 +181,8 @@ This feature is intentionally integrative, not greenfield. First pass should pre
   - If household store participates, changes must stay minimal and avoid reintroducing hidden active-household semantics.
 - `docs/references/frontend/i18n-label-pattern.md`
   - All dashboard headings, helper text, empty states, and action labels must flow through locale keys.
+- `ui-ux-pro-max`
+  - Use skill guidance to review hierarchy, accessibility, touch targets, responsive layout, contrast, and mobile-first dashboard ergonomics during both planning updates and implementation review.
 
 **Backend**
 - `docs/references/backend/architecture-and-boundaries.md`
@@ -197,6 +204,7 @@ This feature is intentionally integrative, not greenfield. First pass should pre
 
 - Mandatory patterns for this scope:
   - Build `/home` as layered dashboard sections, not single giant component.
+  - Compose and verify layout mobile-first; start with stacked small-screen sections, then enhance for `md`/`lg`/`xl` grids only after narrow-width readability works.
   - Keep no-household experience actionable and respectful of onboarding state.
   - Prefer concise, high-value summaries over maximum metric density.
   - Use existing route ownership for deeper actions such as budgets, insights, households, and quick-add.
@@ -212,6 +220,7 @@ This feature is intentionally integrative, not greenfield. First pass should pre
   - `requesting-code-review`
   - `typescript-reviewer`
 - Common pitfalls to avoid:
+  - Designing desktop-first cards that collapse poorly on phones or create horizontal scroll.
   - Rebuilding entire downstream pages inside dashboard cards.
   - Showing totals without clarifying scope when multiple households exist.
   - Accidentally coupling dashboard behavior to hidden household state.
