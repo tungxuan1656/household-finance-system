@@ -1,5 +1,7 @@
 import { vi } from 'vitest'
 
+import { MockNextLink } from '@/test/mock-next-link'
+
 export const useAnalyticsOverviewQueryMock = vi.fn()
 export const useBudgetListQueryMock = vi.fn()
 export const useHouseholdMembersQueryMock = vi.fn()
@@ -29,13 +31,7 @@ export const householdStoreState = {
 }
 
 vi.mock('next/link', () => ({
-  default: ({
-    children,
-    href,
-  }: {
-    children: React.ReactNode
-    href: string
-  }) => <a href={href}>{children}</a>,
+  default: MockNextLink,
 }))
 
 vi.mock('@/lib/i18n/t', () => ({ t: (key: string) => key }))
