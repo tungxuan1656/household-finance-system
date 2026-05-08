@@ -142,8 +142,20 @@ done < <(git ls-files -z "*.ts" "*.tsx")
 # ------------------------
 for type in COMPONENT PAGE HOOK SERVICE REPOSITORY CONTROLLER UTIL TEST DEFAULT; do
   if [[ -f "$TMP_DIR/$type" ]]; then
+    case "$type" in
+      COMPONENT) current_max=$MAX_COMPONENT ;;
+      PAGE) current_max=$MAX_PAGE ;;
+      HOOK) current_max=$MAX_HOOK ;;
+      SERVICE) current_max=$MAX_SERVICE ;;
+      REPOSITORY) current_max=$MAX_REPOSITORY ;;
+      CONTROLLER) current_max=$MAX_CONTROLLER ;;
+      UTIL) current_max=$MAX_UTIL ;;
+      TEST) current_max=$MAX_TEST ;;
+      *) current_max=$MAX_DEFAULT ;;
+    esac
+
     echo "========================"
-    echo "$type"
+    echo "$type, files exceeding thresholds (max length: $current_max):"
     echo "========================"
 
     cat "$TMP_DIR/$type"
