@@ -272,6 +272,7 @@ main() {
   install_skill_batch "antigravity-awesome-skills" "$ANTIGRAVITY_REPO_DIR/skills" "${ANTIGRAVITY_SKILLS[@]}"
   install_skill_batch "superpowers" "$SUPERPOWERS_REPO_DIR/skills" "${SUPERPOWERS_SKILLS[@]}"
   install_skill_batch "caveman" "$CAVEMAN_REPO_DIR/skills" "${CAVEMAN_SKILLS[@]}"
+  find "$DEST_DIR" -type f -exec perl -0pi -e 's#\.claude/skills#\.agents/skills#g' {} +
 
   ./scripts/install_harness_skills.sh
 
