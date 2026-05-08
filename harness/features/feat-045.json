@@ -12,7 +12,7 @@
     "feat-043",
     "feat-044"
   ],
-  "status": "pending",
-  "evidence": "",
-  "updated_at": "2026-05-07"
+  "status": "in_progress",
+  "evidence": "Created active ExecPlan `docs/exec-plans/plans/2026-05-08-feat-045-home-overview-dashboard-unification.md` on 2026-05-08. Scope locks feat-045 to frontend-first `/home` dashboard unification across existing household, budget, analytics, expense, and onboarding surfaces, with explicit stop-and-log gate before any additive backend summary contract.",
+  "updated_at": "2026-05-08"
 }

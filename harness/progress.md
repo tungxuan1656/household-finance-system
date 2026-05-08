@@ -10,6 +10,14 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-08 — Created active ExecPlan for feat-045 home overview dashboard unification
+
+- Who: Orchestrator
+- Summary: Created and registered the active ExecPlan for `feat-045` as next pending roadmap feature after `feat-044`. Locked scope around a frontend-first rebuild of `/home` from placeholder shell into truthful top-level dashboard that composes existing household, budget, analytics, expense, and onboarding surfaces, preserves explicit household context without inventing hidden active-household state, and uses a stop-and-log decision gate before any additive backend summary contract. Plan requires explicit handling for no-household onboarding state, multi-household summary state, partial-failure degradation, role-aware quick actions, focused dashboard tests, and final full verification with `./init.sh`.
+- Files changed: docs exec plan for feat-045, exec plan index, feat-045 harness state, and progress log.
+- Blockers: current implementation path still needs one early decision on whether existing frontend hook composition is responsive and maintainable enough for dashboard-quality summary cards, or whether smallest safe backend summary contract is required.
+- Next steps: define exact `/home` dashboard hierarchy and state model, implement frontend-first overview sections and tests, add backend summary support only if verified necessary, then run focused verification plus `./init.sh` before marking `feat-045` done.
+
 ## 2026-05-08 — Completed feat-044 analytics export path and product hardening follow-up
 
 - Who: Orchestrator
