@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-05-08 — Completed feat-043 expense filter surface expansion
+
+- Who: Orchestrator
+- Summary: Implemented the frontend-first `feat-043` upgrade for `/expenses`. Replaced the page’s raw inline search/select controls with extracted expense-filter and active-filter-summary components, kept one shared page-local filter model for both summary and feed queries, and exposed the highest-value already-supported backend query dimensions in a mobile-first surface: visibility, category, sort, date range, amount range, and group. The first pass intentionally stayed frontend-only after confirming the existing worker contracts already support those filters; broader payer sourcing and broader text-search semantics remain out of scope.
+- Files changed: apps/web/src/views/app/expenses-page.tsx, apps/web/src/views/app/expenses-page.test.tsx, apps/web/src/components/expense/expense-feed-filters.tsx, apps/web/src/components/expense/expense-active-filter-summary.tsx, apps/web/src/lib/i18n/locales/vi.json, docs/exec-plans/index.md, harness/features/feat-043.json, harness/feature_index.json, harness/progress.md
+- Verification: `pnpm --filter web test -- --run src/views/app/expenses-page.test.tsx src/components/expense/expense-feed-list.test.tsx src/components/expense/expense-feed-summary.test.tsx`; `pnpm --filter web typecheck`; `./init.sh`.
+- Blockers: none. `pnpm --filter web lint` remains green for this feature except for two pre-existing repository warnings outside the new scope (`apps/web/src/components/expense/category-picker.tsx` no-img and one local lint-style warning in the updated test file).
+- Next steps: if requested, commit the feat-043 implementation and continue to the next pending roadmap item (`feat-044`).
+
 ## 2026-05-08 — Created active ExecPlan for feat-043 expense filter surface expansion
 
 - Who: Orchestrator
