@@ -1,10 +1,17 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ExpensesPage } from '@/views/app/expenses-page'
 
 const expenseFeedListMock = vi.fn()
 const expenseFeedSummaryMock = vi.fn()
+const useExpenseGroupListQueryMock = vi.fn()
+const fetchHouseholdsMock = vi.fn()
+const householdStoreState = {
+  currentHousehold: { id: 'household-1' } as { id: string } | null,
+  households: [{ id: 'household-1' }] as Array<{ id: string }>,
+}
 
 vi.mock('@/components/expense/expense-feed-list', () => ({
   ExpenseFeedList: (props: unknown) => {
@@ -38,13 +45,52 @@ vi.mock('@/hooks/api/use-reference-data', () => ({
   }),
 }))
 
+vi.mock('@/hooks/api/use-groups', () => ({
+  useExpenseGroupListQuery: (householdId?: string) =>
+    useExpenseGroupListQueryMock(householdId),
+}))
+
 vi.mock('@/lib/i18n/t', () => ({
   t: (key: string) => key,
 }))
 
+vi.mock('@/stores/household.store', () => ({
+  householdActions: { fetchHouseholds: () => fetchHouseholdsMock() },
+  useHouseholdStore: {
+    use: {
+      currentHousehold: () => householdStoreState.currentHousehold,
+      households: () => householdStoreState.households,
+    },
+  },
+}))
+
 describe('ExpensesPage', () => {
-  it('owns feed filter state and passes it to the feed list', () => {
+  beforeEach(() => {
+    expenseFeedListMock.mockReset()
+    expenseFeedSummaryMock.mockReset()
+    useExpenseGroupListQueryMock.mockReset()
+    fetchHouseholdsMock.mockReset()
+    householdStoreState.currentHousehold = { id: 'household-1' }
+    householdStoreState.households = [{ id: 'household-1' }]
+  })
+
+  it('owns expanded feed filter state and passes the same filters to summary and list', async () => {
+    const user = userEvent.setup()
+
+    useExpenseGroupListQueryMock.mockImplementation((householdId?: string) => ({
+      data:
+        householdId === 'household-1'
+          ? {
+              items: [
+                { id: 'group-1', name: 'Trip', householdId: 'household-1' },
+              ],
+            }
+          : undefined,
+    }))
+
     render(<ExpensesPage />)
+
+    expect(useExpenseGroupListQueryMock).toHaveBeenCalledWith('household-1')
 
     expect(
       screen.getByRole('heading', { name: 'expense.feed.title' }),
@@ -53,19 +99,108 @@ describe('ExpensesPage', () => {
     expect(screen.getByLabelText('expense feed search')).toBeInTheDocument()
     expect(screen.getByLabelText('expense feed visibility')).toBeInTheDocument()
     expect(screen.getByLabelText('expense feed category')).toBeInTheDocument()
+    expect(screen.getByLabelText('expense feed sort')).toBeInTheDocument()
 
-    expect(expenseFeedSummaryMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        filters: expect.any(Object),
-        search: expect.any(String),
-      }),
+    expect(
+      screen.queryByText('expense.feed.filters.activeTitle'),
+    ).not.toBeInTheDocument()
+
+    await user.click(screen.getByText('expense.feed.filters.advancedTitle'))
+
+    expect(
+      screen.getByLabelText('expense.feed.filters.dateFrom'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('expense.feed.filters.dateTo'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('expense.feed.filters.amountMin'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('expense.feed.filters.amountMax'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('expense.groupPicker.label'),
+    ).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText('expense feed search'), ' lunch ')
+
+    await user.selectOptions(
+      screen.getByLabelText('expense feed visibility'),
+      'household',
     )
 
-    expect(expenseFeedListMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        filters: expect.any(Object),
-        search: expect.any(String),
-      }),
+    await user.selectOptions(
+      screen.getByLabelText('expense feed category'),
+      'food',
     )
+
+    await user.selectOptions(
+      screen.getByLabelText('expense feed sort'),
+      'amount_desc',
+    )
+
+    await user.type(
+      screen.getByLabelText('expense.feed.filters.dateFrom'),
+      '2026-05-01',
+    )
+
+    await user.type(
+      screen.getByLabelText('expense.feed.filters.dateTo'),
+      '2026-05-31',
+    )
+
+    await user.type(
+      screen.getByLabelText('expense.feed.filters.amountMin'),
+      '100',
+    )
+
+    await user.type(
+      screen.getByLabelText('expense.feed.filters.amountMax'),
+      '500',
+    )
+
+    await user.selectOptions(
+      screen.getByLabelText('expense.groupPicker.label'),
+      'group-1',
+    )
+
+    await waitFor(() => {
+      expect(expenseFeedSummaryMock).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          filters: {
+            amount_max: 500,
+            amount_min: 100,
+            category_key: 'food',
+            date_from: new Date('2026-05-01').getTime(),
+            date_to: new Date('2026-05-31T23:59:59.999Z').getTime(),
+            group_id: 'group-1',
+            sort: 'amount_desc',
+            visibility: 'household',
+          },
+          search: ' lunch ',
+        }),
+      )
+
+      expect(expenseFeedListMock).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          filters: {
+            amount_max: 500,
+            amount_min: 100,
+            category_key: 'food',
+            date_from: new Date('2026-05-01').getTime(),
+            date_to: new Date('2026-05-31T23:59:59.999Z').getTime(),
+            group_id: 'group-1',
+            sort: 'amount_desc',
+            visibility: 'household',
+          },
+          search: ' lunch ',
+        }),
+      )
+    })
   })
 })

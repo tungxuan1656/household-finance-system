@@ -138,7 +138,7 @@
     {
       "id": "feat-043",
       "name": "Expense filter surface expansion to match backend querying capabilities",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": "feat-044",

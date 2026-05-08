@@ -574,7 +574,23 @@
       "loadMore": "Tải thêm",
       "loading": "Đang tải...",
       "error": "Không thể tải chi tiêu",
-      "loadingMore": "Đang tải thêm..."
+      "loadingMore": "Đang tải thêm...",
+      "filters": {
+        "activeTitle": "Bộ lọc đang áp dụng",
+        "advancedTitle": "Bộ lọc nâng cao",
+        "advancedDescription": "Thu hẹp danh sách theo thời gian, số tiền và nhóm chi tiêu.",
+        "allCategories": "Tất cả danh mục",
+        "allGroups": "Tất cả nhóm",
+        "allVisibility": "Tất cả chế độ",
+        "amountMax": "Số tiền tối đa",
+        "amountMin": "Số tiền tối thiểu",
+        "dateFrom": "Từ ngày",
+        "dateTo": "Đến ngày",
+        "reset": "Đặt lại",
+        "searchPlaceholder": "Tìm trong ghi chú chi tiêu",
+        "sortHighestAmount": "Số tiền cao nhất",
+        "sortLatest": "Mới nhất"
+      }
     },
     "detail": {
       "title": "Chi tiết chi tiêu",
