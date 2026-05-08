@@ -632,12 +632,19 @@ export const getAnalyticsOverview = async (
   }
 }
 
+const SPREADSHEET_FORMULA_PREFIX = /^[=+\-@\t\r]/
+
+const sanitizeCsvCell = (value: string): string =>
+  SPREADSHEET_FORMULA_PREFIX.test(value) ? `'${value}` : value
+
 const csvEscape = (value: string): string => {
-  if (/[",\n]/.test(value)) {
-    return `"${value.replaceAll('"', '""')}"`
+  const sanitizedValue = sanitizeCsvCell(value)
+
+  if (/[",\n]/.test(sanitizedValue)) {
+    return `"${sanitizedValue.replaceAll('"', '""')}"`
   }
 
-  return value
+  return sanitizedValue
 }
 
 const buildAnalyticsExportCsv = (input: {

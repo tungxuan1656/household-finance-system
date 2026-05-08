@@ -436,6 +436,48 @@ describe('GET /api/v1/analytics/export', () => {
       ),
     ).toBe(true)
   })
+
+  it('neutralizes spreadsheet formula cells in exported CSV', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-analytics-export-formula:analytics-export-formula@example.com',
+    )
+
+    const householdResponse = await createHousehold(
+      auth.accessToken,
+      'Formula export household',
+    )
+    const householdId = (
+      await parseJson<ApiEnvelope<{ id: string }>>(householdResponse)
+    ).data.id
+
+    await createExpense(auth.accessToken, {
+      amount: 15000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      visibility: 'household',
+      householdId,
+      title: '=HYPERLINK("https://attacker.test","click")',
+      occurredAt: Date.UTC(2026, 4, 7, 9),
+    })
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/analytics/export?period=2026-05&household_id=${householdId}`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(200)
+
+    const csv = await response.text()
+
+    expect(csv).toContain(`'=HYPERLINK(""https://attacker.test"",""click"")`)
+    expect(csv).not.toContain(
+      `,=HYPERLINK(""https://attacker.test"",""click""),`,
+    )
+  })
 })
 
 type AnalyticsComparisonDTO = {
