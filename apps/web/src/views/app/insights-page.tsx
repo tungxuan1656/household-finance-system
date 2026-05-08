@@ -7,9 +7,9 @@ import {
   InsightsChartsSection,
   InsightsComparisonSection,
   InsightsGroupsSection,
-  InsightsLoadingState,
   InsightsSummaryCards,
 } from '@/components/analytics'
+import { Button } from '@/components/ui/button'
 import {
   Empty,
   EmptyDescription,
@@ -17,6 +17,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   useAnalyticsComparisonQuery,
   useAnalyticsGroupsQuery,
@@ -87,16 +88,19 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
     [period, selectedHouseholdId],
   )
 
-  const { data, isLoading, error } = useAnalyticsOverviewQuery(
-    analyticsParams,
-    {
-      enabled: shouldFetchAnalytics,
-    },
-  )
+  const {
+    data,
+    isLoading,
+    error,
+    refetch: refetchOverview,
+  } = useAnalyticsOverviewQuery(analyticsParams, {
+    enabled: shouldFetchAnalytics,
+  })
   const {
     data: comparisonData,
     isLoading: isComparisonLoading,
     error: comparisonError,
+    refetch: refetchComparison,
   } = useAnalyticsComparisonQuery(analyticsParams, {
     enabled: shouldFetchAnalytics,
   })
@@ -104,6 +108,7 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
     data: groupsData,
     isLoading: isGroupsLoading,
     error: groupsError,
+    refetch: refetchGroups,
   } = useAnalyticsGroupsQuery(analyticsParams, {
     enabled: shouldFetchAnalytics,
   })
@@ -121,12 +126,19 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
   )
   const periodOptions = useMemo(() => buildPeriodOptions(period), [period])
 
-  const isAnyLoading = isLoading || isComparisonLoading || isGroupsLoading
-  const pageError = error ?? comparisonError ?? groupsError
+  const isExportDisabled =
+    isLoading ||
+    isComparisonLoading ||
+    isGroupsLoading ||
+    Boolean(error) ||
+    Boolean(comparisonError) ||
+    Boolean(groupsError) ||
+    !data ||
+    data.expenseCount === 0
 
   return (
     <div className='flex flex-col gap-6'>
-      <header className='flex flex-wrap items-end justify-between gap-4'>
+      <header className='flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between'>
         <div className='flex flex-col gap-1'>
           <h1 className='font-heading text-2xl tracking-tight'>
             {t('insights.title')}
@@ -135,45 +147,57 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
             {t('insights.description')}
           </p>
         </div>
-        <label className='flex flex-col gap-1 text-sm text-muted-foreground'>
-          <span>{t('insights.periodLabel')}</span>
-          <NativeSelect
-            aria-label={t('insights.periodLabel')}
-            value={period}
-            onChange={(event) => setPeriod(event.target.value)}>
-            {periodOptions.map((option) => (
-              <NativeSelectOption key={option.value} value={option.value}>
-                {option.label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </label>
-        <AnalyticsExportAction
-          disabled={false}
-          hidden={
-            isAnyLoading ||
-            Boolean(pageError) ||
-            !data ||
-            data.expenseCount === 0
-          }
-          params={analyticsParams}
-        />
+        <div className='flex flex-wrap items-end gap-4'>
+          <label className='flex flex-1 flex-col gap-1 text-sm text-muted-foreground'>
+            <span>{t('insights.periodLabel')}</span>
+            <NativeSelect
+              aria-label={t('insights.periodLabel')}
+              value={period}
+              onChange={(event) => setPeriod(event.target.value)}>
+              {periodOptions.map((option) => (
+                <NativeSelectOption key={option.value} value={option.value}>
+                  {option.label}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+          </label>
+          <AnalyticsExportAction
+            disabled={isExportDisabled}
+            params={analyticsParams}
+          />
+        </div>
       </header>
 
-      {isAnyLoading ? <InsightsLoadingState /> : null}
-
-      {!isAnyLoading && pageError ? (
-        <Empty className='min-h-80 border'>
+      {/* Summary Cards */}
+      {isLoading ? (
+        <div
+          className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'
+          data-testid='insights-summary-skeleton'>
+          <Skeleton className='h-32 rounded-xl' />
+          <Skeleton className='h-32 rounded-xl' />
+          <Skeleton className='h-32 rounded-xl' />
+        </div>
+      ) : error ? (
+        <Empty className='min-h-32 border'>
           <EmptyHeader>
             <EmptyTitle>{t('insights.error.title')}</EmptyTitle>
             <EmptyDescription>
               {t('insights.error.description')}
             </EmptyDescription>
           </EmptyHeader>
+          <Button variant='outline' onClick={() => void refetchOverview()}>
+            {t('insights.actions.retry')}
+          </Button>
         </Empty>
-      ) : null}
-
-      {!isAnyLoading && data && data.expenseCount === 0 ? (
+      ) : !data ? (
+        <div
+          className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'
+          data-testid='insights-summary-skeleton'>
+          <Skeleton className='h-32 rounded-xl' />
+          <Skeleton className='h-32 rounded-xl' />
+          <Skeleton className='h-32 rounded-xl' />
+        </div>
+      ) : data.expenseCount === 0 ? (
         <Empty className='min-h-80 border'>
           <EmptyHeader>
             <EmptyTitle>{t('insights.empty.title')}</EmptyTitle>
@@ -182,28 +206,85 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
-      ) : null}
+      ) : (
+        <InsightsSummaryCards data={data} formatCurrency={formatCurrency} />
+      )}
 
-      {!isAnyLoading &&
-      data &&
-      comparisonData &&
-      groupsData &&
-      data.expenseCount > 0 ? (
+      {/* Render remaining sections only when overview data is available and has expenses */}
+      {!isLoading && !error && data && data.expenseCount > 0 ? (
         <>
-          <InsightsSummaryCards data={data} formatCurrency={formatCurrency} />
-          <InsightsComparisonSection
-            data={comparisonData}
-            formatCurrency={formatCurrency}
-          />
+          {/* Comparison */}
+          {isComparisonLoading ? (
+            <div
+              className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]'
+              data-testid='insights-comparison-skeleton'>
+              <Skeleton className='h-64 rounded-xl' />
+              <Skeleton className='h-64 rounded-xl' />
+            </div>
+          ) : comparisonError ? (
+            <Empty className='min-h-64 border'>
+              <EmptyHeader>
+                <EmptyTitle>{t('insights.error.title')}</EmptyTitle>
+                <EmptyDescription>
+                  {t('insights.error.description')}
+                </EmptyDescription>
+              </EmptyHeader>
+              <Button
+                variant='outline'
+                onClick={() => void refetchComparison()}>
+                {t('insights.actions.retry')}
+              </Button>
+            </Empty>
+          ) : !comparisonData ? (
+            <div
+              className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]'
+              data-testid='insights-comparison-skeleton'>
+              <Skeleton className='h-64 rounded-xl' />
+              <Skeleton className='h-64 rounded-xl' />
+            </div>
+          ) : (
+            <InsightsComparisonSection
+              data={comparisonData}
+              formatCurrency={formatCurrency}
+            />
+          )}
+
+          {/* Charts */}
           <InsightsChartsSection
             categoryMap={categoryMap}
             data={data}
             formatCurrency={formatCurrency}
           />
-          <InsightsGroupsSection
-            data={groupsData}
-            formatCurrency={formatCurrency}
-          />
+
+          {/* Groups */}
+          {isGroupsLoading ? (
+            <Skeleton
+              className='h-64 rounded-xl'
+              data-testid='insights-groups-skeleton'
+            />
+          ) : groupsError ? (
+            <Empty className='min-h-64 border'>
+              <EmptyHeader>
+                <EmptyTitle>{t('insights.error.title')}</EmptyTitle>
+                <EmptyDescription>
+                  {t('insights.error.description')}
+                </EmptyDescription>
+              </EmptyHeader>
+              <Button variant='outline' onClick={() => void refetchGroups()}>
+                {t('insights.actions.retry')}
+              </Button>
+            </Empty>
+          ) : !groupsData ? (
+            <Skeleton
+              className='h-64 rounded-xl'
+              data-testid='insights-groups-skeleton'
+            />
+          ) : (
+            <InsightsGroupsSection
+              data={groupsData}
+              formatCurrency={formatCurrency}
+            />
+          )}
         </>
       ) : null}
     </div>

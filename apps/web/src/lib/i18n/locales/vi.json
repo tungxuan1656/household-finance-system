@@ -656,6 +656,9 @@
       "overlapShareLabel": "tỷ lệ chồng lấp",
       "tabLabel": "Nhóm"
     },
+    "actions": {
+      "retry": "Thử lại"
+    },
     "empty": {
       "title": "Chưa có dữ liệu chi tiêu",
       "description": "Hãy thêm khoản chi trong tháng đã chọn để xem tổng quan."

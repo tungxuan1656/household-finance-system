@@ -7,6 +7,7 @@ import {
   Cell,
   Pie,
   PieChart,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -22,7 +23,7 @@ import {
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import type { AnalyticsOverviewDTO } from '@/types/analytics'
-import type { ReferenceCategoryDTO } from '@/types/reference-data'
+import type { CategoryKey, ReferenceCategoryDTO } from '@/types/reference-data'
 
 type InsightsChartsSectionProps = {
   data: AnalyticsOverviewDTO
@@ -36,7 +37,7 @@ function InsightsChartsSection({
   formatCurrency,
 }: InsightsChartsSectionProps) {
   return (
-    <section className='grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]'>
+    <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]'>
       <Card>
         <CardHeader>
           <CardTitle>{t('insights.dailySpend.title')}</CardTitle>
@@ -45,22 +46,43 @@ function InsightsChartsSection({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='overflow-x-auto'>
-            <BarChart
-              accessibilityLayer
-              data={data.dailySpend}
-              height={288}
-              width={720}>
-              <CartesianGrid strokeDasharray='3 3' vertical={false} />
-              <XAxis axisLine={false} dataKey='date' tickLine={false} />
-              <YAxis axisLine={false} tickLine={false} width={80} />
-              <Tooltip />
-              <Bar
-                dataKey='totalSpendMinor'
-                fill='var(--color-chart-1, #0f766e)'
-                radius={8}
-              />
-            </BarChart>
+          <div
+            aria-label={t('insights.dailySpend.title')}
+            className='h-[288px] w-full'
+            role='img'>
+            <ResponsiveContainer height='100%' width='100%'>
+              <BarChart
+                accessibilityLayer
+                data={data.dailySpend}
+                margin={{ bottom: 0, left: 0, right: 0, top: 0 }}>
+                <CartesianGrid strokeDasharray='3 3' vertical={false} />
+                <XAxis
+                  angle={-45}
+                  axisLine={false}
+                  dataKey='date'
+                  height={60}
+                  tickLine={false}
+                />
+                <YAxis axisLine={false} tickLine={false} width={80} />
+                <Tooltip
+                  formatter={(value) => {
+                    const amount =
+                      typeof value === 'number' ? value : Number(value) || 0
+
+                    return [
+                      formatCurrency(amount, data.currencyCode),
+                      t('insights.summary.totalSpend'),
+                    ]
+                  }}
+                />
+                <Bar
+                  dataKey='totalSpendMinor'
+                  fill='var(--color-chart-1, #0f766e)'
+                  name={t('insights.summary.totalSpend')}
+                  radius={8}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
@@ -73,26 +95,43 @@ function InsightsChartsSection({
           </CardDescription>
         </CardHeader>
         <CardContent className='flex flex-col gap-4'>
-          <div className='flex justify-center'>
-            <PieChart height={224} width={320}>
-              <Pie
-                data={data.topCategories}
-                dataKey='totalSpendMinor'
-                innerRadius={50}
-                nameKey='categoryKey'
-                outerRadius={80}
-                paddingAngle={3}>
-                {data.topCategories.map((category) => (
-                  <Cell
-                    key={category.categoryKey}
-                    fill={
-                      categoryMap.get(category.categoryKey)?.color ?? '#94a3b8'
-                    }
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
+          <div
+            aria-label={t('insights.topCategories.title')}
+            className='h-[224px] w-full'
+            role='img'>
+            <ResponsiveContainer height='100%' width='100%'>
+              <PieChart>
+                <Pie
+                  data={data.topCategories}
+                  dataKey='totalSpendMinor'
+                  innerRadius={50}
+                  nameKey='categoryKey'
+                  outerRadius={80}
+                  paddingAngle={3}>
+                  {data.topCategories.map((category) => (
+                    <Cell
+                      key={category.categoryKey}
+                      fill={
+                        categoryMap.get(category.categoryKey)?.color ??
+                        '#94a3b8'
+                      }
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value, name) => {
+                    const amount =
+                      typeof value === 'number' ? value : Number(value) || 0
+                    const label =
+                      typeof name === 'string'
+                        ? getCategoryLabel(name as CategoryKey)
+                        : ''
+
+                    return [formatCurrency(amount, data.currencyCode), label]
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
           <div className='flex flex-col gap-3'>
             {data.topCategories.map((category) => {
@@ -102,24 +141,26 @@ function InsightsChartsSection({
                 <div
                   key={category.categoryKey}
                   className='flex items-center justify-between gap-4'>
-                  <div className='flex items-center gap-3'>
+                  <div className='flex min-w-0 items-center gap-3'>
                     <span
                       aria-hidden='true'
-                      className='size-3 rounded-full'
+                      className='size-3 shrink-0 rounded-full'
                       style={{
                         backgroundColor: categoryMeta?.color ?? '#999',
                       }}
                     />
-                    <span>{getCategoryLabel(category.categoryKey)}</span>
+                    <span className='truncate'>
+                      {getCategoryLabel(category.categoryKey)}
+                    </span>
                   </div>
-                  <div className='text-right text-sm text-muted-foreground'>
-                    <div>
+                  <div className='min-w-0 text-right text-sm text-muted-foreground'>
+                    <div className='break-words'>
                       {formatCurrency(
                         category.totalSpendMinor,
                         data.currencyCode,
                       )}
                     </div>
-                    <div>
+                    <div className='break-words'>
                       {category.percentOfTotal}% · {category.expenseCount}
                     </div>
                   </div>

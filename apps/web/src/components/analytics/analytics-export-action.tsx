@@ -9,7 +9,6 @@ import type { AnalyticsExportParams } from '@/types/analytics'
 type AnalyticsExportActionProps = {
   params: AnalyticsExportParams
   disabled?: boolean
-  hidden?: boolean
 }
 
 const downloadBlob = (blob: Blob, filename: string) => {
@@ -27,13 +26,8 @@ const getFallbackFilename = (params: AnalyticsExportParams): string =>
 function AnalyticsExportAction({
   params,
   disabled,
-  hidden,
 }: AnalyticsExportActionProps) {
   const [isExporting, setIsExporting] = useState(false)
-
-  if (hidden) {
-    return null
-  }
 
   const handleExport = async () => {
     setIsExporting(true)

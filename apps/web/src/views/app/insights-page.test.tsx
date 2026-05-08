@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { InsightsPage } from '@/views/app/insights-page'
@@ -40,6 +41,17 @@ vi.mock('@/stores/household.store', () => ({
     },
   },
 }))
+
+vi.mock('recharts', async () => {
+  const actual = await vi.importActual<typeof import('recharts')>('recharts')
+
+  return {
+    ...actual,
+    ResponsiveContainer: ({ children }: { children: ReactNode }) => (
+      <div style={{ height: 320, width: 640 }}>{children}</div>
+    ),
+  }
+})
 
 describe('InsightsPage', () => {
   beforeEach(() => {
@@ -337,6 +349,25 @@ describe('InsightsPage', () => {
     expect(screen.getByLabelText('insights.periodLabel')).toBeInTheDocument()
   })
 
+  it('allows retrying a failed overview query', async () => {
+    const refetchMock = vi.fn()
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('boom'),
+      refetch: refetchMock,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'insights.actions.retry' }),
+    )
+
+    expect(refetchMock).toHaveBeenCalledTimes(1)
+  })
+
   it('shows loading skeleton while analytics query is loading', () => {
     useAnalyticsOverviewQueryMock.mockReturnValue({
       data: undefined,
@@ -346,10 +377,18 @@ describe('InsightsPage', () => {
 
     render(<InsightsPage initialPeriod='2026-05' />)
 
-    expect(screen.getByTestId('insights-loading')).toBeInTheDocument()
+    expect(screen.getByTestId('insights-summary-skeleton')).toBeInTheDocument()
+
+    expect(
+      screen.queryByTestId('insights-comparison-skeleton'),
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByTestId('insights-groups-skeleton'),
+    ).not.toBeInTheDocument()
   })
 
-  it('shows comparison error state when secondary analytics query fails', () => {
+  it('shows comparison error state while keeping overview visible', () => {
     useAnalyticsOverviewQueryMock.mockReturnValue({
       data: {
         period: '2026-05',
@@ -382,7 +421,78 @@ describe('InsightsPage', () => {
 
     render(<InsightsPage initialPeriod='2026-05' />)
 
+    // Overview still visible
+    expect(screen.getAllByText(/59[,.]000/).length).toBeGreaterThan(0)
+
+    // Comparison error visible with retry button
     expect(screen.getByText('insights.error.title')).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: 'insights.actions.retry' }),
+    ).toBeInTheDocument()
+  })
+
+  it('shows comparison skeleton while keeping overview visible', () => {
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsComparisonQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    expect(screen.getAllByText(/59[,.]000/).length).toBeGreaterThan(0)
+
+    expect(
+      screen.getByTestId('insights-comparison-skeleton'),
+    ).toBeInTheDocument()
+  })
+
+  it('allows retrying a failed groups query', async () => {
+    const refetchGroupsMock = vi.fn()
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: {
+        period: '2026-05',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+        totalSpendMinor: 59000,
+        expenseCount: 3,
+        dailySpend: [],
+        topCategories: [],
+      },
+      isLoading: false,
+      error: null,
+    })
+
+    useAnalyticsGroupsQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('boom'),
+      refetch: refetchGroupsMock,
+    })
+
+    render(<InsightsPage initialPeriod='2026-05' />)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'insights.actions.retry' }),
+    )
+
+    expect(refetchGroupsMock).toHaveBeenCalledTimes(1)
   })
 
   it('shows export action only when analytics data is ready', () => {
@@ -407,7 +517,7 @@ describe('InsightsPage', () => {
     ).toBeEnabled()
   })
 
-  it('hides export action when page loading, empty, or error', () => {
+  it('disables export action when page loading, empty, or error', () => {
     useAnalyticsOverviewQueryMock.mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -417,8 +527,8 @@ describe('InsightsPage', () => {
     const { rerender } = render(<InsightsPage initialPeriod='2026-05' />)
 
     expect(
-      screen.queryByRole('button', { name: 'insights.export.action' }),
-    ).toBeNull()
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    ).toBeDisabled()
 
     useAnalyticsOverviewQueryMock.mockReturnValue({
       data: {
@@ -437,8 +547,8 @@ describe('InsightsPage', () => {
     rerender(<InsightsPage initialPeriod='2026-05' />)
 
     expect(
-      screen.queryByRole('button', { name: 'insights.export.action' }),
-    ).toBeNull()
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    ).toBeDisabled()
 
     useAnalyticsOverviewQueryMock.mockReturnValue({
       data: undefined,
@@ -449,8 +559,8 @@ describe('InsightsPage', () => {
     rerender(<InsightsPage initialPeriod='2026-05' />)
 
     expect(
-      screen.queryByRole('button', { name: 'insights.export.action' }),
-    ).toBeNull()
+      screen.getByRole('button', { name: 'insights.export.action' }),
+    ).toBeDisabled()
   })
 
   it('exports current period csv with household context', async () => {

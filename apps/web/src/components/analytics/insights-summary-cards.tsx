@@ -20,14 +20,14 @@ function InsightsSummaryCards({
   formatCurrency,
 }: InsightsSummaryCardsProps) {
   return (
-    <section className='grid gap-4 xl:grid-cols-3'>
+    <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
       <Card>
         <CardHeader>
           <CardTitle>{t('insights.summary.totalSpend')}</CardTitle>
           <CardDescription>{data.period}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='font-heading text-3xl tracking-tight'>
+          <div className='min-w-0 font-heading text-3xl tracking-tight break-words'>
             {formatCurrency(data.totalSpendMinor, data.currencyCode)}
           </div>
         </CardContent>
@@ -40,7 +40,7 @@ function InsightsSummaryCards({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='font-heading text-3xl tracking-tight'>
+          <div className='min-w-0 font-heading text-3xl tracking-tight break-words'>
             {data.expenseCount}
           </div>
         </CardContent>
@@ -53,7 +53,7 @@ function InsightsSummaryCards({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='font-heading text-3xl tracking-tight'>
+          <div className='min-w-0 font-heading text-3xl tracking-tight break-words'>
             {formatCurrency(
               data.expenseCount > 0
                 ? Math.round(data.totalSpendMinor / data.expenseCount)

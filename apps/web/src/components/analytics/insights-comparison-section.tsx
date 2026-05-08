@@ -26,7 +26,7 @@ function InsightsComparisonSection({
   const TrendIcon = deltaPositive ? TrendingUpIcon : TrendingDownIcon
 
   return (
-    <section className='grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]'>
+    <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]'>
       <Card>
         <CardHeader>
           <CardTitle>{t('insights.comparison.title')}</CardTitle>
@@ -36,20 +36,24 @@ function InsightsComparisonSection({
         </CardHeader>
         <CardContent className='flex flex-col gap-4'>
           <div className='flex items-center justify-between gap-4'>
-            <div className='flex flex-col gap-1'>
+            <div className='flex min-w-0 flex-col gap-1'>
               <span className='text-sm text-muted-foreground'>
                 {data.currentPeriod.period}
               </span>
-              <span className='font-heading text-2xl tracking-tight'>
+              <span className='min-w-0 font-heading text-2xl tracking-tight break-words'>
                 {formatCurrency(
                   data.currentPeriod.totalSpendMinor,
                   data.currencyCode,
                 )}
               </span>
             </div>
-            <Badge variant={deltaPositive ? 'secondary' : 'destructive'}>
-              <TrendIcon data-icon='inline-start' />
-              {formatCurrency(data.totalDeltaSpendMinor, data.currencyCode)}
+            <Badge
+              className='max-w-full shrink-0 truncate'
+              variant={deltaPositive ? 'secondary' : 'destructive'}>
+              <TrendIcon className='shrink-0' data-icon='inline-start' />
+              <span className='truncate'>
+                {formatCurrency(data.totalDeltaSpendMinor, data.currencyCode)}
+              </span>
             </Badge>
           </div>
 
@@ -58,7 +62,7 @@ function InsightsComparisonSection({
               <div className='text-sm text-muted-foreground'>
                 {t('insights.comparison.currentPeriod')}
               </div>
-              <div className='font-heading text-xl'>
+              <div className='min-w-0 font-heading text-xl break-words'>
                 {formatCurrency(
                   data.currentPeriod.totalSpendMinor,
                   data.currencyCode,
@@ -69,7 +73,7 @@ function InsightsComparisonSection({
               <div className='text-sm text-muted-foreground'>
                 {t('insights.comparison.previousPeriod')}
               </div>
-              <div className='font-heading text-xl'>
+              <div className='min-w-0 font-heading text-xl break-words'>
                 {formatCurrency(
                   data.previousPeriod.totalSpendMinor,
                   data.currencyCode,
@@ -83,8 +87,8 @@ function InsightsComparisonSection({
               <div
                 key={category.categoryKey}
                 className='flex items-center justify-between gap-4 rounded-lg border p-3'>
-                <div className='flex flex-col gap-1'>
-                  <span>
+                <div className='flex min-w-0 flex-col gap-1'>
+                  <span className='truncate'>
                     {t(
                       `app.expenseReference.categories.${category.categoryKey}`,
                     )}
@@ -97,10 +101,16 @@ function InsightsComparisonSection({
                   </span>
                 </div>
                 <Badge
+                  className='max-w-full shrink-0 truncate'
                   variant={
                     category.deltaSpendMinor <= 0 ? 'secondary' : 'destructive'
                   }>
-                  {formatCurrency(category.deltaSpendMinor, data.currencyCode)}
+                  <span className='truncate'>
+                    {formatCurrency(
+                      category.deltaSpendMinor,
+                      data.currencyCode,
+                    )}
+                  </span>
                 </Badge>
               </div>
             ))}
@@ -119,8 +129,10 @@ function InsightsComparisonSection({
               key={`${payer.payerUserId}-${index}`}
               className='flex flex-col gap-1'>
               <div className='flex items-center justify-between gap-4'>
-                <span>{payer.payerDisplayName ?? payer.payerUserId}</span>
-                <span className='text-sm text-muted-foreground'>
+                <span className='min-w-0 truncate'>
+                  {payer.payerDisplayName ?? payer.payerUserId}
+                </span>
+                <span className='shrink-0 text-sm text-muted-foreground'>
                   {payer.percentOfTotal}%
                 </span>
               </div>
