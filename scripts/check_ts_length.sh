@@ -168,7 +168,7 @@ echo ""
 # ------------------------
 if (( found_error > 0 )); then
   echo "❌ Refactor required"
-  exit 0
+  exit 1
 fi
 
 if (( found_warn > 0 )); then
