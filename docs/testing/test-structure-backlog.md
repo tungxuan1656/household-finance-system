@@ -31,12 +31,18 @@
 
 Review these files first when test maintenance work starts:
 
-- `apps/worker/test/integration/analytics-groups.spec.ts`
-- `apps/worker/test/integration/profile-patch.spec.ts`
-- `apps/worker/test/integration/expenses-update.spec.ts`
 - `apps/worker/test/unit/user-repository.spec.ts`
-- `apps/worker/test/integration/expenses-list-personal.spec.ts`
-- `apps/worker/test/integration/households-members.spec.ts`
+- `apps/worker/test/integration/invitations.spec.ts`
+- `apps/worker/test/integration/budgets-status.spec.ts`
+
+## Completed cleanup in this batch
+
+- Split `apps/worker/test/integration/analytics-groups.spec.ts` into semantic shards plus `analytics-groups.test-setup.ts`.
+- Split `apps/worker/test/integration/profile-patch.spec.ts` into semantic shards plus `profile-patch.test-setup.ts`.
+- Split `apps/worker/test/integration/expenses-update.spec.ts` into semantic shards plus `expenses-update.test-setup.ts`.
+- Split `apps/worker/test/integration/expenses-list-personal.spec.ts` into semantic shards plus `expenses-list-personal.test-setup.ts`.
+- Split `apps/worker/test/integration/households-members.spec.ts` into semantic shards plus `households-members.test-setup.ts`.
+- Normalize touched `apps/web` page and quick-add test shard suffixes from `.spec.tsx` to `.test.tsx`.
 
 ## Non-goals
 
