@@ -106,6 +106,8 @@ type AnalyticsGroupSpendRow = {
   expenseCount: number
 }
 
+export { calculateDeltaPercent } from './expense-analytics-helpers'
+
 export const getAnalyticsOverview = async (
   db: D1Database,
   input: AnalyticsQueryInput,

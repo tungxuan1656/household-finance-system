@@ -93,12 +93,12 @@ This plan is architecture-first, not threshold-first. Success is not merely push
 - [x] (2026-05-08) Chose architecture-first full-repo plan instead of threshold-first sweep. Owner: User + Orchestrator.
 - [x] (2026-05-08) Read architecture, plans, harness state, and reference docs required to author repo-wide ExecPlan. Owner: Orchestrator.
 - [x] (2026-05-08) Created and registered active ExecPlan for repo-wide TypeScript file-size refactor. Owner: Orchestrator.
-- [ ] Phase 0: Capture baseline verification and map each oversized file to one target split pattern before editing. Owner: Implementation agent.
-- [ ] Phase 1: Refactor frontend architecture hot spots into orchestrator pages/components + bounded helpers/components. Owner: Implementation agent.
-- [ ] Phase 2: Refactor backend repositories into smaller query-family modules and explicit mappers without changing route/handler contracts. Owner: Implementation agent.
-- [ ] Phase 3: Refactor oversized tests into focused specs plus shared test helpers/builders. Owner: Implementation agent.
-- [ ] Phase 4: Re-run length script, fix remaining warn/error outliers created or exposed by earlier phases, and record residual tech debt if any. Owner: Implementation agent.
-- [ ] Phase 5: Run final verification, update progress evidence, and move plan to Completed. Owner: Implementation agent.
+- [x] Phase 0: Capture baseline verification and map each oversized file to one target split pattern before editing. Owner: Implementation agent.
+- [x] Phase 1: Refactor frontend architecture hot spots into orchestrator pages/components + bounded helpers/components. Owner: Implementation agent.
+- [x] Phase 2: Refactor backend repositories into smaller query-family modules and explicit mappers without changing route/handler contracts. Owner: Implementation agent.
+- [x] Phase 3: Refactor oversized tests into focused specs plus shared test helpers/builders. Owner: Implementation agent.
+- [x] Phase 4: Re-run length script, fix remaining warn/error outliers created or exposed by earlier phases, and record residual tech debt if any. Owner: Implementation agent.
+- [x] Phase 5: Run final verification, update progress evidence, and move plan to Completed. Owner: Implementation agent.
 
 ## Surprises & Discoveries
 
@@ -139,6 +139,13 @@ This plan is architecture-first, not threshold-first. Success is not merely push
 - Acceptance target: `./scripts/check_ts_length.sh` shows no remaining `ERROR` entries or logs explicit deferred exceptions in `docs/exec-plans/tech-debt-tracker.md` with rationale if any file cannot safely be completed in this pass.
 - Verification target: focused test runs for each edited area, workspace typechecks/build/tests via `./init.sh`, and unchanged product behavior in touched flows.
 - Expected follow-up: if any giant file reveals hidden product/contract ambiguity that cannot be resolved as pure refactor, stop that slice and log smaller follow-up plan instead of broadening this one.
+
+## Completion Notes
+
+- Final `./scripts/check_ts_length.sh` result: `Errors: 0`, `Warnings: 10`, `✅ All good`.
+- Frontend oversized orchestrators and tests were split into feature-local setup/spec modules while preserving existing import/runtime contracts.
+- Backend oversized repositories and integration suites were reduced by extracting query-family helpers, repository submodules, and focused test files with compatibility re-exports where needed.
+- Remaining warning-level files were intentionally left as warnings because plan acceptance required eliminating `ERROR` entries first; no deferred `ERROR` exceptions remain.
 
 ## Context and Orientation
 
