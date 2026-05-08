@@ -12,7 +12,7 @@
     "feat-043",
     "feat-044"
   ],
-  "status": "in_progress",
-  "evidence": "Created active ExecPlan `docs/exec-plans/plans/2026-05-08-feat-045-home-overview-dashboard-unification.md` on 2026-05-08. Scope locks feat-045 to frontend-first `/home` dashboard unification across existing household, budget, analytics, expense, and onboarding surfaces, with explicit stop-and-log gate before any additive backend summary contract.",
+  "status": "done",
+  "evidence": "Completed frontend-first `/home` dashboard unification on 2026-05-08. Replaced placeholder overview shell with truthful no-household onboarding CTA state, summary metrics, household cards, role-aware actions, and visible partial budget-failure handling in `apps/web/src/views/app/overview-page.tsx`, backed by focused regression coverage in `apps/web/src/views/app/overview-page.test.tsx`. Verification evidence: `pnpm --filter web test -- --run src/views/app/overview-page.test.tsx src/views/app/households-page.test.tsx src/views/app/budgets-page.test.tsx src/views/app/insights-page.test.tsx`, `pnpm --filter web typecheck`, and `./init.sh`. Backend summary support remained unnecessary for this first pass.",
   "updated_at": "2026-05-08"
 }

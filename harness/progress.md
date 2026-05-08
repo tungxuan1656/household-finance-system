@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-08 — Completed feat-045 home overview dashboard unification
+
+- Who: Orchestrator
+- Summary: Implemented the frontend-first `feat-045` upgrade for `/home`. Replaced the placeholder overview shell with a truthful dashboard that now distinguishes the no-household onboarding path from active household usage, surfaces top-level summary metrics, renders per-household cards with existing household/budget/analytics/member signals, exposes role-aware navigation actions, and keeps healthy sections visible when the budget slice fails. The first pass stayed within existing frontend contracts after focused verification showed backend summary support was unnecessary.
+- Files changed: home overview page, focused overview page tests, overview locale labels, feat-045 plan notes/status tracking, plan index, feature state, and progress log.
+- Verification: `pnpm --filter web test -- --run src/views/app/overview-page.test.tsx src/views/app/households-page.test.tsx src/views/app/budgets-page.test.tsx src/views/app/insights-page.test.tsx`; `pnpm --filter web typecheck`; `./init.sh`.
+- Blockers: none.
+- Next steps: if requested, commit feat-045 implementation artifacts.
+
 ## 2026-05-08 — Created active ExecPlan for feat-045 home overview dashboard unification
 
 - Who: Orchestrator

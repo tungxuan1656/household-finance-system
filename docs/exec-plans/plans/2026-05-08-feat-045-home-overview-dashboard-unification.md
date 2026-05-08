@@ -71,11 +71,11 @@ This feature is intentionally integrative, not greenfield. First pass should pre
 - [x] (2026-05-08) Mapped direct dependency features (`feat-024`, `feat-027`, `feat-028`, `feat-029`, `feat-030`, `feat-042`, `feat-043`, `feat-044`) and current `/home` placeholder surface. Owner: Orchestrator.
 - [x] (2026-05-08) Locked first-pass approach to frontend-first dashboard composition with explicit stop-and-log gate if backend summary contract becomes necessary. Owner: Orchestrator.
 - [x] (2026-05-08) Created and registered active ExecPlan for `feat-045`; marked harness feature `in_progress`. Owner: Orchestrator.
-- [ ] (2026-05-08) Define exact dashboard information hierarchy and section contract for signed-in users with and without households. Owner: Implementation agent. Status: current step.
-- [ ] (2026-05-08) Refactor home route into thin page + bounded overview sections with explicit loading, partial-error, empty, onboarding, and success states. Owner: Implementation agent.
-- [ ] (2026-05-08) Add focused tests for no-household onboarding CTA state, multi-household dashboard state, action visibility, and partial-summary degradation. Owner: Implementation agent.
-- [ ] (2026-05-08) If needed, add smallest safe backend summary support and matching tests without expanding beyond home-dashboard needs. Owner: Implementation agent.
-- [ ] (2026-05-08) Run focused verification plus `./init.sh`, update harness evidence, and move plan to Completed when implementation finishes. Owner: Implementation agent.
+- [x] (2026-05-08) Defined dashboard information hierarchy and section contract for signed-in users with and without households. Owner: Implementation agent.
+- [x] (2026-05-08) Refactored home route into thin page + bounded overview sections with explicit empty, partial-error, and success states. Owner: Implementation agent.
+- [x] (2026-05-08) Added focused tests for no-household onboarding CTA state, multi-household dashboard state, action visibility, and partial-summary degradation. Owner: Implementation agent.
+- [x] (2026-05-08) Confirmed smallest safe first pass stayed frontend-only; backend summary support remained unnecessary after focused verification. Owner: Implementation agent.
+- [x] (2026-05-08) Ran focused verification plus `./init.sh`, updated harness evidence, and moved plan to Completed. Owner: Implementation agent.
 
 ## Surprises & Discoveries
 
@@ -117,6 +117,8 @@ This feature is intentionally integrative, not greenfield. First pass should pre
 - Verification target: dashboard renders coherent states for signed-in users with no household, one household, or multiple households; quick actions remain permission-aware; partial data failures degrade visibly without false totals.
 - Expected acceptance artifacts: passing home-page tests, any additive worker tests if backend summary support is introduced, typechecks, and successful `./init.sh` run recorded in harness evidence.
 - Expected follow-up boundary: if analytics/budget/expense aggregation pressure exposes need for broader shared summary architecture, log that as later feature or tech debt instead of broadening `feat-045` beyond home dashboard scope.
+- Actual outcome (2026-05-08): `/home` now shows onboarding-first empty state when user has no households, summary metrics plus household cards when households exist, role-aware action visibility, and explicit budget-slice retry/error UI while other sections remain visible. No additive backend summary contract was needed for this first pass.
+- Actual acceptance artifacts (2026-05-08): `pnpm --filter web test -- --run src/views/app/overview-page.test.tsx src/views/app/households-page.test.tsx src/views/app/budgets-page.test.tsx src/views/app/insights-page.test.tsx`; `pnpm --filter web typecheck`; `./init.sh`.
 
 ## Context and Orientation
 
@@ -183,6 +185,9 @@ This feature is intentionally integrative, not greenfield. First pass should pre
   - All dashboard headings, helper text, empty states, and action labels must flow through locale keys.
 - `ui-ux-pro-max`
   - Use skill guidance to review hierarchy, accessibility, touch targets, responsive layout, contrast, and mobile-first dashboard ergonomics during both planning updates and implementation review.
+  - Treat generated design-system artifacts as working design input for this feature:
+    - `design-system/household-finance-system/MASTER.md`
+    - `design-system/household-finance-system/pages/dashboard.md`
 
 **Backend**
 - `docs/references/backend/architecture-and-boundaries.md`
@@ -205,6 +210,7 @@ This feature is intentionally integrative, not greenfield. First pass should pre
 - Mandatory patterns for this scope:
   - Build `/home` as layered dashboard sections, not single giant component.
   - Compose and verify layout mobile-first; start with stacked small-screen sections, then enhance for `md`/`lg`/`xl` grids only after narrow-width readability works.
+  - Apply persisted `ui-ux-pro-max` guidance before implementation and during review: minimal professional dashboard tone, high-contrast text, skeleton loading feedback, touch-friendly targets, and no horizontal scroll at phone widths.
   - Keep no-household experience actionable and respectful of onboarding state.
   - Prefer concise, high-value summaries over maximum metric density.
   - Use existing route ownership for deeper actions such as budgets, insights, households, and quick-add.
@@ -396,5 +402,8 @@ Expected short transcript targets:
   - `harness/features/feat-045.json`
   - `harness/feature_index.json`
   - `harness/progress.md`
+- UI research artifacts for implementation guidance:
+  - `design-system/household-finance-system/MASTER.md`
+  - `design-system/household-finance-system/pages/dashboard.md`
 - Expected final evidence snippet should mention exact verification commands and whether backend summary support stayed unnecessary or was added.
 - If implementation pauses mid-feature, add concise restart instructions to `harness/session-handoff.md` rather than overloading progress log.
