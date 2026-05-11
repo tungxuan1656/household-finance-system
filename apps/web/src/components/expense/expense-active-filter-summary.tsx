@@ -35,7 +35,7 @@ export function ExpenseActiveFilterSummary({
         </div>
       </div>
       <Button
-        className='h-10 w-full sm:h-8 sm:w-auto'
+        className='h-12 w-full sm:h-10 sm:w-auto'
         variant='outline'
         onClick={onReset}>
         {t('expense.feed.filters.reset')}

@@ -136,7 +136,8 @@
       "title": "Thiết lập gia đình"
     },
     "overview": {
-      "badge": "Khung đã đăng nhập",
+      "badge": "Bảng điều khiển",
+      "welcome": "Chào mừng trở lại, {{name}}",
       "budget": {
         "availableBudgets": "Đang hiển thị {{count}} ngân sách",
         "description": "Theo dõi nhanh số ngân sách hiện có cho bối cảnh gia đình đang chọn.",
@@ -145,7 +146,7 @@
         "selectHousehold": "Chọn một gia đình để xem ngân sách phù hợp.",
         "title": "Ngân sách"
       },
-      "description": "Trang đích này là nền cho trạng thái đã xác thực. Nó giữ bố cục, điều hướng, và hành vi trạng thái trống ổn định trước khi dữ liệu thật xuất hiện.",
+      "description": "Tổng quan tài chính của bạn trong {{period}}.",
       "demoFamily": "Gia đình mẫu",
       "empty": {
         "createHousehold": "Tạo gia đình đầu tiên",
@@ -190,9 +191,7 @@
         "cardTitle": "Phạm vi khung",
         "description": "Các tuyến mà các feat sau sẽ thay thế."
       },
-      "signedInAs": "Đã đăng nhập với vai trò",
       "summary": {
-        "description": "Tóm tắt nhanh chi tiêu và số gia đình trước khi đi sâu vào từng khu vực.",
         "expenseCount": "Số khoản chi",
         "householdCount": "Số gia đình",
         "errorDescription": "Dữ liệu tổng quan đang tạm thời không khả dụng. Hãy thử tải lại phần này.",
@@ -200,8 +199,7 @@
         "period": "Tháng {{month}}/{{year}}",
         "title": "Tổng quan hôm nay",
         "totalSpend": "Tổng chi"
-      },
-      "title": "Không gian làm việc gia đình"
+      }
     },
     "placeholder": {
       "budgets": {
@@ -616,6 +614,7 @@
     },
     "feed": {
       "title": "Chi tiêu gần đây",
+      "description": "Theo dõi và lọc danh sách chi tiêu của gia đình.",
       "empty": "Chưa có chi tiêu nào",
       "loadMore": "Tải thêm",
       "loading": "Đang tải...",
