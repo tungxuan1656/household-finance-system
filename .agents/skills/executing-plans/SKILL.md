@@ -5,21 +5,32 @@ description: Use when you have a written implementation plan to execute in a sep
 
 # Executing Plans
 
-## Overview
-
 Load plan, review critically, execute all tasks, report when complete.
 
-**Announce at start:** "I'm using the executing-plans skill to implement this plan."
+**Announce at start:** "Using the executing-plans skill to implement this plan."
 
-**Note:** Tell your human partner that Superpowers works much better with access to subagents. The quality of its work will be significantly higher if run on a platform with subagent support (such as Claude Code or Codex). If subagents are available, use subagent-driven-development instead of this skill.
+**Note:** If subagents are available, `subagent-driven-development` is preferred for faster iteration and two-stage review. Use this skill when executing in a separate session or when subagents are not available.
+
+## Required Reading
+
+Before starting:
+- The plan file (read completely)
+- `AGENTS.md` — for session rules and verification commands
+
+Read additional docs only when the plan references them:
+- `ARCHITECTURE.md` — if touching architecture boundaries
+- `docs/FRONTEND.md` — if doing frontend work
+- `docs/BACKEND.md` — if doing backend work
+- Relevant `docs/references/*` — as specified in the plan
 
 ## The Process
 
 ### Step 1: Load and Review Plan
-1. Read plan file
-2. Review critically - identify any questions or concerns about the plan
-3. If concerns: Raise them with your human partner before starting
-4. If no concerns: Create TodoWrite and proceed
+
+1. Read the plan file completely
+2. Review critically — identify any questions or concerns about the plan
+3. If concerns: raise them with your human partner before starting
+4. If no concerns: create TodoWrite and proceed
 
 ### Step 2: Execute Tasks
 
@@ -29,12 +40,17 @@ For each task:
 3. Run verifications as specified
 4. Mark as completed
 
-### Step 3: Complete Development
+### Step 3: Verify and Complete
 
 After all tasks complete and verified:
-- Announce: "I'm using the finishing-a-development-branch skill to complete this work."
-- **REQUIRED SUB-SKILL:** Use subagent-driven-development
-- Follow that skill to verify tests, present options, execute choice
+1. Run `./init.sh` for full workspace verification
+2. Use `verification-before-completion` skill to confirm all claims
+3. Use `requesting-code-review` skill for final review
+4. Update harness artifacts:
+   - `harness/features/*.json` — update status and evidence
+   - `harness/feature_index.json` — update feature status
+   - `harness/progress.md` — add session entry
+5. Commit with descriptive message
 
 ## When to Stop and Ask for Help
 
@@ -52,17 +68,30 @@ After all tasks complete and verified:
 - Partner updates the plan based on your feedback
 - Fundamental approach needs rethinking
 
-**Don't force through blockers** - stop and ask.
+**Don't force through blockers** — stop and ask.
+
+## Harness Integration
+
+- Update `harness/progress.md` after each significant task completion
+- Update `harness/session-handoff.md` if stopping mid-plan
+- Record evidence in `harness/features/*.json` as tasks complete
+- Run `./init.sh` before claiming the plan is done
 
 ## Remember
+
 - Review plan critically first
 - Follow plan steps exactly
 - Don't skip verifications
-- Reference skills when plan says to
+- Reference skills when the plan says to
 - Stop when blocked, don't guess
 - Never start implementation on main/master branch without explicit user consent
 
 ## Integration
 
 **Required workflow skills:**
-- **writing-plans** - Creates the plan this skill executes
+- **writing-plans** — Creates the plan this skill executes
+- **verification-before-completion** — Verify before claiming done
+- **requesting-code-review** — Review before merge
+
+**Alternative workflow:**
+- **subagent-driven-development** — Preferred when subagents are available

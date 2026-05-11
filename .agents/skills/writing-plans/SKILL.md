@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: 'Use when you have a spec or requirements for a multi-step task, before touching code. For this harness-system repo, write a self-contained ExecPlan that follows docs/exec-plans and harness state.'
+description: 'Use when you have a spec or requirements for a multi-step task, before touching code. Write a self-contained ExecPlan that follows docs/exec-plans and harness state.'
 argument-hint: 'Describe feature goal, scope (frontend/backend/fullstack), constraints, and expected verification artifacts.'
 ---
 
@@ -20,6 +20,26 @@ Do not use this skill for:
 - One-off tiny edits that do not need a plan.
 - Generic brainstorming without concrete implementation intent.
 
+## Required Reading
+
+Read these before writing:
+- `AGENTS.md` — project context, session rules, definition of done
+- `ARCHITECTURE.md` — system shape, layer model, dependency rules
+- `docs/PLANS.md` — plan lifecycle and execution policy
+- `docs/exec-plans/__plan-template__.md` — canonical ExecPlan template
+- `docs/exec-plans/index.md` — current plan status
+
+Read scope-specific docs based on what the plan touches:
+- `docs/FRONTEND.md` — when scope includes frontend
+- `docs/BACKEND.md` — when scope includes backend
+- `docs/references/index.md` — to find relevant pattern docs
+
+Check harness state for continuity:
+- `harness/feature_index.json` — current feature status
+- Related `harness/features/*.json` — feature dependencies and evidence
+- `harness/progress.md` — recent session history
+- `harness/session-handoff.md` — if work spans sessions
+
 ## Mandatory Inputs
 
 Collect or infer the following before drafting:
@@ -30,29 +50,11 @@ Collect or infer the following before drafting:
 
 If the scope is unclear, ask concise clarifying questions before writing the plan.
 
-## Required Source Documents
-
-Read these before writing:
-- `AGENTS.md`
-- `ARCHITECTURE.md`
-- `docs/PLANS.md`
-- `docs/exec-plans/__plan-template__.md`
-- `docs/exec-plans/index.md`
-- `docs/references/index.md`
-- `docs/FRONTEND.md` when scope includes frontend
-- `docs/BACKEND.md` when scope includes backend
-
-Also check harness state for continuity:
-- `harness/feature_index.json`
-- Related `harness/features/*.json`
-- `harness/progress.md`
-- `harness/session-handoff.md` when the work spans sessions
-
 ## Plan Lifecycle Requirements
 
 - Save plans to `docs/exec-plans/plans/YYYY-MM-DD-<feature-name>.md`.
-- Active and completed plan files stay in `docs/exec-plans/plans/`.
-- Plan status must be tracked in `docs/exec-plans/index.md` under `Active` and `Completed`.
+- Active and completed plan files stay in `docs/exec-plans/plans/` (no file moves across status folders).
+- Plan status must be tracked in `docs/exec-plans/index.md` under `Active` and `Completed` sections.
 - Deferred items must be logged in `docs/exec-plans/tech-debt-tracker.md`.
 
 ## Scope-Driven Standards Matrix
@@ -109,9 +111,9 @@ If uncertainty is high, include a dedicated research step in the plan before imp
 
 Follow this sequence strictly.
 
-1. Define purpose and user-observable behavior.
-2. Lock scope and explicitly list out-of-scope items.
-3. Build a scope map:
+1. **Define purpose and user-observable behavior.**
+2. **Lock scope** — explicitly list in-scope and out-of-scope items.
+3. **Build a scope map:**
    - Files and modules expected to change.
    - Layer impact using `Types -> Config -> Repo -> Service -> Runtime -> UI` from `ARCHITECTURE.md`.
    - Hard dependency checks from `ARCHITECTURE.md`:
@@ -119,26 +121,26 @@ Follow this sequence strictly.
      - UI does not bypass runtime/service contracts.
      - Data access enters through repository or explicit adapter boundaries.
    - If new dependencies are introduced, include explicit justification in the plan.
-4. Add standards enforcement section:
+4. **Add standards enforcement section:**
    - List required references from the scope-driven matrix.
    - Convert each selected reference into concrete coding constraints.
-5. Write implementation narrative:
+5. **Write implementation narrative:**
    - File-by-file planned edits.
    - Data flow and interface contracts.
-6. Add concrete commands with working directory and expected short outputs.
+6. **Add concrete commands** with working directory and expected short outputs.
    - Include `./init.sh` baseline verification from repo root unless not applicable, and explain why if it is not.
-7. Add validation matrix:
+7. **Add validation matrix:**
    - Happy path.
    - Validation/error paths.
    - Unauthorized/forbidden when relevant.
    - Regression checks for fixed bugs.
-8. Add idempotence and recovery:
+8. **Add idempotence and recovery:**
    - Re-run safety.
    - Backup/rollback for risky operations.
-9. Add harness integration:
-   - Required updates for `harness/feature_index.json`, `harness/features/*.json`, `harness/progress.md`, and `harness/session-handoff.md` when applicable.
-10. Add decision log placeholders and progress checklist suitable for multi-session execution.
-   - Enforce one clearly owned current step with owner and status.
+9. **Add harness integration:**
+   - Required updates for `harness/feature_index.json`, `harness/features/*.json`, and `harness/progress.md`.
+10. **Add decision log placeholders and progress checklist** suitable for multi-session execution.
+    - Enforce one clearly owned current step with owner and status.
 
 ## Output Contract
 
@@ -157,6 +159,16 @@ A plan is complete only if all checks pass:
   - progress log
   - open decisions
 
+## Ambiguity Handling
+
+If any of these are missing, ask before finalizing:
+- Exact user-visible behavior.
+- Ownership boundary between frontend/backend.
+- Data migration or backward-compatibility constraints.
+- Security/privacy sensitivity level.
+
+Use minimal, high-signal questions and continue once answered.
+
 ## Writing Rules
 
 - Use exact file paths always.
@@ -171,11 +183,11 @@ A plan is complete only if all checks pass:
 
 After writing the complete plan, review it against the spec and the harness rules yourself:
 
-1. Spec coverage: can you point to a task for each requirement?
-2. Placeholder scan: remove any incomplete sections, vague requirements, or missing commands.
-3. Type and name consistency: do all file paths, function names, and commands match across tasks?
-4. Harness alignment: does the plan update the required harness artifacts and respect repo layering?
-5. Verification readiness: is there a concrete acceptance artifact and a clear verification path?
+1. **Spec coverage**: can you point to a task for each requirement?
+2. **Placeholder scan**: remove any incomplete sections, vague requirements, or missing commands.
+3. **Type and name consistency**: do all file paths, function names, and commands match across tasks?
+4. **Harness alignment**: does the plan update the required harness artifacts and respect repo layering?
+5. **Verification readiness**: is there a concrete acceptance artifact and a clear verification path?
 
 If you find issues, fix them inline. If a requirement has no task, add the task.
 
@@ -185,8 +197,8 @@ After saving the plan, offer execution choice:
 
 "Plan complete and saved to `docs/exec-plans/plans/<filename>.md`. Two execution options:
 
-1. Subagent-Driven (recommended) - Dispatch a fresh subagent per task, review between tasks, fast iteration.
-2. Inline Execution - Execute tasks in this session using executing-plans, batch execution with checkpoints.
+1. **Subagent-Driven** (recommended) — Dispatch a fresh subagent per task, review between tasks, fast iteration.
+2. **Inline Execution** — Execute tasks in this session using `executing-plans`, batch execution with checkpoints.
 
 Which approach?"
 

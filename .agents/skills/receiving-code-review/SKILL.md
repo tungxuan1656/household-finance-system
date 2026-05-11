@@ -27,7 +27,7 @@ WHEN receiving code review feedback:
 ## Forbidden Responses
 
 **NEVER:**
-- "You're absolutely right!" (explicit CLAUDE.md violation)
+- "You're absolutely right!" (explicit AGENTS.md violation)
 - "Great point!" / "Excellent feedback!" (performative)
 - "Let me implement that now" (before verification)
 
@@ -211,3 +211,9 @@ When replying to inline review comments on GitHub, reply in the comment thread (
 Verify. Question. Then implement.
 
 No performative agreement. Technical rigor always.
+
+## Harness Integration
+
+- After addressing review feedback, update `harness/progress.md` with what was changed.
+- If review feedback changes scope, update `harness/features/*.json` accordingly.
+- Run `./init.sh` after all review changes to verify nothing broke.

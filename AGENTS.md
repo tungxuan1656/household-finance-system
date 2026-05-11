@@ -82,7 +82,7 @@ This repository supports a small team building a reliable expense management app
 ## Quick Start
 
 Before writing or changing code:
-1. Always read the `skill-router` skill first to choose the right skill for the task.
+1. Always read the `using-skills` skill first to determine which workflow skill applies.
 2. Read this file and [ARCHITECTURE.md](ARCHITECTURE.md).
 3. Run `./init.sh`.
 4. Review `harness/feature_index.json` and the relevant file in `harness/features/`.

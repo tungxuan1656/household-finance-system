@@ -180,3 +180,9 @@ From debugging session (2025-10-03):
 - All investigations completed concurrently
 - All fixes integrated successfully
 - Zero conflicts between agent changes
+
+## Harness Integration
+
+- After all agents complete, run `./init.sh` to verify no regressions.
+- Update `harness/progress.md` with a summary of what each agent found and fixed.
+- If any agent's fix affects a feature in `harness/features/*.json`, update its evidence section.

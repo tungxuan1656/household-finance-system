@@ -287,6 +287,13 @@ These techniques are part of systematic debugging and available in this director
 - **test-driven-development** - For creating failing test case (Phase 4, Step 1)
 - **verification-before-completion** - Verify fix worked before claiming success
 
+## Harness Integration
+
+- Check `harness/progress.md` for recent changes that may have introduced the bug.
+- Check `harness/features/*.json` for the feature being debugged — its evidence section may reveal known issues.
+- After fixing, update `harness/progress.md` with the bug description, root cause, and fix.
+- Run `./init.sh` before claiming the fix is complete.
+
 ## Real-World Impact
 
 From debugging sessions:

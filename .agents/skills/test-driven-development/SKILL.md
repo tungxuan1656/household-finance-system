@@ -369,3 +369,11 @@ Otherwise → not TDD
 ```
 
 No exceptions without your human partner's permission.
+
+## Harness Integration
+
+- Follow `docs/testing/test-placement-and-sharding-convention.md` for test file placement and naming.
+- Web tests: colocate with components/hooks/views (`.test.tsx` or `.test.ts`).
+- Worker tests: place under `test/unit/` or `test/integration/` (`.spec.ts`).
+- After writing tests, update `harness/features/*.json` evidence section with test file paths.
+- Run `./init.sh` before claiming tests pass.
