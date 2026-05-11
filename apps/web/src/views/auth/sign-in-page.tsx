@@ -57,10 +57,10 @@ export const SignInPage = () => {
       actionLabel={t('common.actions.signIn')}
       description={t('auth.signIn.description')}
       footer={
-        <p>
-          {t('auth.signIn.footer.prompt')}{' '}
+        <p className='flex items-center justify-center gap-1.5'>
+          <span className='opacity-70'>{t('auth.signIn.footer.prompt')}</span>
           <Link
-            className='font-medium text-primary underline-offset-4 hover:underline'
+            className='font-semibold text-primary transition-colors hover:text-primary/80'
             href={PATHS.SIGN_UP}>
             {t('auth.signIn.footer.link')}
           </Link>

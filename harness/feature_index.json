@@ -249,6 +249,11 @@
       "id": "feat-046",
       "name": "Public landing page with product storytelling and CTA",
       "status": "done"
+    },
+    {
+      "id": "feat-047",
+      "name": "Premium UI refactor for Auth pages (Sign-in/Sign-up) with Liquid Glass style",
+      "status": "done"
     }
   ]
 }

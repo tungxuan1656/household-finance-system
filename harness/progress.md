@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+12: 
+13: ## 2026-05-11 — Refactored Sign-in UI to premium "Liquid Glass" design
+14: 
+15: - Who: Antigravity
+16: - Summary: Refactored the sign-in screen to a modern, high-end "Liquid Glass" design for both light and dark modes. Enhanced the PublicLayout with a dynamic mesh background, implemented glassmorphism in AuthPanel with backdrop blur and subtle animations, and refined the Input and AuthField components for better visual hierarchy and interaction.
+17: - Files changed: apps/web/src/components/layouts/public-layout.tsx, apps/web/src/components/auth/auth-panel.tsx, apps/web/src/components/auth/auth-field.tsx, apps/web/src/components/ui/input.tsx, apps/web/src/views/auth/sign-in-page.tsx.
+18: - Verification: `pnpm lint:fix` → OK. Manual verification of UI states and responsive behavior.
+19: - Blockers: none.
+20: - Next steps: proceed with similar UI refinements for Sign-up and other public pages.
 
 ## 2026-05-11 — Expanded, optimized, and fixed feat-046 landing page
 
