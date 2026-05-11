@@ -7,30 +7,22 @@ description: 'Entry point skill. Load at the start of every conversation to dete
 
 Entry point for every conversation. Determines which workflow skill applies and what to read.
 
-## First: Read AGENTS.md
-
-Every session starts by reading `AGENTS.md`. It contains the project context, session rules, required artifacts, definition of done, and verification commands.
-
-Follow its Quick Start section. Do NOT re-read documents that AGENTS.md already summarizes.
-
 ## Reading Requirements
 
-Not every document needs to be read every session. Follow this matrix — read only what the current task requires:
+AGENTS.md is read at session start and covers baseline reading (architecture, frontend/backend rules, harness state, verification commands). Do NOT re-read documents that AGENTS.md already summarizes.
 
-| When | Read |
-|------|------|
-| Every session | `AGENTS.md` |
-| Starting feature work | `ARCHITECTURE.md`, `harness/feature_index.json`, relevant `harness/features/*.json` |
+Only read additional docs when your task scope requires them:
+
+| When | Additional Reading |
+|------|-------------------|
 | Creating a plan | `docs/PLANS.md`, `docs/exec-plans/__plan-template__.md`, `docs/exec-plans/index.md` |
-| Frontend implementation | `docs/FRONTEND.md`, relevant `docs/references/frontend/*` |
-| Backend implementation | `docs/BACKEND.md`, relevant `docs/references/backend/*` |
-| Fullstack implementation | Both frontend and backend references |
+| Frontend implementation | `docs/references/frontend/*` as needed by the specific pattern |
+| Backend implementation | `docs/references/backend/*` as needed by the specific pattern |
 | Debugging | `harness/progress.md` (recent changes) |
-| Before claiming done | Run `./init.sh` |
+| Before claiming done | Run `./init.sh` — no additional reading needed |
 
 **Do NOT read unless specifically needed:**
 
-- `docs/knowledge/*` — only for project init/setup, not daily work
 - `docs/QUALITY_SCORE.md` — only for quality audits
 - `docs/RELIABILITY.md` — only for reliability work
 - `docs/SECURITY.md` — only for security-sensitive changes

@@ -13,13 +13,11 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 
 **Continuous execution:** Do not pause to check in with your human partner between tasks. Execute all tasks from the plan without stopping. The only reasons to stop are: BLOCKED status you cannot resolve, ambiguity that genuinely prevents progress, or all tasks complete. "Should I continue?" prompts and progress summaries waste their time — they asked you to execute the plan, so execute it.
 
-## Required Reading
+## Additional Reading
 
-Before starting:
+AGENTS.md is read at session start. For plan execution, also read:
 - The plan file (read completely, extract all tasks)
-- `AGENTS.md` — for session rules and verification commands
-
-Read additional docs only when the plan references them.
+- Scope-specific reference docs only when the plan references them
 
 ## When to Use
 

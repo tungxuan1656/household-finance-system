@@ -17,18 +17,13 @@ Do NOT invoke any implementation skill, write any code, scaffold any project, or
 
 Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval.
 
-## Required Reading
+## Additional Reading
 
-Before brainstorming, read:
-- `AGENTS.md` — project context, session rules, definition of done
-- `ARCHITECTURE.md` — system shape, layer model, dependency rules
-- `harness/feature_index.json` — current feature status
+AGENTS.md is read at session start. For brainstorming, also read:
+- `harness/feature_index.json` — check for related features and dependencies
 - Relevant `docs/product-specs/*.md` — product behavior for the domain you're designing
 
-Read additional docs only when the design scope requires them:
-- `docs/FRONTEND.md` — if touching UI
-- `docs/BACKEND.md` — if touching API/data
-- `docs/references/*` — if implementing specific patterns
+Read additional reference docs only when the design scope requires them (e.g., `docs/references/frontend/*` for frontend work, `docs/references/backend/*` for backend work).
 
 ## Checklist
 
@@ -82,7 +77,7 @@ Invoke writing-plans skill
 **Understanding the idea:**
 
 - Check the current project state first (files, docs, recent commits, harness state)
-- Before asking detailed questions, assess scope: if the request describes multiple independent subsystems (e.g., "build a platform with chat, file storage, billing, and analytics"), flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
+- Before asking detailed questions, assess scope: if the request describes multiple independent subsystems, flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
 - If the project is too large for a single spec, help the user decompose into sub-projects: what are the independent pieces, how do they relate, what order should they be built? Then brainstorm the first sub-project through the normal design flow. Each sub-project gets its own spec → plan → implementation cycle.
 - For appropriately-scoped projects, ask questions one at a time to refine the idea
 
@@ -112,8 +107,6 @@ After writing the design doc, check for:
 If you find issues, fix them inline before asking the user to review.
 
 ## Harness Integration
-
-After design approval and before transitioning to writing-plans:
 
 - Check `harness/feature_index.json` for related features and dependencies
 - Note which feature ID this design will map to (or create a new one)

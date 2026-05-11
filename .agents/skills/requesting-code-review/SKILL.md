@@ -105,5 +105,4 @@ See template at: requesting-code-review/code-reviewer.md
 ## Harness Integration
 
 - Reference the feature ID from `harness/feature_index.json` in the review description.
-- Include evidence from `harness/features/*.json` in the review context.
-- After review feedback is addressed, update `harness/progress.md` with the review outcome.
+- After review feedback is addressed, update `harness/progress.md`.

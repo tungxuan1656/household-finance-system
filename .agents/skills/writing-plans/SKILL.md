@@ -20,25 +20,21 @@ Do not use this skill for:
 - One-off tiny edits that do not need a plan.
 - Generic brainstorming without concrete implementation intent.
 
-## Required Reading
+## Additional Reading
 
-Read these before writing:
-- `AGENTS.md` — project context, session rules, definition of done
-- `ARCHITECTURE.md` — system shape, layer model, dependency rules
+AGENTS.md is read at session start. For plan writing, also read:
 - `docs/PLANS.md` — plan lifecycle and execution policy
 - `docs/exec-plans/__plan-template__.md` — canonical ExecPlan template
 - `docs/exec-plans/index.md` — current plan status
-
-Read scope-specific docs based on what the plan touches:
-- `docs/FRONTEND.md` — when scope includes frontend
-- `docs/BACKEND.md` — when scope includes backend
-- `docs/references/index.md` — to find relevant pattern docs
-
-Check harness state for continuity:
 - `harness/feature_index.json` — current feature status
 - Related `harness/features/*.json` — feature dependencies and evidence
 - `harness/progress.md` — recent session history
 - `harness/session-handoff.md` — if work spans sessions
+
+Read scope-specific reference docs based on what the plan touches:
+- Frontend: relevant `docs/references/frontend/*` (see Scope-Driven Standards Matrix below)
+- Backend: relevant `docs/references/backend/*` (see Scope-Driven Standards Matrix below)
+- Shared: `docs/references/shared/type-naming-pattern.md`
 
 ## Mandatory Inputs
 

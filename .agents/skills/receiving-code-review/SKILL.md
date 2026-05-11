@@ -215,5 +215,4 @@ No performative agreement. Technical rigor always.
 ## Harness Integration
 
 - After addressing review feedback, update `harness/progress.md` with what was changed.
-- If review feedback changes scope, update `harness/features/*.json` accordingly.
 - Run `./init.sh` after all review changes to verify nothing broke.

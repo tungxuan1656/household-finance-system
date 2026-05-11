@@ -145,13 +145,7 @@ The project's canonical verification command is `./init.sh`. It runs install, ha
 **Before claiming any feature is done, you MUST:**
 
 1. Run `./init.sh` and confirm it passes.
-2. Check that `harness/features/*.json` has updated evidence for the feature.
-3. Check that `harness/feature_index.json` reflects the current feature status.
-4. Update `harness/progress.md` with the session's work.
+2. Update `harness/features/*.json` with evidence.
+3. Update `harness/progress.md` with the session's work.
 
-**Definition of Done** (from `AGENTS.md`):
-- Implementation is complete and committed.
-- All verification steps pass: lint, type-check, tests, build.
-- Evidence is recorded in `harness/features/*.json` and reflected in `harness/feature_index.json`.
-- Progress is logged in `harness/progress.md`.
-- The repository can be restarted cleanly from the standard startup path.
+See `AGENTS.md` Definition of Done for the full checklist.

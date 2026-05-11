@@ -11,17 +11,11 @@ Load plan, review critically, execute all tasks, report when complete.
 
 **Note:** If subagents are available, `subagent-driven-development` is preferred for faster iteration and two-stage review. Use this skill when executing in a separate session or when subagents are not available.
 
-## Required Reading
+## Additional Reading
 
-Before starting:
+AGENTS.md is read at session start. For plan execution, also read:
 - The plan file (read completely)
-- `AGENTS.md` — for session rules and verification commands
-
-Read additional docs only when the plan references them:
-- `ARCHITECTURE.md` — if touching architecture boundaries
-- `docs/FRONTEND.md` — if doing frontend work
-- `docs/BACKEND.md` — if doing backend work
-- Relevant `docs/references/*` — as specified in the plan
+- Scope-specific reference docs only when the plan references them
 
 ## The Process
 
