@@ -1,0 +1,16 @@
+{
+  "id": "feat-047",
+  "name": "Premium UI refactor for Auth pages (Sign-in/Sign-up) with Liquid Glass style",
+  "description": "Refactor the sign-in and sign-up screens to use a modern, high-end 'Liquid Glass' design system, enhancing the first impression of the application.",
+  "status": "done",
+  "dependencies": ["feat-009b", "feat-046"],
+  "evidence": {
+    "ui_changes": [
+      "Added dynamic mesh background to PublicLayout",
+      "Implemented glassmorphism in AuthPanel with backdrop blur",
+      "Enhanced Input and AuthField styling",
+      "Refined SignInPage header/footer"
+    ],
+    "verification": "Manual verification in browser and pnpm lint:fix"
+  }
+}

@@ -21,7 +21,7 @@ function InsightsSummaryCards({
 }: InsightsSummaryCardsProps) {
   return (
     <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
-      <Card>
+      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
         <CardHeader>
           <CardTitle>{t('insights.summary.totalSpend')}</CardTitle>
           <CardDescription>{data.period}</CardDescription>
@@ -32,7 +32,7 @@ function InsightsSummaryCards({
           </div>
         </CardContent>
       </Card>
-      <Card>
+      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
         <CardHeader>
           <CardTitle>{t('insights.summary.expenseCount')}</CardTitle>
           <CardDescription>
@@ -45,7 +45,7 @@ function InsightsSummaryCards({
           </div>
         </CardContent>
       </Card>
-      <Card>
+      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
         <CardHeader>
           <CardTitle>{t('insights.summary.averageSpend')}</CardTitle>
           <CardDescription>

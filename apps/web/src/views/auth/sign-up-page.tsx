@@ -50,8 +50,8 @@ export const SignUpPage = () => {
       actionLabel={t('common.actions.createAccount')}
       description={t('auth.signUp.description')}
       footer={
-        <p>
-          {t('auth.signUp.footer.prompt')}{' '}
+        <p className='flex flex-wrap items-center justify-center gap-1.5'>
+          {t('auth.signUp.footer.prompt')}
           <Link
             className='font-medium text-primary underline-offset-4 hover:underline'
             href={PATHS.SIGN_IN}>
@@ -81,6 +81,7 @@ export const SignUpPage = () => {
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='name'
+              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
               id='full-name'
               placeholder={t('auth.signUp.fields.fullName.placeholder')}
             />
@@ -101,6 +102,7 @@ export const SignUpPage = () => {
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='email'
+              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
               id='sign-up-email'
               placeholder={t('auth.signUp.fields.email.placeholder')}
               type='email'
@@ -122,6 +124,7 @@ export const SignUpPage = () => {
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='new-password'
+              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
               id='sign-up-password'
               placeholder={t('auth.signUp.fields.password.placeholder')}
               type='password'

@@ -1,39 +1,89 @@
 'use client'
 
-import Link from 'next/link'
-
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { PATHS } from '@/lib/constants/paths'
+import { FaqSection } from '@/components/landing/faq-section'
+import { features, FeatureSection } from '@/components/landing/feature-section'
+import { HowItWorksSection } from '@/components/landing/how-it-works-section'
+import {
+  BottomCtaSection,
+  Footer,
+  HeroSection,
+  Navigation,
+  SecuritySection,
+} from '@/components/landing/landing-sections'
+import { SocialProofSection } from '@/components/landing/social-proof-section'
+import { TestimonialsSection } from '@/components/landing/testimonials-section'
 import { t } from '@/lib/i18n/t'
 
 export default function LandingPage() {
   return (
-    <div className='flex min-h-dvh items-center justify-center bg-background p-6'>
-      <main className='mx-auto flex w-full max-w-3xl flex-col gap-6 rounded-lg border border-border/70 bg-background/85 p-8 shadow-sm backdrop-blur'>
-        <Badge className='w-fit' variant='secondary'>
-          {t('shell.protected.badge')}
-        </Badge>
-        <h1 className='font-heading text-3xl tracking-tight'>
-          {t('app.overview.title')}
-        </h1>
-        <p className='text-sm text-muted-foreground'>
-          {t('app.overview.description')}
-        </p>
-        <div className='flex flex-wrap gap-3'>
-          <Button asChild>
-            <Link href={PATHS.APP_ROOT}>{t('common.actions.backToShell')}</Link>
-          </Button>
-          <Button asChild variant='outline'>
-            <Link href={PATHS.SIGN_IN}>{t('common.actions.signIn')}</Link>
-          </Button>
-          <Button asChild variant='outline'>
-            <Link href={PATHS.SIGN_UP}>
-              {t('common.actions.createAccount')}
-            </Link>
-          </Button>
-        </div>
+    <div className='flex min-h-screen flex-col overflow-hidden bg-background text-foreground'>
+      <Navigation />
+      <main className='flex-1'>
+        <HeroSection />
+        <FeatureSection items={features} title={t('landing.features.title')} />
+        <HowItWorksSection
+          steps={[
+            {
+              description: t('landing.howItWorks.steps.step1.description'),
+              title: t('landing.howItWorks.steps.step1.title'),
+            },
+            {
+              description: t('landing.howItWorks.steps.step2.description'),
+              title: t('landing.howItWorks.steps.step2.title'),
+            },
+            {
+              description: t('landing.howItWorks.steps.step3.description'),
+              title: t('landing.howItWorks.steps.step3.title'),
+            },
+          ]}
+          title={t('landing.howItWorks.title')}
+        />
+        <SecuritySection />
+        <TestimonialsSection
+          items={[
+            {
+              author: t('landing.testimonials.items.user1.author'),
+              quote: t('landing.testimonials.items.user1.quote'),
+            },
+            {
+              author: t('landing.testimonials.items.user2.author'),
+              quote: t('landing.testimonials.items.user2.quote'),
+            },
+            {
+              author: t('landing.testimonials.items.user3.author'),
+              quote: t('landing.testimonials.items.user3.quote'),
+            },
+          ]}
+          title={t('landing.testimonials.title')}
+        />
+        <FaqSection
+          items={[
+            {
+              answer: t('landing.faq.items.q1.answer'),
+              question: t('landing.faq.items.q1.question'),
+            },
+            {
+              answer: t('landing.faq.items.q2.answer'),
+              question: t('landing.faq.items.q2.question'),
+            },
+            {
+              answer: t('landing.faq.items.q3.answer'),
+              question: t('landing.faq.items.q3.question'),
+            },
+          ]}
+          title={t('landing.faq.title')}
+        />
+        <SocialProofSection
+          stats={[
+            t('landing.socialProof.stat1'),
+            t('landing.socialProof.stat2'),
+            t('landing.socialProof.stat3'),
+          ]}
+          title={t('landing.socialProof.title')}
+        />
+        <BottomCtaSection />
       </main>
+      <Footer />
     </div>
   )
 }

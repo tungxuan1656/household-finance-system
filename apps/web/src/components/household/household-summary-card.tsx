@@ -74,7 +74,7 @@ export const HouseholdSummaryCard = ({
   const hasBudget = (budgetQuery.data?.items.length ?? 0) > 0
 
   return (
-    <Card>
+    <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
       <CardHeader>
         <div className='flex items-start justify-between gap-2'>
           <div className='flex flex-col gap-1'>
@@ -124,7 +124,7 @@ export const HouseholdSummaryCard = ({
         ) : null}
       </CardContent>
       <CardFooter className='justify-end'>
-        <Button asChild variant='outline'>
+        <Button asChild size='xl' variant='outline'>
           <Link href={`/households/${household.id}`}>
             {t('app.households.actions.viewDetail')}
           </Link>
@@ -135,7 +135,7 @@ export const HouseholdSummaryCard = ({
 }
 
 export const HouseholdsLoadingState = () => (
-  <div className='grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3'>
+  <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3'>
     {Array.from({ length: 3 }).map((_, index) => (
       <Card key={index}>
         <CardHeader>

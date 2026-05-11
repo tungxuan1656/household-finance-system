@@ -15,9 +15,13 @@ export const AuthField = ({
 }) => {
   return (
     <Field data-invalid={invalid}>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel
+        className='text-xs font-semibold tracking-wider text-muted-foreground uppercase'
+        htmlFor={id}>
+        {label}
+      </FieldLabel>
       {children}
-      {invalid ? <FieldError errors={errors} /> : null}
+      {invalid ? <FieldError className='mt-1 text-xs' errors={errors} /> : null}
     </Field>
   )
 }

@@ -151,6 +151,7 @@ export const ProfileAvatarSection = ({
 
         <div className='flex flex-col items-center gap-3'>
           <Button
+            className='min-h-11'
             disabled={isBusy || isUploadingAvatar}
             type='button'
             variant='outline'

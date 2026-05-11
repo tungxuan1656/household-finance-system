@@ -136,14 +136,17 @@ function ExpensesPage() {
   }
 
   return (
-    <div className='flex flex-col gap-4 sm:gap-6'>
-      <header className='flex flex-wrap items-center justify-between gap-4'>
+    <div className='flex flex-col gap-4 md:gap-6'>
+      <header className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
         <div className='flex flex-col gap-1'>
-          <h1 className='font-heading text-2xl tracking-tight'>
+          <h1 className='font-heading text-xl tracking-tight md:text-2xl'>
             {t('expense.feed.title')}
           </h1>
+          <p className='text-sm text-muted-foreground'>
+            {t('expense.feed.description')}
+          </p>
         </div>
-        <Button asChild className='w-full sm:w-auto' size='lg'>
+        <Button asChild size='xl'>
           <Link href={PATHS.ADD_EXPENSE}>{t('expense.addTitle')}</Link>
         </Button>
       </header>

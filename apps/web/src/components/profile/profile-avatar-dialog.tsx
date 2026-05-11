@@ -46,10 +46,15 @@ export const ProfileAvatarDialog = ({
       ) : null}
 
       <DialogFooter>
-        <Button type='button' variant='outline' onClick={onCancel}>
+        <Button
+          className='min-h-11'
+          type='button'
+          variant='outline'
+          onClick={onCancel}>
           {t('common.actions.cancel')}
         </Button>
         <Button
+          className='min-h-11'
           disabled={isUploading}
           type='button'
           onClick={() => void onApply()}>

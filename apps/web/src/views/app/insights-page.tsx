@@ -98,7 +98,7 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
     data.expenseCount === 0
 
   return (
-    <div className='flex flex-col gap-6'>
+    <div className='flex flex-col gap-4 md:gap-6'>
       <InsightsHeader
         isExportDisabled={isExportDisabled}
         params={analyticsParams}

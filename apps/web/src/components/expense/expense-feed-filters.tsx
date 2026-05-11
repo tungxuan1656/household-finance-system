@@ -44,7 +44,7 @@ export function ExpenseFeedFilters({
       <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
         <Input
           aria-label='expense feed search'
-          className='h-10 md:h-8'
+          className='h-12 md:h-10'
           placeholder={t('expense.feed.filters.searchPlaceholder')}
           type='search'
           value={values.search}
@@ -106,14 +106,14 @@ export function ExpenseFeedFilters({
         </summary>
         <div className='border-t border-border px-4 py-4'>
           <FieldGroup>
-            <FieldGroup className='grid gap-4 lg:grid-cols-2'>
+            <FieldGroup className='grid gap-4 md:grid-cols-2'>
               <Field>
                 <FieldLabel htmlFor='expense-feed-date-from'>
                   {t('expense.feed.filters.dateFrom')}
                 </FieldLabel>
                 <FieldContent>
                   <Input
-                    className='h-10 md:h-8'
+                    className='h-12 md:h-10'
                     id='expense-feed-date-from'
                     type='date'
                     value={values.dateFrom}
@@ -129,7 +129,7 @@ export function ExpenseFeedFilters({
                 </FieldLabel>
                 <FieldContent>
                   <Input
-                    className='h-10 md:h-8'
+                    className='h-12 md:h-10'
                     id='expense-feed-date-to'
                     type='date'
                     value={values.dateTo}
@@ -138,14 +138,14 @@ export function ExpenseFeedFilters({
                 </FieldContent>
               </Field>
             </FieldGroup>
-            <FieldGroup className='grid gap-4 lg:grid-cols-3'>
+            <FieldGroup className='grid gap-4 md:grid-cols-3'>
               <Field>
                 <FieldLabel htmlFor='expense-feed-amount-min'>
                   {t('expense.feed.filters.amountMin')}
                 </FieldLabel>
                 <FieldContent>
                   <Input
-                    className='h-10 md:h-8'
+                    className='h-12 md:h-10'
                     id='expense-feed-amount-min'
                     inputMode='numeric'
                     type='number'
@@ -162,7 +162,7 @@ export function ExpenseFeedFilters({
                 </FieldLabel>
                 <FieldContent>
                   <Input
-                    className='h-10 md:h-8'
+                    className='h-12 md:h-10'
                     id='expense-feed-amount-max'
                     inputMode='numeric'
                     type='number'

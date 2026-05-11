@@ -13,7 +13,7 @@ function OverviewHouseholdsSection({
   return (
     <section className='space-y-3'>
       <div className='space-y-1'>
-        <h2 className='font-heading text-2xl tracking-tight'>
+        <h2 className='text-lg font-semibold'>
           {t('app.overview.households.title')}
         </h2>
         <p className='text-sm text-muted-foreground'>
@@ -21,7 +21,7 @@ function OverviewHouseholdsSection({
         </p>
       </div>
 
-      <div className='grid gap-4 md:grid-cols-2'>
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3'>
         {households.map((household) => (
           <HouseholdOverviewCard key={household.id} household={household} />
         ))}

@@ -70,7 +70,7 @@ function OverviewPage() {
 
   return (
     <div className='space-y-6'>
-      <OverviewHeader email={user?.email} name={user?.displayName} />
+      <OverviewHeader name={user?.displayName} period={period} />
 
       {showInitialHouseholdLoading ? (
         <div className='space-y-6'>
@@ -131,7 +131,6 @@ function OverviewPage() {
             canInviteMembers={canInviteMembers}
             expenseSummaryQuery={expenseSummaryQuery}
             householdCount={households.length}
-            period={period}
           />
 
           <OverviewHouseholdsSection households={households} />

@@ -46,7 +46,7 @@ export function ExpenseFeedItem({ expense, onClick }: ExpenseFeedItemProps) {
 
   return (
     <Card
-      className='cursor-pointer transition-colors hover:bg-muted/50'
+      className='cursor-pointer transition-colors transition-shadow hover:bg-accent/50 hover:shadow-sm active:scale-[0.98]'
       role='button'
       size='sm'
       tabIndex={0}

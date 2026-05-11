@@ -57,10 +57,10 @@ export const SignInPage = () => {
       actionLabel={t('common.actions.signIn')}
       description={t('auth.signIn.description')}
       footer={
-        <p>
-          {t('auth.signIn.footer.prompt')}{' '}
+        <p className='flex items-center justify-center gap-1.5'>
+          <span className='opacity-70'>{t('auth.signIn.footer.prompt')}</span>
           <Link
-            className='font-medium text-primary underline-offset-4 hover:underline'
+            className='font-semibold text-primary transition-colors hover:text-primary/80'
             href={PATHS.SIGN_UP}>
             {t('auth.signIn.footer.link')}
           </Link>
@@ -87,6 +87,7 @@ export const SignInPage = () => {
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='email'
+              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
               id='email'
               placeholder={t('auth.signIn.fields.email.placeholder')}
               type='email'
@@ -108,6 +109,7 @@ export const SignInPage = () => {
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='current-password'
+              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
               id='password'
               placeholder={t('auth.signIn.fields.password.placeholder')}
               type='password'

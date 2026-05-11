@@ -26,7 +26,7 @@ function PaginationContent({
 }: React.ComponentProps<'ul'>) {
   return (
     <ul
-      className={cn('flex items-center gap-0.5', className)}
+      className={cn('flex items-center gap-1', className)}
       data-slot='pagination-content'
       {...props}
     />
@@ -72,7 +72,7 @@ function PaginationPrevious({
   return (
     <PaginationLink
       aria-label='Go to previous page'
-      className={cn('pl-1.5!', className)}
+      className={cn('pl-2!', className)}
       size='default'
       {...props}>
       <ChevronLeftIcon data-icon='inline-start' />
@@ -89,7 +89,7 @@ function PaginationNext({
   return (
     <PaginationLink
       aria-label='Go to next page'
-      className={cn('pr-1.5!', className)}
+      className={cn('pr-2!', className)}
       size='default'
       {...props}>
       <span className='hidden sm:block'>{text}</span>
@@ -106,7 +106,7 @@ function PaginationEllipsis({
     <span
       aria-hidden
       className={cn(
-        "flex size-8 items-center justify-center [&_svg:not([class*='size-'])]:size-4",
+        "flex size-9 items-center justify-center [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-slot='pagination-ellipsis'

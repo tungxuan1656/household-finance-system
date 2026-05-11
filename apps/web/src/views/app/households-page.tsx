@@ -86,7 +86,7 @@ function HouseholdsPage() {
     <div className='flex flex-col gap-6'>
       <header className='flex flex-wrap items-center justify-between gap-3'>
         <div className='flex flex-col gap-1'>
-          <h1 className='font-heading text-2xl tracking-tight'>
+          <h1 className='font-heading text-xl tracking-tight md:text-2xl'>
             {t('app.households.title')}
           </h1>
           <p className='text-sm text-muted-foreground'>
@@ -110,6 +110,7 @@ function HouseholdsPage() {
               {listLoadError}
             </p>
             <Button
+              size='xl'
               type='button'
               variant='outline'
               onClick={() => {
@@ -139,7 +140,10 @@ function HouseholdsPage() {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button type='button' onClick={() => setIsCreateDialogOpen(true)}>
+            <Button
+              size='xl'
+              type='button'
+              onClick={() => setIsCreateDialogOpen(true)}>
               {t('app.households.actions.create')}
             </Button>
           </EmptyContent>
@@ -147,7 +151,7 @@ function HouseholdsPage() {
       ) : null}
 
       {!shouldShowLoadingState && households.length > 0 ? (
-        <div className='grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3'>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3'>
           {households.map((household) => (
             <HouseholdSummaryCard key={household.id} household={household} />
           ))}

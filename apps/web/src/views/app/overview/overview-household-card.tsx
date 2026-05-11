@@ -62,7 +62,7 @@ function HouseholdOverviewCard({ household }: HouseholdOverviewCardProps) {
   }
 
   return (
-    <Card className='min-w-0'>
+    <Card className='min-w-0 transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
       <CardHeader className='space-y-1'>
         <div className='flex items-start justify-between gap-3'>
           <div className='min-w-0 space-y-1'>

@@ -1,9 +1,13 @@
 import '@/index.css'
 
 import type { Metadata, Viewport } from 'next'
+import { Figtree } from 'next/font/google'
 import type { ReactNode } from 'react'
 
 import { AppProviders } from '@/app/providers/app-providers'
+import { cn } from '@/lib/utils'
+
+const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' })
 
 export const viewport: Viewport = {
   initialScale: 1,
@@ -86,7 +90,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html suppressHydrationWarning className='h-full antialiased' lang='vi'>
+    <html
+      suppressHydrationWarning
+      className={cn(
+        'h-full antialiased',
+        'font-sans',
+        'font-sans',
+        figtree.variable,
+      )}
+      lang='vi'>
       <body suppressHydrationWarning className='flex min-h-full flex-col'>
         <AppProviders>{children}</AppProviders>
       </body>

@@ -9,6 +9,60 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-11 — Completed mobile-first UI redesign implementation (feat-048)
+
+- Who: Orchestrator + Designer Subagents (parallel execution)
+- Summary: Implemented 9-phase mobile-first UI redesign. Shell/layout polish (main-layout, sidebar, bottom-tab) → Home page (warm header, stats hierarchy) → Expenses (filters, touch targets) → Budgets (status cards, progress bars) → Insights (panel hierarchy) → Households (grid, cards) → Profile (card restructuring, shortcuts removed) → Auth (liquid glass preserved) → Landing (spacing refinement). UX philosophy: 'form follows function beautifully' — restructured components for better UX, not just restyling.
+- Files changed: 39 files, 550 insertions, 508 deletions across all phases.
+- Verification: 167 tests pass, lint 0 errors (2 pre-existing warnings).
+- Blockers: none.
+- Next steps: commit harness updates, verify with ./init.sh.
+
+## 2026-05-11 — Started mobile-first UI redesign implementation (feat-048)
+
+- Who: Orchestrator
+- Summary: Rebuilt both design documents from scratch with full ui-ux-pro-max aesthetics and shadcn consistency. Initially designed with Teal/Cyan primary and Amber accent, then adjusted to match the actual maia-mist preset (slate primary, subtle accent) already installed in the project. Design system now features maia-mist color tokens (OKLCH), flat minimal visual style, comfortable mobile density, complete semantic token map, shadow system, typography scale, spacing scale, animation tokens, mobile-first layout architecture (bottom tab nav, mobile header, desktop sidebar), safe areas, and 3-step token addition guide. UI implementation rules cover PageShell/PageSection patterns, shadcn component selection table split into "Installed" (24 components) and "Available to install", form rules with FieldGroup/Field/InputGroup/FieldSet, overlay selection guide, semantic tokens-only styling, Tailwind scale enforcement, `cn()` utility, touch targets, animation limits, icon rules, responsive breakpoints, accessibility checklist, and anti-patterns table. User approved both documents.
+- **Updates after approval:**
+  - Changed all `npx shadcn add` to `pnpm dlx shadcn@latest add` (29 occurrences)
+  - Clarified doc usage: `design-system.md` for core component refactor, `ui-implementation-rules.md` for page/shared component build
+- Files changed: `docs/design-docs/design-system.md` (rewritten), `docs/design-docs/ui-implementation-rules.md` (rewritten), `harness/progress.md`.
+- Blockers: none.
+- Next steps: User reviews final written files, then invoke `writing-plans` skill to create implementation plan.
+
+## 2026-05-11 — Split design doc into design-system and ui-implementation-rules (feat-048)
+
+- Who: Orchestrator
+- Summary: Split the monolithic design doc into two focused documents per user request. `design-system.md` contains all global tokens (colors, radius, shadow, typography, spacing, animation) and serves as the single source of truth for theme changes. `ui-implementation-rules.md` contains daily development rules (component usage, styling anti-patterns, responsive rules, accessibility checklist) for quick reference when building or refactoring a single page. Both files are written entirely in English. Created feat-048 harness record.
+- Files changed: `docs/design-docs/design-system.md` (new), `docs/design-docs/ui-implementation-rules.md` (new), removed old combined doc, `harness/features/feat-048.json`, `harness/feature_index.json`, `harness/progress.md`.
+- Blockers: none.
+- Next steps: User reviews the two docs, then invoke `writing-plans` skill to create implementation plan.
+
+## 2026-05-11 — Completed design doc for mobile-first UI redesign (feat-048)
+
+- Who: Orchestrator
+- Summary: Collaborated with user to design a comprehensive mobile-first UI redesign for all app pages. Defined design philosophy (modern, minimal, clean), mobile-first layout architecture (bottom tab, mobile header, responsive breakpoints), design tokens (teal primary, amber accent, 12px radius), universal page patterns (PageShell, PageSection, card variants), component guidelines (button, badge, input, card), responsive rules, animation guidelines, and strict anti-patterns to prevent hardcoding. Saved to `docs/design-docs/2026-05-11-mobile-first-ui-redesign-design.md`.
+- Files changed: `docs/design-docs/2026-05-11-mobile-first-ui-redesign-design.md`, `harness/progress.md`.
+- Blockers: none.
+- Next steps: User reviews design doc, then invoke `writing-plans` skill to create implementation plan.
+
+12: 
+13: ## 2026-05-11 — Refactored Sign-in UI to premium "Liquid Glass" design
+14: 
+15: - Who: Antigravity
+16: - Summary: Refactored the sign-in screen to a modern, high-end "Liquid Glass" design for both light and dark modes. Enhanced the PublicLayout with a dynamic mesh background, implemented glassmorphism in AuthPanel with backdrop blur and subtle animations, and refined the Input and AuthField components for better visual hierarchy and interaction.
+17: - Files changed: apps/web/src/components/layouts/public-layout.tsx, apps/web/src/components/auth/auth-panel.tsx, apps/web/src/components/auth/auth-field.tsx, apps/web/src/components/ui/input.tsx, apps/web/src/views/auth/sign-in-page.tsx.
+18: - Verification: `pnpm lint:fix` → OK. Manual verification of UI states and responsive behavior.
+19: - Blockers: none.
+20: - Next steps: proceed with similar UI refinements for Sign-up and other public pages.
+
+## 2026-05-11 — Expanded, optimized, and fixed feat-046 landing page
+
+- Who: Orchestrator
+- Summary: Completed a full feature cycle for the public landing page. Expanded content with 5 narrative sections, localized all strings in Vietnamese (including Bottom CTA), and optimized for mobile by adjusting grid layouts (Social Proof stats) and vertical spacing. Fixed a critical accessibility issue in Dark Mode where the Bottom CTA button text was invisible due to low contrast, by enforcing a dark text color on white backgrounds.
+- Files changed: apps/web/src/app/page.tsx, apps/web/src/lib/i18n/locales/vi.json.
+- Verification: `./init.sh` → OK. Browser subagent testing confirmed mobile responsiveness and dark mode contrast fix.
+- Blockers: none.
+- Next steps: monitor user engagement and analytics.
 
 ## 2026-05-09 — Completed test structure policy follow-up and targeted cleanup
 
