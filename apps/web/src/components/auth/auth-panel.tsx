@@ -45,8 +45,9 @@ export const AuthPanel = ({
 
             <div className='pt-2'>
               <Button
-                className='h-10 w-full bg-primary font-semibold text-primary-foreground shadow-lg transition-all hover:scale-[1.02] active:scale-100 dark:bg-white dark:text-black dark:hover:bg-zinc-200'
+                className='w-full font-semibold shadow-lg transition-all hover:scale-[1.02] active:scale-100 dark:bg-white dark:text-black dark:hover:bg-zinc-200'
                 disabled={isSubmitting}
+                size='lg'
                 type='submit'>
                 {isSubmitting ? (
                   <span className='flex items-center gap-2'>
