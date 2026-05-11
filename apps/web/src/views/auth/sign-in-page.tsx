@@ -87,6 +87,7 @@ export const SignInPage = () => {
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='email'
+              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
               id='email'
               placeholder={t('auth.signIn.fields.email.placeholder')}
               type='email'
@@ -108,6 +109,7 @@ export const SignInPage = () => {
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='current-password'
+              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
               id='password'
               placeholder={t('auth.signIn.fields.password.placeholder')}
               type='password'

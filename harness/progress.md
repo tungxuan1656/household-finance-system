@@ -9,6 +9,24 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-11 — Completed Phase 8: Auth Pages review & liquid glass integrity restoration (feat-048)
+
+- Who: Designer
+- Summary: Reviewed existing Auth pages (sign-in, sign-up, public-layout, auth-panel, auth-field) to verify the premium "Liquid Glass" design remained intact after recent commits. **Critical finding**: a cleanup commit (3acc15d) accidentally reverted the global Input component's liquid glass styles back to generic shadcn defaults, breaking the translucent auth aesthetic. **Fix**: restored liquid glass styling to all 5 auth inputs via explicit `className` overrides (`h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10`) without refactoring the page structure or design language. **Subtle mobile refinement**: sign-up footer changed from plain `<p>` to `flex flex-wrap items-center justify-center gap-1.5` to match sign-in's footer layout, ensuring prompt and link wrap gracefully on narrow screens. Confirmed auth-panel Card (`border-white/20 bg-background/60 shadow-2xl backdrop-blur-2xl`), public-layout gradient orbs, auth-panel button styles, and auth-field label styling all remain intact.
+- Files changed: `apps/web/src/views/auth/sign-in-page.tsx`, `apps/web/src/views/auth/sign-up-page.tsx`, `harness/features/feat-048.json`, `harness/progress.md`.
+- Verification: `pnpm lint:fix` → OK (0 errors, 2 pre-existing warnings). `pnpm --filter web typecheck` → OK. `pnpm --filter web build` → OK. Build blocked by pre-existing type error in `calendar.tsx` (unrelated). Liquid glass design fully restored on auth inputs.
+- Blockers: none.
+- Next steps: Proceed to Phase 1 (Shell/Layout Polish) or Phase 7 (Profile Page) mobile-first refactor.
+
+## 2026-05-11 — Completed Phase 9: Landing Page mobile-first review & polish (feat-048)
+
+- Who: Designer
+- Summary: Reviewed the public landing page for mobile-first polish and design-system compliance. Key UX decisions: (1) **Replaced hardcoded color** — bottom CTA button changed from `bg-white text-blue-950` to `bg-primary-foreground text-primary`, respecting semantic tokens and fixing dark mode contrast where the white button was becoming invisible against the light primary background. (2) **Mobile gap reduction** — How It Works grid reduced from `gap-16` to `gap-10 md:gap-12` to prevent excessive vertical whitespace on mobile (64px between steps was too much scrolling). Social Proof stats reduced from `gap-12` to `gap-8 md:gap-24` for tighter stacked stat spacing. (3) **Card padding mobile optimization** — FeatureCard and TestimonialCard padding changed from `p-8` to `p-6 md:p-8` so cards feel less bulky on small screens while maintaining comfort on desktop. (4) **Testimonial hover effects** — added `hover:border-primary/20 hover:shadow-md transition-all duration-200` to testimonial cards for tactile consistency with other app pages (FeatureCard already had hover effects). (5) **Validated existing mobile-first patterns** — hero text scales properly (`text-4xl`→`md:text-6xl`→`lg:text-7xl`), CTAs are full-width on mobile with `h-14` (56px) touch targets, grids collapse correctly (`grid-cols-1` mobile), FAQ buttons have `p-6` (48px) touch targets, and footer stacks vertically on mobile.
+- Files changed: `apps/web/src/app/page.tsx`, `harness/features/feat-048.json`, `harness/progress.md`.
+- Verification: `pnpm lint:fix` → OK (0 errors, 2 pre-existing warnings). Build blocked by pre-existing type error in `calendar.tsx` (unrelated to this change). No horizontal scroll introduced. Touch targets remain ≥ 44px on all interactive elements.
+- Blockers: none.
+- Next steps: Proceed to Phase 7 (Profile Page) or Phase 8 (Auth Pages) mobile-first refactor, or Phase 1 (Shell/Layout Polish).
+
 ## 2026-05-11 — Completed Phase 3: Expenses Page mobile-first refactor (feat-048)
 
 - Who: Designer
