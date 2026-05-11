@@ -23,3 +23,5 @@ coverage/
 .omx/
 .gitnexus
 .sisyphus
+.playwright-cli
+.playwright
