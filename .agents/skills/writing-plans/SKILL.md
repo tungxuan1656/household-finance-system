@@ -6,7 +6,7 @@ argument-hint: 'Describe feature goal, scope (frontend/backend/fullstack), const
 
 # Writing Plans
 
-Create a high-quality, implementation-ready ExecPlan for an engineer with zero project context and uneven taste. Minimize ambiguity, make delivery repeatable, and keep the plan usable by both humans and coding agents.
+Create a high-quality, implementation-ready ExecPlan that minimizes ambiguity and makes delivery repeatable for both humans and coding agents.
 
 ## When To Use
 
@@ -160,13 +160,9 @@ A plan is complete only if all checks pass:
 ## Writing Rules
 
 - Use exact file paths always.
-- Write for a reader who has no context beyond the plan itself.
 - Do not use placeholders like `TBD`, `TODO`, or `fill in later`.
 - If a step changes code, show the actual code or command the engineer should use.
 - Keep tasks bite-sized: one action, usually 2-5 minutes.
-- Prefer test-first steps for behavior changes.
-- Prefer frequent, reviewable commits when the work spans multiple tasks.
-- Keep every plan self-contained so it can be executed without the original conversation.
 - Remove or split any step that covers multiple independent subsystems.
 
 ## Self-Review
