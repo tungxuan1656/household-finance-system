@@ -25,7 +25,7 @@ EVERYTHING_SKILLS=(
   # design-system
   # frontend-slides
   # ui-demo
-  browser-qa
+  # browser-qa
   backend-patterns
   database-migrations
   # api-design
@@ -80,7 +80,7 @@ ANTIGRAVITY_SKILLS=(
   i18n-localization
   # tailwind-patterns
   shadcn
-  monorepo-architect
+  # monorepo-architect
   # lint-and-validate
   # react-native-architecture
   # e2e-testing-patterns
