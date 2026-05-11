@@ -1,3 +1,5 @@
+'use client'
+
 import { AlertDialog as AlertDialogPrimitive } from 'radix-ui'
 import * as React from 'react'
 
