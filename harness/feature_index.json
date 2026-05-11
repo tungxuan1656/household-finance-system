@@ -254,6 +254,11 @@
       "id": "feat-047",
       "name": "Premium UI refactor for Auth pages (Sign-in/Sign-up) with Liquid Glass style",
       "status": "done"
+    },
+    {
+      "id": "feat-048",
+      "name": "Mobile-first UI redesign — Design System & Implementation Rules",
+      "status": "design-approved"
     }
   ]
 }

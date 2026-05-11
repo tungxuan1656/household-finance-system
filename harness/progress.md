@@ -9,6 +9,22 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-11 — Split design doc into design-system and ui-implementation-rules (feat-048)
+
+- Who: Orchestrator
+- Summary: Split the monolithic design doc into two focused documents per user request. `design-system.md` contains all global tokens (colors, radius, shadow, typography, spacing, animation) and serves as the single source of truth for theme changes. `ui-implementation-rules.md` contains daily development rules (component usage, styling anti-patterns, responsive rules, accessibility checklist) for quick reference when building or refactoring a single page. Both files are written entirely in English. Created feat-048 harness record.
+- Files changed: `docs/design-docs/design-system.md` (new), `docs/design-docs/ui-implementation-rules.md` (new), removed old combined doc, `harness/features/feat-048.json`, `harness/feature_index.json`, `harness/progress.md`.
+- Blockers: none.
+- Next steps: User reviews the two docs, then invoke `writing-plans` skill to create implementation plan.
+
+## 2026-05-11 — Completed design doc for mobile-first UI redesign (feat-048)
+
+- Who: Orchestrator
+- Summary: Collaborated with user to design a comprehensive mobile-first UI redesign for all app pages. Defined design philosophy (modern, minimal, clean), mobile-first layout architecture (bottom tab, mobile header, responsive breakpoints), design tokens (teal primary, amber accent, 12px radius), universal page patterns (PageShell, PageSection, card variants), component guidelines (button, badge, input, card), responsive rules, animation guidelines, and strict anti-patterns to prevent hardcoding. Saved to `docs/design-docs/2026-05-11-mobile-first-ui-redesign-design.md`.
+- Files changed: `docs/design-docs/2026-05-11-mobile-first-ui-redesign-design.md`, `harness/progress.md`.
+- Blockers: none.
+- Next steps: User reviews design doc, then invoke `writing-plans` skill to create implementation plan.
+
 12: 
 13: ## 2026-05-11 — Refactored Sign-in UI to premium "Liquid Glass" design
 14: 

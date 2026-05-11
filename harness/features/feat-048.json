@@ -1,0 +1,27 @@
+{
+  "id": "feat-048",
+  "name": "Mobile-first UI redesign — Design System & Implementation Rules",
+  "status": "design-approved",
+  "design_docs": [
+    "docs/design-docs/design-system.md",
+    "docs/design-docs/ui-implementation-rules.md"
+  ],
+  "dependencies": ["feat-005", "feat-035", "feat-009b", "feat-047"],
+  "scope": [
+    "Define global design tokens (colors, radius, shadow, typography, spacing, animation)",
+    "Document layout architecture (mobile header, bottom tab, desktop sidebar, main content)",
+    "Create implementation rules for page building (component usage, styling, responsive, accessibility)",
+    "Provide anti-patterns and checklist for daily development"
+  ],
+  "pages_affected": [
+    "Home (feat-045)",
+    "Expenses (feat-021/043)",
+    "Budgets (feat-026/027)",
+    "Insights (feat-028/029)",
+    "Households (feat-011/014)",
+    "Profile (feat-010/041)",
+    "Auth (feat-009/047)",
+    "Landing (feat-046)"
+  ],
+  "notes": "Design phase complete. Ready for implementation planning via writing-plans skill."
+}
