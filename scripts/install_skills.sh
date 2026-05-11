@@ -129,7 +129,7 @@ CLONE_NAMES=()
 CLONE_LOGS=()
 
 cleanup() {
-  rm -rf "$TMP_ROOT"
+  rm -rf "$PROJECT_ROOT/.tmp"
 }
 
 trap cleanup EXIT
@@ -312,7 +312,6 @@ main() {
   echo "- Agents converted: $CONVERTED_AGENTS"
   echo "- Agents skipped: $SKIPPED_AGENTS"
   echo "- Destination: $DEST_DIR"
-  rm -rf "$PROJECT_ROOT/.tmp"
 }
 
 main "$@"
