@@ -20,10 +20,10 @@ CAVEMAN_REPO_URL="https://github.com/JuliusBrussee/caveman.git"
 CAVEMAN_REPO_DIR="$TMP_ROOT/caveman"
 
 EVERYTHING_SKILLS=(
-  frontend-patterns
-  frontend-design
-  design-system
-  frontend-slides
+  # frontend-patterns
+  # frontend-design
+  # design-system
+  # frontend-slides
   # ui-demo
   browser-qa
   backend-patterns
@@ -78,13 +78,10 @@ ANTIGRAVITY_SKILLS=(
   # tailwind-design-system
   react-component-performance
   i18n-localization
-  tailwind-patterns
+  # tailwind-patterns
   shadcn
   monorepo-architect
-  # ui-ux-pro-max
-  # systematic-debugging
   # lint-and-validate
-  # verification-before-completion
   # react-native-architecture
   # e2e-testing-patterns
   # browser-automation
