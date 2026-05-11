@@ -261,27 +261,27 @@ main() {
   mkdir -p "$DEST_DIR" "$TMP_ROOT"
 
   echo "Cloning skill repositories in parallel..."
-  clone_repo_async "everything-claude-code" "$EVERYTHING_REPO_URL" "$EVERYTHING_REPO_DIR"
-  clone_repo_async "antigravity-awesome-skills" "$ANTIGRAVITY_REPO_URL" "$ANTIGRAVITY_REPO_DIR"
+  # clone_repo_async "everything-claude-code" "$EVERYTHING_REPO_URL" "$EVERYTHING_REPO_DIR"
+  # clone_repo_async "antigravity-awesome-skills" "$ANTIGRAVITY_REPO_URL" "$ANTIGRAVITY_REPO_DIR"
   clone_repo_async "superpowers" "$SUPERPOWERS_REPO_URL" "$SUPERPOWERS_REPO_DIR"
-  clone_repo_async "caveman" "$CAVEMAN_REPO_URL" "$CAVEMAN_REPO_DIR"
+  # clone_repo_async "caveman" "$CAVEMAN_REPO_URL" "$CAVEMAN_REPO_DIR"
   wait_for_clones
 
-  install_skill_batch "everything-claude-code" "$EVERYTHING_REPO_DIR/skills" "${EVERYTHING_SKILLS[@]}"
-  convert_EVERYTHING_agents "$EVERYTHING_REPO_DIR/agents"
-  install_skill_batch "antigravity-awesome-skills" "$ANTIGRAVITY_REPO_DIR/skills" "${ANTIGRAVITY_SKILLS[@]}"
+  # install_skill_batch "everything-claude-code" "$EVERYTHING_REPO_DIR/skills" "${EVERYTHING_SKILLS[@]}"
+  # convert_EVERYTHING_agents "$EVERYTHING_REPO_DIR/agents"
+  # install_skill_batch "antigravity-awesome-skills" "$ANTIGRAVITY_REPO_DIR/skills" "${ANTIGRAVITY_SKILLS[@]}"
   install_skill_batch "superpowers" "$SUPERPOWERS_REPO_DIR/skills" "${SUPERPOWERS_SKILLS[@]}"
-  install_skill_batch "caveman" "$CAVEMAN_REPO_DIR/skills" "${CAVEMAN_SKILLS[@]}"
+  # install_skill_batch "caveman" "$CAVEMAN_REPO_DIR/skills" "${CAVEMAN_SKILLS[@]}"
   find "$DEST_DIR" -type f -exec perl -0pi -e 's#\.claude/skills#\.agents/skills#g' {} +
 
   ./scripts/install_harness_skills.sh
 
   # install ui-ux-pro-max skill
-  npm install -g uipro-cli
-  uipro init --ai opencode
-  cp -R ".opencode/skills"/* "$DEST_DIR/"
-  rm -rf ".opencode"
-  perl -0pi -e 's#python3 skills#python3 .agents/skills#g' "$DEST_DIR/ui-ux-pro-max/SKILL.md"
+  # npm install -g uipro-cli
+  # uipro init --ai opencode
+  # cp -R ".opencode/skills"/* "$DEST_DIR/"
+  # rm -rf ".opencode"
+  # perl -0pi -e 's#python3 skills#python3 .agents/skills#g' "$DEST_DIR/ui-ux-pro-max/SKILL.md"
 
   echo ""
   echo "Done."

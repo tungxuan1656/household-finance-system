@@ -163,6 +163,8 @@ A plan is complete only if all checks pass:
 - Do not use placeholders like `TBD`, `TODO`, or `fill in later`.
 - If a step changes code, show the actual code or command the engineer should use.
 - Keep tasks bite-sized: one action, usually 2-5 minutes.
+- Prefer test-first steps for behavior changes.
+- Keep every plan self-contained so it can be executed without the original conversation.
 - Remove or split any step that covers multiple independent subsystems.
 
 ## Self-Review
