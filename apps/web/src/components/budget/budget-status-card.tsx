@@ -30,9 +30,9 @@ type BudgetStatusCardProps = { status: BudgetStatusDTO }
 function statusColor(status: BudgetTotalStatus): string {
   switch (status) {
     case 'ok':
-      return 'bg-emerald-500'
+      return 'bg-status-success'
     case 'warning':
-      return 'bg-amber-500'
+      return 'bg-status-warning'
     case 'exceeded':
       return 'bg-destructive'
     default:
@@ -58,9 +58,9 @@ function statusBadgeVariant(
 function statusBadgeClass(status: BudgetTotalStatus): string {
   switch (status) {
     case 'ok':
-      return 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400'
+      return 'bg-status-success/20 text-status-success hover:bg-status-success/20 dark:bg-status-success/30 dark:text-status-success-foreground'
     case 'warning':
-      return 'bg-amber-100 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400'
+      return 'bg-status-warning/20 text-status-warning hover:bg-status-warning/20 dark:bg-status-warning/30 dark:text-status-warning-foreground'
     case 'exceeded':
       return 'bg-destructive/10 text-destructive hover:bg-destructive/10'
     default:

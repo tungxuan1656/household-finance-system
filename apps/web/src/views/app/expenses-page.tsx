@@ -146,7 +146,7 @@ function ExpensesPage() {
             {t('expense.feed.description')}
           </p>
         </div>
-        <Button asChild className='h-12 w-full min-w-12 sm:w-auto' size='lg'>
+        <Button asChild size='xl'>
           <Link href={PATHS.ADD_EXPENSE}>{t('expense.addTitle')}</Link>
         </Button>
       </header>

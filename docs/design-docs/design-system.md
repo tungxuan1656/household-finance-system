@@ -120,7 +120,16 @@ All colors use the **OKLCH** color space for perceptual uniformity and accessibi
 | `--chart-4` | `oklch(0.488 0.243 264.376)` | Same | Quaternary data (indigo) |
 | `--chart-5` | `oklch(0.424 0.199 265.638)` | Same | Quinary data (purple) |
 
-### 3.4 Sidebar Colors
+### 3.4 Status Colors
+
+| Token | Light Mode | Dark Mode | Purpose |
+|-------|------------|-----------|---------|
+| `--status-success` | `oklch(0.72 0.19 154)` | `oklch(0.55 0.15 154)` | Budget OK state |
+| `--status-success-foreground` | `oklch(0.26 0.06 156)` | `oklch(0.98 0.02 156)` | Text on success bg |
+| `--status-warning` | `oklch(0.78 0.18 70)` | `oklch(0.60 0.15 55)` | Budget warning state |
+| `--status-warning-foreground` | `oklch(0.22 0.05 40)` | `oklch(0.98 0.02 50)` | Text on warning bg |
+
+### 3.5 Sidebar Colors
 
 | Token | Light Mode | Dark Mode |
 |-------|------------|-----------|
@@ -152,6 +161,8 @@ Quick reference: which semantic token to use for which UI element.
 | Disabled text | `--muted-foreground` | `text-muted-foreground` |
 | Income amount | `--primary` | `text-primary` |
 | Error message | `--destructive` | `text-destructive` |
+| Budget OK badge | `--status-success` / `--status-success-foreground` | `bg-status-success/20 text-status-success` |
+| Budget warning badge | `--status-warning` / `--status-warning-foreground` | `bg-status-warning/20 text-status-warning` |
 | Border/divider | `--border` | `border-border` |
 | Badge (default) | `--primary` / `--primary-foreground` | Built-in Badge variant |
 | Badge (secondary) | `--secondary` / `--secondary-foreground` | Built-in Badge variant |

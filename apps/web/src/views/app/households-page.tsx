@@ -141,7 +141,7 @@ function HouseholdsPage() {
           </EmptyHeader>
           <EmptyContent>
             <Button
-              className='h-12'
+              size='xl'
               type='button'
               onClick={() => setIsCreateDialogOpen(true)}>
               {t('app.households.actions.create')}

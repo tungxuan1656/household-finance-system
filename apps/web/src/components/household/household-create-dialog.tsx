@@ -51,7 +51,7 @@ export const HouseholdCreateDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button className='h-12' type='button'>
+        <Button size='xl' type='button'>
           <Plus data-icon='inline-start' />
           {t('app.households.actions.create')}
         </Button>
