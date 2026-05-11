@@ -124,7 +124,7 @@ export const HouseholdSummaryCard = ({
         ) : null}
       </CardContent>
       <CardFooter className='justify-end'>
-        <Button asChild className='h-11' variant='outline'>
+        <Button asChild size='xl' variant='outline'>
           <Link href={`/households/${household.id}`}>
             {t('app.households.actions.viewDetail')}
           </Link>

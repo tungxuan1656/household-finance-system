@@ -24,7 +24,8 @@ function OverviewNextStepsCard() {
       <CardContent className='space-y-2'>
         <Button
           asChild
-          className='min-h-11 w-full justify-start gap-2'
+          className='w-full justify-start gap-2'
+          size='xl'
           variant='outline'>
           <Link href={PATHS.EXPENSES}>
             <ListChecks className='h-4 w-4' />
@@ -33,7 +34,8 @@ function OverviewNextStepsCard() {
         </Button>
         <Button
           asChild
-          className='min-h-11 w-full justify-start gap-2'
+          className='w-full justify-start gap-2'
+          size='xl'
           variant='outline'>
           <Link href={PATHS.BUDGETS}>
             <PiggyBank className='h-4 w-4' />

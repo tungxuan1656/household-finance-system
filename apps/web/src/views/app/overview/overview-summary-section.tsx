@@ -39,7 +39,7 @@ function OverviewSummarySection({
         </h2>
         <div className='flex flex-col gap-2 sm:flex-row'>
           {canInviteMembers ? (
-            <Button asChild className='min-h-11 w-full sm:w-auto'>
+            <Button asChild className='w-full sm:w-auto' size='xl'>
               <Link href={PATHS.HOUSEHOLDS}>
                 {t('app.overview.actions.inviteMembers')}
               </Link>
@@ -48,7 +48,8 @@ function OverviewSummarySection({
           <div className='flex flex-col gap-2 sm:flex-row'>
             <Button
               asChild
-              className='min-h-11 w-full sm:w-auto'
+              className='w-full sm:w-auto'
+              size='xl'
               variant='outline'>
               <Link href={PATHS.HOUSEHOLDS}>
                 {t('app.overview.actions.viewHouseholds')}
@@ -56,7 +57,8 @@ function OverviewSummarySection({
             </Button>
             <Button
               asChild
-              className='min-h-11 w-full sm:w-auto'
+              className='w-full sm:w-auto'
+              size='xl'
               variant='outline'>
               <Link href={PATHS.BUDGETS}>
                 {t('app.overview.actions.viewBudgets')}
@@ -64,7 +66,8 @@ function OverviewSummarySection({
             </Button>
             <Button
               asChild
-              className='min-h-11 w-full sm:w-auto'
+              className='w-full sm:w-auto'
+              size='xl'
               variant='outline'>
               <Link href={PATHS.INSIGHTS}>
                 {t('app.overview.actions.viewInsights')}

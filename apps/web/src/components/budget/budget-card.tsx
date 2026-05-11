@@ -49,8 +49,8 @@ function BudgetCard({ budget, onEdit }: BudgetCardProps) {
           </div>
           {onEdit && (
             <Button
-              className='h-11 min-w-11 shrink-0 gap-2'
-              size='default'
+              className='shrink-0 gap-2'
+              size='xl'
               type='button'
               variant='outline'
               onClick={onEdit}>

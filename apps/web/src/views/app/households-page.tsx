@@ -110,7 +110,7 @@ function HouseholdsPage() {
               {listLoadError}
             </p>
             <Button
-              className='h-11'
+              size='xl'
               type='button'
               variant='outline'
               onClick={() => {

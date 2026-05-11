@@ -33,11 +33,7 @@ function CreateBudgetDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button
-          className='h-11 min-w-11 gap-2'
-          size='lg'
-          type='button'
-          variant='outline'>
+        <Button size='xl' type='button' variant='outline'>
           <Plus className='size-5' data-icon='inline-start' />
           {t('budgets.actions.addNew')}
         </Button>

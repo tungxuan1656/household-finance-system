@@ -51,7 +51,7 @@ function BudgetList({ householdId, period, onEdit }: BudgetListProps) {
             {t('budgets.error.loadFailed')}
           </p>
           <Button
-            className='h-11'
+            size='xl'
             type='button'
             variant='outline'
             onClick={() => void refetch()}>
