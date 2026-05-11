@@ -1,7 +1,7 @@
 'use client'
 
-import { FaqSection, features } from '@/components/landing/faq-section'
-import { FeatureSection } from '@/components/landing/feature-section'
+import { FaqSection } from '@/components/landing/faq-section'
+import { features, FeatureSection } from '@/components/landing/feature-section'
 import { HowItWorksSection } from '@/components/landing/how-it-works-section'
 import {
   BottomCtaSection,
