@@ -19,6 +19,7 @@ coverage/
 
 # OS/editor artifacts
 .DS_Store
+__pycache__/
 .vscode-test/
 .omx/
 .gitnexus
