@@ -94,12 +94,12 @@ Must combine all required frontend + backend + shared references relevant to tou
 ## Companion Skills To Note In The Plan
 
 When creating the plan, explicitly note companion skills that should be used during implementation:
-- `superpowers:test-driven-development` for new features, bug fixes, and refactoring with behavior changes.
-- `superpowers:systematic-debugging` for bugs, failures, or unexpected behavior.
-- `superpowers:requesting-code-review` before merge or after major features.
-- `superpowers:verification-before-completion` before claiming completion.
-- `superpowers:subagent-driven-development` when tasks can be split and executed in the same session.
-- `superpowers:executing-plans` when the plan will be executed in a separate session.
+- `test-driven-development` for new features, bug fixes, and refactoring with behavior changes.
+- `systematic-debugging` for bugs, failures, or unexpected behavior.
+- `requesting-code-review` before merge or after major features.
+- `verification-before-completion` before claiming completion.
+- `subagent-driven-development` when tasks can be split and executed in the same session.
+- `executing-plans` when the plan will be executed in a separate session.
 - Add a dedicated research step when framework/library/API behavior or version specifics are uncertain.
 - Add domain-specific review steps in the plan when frontend, backend, data, or security constraints need explicit verification.
 
@@ -191,11 +191,11 @@ After saving the plan, offer execution choice:
 Which approach?"
 
 If Subagent-Driven is chosen:
-- Use `superpowers:subagent-driven-development`.
+- Use `subagent-driven-development`.
 - Fresh subagent per task plus two-stage review.
 
 If Inline Execution is chosen:
-- Use `superpowers:executing-plans`.
+- Use `executing-plans`.
 - Batch execution with checkpoints for review.
 
 ## Quick Prompt Examples
