@@ -1,26 +1,24 @@
 # FRONTEND.md
 
-This file defines stable frontend expectations so agents do not invent UI
-patterns unpredictably.
+Stable frontend expectations so agents do not invent UI patterns unpredictably.
 
 ## UI Principles
 
 - Optimize for clarity before novelty.
 - Keep interaction flows discoverable and restartable.
-- Prefer a small number of reusable components over one-off variants.
+- Prefer small number of reusable components over one-off variants.
 - Accessibility checks are part of normal verification, not polish work.
 
 ## Guardrails
 
-- Document the design system or component library in `docs/references/index.md` (`frontend/*` and
-	`shared/*`).
+- Document design system or component library in `docs/references/index.md` (`frontend/*` and `shared/*`).
 - Record key user-facing states: empty, loading, success, error, retry.
 - Keep copy, keyboard behavior, and visual hierarchy consistent across flows.
-- When a UI bug is fixed, add or update the matching validation step.
+- When a UI bug is fixed, add or update matching validation step.
 
 ## Mandatory Component Decomposition Policy (Frontend)
 
-- Build pages with an **orchestrator-first** pattern from the start:
+- Build pages with **orchestrator-first** pattern from the start:
   - Page-level file owns route params, store/query wiring, and high-level flow only.
   - Feature-level **smart components** own bounded UI + local feature logic (form submit, dialog state, mutation handlers) for one concern.
   - Reusable **shared components** are promoted only when the same shape is used across multiple features.
@@ -58,15 +56,13 @@ patterns unpredictably.
 - `className` on primitives is for layout-level concerns only, not for restyling primitive internals.
 - Non-compliant UI must be revised before merge.
 
-
 ## Verification Expectations
 
 - Capture evidence for critical user journeys.
-- Record browser or runtime validation steps in the relevant plan.
+- Record browser or runtime validation steps in relevant plan.
 - If visual regressions are common, standardize screenshot or DOM checks.
 
 ---
-
 
 # Frontend & Shared Reference Documents
 

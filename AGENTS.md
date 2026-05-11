@@ -1,103 +1,34 @@
 # AGENTS.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge these baseline rules with project-specific instructions as needed.
-
-**Tradeoff:** these guidelines bias toward caution over speed. For trivial tasks, use judgment.
-
-## 1. Think Before Coding
-
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
-
-Before implementing:
-- State assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them instead of picking silently.
-- If a simpler approach exists, say so.
-- If something is unclear, stop and name the confusion.
-
-## 2. Simplicity First
-
-**Use the minimum code that solves the problem. Nothing speculative.**
-
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No flexibility or configurability that was not requested.
-- No error handling for impossible scenarios.
-- If 200 lines can be 50, rewrite it.
-
-Ask: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
-
-## 3. Surgical Changes
-
-**Touch only what you must. Clean up only your own mess.**
-
-When editing existing code:
-- Do not improve adjacent code, comments, or formatting.
-- Do not refactor unrelated code.
-- Match existing style, even if you would choose differently.
-- If you notice unrelated dead code, mention it instead of deleting it.
-
-When your changes create orphans:
-- Remove imports, variables, or functions made unused by your changes.
-- Do not remove pre-existing dead code unless asked.
-
-The test: every changed line should trace directly to the request.
-
-## 4. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Translate vague requests into checks you can prove:
-- "Add validation" -> write tests for invalid inputs, then make them pass.
-- "Fix the bug" -> reproduce it with a test, then make it pass.
-- "Refactor X" -> ensure behavior is unchanged before and after.
-
-For multi-step work, state a brief plan:
-
-```text
-1. [Step] -> verify: [check]
-2. [Step] -> verify: [check]
-3. [Step] -> verify: [check]
-```
-
-Strong success criteria reduce unnecessary clarification loops.
-
----
-
-**These guidelines are working if:** diffs stay focused, overbuilt solutions decrease, and clarification happens before implementation instead of after mistakes.
-
----
-
-# PRODUCT
-
 Personal & Family Expense Management System — Open Source, Long-term Maintenance
 
-This repository supports a small team building a reliable expense management app for income, expenses, statistics, grouping, templates, habits, recurring deductions, categorization, and family group expense sharing.
+Repository support small team building reliable expense management app: income, expenses, statistics, grouping, templates, habits, recurring deductions, categorization, family group expense sharing.
 
 ## Tech Stack
 
 - Frontend (`apps/web`): React 19, TypeScript, Next.js App Router, Tailwind CSS, shadcn UI, sonner, date-fns
-- Backend / Edge (`apps/worker`): Cloudflare Workers, Hono, D1, Wrangler, `zod`, `jose`, `ulid`
+- Backend/Edge (`apps/worker`): Cloudflare Workers, Hono, D1, Wrangler, `zod`, `jose`, `ulid`
 - Tooling: `pnpm` monorepo, ESLint, Prettier, Vitest, TypeScript
 
 ## Quick Start
 
 Before writing or changing code:
-1. Always read the `skill-router` skill first to choose the right skill for the task.
-2. Read this file and [ARCHITECTURE.md](ARCHITECTURE.md).
+1. Read `using-skills` skill first. Determine which workflow skill applies.
+2. Read this file + `ARCHITECTURE.md`.
 3. Run `./init.sh`.
-4. Review `harness/feature_index.json` and the relevant file in `harness/features/`.
-5. For plan or product-behavior context, read `docs/PLANS.md` and `docs/product-specs/` as needed.
+4. Review `harness/feature_index.json` + relevant file in `harness/features/`.
+5. For plan/product-behavior context, read `docs/PLANS.md` + `docs/product-specs/` as needed.
 
 ## Session Rules
 
 - Work on one feature or plan per session. Do not mix scopes.
 - Run verification before claiming a feature is done.
-- Always run lint with `--fix` when you are linting code, or use `pnpm lint:fix` from the repo root. Do not use lint-only commands when the goal is to apply fixes.
+- MUST run `pnpm lint:fix` (or `--fix`) from repo root after writing/changing code. NOT lint-only when goal is apply fixes.
 - Use clear, consistent, maintainable code.
-- Commit with a descriptive message.
+- Commit with descriptive message.
 - Update `harness/progress.md` after each session.
-- Update harness feature state before ending a session.
-- Leave the repository in a clean, restartable state via the standard startup path.
+- Update harness feature state before end session.
+- Leave repo in clean, restartable state via standard startup path.
 
 ## Required Artifacts
 
@@ -114,32 +45,15 @@ A feature is done only when:
 - All verification steps pass: lint, type-check, tests, build.
 - Evidence is recorded in `harness/features/*.json` and reflected in `harness/feature_index.json`.
 - Progress is logged in `harness/progress.md`.
-- The repository can be restarted cleanly from the standard startup path.
+- Repository can be restarted cleanly from standard startup path.
 
 ## Commands
 
-```bash
-# Full workspace initialization and verification
-./init.sh
-
-# Frontend dev
-pnpm dev:web
-
-# Worker dev
-pnpm dev:worker
-
-# Frontend build
-pnpm build:web
-
-# Worker deploy
-pnpm deploy:worker
-```
-
-`./init.sh` is the default full-workspace verification path. It runs install, harness checks, lint, type-check, tests, and the web build.
+`./init.sh` is default full-workspace verification path. Runs: install, harness checks, lint, type-check, tests, web build.
 
 ## References
 
-Read these before deeper changes:
+Read before deeper changes:
 - `ARCHITECTURE.md`: system map, layer model, dependency rules
 - `docs/PLANS.md`: plan lifecycle and execution policy
 - `docs/product-specs/`: product behavior and acceptance targets
@@ -152,13 +66,13 @@ Read these before deeper changes:
 
 ## GitNexus
 
-Use GitNexus for unfamiliar or high-risk code changes. If the index is stale, run `./scripts/sync_gitnexus.sh` (not `npx gitnexus analyze`) first.
+Use GitNexus for unfamiliar or high-risk code changes. If index stale, run `./scripts/sync_gitnexus.sh` (not `npx gitnexus analyze`) first.
 
 Required:
 - Before editing any function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius and risk.
-- Warn the user before proceeding if impact analysis returns HIGH or CRITICAL risk.
+- Warn user before proceeding if impact returns HIGH or CRITICAL risk.
 - Before committing, run `gitnexus_detect_changes()`.
-- Use `gitnexus_query({query: "concept"})` to explore execution flows, and `gitnexus_context({name: "symbolName"})` when you need full symbol context.
+- Use `gitnexus_query({query: "concept"})` to explore execution flows, `gitnexus_context({name: "symbolName"})` for full symbol context.
 
 Reference:
 - `gitnexus://repo/household-finance-system/context` for codebase overview and index freshness.

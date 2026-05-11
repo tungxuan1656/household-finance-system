@@ -20,17 +20,17 @@ CAVEMAN_REPO_URL="https://github.com/JuliusBrussee/caveman.git"
 CAVEMAN_REPO_DIR="$TMP_ROOT/caveman"
 
 EVERYTHING_SKILLS=(
-  frontend-patterns
-  frontend-design
-  design-system
-  frontend-slides
-  ui-demo
-  browser-qa
+  # frontend-patterns
+  # frontend-design
+  # design-system
+  # frontend-slides
+  # ui-demo
+  # browser-qa
   backend-patterns
   database-migrations
   # api-design
-  api-connector-builder
-  nodejs-keccak256
+  # api-connector-builder
+  # nodejs-keccak256
   deployment-patterns
   coding-standards
   # e2e-testing
@@ -56,7 +56,7 @@ EVERYTHING_AGENTS=(
   architect
   database-reviewer
   security-reviewer
-  type-design-analyzer
+  # type-design-analyzer
   typescript-reviewer
   # planner
   # build-error-resolver
@@ -78,13 +78,10 @@ ANTIGRAVITY_SKILLS=(
   # tailwind-design-system
   react-component-performance
   i18n-localization
-  tailwind-patterns
+  # tailwind-patterns
   shadcn
-  monorepo-architect
-  # ui-ux-pro-max
-  # systematic-debugging
+  # monorepo-architect
   # lint-and-validate
-  # verification-before-completion
   # react-native-architecture
   # e2e-testing-patterns
   # browser-automation
@@ -96,30 +93,30 @@ ANTIGRAVITY_SKILLS=(
 )
 
 SUPERPOWERS_SKILLS=(
-  brainstorming
-  executing-plans
-  receiving-code-review
-  requesting-code-review
-  subagent-driven-development
-  systematic-debugging
-  test-driven-development
-  verification-before-completion
-  writing-plans
-  using-superpowers
-  dispatching-parallel-agents
-  finishing-a-development-branch
+  # brainstorming
+  # executing-plans
+  # receiving-code-review
+  # requesting-code-review
+  # subagent-driven-development
+  # systematic-debugging
+  # test-driven-development
+  # verification-before-completion
+  # writing-plans
+  # using-superpowers
+  # dispatching-parallel-agents
+  # finishing-a-development-branch
   # writing-skills
   # using-git-worktrees
 )
 
 CAVEMAN_SKILLS=(
   cavecrew
-  caveman-commit
-  caveman-help
-  caveman-review
-  caveman-stats
+  # caveman-commit
+  # caveman-help
+  # caveman-review
+  # caveman-stats
   caveman
-  compress
+  caveman-compress
 )
 
 COPIED_SKILLS=0
@@ -132,7 +129,7 @@ CLONE_NAMES=()
 CLONE_LOGS=()
 
 cleanup() {
-  rm -rf "$TMP_ROOT"
+  rm -rf "$PROJECT_ROOT/.tmp"
 }
 
 trap cleanup EXIT
@@ -256,29 +253,54 @@ wait_for_clones() {
   done
 }
 
+# Track all skills being installed (for selective cleanup)
+ALL_SKILLS=(
+  "${EVERYTHING_SKILLS[@]}"
+  "${ANTIGRAVITY_SKILLS[@]}"
+  # SUPERPOWERS_SKILLS - all commented out, skip
+  "${CAVEMAN_SKILLS[@]}"
+  # uipro skills will be added after install
+)
+
+# List of agent directories (these get converted, not copied)
+ALL_AGENTS=(
+  "${EVERYTHING_AGENTS[@]}"
+)
+
+cleanup_skills_dir() {
+  # Only remove skills that will be replaced, keep other custom skills intact
+  local skill_name
+  for skill_name in "${ALL_SKILLS[@]}"; do
+    if [[ -n "$skill_name" ]]; then
+      rm -rf "$DEST_DIR/$skill_name"
+    fi
+  done
+}
+
 main() {
-  rm -rf "$DEST_DIR" "$TMP_ROOT"
   mkdir -p "$DEST_DIR" "$TMP_ROOT"
+  cleanup_skills_dir
 
   echo "Cloning skill repositories in parallel..."
   clone_repo_async "everything-claude-code" "$EVERYTHING_REPO_URL" "$EVERYTHING_REPO_DIR"
   clone_repo_async "antigravity-awesome-skills" "$ANTIGRAVITY_REPO_URL" "$ANTIGRAVITY_REPO_DIR"
-  clone_repo_async "superpowers" "$SUPERPOWERS_REPO_URL" "$SUPERPOWERS_REPO_DIR"
   clone_repo_async "caveman" "$CAVEMAN_REPO_URL" "$CAVEMAN_REPO_DIR"
+  # clone_repo_async "superpowers" "$SUPERPOWERS_REPO_URL" "$SUPERPOWERS_REPO_DIR"
   wait_for_clones
 
   install_skill_batch "everything-claude-code" "$EVERYTHING_REPO_DIR/skills" "${EVERYTHING_SKILLS[@]}"
   convert_EVERYTHING_agents "$EVERYTHING_REPO_DIR/agents"
   install_skill_batch "antigravity-awesome-skills" "$ANTIGRAVITY_REPO_DIR/skills" "${ANTIGRAVITY_SKILLS[@]}"
-  install_skill_batch "superpowers" "$SUPERPOWERS_REPO_DIR/skills" "${SUPERPOWERS_SKILLS[@]}"
   install_skill_batch "caveman" "$CAVEMAN_REPO_DIR/skills" "${CAVEMAN_SKILLS[@]}"
+  # install_skill_batch "superpowers" "$SUPERPOWERS_REPO_DIR/skills" "${SUPERPOWERS_SKILLS[@]}"
+  
   find "$DEST_DIR" -type f -exec perl -0pi -e 's#\.claude/skills#\.agents/skills#g' {} +
-
-  ./scripts/install_harness_skills.sh
 
   # install ui-ux-pro-max skill
   npm install -g uipro-cli
   uipro init --ai opencode
+  # Only remove uipro skills being installed, not entire dest dir
+  rm -rf "$DEST_DIR/ui-ux-pro-max"
   cp -R ".opencode/skills"/* "$DEST_DIR/"
   rm -rf ".opencode"
   perl -0pi -e 's#python3 skills#python3 .agents/skills#g' "$DEST_DIR/ui-ux-pro-max/SKILL.md"
@@ -290,7 +312,6 @@ main() {
   echo "- Agents converted: $CONVERTED_AGENTS"
   echo "- Agents skipped: $SKIPPED_AGENTS"
   echo "- Destination: $DEST_DIR"
-  rm -rf "$PROJECT_ROOT/.tmp"
 }
 
 main "$@"

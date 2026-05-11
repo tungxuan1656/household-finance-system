@@ -37,6 +37,7 @@ run_step "Harness checks" ./scripts/check_harness_size.sh
 run_step "Linting" pnpm run lint:fix
 run_step "Type checking" pnpm run typecheck
 run_step "Running tests" pnpm run test
+run_step "Gitnexus" ./scripts/sync_gitnexus.sh
 # run_step "Building" pnpm run build
 
 echo "Init Done"

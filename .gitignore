@@ -1,5 +1,3 @@
-.agents/skills/**
-
 # Dependencies
 node_modules/
 .pnpm-store/
@@ -21,7 +19,10 @@ coverage/
 
 # OS/editor artifacts
 .DS_Store
+__pycache__/
 .vscode-test/
 .omx/
 .gitnexus
 .sisyphus
+.playwright-cli
+.playwright
