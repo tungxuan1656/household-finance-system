@@ -1,0 +1,25 @@
+{
+  "id": "feat-046",
+  "name": "Public landing page with product storytelling and CTA",
+  "status": "done",
+  "description": "Implemented a modern, beautiful landing page at the root route ('/') that showcases the product value proposition through storytelling, highlights key features, and provides a clear CTA to the main app dashboard.",
+  "dependencies": ["feat-005", "feat-032"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "apps/web/src/app/page.tsx",
+      "description": "New landing page component with hero, features, and CTA."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/lib/i18n/locales/vi.json",
+      "description": "Localized content for the landing page."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh",
+      "output": "Success",
+      "description": "Verified build, lint, and typecheck across the workspace."
+    }
+  ]
+}

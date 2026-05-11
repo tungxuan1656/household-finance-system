@@ -898,5 +898,43 @@
     "error": {
       "loadFailed": "Không thể tải danh sách ngân sách. Vui lòng thử lại."
     }
+  },
+  "landing": {
+    "hero": {
+      "title": "Quản lý tài chính gia đình thông minh",
+      "subtitle": "Giải pháp toàn diện giúp gia đình bạn thấu hiểu dòng tiền, kiểm soát ngân sách và xây dựng tương lai tài chính vững chắc cùng nhau.",
+      "cta": "Bắt đầu ngay",
+      "secondaryCta": "Tìm hiểu thêm"
+    },
+    "features": {
+      "title": "Tại sao chọn Household Finance?",
+      "items": {
+        "familyFirst": {
+          "title": "Ưu tiên gia đình",
+          "description": "Được thiết kế riêng cho các hộ gia đình, giúp mọi thành viên cùng theo dõi và quản lý chi tiêu chung một cách minh bạch."
+        },
+        "simpleTracking": {
+          "title": "Ghi chép nhanh chóng",
+          "description": "Chỉ mất vài giây để ghi lại một khoản chi. Đơn giản như một cuốn sổ tay nhưng thông minh hơn nhiều."
+        },
+        "budgetControl": {
+          "title": "Kiểm soát ngân sách",
+          "description": "Thiết lập hạn mức chi tiêu cho từng danh mục và nhận cảnh báo khi sắp vượt ngưỡng. Không còn lo lắng về thâm hụt."
+        },
+        "actionableInsights": {
+          "title": "Phân tích chuyên sâu",
+          "description": "Biểu đồ trực quan giúp bạn hiểu rõ tiền của mình đang đi đâu và cách tối ưu hóa chi tiêu hiệu quả nhất."
+        }
+      }
+    },
+    "socialProof": {
+      "title": "Được tin dùng bởi hàng ngàn gia đình",
+      "stat1": "10k+ Người dùng",
+      "stat2": "50k+ Khoản chi",
+      "stat3": "500+ Gia đình"
+    },
+    "footer": {
+      "rights": "© 2024 Household Finance System. Bảo lưu mọi quyền."
+    }
   }
 }

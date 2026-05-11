@@ -244,6 +244,11 @@
       "id": "feat-020",
       "name": "Expense visibility rules",
       "status": "superseded"
+    },
+    {
+      "id": "feat-046",
+      "name": "Public landing page with product storytelling and CTA",
+      "status": "done"
     }
   ]
 }
