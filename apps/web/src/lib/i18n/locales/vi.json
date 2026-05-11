@@ -935,6 +935,71 @@
     },
     "footer": {
       "rights": "© 2024 Household Finance System. Bảo lưu mọi quyền."
+    },
+    "howItWorks": {
+      "title": "Hoạt động như thế nào?",
+      "steps": {
+        "step1": {
+          "title": "Tạo gia đình",
+          "description": "Bắt đầu bằng việc tạo một không gian riêng cho gia đình bạn và mời các thành viên tham gia."
+        },
+        "step2": {
+          "title": "Ghi chép chi tiêu",
+          "description": "Mọi người cùng nhau ghi lại các khoản chi tiêu hàng ngày một cách nhanh chóng và dễ dàng."
+        },
+        "step3": {
+          "title": "Theo dõi & Tối ưu",
+          "description": "Xem báo cáo thông minh để biết tiền đi đâu và cùng nhau tối ưu hóa ngân sách gia đình."
+        }
+      }
+    },
+    "testimonials": {
+      "title": "Chia sẻ từ người dùng",
+      "items": {
+        "user1": {
+          "quote": "Từ khi dùng Household Finance, vợ chồng mình không còn phải tranh cãi về việc tiền đi đâu hết. Mọi thứ đều minh bạch!",
+          "author": "Chị Lan, Hà Nội"
+        },
+        "user2": {
+          "quote": "Giao diện cực kỳ đơn giản, ngay cả bố mẹ mình cũng có thể dùng để ghi chép chi tiêu gia đình hàng ngày.",
+          "author": "Anh Tuấn, TP. HCM"
+        },
+        "user3": {
+          "quote": "Phần quản lý ngân sách rất hay, giúp mình kiểm soát được việc mua sắm quá tay trong tháng.",
+          "author": "Chị Mai, Đà Nẵng"
+        }
+      }
+    },
+    "faq": {
+      "title": "Câu hỏi thường gặp",
+      "items": {
+        "q1": {
+          "question": "Ứng dụng có miễn phí không?",
+          "answer": "Hiện tại ứng dụng hoàn toàn miễn phí cho tất cả các tính năng cơ bản quản lý gia đình."
+        },
+        "q2": {
+          "question": "Dữ liệu của tôi có được bảo mật không?",
+          "answer": "Chúng tôi sử dụng các công nghệ bảo mật hàng đầu để đảm bảo dữ liệu tài chính của gia đình bạn luôn an toàn."
+        },
+        "q3": {
+          "question": "Tôi có thể dùng trên điện thoại không?",
+          "answer": "Có, ứng dụng được thiết kế tối ưu cho cả trình duyệt web trên máy tính và điện thoại di động."
+        }
+      }
+    },
+    "security": {
+      "title": "An toàn và Bảo mật",
+      "subtitle": "Chúng tôi coi trọng quyền riêng tư của gia đình bạn hơn bất cứ điều gì.",
+      "features": {
+        "encryption": {
+          "title": "Mã hóa dữ liệu",
+          "description": "Toàn bộ dữ liệu được truyền tải qua giao thức HTTPS an toàn và mã hóa tại máy chủ."
+        },
+        "privacy": {
+          "title": "Quyền riêng tư",
+          "description": "Bạn có quyền kiểm soát ai có thể xem chi tiêu của mình thông qua chế độ Riêng tư/Chung."
+        }
+      }
     }
   }
 }

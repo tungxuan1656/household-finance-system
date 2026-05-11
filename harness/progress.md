@@ -8,14 +8,14 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
-## 2026-05-11 — Completed feat-046 public landing page
+## 2026-05-11 — Expanded feat-046 public landing page and fixed hover bugs
 
 - Who: Orchestrator
-- Summary: Replaced the placeholder root page with a modern, beautiful landing page. Implemented a glassmorphic design system for a fintech feel, added narrative-driven sections (Hero, Features, Social Proof), and integrated a high-impact CTA that routes to `/home`. All content is localized in Vietnamese.
-- Files changed: apps/web/src/app/page.tsx, apps/web/src/lib/i18n/locales/vi.json, harness/feature_index.json, harness/features/feat-046.json.
-- Verification: `./init.sh` → OK. `pnpm lint:fix` → OK.
+- Summary: Significantly expanded the landing page with 5 new sections: Workflow ("Hoạt động như thế nào"), Security ("An toàn và Bảo mật"), Testimonials ("Chia sẻ từ người dùng"), FAQ ("Câu hỏi thường gặp"), and a bottom conversion CTA. Fixed a visual bug where icons would disappear or turn black on hover by ensuring proper stroke color inheritance. Improved visual depth with interactive FAQ components and security visualizations.
+- Files changed: apps/web/src/app/page.tsx, apps/web/src/lib/i18n/locales/vi.json.
+- Verification: `./init.sh` → OK. Manual verification of hover states and layout responsiveness.
 - Blockers: none.
-- Next steps: monitor user feedback on the new design.
+- Next steps: monitor conversion and user engagement.
 
 ## 2026-05-09 — Completed test structure policy follow-up and targeted cleanup
 
