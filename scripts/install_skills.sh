@@ -29,7 +29,7 @@ EVERYTHING_SKILLS=(
   backend-patterns
   database-migrations
   # api-design
-  api-connector-builder
+  # api-connector-builder
   # nodejs-keccak256
   deployment-patterns
   coding-standards
@@ -56,7 +56,7 @@ EVERYTHING_AGENTS=(
   architect
   database-reviewer
   security-reviewer
-  type-design-analyzer
+  # type-design-analyzer
   typescript-reviewer
   # planner
   # build-error-resolver
