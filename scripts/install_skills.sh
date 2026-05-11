@@ -274,8 +274,6 @@ main() {
   # install_skill_batch "caveman" "$CAVEMAN_REPO_DIR/skills" "${CAVEMAN_SKILLS[@]}"
   find "$DEST_DIR" -type f -exec perl -0pi -e 's#\.claude/skills#\.agents/skills#g' {} +
 
-  ./scripts/install_harness_skills.sh
-
   # install ui-ux-pro-max skill
   # npm install -g uipro-cli
   # uipro init --ai opencode
