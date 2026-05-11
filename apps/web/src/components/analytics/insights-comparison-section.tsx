@@ -27,7 +27,7 @@ function InsightsComparisonSection({
 
   return (
     <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]'>
-      <Card>
+      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
         <CardHeader>
           <CardTitle>{t('insights.comparison.title')}</CardTitle>
           <CardDescription>
@@ -118,7 +118,7 @@ function InsightsComparisonSection({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
         <CardHeader>
           <CardTitle>{t('insights.payers.title')}</CardTitle>
           <CardDescription>{t('insights.payers.description')}</CardDescription>

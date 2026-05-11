@@ -35,11 +35,11 @@ function BudgetCard({ budget, onEdit }: BudgetCardProps) {
   )
 
   return (
-    <Card>
-      <CardHeader>
-        <div className='flex items-start justify-between gap-2'>
-          <div className='flex flex-col gap-1'>
-            <CardTitle>
+    <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
+      <CardHeader className='pb-3'>
+        <div className='flex items-start justify-between gap-3'>
+          <div className='flex min-w-0 flex-col gap-1'>
+            <CardTitle className='text-base'>
               {t('budgets.card.periodLabel')}: {budget.period}
             </CardTitle>
             <CardDescription>
@@ -48,9 +48,16 @@ function BudgetCard({ budget, onEdit }: BudgetCardProps) {
             </CardDescription>
           </div>
           {onEdit && (
-            <Button size='sm' type='button' variant='outline' onClick={onEdit}>
-              <Edit data-icon='inline-start' />
-              {t('common.actions.edit')}
+            <Button
+              className='h-11 min-w-11 shrink-0 gap-2'
+              size='default'
+              type='button'
+              variant='outline'
+              onClick={onEdit}>
+              <Edit className='size-4' data-icon='inline-start' />
+              <span className='hidden sm:inline'>
+                {t('common.actions.edit')}
+              </span>
             </Button>
           )}
         </div>

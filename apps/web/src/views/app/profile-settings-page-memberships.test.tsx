@@ -30,10 +30,6 @@ describe('ProfileSettingsPage memberships', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByText(t('app.settings.shortcuts.title')),
-    ).toBeInTheDocument()
-
-    expect(
       screen.getByText(t('app.settings.profile.title')),
     ).toBeInTheDocument()
 

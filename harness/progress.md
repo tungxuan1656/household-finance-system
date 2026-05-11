@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-11 — Completed Phase 7: Profile/Settings Page mobile-first refactor (feat-048)
+
+- Who: Designer
+- Summary: Refactored the Profile/Settings Page with mobile-first UX principles and deep restructuring. Key UX decisions: (1) **Removed redundant Shortcuts card** — the Shortcuts card duplicated 100% of Memberships functionality (household name + "View Household" link) with worse UI (small text links vs. card-style links with role badges). Onboarding CTA consolidated into Memberships empty state. This reduces cognitive load and scrolling. (2) **Reordered sections by frequency of use** — Profile (avatar + display name) is now first because it's the most personal and frequently edited; Account (read-only identity) second; Memberships (navigation) third. (3) **Added visible page title** — `<h1>` with `text-xl md:text-2xl font-heading font-semibold` using existing `shell.protected.nav.settings` i18n key, providing clear page context on mobile where sidebar/tab labels may be truncated. (4) **Card hover effects** — all cards receive `border border-transparent hover:border-primary/20 hover:shadow-md transition-all duration-200` for tactile depth without layout shift (transparent border prevents reflow). (5) **Typography scale** — Card titles elevated to `text-lg font-semibold` for stronger section hierarchy; account info values given `font-medium` for better scannability. (6) **Touch targets** — all buttons raised to `min-h-11` (44px) including retry, change avatar, save, and dialog buttons. Household membership links and onboarding CTA link explicitly set to `min-h-11` with `items-center justify-center`. (7) **Spacing** — container gap tightened to `gap-4 md:gap-6` for mobile-first density. (8) **Fixed pre-existing build blocker** — removed invalid `table` class name from `calendar.tsx` (react-day-picker v10 no longer supports it), unblocking type-check and build.
+- Files changed: `apps/web/src/views/app/profile-settings-page.tsx`, `apps/web/src/components/profile/profile-avatar-section.tsx`, `apps/web/src/components/profile/profile-display-name-form.tsx`, `apps/web/src/components/profile/profile-avatar-dialog.tsx`, `apps/web/src/components/ui/calendar.tsx`, `apps/web/src/views/app/profile-settings-page-memberships.test.tsx`, `apps/web/src/views/app/profile-settings-page-shortcuts.test.tsx` (deleted).
+- Verification: `pnpm lint:fix` → OK (0 errors, 2 pre-existing warnings). `pnpm --filter web typecheck` → OK. `pnpm --filter web build` → OK. `pnpm --filter web test` → OK (167 pass, 0 fail). No horizontal scroll introduced. Touch targets ≥ 44px on all interactive elements.
+- Blockers: none.
+- Next steps: Proceed to Phase 1 (Shell/Layout Polish) to complete feat-048 pending phases.
+
 ## 2026-05-11 — Completed Phase 8: Auth Pages review & liquid glass integrity restoration (feat-048)
 
 - Who: Designer

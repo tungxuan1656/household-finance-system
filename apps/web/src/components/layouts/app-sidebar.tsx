@@ -1,10 +1,12 @@
 'use client'
 
+import { LogOut } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
 import { APP_MENU_ITEMS } from '@/lib/constants/navigation'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
@@ -15,51 +17,74 @@ interface AppSidebarProps {
 
 export function AppSidebar({ onSignOut }: AppSidebarProps) {
   const pathname = usePathname()
+  const { data: profile } = useCurrentUserProfileQuery()
 
   return (
-    <aside className='flex flex-col gap-4 rounded-none border border-border/70 bg-background/85 p-4 shadow-sm backdrop-blur'>
-      <div className='space-y-2'>
-        <Badge className='w-fit' variant='secondary'>
-          {t('shell.protected.badge')}
-        </Badge>
-
-        <div>
-          <h2 className='font-heading text-lg'>{t('shell.protected.title')}</h2>
-          <p className='text-xs text-muted-foreground'>
-            {t('shell.protected.description')}
-          </p>
-        </div>
+    <aside className='flex h-full flex-col gap-6 rounded-lg bg-background p-4 shadow-sm'>
+      {/* Header */}
+      <div className='space-y-1'>
+        <h2 className='font-heading text-lg font-semibold'>
+          {t('shell.protected.title')}
+        </h2>
+        <p className='text-xs text-muted-foreground'>
+          {t('shell.protected.description')}
+        </p>
       </div>
 
+      {/* Navigation */}
       <nav
         aria-label={t('shell.protected.nav.ariaLabel')}
-        className='flex flex-col gap-1'>
-        {APP_MENU_ITEMS.map((item) => (
-          <Link
-            key={item.to}
-            className={(() => {
-              const isActive =
-                item.to === PATHS.APP_ROOT
-                  ? pathname === item.to
-                  : pathname === item.to || pathname.startsWith(`${item.to}/`)
+        className='flex flex-1 flex-col gap-2'>
+        {APP_MENU_ITEMS.map((item) => {
+          const isActive =
+            item.to === PATHS.APP_ROOT
+              ? pathname === item.to
+              : pathname === item.to || pathname.startsWith(`${item.to}/`)
 
-              return [
-                'flex items-center gap-2 rounded-none px-3 py-2 text-sm transition-colors',
+          return (
+            <Link
+              key={item.to}
+              className={[
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'relative bg-primary text-primary-foreground before:absolute before:top-1/2 before:left-0 before:h-5 before:w-0.5 before:-translate-y-1/2 before:rounded-full before:bg-primary-foreground'
                   : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-              ].join(' ')
-            })()}
-            href={item.to}>
-            <item.icon className='h-4 w-4' />
-            {t(item.labelKey)}
-          </Link>
-        ))}
+              ].join(' ')}
+              href={item.to}>
+              <item.icon className='h-5 w-5 shrink-0' />
+              {t(item.labelKey)}
+            </Link>
+          )
+        })}
       </nav>
 
-      <div className='mt-auto space-y-3 rounded-none border border-border/70 bg-muted/40 p-3 text-xs text-muted-foreground'>
-        <p>{t('shell.protected.footer')}</p>
-        <Button className='w-full' variant='outline' onClick={onSignOut}>
+      {/* User Section */}
+      <div className='flex flex-col gap-3 border-t border-border/50 pt-4'>
+        <div className='flex items-center gap-3'>
+          <Avatar size='sm'>
+            <AvatarImage
+              alt={profile?.displayName ?? ''}
+              src={profile?.avatarUrl ?? undefined}
+            />
+            <AvatarFallback>
+              {(profile?.displayName ?? 'U').charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <div className='flex min-w-0 flex-col'>
+            <span className='truncate text-sm font-medium'>
+              {profile?.displayName ?? t('shell.protected.title')}
+            </span>
+            <span className='truncate text-xs text-muted-foreground'>
+              {profile?.email ?? ''}
+            </span>
+          </div>
+        </div>
+        <Button
+          className='w-full justify-start gap-2 text-muted-foreground hover:text-foreground'
+          size='sm'
+          variant='ghost'
+          onClick={onSignOut}>
+          <LogOut className='h-4 w-4' />
           {t('common.actions.signOut')}
         </Button>
       </div>

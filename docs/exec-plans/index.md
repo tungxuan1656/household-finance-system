@@ -5,6 +5,8 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-11-mobile-first-ui-redesign.md](plans/2026-05-11-mobile-first-ui-redesign.md) - feat-048 mobile-first UI redesign: 9-phase implementation starting with shell/layout polish, then page-by-page refactor with deep UX thinking. Design philosophy emphasizes "form follows function beautifully" — willing to restructure components for better UX.
+
 ## Completed
 
 - [2026-05-08-full-repo-typescript-file-size-architecture-refactor.md](plans/2026-05-08-full-repo-typescript-file-size-architecture-refactor.md) - repo-wide fullstack refactor plan completed: reduced oversized TypeScript and TSX files by splitting frontend pages/dialogs/tests into bounded feature modules, decomposing worker repositories by query family and helper seams, and breaking giant integration/component tests into focused suites while preserving product behavior and reaching zero length-script errors.

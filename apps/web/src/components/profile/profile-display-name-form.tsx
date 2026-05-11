@@ -72,7 +72,7 @@ export const ProfileDisplayNameForm = ({
       ) : null}
 
       <div className='flex gap-2'>
-        <Button disabled={isSubmitting} type='submit'>
+        <Button className='min-h-11' disabled={isSubmitting} type='submit'>
           {isSubmitting
             ? t('app.settings.profile.actions.saving')
             : t('app.settings.profile.actions.save')}

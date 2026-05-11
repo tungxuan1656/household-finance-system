@@ -30,7 +30,7 @@ function BudgetList({ householdId, period, onEdit }: BudgetListProps) {
 
   if (isLoading) {
     return (
-      <div className='flex flex-col gap-3'>
+      <div className='flex flex-col gap-4 md:gap-6'>
         {Array.from({ length: 2 }).map((_, i) => (
           <Card key={i}>
             <CardContent className='pt-6'>
@@ -51,6 +51,7 @@ function BudgetList({ householdId, period, onEdit }: BudgetListProps) {
             {t('budgets.error.loadFailed')}
           </p>
           <Button
+            className='h-11'
             type='button'
             variant='outline'
             onClick={() => void refetch()}>
@@ -76,7 +77,7 @@ function BudgetList({ householdId, period, onEdit }: BudgetListProps) {
   }
 
   return (
-    <div className='flex flex-col gap-3'>
+    <div className='flex flex-col gap-4 md:gap-6'>
       {data.items.map((budget) => (
         <BudgetCard
           key={budget.id}

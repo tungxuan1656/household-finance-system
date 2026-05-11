@@ -22,7 +22,7 @@ function MainLayout({ children }: { children: ReactNode }) {
   return (
     <div className='min-h-svh bg-background'>
       {/* Desktop Wrapper */}
-      <div className='mx-auto grid min-h-svh w-full md:grid-cols-[240px_minmax(0,1fr)] lg:max-w-7xl lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8 lg:p-8'>
+      <div className='mx-auto grid min-h-svh w-full md:grid-cols-[240px_minmax(0,1fr)] lg:max-w-5xl lg:gap-8 lg:p-8'>
         {/* Desktop Sidebar (hidden on mobile) */}
         {!isMobile && (
           <div className='hidden md:block'>
@@ -33,8 +33,8 @@ function MainLayout({ children }: { children: ReactNode }) {
         )}
 
         {/* Main Content Area */}
-        <main className='flex w-full flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-8 lg:pb-0'>
-          <section className='flex-1 rounded-none bg-background/85 p-4 shadow-sm backdrop-blur sm:p-6 md:rounded-lg md:border-x'>
+        <main className='flex w-full flex-col pb-24 md:pb-8'>
+          <section className='flex-1 bg-background p-4 md:p-6 lg:p-8'>
             {children}
           </section>
         </main>

@@ -127,7 +127,7 @@ export default function LandingPage() {
             <h2 className='mb-16 text-center text-3xl font-bold md:text-4xl lg:text-5xl'>
               {t('landing.howItWorks.title')}
             </h2>
-            <div className='grid grid-cols-1 gap-16 md:grid-cols-3 md:gap-12'>
+            <div className='grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-12'>
               <StepItem
                 description={t('landing.howItWorks.steps.step1.description')}
                 number={1}
@@ -280,7 +280,7 @@ export default function LandingPage() {
             <p className='mb-12 text-sm font-semibold tracking-widest text-primary uppercase'>
               {t('landing.socialProof.title')}
             </p>
-            <div className='grid grid-cols-1 gap-12 sm:grid-cols-3 md:gap-24'>
+            <div className='grid grid-cols-1 gap-8 sm:grid-cols-3 md:gap-24'>
               <StatItem label={t('landing.socialProof.stat1')} />
               <StatItem label={t('landing.socialProof.stat2')} />
               <StatItem label={t('landing.socialProof.stat3')} />
@@ -303,7 +303,7 @@ export default function LandingPage() {
               </p>
               <Button
                 asChild
-                className='relative h-14 w-full rounded-full bg-white px-10 text-lg font-bold text-blue-950 transition-transform hover:scale-105 hover:bg-white/90 active:scale-95 sm:w-auto'
+                className='relative h-14 w-full rounded-full bg-primary-foreground px-10 text-lg font-bold text-primary transition-transform hover:scale-105 hover:bg-primary-foreground/90 active:scale-95 sm:w-auto'
                 size='lg'>
                 <Link href={PATHS.APP_ROOT}>{t('landing.bottomCta.cta')}</Link>
               </Button>
@@ -355,7 +355,7 @@ function FeatureCard({
   description: string
 }) {
   return (
-    <div className='group rounded-3xl border border-border/50 bg-background p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl'>
+    <div className='group rounded-3xl border border-border/50 bg-background p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl md:p-8'>
       <div className='mb-6 w-fit rounded-2xl bg-primary/5 p-4 transition-colors group-hover:bg-primary group-hover:text-primary-foreground'>
         <Icon className='h-8 w-8 text-primary transition-colors group-hover:text-primary-foreground' />
       </div>
@@ -387,7 +387,7 @@ function StepItem({
 
 function TestimonialCard({ quote, author }: { quote: string; author: string }) {
   return (
-    <div className='rounded-3xl border border-border/50 bg-background p-8 shadow-sm'>
+    <div className='rounded-3xl border border-border/50 bg-background p-6 shadow-sm transition-all duration-200 hover:border-primary/20 hover:shadow-md md:p-8'>
       <div className='mb-6 text-primary'>
         <MessageSquare className='h-8 w-8 fill-primary/10' />
       </div>

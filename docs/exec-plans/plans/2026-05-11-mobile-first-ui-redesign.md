@@ -100,12 +100,12 @@ Mỗi page/component cần được xem xét kỹ:
 - [ ] Audit and fix `bottom-tab.tsx` — height, touch targets, active state, icon clarity
 - [ ] Create `PageShell` + `PageSection` components if needed — consistent page structure
 
-### Phase 2: Home Page (Overview) — THINK UX
-- [ ] Re-examine `overview-page.tsx` — page purpose, information hierarchy
-- [ ] Re-examine `overview-header.tsx` — welcome message, first impression
-- [ ] Re-examine `overview-summary-section.tsx` — stats importance, action placement
-- [ ] Re-examine `overview-households-section.tsx` — card design, quick actions
-- [ ] Re-examine `overview-budget-card.tsx`, `overview-next-steps-card.tsx` — card composition, CTA
+### Phase 2: Home Page (Overview) — THINK UX ✅ COMPLETE
+- [x] Re-examine `overview-page.tsx` — page purpose, information hierarchy
+- [x] Re-examine `overview-header.tsx` — welcome message, first impression
+- [x] Re-examine `overview-summary-section.tsx` — stats importance, action placement
+- [x] Re-examine `overview-households-section.tsx` — card design, quick actions
+- [x] Re-examine `overview-budget-card.tsx`, `overview-next-steps-card.tsx` — card composition, CTA
 
 ### Phase 3: Expenses Page — THINK UX
 - [ ] Re-examine `expenses-page.tsx` — primary user goal (find? add? browse?)

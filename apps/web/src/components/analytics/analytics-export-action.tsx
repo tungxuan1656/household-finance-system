@@ -1,7 +1,8 @@
+import type { VariantProps } from 'class-variance-authority'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
+import { Button, type buttonVariants } from '@/components/ui/button'
 import { exportAnalyticsCsv } from '@/hooks/api/use-analytics'
 import { t } from '@/lib/i18n/t'
 import type { AnalyticsExportParams } from '@/types/analytics'
@@ -9,6 +10,8 @@ import type { AnalyticsExportParams } from '@/types/analytics'
 type AnalyticsExportActionProps = {
   params: AnalyticsExportParams
   disabled?: boolean
+  className?: string
+  variant?: VariantProps<typeof buttonVariants>['variant']
 }
 
 const downloadBlob = (blob: Blob, filename: string) => {
@@ -26,6 +29,8 @@ const getFallbackFilename = (params: AnalyticsExportParams): string =>
 function AnalyticsExportAction({
   params,
   disabled,
+  className,
+  variant,
 }: AnalyticsExportActionProps) {
   const [isExporting, setIsExporting] = useState(false)
 
@@ -44,7 +49,11 @@ function AnalyticsExportAction({
   }
 
   return (
-    <Button disabled={disabled || isExporting} onClick={handleExport}>
+    <Button
+      className={className}
+      disabled={disabled || isExporting}
+      variant={variant}
+      onClick={handleExport}>
       {isExporting ? t('insights.export.loading') : t('insights.export.action')}
     </Button>
   )

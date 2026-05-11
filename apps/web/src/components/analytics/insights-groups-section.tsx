@@ -20,7 +20,7 @@ function InsightsGroupsSection({
   formatCurrency,
 }: InsightsGroupsSectionProps) {
   return (
-    <Card>
+    <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
       <CardHeader>
         <CardTitle>{t('insights.groups.title')}</CardTitle>
         <CardDescription>{t('insights.groups.description')}</CardDescription>

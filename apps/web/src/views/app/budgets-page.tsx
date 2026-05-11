@@ -90,10 +90,10 @@ function BudgetsPage() {
   }
 
   return (
-    <div className='flex flex-col gap-6'>
+    <div className='flex flex-col gap-4 md:gap-6'>
       <header className='flex flex-wrap items-center justify-between gap-3'>
         <div className='flex flex-col gap-1'>
-          <h1 className='font-heading text-2xl tracking-tight'>
+          <h1 className='font-heading text-xl tracking-tight md:text-2xl'>
             {t('budgets.title')}
           </h1>
           <p className='text-sm text-muted-foreground'>

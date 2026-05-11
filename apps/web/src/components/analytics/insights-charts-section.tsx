@@ -49,7 +49,7 @@ function InsightsChartsSection({
 
   return (
     <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]'>
-      <Card>
+      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
         <CardHeader>
           <CardTitle>{t('insights.dailySpend.title')}</CardTitle>
           <CardDescription>
@@ -99,7 +99,7 @@ function InsightsChartsSection({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
         <CardHeader>
           <CardTitle>{t('insights.topCategories.title')}</CardTitle>
           <CardDescription>
