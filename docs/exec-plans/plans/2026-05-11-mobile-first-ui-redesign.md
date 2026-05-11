@@ -37,6 +37,35 @@ Refactor toàn bộ web UI theo hướng **mobile-first**, sử dụng design sy
 
 ---
 
+## Design Philosophy — "Form Follows Function, Beautifully"
+
+### Core Principle
+**Không chỉ "làm đẹp" — mà là THINK THÔNG THIÚP về UI.**
+
+Mỗi page/component cần được xem xét kỹ:
+1. **Purpose first** — Đây là page/component để làm gì? User muốn đạt được gì?
+2. **Information hierarchy** — Thông tin quan trọng nhất hiển thị ở đâu?
+3. **User flow** — User đi qua page như thế nào? Tap/click path nào?
+4. **Visual balance** — Bố cục có cân đối không? Có quá crowded hoặc quá trống?
+5. **Responsive sanity** — Mobile view có practical không? Desktop view có professional không?
+
+### Anti-"Just Make It Pretty" Approach
+- ❌ Không chỉ thay màu, đổi font, rồi gọi là xong
+- ❌ Không giữ nguyên layout cũ chỉ vì nó "vẫn hoạt động"
+- ✅ Có thể **thay đổi cấu trúc component, sắp xếp lại layout, loại bỏ hoặc thêm elements** để đạt được UX tốt hơn
+- ✅ Có thể **tách nhỏ components, gộp components, hoặc tạo components mới** nếu nó cải thiện maintainability và visual consistency
+- ✅ Mỗi quyết định design phải có **lý do rõ ràng** dựa trên use case
+
+### UX Decisions Must Answer
+- Tại sao button này ở vị trí này?
+- Đây có phải là thông tin user cần thấy trước không?
+- Mobile user có thể hoàn thành task chính chỉ với 1 hand không?
+- Khi nào thì nên dùng list vs grid vs cards?
+- Empty state có helpful không, hay chỉ là placeholders?
+- Loading state có informative không, hay chỉ là spinners?
+
+---
+
 ## Context and Orientation
 
 ### Key Files
@@ -53,49 +82,49 @@ Refactor toàn bộ web UI theo hướng **mobile-first**, sử dụng design sy
 - `docs/design-docs/design-system.md` — Tokens definition
 - `docs/design-docs/ui-implementation-rules.md` — Implementation rules
 
-**Pages to refactor:**
-- `apps/web/src/views/app/overview-page.tsx` + sub-components
-- `apps/web/src/views/app/expenses-page.tsx` + components
-- `apps/web/src/views/app/budgets-page.tsx` + components
-- `apps/web/src/views/app/insights-page.tsx` + sub-components
-- `apps/web/src/views/app/households-page.tsx` + components
-- `apps/web/src/views/app/profile-settings-page.tsx`
+**Pages to refactor (with design questions to answer):**
+- `overview-page.tsx` + sub-components — Dashboard, critical info hierarchy
+- `expenses-page.tsx` + components — List/filter UX, search vs browse
+- `budgets-page.tsx` + components — Status visibility, progress representation
+- `insights-page.tsx` + sub-components — Data presentation, chart choices
+- `households-page.tsx` + components — Card vs list, action prominence
+- `profile-settings-page.tsx` — Settings organization, shortcuts
 
 ---
 
 ## Progress
 
 ### Phase 1: Shell/Layout Polish
-- [ ] Audit and fix `main-layout.tsx` — padding, background, max-width
-- [ ] Audit and fix `app-sidebar.tsx` — visual polish, hover states, active indicator
-- [ ] Audit and fix `bottom-tab.tsx` — height, touch targets, active state
-- [ ] Create `PageShell` + `PageSection` components if needed
+- [ ] Audit and fix `main-layout.tsx` — padding, background, max-width, scroll behavior
+- [ ] Audit and fix `app-sidebar.tsx` — visual polish, hover states, active indicator, avatar section
+- [ ] Audit and fix `bottom-tab.tsx` — height, touch targets, active state, icon clarity
+- [ ] Create `PageShell` + `PageSection` components if needed — consistent page structure
 
-### Phase 2: Home Page (Overview)
-- [ ] Refactor `overview-page.tsx` — header, spacing, layout
-- [ ] Refactor `overview-header.tsx` — typography, badge style
-- [ ] Refactor `overview-summary-section.tsx` — cards, stats, buttons
-- [ ] Refactor `overview-households-section.tsx` — card grid
-- [ ] Refactor `overview-budget-card.tsx`, `overview-next-steps-card.tsx`
+### Phase 2: Home Page (Overview) — THINK UX
+- [ ] Re-examine `overview-page.tsx` — page purpose, information hierarchy
+- [ ] Re-examine `overview-header.tsx` — welcome message, first impression
+- [ ] Re-examine `overview-summary-section.tsx` — stats importance, action placement
+- [ ] Re-examine `overview-households-section.tsx` — card design, quick actions
+- [ ] Re-examine `overview-budget-card.tsx`, `overview-next-steps-card.tsx` — card composition, CTA
 
-### Phase 3: Expenses Page
-- [ ] Refactor `expenses-page.tsx` — header, filter layout
-- [ ] Refactor expense components — feed list, filters, cards
+### Phase 3: Expenses Page — THINK UX
+- [ ] Re-examine `expenses-page.tsx` — primary user goal (find? add? browse?)
+- [ ] Re-examine expense components — feed vs list vs grid, filter UX, search behavior
 
-### Phase 4: Budgets Page
-- [ ] Refactor `budgets-page.tsx` — header, layout
-- [ ] Refactor budget components — status panel, list, cards
+### Phase 4: Budgets Page — THINK UX
+- [ ] Re-examine `budgets-page.tsx` — status visibility, progress representation
+- [ ] Re-examine budget components — warning thresholds, action clarity
 
-### Phase 5: Insights Page
-- [ ] Refactor `insights-page.tsx` — header, panels layout
-- [ ] Refactor insights components — overview, comparison, groups panels
+### Phase 5: Insights Page — THINK UX
+- [ ] Re-examine `insights-page.tsx` — chart choices, data density vs simplicity
+- [ ] Re-examine insights components — panel hierarchy, comparison UX
 
-### Phase 6: Households Page
-- [ ] Refactor `households-page.tsx` — header, grid
-- [ ] Refactor household components — summary card, create dialog
+### Phase 6: Households Page — THINK UX
+- [ ] Re-examine `households-page.tsx` — card design, create flow prominence
+- [ ] Re-examine household components — member visibility, role indication
 
-### Phase 7: Profile/Settings Page
-- [ ] Refactor `profile-settings-page.tsx` — cards, sections, shortcuts
+### Phase 7: Profile/Settings Page — THINK UX
+- [ ] Re-examine `profile-settings-page.tsx` — settings organization, shortcut utility
 
 ### Phase 8: Auth Pages (preserve liquid glass)
 - [ ] Review `sign-in-page.tsx` — ensure liquid glass style intact
@@ -116,6 +145,10 @@ Refactor toàn bộ web UI theo hướng **mobile-first**, sử dụng design sy
   **Rationale:** Auth pages (feat-047) already have premium liquid glass design; don't change
   **Date/Author:** 2026-05-11
 
+- **Decision:** Deep refactor — Component restructuring allowed
+  **Rationale:** Surface-level polish won't achieve "beautiful, clean mobile-first". Must be willing to change structure, not just styles.
+  **Date/Author:** 2026-05-11
+
 ---
 
 ## Plan of Work (Narrative)
@@ -124,7 +157,7 @@ Refactor toàn bộ web UI theo hướng **mobile-first**, sử dụng design sy
 
 **1.1 Fix `main-layout.tsx`**
 
-Current state: Uses `grid-cols-[240px_minmax(0,1fr)]` with manual responsive. 
+Current state: Uses `grid-cols-[240px_minmax(0,1fr)]` with manual responsive.
 Target: Clean mobile-first with proper padding scale, max-width container, no horizontal overflow.
 
 Changes:
@@ -135,7 +168,7 @@ Changes:
 
 **1.2 Fix `app-sidebar.tsx`**
 
-Current state: Basic sidebar with links. 
+Current state: Basic sidebar with links.
 Target: Premium desktop navigation with clear active states, subtle shadows, proper spacing.
 
 Changes:
@@ -165,56 +198,81 @@ Check if these exist. If not, create:
 
 ---
 
-### Phase 2: Home Page (Overview) — Visual Refactor
+### Phase 2: Home Page (Overview) — Visual Refactor with UX Thinking
 
-**2.1 `overview-header.tsx`**
+**2.1 Design Questions to Answer First:**
+
+- What is the PRIMARY thing user wants to see on dashboard? (Spending summary? Budget status? Household activity?)
+- Is 3 stat cards too much information at once, or just right?
+- Where should "Add Expense" CTA live — top or bottom?
+- Should households section be collapsed by default if user has many?
+
+**2.2 `overview-header.tsx` — First Impression Matters**
+
+Current: Badge + Title + Description + Signed in as...
+Target: Warm welcome that sets context without overwhelming.
 
 ```tsx
-// Target: Clean, confident header
-<header className='space-y-1'>
-  <Badge variant='secondary' className='text-xs'>Home</Badge>
+// Target: Personal, warm, not info-dumping
+<header className='space-y-2'>
+  <Badge variant='outline' className='text-xs'>Dashboard</Badge>
   <h1 className='font-heading text-xl md:text-2xl tracking-tight'>
-    Welcome back, {name}
+    Welcome back, {name ?? "Family"}
   </h1>
   <p className='text-sm text-muted-foreground'>
-    Your financial overview
+    Here's your financial overview
   </p>
 </header>
 ```
 
-**2.2 `overview-summary-section.tsx`**
+**2.3 `overview-summary-section.tsx` — Stats with Purpose**
 
-Changes:
-- Use `text-lg md:text-xl` for section titles (not `text-2xl`)
-- Cards: `Card` with `CardHeader` (no `CardTitle` for stats — just label), `CardContent` with big number
-- Stats numbers: `text-2xl md:text-3xl font-heading font-semibold`
-- Buttons: `h-12 min-w-12` for primary, `h-11` for secondary
-- Grid: `grid-cols-1 md:grid-cols-3` for stat cards
-- Section actions: horizontal scroll on mobile, wrap on desktop
+Questions:
+- Do users need ALL 3 stats (total spend, expense count, household count) in one row?
+- Or should "total spend" be hero number with others secondary?
+- What does "expense count" tell us that "total spend" doesn't?
 
-**2.3 `overview-households-section.tsx`**
+Design decision: 3-card grid works, but consider:
+- Total spend = HERO (largest, most important)
+- Expense count = supporting
+- Household count = context (only 1 household most common)
 
-Changes:
-- Section title: `text-lg font-semibold`
-- Grid: `grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4`
-- Cards: subtle `hover:shadow-md transition-shadow duration-200`
+**2.4 `overview-budget-card.tsx` — Action-Oriented**
 
-**2.4 `overview-budget-card.tsx`, `overview-next-steps-card.tsx`**
-
-Changes:
-- Card composition: full `CardHeader` + `CardContent` + `CardFooter`
-- Subtle hover: `hover:border-primary/20 hover:shadow-md`
-- No scale transforms
+Questions:
+- When budget is exceeded, how visible is the warning?
+- Can user fix the situation directly from this card?
+- Is "Setup Budget" CTA prominent enough for users without budgets?
 
 ---
 
 ### Phase 3-7: Remaining Pages
 
-Follow same pattern for each page:
-1. Header: Badge + Title + Description
-2. Actions: Primary button right-aligned, secondary buttons grouped
-3. Content: Proper Card composition, grid layouts
-4. Spacing: `gap-4 md:gap-6`, `p-4 md:p-6`
+Each page requires design thinking before styling:
+
+**Expenses Page:**
+- Primary action: ADD EXPENSE or FIND EXPENSE?
+- Filter UX: Collapsible on mobile? Always visible?
+- List vs Grid: Are expenses visual enough for grid, or is list better for scanning?
+
+**Budgets Page:**
+- Status clarity: Can user instantly see if they're OK, WARNING, or EXCEEDED?
+- Progress representation: Progress bar? Number? Both?
+- Action flow: How many taps to create a budget vs edit one?
+
+**Insights Page:**
+- Chart density: Too many charts overwhelm mobile
+- Panel priority: Overview most important, comparison secondary
+- Period selector: Sticky? Inline?
+
+**Households Page:**
+- Card design: What info makes a household card useful?
+- Quick actions: Invite vs View vs Settings — which is most common?
+- Empty state: Create vs Join — what's the right CTA?
+
+**Profile/Settings Page:**
+- Organization: Account vs Memberships vs Shortcuts vs Profile — logical grouping?
+- Shortcut utility: Are these shortcuts actually useful or just placeholders?
 
 ---
 
@@ -227,11 +285,14 @@ Follow same pattern for each page:
 # 2. Start with shell audit - check current state
 # Edit main-layout.tsx, app-sidebar.tsx, bottom-tab.tsx
 
-# 3. Then page by page refactor
+# 3. Design thinking per page (use @designer for complex pages)
+# For each page, ask: What is the user trying to accomplish?
+
+# 4. Implementation after design decisions
 # Use @designer for UI/UX refinement on complex sections
 # Use @fixer for implementation after design decisions
 
-# 4. After each phase
+# 5. After each phase
 pnpm lint:fix
 pnpm --filter @app/web type-check
 ```
@@ -240,6 +301,7 @@ pnpm --filter @app/web type-check
 
 ## Validation and Acceptance
 
+### Visual Quality Checklist
 - [ ] No horizontal scroll on mobile (375px viewport)
 - [ ] All touch targets ≥ 44×44px
 - [ ] Consistent `gap-4 md:gap-6` spacing
@@ -247,7 +309,20 @@ pnpm --filter @app/web type-check
 - [ ] Cards use full composition (CardHeader/CardContent/CardFooter)
 - [ ] Hover states: color/shadow transitions only, no layout shift
 - [ ] Focus rings visible on all interactive elements
+
+### UX Quality Checklist
+- [ ] Each page answers: "What is the user trying to do here?"
+- [ ] Primary actions are visible and accessible
+- [ ] Secondary information doesn't compete with primary
+- [ ] Empty states are helpful, not just "No data" messages
+- [ ] Loading states show what we're loading, not just spinners
+- [ ] Error states are actionable, not just error messages
+
+### Technical Quality
 - [ ] `pnpm lint:fix && pnpm --filter @app/web type-check` passes
+- [ ] All components use shadcn where applicable
+- [ ] All colors use semantic tokens
+- [ ] No hardcoded spacing values (use Tailwind scale)
 
 ---
 
@@ -267,3 +342,10 @@ Design reference:
 Current layout baseline:
 - Mobile: Bottom tab (64px) + content `pb-24`
 - Desktop: Sidebar (240-280px) + main content grid
+
+**Key UX Principles to Remember:**
+1. Mobile users often do ONE thing at a time — don't overwhelm
+2. Desktop users may do MULTIPLE things — support scanning
+3. "Just one more tap" compounds — minimize taps for common actions
+4. Visual hierarchy: Size, color, position all communicate importance
+5. White space is not wasted space — it helps comprehension
