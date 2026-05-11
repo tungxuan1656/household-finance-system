@@ -5,9 +5,11 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
-- [2026-05-11-mobile-first-ui-redesign.md](plans/2026-05-11-mobile-first-ui-redesign.md) - feat-048 mobile-first UI redesign: 9-phase implementation starting with shell/layout polish, then page-by-page refactor with deep UX thinking. Design philosophy emphasizes "form follows function beautifully" — willing to restructure components for better UX.
-
 ## Completed
+
+- [2026-05-11-mobile-first-ui-redesign.md](plans/2026-05-11-mobile-first-ui-redesign.md) - feat-048 mobile-first UI redesign: 9-phase implementation completed with shell/layout polish, page-by-page refactor (Home, Expenses, Budgets, Insights, Households, Profile), auth liquid glass preservation, and landing page polish. Design philosophy "form follows function beautifully" — restructured components for better UX with mobile-first typography, 44px touch targets, semantic tokens, subtle hover effects, consistent spacing.
+
+## Previous entries...
 
 - [2026-05-08-full-repo-typescript-file-size-architecture-refactor.md](plans/2026-05-08-full-repo-typescript-file-size-architecture-refactor.md) - repo-wide fullstack refactor plan completed: reduced oversized TypeScript and TSX files by splitting frontend pages/dialogs/tests into bounded feature modules, decomposing worker repositories by query family and helper seams, and breaking giant integration/component tests into focused suites while preserving product behavior and reaching zero length-script errors.
 - [2026-05-08-feat-045-home-overview-dashboard-unification.md](plans/2026-05-08-feat-045-home-overview-dashboard-unification.md) - feat-045 frontend-first home dashboard unification: upgraded `/home` from placeholder shell into a truthful dashboard with no-household onboarding CTA state, summary metrics, household cards, role-aware actions, and visible partial-failure handling while reusing existing household, budget, analytics, and expense surfaces without adding backend summary contracts.
