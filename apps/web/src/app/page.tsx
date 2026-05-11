@@ -122,12 +122,12 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works Section */}
-        <section className='py-24'>
+        <section className='py-20 md:py-32'>
           <div className='container mx-auto px-6'>
-            <h2 className='mb-16 text-center text-3xl font-bold md:text-4xl'>
+            <h2 className='mb-16 text-center text-3xl font-bold md:text-4xl lg:text-5xl'>
               {t('landing.howItWorks.title')}
             </h2>
-            <div className='grid grid-cols-1 gap-12 md:grid-cols-3'>
+            <div className='grid grid-cols-1 gap-16 md:grid-cols-3 md:gap-12'>
               <StepItem
                 description={t('landing.howItWorks.steps.step1.description')}
                 number={1}
@@ -148,23 +148,23 @@ export default function LandingPage() {
         </section>
 
         {/* Security Section */}
-        <section className='bg-primary/5 py-24'>
+        <section className='bg-primary/5 py-20 md:py-32'>
           <div className='container mx-auto px-6'>
-            <div className='flex flex-col items-center gap-12 lg:flex-row lg:items-start'>
-              <div className='flex-1'>
+            <div className='flex flex-col items-center gap-16 lg:flex-row lg:items-start lg:gap-12'>
+              <div className='w-full flex-1 text-center lg:text-left'>
                 <Badge className='mb-4' variant='outline'>
                   <Lock className='mr-2 h-3 w-3' />
                   Security First
                 </Badge>
-                <h2 className='mb-6 text-3xl font-bold md:text-4xl'>
+                <h2 className='mb-6 text-3xl font-bold md:text-4xl lg:text-5xl'>
                   {t('landing.security.title')}
                 </h2>
-                <p className='mb-8 text-lg text-muted-foreground'>
+                <p className='mx-auto mb-8 max-w-lg text-lg text-muted-foreground lg:mx-0'>
                   {t('landing.security.subtitle')}
                 </p>
-                <div className='space-y-6'>
+                <div className='mx-auto max-w-md space-y-6 text-left lg:mx-0'>
                   <div className='flex items-start gap-4'>
-                    <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-primary'>
+                    <div className='mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary'>
                       <CheckCircle2 className='h-5 w-5' />
                     </div>
                     <div>
@@ -177,7 +177,7 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <div className='flex items-start gap-4'>
-                    <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-primary'>
+                    <div className='mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary'>
                       <CheckCircle2 className='h-5 w-5' />
                     </div>
                     <div>
@@ -191,8 +191,8 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <div className='flex-1 lg:pl-12'>
-                <div className='relative rounded-3xl border border-border/50 bg-background p-8 shadow-2xl'>
+              <div className='w-full flex-1 md:max-w-xl lg:pl-12'>
+                <div className='relative rounded-3xl border border-border/50 bg-background p-6 shadow-2xl md:p-8'>
                   <div className='mb-8 flex items-center gap-4'>
                     <div className='flex h-12 w-12 items-center justify-center rounded-full bg-primary/10'>
                       <ShieldCheck className='h-6 w-6 text-primary' />
@@ -275,12 +275,12 @@ export default function LandingPage() {
         </section>
 
         {/* Social Proof / Stats */}
-        <section className='py-24'>
+        <section className='py-20 md:py-32'>
           <div className='container mx-auto px-6 text-center'>
-            <p className='mb-8 text-sm font-semibold tracking-widest text-primary uppercase'>
+            <p className='mb-12 text-sm font-semibold tracking-widest text-primary uppercase'>
               {t('landing.socialProof.title')}
             </p>
-            <div className='flex flex-wrap justify-center gap-12 md:gap-24'>
+            <div className='grid grid-cols-1 gap-12 sm:grid-cols-3 md:gap-24'>
               <StatItem label={t('landing.socialProof.stat1')} />
               <StatItem label={t('landing.socialProof.stat2')} />
               <StatItem label={t('landing.socialProof.stat3')} />
@@ -289,23 +289,23 @@ export default function LandingPage() {
         </section>
 
         {/* Bottom CTA */}
-        <section className='py-24'>
+        <section className='pb-24 md:pb-32'>
           <div className='container mx-auto px-6'>
-            <div className='relative overflow-hidden rounded-3xl bg-primary px-8 py-16 text-center text-primary-foreground shadow-2xl'>
+            <div className='relative overflow-hidden rounded-[2rem] bg-primary px-8 py-16 text-center text-primary-foreground shadow-2xl md:px-16 md:py-24'>
               <div className='absolute top-0 right-0 -mt-20 -mr-20 h-64 w-64 rounded-full bg-white/10 blur-3xl' />
               <div className='absolute bottom-0 left-0 -mb-20 -ml-20 h-64 w-64 rounded-full bg-white/10 blur-3xl' />
 
-              <h2 className='relative mb-6 text-3xl font-bold md:text-5xl'>
-                Ready to take control?
+              <h2 className='relative mb-6 text-3xl font-bold md:text-5xl lg:text-6xl'>
+                {t('landing.bottomCta.title')}
               </h2>
               <p className='relative mx-auto mb-10 max-w-xl text-lg opacity-90 md:text-xl'>
-                Join thousands of families managing their finances together.
+                {t('landing.bottomCta.subtitle')}
               </p>
               <Button
                 asChild
-                className='relative h-14 rounded-full bg-white px-10 text-lg font-bold text-primary hover:bg-white/90 active:scale-95'
+                className='relative h-14 w-full rounded-full bg-white px-10 text-lg font-bold text-blue-950 transition-transform hover:scale-105 hover:bg-white/90 active:scale-95 sm:w-auto'
                 size='lg'>
-                <Link href={PATHS.APP_ROOT}>Get Started for Free</Link>
+                <Link href={PATHS.APP_ROOT}>{t('landing.bottomCta.cta')}</Link>
               </Button>
             </div>
           </div>

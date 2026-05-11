@@ -10,14 +10,14 @@
 
 <!-- Start writing log before here, latest log on top -->
 
-## 2026-05-11 — Expanded feat-046 public landing page and fixed FAQ interactivity
+## 2026-05-11 — Expanded, optimized, and fixed feat-046 landing page
 
 - Who: Orchestrator
-- Summary: Significantly expanded the landing page with 5 new sections: Workflow, Security, Testimonials, FAQ, and Bottom CTA. Fixed a visual bug where icons would disappear on hover. Fixed an issue where the FAQ items were not interactive by specifying `type='button'`, adding `cursor-pointer`, and upgrading to a more robust `max-height` transition model for better reliability and smoothness.
+- Summary: Completed a full feature cycle for the public landing page. Expanded content with 5 narrative sections, localized all strings in Vietnamese (including Bottom CTA), and optimized for mobile by adjusting grid layouts (Social Proof stats) and vertical spacing. Fixed a critical accessibility issue in Dark Mode where the Bottom CTA button text was invisible due to low contrast, by enforcing a dark text color on white backgrounds.
 - Files changed: apps/web/src/app/page.tsx, apps/web/src/lib/i18n/locales/vi.json.
-- Verification: `./init.sh` → OK. Verified FAQ interactivity and animation.
+- Verification: `./init.sh` → OK. Browser subagent testing confirmed mobile responsiveness and dark mode contrast fix.
 - Blockers: none.
-- Next steps: monitor conversion and user engagement.
+- Next steps: monitor user engagement and analytics.
 
 ## 2026-05-09 — Completed test structure policy follow-up and targeted cleanup
 

@@ -1000,6 +1000,11 @@
           "description": "Bạn có quyền kiểm soát ai có thể xem chi tiêu của mình thông qua chế độ Riêng tư/Chung."
         }
       }
+    },
+    "bottomCta": {
+      "title": "Sẵn sàng để bắt đầu?",
+      "subtitle": "Tham gia cùng hàng nghìn gia đình đang quản lý tài chính thông minh hơn mỗi ngày.",
+      "cta": "Bắt đầu miễn phí ngay"
     }
   }
 }
