@@ -53,7 +53,7 @@ Organization-wide → User-level → Project-level → Local override
 
 ## Implementation Patterns
 
-1. **Define memory directory** idempotently at startup (e.g., `.claude/memory/`)
+1. **Define memory directory** idempotently at startup (e.g., `.agents/memory/`)
 2. **Create index file** with hard caps enforced at read time
 3. **Implement two-step save**: topic file first, then index update
 4. **Fire background extraction** only after final response with no pending tool calls

@@ -24,7 +24,7 @@
       "expectations": [
         "progress.md includes sections: current state, what's done, what's in progress, blockers, next session should",
         "session-handoff.md includes: what was accomplished, what remains, blockers/decisions, files modified",
-        "Instructions for memory directory creation (.claude/memory/ or similar)",
+        "Instructions for memory directory creation (.agents/memory/ or similar)",
         "Two-step save invariant explained (topic file then index)"
       ]
     },

@@ -29,7 +29,7 @@ Non-obvious principles that will cause bugs if you violate them.
 
 ```bash
 # Test priority ordering
-cat ~/.claude/CLAUDE.md          # User level
+cat ~/.agents/CLAUDE.md          # User level
 cat ./CLAUDE.md                   # Project level  
 cat ./CLAUDE.local.md             # Local override (WINS)
 ```
@@ -192,7 +192,7 @@ registry.register('shell', {
 
 ## 15. Orphaned Topic Files Accumulate
 
-**Symptom**: Disk space fills with `.claude/memory/topics/` files.
+**Symptom**: Disk space fills with `.agents/memory/topics/` files.
 
 **Cause**: Two-step save (topic file then index). Crash between steps leaves orphaned topic file.
 
