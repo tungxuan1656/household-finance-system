@@ -1,6 +1,6 @@
 # Design System
 
-> **When to use this file:** When changing global theme, colors, fonts, shadows, or adding new component variants.  
+> **When to use this file:** When refactoring core components, changing global theme, colors, fonts, shadows, or adding new component variants.  
 > **When NOT to use this file:** When building a single page — see `ui-implementation-rules.md` instead.  
 > **Single source of truth:** `apps/web/src/index.css` is the only file that defines tokens.
 
@@ -38,7 +38,7 @@ This design system powers a **modern, minimal, clean** fintech application for h
 
 **Visual style**: Flat minimal. No glassmorphism or liquid glass (reserved for Auth pages only). Subtle shadows (`sm`/`md`), clean surfaces, generous whitespace (comfortable density).
 
-**Brand colors**: Teal primary (`#14B8A6` family) for trust and clarity. Amber accent for income, highlights, and warmth.
+**Brand colors**: Maia-Mist primary (slate family, `oklch(0.218 0.008 223.9)`) for neutrality and clarity. Subtle accent (`oklch(0.963 0.002 197.1)`) for secondary surfaces. Destructive red for errors.
 
 ---
 
@@ -72,21 +72,19 @@ All colors use the **OKLCH** color space for perceptual uniformity and accessibi
 | `--card-foreground` | `oklch(0.148 0.004 228.8)` | Text on cards |
 | `--popover` | `oklch(1 0 0)` | Dropdown/popover backgrounds |
 | `--popover-foreground` | `oklch(0.148 0.004 228.8)` | Text on popovers |
-| `--primary` | `oklch(0.55 0.15 174)` | Primary actions, links (teal) |
+| `--primary` | `oklch(0.218 0.008 223.9)` | Primary actions, links (slate) |
 | `--primary-foreground` | `oklch(0.987 0.002 197.1)` | Text on primary backgrounds |
-| `--secondary` | `oklch(0.963 0.002 197.1)` | Secondary backgrounds (slate-50) |
+| `--secondary` | `oklch(0.963 0.002 197.1)` | Secondary backgrounds (mist) |
 | `--secondary-foreground` | `oklch(0.218 0.008 223.9)` | Text on secondary backgrounds |
 | `--muted` | `oklch(0.963 0.002 197.1)` | Muted/disabled backgrounds |
 | `--muted-foreground` | `oklch(0.56 0.021 213.5)` | Secondary text, placeholders |
-| `--accent` | `oklch(0.75 0.12 45)` | Highlights, badges, income (amber) |
+| `--accent` | `oklch(0.963 0.002 197.1)` | Subtle highlights, hover states |
 | `--accent-foreground` | `oklch(0.218 0.008 223.9)` | Text on accent backgrounds |
 | `--destructive` | `oklch(0.577 0.245 27.325)` | Errors, delete actions |
 | `--destructive-foreground` | `oklch(0.987 0.002 197.1)` | Text on destructive backgrounds |
 | `--border` | `oklch(0.925 0.005 214.3)` | Borders, dividers |
 | `--input` | `oklch(0.925 0.005 214.3)` | Input borders |
 | `--ring` | `oklch(0.723 0.014 214.4)` | Focus rings |
-| `--success` | `oklch(0.65 0.18 145)` | Success states (green) |
-| `--success-foreground` | `oklch(0.148 0.004 228.8)` | Text on success backgrounds |
 
 ### 3.2 Dark Mode (`.dark`)
 
@@ -98,21 +96,19 @@ All colors use the **OKLCH** color space for perceptual uniformity and accessibi
 | `--card-foreground` | `oklch(0.987 0.002 197.1)` | Light text on cards |
 | `--popover` | `oklch(0.218 0.008 223.9)` | Dark popover backgrounds |
 | `--popover-foreground` | `oklch(0.987 0.002 197.1)` | Light text on popovers |
-| `--primary` | `oklch(0.65 0.12 174)` | Lighter teal for dark mode |
-| `--primary-foreground` | `oklch(0.148 0.004 228.8)` | Dark text on primary |
+| `--primary` | `oklch(0.925 0.005 214.3)` | Lighter slate for dark mode |
+| `--primary-foreground` | `oklch(0.218 0.008 223.9)` | Dark text on primary |
 | `--secondary` | `oklch(0.275 0.011 216.9)` | Dark secondary |
 | `--secondary-foreground` | `oklch(0.987 0.002 197.1)` | Light text |
 | `--muted` | `oklch(0.275 0.011 216.9)` | Dark muted |
 | `--muted-foreground` | `oklch(0.723 0.014 214.4)` | Lighter secondary text |
-| `--accent` | `oklch(0.55 0.1 45)` | Darker amber |
+| `--accent` | `oklch(0.275 0.011 216.9)` | Dark accent |
 | `--accent-foreground` | `oklch(0.987 0.002 197.1)` | Light text |
 | `--destructive` | `oklch(0.704 0.191 22.216)` | Brighter red for dark |
 | `--destructive-foreground` | `oklch(0.987 0.002 197.1)` | Text on destructive |
 | `--border` | `oklch(1 0 0 / 10%)` | Subtle borders |
 | `--input` | `oklch(1 0 0 / 15%)` | Input borders |
 | `--ring` | `oklch(0.56 0.021 213.5)` | Focus rings |
-| `--success` | `oklch(0.55 0.14 145)` | Dark mode success (darker green) |
-| `--success-foreground` | `oklch(0.987 0.002 197.1)` | Text on success |
 
 ### 3.3 Chart Colors
 
@@ -154,8 +150,7 @@ Quick reference: which semantic token to use for which UI element.
 | Form input border | `--input` | `border-input` |
 | Focus ring | `--ring` | `focus-visible:ring-ring` |
 | Disabled text | `--muted-foreground` | `text-muted-foreground` |
-| Income amount | `--accent` | `text-accent` |
-| Success message | `--success` | `text-success` |
+| Income amount | `--primary` | `text-primary` |
 | Error message | `--destructive` | `text-destructive` |
 | Border/divider | `--border` | `border-border` |
 | Badge (default) | `--primary` / `--primary-foreground` | Built-in Badge variant |
@@ -481,8 +476,7 @@ Follow the **3-step guide in §13** above.
 
 | Old Token (if any) | New Token | Notes |
 |--------------------|-----------|-------|
-| `bg-blue-500` | `bg-primary` | Now teal |
-| `text-emerald-600` | `text-success` | New success token |
+| `bg-blue-500` | `bg-primary` | Now slate (maia-mist) |
 | `text-gray-600` | `text-muted-foreground` | Consistent naming |
 | `bg-white` | `bg-background` / `bg-card` | Semantic |
 | `bg-white/10` | `bg-card/80` | For glass-like surfaces |

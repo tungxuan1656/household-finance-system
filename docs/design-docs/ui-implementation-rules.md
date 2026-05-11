@@ -1,6 +1,6 @@
 # UI Implementation Rules
 
-> **When to use this file:** When building a new page or refactoring an existing page.  
+> **When to use this file:** When building a new page, shared component, or feature. You only need this file — design tokens are already defined in `design-system.md`.  
 > **When NOT to use this file:** When changing global theme colors, fonts, or tokens — see `design-system.md` instead.  
 > **Companion file:** `design-system.md` defines all tokens. This file defines how to use them.
 
@@ -64,54 +64,72 @@ export default function SomePage() {
 
 ### 2.1 Use shadcn Components First
 
-Before writing custom markup, check if a shadcn component exists:
+Before writing custom markup, check if a shadcn component exists.
+
+#### Installed Components (24)
+
+These are available immediately in `components/ui/`:
 
 | Need | Component |
 |------|-----------|
-| Button / action | `Button` with appropriate variant |
+| Button / action | `Button`, `ButtonGroup` |
 | Text input | `Input` |
 | Dropdown select | `Select`, `Combobox`, `NativeSelect` |
 | Multi-line text | `Textarea` |
-| Boolean toggle | `Switch` (settings) or `Checkbox` (forms) |
-| Single choice (few options) | `RadioGroup` |
-| Toggle 2–5 options | `ToggleGroup` + `ToggleGroupItem` |
-| OTP / verification | `InputOTP` |
-| Range slider | `Slider` |
-| Form layout | `FieldGroup` + `Field` |
-| Data table | `Table` |
+| Boolean toggle | `Switch` |
+| Form layout | `FieldGroup` + `Field` + `InputGroup` |
+| Date picker | `Calendar` |
 | Card container | `Card` + `CardHeader` + `CardContent` + `CardFooter` |
 | Status badge | `Badge` |
 | User avatar | `Avatar` + `AvatarImage` + `AvatarFallback` |
 | Tab navigation | `Tabs` + `TabsList` + `TabsTrigger` |
-| Breadcrumb | `Breadcrumb` |
 | Pagination | `Pagination` |
-| Side navigation | `Sidebar` |
-| Top navigation | `NavigationMenu` |
 | Modal dialog | `Dialog` |
 | Destructive confirmation | `AlertDialog` |
-| Side panel | `Sheet` |
-| Mobile bottom panel | `Drawer` |
-| Context menu | `DropdownMenu` |
-| Right-click menu | `ContextMenu` |
-| Menu bar | `Menubar` |
-| Tooltip | `Tooltip` |
-| Hover card (preview) | `HoverCard` |
-| Popover (click) | `Popover` |
 | Toast notification | `sonner` (`toast.success()`, `toast.error()`) |
-| Alert / callout | `Alert` |
-| Progress bar | `Progress` |
 | Loading skeleton | `Skeleton` |
-| Loading spinner | `Spinner` |
 | Empty state | `Empty` |
-| Command palette | `Command` inside `Dialog` |
-| Charts | `Chart` (wraps Recharts) |
 | Divider | `Separator` |
-| Resizable panels | `Resizable` |
-| Scrollable area | `ScrollArea` |
-| Accordion | `Accordion` |
-| Collapsible | `Collapsible` |
+| Label | `Label` |
+| Item list | `Item` |
 
-**Rule:** Check `components/ui/` before writing a styled `div`.
+#### Available Components (install when needed)
+
+Install via `pnpm dlx shadcn@latest add <component>` when a feature requires it:
+
+| Need | Component | Install Command |
+|------|-----------|-----------------|
+| Boolean checkbox | `Checkbox` | `pnpm dlx shadcn@latest add checkbox` |
+| Single choice | `RadioGroup` | `pnpm dlx shadcn@latest add radio-group` |
+| Toggle 2–5 options | `ToggleGroup` | `pnpm dlx shadcn@latest add toggle-group` |
+| OTP / verification | `InputOTP` | `pnpm dlx shadcn@latest add input-otp` |
+| Range slider | `Slider` | `pnpm dlx shadcn@latest add slider` |
+| Data table | `Table` | `pnpm dlx shadcn@latest add table` |
+| Breadcrumb | `Breadcrumb` | `pnpm dlx shadcn@latest add breadcrumb` |
+| Side navigation | `Sidebar` | `pnpm dlx shadcn@latest add sidebar` |
+| Top navigation | `NavigationMenu` | `pnpm dlx shadcn@latest add navigation-menu` |
+| Side panel | `Sheet` | `pnpm dlx shadcn@latest add sheet` |
+| Mobile bottom panel | `Drawer` | `pnpm dlx shadcn@latest add drawer` |
+| Context menu | `DropdownMenu` | `pnpm dlx shadcn@latest add dropdown-menu` |
+| Right-click menu | `ContextMenu` | `pnpm dlx shadcn@latest add context-menu` |
+| Menu bar | `Menubar` | `pnpm dlx shadcn@latest add menubar` |
+| Tooltip | `Tooltip` | `pnpm dlx shadcn@latest add tooltip` |
+| Hover card | `HoverCard` | `pnpm dlx shadcn@latest add hover-card` |
+| Popover | `Popover` | `pnpm dlx shadcn@latest add popover` |
+| Alert / callout | `Alert` | `pnpm dlx shadcn@latest add alert` |
+| Progress bar | `Progress` | `pnpm dlx shadcn@latest add progress` |
+| Loading spinner | `Spinner` | `pnpm dlx shadcn@latest add spinner` |
+| Command palette | `Command` | `pnpm dlx shadcn@latest add command` |
+| Charts | `Chart` | `pnpm dlx shadcn@latest add chart` |
+| Resizable panels | `Resizable` | `pnpm dlx shadcn@latest add resizable` |
+| Scrollable area | `ScrollArea` | `pnpm dlx shadcn@latest add scroll-area` |
+| Accordion | `Accordion` | `pnpm dlx shadcn@latest add accordion` |
+| Collapsible | `Collapsible` | `pnpm dlx shadcn@latest add collapsible` |
+
+**Rules:**
+- Check `components/ui/` before writing a styled `div`.
+- Do not install components speculatively. Install only when a feature needs it.
+- When installing, the component automatically uses the maia-mist theme.
 
 ### 2.2 Button Usage
 
@@ -202,7 +220,11 @@ import { InputGroup, InputGroupInput, InputGroupAddon } from "@/components/ui/in
 
 **Rule:** Never use raw `Input` or `Textarea` inside an `InputGroup`. Always use `InputGroupInput`/`InputGroupTextarea`.
 
-#### Toggle Group
+#### Toggle Group (install when needed)
+
+```bash
+pnpm dlx shadcn@latest add toggle-group
+```
 
 ```tsx
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -214,7 +236,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 </ToggleGroup>
 ```
 
-**Rule:** For 2–7 choices, use `ToggleGroup` + `ToggleGroupItem`. Don't loop `Button` with manual active state.
+**Rule:** For 2–7 choices, install and use `ToggleGroup` + `ToggleGroupItem`. Don't loop `Button` with manual active state.
 
 #### FieldSet for Groups
 
@@ -261,14 +283,14 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 **Choosing the right overlay:**
 
-| Use Case | Component |
-|----------|-----------|
-| Focused task that requires input | `Dialog` |
-| Destructive action confirmation | `AlertDialog` |
-| Side panel with details or filters | `Sheet` |
-| Mobile-first bottom panel | `Drawer` |
-| Quick info on hover | `HoverCard` |
-| Small contextual content on click | `Popover` |
+| Use Case | Component | Status |
+|----------|-----------|--------|
+| Focused task that requires input | `Dialog` | Installed |
+| Destructive action confirmation | `AlertDialog` | Installed |
+| Side panel with details or filters | `Sheet` | Install when needed |
+| Mobile-first bottom panel | `Drawer` | Install when needed |
+| Quick info on hover | `HoverCard` | Install when needed |
+| Small contextual content on click | `Popover` | Install when needed |
 
 **Requirements:**
 - Every overlay MUST have a `<Title>` (`DialogTitle`, `SheetTitle`, `DrawerTitle`).
@@ -308,7 +330,11 @@ toast("File deleted.", {
 <Skeleton className="h-12 w-full" />
 ```
 
-**Spinner (inside buttons):**
+**Spinner (inside buttons) — install when needed:**
+```bash
+pnpm dlx shadcn@latest add spinner
+```
+
 ```tsx
 <Button disabled>
   <Spinner data-icon="inline-start" />
@@ -316,7 +342,7 @@ toast("File deleted.", {
 </Button>
 ```
 
-**Rule:** Use `Skeleton` for content placeholders. Never use custom `animate-pulse` divs.
+**Rule:** Use `Skeleton` for content placeholders. For button loading states, install `Spinner`. Never use custom `animate-pulse` divs.
 
 ### 2.8 Empty States
 
@@ -335,7 +361,11 @@ toast("File deleted.", {
 
 **Rule:** Use `Empty` component. Don't build custom empty state markup.
 
-### 2.9 Callouts / Alerts
+### 2.9 Callouts / Alerts (install when needed)
+
+```bash
+pnpm dlx shadcn@latest add alert
+```
 
 ```tsx
 <Alert>
@@ -344,7 +374,7 @@ toast("File deleted.", {
 </Alert>
 ```
 
-**Rule:** Use `Alert` for callouts. Don't build custom styled `div`s.
+**Rule:** Install and use `Alert` for callouts. Don't build custom styled `div`s.
 
 ### 2.10 Separators
 
@@ -435,9 +465,7 @@ Use `asChild` (Radix) or `render` (Base) for custom trigger elements:
 | `bg-white` | `bg-background` or `bg-card` |
 | `text-white` | `text-primary-foreground` |
 | `border-gray-200` | `border-border` |
-| `text-emerald-600` | `text-success` or `<Badge variant="secondary">` |
 | `text-red-600` | `text-destructive` |
-| `bg-green-100` | `bg-success/10` (if needed) |
 
 ### 3.2 Tailwind Scale, Not Arbitrary Values
 
@@ -726,12 +754,12 @@ Before marking a page as done, verify:
 
 | Anti-Pattern | Correct Approach |
 |-------------|------------------|
-| Custom styled `div` for callout | Use `<Alert>` |
+| Custom styled `div` for callout | Install and use `<Alert>` |
 | Custom `div` for empty state | Use `<Empty>` |
 | Custom `hr` or `border-t` div | Use `<Separator>` |
 | Custom `animate-pulse` div | Use `<Skeleton>` |
 | Custom styled `span` for status | Use `<Badge>` |
-| Manual active state with `useState` + `Button` loop | Use `ToggleGroup` |
+| Manual active state with `useState` + `Button` loop | Install and use `ToggleGroup` |
 | Raw `Input` in `div` | Use `FieldGroup` + `Field` |
 | Inline glassmorphism (`bg-white/10`) | Use token-based `bg-card/80` |
 | `z-50` on overlay | Let shadcn handle z-index |
@@ -741,7 +769,7 @@ Before marking a page as done, verify:
 | `text-[15px]` | Use `text-sm` |
 | Manual ternary in `className` | Use `cn()` utility |
 | Placeholder as label | Use `<FieldLabel>` |
-| `bg-blue-500` | Use `bg-primary` |
+| `bg-blue-500` | Use `bg-primary` (slate) |
 | `text-red-600` | Use `text-destructive` |
 | Emoji as icon | Use Lucide SVG icon |
 | `hover:scale-105` on cards/buttons | Use color/shadow transitions only |
