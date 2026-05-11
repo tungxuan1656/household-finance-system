@@ -8,12 +8,14 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
-## 2026-05-11 — Expanded feat-046 public landing page and fixed hover bugs
+<!-- Start writing log before here, latest log on top -->
+
+## 2026-05-11 — Expanded feat-046 public landing page and fixed FAQ interactivity
 
 - Who: Orchestrator
-- Summary: Significantly expanded the landing page with 5 new sections: Workflow ("Hoạt động như thế nào"), Security ("An toàn và Bảo mật"), Testimonials ("Chia sẻ từ người dùng"), FAQ ("Câu hỏi thường gặp"), and a bottom conversion CTA. Fixed a visual bug where icons would disappear or turn black on hover by ensuring proper stroke color inheritance. Improved visual depth with interactive FAQ components and security visualizations.
+- Summary: Significantly expanded the landing page with 5 new sections: Workflow, Security, Testimonials, FAQ, and Bottom CTA. Fixed a visual bug where icons would disappear on hover. Fixed an issue where the FAQ items were not interactive by specifying `type='button'`, adding `cursor-pointer`, and upgrading to a more robust `max-height` transition model for better reliability and smoothness.
 - Files changed: apps/web/src/app/page.tsx, apps/web/src/lib/i18n/locales/vi.json.
-- Verification: `./init.sh` → OK. Manual verification of hover states and layout responsiveness.
+- Verification: `./init.sh` → OK. Verified FAQ interactivity and animation.
 - Blockers: none.
 - Next steps: monitor conversion and user engagement.
 

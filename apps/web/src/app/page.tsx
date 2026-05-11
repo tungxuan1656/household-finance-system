@@ -406,20 +406,22 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className='overflow-hidden rounded-2xl border border-border/50 bg-background transition-all'>
+    <div className='overflow-hidden rounded-2xl border border-border/50 bg-background shadow-sm transition-all'>
       <button
-        className='flex w-full items-center justify-between p-6 text-left hover:bg-muted/50'
+        className='flex w-full cursor-pointer items-center justify-between p-6 text-left transition-colors hover:bg-muted/50 focus:outline-none'
+        type='button'
         onClick={() => setIsOpen(!isOpen)}>
-        <span className='font-bold'>{question}</span>
+        <span className='text-lg font-bold'>{question}</span>
         <ChevronDown
-          className={`h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`h-5 w-5 text-primary transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
-      {isOpen && (
-        <div className='animate-in border-t border-border/50 p-6 pt-4 text-muted-foreground duration-200 slide-in-from-top-2'>
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className='border-t border-border/50 p-6 pt-4 leading-relaxed text-muted-foreground'>
           {answer}
         </div>
-      )}
+      </div>
     </div>
   )
 }
