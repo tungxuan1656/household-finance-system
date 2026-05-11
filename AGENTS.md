@@ -1,74 +1,5 @@
 # AGENTS.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge these baseline rules with project-specific instructions as needed.
-
-**Tradeoff:** these guidelines bias toward caution over speed. For trivial tasks, use judgment.
-
-## 1. Think Before Coding
-
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
-
-Before implementing:
-- State assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them instead of picking silently.
-- If a simpler approach exists, say so.
-- If something is unclear, stop and name the confusion.
-
-## 2. Simplicity First
-
-**Use the minimum code that solves the problem. Nothing speculative.**
-
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No flexibility or configurability that was not requested.
-- No error handling for impossible scenarios.
-- If 200 lines can be 50, rewrite it.
-
-Ask: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
-
-## 3. Surgical Changes
-
-**Touch only what you must. Clean up only your own mess.**
-
-When editing existing code:
-- Do not improve adjacent code, comments, or formatting.
-- Do not refactor unrelated code.
-- Match existing style, even if you would choose differently.
-- If you notice unrelated dead code, mention it instead of deleting it.
-
-When your changes create orphans:
-- Remove imports, variables, or functions made unused by your changes.
-- Do not remove pre-existing dead code unless asked.
-
-The test: every changed line should trace directly to the request.
-
-## 4. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Translate vague requests into checks you can prove:
-- "Add validation" -> write tests for invalid inputs, then make them pass.
-- "Fix the bug" -> reproduce it with a test, then make it pass.
-- "Refactor X" -> ensure behavior is unchanged before and after.
-
-For multi-step work, state a brief plan:
-
-```text
-1. [Step] -> verify: [check]
-2. [Step] -> verify: [check]
-3. [Step] -> verify: [check]
-```
-
-Strong success criteria reduce unnecessary clarification loops.
-
----
-
-**These guidelines are working if:** diffs stay focused, overbuilt solutions decrease, and clarification happens before implementation instead of after mistakes.
-
----
-
-# PRODUCT
-
 Personal & Family Expense Management System — Open Source, Long-term Maintenance
 
 This repository supports a small team building a reliable expense management app for income, expenses, statistics, grouping, templates, habits, recurring deductions, categorization, and family group expense sharing.
@@ -117,24 +48,6 @@ A feature is done only when:
 - The repository can be restarted cleanly from the standard startup path.
 
 ## Commands
-
-```bash
-# Full workspace initialization and verification
-./init.sh
-
-# Frontend dev
-pnpm dev:web
-
-# Worker dev
-pnpm dev:worker
-
-# Frontend build
-pnpm build:web
-
-# Worker deploy
-pnpm deploy:worker
-```
-
 `./init.sh` is the default full-workspace verification path. It runs install, harness checks, lint, type-check, tests, and the web build.
 
 ## References
