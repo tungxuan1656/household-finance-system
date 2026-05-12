@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Completed shared forms/dialogs primitive rollout
+
+- Who: Orchestrator + Fixer/Oracle subagents
+- Summary: Executed the representative rollout plan that migrates real app consumers onto the hardened primitive contract. Dialog-shell consumers dropped `DialogContent` width override classes in favor of primitive sizing, representative form and selection consumers moved from local geometry/shell compensation to `size='lg'` and shared primitive composition, and representative feedback states replaced `Empty` border restyling with `surface='outline'`. The rollout stayed additive and compatibility-safe, and each batch was locked with focused migration tests plus spec and TypeScript/UI review passes.
+- Files changed: Representative budget/group/expense dialog consumers, onboarding and expense filter form consumers, representative insights/household empty states, focused migration test files, the dialog primitive, the shared primitive contract test, ExecPlan index, feature record, and this progress log.
+- Verification: GitNexus impact checks for representative dialog, form, selection, and feedback symbols all returned LOW risk before edits; `gitnexus_detect_changes` reported low risk with no affected processes; targeted Vitest batches for dialog migration, form/selection migration, and primitive feedback contract checks passed; `pnpm typecheck` passed; batch spec reviews passed; dialog-shell and form/selection TypeScript/UI quality reviews approved; feedback-state TypeScript/UI quality review approved.
+- Blockers: none.
+- Next steps: run full-workspace verification and, if still green, commit the rollout plus associated harness updates if desired.
+
 ## 2026-05-12 — Wrote ExecPlan for shared forms/dialogs primitive rollout
 
 - Who: Orchestrator

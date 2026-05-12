@@ -17,6 +17,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Drawer, DrawerContent } from '@/components/ui/drawer'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { Input } from '@/components/ui/input'
 import { InputGroup, InputGroupInput } from '@/components/ui/input-group'
 import { NativeSelect } from '@/components/ui/native-select'
@@ -227,5 +235,24 @@ describe('primitive variant contracts', () => {
 
     expect(alert).toHaveAttribute('data-tone', 'warning')
     expect(alert.className).toContain('text-status-warning-foreground')
+  })
+
+  it('applies empty surface presets with layout-only consumer classes preserved', () => {
+    render(
+      <Empty className='min-h-32' data-testid='empty' surface='outline'>
+        <EmptyHeader>
+          <EmptyMedia variant='icon'>icon</EmptyMedia>
+          <EmptyTitle>Empty title</EmptyTitle>
+          <EmptyDescription>Empty description</EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>Action</EmptyContent>
+      </Empty>,
+    )
+
+    const empty = screen.getByTestId('empty')
+
+    expect(empty).toHaveAttribute('data-surface', 'outline')
+    expect(empty.className).toContain('border-dashed')
+    expect(empty.className).toContain('min-h-32')
   })
 })

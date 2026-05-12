@@ -5,10 +5,10 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
-- [2026-05-12-shared-forms-dialogs-primitive-rollout.md](plans/2026-05-12-shared-forms-dialogs-primitive-rollout.md) - frontend rollout follow-up to feat-048/049/051: audit and migrate representative shared dialogs, form structures, selection controls, and feedback states onto the hardened primitive contract, with only tiny additive primitive follow-ups allowed when real migrations are blocked.
 
 ## Completed
 
+- [2026-05-12-shared-forms-dialogs-primitive-rollout.md](plans/2026-05-12-shared-forms-dialogs-primitive-rollout.md) - frontend rollout follow-up to feat-048/049/051 completed: representative dialog shells, form structures, selection controls, and feedback states now route common visual intent through primitive props instead of consumer-side restyling, with focused migration tests and bounded additive follow-ups only where justified.
 - [2026-05-12-design-system-contract-hardening.md](plans/2026-05-12-design-system-contract-hardening.md) - frontend/tooling-docs follow-up to feat-048/049/051 completed: `design-system.md` and `ui-implementation-rules.md` now enforce V2.1 as the single visual contract, restrict page-level customization to layout-only concerns, and route missing visuals through primitive APIs.
 - [2026-05-12-base-primitive-expansion.md](plans/2026-05-12-base-primitive-expansion.md) - frontend follow-up to feat-048/049/051 completed: `components/ui` primitives now expose additive `variant` / `size` / `tone` / `surface` APIs, shared surface helpers, stronger tests, and a first migrated consumer so pages can reduce custom visual styling.
 - [2026-05-11-mobile-first-ui-redesign.md](plans/2026-05-11-mobile-first-ui-redesign.md) - feat-048 mobile-first UI redesign: 9-phase implementation completed with shell/layout polish, page-by-page refactor (Home, Expenses, Budgets, Insights, Households, Profile), auth liquid glass preservation, and landing page polish. Design philosophy "form follows function beautifully" — restructured components for better UX with mobile-first typography, 44px touch targets, semantic tokens, subtle hover effects, consistent spacing.
