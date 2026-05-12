@@ -1,10 +1,12 @@
-# Product Overview – Household Finance Web App
+# Product Overview – Personal & Household Finance System
 
 ## 1. Vision
 
-Build a platform that helps families understand, control, and optimize their shared cash flow by recording expenses transparently, tracking budgets, and delivering clear, actionable insights.
+Build a platform where individuals track expenses with zero friction, then optionally expand into household collaboration — without ever leaving the same product.
 
-> Not for "splitting bills," but for managing family finances together.
+> **Start personal. Grow into family. Never lose your own view.**
+
+The app begins as the simplest possible expense tracker for one person. As the user's life gets more complex — joining a household, planning an event, setting family budgets — the product scales naturally by adding lenses, not by forcing a different workflow.
 
 ---
 
@@ -12,195 +14,226 @@ Build a platform that helps families understand, control, and optimize their sha
 
 A tool that is:
 
-- As simple as an expense notebook
-- Yet powerful as a family finance dashboard
+- As simple as a personal expense notebook
+- Yet scales into a family finance dashboard when needed
 
 Core differentiators:
 
-- Family-first (household-centric), not individual-first
-- Not focused on “who owes whom”
+- **Individual-first, household-aware** — every user starts with their own financial picture; household is an optional layer, not the foundation
+- **Lens-based navigation** — users switch between Personal, Household, and Group views to see their data from different perspectives
+- Not focused on "who owes whom" (no split-bill mechanics)
 - Focused on:
-  - cash flow
-  - spending behavior
-  - budget control
+  - personal spending awareness
+  - household cash flow visibility
+  - budget control across all scopes
 
 ---
 
-## 3. Target Users
+## 3. Target Users & Growth Path
 
-- Couples managing shared finances
-- Multi-generation households
-- People who want to control household spending rather than only personal expenses
+### Primary user (onboarding)
+
+- **Individuals** who want to understand their own spending: "How much did I spend this month?", "What did I spend on?", "Where can I cut back?"
+
+### Expanded use (voluntary, post-onboarding)
+
+- Couples who want transparency into shared finances while maintaining personal privacy
+- Multi-generation households tracking both individual contributions and family-level spending
+- Anyone organizing event-based spending (vacation, renovation, wedding) through groups
+
+### Key principle
+
+The product must **deliver value from the very first expense entry** — before any household or group exists. Single-player mode is not a fallback; it is the designed starting point.
 
 ---
 
 ## 4. Core Value Proposition
 
-The app helps answer key family finance questions:
+The app answers questions in layers, from simple to complex:
 
-- How much is the household spending each month?
-- Where is the money going?
-- Are we over budget?
-- Is spending trending up or down?
-- Who is contributing most financially?
+### Layer 1 — Personal (always available)
+- How much did I spend this month?
+- Where did my money go? (by category)
+- Am I staying within my personal budget?
+- Is my spending trending up or down?
+
+### Layer 2 — Household (when user joins one)
+- How much did the household spend this month?
+- What did I personally contribute to the household?
+- Who in the family paid for what?
+- Is the household over budget? Is my portion over budget?
+
+### Layer 3 — Group / Event (when user creates one)
+- How much has this group spent so far?
+- What was spent on each day of this trip?
+- Is the group within its allocated budget?
 
 ---
 
-## 5. Core Features
+## 5. Core Concepts
 
-### 5.1. Expense Tracking
+### 5.1 The Lens Model
+
+The app operates through **lenses** — the user's current viewing context. Every screen (Home, Expenses, Budgets, Insights) respects the active lens.
+
+| Lens | Scope | Availability |
+|------|-------|-------------|
+| **Personal** | Only the user's own expenses (both private and those shared to households) | Always |
+| **Household** | All household-shared expenses + the user's own contributions to that household | When user belongs to ≥1 household |
+| **Group** | Expenses assigned to a specific group/event | When user creates or is added to a group |
+
+**Rules:**
+- There is no "global active household" that silently applies everywhere. The user explicitly chooses their lens.
+- Quick-add always respects the current lens: creating an expense while on Personal lens defaults it to private; creating one on a Household lens prompts explicit household selection.
+- The Home screen shows stats and recent activity **for the selected lens**, with an indicator of which lens is active.
+
+### 5.2 Expense Tracking
 
 Each expense includes:
 
 - Amount
 - Category (selected from an immutable global catalog)
-- Source (selected from an immutable global catalog)
+- Source / payment method (selected from an immutable global catalog)
 - Note
 - Timestamp
-
-Ownership model:
-
 - Creator: the person who enters the expense
-- Payer: the person who actually paid (may differ from creator)
+- Payer: the person who actually paid (may differ from creator; defaults to creator)
 
 Reference-data model:
 
 - Categories and sources are shared reference data for all users and households.
 - End users cannot create, edit, or delete categories/sources.
-- Web maps display labels from i18n using stable category/source keys.
+- UI displays labels from i18n using stable category/source keys.
 
----
+### 5.3 Personal vs. Household Visibility
 
-### 5.2. Personal vs. Household Visibility
+Each expense has a `visibility` field:
 
-Each expense can be:
+| Visibility | Who can see it |
+|------------|---------------|
+| `private` | Only the creator |
+| `household` | All members of the specified household |
 
-- Private → visible only to the creator
-- Household → shared with the household group
+**Default behavior:**
+- New expenses start as `private` by default.
+- Switching an expense to `household` requires **explicit user action** and explicit household selection for that submission.
+- Category choice does **not** determine visibility. The two decisions are independent.
 
-Default behavior:
+**Design intent:** Privacy by default. The user consciously decides what to share, and with which household.
 
-- New expenses start as private/personal by default.
-- If a user wants to share an expense with a household, they must explicitly switch it to household scope and choose the target household for that submission.
-- Category choice does not determine whether an expense is personal or household-shared.
+### 5.4 Households
 
-Ensure:
-
-- Transparency when needed
-- Privacy when desired
-
----
-
-### 5.3. Households
-
-Structure:
-
-- A user can belong to multiple households
-- Each household is an independent unit
-
-Within a household:
-
-- See all shared expenses
+A household is a shared space where members can:
+- See all household-scoped expenses
 - Know who paid, what, and when
+- Track household-level budgets
 
----
+**Structure:**
+- A user can belong to **multiple** households (e.g., nuclear family + extended family)
+- Each household is an independent unit with its own members, budgets, and expense feed
+- Household is **optional**: the product is fully functional without ever creating or joining one
 
-### 5.4. Roles & Permissions
+### 5.5 Roles & Permissions
 
-Roles:
-
-- Admin
-  - Manage members
-  - Full edit rights
-- Member
-  - Add expenses
-  - Limited edit/delete rights
+| Role | Capabilities |
+|------|-------------|
+| **Admin** | Manage members (invite, remove), full edit/delete rights on household expenses, manage household budgets |
+| **Member** | Add household expenses, limited edit/delete rights on own expenses, view household data |
 
 Optional (future-ready):
+- Approval flow for large household expenses
+- Custom role definitions
 
-- Approval flow for large expenses
+### 5.6 Budget Management
 
----
+**Personal budgets** (always available):
+- Monthly spending limit for the individual
+- Optional per-category limits (e.g., max 3tr on dining, max 2tr on shopping)
+- Planned vs Actual tracking
+- Alerts when approaching or exceeding limits
 
-### 5.5. Budget Management (Core retention feature)
+**Household budgets** (when user belongs to a household):
+- Monthly spending limit for the household as a whole
+- Optional per-category household budgets
+- Tracks total household spend + individual contributions
+- Budget warnings visible to all members
 
-Setup:
+**Group budgets** (when user creates a group):
+- Allocated budget for the group's lifetime or timeframe
+- Tracks spending within the group scope
 
-- Monthly budgets
-- Optional per-category budgets referencing the same global category catalog
+All budgets reference the same global category catalog for per-category limits.
 
-Tracking:
+### 5.7 Grouping / Events
 
-- Planned vs Actual
-- Alerts when approaching or exceeding budgets
+A Group (or Event) is a way to cluster related expenses for tracking purposes.
 
----
+**Examples:** Vacation trip, home renovation, wedding planning, holiday shopping
 
-### 5.6. Filtering & Search
-
-Filter by:
-
-- Date (day / week / month / range)
-- Category
-- Payer
-
-Search by:
-
-- Note text
-- Amount
-- Group (Event / Project)
-
----
-
-### 5.7. Grouping / Events
-
-Concept:
-
-- Group expenses by events (vacation, wedding, holiday shopping, etc.)
-- Track a separate budget per group
-
-Functionality:
-
+**Functionality:**
 - Create / edit / delete groups
 - Assign an expense to one or more groups
-- View group-level summaries and reports
+- Set a budget per group
+- View group-level summaries and reports (timeline, category breakdown)
+- Switch to Group lens to see only that group's data across the app
 
----
+**Relationship to households:** A group is independent of households. A personal expense assigned to a group stays personal unless explicitly shared to a household. A household expense can also be assigned to a group.
 
-### 5.8. Insights & Analytics (Simple, focused)
+### 5.8 Filtering & Search
 
-Includes:
+Filter by:
+- Date (day / week / month / custom range)
+- Category
+- Source (payment method)
+- Payer
+- Visibility (private / household)
 
+Search by:
+- Note text
+- Amount range
+- Group name
+
+### 5.9 Insights & Analytics
+
+Simple, focused insights — no complex AI required.
+
+**Personal lens:**
 - Total spending over time
-- Category breakdowns based on stable global category keys
-- Comparisons (this month vs last month)
-
-Highlights:
-
+- Category breakdowns (pie/bar)
+- Month-over-month comparison
 - Top spending categories
 - Increasing / decreasing trends
 
-No complex AI required—just accurate, clear, and easy-to-understand insights.
+**Household lens:**
+- All of the above, aggregated across household members
+- Payer attribution (who paid what share)
+- Contribution breakdown per member
+
+**Group lens:**
+- Timeline view of spending
+- Category breakdown within the group
+- Budget status (remaining / overspent)
 
 ---
 
 ## 6. User Experience Principles
 
-- Fast input first: Add an expense in 2–3 seconds
-- Mobile-friendly (even though it’s a web app)
-- Low cognitive load: few choices and sensible defaults
-- Single-player usable: works well even before inviting family members
+- **Single-player first:** Works perfectly for one person from day one. No household or group required.
+- **Fast input first:** Add an expense in 2–3 seconds via quick-add accessible everywhere.
+- **Default to privacy:** Expenses are private unless explicitly shared. No accidental exposure.
+- **Explicit context:** The user always knows which lens they're viewing. No hidden global state.
+- **Mobile-friendly:** Optimized for phone use (bottom tab nav, large touch targets) even as a web app.
+- **Low cognitive load:** Few choices, sensible defaults, progressive complexity.
+- **Transparent extensions:** Household and group features appear as natural additions, not mode switches.
 
 ---
 
 ## 7. Authentication & Identity
 
-Sign-in (MVP):
-
+**Sign-in (MVP):**
 - Firebase (email/password) — future: Google / Supabase
 
-Flow:
-
+**Flow:**
 1. User signs up / signs in via Firebase Authentication (email/password) on the frontend.
 2. Frontend sends the Firebase ID token to the backend.
 3. Backend:
@@ -210,69 +243,78 @@ Flow:
 
 ---
 
-## 8. MVP Scope (Lean but usable)
+## 8. MVP Scope
 
-Includes:
+### Included
 
-- Auth (Firebase email/password; Google later)
-- Global static category/source catalogs served as reference data
-- CRUD for expenses (amount, category, source, group, payer, creator, visibility)
-- Personal vs household visibility
-- Household model + roles (admin / member)
-- Payer vs creator
-- Monthly budgets
-- Grouping (events / projects)
-- Basic insights (month comparisons, category breakdowns, group summaries)
-- Filtering & search
+| Area | Scope |
+|------|-------|
+| Auth | Firebase email/password (Google later) |
+| Reference data | Global static category/source catalogs |
+| Expenses | Full CRUD (amount, category, source, note, date, creator, payer, visibility) |
+| Personal tracking | Personal expenses, personal budgets, personal insights — all work with zero setup |
+| Households | Create, join, manage members, roles (admin/member) |
+| Household visibility | Explicit household sharing per expense |
+| Budgets | Monthly total + per-category; personal + household + group |
+| Groups | Create, edit, delete; assign expenses; group-level summaries |
+| Insights | Period comparisons, category breakdowns, payer attribution — per lens |
+| Filtering & search | By date, category, source, payer, visibility, note text, amount, group |
 
----
+### Out of Scope for MVP
 
-## 9. What’s Out of Scope for MVP
-
-- Split-bill / debt tracking
+- Split-bill / debt tracking / "who owes whom"
 - Advanced AI-driven insights
 - Nested households
-- Complex automation
+- Complex automation / recurring expenses
 - Bank integrations
+- Offline support
+- Notification delivery (email/push)
 
-Keep scope small to ship quickly.
+**Keep scope small to ship quickly.**
 
 ---
 
-## 10. Roadmap (Post-MVP)
+## 9. Roadmap
 
-Phase 2:
+### Phase 2 (post-MVP)
+- Recurring expenses (bills, subscriptions, salary)
+- Smart category suggestions based on history
+- Budget-exceeded push notifications
+- Expense templates (common entries)
 
-- Recurring expenses
-- Smart category suggestions
-- Budget-exceeded notifications
-
-Phase 3:
-
-- Advanced insights
+### Phase 3
+- Advanced insights and trend forecasting
 - Financial health score
-- Multi-device optimization
+- Multi-device synchronization optimization
+- Export (CSV/PDF) for tax or review purposes
 
 ---
 
-## 11. Differentiator (USP)
+## 10. Differentiator (USP)
 
-Not just a personal expense tracker and not just a bill-splitting app.
+Not just a personal expense tracker. Not just a bill-splitting app.
 
-It aims to be:
+It is:
 
-> The single source of truth for household finances.
+> **A personal expense tracker that grows into a household finance tool — without ever asking the user to switch apps or mindsets.**
+
+The user starts by answering "Where did my money go?" and, only when ready, extends to "Where did our money go?" — all within the same product, same UI, same workflow.
 
 ---
 
-## 12. Conclusion
+## 11. Conclusion
 
-This product avoids chasing complex fintech features and instead focuses on real behaviors and everyday needs.
+This product deliberately avoids feature-creep and complex fintech ambitions. It stays focused on real human behaviors:
+
+1. **I want to know what I spend.** (Personal)
+2. **I want my family to see our shared spending.** (Household)
+3. **I want to control budgets for specific events.** (Groups)
+
+Each layer builds on the previous one naturally. No user is forced into a layer they don't need.
 
 If done right:
+- Works immediately for a single user without setup
+- Expands gracefully when they invite family
+- Feels like one cohesive product, not a collection of modes
 
-- Extremely simple UX
-- Clear budgets and insights
-- A practical family-first model
-
-→ Becomes a daily household finance management tool.
+→ Becomes a daily financial companion, from individual to household.
