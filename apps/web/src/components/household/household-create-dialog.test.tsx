@@ -65,4 +65,24 @@ describe('HouseholdCreateDialog', () => {
       t('app.households.actions.create'),
     )
   })
+
+  it('uses the dialog size prop instead of a shell width override class', () => {
+    render(
+      <HouseholdCreateDialog
+        isOpen
+        isSubmitting={false}
+        onOpenChange={onOpenChangeMock}
+        onSubmit={vi.fn(async () => true)}
+      />,
+    )
+
+    const content = screen.getByRole('dialog')
+
+    expect(content).toHaveAttribute('data-size', 'default')
+    expect(content.className).toContain('sm:max-w-md')
+
+    const shell = content.closest('[data-slot="dialog-content"]')
+
+    expect(shell).toBe(content)
+  })
 })

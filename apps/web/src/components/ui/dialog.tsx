@@ -1,11 +1,39 @@
 'use client'
 
+import { cva, type VariantProps } from 'class-variance-authority'
 import { XIcon } from 'lucide-react'
 import { Dialog as DialogPrimitive } from 'radix-ui'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
+import {
+  overlayGlassClass,
+  popupSurfaceVariants,
+} from '@/components/ui/primitive-styles'
 import { cn } from '@/lib/utils'
+
+const dialogContentVariants = cva(
+  'fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-xl p-6 text-sm text-popover-foreground duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+  {
+    variants: {
+      size: {
+        sm: 'sm:max-w-sm',
+        default: 'sm:max-w-md',
+        lg: 'sm:max-w-xl',
+      },
+      surface: {
+        glass: popupSurfaceVariants({ surface: 'glass' }),
+        subtle: popupSurfaceVariants({ surface: 'subtle' }),
+        outline: popupSurfaceVariants({ surface: 'outline' }),
+        solid: popupSurfaceVariants({ surface: 'solid' }),
+      },
+    },
+    defaultVariants: {
+      size: 'default',
+      surface: 'glass',
+    },
+  },
+)
 
 function Dialog({
   ...props
@@ -38,7 +66,7 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Overlay
       className={cn(
-        'fixed inset-0 isolate z-50 bg-black/80 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0',
+        `fixed inset-0 isolate z-50 duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 ${overlayGlassClass}`,
         className,
       )}
       data-slot='dialog-overlay'
@@ -51,19 +79,20 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  size = 'default',
+  surface = 'glass',
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
-}) {
+} & VariantProps<typeof dialogContentVariants>) {
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
-        className={cn(
-          'fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-xl border border-white/10 bg-popover/65 p-6 text-sm text-popover-foreground shadow-glass backdrop-blur-xl duration-100 outline-none sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
-          className,
-        )}
+        className={cn(dialogContentVariants({ size, surface }), className)}
+        data-size={size}
         data-slot='dialog-content'
+        data-surface={surface}
         {...props}>
         {children}
         {showCloseButton && (

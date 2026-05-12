@@ -1,29 +1,58 @@
+import { cva } from 'class-variance-authority'
 import { ChevronDownIcon } from 'lucide-react'
 import * as React from 'react'
 
+import {
+  controlVariants,
+  type PrimitiveControlSize,
+  type PrimitiveControlVariant,
+} from '@/components/ui/primitive-styles'
 import { cn } from '@/lib/utils'
 
+const nativeSelectSizeVariants = cva(
+  'appearance-none py-1 pr-8 text-sm select-none selection:bg-primary selection:text-primary-foreground',
+  {
+    variants: {
+      size: {
+        sm: 'pl-2.5',
+        default: 'pl-3',
+        lg: 'pl-4',
+      },
+    },
+    defaultVariants: {
+      size: 'default',
+    },
+  },
+)
+
 type NativeSelectProps = Omit<React.ComponentProps<'select'>, 'size'> & {
-  size?: 'sm' | 'default'
+  size?: PrimitiveControlSize
+  variant?: PrimitiveControlVariant
 }
 
 function NativeSelect({
   className,
   size = 'default',
+  variant = 'default',
   ...props
 }: NativeSelectProps) {
   return (
     <div
       className={cn(
-        'group/native-select relative w-fit has-[select:disabled]:opacity-50',
+        'group/native-select relative w-full has-[select:disabled]:opacity-50',
         className,
       )}
       data-size={size}
       data-slot='native-select-wrapper'>
       <select
-        className='h-9 w-full min-w-0 appearance-none rounded-lg border border-input bg-input/30 py-1 pr-8 pl-3 text-sm transition-colors outline-none select-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20 data-[size=sm]:h-8 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40'
+        className={cn(
+          controlVariants({ size, variant }),
+          nativeSelectSizeVariants({ size }),
+          'disabled:pointer-events-none',
+        )}
         data-size={size}
         data-slot='native-select'
+        data-variant={variant}
         {...props}
       />
       <ChevronDownIcon

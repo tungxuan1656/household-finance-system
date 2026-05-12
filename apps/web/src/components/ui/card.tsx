@@ -1,20 +1,50 @@
+import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 
+import { surfaceVariants } from '@/components/ui/primitive-styles'
 import { cn } from '@/lib/utils'
+
+const cardVariants = cva(
+  'group/card flex flex-col overflow-hidden border text-sm text-card-foreground has-[>img:first-child]:pt-0 *:[img:first-child]:rounded-t-2xl *:[img:last-child]:rounded-b-2xl',
+  {
+    variants: {
+      variant: {
+        default: '',
+        elevated: 'shadow-lg',
+      },
+      size: {
+        sm: 'gap-4 rounded-xl py-4 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl',
+        default: 'gap-6 rounded-2xl py-5',
+      },
+      surface: {
+        glass: surfaceVariants({ surface: 'glass' }),
+        subtle: surfaceVariants({ surface: 'subtle' }),
+        outline: surfaceVariants({ surface: 'outline' }),
+        solid: surfaceVariants({ surface: 'solid' }),
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+      surface: 'glass',
+    },
+  },
+)
 
 function Card({
   className,
+  variant = 'default',
   size = 'default',
+  surface = 'glass',
   ...props
-}: React.ComponentProps<'div'> & { size?: 'default' | 'sm' }) {
+}: React.ComponentProps<'div'> & VariantProps<typeof cardVariants>) {
   return (
     <div
-      className={cn(
-        'group/card flex flex-col gap-6 overflow-hidden rounded-2xl border border-white/10 bg-card/65 py-5 text-sm text-card-foreground shadow-glass backdrop-blur-2xl has-[>img:first-child]:pt-0 data-[size=sm]:gap-4 data-[size=sm]:py-4 *:[img:first-child]:rounded-t-2xl *:[img:last-child]:rounded-b-2xl',
-        className,
-      )}
+      className={cn(cardVariants({ variant, size, surface }), className)}
       data-size={size}
       data-slot='card'
+      data-surface={surface}
+      data-variant={variant}
       {...props}
     />
   )

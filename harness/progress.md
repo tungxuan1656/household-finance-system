@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Completed design-system contract hardening and primitive expansion follow-up
+
+- Who: Orchestrator + General/Oracle subagents
+- Summary: Executed both V2.1 follow-up ExecPlans. Hardened `docs/design-docs/design-system.md` and `docs/design-docs/ui-implementation-rules.md` so the V2.1 spec is the single aesthetic source of truth, page-level code is limited to layout-only customization, and missing visuals must be expressed through primitive APIs. Expanded core `apps/web/src/components/ui` primitives with additive `variant`, `size`, `tone`, and `surface` contracts, centralized shared surface/overlay helpers in `primitive-styles.ts`, strengthened focused primitive tests, and migrated `HouseholdCreateDialog` from an inline dialog width override to `DialogContent size='default'` as the first consumer proof.
+- Files changed: Design-system docs, ExecPlan index, feature record, progress log, shared primitive styling helper, focused primitive contract test, core UI primitives (card, input family, select family, dialog, drawer, alert, empty), and one representative household dialog consumer with its test.
+- Verification: GitNexus upstream impact checks for representative primitives returned LOW risk before edits; GitNexus detect-changes returned low risk after edits; `pnpm --filter web exec vitest run src/components/ui/primitive-contract.test.tsx src/components/household/household-create-dialog.test.tsx` passed after TDD red/green; `pnpm --filter web exec vitest run src/components/expense/source-picker.test.tsx src/components/expense/category-picker.test.tsx src/components/household/household-create-dialog.test.tsx` passed; `pnpm lint:fix` passed with 2 pre-existing warnings outside task scope; `pnpm typecheck` passed for web + worker; Plan 2 spec review passed; TypeScript/UI quality review approved.
+- Blockers: none.
+- Next steps: optionally migrate remaining page-level visual overrides onto the new primitive APIs and commit if desired.
+
 ## 2026-05-12 — Created ExecPlans for design-system hardening and primitive expansion
 
 - Who: Orchestrator

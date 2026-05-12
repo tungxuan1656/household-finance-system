@@ -11,6 +11,12 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group'
+import {
+  popupSurfaceVariants,
+  type PrimitiveControlSize,
+  type PrimitiveControlVariant,
+  type PrimitiveSurface,
+} from '@/components/ui/primitive-styles'
 import { cn } from '@/lib/utils'
 
 const Combobox = ComboboxPrimitive.Root
@@ -53,15 +59,19 @@ function ComboboxInput({
   disabled = false,
   showTrigger = true,
   showClear = false,
+  size = 'default',
+  variant = 'default',
   ...props
-}: ComboboxPrimitive.Input.Props & {
+}: Omit<ComboboxPrimitive.Input.Props, 'size'> & {
   showTrigger?: boolean
   showClear?: boolean
+  size?: PrimitiveControlSize
+  variant?: PrimitiveControlVariant
 }) {
   return (
-    <InputGroup className={cn('w-auto', className)}>
+    <InputGroup className={cn(className)} size={size} variant={variant}>
       <ComboboxPrimitive.Input
-        render={<InputGroupInput disabled={disabled} />}
+        render={<InputGroupInput disabled={disabled} size={size} />}
         {...props}
       />
       <InputGroupAddon align='inline-end'>
@@ -90,12 +100,15 @@ function ComboboxContent({
   align = 'start',
   alignOffset = 0,
   anchor,
+  surface = 'glass',
   ...props
 }: ComboboxPrimitive.Popup.Props &
   Pick<
     ComboboxPrimitive.Positioner.Props,
     'side' | 'align' | 'sideOffset' | 'alignOffset' | 'anchor'
-  >) {
+  > & {
+    surface?: PrimitiveSurface
+  }) {
   return (
     <ComboboxPrimitive.Portal>
       <ComboboxPrimitive.Positioner
@@ -107,11 +120,13 @@ function ComboboxContent({
         sideOffset={sideOffset}>
         <ComboboxPrimitive.Popup
           className={cn(
-            'group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-xl border border-white/10 bg-popover/65 text-popover-foreground shadow-glass backdrop-blur-xl duration-100 data-[chips=true]:min-w-(--anchor-width) data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-9 *:data-[slot=input-group]:border-none *:data-[slot=input-group]:bg-input/30 *:data-[slot=input-group]:shadow-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+            popupSurfaceVariants({ surface }),
+            'group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) overflow-hidden rounded-xl text-popover-foreground duration-100 data-[chips=true]:min-w-(--anchor-width) data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:border-none *:data-[slot=input-group]:shadow-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
             className,
           )}
           data-chips={!!anchor}
           data-slot='combobox-content'
+          data-surface={surface}
           {...props}
         />
       </ComboboxPrimitive.Positioner>
