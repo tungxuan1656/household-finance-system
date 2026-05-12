@@ -20,7 +20,7 @@ A tool that is:
 Core differentiators:
 
 - **Individual-first, household-aware** — every user starts with their own financial picture; household is an optional layer, not the foundation
-- **Lens-based navigation** — users switch between Personal, Household, and Group views to see their data from different perspectives
+- **Lens-based navigation** — users switch between Personal and Household views to see their data from different scopes, with Groups as a cross-cutting filter within any lens
 - Not focused on "who owes whom" (no split-bill mechanics)
 - Focused on:
   - personal spending awareness
@@ -80,12 +80,14 @@ The app operates through **lenses** — the user's current viewing context. Ever
 |------|-------|-------------|
 | **Personal** | Only the user's own expenses (both private and those shared to households) | Always |
 | **Household** | All household-shared expenses + the user's own contributions to that household | When user belongs to ≥1 household |
-| **Group** | Expenses assigned to a specific group/event | When user creates or is added to a group |
+
+**Groups are NOT a lens.** Groups are a cross-cutting filter: expenses in any lens (Personal or Household) can be tagged to one or more groups. Filtering by Group narrows results within the current lens — it does not change the data scope.
 
 **Rules:**
 - There is no "global active household" that silently applies everywhere. The user explicitly chooses their lens.
 - Quick-add always respects the current lens: creating an expense while on Personal lens defaults it to private; creating one on a Household lens prompts explicit household selection.
 - The Home screen shows stats and recent activity **for the selected lens**, with an indicator of which lens is active.
+- Group filters can be applied on top of any lens to narrow down to tagged expenses only.
 
 ### 5.2 Expense Tracking
 
@@ -175,7 +177,7 @@ A Group (or Event) is a way to cluster related expenses for tracking purposes.
 - Assign an expense to one or more groups
 - Set a budget per group
 - View group-level summaries and reports (timeline, category breakdown)
-- Switch to Group lens to see only that group's data across the app
+- Filter by a group to see only tagged expenses within the current lens
 
 **Relationship to households:** A group is independent of households. A personal expense assigned to a group stays personal unless explicitly shared to a household. A household expense can also be assigned to a group.
 
@@ -209,7 +211,7 @@ Simple, focused insights — no complex AI required.
 - Payer attribution (who paid what share)
 - Contribution breakdown per member
 
-**Group lens:**
+**Filtering by Group:**
 - Timeline view of spending
 - Category breakdown within the group
 - Budget status (remaining / overspent)
