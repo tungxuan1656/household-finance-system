@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "rtk vitest run",
+    "test": "vitest run",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\"",
     "typecheck": "next typegen && tsc --noEmit --project tsconfig.json"
   },

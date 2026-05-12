@@ -4,965 +4,425 @@
 > Platform: Responsive Web App
 > Design System: shadcn/ui + Maia Mist preset
 > Style Direction: Calm fintech, minimal, content-first, mobile-first
-> Purpose: Give users a quick understanding of their current financial state with low cognitive load.
+> Purpose: Give users an immediate understanding of their financial state with low cognitive load.
+
+## 1. Overall UX Goals
+
+The Home screen is the primary landing screen after login, defaulting to **Personal lens**.
+
+This screen should answer these questions at a glance:
+
+- How much did I spend this month?
+- Am I within budget?
+- Which category is spending the most?
+- What are my latest expenses?
+- Is anything on track to exceed budget?
+
+The UI should feel: calm, trustworthy, lightweight, readable, fast to scan.
+
+The UI should avoid: overly saturated colors, crypto/trading dashboard feeling, dense admin-panel layouts, too many nested cards.
 
 ---
 
-# 1. Overall UX Goals
+## 2. Core Architecture: Lens + Group Model
 
-The Home screen is the primary landing screen after login.
+### 2.1 The Lens Selector
 
-This screen should help users answer these questions immediately:
+The **lens selector** is the top-level scope switch and **always visible** on the Home screen. It determines whose data appears in every section below.
 
-* How much did I spend this month?
-* Am I within budget?
-* Which category is spending the most?
-* What are my latest expenses?
-* Is there anything that needs attention?
+> **Lens = data scope.** Personal shows the user's own data. Household X shows that household's shared data.
 
-The screen should feel:
+**Lens tabs** (mobile: below MobileHeader; desktop: pill selector at top of content):
 
-* calm
-* trustworthy
-* lightweight
-* readable
-* fast to scan
-
-The UI should avoid:
-
-* overly saturated colors
-* crypto/trading dashboard feeling
-* dense admin-panel layouts
-* too many nested cards
-
----
-
-# 2. Responsive Layout Structure
-
----
-
-# 2.1 Desktop Layout (md+)
-
-## Structure
-
-```txt
-┌────────────────────────────────────────────────────────────┐
-│ Sidebar │ Main Content                                    │
-│         │                                                  │
-│         │  max-w-5xl centered                             │
-│         │                                                  │
-└────────────────────────────────────────────────────────────┘
+```
+[ Personal ] [ Gia đình ] [ Chung cư ] ...
+   ^active     ^inactive    ^inactive
 ```
 
----
+**Rules:**
+- Personal is always the first tab and always present.
+- Each household the user belongs to gets its own tab.
+- Only one lens is active at a time.
+- When the user has no households yet, only `[ Personal ]` appears, with an optional badge/hint suggesting household creation.
+- Desktop: pill-style ToggleGroup with short labels. If many households, truncate with `...` or a dropdown for overflow.
 
-## Desktop Sidebar
+### 2.2 The Group Filter Bar
 
-### Position
+Groups are **NOT a lens**. Groups are cross-cutting tags. An expense in Personal or Household lens can be tagged to one or more groups.
 
-* Fixed/sticky left side
-* Full viewport height
-* Width: `240px - 280px`
+> **Group = cross-cutting filter.** Applying a group filter narrows results within the current lens. It does not change the data scope.
 
-### Style
+**Group filter bar** (separate row below lens selector):
 
-* `bg-sidebar`
-* subtle right border
-* no heavy shadow
-
-### Content Order
-
-#### Top
-
-* App logo
-* Household switcher
-
-#### Middle Navigation
-
-* Home
-* Expenses
-* Budgets
-* Insights
-* Profile
-
-### Navigation Style
-
-* icon + label
-* active item:
-
-  * `bg-sidebar-accent`
-  * `text-sidebar-primary`
-* inactive:
-
-  * `text-muted-foreground`
-
-### Bottom Area
-
-* user avatar
-* settings shortcut
-* logout
-
----
-
-## Desktop Main Content
-
-### Container
-
-* `max-w-5xl`
-* centered horizontally
-* `p-6 lg:p-8`
-* vertical spacing via `gap-6`
-
-### Layout Structure
-
-```txt
-Header
-↓
-Hero summary
-↓
-2-column dashboard grid
+```
+🏷️ Vacation 2025  ✕     |     [+ Filter]
 ```
 
----
+**Behavior:**
+- Hidden by default (no filter applied).
+- When user taps `[+ Filter]`, a dropdown/popover lets them pick one or more groups to filter by.
+- Active filters appear as chips with an `✕` close button.
+- Filtering by group does **not** change lens — all sections (hero, budgets, expenses, breakdown) show only data tagged to selected groups _within the current lens_.
+- Removing all filters hides the filter bar again.
 
-## Desktop Grid
+**Combined lens + group logic:**
 
-### Left Column (primary content)
-
-Width priority: larger
-
-Contains:
-
-1. Monthly spending hero
-2. Recent expenses
-3. Budget progress
-
-### Right Column (secondary content)
-
-Contains:
-
-1. Category breakdown
-2. Budget alerts
-3. Household snapshot
-4. Quick actions
+| Active Lens | Group Filter | Data Shown |
+|-------------|-------------|------------|
+| Personal | _(none)_ | All personal expenses |
+| Personal | Vacation 2025 | Personal expenses tagged Vacation 2025 |
+| Gia đình | _(none)_ | All shared household expenses |
+| Gia đình | Vacation 2025 | Household expenses tagged Vacation 2025 |
 
 ---
 
-# 2.2 Mobile Layout (< md)
+## 3. Responsive Layout Structure
 
-## Structure
+### 3.1 Desktop Layout (md+)
 
-```txt
-Mobile Header
-↓
-Scrollable Content
-↓
-Bottom Tab Navigation
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ Sidebar │ Main Content (max-w-5xl, centered)                    │
+│         │                                                         │
+│         │  Lens Selector (pill group)                             │
+│         │  Group Filter Bar (conditional)                         │
+│         │                                                         │
+│         │  ┌─ Hero Stats Card ─────────────────────────────────┐ │
+│         │  │                                                    │ │
+│         │  └────────────────────────────────────────────────────┘ │
+│         │                                                         │
+│         │  Budget Cards (horizontal scroll within card area)       │
+│         │                                                         │
+│         │  ┌─ Recent Expenses ──┐ ┌─ Category Breakdown ───────┐ │
+│         │  │                    │ │                             │ │
+│         │  └────────────────────┘ └─────────────────────────────┘ │
+│         │                                                         │
+│         │  Household Cards (conditional, when household lens)      │
+│         │                                                         │
+│         │                                              [ + ] FAB  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
----
+**Desktop specifics:**
+- Sidebar: 240px-280px, fixed left, `bg-sidebar`, subtle right border
+- Content: `max-w-5xl`, centered, `p-6 lg:p-8`
+- Lens selector: Pill-style ToggleGroup at top of content area
+- Group filter bar: single row with chips, below lens selector
+- 2-column grid: Recent Expenses (wider, left) + Category Breakdown (right)
+- FAB: sticky bottom-right inside content area, `size-14`, circular
 
-## Mobile Header
+### 3.2 Mobile Layout (< md)
 
-### Position
-
-* sticky top
-* z-index above content
-* translucent background
-
-### Height
-
-* `56px`
-
-### Style
-
-* `bg-background/80`
-* `backdrop-blur-md`
-* subtle bottom border
-
-### Content
-
-#### Left
-
-* Page title: “Home”
-
-#### Right
-
-* notification button
-* profile avatar
-
----
-
-## Mobile Content Area
-
-### Layout
-
-* single column
-* `p-4`
-* `gap-4`
-* `pb-24` for bottom tab spacing
-
-### Philosophy
-
-The mobile layout must prioritize:
-
-* glanceability
-* thumb reach
-* fast scanning
-
-The screen should not feel crowded.
-
----
-
-## Mobile Bottom Tabs
-
-### Position
-
-* fixed bottom
-* safe-area aware
-
-### Height
-
-* `64px + pb-safe`
-
-### Style
-
-* `bg-background/70`
-* `backdrop-blur-lg`
-* top border
-* subtle shadow
-
----
-
-## Tabs
-
-### Total: 5 tabs
-
-1. Home
-2. Expenses
-3. Budgets
-4. Insights
-5. Profile
-
----
-
-## Tab Behavior
-
-### Active Tab
-
-* highlighted icon
-* visible label
-* `text-primary`
-
-### Inactive Tab
-
-* muted icon
-* optional hidden label on very small widths
-
----
-
-## Tab Icon Style
-
-* Lucide icons only
-* 24px visual size
-* large tap targets
-
----
-
-# 3. Home Screen Sections
-
----
-
-# 3.1 Greeting/Header Section
-
-## Purpose
-
-Provide contextual identity and emotional warmth.
-
----
-
-## Desktop
-
-### Layout
-
-```txt
-Welcome back, Linh
-Here is your financial overview this month.
+```
+┌───────────────────────────┐
+│ MobileHeader "Home"        │  ← sticky, h-14, bg-background/80, backdrop-blur-md
+├───────────────────────────┤
+│ [Personal] [Gia đình] [..]│  ← Lens tabs, horizontal scroll
+│ 🏷️ Vacation 2025 ✕  [+..] │  ← Group filter (conditional)
+├───────────────────────────┤
+│                            │
+│  ┌─ Hero Stats Card ────┐ │
+│  │                       │ │
+│  └───────────────────────┘ │
+│                            │
+│  Budget Cards (h-scroll)   │
+│                            │
+│  Recent Expenses           │
+│                            │
+│  Category Breakdown        │
+│                            │
+│  Household Cards (cond.)   │
+│                            │
+│                   [ + ]    │  ← FAB, bottom-right
+│                            │
+├───────────────────────────┤
+│ Bottom Tab Navigation      │  ← fixed, 64px + pb-safe
+└───────────────────────────┘
 ```
 
-### Right Side
-
-* current month selector
-* household selector
+**Mobile specifics:**
+- MobileHeader: sticky top, 56px, translucent, subtle border-bottom
+- Lens tabs: below header, horizontal scroll, full-width
+- Group filter bar: below lens tabs, same horizontal scroll behavior
+- Single-column vertical stack, `p-4`, `gap-4`, `pb-24` for bottom tab
+- Bottom tabs: 5 tabs (Home, Expenses, Budgets, Insights, Profile)
 
 ---
 
-## Mobile
+## 4. Home Screen Sections
 
-### Layout
+### 4.1 Lens Selector
 
-Compact horizontal row.
+**Purpose:** Let the user choose their data scope. Always visible.
 
-```txt
-Home                      [Bell] [Avatar]
+**Mobile:**
+- Full-width horizontal tabs directly below MobileHeader
+- `[ Personal ] [ Gia đình ] [ Chung cư ]` with horizontal scroll if many
+- Active tab: `text-primary`, bottom border indicator
+- Inactive tabs: `text-muted-foreground`
+
+**Desktop:**
+- Pill-style ToggleGroup at top of content area
+- Compact labels: "Personal", "Gia đình", "Chung cư"
+- If more than 4-5 households: first 3-4 visible + `[ +2 ]` overflow dropdown
+
+### 4.2 Group Filter Bar
+
+**Purpose:** Apply cross-cutting group filter within the active lens.
+
+**Position:** Immediately below lens selector. Same width as content area.
+
+**Mobile and desktop:**
+- Hidden when no filter is active
+- Shows active filter chips + `[+ Filter]` button
+- Chip style: `rounded-full`, `border`, `text-sm`, `px-3 py-1`
+- Close button: small `✕` or `X` icon at end of chip
+- `[+ Filter]` button: ghost style, `text-muted-foreground`, opens popover/dropdown
+- Multiple groups can be active simultaneously (all AND logic)
+
+**Group selection popover:**
+- List of all user's groups (from all households)
+- Checkboxes or multi-select
+- Groups scoped to current lens are shown at top; groups from other lenses below with faint indicator
+
+### 4.3 Hero Stats Card
+
+**Importance:** Primary visual focus of the page.
+
+**Content hierarchy (top to bottom):**
+
+```
+This month spending          [ Tháng 5/2026 ▼ ]
+────────────────────────────────────────────────
+        12,450,000 ₫                ← text-3xl font-bold
+────────────────────────────────────────────────
+████████████░░░░░░░░░░  65% of budget
+Còn 6,550,000 ₫                     ← text-sm muted
+
+↓ 12% so với tháng trước           ← trend indicator
+Còn 12 ngày — khoảng 545k/ngày     ← safe daily rate
 ```
 
----
+**Style:**
+- Surface: `bg-card`, `rounded-2xl`, subtle border, `shadow-sm`
+- Padding: `p-5 md:p-6`
+- Month selector: top-right, compact dropdown or chevron
+- Main number: `text-3xl font-bold`, largest text on screen
+- Progress bar: `h-2`, `rounded-full`, semantic color:
+  - < 80%: primary
+  - 80–99%: warning
+  - ≥ 100%: destructive
+- Trend indicator: small arrow + percentage, green (↓ decrease) or warning (↑ increase)
+- Safe daily rate: small muted text, informative, non-alarming
 
-# 3.2 Monthly Spending Hero Card
+**Loading state:** Skeleton card matching exact shape. Pulse animation.
 
-## Importance
+**Error state:** Card with muted "Could not load summary" text + retry button.
 
-This is the primary visual focus of the page.
+### 4.4 Budget Status Cards
 
-The hero should emphasize:
+**Purpose:** Surface budget health at a glance — overall + per category with progress bars.
 
-* monthly spending
-* budget usage
-* remaining budget
+**Layout:**
+- **Desktop:** Horizontal row of cards, wrapping if many categories. Each card: min-width ~200px.
+- **Mobile:** Horizontal scroll container. Snap scroll, peek-a-boo right edge for affordance.
 
-NOT total account balance.
-
----
-
-## Style
-
-### Surface
-
-* `bg-card`
-* `rounded-2xl`
-* subtle border
-* `shadow-sm`
-
-### Padding
-
-* `p-5 md:p-6`
-
----
-
-## Content Hierarchy
-
-### Top Label
-
-```txt
-This month spending
+**Cards:**
+```
+┌─ Overall Budget ─────┐  ┌─ Ăn uống ────────┐  ┌─ Di lại ──────────┐
+│ ████████░░░░░░  65%  │  │ ██████████░░  82%  │  │ ███░░░░░░░░  28% │
+│ 12.5M / 19M          │  │ 6.5M / 8M          │  │ 1.4M / 5M         │
+│ Còn 6.5M             │  │ Còn 1.5M ⚠️        │  │ Còn 3.6M          │
+└───────────────────────┘  └────────────────────┘  └───────────────────┘
 ```
 
-* muted text
-* small typography
+**Rules:**
+- "Overall Budget" card is always first (if a budget exists).
+- Per-category cards sorted by % used descending (most-pressured first).
+- Warning threshold (≥ 80%): change progress bar to warning color, add subtle `⚠️` indicator.
+- Exceeded threshold (≥ 100%): change to destructive color.
+- Desktop: fit as many as width allows; overflow wraps.
+- Mobile: infinite-like horizontal scroll; max 5-6 cards visible at a time.
+- Card style: compact `bg-card`, `rounded-xl`, `p-4`, subtle border.
 
----
+**Empty state** (no budget set): single card: "Set a monthly budget to track your spending" with CTA.
 
-## Main Number
+### 4.5 Recent Expenses
 
-```txt
-18.500.000 VND
+**Layout:**
+- Desktop: left column in 2-col grid (wider ~60%)
+- Mobile: full-width, single column
+
+**Section header:**
+```
+Recent Expenses                    [ View all → ]
+```
+Ghost/link style for "View all".
+
+**Expense list style:**
+- Flat list, no nested cards
+- Each row: `min-h-[56px]`, `py-3`
+- Subtle separator between rows
+- Show last 5 items on Home
+
+**Row layout:**
+```
+[🍽️]  Ăn trưa                          - 85,000 ₫
+       Highlands Coffee
+       Hôm nay · 12:30 · 🏷️ Vacation 2025
 ```
 
-### Typography
+- Left: category icon (24px, muted), title (font-medium), metadata line (text-xs, text-muted-foreground)
+- Right: amount (tabular-nums, font-medium), negative (expense) in default foreground, positive (income) in success color
+- Metadata line includes: relative date, payer name (if household lens), group tag chip (if any)
+- Group tag chip: `text-xs`, `rounded-full`, `bg-muted`, `px-2 py-0.5`
 
-* `text-3xl`
-* `font-bold`
+**Interaction:** Tap → opens Drawer (mobile) / Dialog (desktop) with expense details.
 
-This should be the largest text on the screen.
+**Loading state:** 5 skeleton rows matching row height and shape.
 
----
+**Empty state:** "No expenses yet. Tap + to add your first one."
 
-## Budget Progress
+### 4.6 Category Breakdown
 
-### Includes
+**Layout:**
+- Desktop: right column in 2-col grid (narrower ~40%)
+- Mobile: full-width, below Recent Expenses
 
-* progress bar
-* percentage used
-* remaining budget
+**Content:** Vertical ranked list of top 5 categories by spend.
 
-Example:
+```
+Category Breakdown
 
-```txt
-68% of monthly budget used
-Remaining: 6.5M VND
+Food           ████████████░░░░░░░░  45%    6,500,000
+Housing        ██████░░░░░░░░░░░░░░  25%    3,600,000
+Transport      ████░░░░░░░░░░░░░░░░  15%    2,200,000
+Shopping       ███░░░░░░░░░░░░░░░░░  10%    1,400,000
+Other          ██░░░░░░░░░░░░░░░░░░   5%      750,000
 ```
 
----
+Each row:
+- Category name (left)
+- Mini progress bar (middle, `h-1.5` or `h-2`, rounded)
+- Percentage + absolute amount (right, tabular-nums)
 
-## Progress Colors
+**Style:**
+- Card surface (desktop) or flat section (mobile)
+- `p-4`
+- Compact vertical spacing (`gap-3`)
+- Progress bar color: monochromatic blue scale (chart-1 through chart-5)
 
-### Normal
+**Loading state:** 5 skeleton rows.
 
-* primary/slate
+**Empty state:** "Start adding expenses to see your spending breakdown."
 
-### Warning (>= 80%)
+### 4.7 Household Section (Conditional)
 
-* warning token
+**Purpose:** Show household context — only visible when a household lens is active.
 
-### Exceeded
+**Content:**
+- Member avatars (small circles, max 5 shown + `+N` overflow)
+- Household monthly total spend
+- "Your contribution" line (personal spend within this household)
 
-* destructive token
+**Style:** Secondary card, low visual weight. Should not compete with hero.
 
----
+**Desktop:** Right column, below Category Breakdown.
 
-## Footer Insight
+**Mobile:** Full-width, toward bottom.
 
-Example:
+**Empty state:** "No members yet. Invite family members to start tracking together."
 
-```txt
-Safe daily spending:
-650k/day for the rest of the month
+### 4.8 Empty State (New User — No Expenses)
+
+When user has no expenses at all (fresh account):
+
+```
+┌─────────────────────────────────────────────┐
+│                                               │
+│              [ Wallet illustration ]           │
+│                                               │
+│         Start tracking your spending          │
+│     Add your first expense to see insights    │
+│                                               │
+│            [ + Add First Expense ]            │
+│            (primary button, large)            │
+│                                               │
+│  No budget yet? Set one up to track limits.   │
+│             [ Set Budget → ]                  │
+│                                               │
+└─────────────────────────────────────────────┘
 ```
 
-Style:
+- Hero card replaced by welcome card.
+- Budget section replaced by "Set your first budget" prompt.
+- Recent Expenses and Category Breakdown hidden (no data).
+- Household section hidden.
+- FAB still accessible (but welcome card CTA is the primary path).
 
-* small muted text
-* informational
-* non-alarming
+### 4.9 Floating Add Expense Button (FAB)
 
----
+**Position:** Bottom-right corner.
+- Mobile: fixed, `bottom-20 right-4` (above bottom tabs)
+- Desktop: sticky within content area, `bottom-6 right-6`
 
-# 3.3 Quick Financial Summary
+**Style:** Circular, `size-14`, `bg-primary`, `text-primary-foreground`, `shadow-lg`, `rounded-full`.
 
-## Purpose
+**Icon:** `Plus` (Lucide).
 
-Show supporting metrics.
-
----
-
-## Layout
-
-### Desktop
-
-3-column grid.
-
-### Mobile
-
-2-column grid.
+**Interaction:** Opens quick-add via Drawer (mobile) / Dialog (desktop).
 
 ---
 
-## Cards
+## 5. Visual Style Guidelines
 
-### Card 1 — Income
+### 5.1 Surface Hierarchy
 
-```txt
-Income
-42.000.000
-```
+Avoid card-in-card-in-card. Use spacing, typography, and subtle borders to create hierarchy.
 
-### Card 2 — Expenses
+### 5.2 Color Usage
 
-```txt
-Expenses
-18.500.000
-```
+- **Primary:** Active states, key metrics, CTA buttons, progress bars (safe range)
+- **Warning:** Budget ≥ 80%, used sparingly
+- **Destructive:** Budget exceeded
+- **Neutral surfaces:** Most surfaces remain muted, low-contrast, soft
 
-### Card 3 — Savings
+### 5.3 Typography Hierarchy
 
-```txt
-Savings
-23.500.000
-```
+- **Largest:** Monthly spending number (`text-3xl font-bold`)
+- **Medium emphasis:** Section titles (`text-base font-semibold`)
+- **Low emphasis:** Descriptions, metadata (`text-sm text-muted-foreground`)
 
----
+### 5.4 Shadows
 
-## Card Style
+Use `shadow-sm` and `shadow-md`. No glow effects, neon shadows, or heavy elevation.
 
-* compact
-* medium emphasis
-* less visually dominant than hero card
+### 5.5 Spacing
+
+Preferred rhythm: `gap-4`, `gap-6`. Avoid dense packing.
 
 ---
 
-## Icons
+## 6. UX Principles
 
-Use subtle Lucide icons:
+### 6.1 Fast Scanning
 
-* ArrowUpRight
-* ArrowDownRight
-* Wallet
+User should understand the screen within 3 seconds. Hero number is the anchor.
 
----
+### 6.2 Low Cognitive Load
 
-# 3.4 Recent Expenses Section
+- No more than 2 chart-like elements on Home
+- Category breakdown uses simple bars, not pie charts
+- Colors stay monochromatic (blue scale) unless warning
 
-## Importance
+### 6.3 Mobile First
 
-This is one of the most-used sections in the app.
+Mobile layout is primary. Desktop is enhanced — same information, more horizontal space.
 
-The design must prioritize:
+### 6.4 Content First
 
-* readability
-* scanability
-* fast recognition
+Financial data > decoration. UI polish supports clarity, not distracts.
 
----
+### 6.5 Explicit Context
 
-## Section Header
-
-### Left
-
-```txt
-Recent Expenses
-```
-
-### Right
-
-```txt
-View all
-```
-
-ghost/link button style.
-
----
-
-## Expense List Style
-
-### Container
-
-* flat list OR soft card surface
-* avoid nested cards
-
-### Spacing
-
-* comfortable vertical rhythm
-* each item min-height `56px`
-
----
-
-## Expense Item Layout
-
-```txt
-[Category Icon]
-
-Coffee
-Highlands Coffee
-Today · 12:30
-
-                     -85.000
-```
-
----
-
-## Item Structure
-
-### Left
-
-* category icon
-* title
-* metadata
-
-### Right
-
-* amount
-* visibility badge (optional)
-
----
-
-## Metadata Line
-
-Contains:
-
-* date
-* payer
-* group tag (optional)
-
-Example:
-
-```txt
-Today · Linh · Da Nang Trip
-```
-
----
-
-## Amount Colors
-
-### Expense
-
-* default foreground
-* not aggressive red
-
-### Income
-
-* success color
-
----
-
-## Interaction
-
-### Tap Behavior
-
-Opens:
-
-* mobile: Drawer
-* desktop: Dialog
-
-Expense details appear without route navigation.
-
----
-
-# 3.5 Budget Progress Section
-
-## Purpose
-
-Help users monitor category budgets.
-
----
-
-## Layout
-
-Vertical stacked list.
-
----
-
-## Section Structure
-
-```txt
-Food
-8.2M / 18M
-[progress bar]
-45%
-```
-
----
-
-## Visual Rules
-
-### Progress Track
-
-* muted background
-
-### Progress Fill
-
-* semantic color
-
----
-
-## Color States
-
-### Safe
-
-primary
-
-### Warning
-
-warning token
-
-### Exceeded
-
-destructive
-
----
-
-## Important Rule
-
-Avoid overly colorful charts.
-
-The UI should remain calm and neutral.
-
----
-
-# 3.6 Category Breakdown Section
-
-## Purpose
-
-Provide quick insight into spending distribution.
-
----
-
-## Layout
-
-Simple vertical ranked list.
-
-Avoid heavy pie charts on mobile.
-
----
-
-## Example
-
-```txt
-Food         45%
-Housing      25%
-Transport    15%
-Shopping     10%
-Other         5%
-```
-
-Each row contains:
-
-* category label
-* amount
-* progress indicator
-
----
-
-# 3.7 Budget Alert Section
-
-## Purpose
-
-Surface actionable information.
-
----
-
-## Examples
-
-### Warning
-
-```txt
-Food budget is at 82%.
-```
-
-### Overspending
-
-```txt
-Shopping exceeded budget by 1.2M.
-```
-
----
-
-## Style
-
-Use:
-
-* Alert component
-* subtle warning/destructive variants
-
-Avoid:
-
-* flashing colors
-* strong red backgrounds
-
----
-
-# 3.8 Household Snapshot (Desktop Priority)
-
-## Purpose
-
-Show lightweight household context.
-
----
-
-## Content
-
-### Members
-
-* avatars
-* names
-
-### Shared spending
-
-### Household monthly total
-
----
-
-## Style
-
-Secondary information only.
-
-Should not compete visually with spending hero.
-
----
-
-# 3.9 Floating Add Expense Button
-
-## Importance
-
-Critical interaction point.
-
----
-
-## Position
-
-### Mobile
-
-* bottom-right floating action button
-
-### Desktop
-
-* sticky bottom-right inside content area
-
----
-
-## Style
-
-### Shape
-
-* circular
-* `size-14`
-
-### Colors
-
-* `bg-primary`
-* `text-primary-foreground`
-
-### Shadow
-
-* `shadow-lg`
-
----
-
-## Icon
-
-* Plus icon
-
----
-
-## Interaction
-
-### Tap
-
-Opens:
-
-* mobile: Drawer
-* desktop: Dialog
-
----
-
-# 4. Visual Style Guidelines
-
----
-
-# 4.1 Visual Tone
-
-The UI should feel:
-
-* calm
-* premium
-* soft
-* breathable
-
-Not:
-
-* futuristic
-* gaming
-* crypto-like
-
----
-
-# 4.2 Surface Hierarchy
-
-Avoid:
-
-* card inside card inside card
-
-Use:
-
-* spacing
-* typography
-* subtle borders
-
-to create hierarchy.
-
----
-
-# 4.3 Color Usage
-
-## Primary Color
-
-Reserved for:
-
-* active states
-* key metrics
-* CTA buttons
-
----
-
-## Warning Colors
-
-Used sparingly.
-
-Only for:
-
-* near-limit budgets
-* exceeded budgets
-
----
-
-## Neutral Surfaces
-
-Most surfaces should remain:
-
-* muted
-* low contrast
-* soft
-
----
-
-# 4.4 Typography Hierarchy
-
-## Largest Text
-
-Monthly spending number.
-
----
-
-## Medium Emphasis
-
-Section titles.
-
----
-
-## Low Emphasis
-
-Descriptions and metadata.
-
----
-
-# 4.5 Shadows
-
-Use:
-
-* `shadow-sm`
-* `shadow-md`
-
-Avoid:
-
-* glow effects
-* neon shadows
-* heavy elevation
-
----
-
-# 4.6 Spacing
-
-Use spacing to create clarity.
-
-Preferred rhythm:
-
-* `gap-4`
-* `gap-6`
-
-Avoid dense packing.
-
----
-
-# 5. UX Principles
-
----
-
-# 5.1 Fast Scanning
-
-The user should understand the screen within 3 seconds.
-
----
-
-# 5.2 Low Cognitive Load
-
-Avoid:
-
-* too many charts
-* too many colors
-* too much data at once
-
----
-
-# 5.3 Mobile First
-
-The mobile layout is the primary experience.
-
-Desktop is an enhanced layout.
-
----
-
-# 5.4 Content First
-
-Financial data is more important than decoration.
-
-UI polish should support clarity, not distract from it.
+User always knows which lens is active. Lens selector is permanent, not hidden. Group filters are visible chips, not invisible state.
