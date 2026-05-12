@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { AuthField } from '@/components/auth/auth-field'
 import { AuthPanel } from '@/components/auth/auth-panel'
+import { Button } from '@/components/ui/button'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { signUpWithEmailPassword } from '@/lib/auth/session-service'
 import { PATHS } from '@/lib/constants/paths'
@@ -50,42 +51,38 @@ export const SignUpPage = () => {
       actionLabel={t('common.actions.createAccount')}
       description={t('auth.signUp.description')}
       footer={
-        <p className='flex flex-wrap items-center justify-center gap-1.5'>
-          {t('auth.signUp.footer.prompt')}
-          <Link
-            className='font-medium text-primary underline-offset-4 hover:underline'
-            href={PATHS.SIGN_IN}>
-            {t('auth.signUp.footer.link')}
-          </Link>
-        </p>
+        <div className='flex flex-wrap items-center justify-center gap-1.5'>
+          <span>{t('auth.signUp.footer.prompt')}</span>
+          <Button asChild variant='link'>
+            <Link href={PATHS.SIGN_IN}>{t('auth.signUp.footer.link')}</Link>
+          </Button>
+        </div>
       }
       isSubmitting={form.formState.isSubmitting}
       title={t('auth.signUp.title')}
       onSubmit={handleSubmit}>
       {form.formState.errors.root?.message ? (
-        <p className='text-sm text-destructive'>
-          {form.formState.errors.root.message}
-        </p>
+        <FieldError errors={[form.formState.errors.root]} />
       ) : null}
 
       <Controller
         control={form.control}
         name='name'
         render={({ field, fieldState }) => (
-          <AuthField
-            errors={[fieldState.error]}
-            id='full-name'
-            invalid={fieldState.invalid}
-            label={t('auth.signUp.fields.fullName.label')}>
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor='full-name'>
+              {t('auth.signUp.fields.fullName.label')}
+            </FieldLabel>
             <Input
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='name'
-              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
+              className='h-10'
               id='full-name'
               placeholder={t('auth.signUp.fields.fullName.placeholder')}
             />
-          </AuthField>
+            <FieldError errors={[fieldState.error]} />
+          </Field>
         )}
       />
 
@@ -93,21 +90,21 @@ export const SignUpPage = () => {
         control={form.control}
         name='email'
         render={({ field, fieldState }) => (
-          <AuthField
-            errors={[fieldState.error]}
-            id='sign-up-email'
-            invalid={fieldState.invalid}
-            label={t('auth.signUp.fields.email.label')}>
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor='sign-up-email'>
+              {t('auth.signUp.fields.email.label')}
+            </FieldLabel>
             <Input
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='email'
-              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
+              className='h-10'
               id='sign-up-email'
               placeholder={t('auth.signUp.fields.email.placeholder')}
               type='email'
             />
-          </AuthField>
+            <FieldError errors={[fieldState.error]} />
+          </Field>
         )}
       />
 
@@ -115,21 +112,21 @@ export const SignUpPage = () => {
         control={form.control}
         name='password'
         render={({ field, fieldState }) => (
-          <AuthField
-            errors={[fieldState.error]}
-            id='sign-up-password'
-            invalid={fieldState.invalid}
-            label={t('auth.signUp.fields.password.label')}>
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor='sign-up-password'>
+              {t('auth.signUp.fields.password.label')}
+            </FieldLabel>
             <Input
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='new-password'
-              className='h-10 rounded-xl border-white/20 bg-background/50 py-2 transition-all placeholder:text-muted-foreground/50 focus-visible:border-primary/50 focus-visible:ring-4 focus-visible:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:focus-visible:border-white/50 dark:focus-visible:ring-white/10'
+              className='h-10'
               id='sign-up-password'
               placeholder={t('auth.signUp.fields.password.placeholder')}
               type='password'
             />
-          </AuthField>
+            <FieldError errors={[fieldState.error]} />
+          </Field>
         )}
       />
     </AuthPanel>

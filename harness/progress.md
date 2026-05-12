@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Refactored UI to Minimal Glassmorphism V2.1
+
+- Who: Antigravity
+- Summary: Completed a comprehensive UI refactor of `apps/web` to the "Minimal Glassmorphism V2.1" specification. Standardized color tokens using OKLCH space for better vibrance and accessibility. Implemented "Triple Layer Geometry" (backdrop-blur, hairline borders, and shadow-glass) across all surface components. Standardized interactive element radii to 12px (`rounded-lg`) and layout containers to 24px (`rounded-2xl`). Refactored Auth pages (`sign-in`, `sign-up`) to use default components without custom class overrides, ensuring design system integrity. Fixed visual issues including flickering ambient glows and light mode input contrast.
+- Files changed: 30+ files modified across `index.css` and `components/ui/`, plus `public-layout.tsx`, `auth-panel.tsx`, `sign-in-page.tsx`, and `sign-up-page.tsx`.
+- Verification: `pnpm build` successful, `pnpm lint --fix` passed, visual verification of both light and dark themes completed via browser subagent.
+- Blockers: none.
+- Next steps: monitor user feedback on the new aesthetics.
+
 ## 2026-05-12 — Refine Home screen UI aesthetics and layout
 
 - Who: Orchestrator

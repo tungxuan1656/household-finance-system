@@ -269,6 +269,11 @@
       "id": "feat-050",
       "name": "Home screen redesign: wireframe, lens model correction, 8 new components, overview-page rewrite",
       "status": "done"
+    },
+    {
+      "id": "feat-051",
+      "name": "Comprehensive UI refactor to Minimal Glassmorphism V2.1",
+      "status": "done"
     }
   ]
 }

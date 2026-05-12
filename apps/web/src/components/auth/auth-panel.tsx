@@ -35,7 +35,7 @@ export const AuthPanel = ({
           <CardDescription>{description}</CardDescription>
         </CardHeader>
 
-        <CardContent className='pb-8'>
+        <CardContent>
           <form className='space-y-5' onSubmit={onSubmit}>
             <div className='space-y-4'>{children}</div>
 
