@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Removed `apps/web` render tests and hardened frontend test policy
+
+- Who: Orchestrator
+- Summary: Removed all remaining `apps/web` component/page render suites and their page-local render test setup helpers so the web test surface now focuses on util/api/store/helper logic only. Updated surviving store and i18n tests to stay non-rendered, simplified `apps/web` Vitest setup to drop Testing Library-specific cleanup and matchers, and tightened the canonical frontend testing policy so future `apps/web` coverage explicitly excludes component/page render tests in favor of logic tests plus browser/manual validation evidence.
+- Files changed: Deleted colocated web render test files and render-only test setup helpers, updated retained web logic tests and test setup, refreshed frontend/testing reference docs, updated feat-040 evidence, and logged this session.
+- Verification: `gitnexus_detect_changes` (scope `all`) → low risk, 0 affected processes; `pnpm lint:fix` passed with 1 pre-existing Next.js `<img>` warning in `apps/web/src/components/expense/category-picker.tsx`; `pnpm --filter web test` passed (15 files, 45 tests); `pnpm --filter web typecheck` passed.
+- Blockers: none.
+- Next steps: run `./init.sh` if you want full-workspace verification before commit.
+
 ## 2026-05-12 — Completed shared forms/dialogs primitive rollout
 
 - Who: Orchestrator + Fixer/Oracle subagents
