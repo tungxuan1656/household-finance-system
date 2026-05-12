@@ -9,6 +9,14 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Created ExecPlans for design-system hardening and primitive expansion
+
+- Who: Orchestrator
+- Summary: Wrote two follow-up execution plans to address the gap between the newly applied V2.1 design spec and the current operational docs/component APIs. The first plan hardens `design-system.md` and `ui-implementation-rules.md` into a strict primitive-owned styling contract. The second plan expands core `components/ui` primitives (`Card`, form controls, selection family, overlays, alerts, empty states) so product pages can rely on built-in variants/sizes/tones/surfaces instead of custom visual classes.
+- Files changed: Added two ExecPlan files, updated the ExecPlan index, and logged the planning session.
+- Blockers: none.
+- Next steps: Execute the docs contract-hardening plan first, then the primitive expansion plan once the policy target is frozen.
+
 ## 2026-05-12 — Refactored UI to Minimal Glassmorphism V2.1
 
 - Who: Antigravity

@@ -5,6 +5,9 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-12-design-system-contract-hardening.md](plans/2026-05-12-design-system-contract-hardening.md) - frontend/tooling-docs follow-up to feat-048/049/051: harden design-system operational docs so V2.1 remains the single visual contract and page-level code stops making primitive visual decisions.
+- [2026-05-12-base-primitive-expansion.md](plans/2026-05-12-base-primitive-expansion.md) - frontend follow-up to feat-048/049/051: expand `components/ui` primitive APIs so pages can compose UI through variants, sizes, tones, and surfaces without custom visual styling.
+
 ## Completed
 
 - [2026-05-11-mobile-first-ui-redesign.md](plans/2026-05-11-mobile-first-ui-redesign.md) - feat-048 mobile-first UI redesign: 9-phase implementation completed with shell/layout polish, page-by-page refactor (Home, Expenses, Budgets, Insights, Households, Profile), auth liquid glass preservation, and landing page polish. Design philosophy "form follows function beautifully" — restructured components for better UX with mobile-first typography, 44px touch targets, semantic tokens, subtle hover effects, consistent spacing.
