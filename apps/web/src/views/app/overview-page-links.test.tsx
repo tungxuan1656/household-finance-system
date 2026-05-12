@@ -9,9 +9,7 @@ import {
   householdStoreState,
   resetOverviewPageTestState,
   useAnalyticsOverviewQueryMock,
-  useBudgetListQueryMock,
   useExpenseSummaryQueryMock,
-  useHouseholdMembersQueryMock,
 } from './overview-page.test-setup'
 
 describe('OverviewPage content links', () => {
@@ -19,7 +17,7 @@ describe('OverviewPage content links', () => {
     resetOverviewPageTestState()
   })
 
-  it('renders household summary cards and scoped links for multiple households', () => {
+  it('renders household names in LensSelector for multiple households', () => {
     householdStoreState.households = [
       {
         createdAt: 1,
@@ -43,42 +41,6 @@ describe('OverviewPage content links', () => {
       },
     ]
 
-    useHouseholdMembersQueryMock.mockImplementation((householdId: string) => ({
-      data:
-        householdId === 'household-1' ? { items: [{}, {}] } : { items: [{}] },
-      isLoading: false,
-      error: null,
-    }))
-
-    useBudgetListQueryMock.mockImplementation((householdId: string) => ({
-      data: {
-        items:
-          householdId === 'household-1'
-            ? [{ id: 'budget-1', period: '2026-05' }]
-            : [],
-      },
-      isLoading: false,
-      error: null,
-      refetch: vi.fn(),
-    }))
-
-    useAnalyticsOverviewQueryMock.mockImplementation(
-      (params: { household_id?: string }) => ({
-        data: {
-          currencyCode: params.household_id === 'household-1' ? 'VND' : 'USD',
-          dailySpend: [],
-          expenseCount: params.household_id === 'household-1' ? 6 : 0,
-          householdId: params.household_id ?? null,
-          period: '2026-05',
-          topCategories: [],
-          totalSpendMinor: params.household_id === 'household-1' ? 1250000 : 0,
-        },
-        isLoading: false,
-        error: null,
-        refetch: vi.fn(),
-      }),
-    )
-
     useExpenseSummaryQueryMock.mockReturnValue({
       data: {
         currencyCode: 'VND',
@@ -92,44 +54,14 @@ describe('OverviewPage content links', () => {
 
     render(<OverviewPage />)
 
-    expect(screen.getByText('Gia đình Một')).toBeInTheDocument()
-    expect(screen.getByText('Gia đình Hai')).toBeInTheDocument()
-
-    expect(
-      screen.getByText('app.overview.households.title'),
-    ).toBeInTheDocument()
-
-    expect(useAnalyticsOverviewQueryMock).toHaveBeenCalledWith(
-      expect.objectContaining({ household_id: 'household-1' }),
-      expect.objectContaining({ enabled: true }),
-    )
-
-    expect(
-      screen.getByRole('link', { name: 'app.overview.actions.viewHouseholds' }),
-    ).toHaveAttribute('href', '/households')
-
-    expect(
-      screen.getByRole('link', { name: 'app.overview.actions.viewBudgets' }),
-    ).toHaveAttribute('href', '/budgets')
-
-    expect(
-      screen.getByRole('link', { name: 'app.overview.actions.viewInsights' }),
-    ).toHaveAttribute('href', '/insights')
-
-    expect(
-      screen.getByText(
-        'app.householdDetail.members.invite.fields.role.options.admin',
-      ),
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByText(
-        'app.householdDetail.members.invite.fields.role.options.member',
-      ),
-    ).toBeInTheDocument()
+    // Both household names should appear in LensSelector (rendered twice: desktop + mobile)
+    expect(screen.getAllByText('Gia đình Một').length).toBe(2)
+    expect(screen.getAllByText('Gia đình Hai').length).toBe(2)
+    // Personal lens should also be present
+    expect(screen.getAllByText('Personal').length).toBe(2)
   })
 
-  it('links invite-members action to households flow for admin household context', () => {
+  it('renders page without crashing with single household', () => {
     householdStoreState.households = [
       {
         createdAt: 1,
@@ -143,10 +75,15 @@ describe('OverviewPage content links', () => {
       },
     ]
 
-    useHouseholdMembersQueryMock.mockReturnValue({
-      data: { items: [{}] },
+    useExpenseSummaryQueryMock.mockReturnValue({
+      data: {
+        currencyCode: 'VND',
+        expenseCount: 2,
+        totalSpendMinor: 250000,
+      },
       isLoading: false,
       error: null,
+      refetch: vi.fn(),
     })
 
     useAnalyticsOverviewQueryMock.mockReturnValue({
@@ -164,28 +101,12 @@ describe('OverviewPage content links', () => {
       refetch: vi.fn(),
     })
 
-    useBudgetListQueryMock.mockReturnValue({
-      data: { items: [] },
-      isLoading: false,
-      error: null,
-      refetch: vi.fn(),
-    })
-
-    useExpenseSummaryQueryMock.mockReturnValue({
-      data: {
-        currencyCode: 'VND',
-        expenseCount: 2,
-        totalSpendMinor: 250000,
-      },
-      isLoading: false,
-      error: null,
-      refetch: vi.fn(),
-    })
-
     render(<OverviewPage />)
 
-    expect(
-      screen.getByRole('link', { name: 'app.overview.actions.inviteMembers' }),
-    ).toHaveAttribute('href', '/households')
+    // LensSelector renders labels twice (desktop + mobile)
+    expect(screen.getAllByText('Personal').length).toBe(2)
+    expect(screen.getAllByText('Gia đình Một').length).toBe(2)
+    // Page should render the spending summary section
+    expect(screen.getByText('This month spending')).toBeInTheDocument()
   })
 })

@@ -264,6 +264,11 @@
       "id": "feat-049",
       "name": "Design system foundation: PageShell, tokens, shadcn components",
       "status": "done"
+    },
+    {
+      "id": "feat-050",
+      "name": "Home screen redesign: wireframe, lens model correction, 8 new components, overview-page rewrite",
+      "status": "done"
     }
   ]
 }

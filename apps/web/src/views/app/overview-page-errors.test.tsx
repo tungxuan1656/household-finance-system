@@ -9,9 +9,8 @@ import {
   householdStoreState,
   resetOverviewPageTestState,
   useAnalyticsOverviewQueryMock,
-  useBudgetListQueryMock,
   useExpenseSummaryQueryMock,
-  useHouseholdMembersQueryMock,
+  useInfiniteExpenseListQueryMock,
 } from './overview-page.test-setup'
 
 describe('OverviewPage errors', () => {
@@ -19,7 +18,7 @@ describe('OverviewPage errors', () => {
     resetOverviewPageTestState()
   })
 
-  it('keeps healthy summary sections visible when budget slice fails', () => {
+  it('shows error state in HeroStatsCard when analytics query fails', () => {
     householdStoreState.households = [
       {
         createdAt: 1,
@@ -33,10 +32,56 @@ describe('OverviewPage errors', () => {
       },
     ]
 
-    useHouseholdMembersQueryMock.mockReturnValue({
-      data: { items: [{}, {}] },
+    useExpenseSummaryQueryMock.mockReturnValue({
+      data: {
+        currencyCode: 'VND',
+        expenseCount: 6,
+        totalSpendMinor: 1250000,
+      },
       isLoading: false,
       error: null,
+      refetch: vi.fn(),
+    })
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('analytics boom'),
+      refetch: vi.fn(),
+    })
+
+    render(<OverviewPage />)
+
+    expect(
+      screen.getByText('Could not load spending summary.'),
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
+  })
+
+  it('shows error state in RecentExpenses when recent expenses query fails', () => {
+    householdStoreState.households = [
+      {
+        createdAt: 1,
+        defaultCurrencyCode: 'VND',
+        defaultVisibility: 'private',
+        id: 'household-1',
+        name: 'Gia đình Một',
+        role: 'admin',
+        slug: 'gia-dinh-mot',
+        timezone: 'Asia/Ho_Chi_Minh',
+      },
+    ]
+
+    useExpenseSummaryQueryMock.mockReturnValue({
+      data: {
+        currencyCode: 'VND',
+        expenseCount: 6,
+        totalSpendMinor: 1250000,
+      },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
     })
 
     useAnalyticsOverviewQueryMock.mockReturnValue({
@@ -54,90 +99,21 @@ describe('OverviewPage errors', () => {
       refetch: vi.fn(),
     })
 
-    useExpenseSummaryQueryMock.mockReturnValue({
-      data: {
-        currencyCode: 'VND',
-        expenseCount: 6,
-        totalSpendMinor: 1250000,
-      },
-      isLoading: false,
-      error: null,
-      refetch: vi.fn(),
-    })
-
-    useBudgetListQueryMock.mockReturnValue({
+    useInfiniteExpenseListQueryMock.mockReturnValue({
       data: undefined,
       isLoading: false,
-      error: new Error('boom'),
-      refetch: vi.fn(),
-    })
-
-    render(<OverviewPage />)
-
-    expect(screen.getByText('app.overview.summary.title')).toBeInTheDocument()
-
-    expect(
-      screen.getByText('app.overview.budget.errorTitle'),
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByRole('button', { name: 'app.overview.actions.retryBudget' }),
-    ).toBeInTheDocument()
-  })
-
-  it('shows retry actions when summary slices fail', () => {
-    householdStoreState.households = [
-      {
-        createdAt: 1,
-        defaultCurrencyCode: 'VND',
-        defaultVisibility: 'private',
-        id: 'household-1',
-        name: 'Gia đình Một',
-        role: 'admin',
-        slug: 'gia-dinh-mot',
-        timezone: 'Asia/Ho_Chi_Minh',
-      },
-    ]
-
-    useHouseholdMembersQueryMock.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      error: new Error('members boom'),
-    })
-
-    useAnalyticsOverviewQueryMock.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      error: new Error('analytics boom'),
-      refetch: vi.fn(),
-    })
-
-    useBudgetListQueryMock.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      error: null,
-      refetch: vi.fn(),
-    })
-
-    useExpenseSummaryQueryMock.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      error: new Error('summary boom'),
+      error: new Error('expenses boom'),
       refetch: vi.fn(),
     })
 
     render(<OverviewPage />)
 
     expect(
-      screen.getAllByRole('button', {
-        name: 'app.overview.actions.retrySummary',
-      }),
-    ).toHaveLength(2)
-
-    expect(
-      screen.getByRole('button', {
-        name: 'app.overview.actions.retryHouseholdCard',
-      }),
+      screen.getByText('Could not load recent expenses.'),
     ).toBeInTheDocument()
+
+    // Should have Retry buttons: one in RecentExpenses error, one in HeroStatsCard (no budget → shows "Set a monthly budget" link, not Retry)
+    // Actually HeroStatsCard has no error (overviewQuery.error is null), so only 1 Retry from RecentExpenses
+    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
   })
 })

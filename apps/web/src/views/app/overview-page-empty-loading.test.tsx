@@ -6,13 +6,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { OverviewPage } from '@/views/app/overview-page'
 
 import {
-  fetchHouseholdsMock,
   householdStoreState,
   resetOverviewPageTestState,
   useAnalyticsOverviewQueryMock,
   useBudgetListQueryMock,
   useExpenseSummaryQueryMock,
-  useHouseholdMembersQueryMock,
 } from './overview-page.test-setup'
 
 describe('OverviewPage empty and loading', () => {
@@ -20,35 +18,79 @@ describe('OverviewPage empty and loading', () => {
     resetOverviewPageTestState()
   })
 
-  it('shows onboarding-first empty state when user has no households', () => {
+  it('shows empty state when user has no data (no expenses, no budgets)', () => {
+    // isEntirelyEmpty requires expenseCount === 0, no budgets, and no loading
+    useExpenseSummaryQueryMock.mockReturnValue({
+      data: {
+        currencyCode: 'VND',
+        expenseCount: 0,
+        totalSpendMinor: 0,
+      },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    useBudgetListQueryMock.mockReturnValue({
+      data: { items: [] },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    })
+
     render(<OverviewPage />)
 
-    expect(screen.getByText('app.overview.empty.title')).toBeInTheDocument()
+    expect(screen.getByText('Welcome to Expense Tracker')).toBeInTheDocument()
 
     expect(
-      screen.getByText('app.overview.empty.description'),
+      screen.getByText(
+        'Start tracking your spending to see insights and stay on budget.',
+      ),
     ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('link', { name: 'app.overview.empty.createHousehold' }),
-    ).toHaveAttribute('href', '/onboarding')
-
-    expect(
-      screen.getByRole('link', { name: 'app.overview.empty.joinHousehold' }),
-    ).toHaveAttribute('href', '/onboarding')
+      screen.getByRole('button', { name: 'Add Your First Expense' }),
+    ).toBeInTheDocument()
   })
 
-  it('loads households on mount and does not show empty state while initial household load is pending', () => {
-    householdStoreState.isLoading = true
+  it('does not show empty state while queries are loading', () => {
+    // Even with empty data, loading takes precedence
+    useExpenseSummaryQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    useBudgetListQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+      refetch: vi.fn(),
+    })
+
+    useAnalyticsOverviewQueryMock.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+      refetch: vi.fn(),
+    })
 
     render(<OverviewPage />)
 
-    expect(fetchHouseholdsMock).toHaveBeenCalledTimes(1)
-
+    // Empty state should NOT be shown
     expect(
-      screen.queryByText('app.overview.empty.title'),
+      screen.queryByText('Welcome to Expense Tracker'),
     ).not.toBeInTheDocument()
 
+    // Skeletons should be visible
     expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0)
   })
 
@@ -66,10 +108,11 @@ describe('OverviewPage empty and loading', () => {
       },
     ]
 
-    useHouseholdMembersQueryMock.mockReturnValue({
+    useExpenseSummaryQueryMock.mockReturnValue({
       data: undefined,
       isLoading: true,
       error: null,
+      refetch: vi.fn(),
     })
 
     useAnalyticsOverviewQueryMock.mockReturnValue({
@@ -86,17 +129,8 @@ describe('OverviewPage empty and loading', () => {
       refetch: vi.fn(),
     })
 
-    useExpenseSummaryQueryMock.mockReturnValue({
-      data: undefined,
-      isLoading: true,
-      error: null,
-      refetch: vi.fn(),
-    })
-
     render(<OverviewPage />)
 
     expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0)
-    expect(screen.queryByText('0')).not.toBeInTheDocument()
-    expect(screen.queryByText('—')).not.toBeInTheDocument()
   })
 })

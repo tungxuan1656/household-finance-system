@@ -9,6 +9,24 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Home screen wireframe + 8 new components + overview-page rewrite (feat-050)
+
+- Who: Orchestrator + Fixer subagents (parallel execution)
+- Summary: Designed Home screen wireframe (home.md) with corrected Lens Model (Groups are NOT a lens — they're cross-cutting filters). Fixed PRODUCT.md conflicts (§2, §5.1, §5.7, §5.9). Built 8 new components: LensSelector (desktop ToggleGroup + mobile tabs), GroupFilterBar (chip-based filter row), HeroStatsCard (spend, budget progress, MoM trend, daily rate), BudgetStatusCards (horizontal scroll, Overall-first, per-category bars), RecentExpenses (5-item list), CategoryBreakdown (top 5 with progress bars), HouseholdCardsSection (conditional card), EmptyState (welcome card). Rewrote overview-page.tsx to orchestrate new components with lens state management. Wired analytics/comparison/budget/expense/group query hooks.
+- Files changed: 17 files. 8 new components (components/home/), 1 wireframe doc (home.md), 1 product doc (PRODUCT.md), 5 test files, 1 overview-page.tsx.
+- Verification: TypeScript 0 errors, ESLint 0 errors (2 pre-existing warnings), 167 web tests pass, 370 worker tests pass, build successful (21 routes).
+- Blockers: none.
+- Next steps: Visual QA the home page rendering, connect to actual data in dev environment.
+
+## 2026-05-12 — Fix overview-page tests after component rewrite
+
+- Who: Fixer
+- Summary: Fixed 8 failing overview-page tests. Added missing mock hooks (useAnalyticsComparisonQueryMock, useInfiniteExpenseListQueryMock, useExpenseGroupListQueryMock) to test-setup, removed obsolete useAuthStore mock, rewrote test assertions to match new component structure (LensSelector, HeroStatsCard, RecentExpenses, EmptyState). Tests now verify page renders with/without households, empty state, loading skeletons, and error states.
+- Files changed: 5 files. 1 test-setup (added mocks, removed auth store mock), 4 test files (rewritten assertions for new components).
+- Verification: Lint 0 errors (2 pre-existing warnings), 167 tests pass (60 files), TypeScript 0 errors, build successful (21 routes).
+- Blockers: none.
+- Next steps: none.
+
 ## 2026-05-12 — Design system foundation gap-fill (feat-049)
 
 - Who: Orchestrator + Fixer subagents (parallel execution)

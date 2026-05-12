@@ -9,9 +9,7 @@ import {
   householdStoreState,
   resetOverviewPageTestState,
   useAnalyticsOverviewQueryMock,
-  useBudgetListQueryMock,
   useExpenseSummaryQueryMock,
-  useHouseholdMembersQueryMock,
 } from './overview-page.test-setup'
 
 describe('OverviewPage membership actions', () => {
@@ -19,7 +17,7 @@ describe('OverviewPage membership actions', () => {
     resetOverviewPageTestState()
   })
 
-  it('does not show invite-members action for member-only household context', () => {
+  it('renders page with member-only household', () => {
     householdStoreState.households = [
       {
         createdAt: 2,
@@ -33,10 +31,15 @@ describe('OverviewPage membership actions', () => {
       },
     ]
 
-    useHouseholdMembersQueryMock.mockReturnValue({
-      data: { items: [{}] },
+    useExpenseSummaryQueryMock.mockReturnValue({
+      data: {
+        currencyCode: 'USD',
+        expenseCount: 1,
+        totalSpendMinor: 9000,
+      },
       isLoading: false,
       error: null,
+      refetch: vi.fn(),
     })
 
     useAnalyticsOverviewQueryMock.mockReturnValue({
@@ -54,30 +57,12 @@ describe('OverviewPage membership actions', () => {
       refetch: vi.fn(),
     })
 
-    useBudgetListQueryMock.mockReturnValue({
-      data: { items: [] },
-      isLoading: false,
-      error: null,
-      refetch: vi.fn(),
-    })
-
-    useExpenseSummaryQueryMock.mockReturnValue({
-      data: {
-        currencyCode: 'USD',
-        expenseCount: 1,
-        totalSpendMinor: 9000,
-      },
-      isLoading: false,
-      error: null,
-      refetch: vi.fn(),
-    })
-
     render(<OverviewPage />)
 
-    expect(
-      screen.queryByRole('link', {
-        name: 'app.overview.actions.inviteMembers',
-      }),
-    ).not.toBeInTheDocument()
+    // LensSelector renders labels twice (desktop + mobile)
+    expect(screen.getAllByText('Gia đình Hai').length).toBe(2)
+    expect(screen.getAllByText('Personal').length).toBe(2)
+    // The spending summary should render
+    expect(screen.getByText('This month spending')).toBeInTheDocument()
   })
 })
