@@ -277,7 +277,9 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 </Card>
 ```
 
-**Rule:** Always use full Card composition. Do not dump everything into `CardContent`.
+**Rules:**
+- Always use full Card composition. Do not dump everything into `CardContent`.
+- Base `Card` MUST use Triple Layer classes: `bg-card/65 backdrop-blur-xl border border-white/10 shadow-glass`.
 
 ### 2.5 Overlay Components
 
@@ -606,14 +608,14 @@ Use semantic tokens — they handle light/dark via CSS variables.
 
 | Element | Effect |
 |---------|--------|
-| Button (default) | `hover:bg-primary/90` |
-| Button (outline) | `hover:bg-accent hover:text-accent-foreground` |
-| Card | `hover:shadow-md hover:border-primary/20` |
+| Button (default) | `hover:brightness-110 active:scale-95` |
+| Button (outline) | `hover:bg-accent hover:text-accent-foreground active:scale-95` |
+| Card | `hover:shadow-glass hover:border-white/20` |
 | List item | `hover:bg-accent/50` |
 | Link | `hover:underline` |
-| Ghost button | `hover:bg-accent hover:text-accent-foreground` |
+| Ghost button | `hover:bg-accent hover:text-accent-foreground active:scale-95` |
 
-**Rule:** Hover must not cause layout shift. Do not use `hover:scale-105`.
+**Rule:** Hover must not cause layout shift. Buttons MUST use `active:scale-95` and `hover:brightness-110` to create physical interaction feel.
 
 ### 4.3 Focus States
 
@@ -761,7 +763,9 @@ Before marking a page as done, verify:
 | Custom styled `span` for status | Use `<Badge>` |
 | Manual active state with `useState` + `Button` loop | Install and use `ToggleGroup` |
 | Raw `Input` in `div` | Use `FieldGroup` + `Field` |
-| Inline glassmorphism (`bg-white/10`) | Use token-based `bg-card/80` |
+| Opaque cards (`bg-card`) | Use Triple Layer: `bg-card/65 backdrop-blur-xl border border-white/10 shadow-glass` |
+| Plain amounts (`text-base`) | Use Mono font + `tabular-nums font-semibold` |
+| Solid gray borders (`border-gray-200`) | Use hairline border `border-white/10` |
 | `z-50` on overlay | Let shadcn handle z-index |
 | `dark:bg-gray-900` | Use semantic tokens (`bg-background`) |
 | `space-y-4` | Use `flex flex-col gap-4` |

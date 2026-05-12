@@ -27,18 +27,18 @@
 
 ## 1. Philosophy
 
-This design system powers a **modern, minimal, clean** fintech application for household expense management. It is optimized for **mobile-first** usage while providing a premium desktop experience.
+This design system powers a **modern, minimal glassmorphism** fintech application for household expense management. It is optimized for **mobile-first** usage while providing a premium desktop experience.
 
-**Principles:**
-1. **Content-first**: Data and actions take precedence over decorative elements.
-2. **Mobile-native**: Bottom tab navigation, large touch targets, swipe-friendly.
-3. **Systematic**: All values derive from a 4px base scale.
-4. **Semantic**: Colors, spacing, and typography use tokens, never raw values.
-5. **Accessible**: WCAG 2.1 AA compliant, touch-friendly, screen-reader friendly.
+**Principles (V2.1):**
+1. **The Triple Layer**: Cards, Dialogs, and Popovers use `backdrop-blur-xl` (min 24px), 65%-80% opacity, and hairline edge highlight.
+2. **Color Logic (OKLCH)**: No pure black (`#000000`); use Midnight Slate.
+3. **Airy Design**: Generous, strict spacing rules.
+4. **Typography Strictness**: Monospace fonts are MANDATORY for all financial data (amounts).
+5. **Floating UI**: Multi-layer shadows (`shadow-glass`).
 
-**Visual style**: Flat minimal. No glassmorphism or liquid glass (reserved for Auth pages only). Subtle shadows (`sm`/`md`), clean surfaces, generous whitespace (comfortable density).
+**Visual style**: Minimal Glassmorphism (V2.1). Floating UI with multi-layer shadows, clean surfaces, generous whitespace.
 
-**Brand colors**: Maia-Mist primary (slate family, `oklch(0.218 0.008 223.9)`) for neutrality and clarity. Subtle accent (`oklch(0.963 0.002 197.1)`) for secondary surfaces. Destructive red for errors.
+**Brand colors**: Maia Blue primary (`oklch(0.70 0.15 250)`). Midnight Slate background (`oklch(0.14 0.02 250)`).
 
 ---
 
@@ -172,41 +172,34 @@ Quick reference: which semantic token to use for which UI element.
 
 ## 5. Border Radius
 
-| Token | Formula | Approximate |
-|-------|---------|-------------|
-| `--radius` | Base | `0.625rem` (~10px) |
-| `--radius-sm` | `radius * 0.6` | ~6px |
-| `--radius-md` | `radius * 0.8` | ~8px |
-| `--radius-lg` | `radius` | ~10px |
-| `--radius-xl` | `radius * 1.4` | ~14px |
-| `--radius-2xl` | `radius * 1.8` | ~18px |
-| `--radius-3xl` | `radius * 2.2` | ~22px |
-| `--radius-4xl` | `radius * 2.6` | ~26px |
+Áp dụng tính nhất quán từ lớn đến nhỏ theo tỷ lệ vàng (V2.1):
 
-**Rule:** To change global radius, update only `--radius`. All derived values update automatically.
+| Element | Token | Value |
+|---------|-------|-------|
+| Page Card / Container chính | `--radius-xl` | `1.5rem` (24px) |
+| Interactive Elements (Button, Input) | `--radius-lg` | `0.75rem` (12px) |
+| Small Elements (Checkbox, Tag) | `--radius-sm` | `0.375rem` (6px) |
+
+**Rule:** Always use the defined Tailwind classes for consistent geometry.
 
 ---
 
 ## 6. Shadow System
 
+Sử dụng đổ bóng đa lớp để tạo cảm giác vật thể đang lơ lửng thực sự (Floating UI):
+
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px 0 rgb(0 0 0 / 0.05)` | Subtle elevation |
-| `--shadow-md` | `0 4px 6px -1px rgb(0 0 0 / 0.1)` | Cards, dropdowns |
-| `--shadow-lg` | `0 10px 15px -3px rgb(0 0 0 / 0.1)` | Modals, drawers |
-| `--shadow-xl` | `0 20px 25px -5px rgb(0 0 0 / 0.1)` | Overlays |
+| `--shadow-glass` | `0 0 0 1px oklch(1 0 0 / 0.05), 0 20px 40px -12px rgba(0, 0, 0, 0.4)` | The standard shadow for Cards and Dialogs |
 
 **Registration in Tailwind:**
 ```css
 @theme inline {
-  --shadow-sm: var(--shadow-sm);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-xl: var(--shadow-xl);
+  --shadow-glass: var(--shadow-glass);
 }
 ```
 
-**Mobile note:** Use `shadow-sm` and `shadow-md` primarily. Reserve `shadow-lg`/`shadow-xl` for overlays only.
+**Mobile note:** Use `shadow-glass` primarily for elevated cards.
 
 ---
 
@@ -253,9 +246,12 @@ const inter = Inter({
 - `font-bold` (700): Hero numbers, emphasis (rare)
 
 **Rules:**
+- **FINANCIAL DATA:** **MUST** use Monospace font (JetBrains Mono or Roboto Mono) for all amounts so numbers align in lists. Add `tabular-nums font-semibold`.
 - Never use arbitrary font sizes like `text-[15px]` or `text-[13px]`.
 - Never use `font-thin` (100) or `font-extralight` (200).
 - Mobile headings should not exceed `text-2xl`.
+- **Titles (H1, H2):** `font-bold tracking-tighter text-foreground`.
+- **Labels/Captions:** `font-medium text-muted-foreground text-xs/sm`.
 
 ### 7.3 Line Height
 
@@ -285,10 +281,11 @@ All spacing uses a **4px base unit**.
 | `12` | 48px | Major section breaks |
 | `16` | 64px | Hero / page breaks |
 
-**Mobile-first rules:**
-- Default padding: `p-4` (16px) on mobile, `md:p-6`, `lg:p-8`.
-- Section gaps: `gap-4` mobile, `md:gap-6`.
-- List items: `py-4` (16px vertical) for comfortable density.
+**Airy Design Spacing Rules (V2.1):**
+- **Page Margin:** `p-4` (16px) on mobile, `lg:p-10` (40px) on desktop.
+- **Section Gap:** `gap-6` (24px) on mobile, `lg:gap-12` (48px) on desktop.
+- **Card Padding:** `p-5` (20px) on mobile, `lg:p-6` (24px) on desktop.
+- **Element Gap:** `gap-3` (12px) on mobile, `lg:gap-4` (16px) on desktop.
 
 ---
 

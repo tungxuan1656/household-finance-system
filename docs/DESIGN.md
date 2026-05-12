@@ -16,6 +16,7 @@ Record durable product and system design decisions that survive beyond a single 
 
 - `docs/design-docs/index.md`: index of accepted, proposed, and deprecated docs
 - `docs/design-docs/core-beliefs.md`: project-wide agent-first beliefs
+- `docs/design-docs/design-system-v2-spec.md`: Master Design System Specification (Minimal Glassmorphism V2.1)
 - `docs/design-docs/shadcn-first-ui-web-guide.md`: mandatory shadcn-first UI governance for `apps/web`
 
 ## Design Rules
