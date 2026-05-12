@@ -259,6 +259,11 @@
       "id": "feat-048",
       "name": "Mobile-first UI redesign — Design System & Implementation Rules",
       "status": "done"
+    },
+    {
+      "id": "feat-049",
+      "name": "Design system foundation: PageShell, tokens, shadcn components",
+      "status": "done"
     }
   ]
 }

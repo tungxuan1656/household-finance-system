@@ -33,11 +33,7 @@ function MainLayout({ children }: { children: ReactNode }) {
         )}
 
         {/* Main Content Area */}
-        <main className='flex w-full flex-col pb-24 md:pb-8'>
-          <section className='flex-1 bg-background p-4 md:p-6 lg:p-8'>
-            {children}
-          </section>
-        </main>
+        <main className='flex w-full flex-col'>{children}</main>
       </div>
 
       {/* Mobile Bottom Tab (hidden on desktop) */}

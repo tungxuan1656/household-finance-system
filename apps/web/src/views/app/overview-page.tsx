@@ -12,6 +12,7 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from '@/components/ui/empty'
+import { PageSection, PageShell } from '@/components/ui/page-shell'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useBudgetListQuery } from '@/hooks/api/use-budgets'
 import { useExpenseSummaryQuery } from '@/hooks/api/use-expense'
@@ -69,7 +70,7 @@ function OverviewPage() {
   )
 
   return (
-    <div className='space-y-6'>
+    <PageShell title='Overview'>
       <OverviewHeader name={user?.displayName} period={period} />
 
       {showInitialHouseholdLoading ? (
@@ -105,47 +106,55 @@ function OverviewPage() {
           </div>
         </div>
       ) : showEmptyState ? (
-        <Empty className='border bg-card'>
-          <EmptyHeader>
-            <EmptyTitle>{t('app.overview.empty.title')}</EmptyTitle>
-            <EmptyDescription>
-              {t('app.overview.empty.description')}
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button asChild className='w-full sm:w-auto'>
-              <Link href={PATHS.ONBOARDING}>
-                {t('app.overview.empty.createHousehold')}
-              </Link>
-            </Button>
-            <Button asChild className='w-full sm:w-auto' variant='outline'>
-              <Link href={PATHS.ONBOARDING}>
-                {t('app.overview.empty.joinHousehold')}
-              </Link>
-            </Button>
-          </EmptyContent>
-        </Empty>
+        <PageSection variant='default'>
+          <Empty className='border bg-card'>
+            <EmptyHeader>
+              <EmptyTitle>{t('app.overview.empty.title')}</EmptyTitle>
+              <EmptyDescription>
+                {t('app.overview.empty.description')}
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button asChild className='w-full sm:w-auto'>
+                <Link href={PATHS.ONBOARDING}>
+                  {t('app.overview.empty.createHousehold')}
+                </Link>
+              </Button>
+              <Button asChild className='w-full sm:w-auto' variant='outline'>
+                <Link href={PATHS.ONBOARDING}>
+                  {t('app.overview.empty.joinHousehold')}
+                </Link>
+              </Button>
+            </EmptyContent>
+          </Empty>
+        </PageSection>
       ) : (
         <div className='space-y-6'>
-          <OverviewSummarySection
-            canInviteMembers={canInviteMembers}
-            expenseSummaryQuery={expenseSummaryQuery}
-            householdCount={households.length}
-          />
-
-          <OverviewHouseholdsSection households={households} />
-
-          <section className='grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]'>
-            <OverviewBudgetCard
-              budgetSummaryQuery={budgetSummaryQuery}
-              hasCurrentHousehold={Boolean(currentHousehold)}
+          <PageSection variant='stats'>
+            <OverviewSummarySection
+              canInviteMembers={canInviteMembers}
+              expenseSummaryQuery={expenseSummaryQuery}
+              householdCount={households.length}
             />
+          </PageSection>
 
-            <OverviewNextStepsCard />
-          </section>
+          <PageSection title='Households' variant='card'>
+            <OverviewHouseholdsSection households={households} />
+          </PageSection>
+
+          <PageSection variant='default'>
+            <section className='grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]'>
+              <OverviewBudgetCard
+                budgetSummaryQuery={budgetSummaryQuery}
+                hasCurrentHousehold={Boolean(currentHousehold)}
+              />
+
+              <OverviewNextStepsCard />
+            </section>
+          </PageSection>
         </div>
       )}
-    </div>
+    </PageShell>
   )
 }
 

@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Design system foundation gap-fill (feat-049)
+
+- Who: Orchestrator + Fixer subagents (parallel execution)
+- Summary: Filled all gaps identified in the design-docs audit. Updated chart colors in design-system.md to match index.css actual values (blue monochromatic). Added animation tokens (--duration-fast/base/slow, --ease-out/in-out), shadow tokens (--shadow-sm/md/lg/xl), and prefers-reduced-motion rule to index.css. Installed 7 shadcn components: Progress, Alert, ToggleGroup, Spinner, DropdownMenu, Tooltip, Drawer. Built PageShell (page wrapper with MobileHeader + responsive padding), PageSection (4 variants: default/card/stats/list), and MobileHeader (56px sticky, blur, title + back + actions). Integrated PageShell into overview-page.tsx replacing raw div structure. Wrapped TooltipProvider in app-providers.tsx.
+- Files changed: 11 files. 2 new (mobile-header.tsx, page-shell.tsx), 4 modified (main-layout.tsx, overview-page.tsx, app-providers.tsx, design-system.md, index.css), 8 shadcn component files auto-generated.
+- Verification: TypeScript 0 errors, ESLint 0 errors (2 pre-existing warnings), 537 tests pass (167 web + 370 worker), build successful (21 routes).
+- Blockers: none.
+- Next steps: Proceed to build Home page with new components. Update PRODUCT.md positioning (individual-first) should feed into home screen design.
+
 ## 2026-05-11 — Completed mobile-first UI redesign implementation (feat-048)
 
 - Who: Orchestrator + Designer Subagents (parallel execution)

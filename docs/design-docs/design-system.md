@@ -114,11 +114,11 @@ All colors use the **OKLCH** color space for perceptual uniformity and accessibi
 
 | Token | Light Mode | Dark Mode | Purpose |
 |-------|------------|-----------|---------|
-| `--chart-1` | `oklch(0.55 0.15 174)` | `oklch(0.65 0.12 174)` | Primary data (teal) |
-| `--chart-2` | `oklch(0.75 0.12 45)` | `oklch(0.55 0.1 45)` | Secondary data (amber) |
-| `--chart-3` | `oklch(0.623 0.214 259.815)` | Same | Tertiary data (blue) |
-| `--chart-4` | `oklch(0.488 0.243 264.376)` | Same | Quaternary data (indigo) |
-| `--chart-5` | `oklch(0.424 0.199 265.638)` | Same | Quinary data (purple) |
+| `--chart-1` | `oklch(0.809 0.105 251.813)` | Same | Primary data (light blue) |
+| `--chart-2` | `oklch(0.623 0.214 259.815)` | Same | Secondary data (blue) |
+| `--chart-3` | `oklch(0.546 0.245 262.881)` | Same | Tertiary data (deep blue) |
+| `--chart-4` | `oklch(0.488 0.243 264.376)` | Same | Quaternary data (dark blue) |
+| `--chart-5` | `oklch(0.424 0.199 265.638)` | Same | Quinary data (darkest blue) |
 
 ### 3.4 Status Colors
 
