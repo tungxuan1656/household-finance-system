@@ -76,7 +76,7 @@ function Field({
 }: React.ComponentProps<'div'> & VariantProps<typeof fieldVariants>) {
   return (
     <div
-      className={cn(fieldVariants({ orientation }), className)}
+      className={cn(fieldVariants({ orientation }), 'gap-2', className)}
       data-orientation={orientation}
       data-slot='field'
       role='group'
