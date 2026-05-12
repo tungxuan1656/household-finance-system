@@ -1,5 +1,6 @@
 'use client'
 
+import { ReceiptText } from 'lucide-react'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
@@ -69,39 +70,44 @@ function RecentExpenses({
         <ul className='divide-y divide-border'>
           {expenses.map((item) => (
             <li key={item.id} className='flex items-start gap-3 py-3'>
-              {/* Category badge */}
-              <span className='self-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium'>
-                {item.categoryKey}
-              </span>
+              {/* Category Icon */}
+              <div className='flex size-10 shrink-0 items-center justify-center rounded-full bg-muted/50'>
+                <ReceiptText className='size-5 text-muted-foreground' />
+              </div>
 
               {/* Middle content */}
-              <div className='min-w-0 flex-1'>
+              <div className='min-w-0 flex-1 py-0.5'>
                 <p className='truncate text-sm font-medium'>{item.title}</p>
-                <p className='mt-0.5 truncate text-xs text-muted-foreground'>
+                <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
                   <span>{formatRelativeDate(item.occurredAt)}</span>
+
                   {item.payerName && (
                     <>
-                      <span aria-hidden='true'> · </span>
+                      <span aria-hidden='true'>&middot;</span>
                       <span>{item.payerName}</span>
                     </>
                   )}
+
+                  <span aria-hidden='true'>&middot;</span>
+                  <span className='capitalize'>{item.categoryKey}</span>
+
                   {item.groupNames && item.groupNames.length > 0 && (
                     <>
-                      <span aria-hidden='true'> · </span>
+                      <span aria-hidden='true'>&middot;</span>
                       {item.groupNames.map((group) => (
                         <span
                           key={group}
-                          className='rounded-full bg-muted/50 px-1.5 py-0 text-xs'>
+                          className='rounded-full bg-muted px-2 py-0.5 text-[10px] tracking-wider text-foreground/80 uppercase'>
                           {group}
                         </span>
                       ))}
                     </>
                   )}
-                </p>
+                </div>
               </div>
 
               {/* Amount */}
-              <span className='shrink-0 text-sm font-medium tabular-nums'>
+              <span className='shrink-0 py-0.5 text-sm font-medium tabular-nums'>
                 {formatCurrency(item.amountMinor, item.currencyCode)}
               </span>
             </li>

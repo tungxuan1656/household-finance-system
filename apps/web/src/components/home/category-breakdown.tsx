@@ -2,6 +2,7 @@
 
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
 type CategoryItem = {
@@ -17,6 +18,14 @@ type CategoryBreakdownProps = {
   isLoading: boolean
   isEmpty: boolean
 }
+
+const CHART_COLORS = [
+  '[&>div]:bg-chart-1',
+  '[&>div]:bg-chart-2',
+  '[&>div]:bg-chart-3',
+  '[&>div]:bg-chart-4',
+  '[&>div]:bg-chart-5',
+]
 
 function CategoryBreakdown({
   categories,
@@ -35,28 +44,33 @@ function CategoryBreakdown({
       ) : (
         <div className='rounded-xl border bg-card p-4'>
           <div className='space-y-3'>
-            {categories.map((cat) => (
-              <div key={cat.categoryKey} className='flex flex-col gap-1'>
-                {/* Top row: label + percent + amount */}
-                <div className='flex items-center justify-between'>
-                  <span className='text-sm font-medium'>{cat.categoryKey}</span>
-                  <div className='flex items-center gap-2'>
-                    <span className='font-mono text-sm text-muted-foreground tabular-nums'>
-                      {cat.percentOfTotal}%
+            {categories.map((cat, index) => {
+              const colorClass = CHART_COLORS[index % CHART_COLORS.length]
+
+              return (
+                <div key={cat.categoryKey} className='flex flex-col gap-1'>
+                  {/* Top row: label + percent + amount */}
+                  <div className='flex items-center justify-between'>
+                    <span className='text-sm font-medium'>
+                      {cat.categoryKey}
                     </span>
-                    <span className='font-mono text-sm tabular-nums'>
-                      {formatCurrency(cat.totalSpendMinor, currencyCode)}
-                    </span>
+                    <div className='flex items-center gap-2'>
+                      <span className='font-mono text-sm text-muted-foreground tabular-nums'>
+                        {cat.percentOfTotal}%
+                      </span>
+                      <span className='font-mono text-sm tabular-nums'>
+                        {formatCurrency(cat.totalSpendMinor, currencyCode)}
+                      </span>
+                    </div>
                   </div>
+                  {/* Progress bar */}
+                  <Progress
+                    className={cn('h-1.5 rounded-full', colorClass)}
+                    value={cat.percentOfTotal}
+                  />
                 </div>
-                {/* Progress bar */}
-                <Progress
-                  className='h-1.5 rounded-full'
-                  value={cat.percentOfTotal}
-                  // We don't override indicator color per spec — uses default bg-primary
-                />
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}

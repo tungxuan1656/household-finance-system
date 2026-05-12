@@ -95,7 +95,7 @@ function HeroStatsCard({
 
   /* ── Populated state ───────────────────────────────────────────── */
   return (
-    <div className='space-y-4 rounded-2xl border bg-card p-5 shadow-sm md:p-6'>
+    <div className='space-y-4 rounded-2xl border bg-gradient-to-br from-card to-muted/20 p-5 shadow-sm md:p-6'>
       {/* Top row */}
       <div className='flex items-center justify-between'>
         <span className='text-sm text-muted-foreground'>
@@ -105,7 +105,7 @@ function HeroStatsCard({
       </div>
 
       {/* Main number */}
-      <div className='text-3xl font-bold tracking-tight tabular-nums md:text-4xl'>
+      <div className='text-4xl font-bold tracking-tight tabular-nums md:text-5xl'>
         {formatCurrency(totalSpendMinor, currencyCode)}
       </div>
 

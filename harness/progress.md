@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Refine Home screen UI aesthetics and layout
+
+- Who: Orchestrator
+- Summary: Refined the Home screen UI based on design wireframes and visual rules. Fixed currency formatting (`đ` symbol). Enhanced the Hero Stats Card with a subtle gradient and larger typography for a more premium feel. Refactored the Recent Expenses list to accurately match the wireframe layout (circular icon, correct metadata grouping). Updated Category Breakdown progress bars to use semantic chart colors. Removed the "Groups" tab from the bottom navigation to ensure a proper 5-item layout on mobile without text wrapping.
+- Files changed: 5 files modified (overview-formatters.ts, hero-stats-card.tsx, recent-expenses.tsx, category-breakdown.tsx, navigation.ts).
+- Verification: `./init.sh` (lint, typecheck, test, build) passed successfully.
+- Blockers: none.
+- Next steps: none.
+
 ## 2026-05-12 — Home screen wireframe + 8 new components + overview-page rewrite (feat-050)
 
 - Who: Orchestrator + Fixer subagents (parallel execution)
