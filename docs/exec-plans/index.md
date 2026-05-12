@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-12-shared-forms-dialogs-primitive-rollout.md](plans/2026-05-12-shared-forms-dialogs-primitive-rollout.md) - frontend rollout follow-up to feat-048/049/051: audit and migrate representative shared dialogs, form structures, selection controls, and feedback states onto the hardened primitive contract, with only tiny additive primitive follow-ups allowed when real migrations are blocked.
 
 ## Completed
 

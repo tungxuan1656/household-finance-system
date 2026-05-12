@@ -9,6 +9,14 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Wrote ExecPlan for shared forms/dialogs primitive rollout
+
+- Who: Orchestrator
+- Summary: Wrote the next frontend rollout ExecPlan after the completed V2.1 contract hardening and primitive expansion phases. The new plan targets shared dialogs, shared form structures, selection controls, and form feedback states, using a pattern-first migration strategy that replaces consumer-side visual overrides with primitive props and allows only tiny additive primitive follow-ups when blocked by a real migration.
+- Files changed: Added one rollout design spec, added one new ExecPlan, updated the ExecPlan index, and logged the planning session.
+- Blockers: none.
+- Next steps: Execute the rollout audit first, select representative consumers per pattern family, and then run the plan via subagent-driven or inline execution.
+
 ## 2026-05-12 — Completed design-system contract hardening and primitive expansion follow-up
 
 - Who: Orchestrator + General/Oracle subagents
