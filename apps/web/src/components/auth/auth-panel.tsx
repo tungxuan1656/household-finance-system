@@ -26,7 +26,7 @@ export const AuthPanel = ({
 }) => {
   return (
     <div className='m-auto w-full max-w-md animate-in duration-500 ease-out zoom-in-95 fade-in'>
-      <Card className='relative overflow-hidden border-white/20 bg-background/60 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-950/60'>
+      <Card className='relative overflow-hidden border-white/20 shadow-glass backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/60'>
         {/* Subtle top light effect */}
         <div className='pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent' />
 
@@ -45,7 +45,7 @@ export const AuthPanel = ({
 
             <div className='pt-2'>
               <Button
-                className='w-full font-semibold shadow-lg transition-all hover:scale-[1.02] active:scale-100 dark:bg-white dark:text-black dark:hover:bg-zinc-200'
+                className='w-full'
                 disabled={isSubmitting}
                 size='lg'
                 type='submit'>
