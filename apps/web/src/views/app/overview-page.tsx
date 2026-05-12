@@ -12,6 +12,7 @@ import { LensSelector } from '@/components/home/lens-selector'
 import { type Lens } from '@/components/home/lens-selector'
 import { RecentExpenses } from '@/components/home/recent-expenses'
 import { type RecentExpenseItem } from '@/components/home/recent-expenses'
+import { Card, CardContent } from '@/components/ui/card'
 import { PageShell } from '@/components/ui/page-shell'
 import { useAnalyticsComparisonQuery } from '@/hooks/api/use-analytics'
 import { useAnalyticsOverviewQuery } from '@/hooks/api/use-analytics'
@@ -19,6 +20,7 @@ import { useBudgetListQuery } from '@/hooks/api/use-budgets'
 import { useExpenseSummaryQuery } from '@/hooks/api/use-expense'
 import { useInfiniteExpenseListQuery } from '@/hooks/api/use-expense'
 import { useExpenseGroupListQuery } from '@/hooks/api/use-groups'
+import { t } from '@/lib/i18n/t'
 import { useHouseholdStore } from '@/stores/household.store'
 import {
   formatCurrency,
@@ -163,7 +165,7 @@ function OverviewPage() {
           lenses={lenses}
           onLensChange={setActiveLens}
         />
-        <div className='p-4 md:p-6 lg:p-8'>
+        <div className='px-4 py-6 md:px-6 md:py-8 lg:px-8'>
           <EmptyState
             onAddFirstExpense={() => {
               // FAB handles quick-add globally; empty state CTA does nothing for now
@@ -199,7 +201,7 @@ function OverviewPage() {
         }}
       />
 
-      <div className='space-y-4 p-4 md:space-y-6 md:p-6 lg:p-8'>
+      <div className='flex flex-col gap-6 md:gap-8'>
         {/* Hero Stats */}
         <HeroStatsCard
           budgetLimitMinor={budgetListQuery.data?.items?.[0]?.totalLimitMinor}
@@ -243,11 +245,13 @@ function OverviewPage() {
               currencyCode={overviewData.currencyCode}
             />
           ) : overviewQuery.isLoading ? (
-            <div className='rounded-xl border bg-card p-4'>
-              <p className='text-sm text-muted-foreground'>
-                Loading categories...
-              </p>
-            </div>
+            <Card surface='glass'>
+              <CardContent className='p-4'>
+                <p className='text-sm text-muted-foreground'>
+                  {t('app.overview.categoryBreakdown.loading')}
+                </p>
+              </CardContent>
+            </Card>
           ) : null}
         </div>
 
@@ -309,18 +313,29 @@ function BudgetCardsPlaceholder({
   return (
     <div className='flex snap-x snap-mandatory gap-3 overflow-x-auto px-0 pb-2 md:flex-wrap md:overflow-x-visible'>
       {budgets.slice(0, 5).map((budget) => (
-        <div
+        <Card
           key={budget.id}
-          className='max-w-[220px] min-w-[180px] shrink-0 snap-start space-y-2 rounded-xl border bg-card p-4 md:shrink'>
-          <span className='text-sm font-medium'>Budget</span>
-          <Progress className='h-2' value={0} />
-          <p className='text-xs text-muted-foreground'>
-            Limit: {formatCurrency(budget.totalLimitMinor, budget.currencyCode)}
-          </p>
-          <p className='text-xs text-muted-foreground'>
-            Connect budget tracking to see actual spend
-          </p>
-        </div>
+          className='max-w-55 min-w-45 shrink-0 snap-start md:shrink'
+          size='sm'
+          surface='glass'>
+          <CardContent className='space-y-2 py-4'>
+            <span className='text-sm font-medium'>
+              {t('app.overview.budget.title')}
+            </span>
+            <Progress className='h-2' value={0} />
+            <p className='text-xs text-muted-foreground'>
+              {t('app.overview.budget.limit', {
+                amount: formatCurrency(
+                  budget.totalLimitMinor,
+                  budget.currencyCode,
+                ),
+              })}
+            </p>
+            <p className='text-xs text-muted-foreground'>
+              {t('app.overview.budget.placeholder')}
+            </p>
+          </CardContent>
+        </Card>
       ))}
     </div>
   )

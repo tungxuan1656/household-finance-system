@@ -1,6 +1,8 @@
 'use client'
 
+import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { t } from '@/lib/i18n/t'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
 type HouseholdInfo = {
@@ -31,41 +33,44 @@ function HouseholdCardsSection({
       {isLoading ? (
         <LoadingSkeleton />
       ) : household ? (
-        <div className='rounded-xl border bg-card p-4'>
-          {/* Title line */}
-          <div className='flex items-baseline gap-1'>
-            <span className='text-sm font-semibold'>{household.name}</span>
-            <span className='text-xs text-muted-foreground'>
-              ({household.memberCount} members)
-            </span>
-          </div>
-
-          {/* Stats */}
-          <div className='mt-2 space-y-1 text-sm'>
-            <p>
-              <span className='text-muted-foreground'>Total spend: </span>
-              <span className='font-medium tabular-nums'>
-                {formatCurrency(
-                  household.totalSpendMinor,
-                  household.currencyCode,
-                )}
+        <Card surface='glass'>
+          <CardContent className='space-y-2 p-4'>
+            <div className='flex items-baseline gap-1'>
+              <span className='text-sm font-semibold'>{household.name}</span>
+              <span className='text-xs text-muted-foreground'>
+                ({household.memberCount}{' '}
+                {t('app.overview.householdCard.members')})
               </span>
-            </p>
-            {household.yourContributionMinor !== undefined && (
+            </div>
+
+            <div className='space-y-1 text-sm'>
               <p>
                 <span className='text-muted-foreground'>
-                  Your contribution:{' '}
+                  {t('app.overview.householdCard.totalSpend')}{' '}
                 </span>
-                <span className='font-medium tabular-nums'>
+                <span className='font-mono font-medium tabular-nums'>
                   {formatCurrency(
-                    household.yourContributionMinor,
+                    household.totalSpendMinor,
                     household.currencyCode,
                   )}
                 </span>
               </p>
-            )}
-          </div>
-        </div>
+              {household.yourContributionMinor !== undefined && (
+                <p>
+                  <span className='text-muted-foreground'>
+                    {t('app.overview.householdCard.yourContribution')}{' '}
+                  </span>
+                  <span className='font-mono font-medium tabular-nums'>
+                    {formatCurrency(
+                      household.yourContributionMinor,
+                      household.currencyCode,
+                    )}
+                  </span>
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       ) : null}
     </section>
   )
@@ -73,8 +78,8 @@ function HouseholdCardsSection({
 
 function LoadingSkeleton() {
   return (
-    <div className='rounded-xl border bg-card p-4'>
-      <div className='space-y-2'>
+    <Card surface='glass'>
+      <CardContent className='space-y-2 p-4'>
         <div className='flex items-baseline gap-1'>
           <Skeleton className='h-4 w-32' />
           <Skeleton className='h-3 w-20' />
@@ -83,8 +88,8 @@ function LoadingSkeleton() {
           <Skeleton className='h-4 w-40' />
           <Skeleton className='h-4 w-36' />
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 

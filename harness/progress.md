@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Completed `/home` primitive-first premium refactor hardening
+
+- Who: Orchestrator + Fixer subagent
+- Summary: Executed the approved follow-up plan for protected `/home` and brought the touched overview UI back into compliance with the hardened V2.1 primitive-first contract. The pass unified lens selection onto pill-style toggle-group primitives across mobile and desktop, added a reusable `Badge` filter variant and chart-tone support on `Progress`, migrated touched home sections and loading states onto shared glass `Card` composition, localized touched overview copy, and corrected financial amount styling to use `font-mono tabular-nums`. The implementation preserved current dashboard truthfulness and avoided component render tests per explicit user instruction.
+- Files changed: Home overview composition, touched home section components, shared badge/progress/toggle primitives, overview locale labels, the home design spec and ExecPlan records, the feature evidence record, and this progress log.
+- Verification: Required GitNexus upstream impact checks for all edited home symbols and touched shared primitives returned LOW risk before edits; `gitnexus_detect_changes` (scope `all`) returned low risk with 0 affected processes after edits; `pnpm --filter web test -- --run src/components/ui/toggle-group.test.tsx src/components/ui/progress.test.tsx` passed; `pnpm --filter web test` passed (17 files, 47 tests); `pnpm lint:fix` passed with 1 pre-existing unrelated `<img>` warning in `apps/web/src/components/expense/category-picker.tsx`; `./init.sh` passed fully.
+- Blockers: none.
+- Next steps: if desired, run final git review and create a commit for the `/home` hardening plus harness updates.
+
 ## 2026-05-12 — Removed `apps/web` render tests and hardened frontend test policy
 
 - Who: Orchestrator

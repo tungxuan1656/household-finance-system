@@ -1,8 +1,9 @@
 'use client'
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
+import { t } from '@/lib/i18n/t'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
 type CategoryItem = {
@@ -19,13 +20,13 @@ type CategoryBreakdownProps = {
   isEmpty: boolean
 }
 
-const CHART_COLORS = [
-  '[&>div]:bg-chart-1',
-  '[&>div]:bg-chart-2',
-  '[&>div]:bg-chart-3',
-  '[&>div]:bg-chart-4',
-  '[&>div]:bg-chart-5',
-]
+const CHART_TONES = [
+  'chart-1',
+  'chart-2',
+  'chart-3',
+  'chart-4',
+  'chart-5',
+] as const
 
 function CategoryBreakdown({
   categories,
@@ -34,22 +35,22 @@ function CategoryBreakdown({
   isEmpty,
 }: CategoryBreakdownProps) {
   return (
-    <section>
-      <h2 className='mb-3 text-base font-semibold'>Category Breakdown</h2>
-
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : isEmpty ? (
-        <EmptyState />
-      ) : (
-        <div className='rounded-xl border bg-card p-4'>
+    <Card surface='glass'>
+      <CardHeader>
+        <CardTitle>{t('app.overview.categoryBreakdown.title')}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <LoadingSkeleton />
+        ) : isEmpty ? (
+          <EmptyState />
+        ) : (
           <div className='space-y-3'>
             {categories.map((cat, index) => {
-              const colorClass = CHART_COLORS[index % CHART_COLORS.length]
+              const tone = CHART_TONES[index % CHART_TONES.length]
 
               return (
                 <div key={cat.categoryKey} className='flex flex-col gap-1'>
-                  {/* Top row: label + percent + amount */}
                   <div className='flex items-center justify-between'>
                     <span className='text-sm font-medium'>
                       {cat.categoryKey}
@@ -63,18 +64,18 @@ function CategoryBreakdown({
                       </span>
                     </div>
                   </div>
-                  {/* Progress bar */}
                   <Progress
-                    className={cn('h-1.5 rounded-full', colorClass)}
+                    className='h-1.5 rounded-full'
+                    tone={tone}
                     value={cat.percentOfTotal}
                   />
                 </div>
               )
             })}
           </div>
-        </div>
-      )}
-    </section>
+        )}
+      </CardContent>
+    </Card>
   )
 }
 
@@ -101,7 +102,7 @@ function EmptyState() {
   return (
     <div className='py-4 text-center'>
       <p className='text-sm text-muted-foreground'>
-        Start adding expenses to see your spending breakdown.
+        {t('app.overview.categoryBreakdown.empty')}
       </p>
     </div>
   )

@@ -2,6 +2,10 @@
 
 import { X } from 'lucide-react'
 
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { t } from '@/lib/i18n/t'
+
 type GroupInfo = {
   id: string
   name: string
@@ -19,6 +23,7 @@ function GroupFilterBar({
   availableGroups,
   activeGroupIds,
   onToggleGroup,
+  onClearAll,
   onOpenSelector,
 }: GroupFilterBarProps) {
   if (activeGroupIds.length === 0) return null
@@ -30,25 +35,30 @@ function GroupFilterBar({
   return (
     <div className='flex items-center gap-2 overflow-x-auto px-4 py-1'>
       {activeGroups.map((group) => (
-        <div
-          key={group.id}
-          className='inline-flex items-center gap-1 rounded-full border bg-muted/50 px-3 py-1 text-xs'>
+        <Badge key={group.id} className='gap-1' variant='filter'>
           <span>{group.name}</span>
           <button
             aria-label={`Remove ${group.name} filter`}
-            className='text-muted-foreground transition-colors hover:text-foreground'
             type='button'
             onClick={() => onToggleGroup(group.id)}>
             <X className='size-3' />
           </button>
-        </div>
+        </Badge>
       ))}
-      <button
-        className='px-2 py-1 text-xs whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground'
+      <Button
+        className='h-7 px-3 text-xs'
         type='button'
+        variant='ghost'
         onClick={onOpenSelector}>
-        [+ Filter]
-      </button>
+        {t('app.overview.filters.add')}
+      </Button>
+      <Button
+        className='h-7 px-3 text-xs'
+        type='button'
+        variant='ghost'
+        onClick={onClearAll}>
+        {t('app.overview.filters.clearAll')}
+      </Button>
     </div>
   )
 }

@@ -3,8 +3,10 @@
 import { ArrowDown, ArrowUp } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
+import { t } from '@/lib/i18n/t'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
@@ -21,11 +23,11 @@ type HeroStatsCardProps = {
   onPeriodChange: (period: string) => void
 }
 
-function getProgressColor(percent: number): string {
-  if (percent >= 100) return '[&>div]:bg-destructive'
-  if (percent >= 80) return '[&>div]:bg-warning'
+function getProgressTone(percent: number): 'default' | 'warning' | 'danger' {
+  if (percent >= 100) return 'danger'
+  if (percent >= 80) return 'warning'
 
-  return ''
+  return 'default'
 }
 
 function HeroStatsCard({
@@ -42,30 +44,34 @@ function HeroStatsCard({
   /* ── Loading state ─────────────────────────────────────────────── */
   if (isLoading) {
     return (
-      <div className='space-y-4 rounded-2xl border bg-card p-5 shadow-sm md:p-6'>
-        <div className='flex items-center justify-between'>
-          <Skeleton className='h-4 w-32' />
-          <Skeleton className='h-6 w-24' />
-        </div>
-        <Skeleton className='h-10 w-48' />
-        <Skeleton className='h-2 w-full' />
-        <Skeleton className='h-4 w-40' />
-        <Skeleton className='h-4 w-48' />
-      </div>
+      <Card surface='glass'>
+        <CardContent className='space-y-4 p-5 md:p-6'>
+          <div className='flex items-center justify-between'>
+            <Skeleton className='h-4 w-32' />
+            <Skeleton className='h-6 w-24' />
+          </div>
+          <Skeleton className='h-10 w-48' />
+          <Skeleton className='h-2 w-full' />
+          <Skeleton className='h-4 w-40' />
+          <Skeleton className='h-4 w-48' />
+        </CardContent>
+      </Card>
     )
   }
 
   /* ── Error state ───────────────────────────────────────────────── */
   if (error) {
     return (
-      <div className='rounded-2xl border bg-card p-5 shadow-sm md:p-6'>
-        <p className='mb-3 text-sm text-muted-foreground'>
-          Could not load spending summary.
-        </p>
-        <Button size='sm' variant='outline' onClick={onRetry}>
-          Retry
-        </Button>
-      </div>
+      <Card surface='glass'>
+        <CardContent className='p-5 md:p-6'>
+          <p className='mb-3 text-sm text-muted-foreground'>
+            {t('app.overview.summary.errorTitle')}
+          </p>
+          <Button size='sm' variant='outline' onClick={onRetry}>
+            {t('app.overview.actions.retrySummary')}
+          </Button>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -95,76 +101,92 @@ function HeroStatsCard({
 
   /* ── Populated state ───────────────────────────────────────────── */
   return (
-    <div className='space-y-4 rounded-2xl border bg-gradient-to-br from-card to-muted/20 p-5 shadow-sm md:p-6'>
-      {/* Top row */}
-      <div className='flex items-center justify-between'>
-        <span className='text-sm text-muted-foreground'>
-          This month spending
-        </span>
-        <span className='text-sm font-medium tabular-nums'>{period}</span>
-      </div>
+    <Card
+      className='space-y-4 bg-gradient-to-br from-card to-muted/20 p-0'
+      surface='glass'>
+      <CardContent className='space-y-4 p-5 md:p-6'>
+        {/* Top row */}
+        <div className='flex items-center justify-between'>
+          <span className='text-sm text-muted-foreground'>
+            {t('app.overview.summary.title')}
+          </span>
+          <span className='text-sm font-medium tabular-nums'>{period}</span>
+        </div>
 
-      {/* Main number */}
-      <div className='text-4xl font-bold tracking-tight tabular-nums md:text-5xl'>
-        {formatCurrency(totalSpendMinor, currencyCode)}
-      </div>
+        {/* Main number */}
+        <div className='font-mono text-4xl font-bold tracking-tight tabular-nums md:text-5xl'>
+          {formatCurrency(totalSpendMinor, currencyCode)}
+        </div>
 
-      {/* Budget section */}
-      {hasBudget ? (
-        <>
-          {/* Progress bar */}
-          <div className='space-y-2'>
-            <Progress
-              className={cn('h-2', getProgressColor(percentUsed))}
-              value={Math.min(percentUsed, 100)}
-            />
-            <div className='flex items-center justify-between'>
-              <span className='text-xs text-muted-foreground'>
-                {percentUsed}% of monthly budget
-              </span>
-              <span className='text-xs text-muted-foreground'>
-                {isOverBudget
-                  ? `Over budget by ${formatCurrency(
-                      Math.abs(budgetRemaining),
-                      currencyCode,
-                    )}`
-                  : `Còn ${formatCurrency(budgetRemaining, currencyCode)}`}
-              </span>
+        {/* Budget section */}
+        {hasBudget ? (
+          <>
+            {/* Progress bar */}
+            <div className='space-y-2'>
+              <Progress
+                className='h-2'
+                tone={getProgressTone(percentUsed)}
+                value={Math.min(percentUsed, 100)}
+              />
+              <div className='flex items-center justify-between'>
+                <span className='text-xs text-muted-foreground'>
+                  {t('app.overview.hero.percentOfBudget', {
+                    percent: percentUsed,
+                  })}
+                </span>
+                <span className='text-xs text-muted-foreground'>
+                  {isOverBudget
+                    ? t('app.overview.hero.overBudget', {
+                        amount: formatCurrency(
+                          Math.abs(budgetRemaining),
+                          currencyCode,
+                        ),
+                      })
+                    : t('app.overview.hero.remaining', {
+                        amount: formatCurrency(budgetRemaining, currencyCode),
+                      })}
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* Month-over-month trend */}
-          {momPercent != null && momPercent !== 0 && (
-            <div
-              className={cn(
-                'flex items-center gap-1 text-sm',
-                delta! < 0 ? 'text-green-600' : 'text-yellow-600',
-              )}>
-              {delta! < 0 ? (
-                <ArrowDown className='size-4' />
-              ) : (
-                <ArrowUp className='size-4' />
-              )}
-              <span>{Math.abs(momPercent)}% so với tháng trước</span>
-            </div>
-          )}
+            {/* Month-over-month trend */}
+            {momPercent != null && momPercent !== 0 && (
+              <div
+                className={cn(
+                  'flex items-center gap-1 text-sm',
+                  delta! < 0 ? 'text-status-success' : 'text-status-warning',
+                )}>
+                {delta! < 0 ? (
+                  <ArrowDown className='size-4' />
+                ) : (
+                  <ArrowUp className='size-4' />
+                )}
+                <span>
+                  {t('app.overview.hero.monthOverMonth', {
+                    percent: Math.abs(momPercent),
+                  })}
+                </span>
+              </div>
+            )}
 
-          {/* Safe daily rate */}
-          {dailyRate != null && (
-            <p className='mt-1 text-xs text-muted-foreground'>
-              Còn {daysRemaining} ngày &mdash; khoảng{' '}
-              {formatCurrency(dailyRate, currencyCode)}
-              /ngày
-            </p>
-          )}
-        </>
-      ) : (
-        /* No budget set — prompt */
-        <p className='text-xs text-muted-foreground'>
-          Set a monthly budget to track your spending
-        </p>
-      )}
-    </div>
+            {/* Safe daily rate */}
+            {dailyRate != null && (
+              <p className='mt-1 text-xs text-muted-foreground'>
+                {t('app.overview.hero.dailyRate', {
+                  days: daysRemaining,
+                  amount: formatCurrency(dailyRate, currencyCode),
+                })}
+              </p>
+            )}
+          </>
+        ) : (
+          /* No budget set — prompt */
+          <p className='text-xs text-muted-foreground'>
+            {t('app.overview.hero.noBudget')}
+          </p>
+        )}
+      </CardContent>
+    </Card>
   )
 }
 

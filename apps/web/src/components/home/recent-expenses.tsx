@@ -3,8 +3,11 @@
 import { ReceiptText } from 'lucide-react'
 import Link from 'next/link'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { t } from '@/lib/i18n/t'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
 type RecentExpenseItem = {
@@ -33,10 +36,10 @@ function formatRelativeDate(timestampSec: number): string {
   const diffDays = Math.floor(
     (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
   )
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
+  if (diffDays === 0) return t('app.overview.recentExpenses.today')
+  if (diffDays === 1) return t('app.overview.recentExpenses.yesterday')
 
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return date.toLocaleDateString('vi-VN', { month: 'short', day: 'numeric' })
 }
 
 function RecentExpenses({
@@ -47,74 +50,71 @@ function RecentExpenses({
   isEmpty,
 }: RecentExpensesProps) {
   return (
-    <section>
-      {/* Section header */}
-      <div className='mb-3 flex items-center justify-between'>
-        <h2 className='text-base font-semibold'>Recent Expenses</h2>
+    <Card surface='glass'>
+      <CardHeader className='flex flex-row items-center justify-between gap-3'>
+        <CardTitle>{t('app.overview.recentExpenses.title')}</CardTitle>
         <Button asChild size='sm' variant='ghost'>
           <Link href='/expenses'>
-            View all
+            {t('app.overview.recentExpenses.viewAll')}
             <span aria-hidden='true'>&nbsp;&rarr;</span>
           </Link>
         </Button>
-      </div>
+      </CardHeader>
 
-      {/* Content */}
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : error ? (
-        <ErrorState onRetry={onRetry} />
-      ) : isEmpty ? (
-        <EmptyState />
-      ) : (
-        <ul className='divide-y divide-border'>
-          {expenses.map((item) => (
-            <li key={item.id} className='flex items-start gap-3 py-3'>
-              {/* Category Icon */}
-              <div className='flex size-10 shrink-0 items-center justify-center rounded-full bg-muted/50'>
-                <ReceiptText className='size-5 text-muted-foreground' />
-              </div>
+      <CardContent>
+        {isLoading ? (
+          <LoadingSkeleton />
+        ) : error ? (
+          <ErrorState onRetry={onRetry} />
+        ) : isEmpty ? (
+          <EmptyState />
+        ) : (
+          <ul className='divide-y divide-border'>
+            {expenses.map((item) => (
+              <li
+                key={item.id}
+                className='flex items-start gap-3 py-3 first:pt-0 last:pb-0'>
+                <Badge className='size-10 rounded-full p-0' variant='outline'>
+                  <ReceiptText className='size-5 text-muted-foreground' />
+                </Badge>
 
-              {/* Middle content */}
-              <div className='min-w-0 flex-1 py-0.5'>
-                <p className='truncate text-sm font-medium'>{item.title}</p>
-                <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
-                  <span>{formatRelativeDate(item.occurredAt)}</span>
+                <div className='min-w-0 flex-1 py-0.5'>
+                  <p className='truncate text-sm font-medium'>{item.title}</p>
+                  <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
+                    <span>{formatRelativeDate(item.occurredAt)}</span>
 
-                  {item.payerName && (
-                    <>
-                      <span aria-hidden='true'>&middot;</span>
-                      <span>{item.payerName}</span>
-                    </>
-                  )}
+                    {item.payerName && (
+                      <>
+                        <span aria-hidden='true'>&middot;</span>
+                        <span>{item.payerName}</span>
+                      </>
+                    )}
 
-                  <span aria-hidden='true'>&middot;</span>
-                  <span className='capitalize'>{item.categoryKey}</span>
+                    <span aria-hidden='true'>&middot;</span>
+                    <span className='capitalize'>{item.categoryKey}</span>
 
-                  {item.groupNames && item.groupNames.length > 0 && (
-                    <>
-                      <span aria-hidden='true'>&middot;</span>
-                      {item.groupNames.map((group) => (
-                        <span
-                          key={group}
-                          className='rounded-full bg-muted px-2 py-0.5 text-[10px] tracking-wider text-foreground/80 uppercase'>
-                          {group}
-                        </span>
-                      ))}
-                    </>
-                  )}
+                    {item.groupNames && item.groupNames.length > 0 && (
+                      <>
+                        <span aria-hidden='true'>&middot;</span>
+                        {item.groupNames.map((group) => (
+                          <Badge key={group} variant='secondary'>
+                            {group}
+                          </Badge>
+                        ))}
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Amount */}
-              <span className='shrink-0 py-0.5 text-sm font-medium tabular-nums'>
-                {formatCurrency(item.amountMinor, item.currencyCode)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
+                <span className='shrink-0 py-0.5 font-mono text-sm font-medium tabular-nums'>
+                  {formatCurrency(item.amountMinor, item.currencyCode)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
   )
 }
 
@@ -138,10 +138,10 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className='py-6 text-center'>
       <p className='mb-3 text-sm text-muted-foreground'>
-        Could not load recent expenses.
+        {t('app.overview.recentExpenses.error')}
       </p>
       <Button size='sm' variant='outline' onClick={onRetry}>
-        Retry
+        {t('app.overview.actions.retrySummary')}
       </Button>
     </div>
   )
@@ -151,7 +151,7 @@ function EmptyState() {
   return (
     <div className='py-6 text-center'>
       <p className='text-sm text-muted-foreground'>
-        No expenses yet. Tap + to add your first one.
+        {t('app.overview.recentExpenses.empty')}
       </p>
     </div>
   )
