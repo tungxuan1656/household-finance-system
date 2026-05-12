@@ -84,9 +84,9 @@ export const SignInPage = () => {
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='email'
-              className='h-10'
               id='email'
               placeholder={t('auth.signIn.fields.email.placeholder')}
+              size='lg'
               type='email'
             />
             <FieldError errors={[fieldState.error]} />
@@ -106,9 +106,9 @@ export const SignInPage = () => {
               {...field}
               aria-invalid={fieldState.invalid}
               autoComplete='current-password'
-              className='h-10'
               id='password'
               placeholder={t('auth.signIn.fields.password.placeholder')}
+              size='lg'
               type='password'
             />
             <FieldError errors={[fieldState.error]} />
