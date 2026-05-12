@@ -1,15 +1,41 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 
+import { surfaceVariants } from '@/components/ui/primitive-styles'
 import { cn } from '@/lib/utils'
 
-function Empty({ className, ...props }: React.ComponentProps<'div'>) {
+const emptyVariants = cva(
+  'flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 rounded-lg p-12 text-center text-balance',
+  {
+    variants: {
+      tone: {
+        neutral: 'text-foreground',
+        muted: 'text-muted-foreground',
+      },
+      surface: {
+        outline: 'border border-dashed border-border bg-transparent',
+        subtle: 'border border-dashed border-border/60 bg-background/70',
+        glass: surfaceVariants({ surface: 'glass' }),
+      },
+    },
+    defaultVariants: {
+      tone: 'neutral',
+      surface: 'outline',
+    },
+  },
+)
+
+function Empty({
+  className,
+  tone = 'neutral',
+  surface = 'outline',
+  ...props
+}: React.ComponentProps<'div'> & VariantProps<typeof emptyVariants>) {
   return (
     <div
-      className={cn(
-        'flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 rounded-lg border-dashed p-12 text-center text-balance',
-        className,
-      )}
+      className={cn(emptyVariants({ tone, surface }), className)}
       data-slot='empty'
+      data-surface={surface}
+      data-tone={tone}
       {...props}
     />
   )

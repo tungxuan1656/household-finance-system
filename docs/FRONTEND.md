@@ -61,6 +61,8 @@ Stable frontend expectations so agents do not invent UI patterns unpredictably.
 - Capture evidence for critical user journeys.
 - Record browser or runtime validation steps in relevant plan.
 - If visual regressions are common, standardize screenshot or DOM checks.
+- For `apps/web`, do not add colocated component render or page render tests. Prefer util/api/store/helper tests in Vitest plus browser/manual validation evidence for UI behavior.
+- Canonical frontend test placement and scope rules live in `docs/testing/test-placement-and-sharding-convention.md`.
 
 ---
 

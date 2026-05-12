@@ -58,11 +58,6 @@ export const BOTTOM_TAB_ITEMS = [
     icon: Banknote,
   },
   {
-    to: PATHS.GROUPS,
-    labelKey: 'shell.protected.nav.groups',
-    icon: Tags,
-  },
-  {
     to: PATHS.BUDGETS,
     labelKey: 'shell.protected.nav.budgets',
     icon: PiggyBank,

@@ -8,6 +8,7 @@ import { type ReactNode, useState } from 'react'
 import { SwRegister } from '@/app/providers/sw-register'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient())
@@ -15,9 +16,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <SwRegister />
-        {children}
-        <Toaster richColors position='top-right' />
+        <TooltipProvider delayDuration={300}>
+          <SwRegister />
+          {children}
+          <Toaster richColors position='top-right' />
+        </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
   )

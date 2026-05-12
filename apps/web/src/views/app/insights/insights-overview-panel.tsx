@@ -29,7 +29,7 @@ export function InsightsOverviewPanel({
 }: InsightsOverviewPanelProps) {
   if (error) {
     return (
-      <Empty className='min-h-32 border'>
+      <Empty className='min-h-32' surface='outline'>
         <EmptyHeader>
           <EmptyTitle>{t('insights.error.title')}</EmptyTitle>
           <EmptyDescription>{t('insights.error.description')}</EmptyDescription>
@@ -55,7 +55,7 @@ export function InsightsOverviewPanel({
 
   if (data.expenseCount === 0) {
     return (
-      <Empty className='min-h-80 border'>
+      <Empty className='min-h-80' surface='outline'>
         <EmptyHeader>
           <EmptyTitle>{t('insights.empty.title')}</EmptyTitle>
           <EmptyDescription>{t('insights.empty.description')}</EmptyDescription>

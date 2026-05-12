@@ -9,6 +9,94 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Removed `apps/web` render tests and hardened frontend test policy
+
+- Who: Orchestrator
+- Summary: Removed all remaining `apps/web` component/page render suites and their page-local render test setup helpers so the web test surface now focuses on util/api/store/helper logic only. Updated surviving store and i18n tests to stay non-rendered, simplified `apps/web` Vitest setup to drop Testing Library-specific cleanup and matchers, and tightened the canonical frontend testing policy so future `apps/web` coverage explicitly excludes component/page render tests in favor of logic tests plus browser/manual validation evidence.
+- Files changed: Deleted colocated web render test files and render-only test setup helpers, updated retained web logic tests and test setup, refreshed frontend/testing reference docs, updated feat-040 evidence, and logged this session.
+- Verification: `gitnexus_detect_changes` (scope `all`) → low risk, 0 affected processes; `pnpm lint:fix` passed with 1 pre-existing Next.js `<img>` warning in `apps/web/src/components/expense/category-picker.tsx`; `pnpm --filter web test` passed (15 files, 45 tests); `pnpm --filter web typecheck` passed.
+- Blockers: none.
+- Next steps: run `./init.sh` if you want full-workspace verification before commit.
+
+## 2026-05-12 — Completed shared forms/dialogs primitive rollout
+
+- Who: Orchestrator + Fixer/Oracle subagents
+- Summary: Executed the representative rollout plan that migrates real app consumers onto the hardened primitive contract. Dialog-shell consumers dropped `DialogContent` width override classes in favor of primitive sizing, representative form and selection consumers moved from local geometry/shell compensation to `size='lg'` and shared primitive composition, and representative feedback states replaced `Empty` border restyling with `surface='outline'`. The rollout stayed additive and compatibility-safe, and each batch was locked with focused migration tests plus spec and TypeScript/UI review passes.
+- Files changed: Representative budget/group/expense dialog consumers, onboarding and expense filter form consumers, representative insights/household empty states, focused migration test files, the dialog primitive, the shared primitive contract test, ExecPlan index, feature record, and this progress log.
+- Verification: GitNexus impact checks for representative dialog, form, selection, and feedback symbols all returned LOW risk before edits; `gitnexus_detect_changes` reported low risk with no affected processes; targeted Vitest batches for dialog migration, form/selection migration, and primitive feedback contract checks passed; `pnpm typecheck` passed; batch spec reviews passed; dialog-shell and form/selection TypeScript/UI quality reviews approved; feedback-state TypeScript/UI quality review approved.
+- Blockers: none.
+- Next steps: run full-workspace verification and, if still green, commit the rollout plus associated harness updates if desired.
+
+## 2026-05-12 — Wrote ExecPlan for shared forms/dialogs primitive rollout
+
+- Who: Orchestrator
+- Summary: Wrote the next frontend rollout ExecPlan after the completed V2.1 contract hardening and primitive expansion phases. The new plan targets shared dialogs, shared form structures, selection controls, and form feedback states, using a pattern-first migration strategy that replaces consumer-side visual overrides with primitive props and allows only tiny additive primitive follow-ups when blocked by a real migration.
+- Files changed: Added one rollout design spec, added one new ExecPlan, updated the ExecPlan index, and logged the planning session.
+- Blockers: none.
+- Next steps: Execute the rollout audit first, select representative consumers per pattern family, and then run the plan via subagent-driven or inline execution.
+
+## 2026-05-12 — Completed design-system contract hardening and primitive expansion follow-up
+
+- Who: Orchestrator + General/Oracle subagents
+- Summary: Executed both V2.1 follow-up ExecPlans. Hardened `docs/design-docs/design-system.md` and `docs/design-docs/ui-implementation-rules.md` so the V2.1 spec is the single aesthetic source of truth, page-level code is limited to layout-only customization, and missing visuals must be expressed through primitive APIs. Expanded core `apps/web/src/components/ui` primitives with additive `variant`, `size`, `tone`, and `surface` contracts, centralized shared surface/overlay helpers in `primitive-styles.ts`, strengthened focused primitive tests, and migrated `HouseholdCreateDialog` from an inline dialog width override to `DialogContent size='default'` as the first consumer proof.
+- Files changed: Design-system docs, ExecPlan index, feature record, progress log, shared primitive styling helper, focused primitive contract test, core UI primitives (card, input family, select family, dialog, drawer, alert, empty), and one representative household dialog consumer with its test.
+- Verification: GitNexus upstream impact checks for representative primitives returned LOW risk before edits; GitNexus detect-changes returned low risk after edits; `pnpm --filter web exec vitest run src/components/ui/primitive-contract.test.tsx src/components/household/household-create-dialog.test.tsx` passed after TDD red/green; `pnpm --filter web exec vitest run src/components/expense/source-picker.test.tsx src/components/expense/category-picker.test.tsx src/components/household/household-create-dialog.test.tsx` passed; `pnpm lint:fix` passed with 2 pre-existing warnings outside task scope; `pnpm typecheck` passed for web + worker; Plan 2 spec review passed; TypeScript/UI quality review approved.
+- Blockers: none.
+- Next steps: optionally migrate remaining page-level visual overrides onto the new primitive APIs and commit if desired.
+
+## 2026-05-12 — Created ExecPlans for design-system hardening and primitive expansion
+
+- Who: Orchestrator
+- Summary: Wrote two follow-up execution plans to address the gap between the newly applied V2.1 design spec and the current operational docs/component APIs. The first plan hardens `design-system.md` and `ui-implementation-rules.md` into a strict primitive-owned styling contract. The second plan expands core `components/ui` primitives (`Card`, form controls, selection family, overlays, alerts, empty states) so product pages can rely on built-in variants/sizes/tones/surfaces instead of custom visual classes.
+- Files changed: Added two ExecPlan files, updated the ExecPlan index, and logged the planning session.
+- Blockers: none.
+- Next steps: Execute the docs contract-hardening plan first, then the primitive expansion plan once the policy target is frozen.
+
+## 2026-05-12 — Refactored UI to Minimal Glassmorphism V2.1
+
+- Who: Antigravity
+- Summary: Completed a comprehensive UI refactor of `apps/web` to the "Minimal Glassmorphism V2.1" specification. Standardized color tokens using OKLCH space for better vibrance and accessibility. Implemented "Triple Layer Geometry" (backdrop-blur, hairline borders, and shadow-glass) across all surface components. Standardized interactive element radii to 12px (`rounded-lg`) and layout containers to 24px (`rounded-2xl`). Refactored Auth pages (`sign-in`, `sign-up`) to use default components without custom class overrides, ensuring design system integrity. Fixed visual issues including flickering ambient glows and light mode input contrast.
+- Files changed: 30+ files modified across `index.css` and `components/ui/`, plus `public-layout.tsx`, `auth-panel.tsx`, `sign-in-page.tsx`, and `sign-up-page.tsx`.
+- Verification: `pnpm build` successful, `pnpm lint --fix` passed, visual verification of both light and dark themes completed via browser subagent.
+- Blockers: none.
+- Next steps: monitor user feedback on the new aesthetics.
+
+## 2026-05-12 — Refine Home screen UI aesthetics and layout
+
+- Who: Orchestrator
+- Summary: Refined the Home screen UI based on design wireframes and visual rules. Fixed currency formatting (`đ` symbol). Enhanced the Hero Stats Card with a subtle gradient and larger typography for a more premium feel. Refactored the Recent Expenses list to accurately match the wireframe layout (circular icon, correct metadata grouping). Updated Category Breakdown progress bars to use semantic chart colors. Removed the "Groups" tab from the bottom navigation to ensure a proper 5-item layout on mobile without text wrapping.
+- Files changed: 5 files modified (overview-formatters.ts, hero-stats-card.tsx, recent-expenses.tsx, category-breakdown.tsx, navigation.ts).
+- Verification: `./init.sh` (lint, typecheck, test, build) passed successfully.
+- Blockers: none.
+- Next steps: none.
+
+## 2026-05-12 — Home screen wireframe + 8 new components + overview-page rewrite (feat-050)
+
+- Who: Orchestrator + Fixer subagents (parallel execution)
+- Summary: Designed Home screen wireframe (home.md) with corrected Lens Model (Groups are NOT a lens — they're cross-cutting filters). Fixed PRODUCT.md conflicts (§2, §5.1, §5.7, §5.9). Built 8 new components: LensSelector (desktop ToggleGroup + mobile tabs), GroupFilterBar (chip-based filter row), HeroStatsCard (spend, budget progress, MoM trend, daily rate), BudgetStatusCards (horizontal scroll, Overall-first, per-category bars), RecentExpenses (5-item list), CategoryBreakdown (top 5 with progress bars), HouseholdCardsSection (conditional card), EmptyState (welcome card). Rewrote overview-page.tsx to orchestrate new components with lens state management. Wired analytics/comparison/budget/expense/group query hooks.
+- Files changed: 17 files. 8 new components (components/home/), 1 wireframe doc (home.md), 1 product doc (PRODUCT.md), 5 test files, 1 overview-page.tsx.
+- Verification: TypeScript 0 errors, ESLint 0 errors (2 pre-existing warnings), 167 web tests pass, 370 worker tests pass, build successful (21 routes).
+- Blockers: none.
+- Next steps: Visual QA the home page rendering, connect to actual data in dev environment.
+
+## 2026-05-12 — Fix overview-page tests after component rewrite
+
+- Who: Fixer
+- Summary: Fixed 8 failing overview-page tests. Added missing mock hooks (useAnalyticsComparisonQueryMock, useInfiniteExpenseListQueryMock, useExpenseGroupListQueryMock) to test-setup, removed obsolete useAuthStore mock, rewrote test assertions to match new component structure (LensSelector, HeroStatsCard, RecentExpenses, EmptyState). Tests now verify page renders with/without households, empty state, loading skeletons, and error states.
+- Files changed: 5 files. 1 test-setup (added mocks, removed auth store mock), 4 test files (rewritten assertions for new components).
+- Verification: Lint 0 errors (2 pre-existing warnings), 167 tests pass (60 files), TypeScript 0 errors, build successful (21 routes).
+- Blockers: none.
+- Next steps: none.
+
+## 2026-05-12 — Design system foundation gap-fill (feat-049)
+
+- Who: Orchestrator + Fixer subagents (parallel execution)
+- Summary: Filled all gaps identified in the design-docs audit. Updated chart colors in design-system.md to match index.css actual values (blue monochromatic). Added animation tokens (--duration-fast/base/slow, --ease-out/in-out), shadow tokens (--shadow-sm/md/lg/xl), and prefers-reduced-motion rule to index.css. Installed 7 shadcn components: Progress, Alert, ToggleGroup, Spinner, DropdownMenu, Tooltip, Drawer. Built PageShell (page wrapper with MobileHeader + responsive padding), PageSection (4 variants: default/card/stats/list), and MobileHeader (56px sticky, blur, title + back + actions). Integrated PageShell into overview-page.tsx replacing raw div structure. Wrapped TooltipProvider in app-providers.tsx.
+- Files changed: 11 files. 2 new (mobile-header.tsx, page-shell.tsx), 4 modified (main-layout.tsx, overview-page.tsx, app-providers.tsx, design-system.md, index.css), 8 shadcn component files auto-generated.
+- Verification: TypeScript 0 errors, ESLint 0 errors (2 pre-existing warnings), 537 tests pass (167 web + 370 worker), build successful (21 routes).
+- Blockers: none.
+- Next steps: Proceed to build Home page with new components. Update PRODUCT.md positioning (individual-first) should feed into home screen design.
+
 ## 2026-05-11 — Completed mobile-first UI redesign implementation (feat-048)
 
 - Who: Orchestrator + Designer Subagents (parallel execution)

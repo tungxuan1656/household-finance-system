@@ -1,493 +1,300 @@
 # Design System
 
-> **When to use this file:** When refactoring core components, changing global theme, colors, fonts, shadows, or adding new component variants.  
-> **When NOT to use this file:** When building a single page — see `ui-implementation-rules.md` instead.  
-> **Single source of truth:** `apps/web/src/index.css` is the only file that defines tokens.
+> **Purpose:** Operational contract for tokens and primitive-owned visuals.
+> **Aesthetic source of truth:** `docs/design-docs/design-system-v2-spec.md`.
+> **Use this file when:** Updating tokens, primitive defaults, or primitive APIs in `apps/web/src/components/ui`.
+> **Do not use this file for:** Page-level visual styling decisions. Page and feature authors must follow `ui-implementation-rules.md`.
 
 ---
 
-## Table of Contents
+## 1. Contract Boundaries
 
-1. [Philosophy](#1-philosophy)
-2. [Single Source of Truth](#2-single-source-of-truth)
-3. [Color System](#3-color-system)
-4. [Semantic Usage Map](#4-semantic-usage-map)
-5. [Border Radius](#5-border-radius)
-6. [Shadow System](#6-shadow-system)
-7. [Typography](#7-typography)
-8. [Spacing Scale](#8-spacing-scale)
-9. [Animation Tokens](#9-animation-tokens)
-10. [Breakpoints](#10-breakpoints)
-11. [Layout Architecture](#11-layout-architecture)
-12. [Safe Areas](#12-safe-areas)
-13. [Adding Custom Tokens](#13-adding-custom-tokens)
-14. [Changing the Theme](#14-changing-the-theme)
+This repository has one visual ownership rule:
 
----
+- `docs/design-docs/design-system-v2-spec.md` defines the intended look.
+- `docs/design-docs/design-system.md` defines the operational token and primitive contract.
+- `docs/design-docs/ui-implementation-rules.md` defines how pages and shared feature components may consume primitives.
+- `apps/web/src/components/ui` owns visual styling.
+- Page, route, and feature call sites may control layout only.
 
-## 1. Philosophy
+If these documents disagree, resolve them in this order:
 
-This design system powers a **modern, minimal, clean** fintech application for household expense management. It is optimized for **mobile-first** usage while providing a premium desktop experience.
+1. `design-system-v2-spec.md`
+2. `design-system.md`
+3. `ui-implementation-rules.md`
 
-**Principles:**
-1. **Content-first**: Data and actions take precedence over decorative elements.
-2. **Mobile-native**: Bottom tab navigation, large touch targets, swipe-friendly.
-3. **Systematic**: All values derive from a 4px base scale.
-4. **Semantic**: Colors, spacing, and typography use tokens, never raw values.
-5. **Accessible**: WCAG 2.1 AA compliant, touch-friendly, screen-reader friendly.
+Non-negotiable rules:
 
-**Visual style**: Flat minimal. No glassmorphism or liquid glass (reserved for Auth pages only). Subtle shadows (`sm`/`md`), clean surfaces, generous whitespace (comfortable density).
-
-**Brand colors**: Maia-Mist primary (slate family, `oklch(0.218 0.008 223.9)`) for neutrality and clarity. Subtle accent (`oklch(0.963 0.002 197.1)`) for secondary surfaces. Destructive red for errors.
+- Do not hardcode hex colors or ad hoc visual values in app code.
+- Do not add page-level visual overrides to compensate for missing primitive variants.
+- If the needed visual treatment does not exist, extend the primitive API with `variant`, `size`, `tone`, or `surface`.
 
 ---
 
-## 2. Single Source of Truth
+## 2. Token Ownership
 
-**All design tokens live in exactly one file:**
+All tokens live in exactly one file:
 
-```
+```text
 apps/web/src/index.css
 ```
 
-**Rules:**
-- Never create additional CSS files for tokens.
-- Never hardcode color, spacing, radius, or shadow values in `.tsx` files.
-- All tokens must define both light mode (`:root`) and dark mode (`.dark`).
-- All color tokens must define both base and foreground (`--*-foreground`).
+Rules:
+
+- Tokens must be semantic, not page-specific.
+- Tokens must support both light and dark modes when applicable.
+- Tokens are introduced only to support reusable primitive behavior, not a one-off page request.
+- Visual decisions must flow from tokens into primitives, then from primitives into pages.
+
+Decision path:
+
+1. Can the existing primitive API express the desired UI?
+2. If no, can an existing token support a new primitive `variant`, `tone`, `size`, or `surface`?
+3. If no, add or revise tokens in `index.css`, then expose the result through the primitive.
+4. Never skip directly to page-level `className` visual overrides.
 
 ---
 
-## 3. Color System
+## 3. V2.1 Core Visual Rules
 
-All colors use the **OKLCH** color space for perceptual uniformity and accessibility.
+These rules operationalize V2.1 and are the canonical values and semantics for this repository.
 
-### 3.1 Light Mode (`:root`)
+### 3.1 Color System
 
-| Token | OKLCH Value | Purpose |
-|-------|-------------|---------|
-| `--background` | `oklch(1 0 0)` | Page background (pure white) |
-| `--foreground` | `oklch(0.148 0.004 228.8)` | Primary text (slate-900) |
-| `--card` | `oklch(1 0 0)` | Card surfaces |
-| `--card-foreground` | `oklch(0.148 0.004 228.8)` | Text on cards |
-| `--popover` | `oklch(1 0 0)` | Dropdown/popover backgrounds |
-| `--popover-foreground` | `oklch(0.148 0.004 228.8)` | Text on popovers |
-| `--primary` | `oklch(0.218 0.008 223.9)` | Primary actions, links (slate) |
-| `--primary-foreground` | `oklch(0.987 0.002 197.1)` | Text on primary backgrounds |
-| `--secondary` | `oklch(0.963 0.002 197.1)` | Secondary backgrounds (mist) |
-| `--secondary-foreground` | `oklch(0.218 0.008 223.9)` | Text on secondary backgrounds |
-| `--muted` | `oklch(0.963 0.002 197.1)` | Muted/disabled backgrounds |
-| `--muted-foreground` | `oklch(0.56 0.021 213.5)` | Secondary text, placeholders |
-| `--accent` | `oklch(0.963 0.002 197.1)` | Subtle highlights, hover states |
-| `--accent-foreground` | `oklch(0.218 0.008 223.9)` | Text on accent backgrounds |
-| `--destructive` | `oklch(0.577 0.245 27.325)` | Errors, delete actions |
-| `--destructive-foreground` | `oklch(0.987 0.002 197.1)` | Text on destructive backgrounds |
-| `--border` | `oklch(0.925 0.005 214.3)` | Borders, dividers |
-| `--input` | `oklch(0.925 0.005 214.3)` | Input borders |
-| `--ring` | `oklch(0.723 0.014 214.4)` | Focus rings |
+All colors use OKLCH.
 
-### 3.2 Dark Mode (`.dark`)
+| Token | Dark Mode | Light Mode | Meaning |
+| --- | --- | --- | --- |
+| `--background` | `oklch(0.14 0.02 250)` | `oklch(0.98 0.01 250)` | Lowest page surface, Midnight Slate in dark mode. |
+| `--card` | `oklch(0.20 0.03 250 / 0.65)` | `oklch(1 0 0 / 0.8)` | Glass content surface, never opaque. |
+| `--primary` | `oklch(0.70 0.15 250)` | `oklch(0.60 0.18 250)` | Maia Blue brand/action color. |
+| `--border` | `oklch(1 0 0 / 0.1)` | `oklch(0 0 0 / 0.08)` | Hairline reflective border. |
+| `--foreground` | `oklch(0.98 0.01 250)` | `oklch(0.25 0.02 250)` | Primary text. |
+| `--muted` | `oklch(0.85 0.02 250 / 0.6)` | `oklch(0.4 0.02 250)` | Secondary text and muted content. |
 
-| Token | OKLCH Value | Purpose |
-|-------|-------------|---------|
-| `--background` | `oklch(0.148 0.004 228.8)` | Dark page background |
-| `--foreground` | `oklch(0.987 0.002 197.1)` | Light text |
-| `--card` | `oklch(0.218 0.008 223.9)` | Dark card surfaces |
-| `--card-foreground` | `oklch(0.987 0.002 197.1)` | Light text on cards |
-| `--popover` | `oklch(0.218 0.008 223.9)` | Dark popover backgrounds |
-| `--popover-foreground` | `oklch(0.987 0.002 197.1)` | Light text on popovers |
-| `--primary` | `oklch(0.925 0.005 214.3)` | Lighter slate for dark mode |
-| `--primary-foreground` | `oklch(0.218 0.008 223.9)` | Dark text on primary |
-| `--secondary` | `oklch(0.275 0.011 216.9)` | Dark secondary |
-| `--secondary-foreground` | `oklch(0.987 0.002 197.1)` | Light text |
-| `--muted` | `oklch(0.275 0.011 216.9)` | Dark muted |
-| `--muted-foreground` | `oklch(0.723 0.014 214.4)` | Lighter secondary text |
-| `--accent` | `oklch(0.275 0.011 216.9)` | Dark accent |
-| `--accent-foreground` | `oklch(0.987 0.002 197.1)` | Light text |
-| `--destructive` | `oklch(0.704 0.191 22.216)` | Brighter red for dark |
-| `--destructive-foreground` | `oklch(0.987 0.002 197.1)` | Text on destructive |
-| `--border` | `oklch(1 0 0 / 10%)` | Subtle borders |
-| `--input` | `oklch(1 0 0 / 15%)` | Input borders |
-| `--ring` | `oklch(0.56 0.021 213.5)` | Focus rings |
+Operational notes:
 
-### 3.3 Chart Colors
+- `--background` is the page foundation, not pure black or pure white.
+- `--card` is a translucent glass layer, not a solid panel token.
+- `--border` is a subtle edge highlight, not a heavy divider color.
+- `--primary` is reserved for brand emphasis and key actions.
 
-| Token | Light Mode | Dark Mode | Purpose |
-|-------|------------|-----------|---------|
-| `--chart-1` | `oklch(0.55 0.15 174)` | `oklch(0.65 0.12 174)` | Primary data (teal) |
-| `--chart-2` | `oklch(0.75 0.12 45)` | `oklch(0.55 0.1 45)` | Secondary data (amber) |
-| `--chart-3` | `oklch(0.623 0.214 259.815)` | Same | Tertiary data (blue) |
-| `--chart-4` | `oklch(0.488 0.243 264.376)` | Same | Quaternary data (indigo) |
-| `--chart-5` | `oklch(0.424 0.199 265.638)` | Same | Quinary data (purple) |
+### 3.2 Glass Surface Anatomy
 
-### 3.4 Status Colors
+All block primitives that present as glass surfaces must follow the same three-part rule:
 
-| Token | Light Mode | Dark Mode | Purpose |
-|-------|------------|-----------|---------|
-| `--status-success` | `oklch(0.72 0.19 154)` | `oklch(0.55 0.15 154)` | Budget OK state |
-| `--status-success-foreground` | `oklch(0.26 0.06 156)` | `oklch(0.98 0.02 156)` | Text on success bg |
-| `--status-warning` | `oklch(0.78 0.18 70)` | `oklch(0.60 0.15 55)` | Budget warning state |
-| `--status-warning-foreground` | `oklch(0.22 0.05 40)` | `oklch(0.98 0.02 50)` | Text on warning bg |
+1. Backdrop blur: `backdrop-blur-xl` minimum.
+2. Surface opacity: `65% - 80%` effective opacity.
+3. Edge highlight: thin reflective border using the border token semantics.
 
-### 3.5 Sidebar Colors
+Applies to:
 
-| Token | Light Mode | Dark Mode |
-|-------|------------|-----------|
-| `--sidebar` | `oklch(0.987 0.002 197.1)` | `oklch(0.218 0.008 223.9)` |
-| `--sidebar-foreground` | `oklch(0.148 0.004 228.8)` | `oklch(0.987 0.002 197.1)` |
-| `--sidebar-primary` | `oklch(0.218 0.008 223.9)` | `oklch(0.488 0.243 264.376)` |
-| `--sidebar-primary-foreground` | `oklch(0.987 0.002 197.1)` | `oklch(0.987 0.002 197.1)` |
-| `--sidebar-accent` | `oklch(0.963 0.002 197.1)` | `oklch(0.275 0.011 216.9)` |
-| `--sidebar-accent-foreground` | `oklch(0.218 0.008 223.9)` | `oklch(0.987 0.002 197.1)` |
-| `--sidebar-border` | `oklch(0.925 0.005 214.3)` | `oklch(1 0 0 / 10%)` |
-| `--sidebar-ring` | `oklch(0.723 0.014 214.4)` | `oklch(0.56 0.021 213.5)` |
+- `Card`
+- `DialogContent`
+- `PopoverContent`
+- `SheetContent` when visually treated as a floating surface
 
----
+This is a single-source rule. Do not define alternate blur tiers in other docs unless the V2 spec changes.
 
-## 4. Semantic Usage Map
+### 3.3 Radius System
 
-Quick reference: which semantic token to use for which UI element.
+| Surface Type | Value | Intended Owner |
+| --- | --- | --- |
+| Page card / main container | `1.5rem` (24px) | Primitive default for large containers |
+| Interactive element | `0.75rem` (12px) | Primitive default for button/input/card internals |
+| Small element | `0.375rem` (6px) | Primitive default for checkbox/tag/badge |
 
-| UI Element | Token | Tailwind Example |
-|------------|-------|------------------|
-| Primary button | `--primary` / `--primary-foreground` | `bg-primary text-primary-foreground` |
-| Secondary button | `--secondary` / `--secondary-foreground` | `bg-secondary text-secondary-foreground` |
-| Ghost button hover | `--accent` / `--accent-foreground` | `hover:bg-accent hover:text-accent-foreground` |
-| Destructive button | `--destructive` / `--destructive-foreground` | `bg-destructive text-destructive-foreground` |
-| Page background | `--background` / `--foreground` | `bg-background text-foreground` |
-| Card surface | `--card` / `--card-foreground` | `bg-card text-card-foreground` |
-| Form input border | `--input` | `border-input` |
-| Focus ring | `--ring` | `focus-visible:ring-ring` |
-| Disabled text | `--muted-foreground` | `text-muted-foreground` |
-| Income amount | `--primary` | `text-primary` |
-| Error message | `--destructive` | `text-destructive` |
-| Budget OK badge | `--status-success` / `--status-success-foreground` | `bg-status-success/20 text-status-success` |
-| Budget warning badge | `--status-warning` / `--status-warning-foreground` | `bg-status-warning/20 text-status-warning` |
-| Border/divider | `--border` | `border-border` |
-| Badge (default) | `--primary` / `--primary-foreground` | Built-in Badge variant |
-| Badge (secondary) | `--secondary` / `--secondary-foreground` | Built-in Badge variant |
-| Skeleton loading | `--muted` | Built-in Skeleton variant |
+Call sites must not change these values with `rounded-*` classes unless the primitive API explicitly exposes a supported size or surface option.
 
----
+### 3.4 Shadow System
 
-## 5. Border Radius
+Standard glass elevation:
 
-| Token | Formula | Approximate |
-|-------|---------|-------------|
-| `--radius` | Base | `0.625rem` (~10px) |
-| `--radius-sm` | `radius * 0.6` | ~6px |
-| `--radius-md` | `radius * 0.8` | ~8px |
-| `--radius-lg` | `radius` | ~10px |
-| `--radius-xl` | `radius * 1.4` | ~14px |
-| `--radius-2xl` | `radius * 1.8` | ~18px |
-| `--radius-3xl` | `radius * 2.2` | ~22px |
-| `--radius-4xl` | `radius * 2.6` | ~26px |
-
-**Rule:** To change global radius, update only `--radius`. All derived values update automatically.
-
----
-
-## 6. Shadow System
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px 0 rgb(0 0 0 / 0.05)` | Subtle elevation |
-| `--shadow-md` | `0 4px 6px -1px rgb(0 0 0 / 0.1)` | Cards, dropdowns |
-| `--shadow-lg` | `0 10px 15px -3px rgb(0 0 0 / 0.1)` | Modals, drawers |
-| `--shadow-xl` | `0 20px 25px -5px rgb(0 0 0 / 0.1)` | Overlays |
-
-**Registration in Tailwind:**
 ```css
-@theme inline {
-  --shadow-sm: var(--shadow-sm);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-xl: var(--shadow-xl);
-}
+0 0 0 1px oklch(1 0 0 / 0.05), 0 20px 40px -12px rgba(0, 0, 0, 0.4)
 ```
 
-**Mobile note:** Use `shadow-sm` and `shadow-md` primarily. Reserve `shadow-lg`/`shadow-xl` for overlays only.
+Rules:
+
+- Use one canonical glass shadow system for elevated surfaces.
+- Do not swap shadows at page call sites.
+- Hover/elevation behavior belongs inside primitives.
+
+### 3.5 Typography System
+
+#### Typefaces
+
+- UI text: modern sans (`Geist`, `Inter`, or system equivalent already used by the app).
+- Financial data: monospace is mandatory.
+
+#### Financial UI requirements
+
+- Every currency amount, balance, total, subtotal, trend value, and ledger-like numeric column must use monospace.
+- Financial numbers must use `tabular-nums`.
+- Amount emphasis should use at least `font-semibold`.
+
+#### Hierarchy rules
+
+| Content Type | Required Treatment |
+| --- | --- |
+| Titles (`H1`, `H2`) | `font-bold tracking-tighter text-foreground` |
+| Amounts | monospace + `tabular-nums` + `font-semibold` |
+| Labels / captions | `font-medium` with muted text token semantics, `text-xs` or `text-sm` |
+
+Disallowed:
+
+- Proportional fonts for financial amounts.
+- Arbitrary one-off type sizes for routine UI.
+- Page-level typography overrides that restyle primitive content containers into a new visual system.
+
+### 3.6 Spacing System
+
+The design system uses a 4px base scale, but V2.1 defines the operational spacing targets below.
+
+| Placement | Mobile | Desktop |
+| --- | --- | --- |
+| Page margin | `1rem` (16px) | `2.5rem` (40px) |
+| Section gap | `1.5rem` (24px) | `3rem` (48px) |
+| Card padding | `1.25rem` (20px) | `1.5rem` (24px) |
+| Element gap inside cards | `0.75rem` (12px) | `1rem` (16px) |
+
+Rules:
+
+- These values are the canonical mobile/desktop spacing targets for financial UI.
+- Primitive-internal spacing is owned by the primitive.
+- Page authors may compose primitives within layout containers, but may not tighten or loosen primitive internals to create a new visual style.
+
+### 3.7 Interaction Rules
+
+Interaction guidance must be consistent across all docs.
+
+- Buttons use `hover:brightness-110`.
+- Buttons use `active:scale-95`.
+- Do not publish or implement a competing active-scale rule such as `active:scale-[0.98]` unless V2 changes.
+- Overlay backdrops follow the V2 glass rule and must not downgrade to weaker blur guidance elsewhere.
 
 ---
 
-## 7. Typography
+## 4. Primitive Ownership Rules
 
-### 7.1 Font Family
+Visual ownership belongs to `apps/web/src/components/ui`.
+
+Primitive-owned concerns:
+
+- Surface color and opacity
+- Text color semantics that belong to the primitive state
+- Border treatment and border opacity
+- Radius
+- Shadow and elevation
+- Blur and backdrop treatment
+- Hover, focus, and active visuals
+- Primitive-internal padding and gaps that define the primitive's look
+- Typography decisions baked into primitive roles or slots
+
+Call-site-owned concerns:
+
+- Width and height constraints
+- Min/max constraints
+- Grid/flex placement
+- Responsive layout changes
+- Container margins used for placement
+- Positioning and stacking within page layout
+- Order and visibility
+
+If a primitive exposes a prop for a visual decision, use that prop. If it does not, add the prop at the primitive layer instead of overriding with page classes.
+
+---
+
+## 5. Token Changes Are Escalations, Not First-Line Work
+
+Adding tokens is allowed only when all of the following are true:
+
+1. The V2.1 aesthetic requires a reusable visual concept that existing tokens cannot express.
+2. The concept will be owned by one or more primitives.
+3. The need cannot be satisfied by adding a primitive `variant`, `size`, `tone`, or `surface` backed by existing tokens.
+4. The new token has a stable semantic meaning beyond one screen.
+
+Do not use custom tokens as the first-line answer to feature work.
+
+Bad escalation path:
+
+1. Page needs a special card.
+2. Engineer adds `bg-report-card`, `rounded-[20px]`, `shadow-[...]`.
+3. Page now owns visuals.
+
+Required escalation path:
+
+1. Page needs a special card.
+2. Evaluate `Card` API.
+3. Add `surface="report"` or `variant="report"` to `Card` if the treatment is valid and reusable.
+4. Only add tokens if the primitive cannot represent the new surface with existing tokens.
+
+---
+
+## 6. Primitive API Guidance
+
+Preferred primitive extension points:
+
+- `variant`: role or interaction style
+- `size`: dimension and internal density
+- `tone`: semantic emphasis
+- `surface`: container or glass treatment
+
+Examples:
 
 ```tsx
-// app/layout.tsx
-import { Inter } from "next/font/google"
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-})
+<Button variant="default" size="lg">Save changes</Button>
+
+<Badge variant="destructive">Over budget</Badge>
+
+<Card surface="default">...</Card>
 ```
 
-**Registration:**
-```css
-@theme inline {
-  --font-sans: var(--font-sans);
-  --font-heading: var(--font-sans);
-}
-```
-
-**Rule:** To change font, update `layout.tsx` (1 line) and ensure `--font-sans` is registered. No other files need changes.
-
-### 7.2 Type Scale
-
-| Token | Mobile | Desktop | Line Height | Usage |
-|-------|--------|---------|-------------|-------|
-| `text-xs` | 12px | 12px | 16px | Captions, badges, timestamps |
-| `text-sm` | 14px | 14px | 20px | Secondary text, buttons, labels |
-| `text-base` | 16px | 16px | 24px | Body text, inputs, form labels |
-| `text-lg` | 18px | 18px | 28px | Section titles, card headings |
-| `text-xl` | 20px | 24px | 28px / 32px | Page titles |
-| `text-2xl` | 24px | 30px | 32px / 36px | Dashboard stats, hero numbers |
-| `text-3xl` | 30px | 36px | 36px / 40px | Welcome messages, large figures |
-
-**Font Weights:**
-- `font-normal` (400): Body text, descriptions
-- `font-medium` (500): Buttons, labels, tab triggers
-- `font-semibold` (600): Headings, card titles, section headers
-- `font-bold` (700): Hero numbers, emphasis (rare)
-
-**Rules:**
-- Never use arbitrary font sizes like `text-[15px]` or `text-[13px]`.
-- Never use `font-thin` (100) or `font-extralight` (200).
-- Mobile headings should not exceed `text-2xl`.
-
-### 7.3 Line Height
-
-| Context | Value |
-|---------|-------|
-| Headings | `leading-tight` (1.25) |
-| Body text | `leading-normal` (1.5) |
-| Captions | `leading-snug` (1.375) |
-| List items | `leading-relaxed` (1.625) |
-
----
-
-## 8. Spacing Scale
-
-All spacing uses a **4px base unit**.
-
-| Token | Value | Common Usage |
-|-------|-------|-------------|
-| `1` | 4px | Tight internal gaps |
-| `2` | 8px | Icon margins, small gaps |
-| `3` | 12px | Medium gaps, compact padding |
-| `4` | 16px | Standard padding, section gaps |
-| `5` | 20px | Card padding (comfortable) |
-| `6` | 24px | Section margins |
-| `8` | 32px | Large section gaps |
-| `10` | 40px | Page-level spacing |
-| `12` | 48px | Major section breaks |
-| `16` | 64px | Hero / page breaks |
-
-**Mobile-first rules:**
-- Default padding: `p-4` (16px) on mobile, `md:p-6`, `lg:p-8`.
-- Section gaps: `gap-4` mobile, `md:gap-6`.
-- List items: `py-4` (16px vertical) for comfortable density.
-
----
-
-## 9. Animation Tokens
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--duration-fast` | `150ms` | Hover, focus, opacity changes |
-| `--duration-base` | `200ms` | State changes, shadow transitions |
-| `--duration-slow` | `300ms` | Dialogs, sheets, drawers, page transitions |
-| `--ease-out` | `cubic-bezier(0, 0, 0.2, 1)` | Elements entering |
-| `--ease-in-out` | `cubic-bezier(0.4, 0, 0.2, 1)` | State switching |
-
-**Registration:**
-```css
-@theme inline {
-  --transition-duration-fast: var(--duration-fast);
-  --transition-duration-base: var(--duration-base);
-  --transition-duration-slow: var(--duration-slow);
-  --ease-out: var(--ease-out);
-  --ease-in-out: var(--ease-in-out);
-}
-```
-
-**Rules:**
-- Never exceed 300ms duration.
-- Never use `animate-bounce` or `animate-pulse` for UI elements (use `Skeleton` for loading).
-- Respect `prefers-reduced-motion`:
-```css
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-```
-
----
-
-## 10. Breakpoints
-
-| Name | Value | Tailwind Prefix | Usage |
-|------|-------|-----------------|-------|
-| `sm` | 640px | `sm:` | Large phones |
-| `md` | 768px | `md:` | Tablets, small laptops (sidebar appears) |
-| `lg` | 1024px | `lg:` | Laptops (max-width container) |
-| `xl` | 1280px | `xl:` | Desktops |
-| `2xl` | 1536px | `2xl:` | Large desktops |
-
-**Strategy:** Mobile-first. Write styles for mobile first, then override with `md:`, `lg:`.
-
----
-
-## 11. Layout Architecture
-
-### 11.1 App Shell
-
-```
-<AppShell>
-  ├── <DesktopSidebar>  (md+: sticky, 240-280px)
-  ├── <MobileHeader>    (<md: 56px, sticky, blur)
-  ├── <MainContent>     (flex-1, scrollable)
-  └── <BottomTab>       (<md: fixed, 64px)
-```
-
-### 11.2 Desktop Sidebar
-
-- Width: 240–280px
-- Position: `sticky top-0`
-- Background: `bg-sidebar`
-- Contains: Logo, primary navigation links, user avatar
-
-### 11.3 Mobile Header
-
-- Height: 56px
-- Position: `sticky top-0 z-40`
-- Background: `bg-background/80 backdrop-blur-md`
-- Border: `border-b border-border/50`
-- Safe area: `pt-safe`
-- Contains: Back button (if applicable), page title, action buttons
-
-### 11.4 Bottom Tab Bar
-
-- Height: 64px + `pb-safe`
-- Position: `fixed bottom-0 z-50`
-- Background: `bg-background/50 backdrop-blur-lg border-t border-border/70`
-- Shadow: `shadow-md`
-- 5 tabs: Home, Expenses, Budgets, Insights, Profile
-- Each tab icon: 24px, label: `text-xs`
-- Active tab: `text-primary`
-- Inactive tab: `text-muted-foreground`
-
-### 11.5 Main Content Area
-
-| Breakpoint | Padding | Bottom Padding |
-|------------|---------|----------------|
-| Mobile | `p-4` (16px) | `pb-24` (96px, accounts for bottom tab) |
-| md | `p-6` (24px) | `pb-8` (32px) |
-| lg | `p-8` (32px) | `pb-0` |
-| Max width | — | `max-w-5xl` centered on `lg+` |
-
-### 11.6 Scroll Behavior
-
-- Main content area scrolls independently.
-- Mobile header and bottom tab remain fixed.
-- Desktop sidebar scrolls independently if content overflows.
-
----
-
-## 12. Safe Areas
-
-Pre-defined utilities in `index.css`:
-
-```css
-@utility pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-@utility pt-safe { padding-top: env(safe-area-inset-top); }
-@utility pl-safe { padding-left: env(safe-area-inset-left); }
-@utility pr-safe { padding-right: env(safe-area-inset-right); }
-@utility p-safe {
-  padding: env(safe-area-inset-top) env(safe-area-inset-right)
-    env(safe-area-inset-bottom) env(safe-area-inset-left);
-}
-```
-
-**Usage:**
-- Apply `pb-safe` to fixed bottom elements (BottomTab).
-- Apply `pt-safe` to fixed top elements (MobileHeader).
-
----
-
-## 13. Adding Custom Tokens
-
-To add a new color (e.g., `--warning`):
-
-### Step 1: Define in `index.css`
-
-```css
-:root {
-  --warning: oklch(0.84 0.16 84);
-  --warning-foreground: oklch(0.28 0.07 46);
-}
-.dark {
-  --warning: oklch(0.41 0.11 46);
-  --warning-foreground: oklch(0.99 0.02 95);
-}
-```
-
-### Step 2: Register in `@theme inline`
-
-```css
-@theme inline {
-  --color-warning: var(--warning);
-  --color-warning-foreground: var(--warning-foreground);
-}
-```
-
-### Step 3: Use in components
+Avoid this pattern:
 
 ```tsx
-<div className="bg-warning text-warning-foreground">Warning</div>
+<Button className="bg-primary text-white rounded-full shadow-lg">Save changes</Button>
 ```
 
-**Rules:**
-- New tokens must always define light mode, dark mode, and foreground pair.
-- Update the **Semantic Usage Map** (§4) when adding new tokens.
-- Never create tokens without documenting their intended usage.
+If the desired API does not exist yet, the primitive should be extended before the page is considered complete.
 
 ---
 
-## 14. Changing the Theme
+## 7. Reviewer Checklist
 
-### To change primary color:
+Use this checklist when reviewing token or primitive changes.
 
-1. Update `--primary` in `:root` and `.dark` in `index.css`.
-2. Update `--chart-1` if needed.
-3. Done. All components using `bg-primary` update automatically.
-
-### To change font:
-
-1. Update font import in `app/layout.tsx`.
-2. Ensure `--font-sans` variable is set.
-3. Done.
-
-### To change border radius:
-
-1. Update `--radius` in `index.css`.
-2. All `rounded-lg`, `rounded-xl`, etc. update automatically.
-
-### To add a new semantic token:
-
-Follow the **3-step guide in §13** above.
+- [ ] The doc change still defers aesthetic authority to `design-system-v2-spec.md`.
+- [ ] Token values and semantics match V2.1 for background, card, primary, border, foreground, and muted.
+- [ ] Glass surfaces still require blur + translucency + edge highlight.
+- [ ] Overlay blur guidance is consistent with the glass rule.
+- [ ] Button active-state guidance is consistently `active:scale-95`.
+- [ ] Financial amounts require monospace and `tabular-nums`.
+- [ ] Spacing guidance matches the canonical mobile and desktop values.
+- [ ] No section encourages page-owned visual styling.
+- [ ] No section treats custom tokens as a default feature-level solution.
+- [ ] Any new visual need is routed through primitive API expansion.
 
 ---
 
-## Appendix A: Token Migration Guide (from old docs)
+## 8. Quick Violation Matrix
 
-| Old Token (if any) | New Token | Notes |
-|--------------------|-----------|-------|
-| `bg-blue-500` | `bg-primary` | Now slate (maia-mist) |
-| `text-gray-600` | `text-muted-foreground` | Consistent naming |
-| `bg-white` | `bg-background` / `bg-card` | Semantic |
-| `bg-white/10` | `bg-card/80` | For glass-like surfaces |
+| If you see this | It means | Required fix |
+| --- | --- | --- |
+| Page asks for new `bg-*`, `text-*`, `border-*`, `rounded-*`, `shadow-*`, or `backdrop-blur-*` on a primitive | Visual ownership leaked to the call site | Move styling into the primitive or add a primitive prop |
+| New token added for one page only | Token layer is being used as a workaround | Remove token or justify it as reusable primitive support |
+| Opaque card guidance | Drift from V2.1 glass spec | Restore translucent card treatment |
+| Overlay doc says weaker blur than cards | Contradictory glass rules | Use the canonical glass rule |
+| Financial amounts shown in proportional font | Readability regression for finance UI | Use monospace + `tabular-nums` |
+
+---
+
+## 9. Summary
+
+The visual system is centralized on purpose:
+
+- V2.1 defines the look.
+- Tokens encode reusable semantics.
+- `components/ui` owns visuals.
+- Pages compose primitives and control layout only.
+- Missing visuals are solved by extending primitives, not patching pages.

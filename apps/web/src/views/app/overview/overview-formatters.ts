@@ -10,10 +10,16 @@ function getCurrentPeriod() {
 }
 
 function formatCurrency(amountMinor: number, currencyCode: string) {
-  return new Intl.NumberFormat('vi-VN', {
+  const formatted = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: currencyCode,
   }).format(amountMinor / 100)
+
+  if (currencyCode === 'VND') {
+    return formatted.replace('₫', 'đ')
+  }
+
+  return formatted
 }
 
 function formatPeriodLabel(period: string) {

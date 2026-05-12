@@ -56,7 +56,7 @@ export const HouseholdCreateDialog = ({
           {t('app.households.actions.create')}
         </Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-md'>
+      <DialogContent size='default'>
         <DialogHeader>
           <DialogTitle>{t('app.households.create.title')}</DialogTitle>
           <DialogDescription>

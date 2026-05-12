@@ -22,6 +22,7 @@ Canonical standards index for agent execution and review.
 - `frontend/form-pattern.md`
 - `frontend/dialog-and-form-pattern.md`
 - `frontend/i18n-label-pattern.md`
+- `../testing/test-placement-and-sharding-convention.md` (canonical web/frontend test scope and placement policy)
 
 ## Backend
 

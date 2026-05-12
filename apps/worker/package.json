@@ -8,7 +8,7 @@
     "dev": "wrangler dev",
     "lint": "eslint .",
     "start": "wrangler dev",
-    "test": "rtk vitest run",
+    "test": "vitest run",
     "cf-typegen": "wrangler types",
     "db:migrate:local": "wrangler d1 migrations apply household-finance-main --local --config ./wrangler.jsonc",
     "db:migrate:remote": "wrangler d1 migrations apply household-finance-main --remote --config ./wrangler.jsonc",
