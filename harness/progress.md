@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-13 — Simplified Home overview DTO flow and StateCard sections
+
+- Who: Orchestrator + Oracle reviewer
+- Summary: Simplified the Home overview data flow by passing backend expense/group DTOs directly into UI boundaries instead of narrowing through mirror types and memoized mappings. Replaced the placeholder-specific card wrapper with reusable `StateCard` loading/empty/error handling, moved recent expenses and category statistics into smart overview sections that receive `householdId` and own their widget queries, and documented the StateCard plus smart-vs-dumb component break guide in the frontend guide.
+- Files changed: Home overview composition, smart overview widget sections, shared state-card handling, Home source-contract test coverage, frontend governance docs, and this progress log.
+- Verification: GitNexus upstream impact checks for touched Home overview symbols returned LOW risk; TDD red-green completed for the `StateCard` and smart-section source contracts; focused Vitest passed; `pnpm lint:fix` passed; `pnpm typecheck:web` passed; `pnpm test:web` passed; Oracle TypeScript/simplification review approved with no remaining warnings; `gitnexus_detect_changes(scope: all)` reported low risk and 0 affected processes; `./init.sh` passed fully.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
 ## 2026-05-13 — Completed Home card-composition and sidebar card refactor
 
 - Who: Orchestrator + Fixer subagent
