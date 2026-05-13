@@ -20,7 +20,9 @@ import { useBudgetListQuery } from '@/hooks/api/use-budgets'
 import { useExpenseSummaryQuery } from '@/hooks/api/use-expense'
 import { useInfiniteExpenseListQuery } from '@/hooks/api/use-expense'
 import { useExpenseGroupListQuery } from '@/hooks/api/use-groups'
+import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
+import { householdActions } from '@/stores/household.store'
 import { useHouseholdStore } from '@/stores/household.store'
 import {
   formatCurrency,
@@ -38,6 +40,7 @@ function getDaysRemaining(): number {
 
 function OverviewPage() {
   const households = useHouseholdStore.use.households()
+  const householdsLoading = useHouseholdStore.use.isLoading()
   const period = getCurrentPeriod()
 
   // ── Lens state ──────────────────────────────────────────────────
@@ -61,6 +64,12 @@ function OverviewPage() {
     return list
   }, [households])
 
+  useEffect(() => {
+    if (households.length === 0 && !householdsLoading) {
+      void householdActions.fetchHouseholds()
+    }
+  }, [householdActions, households.length, householdsLoading])
+
   // Keep active lens in sync if selected household is removed
   useEffect(() => {
     if (activeLens.type === 'household') {
@@ -82,6 +91,7 @@ function OverviewPage() {
     period,
     household_id: householdId,
   })
+  const referenceCategoriesQuery = useReferenceCategoriesQuery()
   const budgetListQuery = useBudgetListQuery(householdId)
   const expenseSummaryQuery = useExpenseSummaryQuery(
     householdId ? { household_id: householdId } : undefined,
@@ -220,9 +230,9 @@ function OverviewPage() {
           onRetry={() => overviewQuery.refetch()}
         />
 
-        {/* Budget status (simplified: show budget cards with limits only for now) */}
+        {/* Budget summary */}
         {budgetListQuery.data && budgetListQuery.data.items.length > 0 ? (
-          <BudgetCardsPlaceholder
+          <BudgetSummaryCards
             budgets={budgetListQuery.data.items}
             currencyCode={budgetListQuery.data.items[0]?.currencyCode ?? 'VND'}
           />
@@ -235,6 +245,7 @@ function OverviewPage() {
             expenses={recentItems}
             isEmpty={recentItems.length === 0 && !recentExpensesQuery.isLoading}
             isLoading={recentExpensesQuery.isLoading}
+            referenceCategories={referenceCategoriesQuery.data?.items}
             onRetry={() => recentExpensesQuery.refetch()}
           />
 
@@ -243,6 +254,7 @@ function OverviewPage() {
             <CategoryBreakdownPlaceholder
               categories={overviewData.topCategories}
               currencyCode={overviewData.currencyCode}
+              referenceCategories={referenceCategoriesQuery.data?.items}
             />
           ) : overviewQuery.isLoading ? (
             <Card surface='glass'>
@@ -268,16 +280,18 @@ function OverviewPage() {
 // ── Inline placeholders (to avoid too many component files) ──────
 
 import { CategoryBreakdown } from '@/components/home/category-breakdown'
-import { Progress } from '@/components/ui/progress'
 import type { AnalyticsTopCategoryDTO } from '@/types/analytics'
 import type { BudgetDTO } from '@/types/budget'
+import type { ReferenceCategoryDTO } from '@/types/reference-data'
 
 function CategoryBreakdownPlaceholder({
   categories,
   currencyCode,
+  referenceCategories,
 }: {
   categories: AnalyticsTopCategoryDTO[]
   currencyCode: string
+  referenceCategories?: ReferenceCategoryDTO[]
 }) {
   if (categories.length === 0) {
     return (
@@ -286,6 +300,7 @@ function CategoryBreakdownPlaceholder({
         categories={[]}
         currencyCode={currencyCode}
         isLoading={false}
+        referenceCategories={referenceCategories}
         totalSpendMinor={0}
       />
     )
@@ -297,43 +312,58 @@ function CategoryBreakdownPlaceholder({
       currencyCode={currencyCode}
       isEmpty={false}
       isLoading={false}
+      referenceCategories={referenceCategories}
       totalSpendMinor={0}
     />
   )
 }
 
-function BudgetCardsPlaceholder({
+function BudgetSummaryCards({
   budgets,
-  currencyCode: _currencyCode,
+  currencyCode,
 }: {
   budgets: BudgetDTO[]
   currencyCode: string
 }) {
-  // Simple display of budget cards with limits
   return (
     <div className='flex snap-x snap-mandatory gap-3 overflow-x-auto px-0 pb-2 md:flex-wrap md:overflow-x-visible'>
       {budgets.slice(0, 5).map((budget) => (
         <Card
           key={budget.id}
-          className='max-w-55 min-w-45 shrink-0 snap-start md:shrink'
+          className='max-w-60 min-w-48 shrink-0 snap-start border-border/60 bg-card/90 shadow-sm md:shrink'
           size='sm'
           surface='glass'>
-          <CardContent className='space-y-2 py-4'>
-            <span className='text-sm font-medium'>
-              {t('app.overview.budget.title')}
-            </span>
-            <Progress className='h-2' value={0} />
-            <p className='text-xs text-muted-foreground'>
-              {t('app.overview.budget.limit', {
-                amount: formatCurrency(
-                  budget.totalLimitMinor,
-                  budget.currencyCode,
-                ),
-              })}
-            </p>
-            <p className='text-xs text-muted-foreground'>
-              {t('app.overview.budget.placeholder')}
-            </p>
+          <CardContent className='space-y-3 p-4'>
+            <div className='flex items-start justify-between gap-3'>
+              <div className='min-w-0'>
+                <p className='truncate text-sm font-medium'>
+                  {budget.categoryLimits.length > 0
+                    ? `${budget.categoryLimits.length} category budget`
+                    : 'Overall budget'}
+                </p>
+                <p className='text-xs text-muted-foreground'>{budget.period}</p>
+              </div>
+              <span className='rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground'>
+                {formatCurrency(budget.totalLimitMinor, currencyCode)}
+              </span>
+            </div>
+
+            {budget.categoryLimits.length > 0 ? (
+              <div className='space-y-2'>
+                {budget.categoryLimits.slice(0, 3).map((limit) => (
+                  <div
+                    key={limit.categoryKey}
+                    className='flex items-center justify-between gap-2'>
+                    <span className='truncate text-xs text-muted-foreground'>
+                      {limit.categoryKey}
+                    </span>
+                    <span className='font-mono text-xs tabular-nums'>
+                      {formatCurrency(limit.limitMinor, budget.currencyCode)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       ))}

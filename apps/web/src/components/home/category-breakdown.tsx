@@ -1,9 +1,13 @@
 'use client'
 
+import * as React from 'react'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
+import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
+import type { ReferenceCategoryDTO } from '@/types/reference-data'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
 type CategoryItem = {
@@ -18,21 +22,15 @@ type CategoryBreakdownProps = {
   totalSpendMinor: number
   isLoading: boolean
   isEmpty: boolean
+  referenceCategories?: ReferenceCategoryDTO[]
 }
-
-const CHART_TONES = [
-  'chart-1',
-  'chart-2',
-  'chart-3',
-  'chart-4',
-  'chart-5',
-] as const
 
 function CategoryBreakdown({
   categories,
   currencyCode,
   isLoading,
   isEmpty,
+  referenceCategories,
 }: CategoryBreakdownProps) {
   return (
     <Card surface='glass'>
@@ -46,27 +44,40 @@ function CategoryBreakdown({
           <EmptyState />
         ) : (
           <div className='space-y-3'>
-            {categories.map((cat, index) => {
-              const tone = CHART_TONES[index % CHART_TONES.length]
+            {categories.map((cat) => {
+              const presentation = getCategoryPresentation(
+                cat.categoryKey,
+                referenceCategories,
+              )
+              const accentStyle = presentation.color
+                ? { color: presentation.color }
+                : undefined
+              const progressStyle = presentation.color
+                ? ({
+                    '--progress-background': presentation.color,
+                  } as React.CSSProperties)
+                : undefined
 
               return (
                 <div key={cat.categoryKey} className='flex flex-col gap-1'>
                   <div className='flex items-center justify-between'>
-                    <span className='text-sm font-medium'>
-                      {cat.categoryKey}
+                    <span className='text-sm font-medium' style={accentStyle}>
+                      {presentation.label}
                     </span>
                     <div className='flex items-center gap-2'>
                       <span className='font-mono text-sm text-muted-foreground tabular-nums'>
                         {cat.percentOfTotal}%
                       </span>
-                      <span className='font-mono text-sm tabular-nums'>
+                      <span
+                        className='font-mono text-sm tabular-nums'
+                        style={accentStyle}>
                         {formatCurrency(cat.totalSpendMinor, currencyCode)}
                       </span>
                     </div>
                   </div>
                   <Progress
                     className='h-1.5 rounded-full'
-                    tone={tone}
+                    style={progressStyle}
                     value={cat.percentOfTotal}
                   />
                 </div>

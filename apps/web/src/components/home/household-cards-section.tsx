@@ -34,16 +34,18 @@ function HouseholdCardsSection({
         <LoadingSkeleton />
       ) : household ? (
         <Card surface='glass'>
-          <CardContent className='space-y-2 p-4'>
-            <div className='flex items-baseline gap-1'>
-              <span className='text-sm font-semibold'>{household.name}</span>
-              <span className='text-xs text-muted-foreground'>
-                ({household.memberCount}{' '}
-                {t('app.overview.householdCard.members')})
+          <CardContent className='space-y-3 p-4'>
+            <div className='flex items-center justify-between gap-2'>
+              <span className='truncate text-sm font-semibold'>
+                {household.name}
+              </span>
+              <span className='rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground'>
+                {household.memberCount}{' '}
+                {t('app.overview.householdCard.members')}
               </span>
             </div>
 
-            <div className='space-y-1 text-sm'>
+            <div className='space-y-2 text-sm'>
               <p>
                 <span className='text-muted-foreground'>
                   {t('app.overview.householdCard.totalSpend')}{' '}

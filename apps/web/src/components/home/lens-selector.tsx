@@ -32,7 +32,7 @@ function LensSelector({ lenses, activeLens, onLensChange }: LensSelectorProps) {
 
   return (
     <ToggleGroup
-      className='justify-center overflow-x-auto px-4 md:px-0'
+      className='justify-center overflow-x-auto px-3 py-1 md:px-0'
       size='sm'
       type='single'
       value={activeValue}
@@ -51,7 +51,10 @@ function LensSelector({ lenses, activeLens, onLensChange }: LensSelectorProps) {
         }
       }}>
       {lenses.map((lens) => (
-        <ToggleGroupItem key={getLensValue(lens)} value={getLensValue(lens)}>
+        <ToggleGroupItem
+          key={getLensValue(lens)}
+          className='rounded-full px-4 py-2 text-sm'
+          value={getLensValue(lens)}>
           {getLensLabel(lens)}
         </ToggleGroupItem>
       ))}

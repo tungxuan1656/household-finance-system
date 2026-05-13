@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
+import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
+import type { ReferenceCategoryDTO } from '@/types/reference-data'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
 type RecentExpenseItem = {
@@ -28,6 +30,7 @@ type RecentExpensesProps = {
   error: Error | null
   onRetry: () => void
   isEmpty: boolean
+  referenceCategories?: ReferenceCategoryDTO[]
 }
 
 function formatRelativeDate(timestampSec: number): string {
@@ -48,6 +51,7 @@ function RecentExpenses({
   error,
   onRetry,
   isEmpty,
+  referenceCategories,
 }: RecentExpensesProps) {
   return (
     <Card surface='glass'>
@@ -70,47 +74,74 @@ function RecentExpenses({
           <EmptyState />
         ) : (
           <ul className='divide-y divide-border'>
-            {expenses.map((item) => (
-              <li
-                key={item.id}
-                className='flex items-start gap-3 py-3 first:pt-0 last:pb-0'>
-                <Badge className='size-10 rounded-full p-0' variant='outline'>
-                  <ReceiptText className='size-5 text-muted-foreground' />
-                </Badge>
+            {expenses.map((item) => {
+              const category = getCategoryPresentation(
+                item.categoryKey,
+                referenceCategories,
+              )
 
-                <div className='min-w-0 flex-1 py-0.5'>
-                  <p className='truncate text-sm font-medium'>{item.title}</p>
-                  <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
-                    <span>{formatRelativeDate(item.occurredAt)}</span>
-
-                    {item.payerName && (
-                      <>
-                        <span aria-hidden='true'>&middot;</span>
-                        <span>{item.payerName}</span>
-                      </>
+              return (
+                <li
+                  key={item.id}
+                  className='flex items-start gap-3 py-3 first:pt-0 last:pb-0'>
+                  <Badge
+                    className='size-10 rounded-full p-0'
+                    style={
+                      category.color
+                        ? {
+                            backgroundColor: `${category.color}14`,
+                            color: category.color,
+                          }
+                        : undefined
+                    }
+                    variant='outline'>
+                    {category.iconUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- remote category icons are user-provided metadata; keep local fallback without widening Next config
+                      <img
+                        alt=''
+                        aria-hidden='true'
+                        className='size-5 object-contain'
+                        src={category.iconUrl}
+                      />
+                    ) : (
+                      <ReceiptText className='size-5' />
                     )}
+                  </Badge>
 
-                    <span aria-hidden='true'>&middot;</span>
-                    <span className='capitalize'>{item.categoryKey}</span>
+                  <div className='min-w-0 flex-1 py-0.5'>
+                    <p className='truncate text-sm font-medium'>{item.title}</p>
+                    <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
+                      <span>{formatRelativeDate(item.occurredAt)}</span>
 
-                    {item.groupNames && item.groupNames.length > 0 && (
-                      <>
-                        <span aria-hidden='true'>&middot;</span>
-                        {item.groupNames.map((group) => (
-                          <Badge key={group} variant='secondary'>
-                            {group}
-                          </Badge>
-                        ))}
-                      </>
-                    )}
+                      {item.payerName && (
+                        <>
+                          <span aria-hidden='true'>&middot;</span>
+                          <span>{item.payerName}</span>
+                        </>
+                      )}
+
+                      <span aria-hidden='true'>&middot;</span>
+                      <span>{category.label}</span>
+
+                      {item.groupNames && item.groupNames.length > 0 && (
+                        <>
+                          <span aria-hidden='true'>&middot;</span>
+                          {item.groupNames.map((group) => (
+                            <Badge key={group} variant='secondary'>
+                              {group}
+                            </Badge>
+                          ))}
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <span className='shrink-0 py-0.5 font-mono text-sm font-medium tabular-nums'>
-                  {formatCurrency(item.amountMinor, item.currencyCode)}
-                </span>
-              </li>
-            ))}
+                  <span className='shrink-0 py-0.5 font-mono text-sm font-medium tabular-nums'>
+                    {formatCurrency(item.amountMinor, item.currencyCode)}
+                  </span>
+                </li>
+              )
+            })}
           </ul>
         )}
       </CardContent>

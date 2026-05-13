@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-12 — Completed `/home` overview refinement for category metadata and first-entry household lenses
+
+- Who: Orchestrator + Fixer/Oracle subagents
+- Summary: Executed the approved refinement follow-up for protected `/home` after the earlier primitive-first hardening pass. This round tightened the lens selector geometry, added a reusable category-presentation helper backed by the existing reference-data catalog, updated touched Home sections to use category labels/icons/colors instead of raw keys where metadata exists, improved household and budget summary card composition, and fixed the first-entry household-lens loading bug by wiring `/home` to the existing household store fetch path. The pass stayed frontend-only, kept the dashboard truthful, and did not add component render tests per user instruction.
+- Files changed: Home overview composition, touched Home section components, the reusable reference-data category presentation helper, refinement design/ExecPlan records, feature evidence, and this progress log.
+- Verification: GitNexus upstream impact checks for the refined Home symbols returned LOW risk before edits; `gitnexus_detect_changes` (scope `all`) returned low risk with 0 affected processes after edits; spec review passed after removing placeholder-like budget behavior; code-quality review surfaced and the final pass fixed a real store-action runtime crash plus unsafe category fallback typing; Playwright runtime validation on `/home` finished with 0 console errors and showed both personal and household lenses after load plus metadata-backed category labels/icons; `pnpm lint:fix` passed with 1 pre-existing unrelated `<img>` warning in `apps/web/src/components/expense/category-picker.tsx`; `pnpm --filter web test` passed (16 files, 47 tests); `./init.sh` passed fully.
+- Blockers: none.
+- Next steps: if desired, review the final diff and create a git commit for the refinement plus artifact updates.
+
 ## 2026-05-12 — Completed `/home` primitive-first premium refactor hardening
 
 - Who: Orchestrator + Fixer subagent
