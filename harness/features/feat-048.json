@@ -1,17 +1,13 @@
 {
   "id": "feat-048",
-  "name": "Mobile-first UI redesign — Design System & Implementation Rules",
+  "name": "Mobile-first UI redesign",
   "status": "done",
-  "design_docs": [
-    "docs/design-docs/design-system.md",
-    "docs/design-docs/ui-implementation-rules.md"
-  ],
+  "design_docs": ["docs/design-docs/shadcn-first-ui-web-guide.md"],
   "dependencies": ["feat-005", "feat-035", "feat-009b", "feat-047"],
   "scope": [
-    "Define global design tokens (colors, radius, shadow, typography, spacing, animation)",
-    "Document layout architecture (mobile header, bottom tab, desktop sidebar, main content)",
-    "Create implementation rules for page building (component usage, styling, responsive, accessibility)",
-    "Provide anti-patterns and checklist for daily development"
+    "Document layout architecture for mobile header, bottom tab, desktop sidebar, and main content",
+    "Create mobile-first page structure and responsive UX patterns",
+    "Use shadcn components as the web UI baseline"
   ],
   "pages_affected": [
     "Home (feat-045)",
@@ -34,10 +30,9 @@
       "Phase 7: Profile Page",
       "Phase 8: Auth Pages",
       "Phase 9: Landing Page",
-      "Phase 10: V2.1 contract hardening and primitive API expansion",
-      "Phase 11: Shared forms/dialogs primitive rollout"
+      "Phase 10: Custom design-system documentation removed after shadcn-only decision"
     ],
     "pending": []
   },
-  "notes": "Phase 7 (Profile Page) completed on 2026-05-11. Refactored Profile/Settings Page with mobile-first UX: removed redundant Shortcuts card (duplicated Memberships functionality 100%), consolidated onboarding CTA into Memberships empty state, reordered sections by usage frequency (Profile → Account → Memberships), added visible page title (text-xl md:text-2xl), applied card hover effects (border-transparent + hover:border-primary/20 + hover:shadow-md), elevated card titles to text-lg font-semibold, ensured all buttons and links meet min-h-11 (44px) touch targets, tightened container gap to gap-4 md:gap-6. Also fixed pre-existing calendar.tsx type error (removed invalid 'table' class name from react-day-picker v10 classNames) which unblocked build. Phase 8 (Auth Pages) completed on 2026-05-11. Verified liquid glass design integrity across sign-in, sign-up, public-layout, auth-panel, and auth-field. Identified that a subsequent cleanup commit (3acc15d) accidentally reverted the global Input component's liquid glass styles (border-white/20, bg-background/50, dark:border-white/10, dark:bg-white/5, focus glow). Restored liquid glass styling to all 5 auth inputs via explicit className overrides without refactoring the pages. Added subtle mobile refinement: sign-up footer now uses flex layout with flex-wrap (matching sign-in) for better text/link wrapping on narrow screens. Phase 9 (Landing Page) completed on 2026-05-11. Reviewed and refined mobile spacing, replaced hardcoded text-blue-950 with semantic tokens (bg-primary-foreground text-primary) for dark mode contrast compliance, reduced excessive mobile gaps in How It Works (gap-16→gap-10 md:gap-12) and Social Proof (gap-12→gap-8 md:gap-24), tightened card padding on mobile (p-8→p-6 md:p-8), and added subtle hover effects to testimonial cards for tactile consistency with other app pages. On 2026-05-12, follow-up contract hardening and primitive expansion aligned design-system docs to the V2.1 spec, expanded base primitives with additive variant/size/tone/surface APIs, and established a first consumer migration proof through dialog sizing. Later that same day, the shared forms/dialogs rollout phase migrated representative dialog shells, form structures, selection controls, and feedback states away from consumer-side visual restyling: shared dialogs now use DialogContent size='default', representative forms and filter controls now use primitive sizing and card/separator composition, onboarding form shell styling was reduced to layout-only composition, and representative Empty states now use surface='outline' while preserving layout-only min-height classes. Focused migration tests were added for dialog shells, form/selection consumers, and feedback-state contract usage to lock the rollout patterns."
+  "notes": "Original mobile-first UI redesign history is retained. Custom design-system documentation has been removed; current UI guidance is shadcn-first only."
 }
