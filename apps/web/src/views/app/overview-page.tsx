@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmptyState } from '@/components/home/empty-state'
 import { GroupFilterBar } from '@/components/home/group-filter-bar'
@@ -10,7 +10,6 @@ import { RecentExpenses } from '@/components/home/recent-expenses'
 import { type RecentExpenseItem } from '@/components/home/recent-expenses'
 import { CardPlaceholder } from '@/components/shared/card-placeholder'
 import { PageShell } from '@/components/ui/page-shell'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAnalyticsComparisonQuery } from '@/hooks/api/use-analytics'
 import { useAnalyticsOverviewQuery } from '@/hooks/api/use-analytics'
 import { useBudgetListQuery } from '@/hooks/api/use-budgets'
@@ -18,16 +17,13 @@ import { useExpenseSummaryQuery } from '@/hooks/api/use-expense'
 import { useInfiniteExpenseListQuery } from '@/hooks/api/use-expense'
 import { useExpenseGroupListQuery } from '@/hooks/api/use-groups'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
-import { t } from '@/lib/i18n/t'
 import { householdActions } from '@/stores/household.store'
 import { useHouseholdStore } from '@/stores/household.store'
 import { getCurrentPeriod } from '@/views/app/overview/overview-formatters'
+import type { Lens } from '@/views/app/overview/overview-tabs'
+import { OverviewTabs } from '@/views/app/overview/overview-tabs'
 
 import { CategoryBreakdownPlaceholder } from './overview/category-breakdown-placeholder'
-
-type Lens =
-  | { type: 'personal' }
-  | { type: 'household'; householdId: string; householdName: string }
 
 const RECENT_LIMIT = 5
 
@@ -63,6 +59,23 @@ function OverviewPage() {
 
     return list
   }, [households])
+
+  const handleLensChange = useCallback(
+    (value: string) => {
+      if (value === 'personal') {
+        setActiveLens({ type: 'personal' })
+
+        return
+      }
+
+      const lens = lenses.find(
+        (item): item is Extract<Lens, { type: 'household' }> =>
+          item.type === 'household' && item.householdId === value,
+      )
+      if (lens) setActiveLens(lens)
+    },
+    [lenses],
+  )
 
   useEffect(() => {
     if (households.length === 0 && !householdsLoading) {
@@ -154,51 +167,17 @@ function OverviewPage() {
   if (isEntirelyEmpty) {
     return (
       <PageShell title='Home'>
-        <Tabs
-          className='px-4 pt-4 md:px-6 lg:px-8'
-          value={
-            activeLens.type === 'personal' ? 'personal' : activeLens.householdId
-          }
-          onValueChange={(value) => {
-            if (value === 'personal') {
-              setActiveLens({ type: 'personal' })
-
-              return
+        <div className='px-4 pt-4 md:px-6 lg:px-8'>
+          <OverviewTabs
+            lenses={lenses}
+            value={
+              activeLens.type === 'personal'
+                ? 'personal'
+                : activeLens.householdId
             }
-
-            const lens = lenses.find(
-              (item): item is Extract<Lens, { type: 'household' }> =>
-                item.type === 'household' && item.householdId === value,
-            )
-            if (lens) setActiveLens(lens)
-          }}>
-          <TabsList className='w-full justify-start overflow-x-auto'>
-            {lenses.map((lens) => (
-              <TabsTrigger
-                key={lens.type === 'personal' ? 'personal' : lens.householdId}
-                value={
-                  lens.type === 'personal' ? 'personal' : lens.householdId
-                }>
-                {lens.type === 'personal'
-                  ? t('app.overview.lenses.personal')
-                  : lens.householdName}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          <TabsContent className='mt-0' value='personal' />
-          {lenses
-            .filter(
-              (lens): lens is Extract<Lens, { type: 'household' }> =>
-                lens.type === 'household',
-            )
-            .map((lens) => (
-              <TabsContent
-                key={lens.householdId}
-                className='mt-0'
-                value={lens.householdId}
-              />
-            ))}
-        </Tabs>
+            onValueChange={handleLensChange}
+          />
+        </div>
         <div className='px-4 py-6 md:px-6 md:py-8 lg:px-8'>
           <EmptyState
             onAddFirstExpense={() => {
@@ -213,48 +192,13 @@ function OverviewPage() {
   // ── Main layout ─────────────────────────────────────────────────
   return (
     <PageShell title='Home'>
-      <Tabs
+      <OverviewTabs
+        lenses={lenses}
         value={
           activeLens.type === 'personal' ? 'personal' : activeLens.householdId
         }
-        onValueChange={(value) => {
-          if (value === 'personal') {
-            setActiveLens({ type: 'personal' })
-
-            return
-          }
-
-          const lens = lenses.find(
-            (item): item is Extract<Lens, { type: 'household' }> =>
-              item.type === 'household' && item.householdId === value,
-          )
-          if (lens) setActiveLens(lens)
-        }}>
-        <TabsList className='justify-start overflow-x-auto'>
-          {lenses.map((lens) => (
-            <TabsTrigger
-              key={lens.type === 'personal' ? 'personal' : lens.householdId}
-              value={lens.type === 'personal' ? 'personal' : lens.householdId}>
-              {lens.type === 'personal'
-                ? t('app.overview.lenses.personal')
-                : lens.householdName}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <TabsContent className='mt-0' value='personal' />
-        {lenses
-          .filter(
-            (lens): lens is Extract<Lens, { type: 'household' }> =>
-              lens.type === 'household',
-          )
-          .map((lens) => (
-            <TabsContent
-              key={lens.householdId}
-              className='mt-0'
-              value={lens.householdId}
-            />
-          ))}
-      </Tabs>
+        onValueChange={handleLensChange}
+      />
       <GroupFilterBar
         activeGroupIds={activeGroupIds}
         availableGroups={availableGroupItems}

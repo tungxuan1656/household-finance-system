@@ -9,7 +9,6 @@ product decision explicitly says otherwise.
 ## Accepted
 
 - `core-beliefs.md`: agent-first operating beliefs and durable project norms
-- `shadcn-first-ui-web-guide.md`: mandatory shadcn-first governance for web UI implementation and review
 
 ## Proposed
 

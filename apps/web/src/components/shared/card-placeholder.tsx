@@ -27,6 +27,11 @@ function CardPlaceholder({
   if (isLoading) {
     return (
       <Card {...props}>
+        {title && (
+          <CardHeader>
+            <CardTitle>{title}</CardTitle>
+          </CardHeader>
+        )}
         <CardContent>
           <div className='flex flex-col gap-4'>
             <Skeleton className='h-4 w-3/4' />
@@ -51,7 +56,7 @@ function CardPlaceholder({
     )
   }
 
-  return <>{children}</>
+  return <Card {...props}>{children}</Card>
 }
 
 export { CardPlaceholder }

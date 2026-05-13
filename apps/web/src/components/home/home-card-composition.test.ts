@@ -9,16 +9,20 @@ const readSource = (path: string) =>
   readFileSync(join(sourceRoot, path), 'utf8')
 
 describe('home card composition source contracts', () => {
-  it('uses shadcn tabs for lens switching instead of LensSelector', () => {
-    const source = readSource('views/app/overview-page.tsx')
+  it('uses extracted OverviewTabs for lens switching instead of LensSelector', () => {
+    const pageSource = readSource('views/app/overview-page.tsx')
+    const tabsSource = readSource('views/app/overview/overview-tabs.tsx')
 
-    expect(source).toContain('@/components/ui/tabs')
-    expect(source).toContain('<Tabs')
-    expect(source).toContain('<TabsList')
-    expect(source).toContain('<TabsTrigger')
-    expect(source).toContain('<TabsContent')
-    expect(source).not.toContain('LensSelector')
-    expect(source).not.toContain('components/home/lens-selector')
+    expect(pageSource).toContain('OverviewTabs')
+    expect(pageSource).not.toContain('<Tabs')
+    expect(pageSource).not.toContain('LensSelector')
+    expect(pageSource).not.toContain('components/home/lens-selector')
+
+    expect(tabsSource).toContain('@/components/ui/tabs')
+    expect(tabsSource).toContain('<Tabs')
+    expect(tabsSource).toContain('<TabsList')
+    expect(tabsSource).toContain('<TabsTrigger')
+    expect(tabsSource).toContain('<TabsContent')
   })
 
   it('composes the desktop sidebar as a Card container', () => {
@@ -37,9 +41,12 @@ describe('home card composition source contracts', () => {
     'components/home/empty-state.tsx',
     'components/home/household-cards-section.tsx',
     'components/home/budget-status-cards.tsx',
-  ])('%s uses full Card anatomy for widget structure', (path) => {
+  ])('%s uses Card anatomy for widget structure', (path) => {
     const source = readSource(path)
 
+    if (path === 'components/home/hero-stats-card.tsx') {
+      expect(source).toContain('CardPlaceholder')
+    }
     expect(source).toContain('<Card')
     expect(source).toContain('<CardHeader')
     expect(source).toContain('<CardTitle')

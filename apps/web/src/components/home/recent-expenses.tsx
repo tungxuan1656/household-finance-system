@@ -2,16 +2,15 @@
 
 import Link from 'next/link'
 
+import { CardPlaceholder } from '@/components/shared/card-placeholder'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-  Card,
   CardAction,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
 import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
@@ -59,7 +58,10 @@ function RecentExpenses({
   referenceCategories,
 }: RecentExpensesProps) {
   return (
-    <Card>
+    <CardPlaceholder
+      isEmpty={isEmpty}
+      isLoading={isLoading}
+      title={t('app.overview.recentExpenses.title')}>
       <CardHeader>
         <CardTitle>{t('app.overview.recentExpenses.title')}</CardTitle>
         <CardAction>
@@ -73,12 +75,8 @@ function RecentExpenses({
       </CardHeader>
 
       <CardContent>
-        {isLoading ? (
-          <LoadingSkeleton />
-        ) : error ? (
+        {error ? (
           <ErrorState onRetry={onRetry} />
-        ) : isEmpty ? (
-          <EmptyState />
         ) : (
           <ul className='divide-y divide-border'>
             {expenses.map((item) => {
@@ -139,23 +137,7 @@ function RecentExpenses({
           </ul>
         )}
       </CardContent>
-    </Card>
-  )
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className='divide-y divide-border'>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className='flex items-start gap-3 py-3'>
-          <Skeleton className='size-10 shrink-0 rounded-full' />
-          <div className='flex flex-1 flex-col gap-2'>
-            <Skeleton className='h-4 w-3/5' />
-            <Skeleton className='h-3 w-2/5' />
-          </div>
-        </div>
-      ))}
-    </div>
+    </CardPlaceholder>
   )
 }
 
@@ -170,16 +152,6 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
           {t('app.overview.actions.retrySummary')}
         </Button>
       </div>
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className='py-6 text-center'>
-      <p className='text-sm text-muted-foreground'>
-        {t('app.overview.recentExpenses.empty')}
-      </p>
     </div>
   )
 }

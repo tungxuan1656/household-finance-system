@@ -2,6 +2,7 @@
 
 import { ArrowDown, ArrowUp } from 'lucide-react'
 
+import { CardPlaceholder } from '@/components/shared/card-placeholder'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -11,7 +12,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
@@ -41,23 +41,7 @@ function HeroStatsCard({
 }: HeroStatsCardProps) {
   /* ── Loading state ─────────────────────────────────────────────── */
   if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('app.overview.summary.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className='flex flex-col gap-4'>
-          <div className='flex items-center justify-between'>
-            <Skeleton className='h-4 w-32' />
-            <Skeleton className='h-6 w-24' />
-          </div>
-          <Skeleton className='h-10 w-48' />
-          <Skeleton className='h-2 w-full' />
-          <Skeleton className='h-4 w-40' />
-          <Skeleton className='h-4 w-48' />
-        </CardContent>
-      </Card>
-    )
+    return <CardPlaceholder isLoading title={t('app.overview.summary.title')} />
   }
 
   /* ── Error state ───────────────────────────────────────────────── */
