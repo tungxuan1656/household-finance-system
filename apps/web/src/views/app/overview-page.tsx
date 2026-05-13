@@ -24,10 +24,9 @@ import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
 import { householdActions } from '@/stores/household.store'
 import { useHouseholdStore } from '@/stores/household.store'
-import {
-  formatCurrency,
-  getCurrentPeriod,
-} from '@/views/app/overview/overview-formatters'
+import { getCurrentPeriod } from '@/views/app/overview/overview-formatters'
+
+import { CategoryBreakdownPlaceholder } from './overview/category-breakdown-placeholder'
 
 const RECENT_LIMIT = 5
 
@@ -211,7 +210,7 @@ function OverviewPage() {
         }}
       />
 
-      <div className='flex flex-col gap-6 md:gap-8'>
+      <div className='mt-4 flex flex-col gap-6 md:gap-8'>
         {/* Hero Stats */}
         <HeroStatsCard
           budgetLimitMinor={budgetListQuery.data?.items?.[0]?.totalLimitMinor}
@@ -231,12 +230,12 @@ function OverviewPage() {
         />
 
         {/* Budget summary */}
-        {budgetListQuery.data && budgetListQuery.data.items.length > 0 ? (
+        {/* {budgetListQuery.data && budgetListQuery.data.items.length > 0 ? (
           <BudgetSummaryCards
             budgets={budgetListQuery.data.items}
             currencyCode={budgetListQuery.data.items[0]?.currencyCode ?? 'VND'}
           />
-        ) : null}
+        ) : null} */}
 
         {/* 2-column grid: Recent Expenses + Category Breakdown */}
         <div className='grid gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]'>
@@ -274,100 +273,6 @@ function OverviewPage() {
         />
       </div>
     </PageShell>
-  )
-}
-
-// ── Inline placeholders (to avoid too many component files) ──────
-
-import { CategoryBreakdown } from '@/components/home/category-breakdown'
-import type { AnalyticsTopCategoryDTO } from '@/types/analytics'
-import type { BudgetDTO } from '@/types/budget'
-import type { ReferenceCategoryDTO } from '@/types/reference-data'
-
-function CategoryBreakdownPlaceholder({
-  categories,
-  currencyCode,
-  referenceCategories,
-}: {
-  categories: AnalyticsTopCategoryDTO[]
-  currencyCode: string
-  referenceCategories?: ReferenceCategoryDTO[]
-}) {
-  if (categories.length === 0) {
-    return (
-      <CategoryBreakdown
-        isEmpty
-        categories={[]}
-        currencyCode={currencyCode}
-        isLoading={false}
-        referenceCategories={referenceCategories}
-        totalSpendMinor={0}
-      />
-    )
-  }
-
-  return (
-    <CategoryBreakdown
-      categories={categories}
-      currencyCode={currencyCode}
-      isEmpty={false}
-      isLoading={false}
-      referenceCategories={referenceCategories}
-      totalSpendMinor={0}
-    />
-  )
-}
-
-function BudgetSummaryCards({
-  budgets,
-  currencyCode,
-}: {
-  budgets: BudgetDTO[]
-  currencyCode: string
-}) {
-  return (
-    <div className='flex snap-x snap-mandatory gap-3 overflow-x-auto px-0 pb-2 md:flex-wrap md:overflow-x-visible'>
-      {budgets.slice(0, 5).map((budget) => (
-        <Card
-          key={budget.id}
-          className='max-w-60 min-w-48 shrink-0 snap-start border-border/60 bg-card/90 shadow-sm md:shrink'
-          size='sm'
-          surface='glass'>
-          <CardContent className='space-y-3 p-4'>
-            <div className='flex items-start justify-between gap-3'>
-              <div className='min-w-0'>
-                <p className='truncate text-sm font-medium'>
-                  {budget.categoryLimits.length > 0
-                    ? `${budget.categoryLimits.length} category budget`
-                    : 'Overall budget'}
-                </p>
-                <p className='text-xs text-muted-foreground'>{budget.period}</p>
-              </div>
-              <span className='rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground'>
-                {formatCurrency(budget.totalLimitMinor, currencyCode)}
-              </span>
-            </div>
-
-            {budget.categoryLimits.length > 0 ? (
-              <div className='space-y-2'>
-                {budget.categoryLimits.slice(0, 3).map((limit) => (
-                  <div
-                    key={limit.categoryKey}
-                    className='flex items-center justify-between gap-2'>
-                    <span className='truncate text-xs text-muted-foreground'>
-                      {limit.categoryKey}
-                    </span>
-                    <span className='font-mono text-xs tabular-nums'>
-                      {formatCurrency(limit.limitMinor, budget.currencyCode)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
-      ))}
-    </div>
   )
 }
 
