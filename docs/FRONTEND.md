@@ -49,6 +49,7 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 ## Verification
 
 - Run focused web checks for touched area.
-- Run `pnpm lint:fix` after edits.
-- Prefer `./init.sh` before done.
+- Use `./init.sh <param>` instead of `pnpm <cmd>` for lint/typecheck/test/build.
+- Manual one-file lint/test OK for focused debug.
+- Run full `./init.sh` only at final verification.
 - For `apps/web`, never add component/page render tests. Prefer util/api/store/helper unit tests plus browser/manual evidence for UI behavior.

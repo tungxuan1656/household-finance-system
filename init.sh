@@ -1,21 +1,40 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# echo "=== Household Finance System: init.sh ==="
+VERBOSE=false
 
-run_step() {
+usage() {
+  cat >&2 <<'EOF'
+Usage: ./init.sh [--verbose] [install|lint|typecheck|test|build|sync]
+
+No argument runs the full flow:
+  install -> harness check -> lint/typecheck/test in parallel -> sync
+
+Command behavior:
+  install    pnpm install
+  lint       run web and worker lint --fix in parallel
+  typecheck  run web and worker typecheck in parallel
+  test       run web and worker tests in parallel
+  build      run web build and worker dry-run deploy build in parallel
+  sync       sync GitNexus index
+EOF
+}
+
+run_quiet() {
   local label="$1"
   shift
 
+  if [ "$VERBOSE" = "true" ]; then
+    echo "${label}: running"
+    "$@"
+    return "$?"
+  fi
+
   local log_file
   log_file="$(mktemp)"
-  trap 'rm -f "$log_file"' RETURN
 
-  # echo "${label}:"
   if "$@" >"$log_file" 2>&1; then
     rm -f "$log_file"
-    echo "${label}: OK"
-    trap - RETURN
     return 0
   fi
 
@@ -23,21 +42,223 @@ run_step() {
   echo "${label} failed; output follows" >&2
   cat "$log_file" >&2
   rm -f "$log_file"
-  trap - RETURN
   return "$status"
 }
 
-if [ -t 1 ]; then
-  run_step "pnpm install" pnpm install
-else
-  run_step "pnpm install" env CI=true pnpm install
-fi
+run_install() {
+  if [ -t 1 ]; then
+    run_quiet "install" pnpm install
+  else
+    run_quiet "install" env CI=true pnpm install
+  fi
+}
 
-run_step "Harness checks" ./scripts/check_harness_size.sh
-run_step "Linting" pnpm run lint:fix
-run_step "Type checking" pnpm run typecheck
-run_step "Running tests" pnpm run test
-run_step "Gitnexus" ./scripts/sync_gitnexus.sh
-# run_step "Building" pnpm run build
+run_harness_check() {
+  run_quiet "harness" ./scripts/check_harness_size.sh
+}
 
-echo "Init Done"
+run_sync() {
+  run_quiet "sync" ./scripts/sync_gitnexus.sh
+}
+
+run_worker_build() {
+  local out_dir
+  out_dir="$(mktemp -d)"
+  trap 'rm -rf "$out_dir"' RETURN
+
+  pnpm --filter worker exec wrangler deploy --dry-run --outdir "$out_dir"
+}
+
+start_background_job() {
+  local label="$1"
+  local log_file="$2"
+  local status_file="$3"
+  shift 3
+
+  (
+    set +e
+    "$@" >"$log_file" 2>&1
+    printf '%s' "$?" >"$status_file"
+  ) &
+}
+
+print_verbose_parallel_logs() {
+  local index
+  for index in "${!labels[@]}"; do
+    echo "=== ${labels[$index]} ==="
+    cat "${log_files[$index]}"
+  done
+}
+
+cleanup_parallel_files() {
+  local file
+  for file in "$@"; do
+    [ -n "$file" ] && rm -f "$file"
+  done
+}
+
+run_parallel_checks() {
+  local check_name="$1"
+  shift
+
+  local labels=()
+  local pids=()
+  local log_files=()
+  local status_files=()
+  local completed=()
+
+  local label log_file status_file pid
+  while [ "$#" -gt 0 ]; do
+    label="$1"
+    shift
+
+    log_file="$(mktemp)"
+    status_file="$(mktemp)"
+    rm -f "$status_file"
+
+    labels+=("$label")
+    log_files+=("$log_file")
+    status_files+=("$status_file")
+    completed+=("0")
+
+    case "$label" in
+      "web lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web lint --fix ;;
+      "worker lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker lint --fix ;;
+      "web typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web typecheck ;;
+      "worker typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker typecheck ;;
+      "web test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web exec vitest run ;;
+      "worker test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker exec vitest run ;;
+      "web build") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web build ;;
+      "worker build") start_background_job "$label" "$log_file" "$status_file" run_worker_build ;;
+      *)
+        echo "Unknown parallel job: ${label}" >&2
+        cleanup_parallel_files "${log_files[@]}" "${status_files[@]}"
+        return 2
+        ;;
+    esac
+
+    pid=$!
+    pids+=("$pid")
+  done
+
+  local total="${#pids[@]}"
+  local done_count=0
+  local index status failed_index=-1
+
+  while [ "$done_count" -lt "$total" ]; do
+    for index in "${!pids[@]}"; do
+      if [ "${completed[$index]}" = "1" ]; then
+        continue
+      fi
+
+      if [ -f "${status_files[$index]}" ]; then
+        wait "${pids[$index]}" 2>/dev/null || true
+        status="$(cat "${status_files[$index]}")"
+        completed[$index]="1"
+        done_count=$((done_count + 1))
+
+        if [ "$status" -ne 0 ]; then
+          failed_index="$index"
+          break 2
+        fi
+      fi
+    done
+
+    sleep 0.2
+  done
+
+  if [ "$failed_index" -ne -1 ]; then
+    for index in "${!pids[@]}"; do
+      if [ "${completed[$index]}" = "0" ]; then
+        kill "${pids[$index]}" 2>/dev/null || true
+      fi
+    done
+
+    for pid in "${pids[@]}"; do
+      wait "$pid" 2>/dev/null || true
+    done
+
+    if [ "$VERBOSE" = "true" ]; then
+      print_verbose_parallel_logs >&2
+    else
+      echo "${labels[$failed_index]} failed during ${check_name}; output follows" >&2
+      cat "${log_files[$failed_index]}" >&2
+    fi
+    cleanup_parallel_files "${log_files[@]}" "${status_files[@]}"
+    return 1
+  fi
+
+  if [ "$VERBOSE" = "true" ]; then
+    print_verbose_parallel_logs
+  fi
+
+  cleanup_parallel_files "${log_files[@]}" "${status_files[@]}"
+}
+
+run_lint() {
+  run_parallel_checks "lint" "web lint" "worker lint"
+}
+
+run_typecheck() {
+  run_parallel_checks "typecheck" "web typecheck" "worker typecheck"
+}
+
+run_test() {
+  run_parallel_checks "test" "web test" "worker test"
+}
+
+run_build() {
+  run_parallel_checks "build" "web build" "worker build"
+}
+
+run_full() {
+  run_install
+  run_harness_check
+  run_parallel_checks \
+    "verification" \
+    "web lint" \
+    "worker lint" \
+    "web typecheck" \
+    "worker typecheck" \
+    "web test" \
+    "worker test"
+  run_sync
+  echo "Done!"
+}
+
+command="full"
+command_set=false
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --verbose) VERBOSE=true ;;
+    install|lint|typecheck|test|build|sync|full|help|--help|-h)
+      if [ "$command_set" = "true" ]; then
+        usage
+        exit 2
+      fi
+      command="$1"
+      command_set=true
+      ;;
+    *)
+      usage
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+case "$command" in
+  full) run_full ;;
+  install) run_install && echo "OK" ;;
+  lint) run_lint && echo "OK" ;;
+  typecheck) run_typecheck && echo "OK" ;;
+  test) run_test && echo "OK" ;;
+  build) run_build && echo "OK" ;;
+  sync) run_sync && echo "OK" ;;
+  help|--help|-h) usage ;;
+  *)
+    usage
+    exit 2
+    ;;
+esac

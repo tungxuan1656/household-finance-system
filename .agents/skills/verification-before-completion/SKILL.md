@@ -140,11 +140,11 @@ This is non-negotiable.
 
 ## Harness Integration
 
-The project's canonical verification command is `./init.sh`. It runs install, harness checks, lint, type-check, and tests.
+Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build. Run full `./init.sh` only at final verification.
 
 **Before claiming any feature is done, you MUST:**
 
-1. Run `./init.sh` and confirm it passes.
+1. Run needed `./init.sh <param>` commands, then full `./init.sh` only for final verification.
 2. Update `harness/features/*.json` with evidence.
 3. Update `harness/progress.md` with the session's work.
 

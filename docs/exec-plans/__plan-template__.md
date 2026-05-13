@@ -59,18 +59,16 @@ Example:
 ## Concrete Steps (Commands)
 
 - Show exact commands to run, and the working directory for each. Provide expected short transcript outputs the user can compare against.
+- Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build. Full `./init.sh` only final.
 
 Example (run from repo root):
 
 ```bash
-# install & verify
-./init.sh
-
-# run worker tests
-pnpm --filter @app/worker test
+# run tests
+./init.sh test
 ```
 
-Expected transcript examples should be short and focused (e.g., `1 passed, 0 failed`).
+Expected transcript examples should be short and focused (e.g., `OK`, `Done!`, or one-file test output).
 
 ## Validation and Acceptance
 
@@ -78,7 +76,7 @@ Expected transcript examples should be short and focused (e.g., `1 passed, 0 fai
 
 Example Acceptance Criteria:
 - `curl -sSf http://localhost:8787/health` returns `OK` and HTTP 200.
-- `pnpm --filter @app/worker test` shows the new test passing.
+- `./init.sh test` prints `OK`, or an allowed one-file test command shows the new test passing.
 
 ## Idempotence & Recovery
 
@@ -103,12 +101,11 @@ Plan of Work:
 1. Create `apps/worker/src/routes/health.ts` with a GET handler returning 200/OK.
 2. Register the route in `apps/worker/src/index.ts`.
 3. Add test `apps/worker/test/health.test.ts` that calls the handler or starts the worker and asserts HTTP 200 + body `OK`.
-4. Run `./init.sh` and `pnpm --filter @app/worker test` to verify.
+4. Run `./init.sh test`, then full `./init.sh` only at final verification.
 
 Concrete Commands (repo root):
 ```bash
-./init.sh
-pnpm --filter @app/worker test
+./init.sh test
 ```
 
 Expected:
@@ -153,17 +150,12 @@ OK
 }
 ```
 
-init.sh (example snippet):
+init.sh use:
 
 ```bash
-#!/bin/bash
-set -e
-echo "Installing dependencies"
-pnpm install
-echo "Running tests"
-pnpm -w -s test
-echo "Build"
-pnpm -w -s build || true
+./init.sh install
+./init.sh test
+./init.sh build
 ```
 
 ## Best Practices (quick)

@@ -36,3 +36,4 @@ Plan router. Use ExecPlans for multi-step, risky, or multi-session work.
 - Record direction-changing decisions.
 - Keep plan self-contained enough for a fresh agent.
 - Do not duplicate child reference docs; link exact docs needed.
+- Verification: use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build. Full `./init.sh` only final.

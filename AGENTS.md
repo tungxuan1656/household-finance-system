@@ -42,8 +42,10 @@ Do not read broad folders by default. Use indexes to choose exact leaf docs.
 - Use `using-skills` first. Load task skill if applies.
 - One feature/plan per session. Do not mix scopes.
 - Before code edits, run required GitNexus impact checks for touched symbols.
-- After code/doc edits, run `pnpm lint:fix` from repo root.
-- Before claiming done, verify. Prefer `./init.sh` for full workspace.
+- Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
+- Params: `install`, `lint`, `typecheck`, `test`, `build`, `sync`.
+- Manual one-file lint/test OK for focused debug.
+- Run full `./init.sh` only at final verification.
 - Before commit-ready summary, run `gitnexus_detect_changes(scope: "all")`.
 - Update harness feature state + `harness/progress.md` before end session.
 - Commit only when user explicitly asks.
@@ -68,14 +70,19 @@ Done means:
 
 ## Commands
 
-- Full verification: `./init.sh`
-- Required auto-fix after edits: `pnpm lint:fix`
+- Install: `./init.sh install`
+- Lint: `./init.sh lint`
+- Typecheck: `./init.sh typecheck`
+- Test: `./init.sh test`
+- Build: `./init.sh build`
+- Sync GitNexus: `./init.sh sync`
+- Final full verify: `./init.sh`
 
-`./init.sh` installs deps, checks harness, lints, type-checks, tests, builds web.
+Full `./init.sh`: install, harness, lint, typecheck, test, sync. No build.
 
 ## GitNexus
 
-Use GitNexus for unfamiliar/high-risk changes. If index stale, run `./scripts/sync_gitnexus.sh`.
+Use GitNexus for unfamiliar/high-risk changes. If index stale, run `./init.sh sync`.
 
 Required:
 - Before editing function/class/method: `gitnexus_impact({ target: "symbolName", direction: "upstream" })`.

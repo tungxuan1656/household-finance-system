@@ -4,12 +4,14 @@ Reliability rules. Read for runtime health, restartability, or verification-path
 
 ## Standard Paths
 
-- Bootstrap/full verification: `./init.sh`.
+- Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
+- Params: `install`, `lint`, `typecheck`, `test`, `build`, `sync`.
+- Run full `./init.sh` only at final verification.
 - Frontend dev: `pnpm --filter web dev`.
 - Worker dev: `pnpm --filter worker dev`.
 - Runtime logs: `wrangler tail` / `wrangler dev` when worker debugging needs traces.
 
-`./init.sh` installs deps, checks harness, lints, type-checks, tests, builds web.
+Full `./init.sh`: install, harness, lint, typecheck, test, sync. No build.
 
 ## Required Signals
 

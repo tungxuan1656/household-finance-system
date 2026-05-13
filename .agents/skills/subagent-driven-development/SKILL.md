@@ -166,7 +166,7 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 ## Harness Integration
 
 After all tasks complete:
-1. Run `./init.sh` for full workspace verification
+1. Run needed `./init.sh <param>` commands; use full `./init.sh` only for final verification
 2. Use `verification-before-completion` skill to confirm all claims
 3. Use `requesting-code-review` skill for final review
 4. Update harness artifacts:
@@ -177,6 +177,8 @@ After all tasks complete:
 
 During execution:
 - Update `harness/progress.md` after each significant task completion
+- Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
+- Run full `./init.sh` only at final verification.
 - Update `harness/session-handoff.md` if stopping mid-plan
 
 ## Integration

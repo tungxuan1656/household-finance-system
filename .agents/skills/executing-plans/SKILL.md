@@ -37,7 +37,7 @@ For each task:
 ### Step 3: Verify and Complete
 
 After all tasks complete and verified:
-1. Run `./init.sh` for full workspace verification
+1. Run needed `./init.sh <param>` commands; use full `./init.sh` only for final verification
 2. Use `verification-before-completion` skill to confirm all claims
 3. Use `requesting-code-review` skill for final review
 4. Update harness artifacts:
@@ -69,7 +69,8 @@ After all tasks complete and verified:
 - Update `harness/progress.md` after each significant task completion
 - Update `harness/session-handoff.md` if stopping mid-plan
 - Record evidence in `harness/features/*.json` as tasks complete
-- Run `./init.sh` before claiming the plan is done
+- Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
+- Run full `./init.sh` only at final verification.
 
 ## Remember
 

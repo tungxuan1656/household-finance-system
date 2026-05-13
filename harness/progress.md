@@ -9,6 +9,16 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+
+## 2026-05-14 — Improved init verification script ergonomics
+
+- Who: Orchestrator
+- Summary: Reworked `init.sh` into a quiet command dispatcher with optional `install`, `lint`, `typecheck`, `test`, `build`, and `sync` targets. The default full flow runs install first, then web/worker lint, typecheck, and test jobs in parallel, then syncs GitNexus and prints `Done!`; build is temporarily explicit-only through `./init.sh build`. Single-command success now prints `OK`; failures print the failing captured output; `--verbose` prints captured logs.
+- Files changed: Repository init verification script, feature harness evidence, and this progress log.
+- Verification: GitNexus upstream impact for `init.sh` returned LOW risk; `bash -n init.sh` passed; harness JSON validation passed; `./init.sh lint`, `./init.sh typecheck`, `./init.sh test`, and explicit `./init.sh build` passed and printed `OK`; `./init.sh` full flow passed and printed `Done!` with build excluded; `gitnexus_detect_changes(scope: all)` reported low risk with 3 changed files and 0 affected processes.
+- Blockers: none.
+- Next steps: Run final change scan and commit if desired.
+
 ## 2026-05-13 — Refactored Home shared state handling to DataState
 
 - Who: Orchestrator

@@ -42,5 +42,6 @@ Rules:
 - Cover happy path, validation failure, unauthorized/forbidden, not found, conflict when relevant.
 - Record API evidence in plan/harness.
 - Logs must help debug without exposing secrets/personal data.
-- Run `pnpm lint:fix` after edits.
-- Prefer `./init.sh` before done.
+- Use `./init.sh <param>` instead of `pnpm <cmd>` for lint/typecheck/test/build.
+- Manual one-file lint/test OK for focused debug.
+- Run full `./init.sh` only at final verification.

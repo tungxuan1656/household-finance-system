@@ -274,6 +274,11 @@
       "id": "feat-054",
       "name": "Documentation clean architecture and minimal-reading workflow",
       "status": "done"
+    },
+    {
+      "id": "feat-055",
+      "name": "Quiet parallel init verification commands",
+      "status": "done"
     }
   ]
 }
