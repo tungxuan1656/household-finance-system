@@ -1,0 +1,52 @@
+{
+  "id": "feat-052",
+  "name": "Responsive shadcn component variants",
+  "status": "planned",
+  "design_docs": ["docs/design-docs/shadcn-first-ui-web-guide.md"],
+  "exec_plan": "docs/exec-plans/plans/2026-05-13-responsive-shadcn-component-variants.md",
+  "dependencies": ["feat-005", "feat-035", "feat-048"],
+  "scope": [
+    "Refactor project-owned shadcn UI primitives for mobile-first responsive sizing",
+    "Use 44px touch targets and 16px input text below 640px while preserving compact desktop controls at the sm breakpoint",
+    "Keep responsive sizing and padding primitive-owned without recreating a custom design system",
+    "Preserve compatibility for existing Button size and DialogContent usage during the transition"
+  ],
+  "components_affected": [
+    "Button",
+    "Toggle",
+    "ToggleGroup",
+    "Input",
+    "Textarea",
+    "Select",
+    "NativeSelect",
+    "InputGroup",
+    "Combobox",
+    "Card",
+    "Alert",
+    "Dialog",
+    "AlertDialog",
+    "Drawer"
+  ],
+  "implementation_phases": {
+    "completed": [
+      "Planning: shadcn config and installed component audit",
+      "Planning: shadcn docs review for touched primitives",
+      "Planning: GitNexus representative impact checks returned LOW risk"
+    ],
+    "pending": [
+      "Baseline typecheck and compatibility grep",
+      "Responsive primitive class refactor",
+      "Focused contract verification and browser/manual touch-target checks",
+      "Full verification and harness evidence update"
+    ]
+  },
+  "evidence": {
+    "planned": [
+      "ExecPlan created at docs/exec-plans/plans/2026-05-13-responsive-shadcn-component-variants.md",
+      "shadcn info confirmed Next.js, Tailwind v4, radix base, lucide icons, and UI path apps/web/src/components/ui",
+      "Representative GitNexus upstream impact checks for Button, Input, DialogContent, SelectTrigger, and Card returned LOW risk"
+    ],
+    "verification": []
+  },
+  "notes": "This feature follows the shadcn-only direction after custom design-system documentation removal. It is a responsive ergonomics pass over owned source primitives, not a new visual design system."
+}

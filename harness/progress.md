@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-13 — Planned responsive shadcn component variants
+
+- Who: Orchestrator
+- Summary: Wrote a frontend-only ExecPlan for project-owned shadcn source components to support mobile-first responsive sizing: 44px/16px controls below 640px, compact `sm:` desktop controls, primitive-owned padding, and compatibility cleanup for existing `Button size='xl'` and `DialogContent size` usage without recreating custom design-system docs.
+- Files changed: Added the responsive shadcn component variants ExecPlan, registered it in the ExecPlan index, added planned feature evidence for feat-052, updated the feature index, and logged this planning session.
+- Verification: Plan self-review completed; updated JSON artifacts validated with `python3 -m json.tool`; git diff/status reviewed.
+- Blockers: none.
+- Next steps: Choose an execution mode, then start with baseline web typecheck, compatibility grep, and primitive contract/test-first work from the ExecPlan.
+
 ## 2026-05-13 — Removed custom design-system documentation
 
 - Who: Orchestrator
@@ -97,7 +106,7 @@
 - Blockers: none.
 - Next steps: none.
 
-## 2026-05-12 — Home screen wireframe + 8 new components + overview-page rewrite (feat-050)
+## 2026-05-12 — Home screen wireframe + 8 new components + overview-page rewrite
 
 - Who: Orchestrator + Fixer subagents (parallel execution)
 - Summary: Designed Home screen wireframe (home.md) with corrected Lens Model (Groups are NOT a lens — they're cross-cutting filters). Fixed PRODUCT.md conflicts (§2, §5.1, §5.7, §5.9). Built 8 new components: LensSelector (desktop ToggleGroup + mobile tabs), GroupFilterBar (chip-based filter row), HeroStatsCard (spend, budget progress, MoM trend, daily rate), BudgetStatusCards (horizontal scroll, Overall-first, per-category bars), RecentExpenses (5-item list), CategoryBreakdown (top 5 with progress bars), HouseholdCardsSection (conditional card), EmptyState (welcome card). Rewrote overview-page.tsx to orchestrate new components with lens state management. Wired analytics/comparison/budget/expense/group query hooks.

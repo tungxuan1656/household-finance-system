@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-13-responsive-shadcn-component-variants.md](plans/2026-05-13-responsive-shadcn-component-variants.md) - feat-052 frontend-only plan to refactor project-owned shadcn UI primitives for mobile-first responsive sizing: 44px/16px mobile controls, compact `sm:` desktop controls, primitive-owned padding, compatibility for existing `Button size='xl'` and `DialogContent size` usage, and no custom design-system restoration.
 
 ## Completed
 
