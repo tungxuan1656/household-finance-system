@@ -86,7 +86,7 @@ export const SignInPage = () => {
               autoComplete='email'
               id='email'
               placeholder={t('auth.signIn.fields.email.placeholder')}
-              size='lg'
+              size='2xl'
               type='email'
             />
             <FieldError errors={[fieldState.error]} />
@@ -108,7 +108,7 @@ export const SignInPage = () => {
               autoComplete='current-password'
               id='password'
               placeholder={t('auth.signIn.fields.password.placeholder')}
-              size='lg'
+              size='2xl'
               type='password'
             />
             <FieldError errors={[fieldState.error]} />

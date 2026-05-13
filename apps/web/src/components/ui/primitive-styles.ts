@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority'
 
-export type PrimitiveControlSize = 'sm' | 'default' | 'lg'
+export type PrimitiveControlSize = 'sm' | 'default' | 'lg' | 'xl' | '2xl'
 export type PrimitiveControlVariant = 'default' | 'ghost' | 'subtle'
 export type PrimitiveSurface = 'glass' | 'subtle' | 'outline' | 'solid'
 
@@ -66,6 +66,8 @@ export const controlVariants = cva(
         sm: 'h-8 rounded-md px-2.5',
         default: 'h-9 rounded-lg px-3',
         lg: 'h-10 rounded-xl px-4',
+        xl: 'h-11 rounded-xl px-4',
+        '2xl': 'h-12 rounded-xl px-4',
       },
     },
     defaultVariants: {
