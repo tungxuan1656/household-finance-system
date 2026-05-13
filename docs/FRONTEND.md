@@ -19,6 +19,7 @@ Stable frontend expectations so agents do not invent UI patterns unpredictably.
 
 ## Mandatory Component Decomposition Policy (Frontend)
 
+- Before planning or changing frontend components, read `docs/references/frontend/frontend-component-architecture-guide.md`. It is the project-specific component architecture guide for choosing page, feature, shared, and shadcn primitive boundaries.
 - Build pages with **orchestrator-first** pattern from the start:
   - Page-level file owns route params, store/query wiring, and high-level flow only.
   - Feature-level **smart components** own bounded UI + local feature logic (form submit, dialog state, mutation handlers) for one concern.
@@ -87,6 +88,7 @@ Stable frontend expectations so agents do not invent UI patterns unpredictably.
 |--------------|-------------|------|
 | Form Pattern | Standard for writing forms with shadcn, react-hook-form, zod. | [references/frontend/form-pattern.md](references/frontend/form-pattern.md) |
 | API + React Query Pattern | API, hook, mock, cache, React Query organization standard. | [references/frontend/api-react-query-pattern.md](references/frontend/api-react-query-pattern.md) |
+| Frontend Component Architecture Guide | Project-specific page, feature, shared, and shadcn primitive component boundaries. | [references/frontend/frontend-component-architecture-guide.md](references/frontend/frontend-component-architecture-guide.md) |
 | Component Structure Pattern | Rules for distinguishing page/child components, export, template. | [references/frontend/component-structure-pattern.md](references/frontend/component-structure-pattern.md) |
 | Project Folder Structure | Standard folder structure for large projects. | [references/frontend/project-folder-structure.md](references/frontend/project-folder-structure.md) |
 | I18n Label Pattern | i18n rules, text/label management, key naming. | [references/frontend/i18n-label-pattern.md](references/frontend/i18n-label-pattern.md) |

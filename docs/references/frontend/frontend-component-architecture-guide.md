@@ -11,23 +11,42 @@ A component should:
 
 ---
 
-# Architecture Layers
+## Architecture Layers
 
 ```txt
-app/page
+Next.js App Router page
   ↓
-feature container
+page composition / route orchestrator
   ↓
-feature component
+feature smart component
   ↓
-shared component
+feature presentational component
   ↓
-ui primitive
+shared component / shared hook
+  ↓
+shadcn ui primitive
+```
+
+Dependency direction must stay downward and generic:
+
+```txt
+app route/page → components/<feature> → components/shared → components/ui
+page/component → hooks/api or hooks/shared → api/*
+page/component → stores/*.store.ts when global app state is required
+```
+
+Never allow:
+
+```txt
+components/shared → components/<feature> ❌
+components/ui → components/shared or components/<feature> ❌
+api/* → components/* ❌
+stores/* → components/* ❌
 ```
 
 ---
 
-# 1. UI Primitive
+## 1. UI Primitive
 
 Base UI components.
 
@@ -44,21 +63,23 @@ Rules:
 - Pure UI only
 
 Folder:
+
 ```txt
-shared/ui/
+components/ui/
 ```
 
 ---
 
-# 2. Shared Component
+## 2. Shared Component
 
-Reusable UI patterns.
+Shared components are reusable patterns that work across multiple features.
 
 Examples:
+
 ```tsx
 <DataState />
-<PageHeader />
-<ConfirmDialog />
+<FieldInputController />
+<FieldSelectController />
 ```
 
 Rules:
@@ -67,38 +88,45 @@ Rules:
 - Can contain generic behavior
 
 Folder:
+
 ```txt
-shared/components/
+components/shared/
 ```
 
 ---
 
-# 3. Feature Component
+## 3. Feature Component
 
-Domain-specific components.
+Feature components are domain-specific components owned by one feature area.
 
 Examples:
+
 ```tsx
-<ExpenseItem />
-<OverviewStats />
-<BudgetChart />
+<RecentExpenses />
+<BudgetStatusPanel />
+<ExpenseFeedItem />
+<InsightsChartsSection />
 ```
 
 Rules:
-- Knows business/domain
-- Can contain feature logic
-- Belongs to a specific feature
+
+- May know domain DTOs, copy, filters, feature actions, and feature-specific UI state.
+- Belongs to exactly one feature folder under `components/<feature>`.
+- May be smart or presentational, but must keep one clear responsibility.
+- Export public child components from `components/<feature>/index.ts`; keep internal subcomponents module-private.
+- Prefer direct DTO usage at UI boundaries. Map data only when the UI needs a real derived value, shape change, or non-trivial calculation.
 
 Folder:
+
 ```txt
-features/{feature}/components/
+components/<feature>/
 ```
 
 ---
 
-# 4. Feature Container
+## 4. Smart Feature Component
 
-Handles data orchestration.
+Smart feature components own bounded orchestration for one UI concern.
 
 Responsibilities:
 - API calls
@@ -107,25 +135,54 @@ Responsibilities:
 - Loading/error state
 
 Example:
+
 ```tsx
-function RecentExpenses() {
-  const { data, isLoading } = useRecentExpenses()
+type RecentExpensesProps = {
+  householdId?: string
+}
+
+export const RecentExpenses = ({ householdId }: RecentExpensesProps) => {
+  const { data, isError, isLoading, refetch } = useExpenseFeed({ householdId })
+  const expenses = data?.items ?? []
 
   return (
-    <DataState isLoading={isLoading}>
-      <ExpenseList expenses={data} />
+    <DataState
+      isEmpty={expenses.length === 0}
+      isError={isError}
+      isLoading={isLoading}
+      onRetry={() => void refetch()}
+    >
+      <ExpenseList expenses={expenses} />
     </DataState>
   )
 }
 ```
 
+Use smart feature components to split pages when a section owns its own query, filters, async states, form submission, dialog state, or retry behavior.
+
 ---
 
-# 5. Page Component
+## 5. Page Component / Route Orchestrator
 
-Composes the page layout.
+Next.js route files compose the page and own route-level concerns.
+
+Responsibilities:
+
+- Route params/search params.
+- Top-level protected/public route decisions.
+- High-level layout composition.
+- Global store sync when multiple sections depend on it.
+- Top-level empty guards when the whole page cannot render meaningfully.
+
+Rules:
+
+- Keep pages thin and orchestration-focused.
+- Do not keep child widget query wiring in the page unless multiple sibling sections must coordinate from the same query result.
+- Do not place reusable UI under `app/`; route files should import components from `components/*`.
+- Page files should stay readable; when they mix 3+ concerns, split into feature smart components.
 
 Example:
+
 ```tsx
 function OverviewPage() {
   return (
@@ -138,169 +195,144 @@ function OverviewPage() {
 }
 ```
 
+Folder:
+
+```txt
+app/**/page.tsx
+```
+
+---
+
+## Smart vs Presentational Components
+
+### Presentational Component
+
+UI-only rendering controlled by props.
+
+```tsx
+type ExpenseFeedItemProps = {
+  expense: ExpenseDto
+}
+
+export const ExpenseFeedItem = ({ expense }: ExpenseFeedItemProps) => {
+  return <article>{expense.title}</article>
+}
+```
+
 Rules:
-- Minimal business logic
-- Mostly layout composition
+
+- Receives data and callbacks through props.
+- No feature API calls or mutations.
+- Useful when multiple callers need the same rendering shape or a smart component needs a small pure helper.
+- Does not need to be extracted merely because it reduces line count.
+
+### Smart Component
+
+Data/state orchestration for one feature concern.
+
+```tsx
+export const CreateBudgetDialog = () => {
+  const createBudget = useCreateBudgetMutation()
+
+  return <BudgetForm onSubmit={(input) => createBudget.mutate(input)} />
+}
+```
+
+Rules:
+
+- Uses hooks/API/store where needed.
+- Handles async state and user actions.
+- Passes simple props to presentational children.
+- Stays feature-scoped unless its behavior is truly generic.
 
 ---
 
-# Dependency Rules
+## Async State Pattern
 
-Dependencies flow downward only.
+Every user-facing async widget must account for:
 
 ```txt
-app
- ↓
-features
- ↓
-shared
- ↓
-ui
+loading → error/retry → empty → success
 ```
 
-Never:
-```txt
-shared → feature ❌
-ui → feature/shared ❌
+For card-shaped widgets, use `DataState`:
+
+```tsx
+<DataState isEmpty={!items.length} isError={isError} isLoading={isLoading} onRetry={retry}>
+  <Card>
+    <CardHeader>
+      <CardTitle>Recent expenses</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <ExpenseList expenses={items} />
+    </CardContent>
+  </Card>
+</DataState>
 ```
+
+Rules:
+
+- Use `DataState` from `@/components/shared/data-state` for standard card loading/empty/error handling.
+- Preserve useful retry actions through `DataState` action props.
+- Use one-off async markup only when the widget shape is not card-like or `DataState` cannot represent the interaction.
 
 ---
 
-# Naming Rules
+## Naming and Export Rules
 
-Use meaningful names.
+- Files use `kebab-case`.
+- Components use `PascalCase` and named exports: `export const ComponentName = (...) => {}`.
+- Name by domain meaning or responsibility, not visual position.
+- Use `index.ts` barrel files in feature/shared component folders to export only public components.
+- Import public child components from the folder barrel when available.
 
 Good:
+
 ```tsx
-<ExpenseItem />
-<UserProfileCard />
+<ExpenseFeedItem />
+<BudgetStatusPanel />
 <RecentExpenses />
+<HouseholdCardsSection />
 ```
 
 Bad:
+
 ```tsx
 <ComponentA />
 <LeftSection />
 <TopArea />
-```
-
-Do not name by position/layout.
-
-Name by responsibility or domain meaning.
-
----
-
-# Smart vs Dumb Components
-
-## Dumb Component
-
-UI only.
-
-Example:
-```tsx
-function ExpenseItem({ expense }) {
-  return <div>{expense.title}</div>
-}
-```
-
-Rules:
-- Receives props
-- No API calls
-- Highly reusable
-
----
-
-## Smart Component
-
-Handles data and state.
-
-Example:
-```tsx
-function RecentExpenses() {
-  const { data } = useRecentExpenses()
-
-  return <ExpenseList expenses={data} />
-}
-```
-
-Rules:
-- Uses hooks/API
-- Handles async state
-- Passes data to dumb components
-
----
-
-# Async State Pattern
-
-Use shared async state wrappers.
-
-Example:
-```tsx
-<DataState
-  isLoading={isLoading}
-  isError={isError}
-  isEmpty={!data?.length}
->
-  <ExpenseList expenses={data} />
-</DataState>
-```
-
-Priority:
-```txt
-loading
-→ error
-→ empty
-→ success
+<CardWrapper2 />
 ```
 
 ---
 
-# Recommended Structure
+## Extraction Decision Checklist
 
-```txt
-app/
-  overview/
-    page.tsx
+Before creating or moving a component, answer:
 
-features/
-  overview/
-    components/
-    hooks/
-    services/
-    types/
-
-  expenses/
-    components/
-
-shared/
-  ui/
-  components/
-  hooks/
-  lib/
-```
+1. Which layer owns this responsibility: page, feature, shared, or UI primitive?
+2. Does it know a project domain such as expenses, budgets, households, invitations, auth, or analytics?
+   - Yes → keep it under `components/<feature>`.
+   - No → it may be shared only if it is reused across features.
+3. Does it need API/query/mutation/store logic?
+   - Yes → make it a smart feature component unless the logic is generic.
+4. Is the extraction for reuse or just line count?
+   - Reuse/clear concern boundary → extract.
+   - Line count only → prefer a smart feature section over many tiny dumb single-use pieces.
+5. Will a new mapped type or memoized data shape drop DTO fields or add rerender surfaces?
+   - Yes → avoid it unless the derived shape is necessary.
 
 ---
 
-# Golden Rules
+## Golden Rules
 
-## Rule 1
-Shared components must not know business logic.
-
-## Rule 2
-Pages should mostly compose layout.
-
-## Rule 3
-Feature components should own domain logic.
-
-## Rule 4
-Prefer many dumb components.
-
-## Rule 5
-Only move components to shared if truly generic.
-
-## Rule 6
-If a component knows `expense`, `user`, or `budget`,
-it belongs to a feature.
-
-## Rule 7
-Reusable UI patterns belong to shared.
+1. Pages should mostly compose route-level flow and layout.
+2. Feature smart components should own bounded feature orchestration.
+3. Shared components must not know business logic.
+4. UI primitives must remain shadcn-first and domain-free.
+5. Prefer direct DTO reads over unnecessary mirror types and mapping layers.
+6. Only move components to shared when the abstraction is truly cross-feature.
+7. If a component knows `expense`, `budget`, `household`, `group`, `invitation`, or `analytics`, it belongs to a feature folder.
+8. Every async surface needs clear loading, empty, error/retry, and success states.
+9. Keep files focused; split when a file trends beyond ~200 lines or mixes 3+ concerns.
+10. Do not introduce new frontend folder conventions without updating the canonical reference docs first.
