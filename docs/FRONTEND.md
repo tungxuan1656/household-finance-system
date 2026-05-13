@@ -15,6 +15,7 @@ Stable frontend expectations so agents do not invent UI patterns unpredictably.
 - Record key user-facing states: empty, loading, success, error, retry.
 - Keep copy, keyboard behavior, and visual hierarchy consistent across flows.
 - When a UI bug is fixed, add or update matching validation step.
+- Prefer passing backend DTOs through UI boundaries directly instead of creating narrowed mirror types or mapped copies. Only map DTO data when the UI needs a real derived value, shape change, or non-trivial calculation; simple field reads and simple display calculations can happen inline during render. Avoid intermediate state or memoized mappings that drop DTO fields and add rerender surfaces without improving clarity.
 
 ## Mandatory Component Decomposition Policy (Frontend)
 
@@ -30,8 +31,20 @@ Stable frontend expectations so agents do not invent UI patterns unpredictably.
   - Keep feature-only components in `src/components/<feature>/*`.
   - Do not move feature-specific business logic into shared components.
 - Smart vs dumb boundary:
-  - **Smart component**: feature-scoped state + API/mutation handlers + composed UI.
-  - **Dumb component**: presentational-only, controlled by props, no feature API calls.
+  - **Smart component**: feature-scoped state + API/query/mutation handlers + composed UI for one bounded concern. Smart sections may receive only the route/lens identifiers they need (for example `householdId`) and call their own hooks internally.
+  - **Dumb component**: presentational-only, controlled by props, no feature API calls. Use dumb components when the same UI shape is reused by multiple callers or when a smart section needs a small pure rendering helper.
+- Before extracting a component, choose the extraction strategy deliberately:
+  - Prefer feature-level **smart child components** for page decomposition. Each smart child should own one clear role and may include its own UI, hooks, API/query wiring, filters, retry handling, and data handling. If smart children need shared state, use the appropriate Zustand store or pass state from the highest owner page/component.
+  - Extract **dumb/presentational components** only when multiple pages or components need the same UI shape rendered consistently from caller-provided data. Do not split a single-use independent feature section into a dumb component just to reduce page length; keep it smart and feature-scoped instead.
+- State card pattern:
+  - Use `StateCard` from `src/components/shared/state-card.tsx` for card-shaped widgets that need standard loading, empty, and error handling.
+  - `StateCard` renders loading/empty/error states from `isLoading`, `isEmpty`, and `isError`; otherwise it renders `children` inside the card shell. Data cards should wrap their populated `CardHeader`/`CardContent` children with `StateCard` instead of duplicating placeholder branches.
+  - Preserve useful actions such as retry via `StateCard` action props rather than adding one-off error markup in each widget.
+  - Avoid nested cards: if a widget uses `StateCard`, its populated children should be card anatomy (`CardHeader`, `CardContent`, etc.), not another full `Card`.
+- Page composition guide:
+  - Pages should compose route/lens state, global store sync, top-level empty guards, and feature sections.
+  - Move independent data widgets into smart section components when they own their own API calls, filters, loading/empty/error state, or retry behavior.
+  - Keep pages thin: do not keep query wiring for a child widget in the page unless multiple sibling sections must coordinate from the same query result.
 - Keep decomposition pragmatic:
   - Avoid over-generic abstractions.
   - Extract only the prop contracts that are actually reused.
