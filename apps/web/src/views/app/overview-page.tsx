@@ -6,8 +6,6 @@ import { EmptyState } from '@/components/home/empty-state'
 import { GroupFilterBar } from '@/components/home/group-filter-bar'
 import { type GroupInfo } from '@/components/home/group-filter-bar'
 import { HeroStatsCard } from '@/components/home/hero-stats-card'
-import { HouseholdCardsSection } from '@/components/home/household-cards-section'
-import { type HouseholdInfo } from '@/components/home/household-cards-section'
 import { LensSelector } from '@/components/home/lens-selector'
 import { type Lens } from '@/components/home/lens-selector'
 import { RecentExpenses } from '@/components/home/recent-expenses'
@@ -139,22 +137,6 @@ function OverviewPage() {
     }))
   }, [recentExpensesQuery.data])
 
-  // Transform for HouseholdCardsSection
-  const activeHousehold: HouseholdInfo | null = useMemo(() => {
-    if (activeLens.type !== 'household') return null
-
-    const h = households.find((hh) => hh.id === activeLens.householdId)
-    if (!h) return null
-
-    return {
-      id: h.id,
-      name: h.name,
-      memberCount: 0, // member count to be added when API supports it
-      totalSpendMinor: overviewData?.totalSpendMinor ?? 0,
-      currencyCode: overviewData?.currencyCode ?? 'VND',
-    }
-  }, [activeLens, households, overviewData])
-
   // Available groups for filter bar
   const availableGroupItems: GroupInfo[] = useMemo(
     () =>
@@ -265,12 +247,6 @@ function OverviewPage() {
             </Card>
           ) : null}
         </div>
-
-        {/* Household section (only when household lens active) */}
-        <HouseholdCardsSection
-          household={activeHousehold}
-          isLoading={overviewQuery.isLoading && activeLens.type === 'household'}
-        />
       </div>
     </PageShell>
   )
