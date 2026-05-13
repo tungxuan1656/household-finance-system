@@ -1,13 +1,18 @@
 import '@/index.css'
 
 import type { Metadata, Viewport } from 'next'
-import { Figtree } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
 
 import { AppProviders } from '@/app/providers/app-providers'
 import { cn } from '@/lib/utils'
 
-const figtree = Figtree({ subsets: ['latin'], variable: '--font-sans' })
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
 
 export const viewport: Viewport = {
   initialScale: 1,
@@ -94,9 +99,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       suppressHydrationWarning
       className={cn(
         'h-full antialiased',
+        'font-mono',
+        jetbrainsMono.variable,
         'font-sans',
-        'font-sans',
-        figtree.variable,
+        inter.variable,
       )}
       lang='vi'>
       <body suppressHydrationWarning className='flex min-h-full flex-col'>

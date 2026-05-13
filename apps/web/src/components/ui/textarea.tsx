@@ -1,49 +1,15 @@
-import { cva } from 'class-variance-authority'
 import * as React from 'react'
 
-import {
-  controlVariants,
-  type PrimitiveControlSize,
-  type PrimitiveControlVariant,
-} from '@/components/ui/primitive-styles'
 import { cn } from '@/lib/utils'
 
-const textareaSizeVariants = cva(
-  'flex field-sizing-content w-full resize-none text-base md:text-sm',
-  {
-    variants: {
-      size: {
-        sm: 'min-h-14 py-2.5',
-        default: 'min-h-16 py-3',
-        lg: 'min-h-20 py-3.5',
-      },
-    },
-    defaultVariants: {
-      size: 'default',
-    },
-  },
-)
-
-function Textarea({
-  className,
-  size = 'default',
-  variant = 'default',
-  ...props
-}: React.ComponentProps<'textarea'> & {
-  size?: PrimitiveControlSize
-  variant?: PrimitiveControlVariant
-}) {
+function Textarea({ className, ...props }: React.ComponentProps<'textarea'>) {
   return (
     <textarea
       className={cn(
-        controlVariants({ size, variant }),
-        textareaSizeVariants({ size }),
-        'disabled:opacity-50',
+        'flex field-sizing-content min-h-16 w-full resize-none rounded-2xl border border-transparent bg-input/50 px-3 py-3 text-base transition-[color,box-shadow,background-color] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
         className,
       )}
-      data-size={size}
       data-slot='textarea'
-      data-variant={variant}
       {...props}
     />
   )

@@ -1,41 +1,15 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 
-import { surfaceVariants } from '@/components/ui/primitive-styles'
 import { cn } from '@/lib/utils'
 
-const emptyVariants = cva(
-  'flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 rounded-lg p-12 text-center text-balance',
-  {
-    variants: {
-      tone: {
-        neutral: 'text-foreground',
-        muted: 'text-muted-foreground',
-      },
-      surface: {
-        outline: 'border border-dashed border-border bg-transparent',
-        subtle: 'border border-dashed border-border/60 bg-background/70',
-        glass: surfaceVariants({ surface: 'glass' }),
-      },
-    },
-    defaultVariants: {
-      tone: 'neutral',
-      surface: 'outline',
-    },
-  },
-)
-
-function Empty({
-  className,
-  tone = 'neutral',
-  surface = 'outline',
-  ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof emptyVariants>) {
+function Empty({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn(emptyVariants({ tone, surface }), className)}
+      className={cn(
+        'flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 rounded-2xl border-dashed p-12 text-center text-balance',
+        className,
+      )}
       data-slot='empty'
-      data-surface={surface}
-      data-tone={tone}
       {...props}
     />
   )
@@ -57,7 +31,7 @@ const emptyMediaVariants = cva(
     variants: {
       variant: {
         default: 'bg-transparent',
-        icon: "flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-6",
+        icon: "flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-foreground [&_svg:not([class*='size-'])]:size-5",
       },
     },
     defaultVariants: {
