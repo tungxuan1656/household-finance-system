@@ -1,25 +1,22 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { StateCard } from '@/components/shared/state-card'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
 import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
+import type { AnalyticsTopCategoryDTO } from '@/types/analytics'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
-type CategoryItem = {
-  categoryKey: string
-  totalSpendMinor: number
-  percentOfTotal: number
-}
+type CategoryItem = AnalyticsTopCategoryDTO
 
 type CategoryBreakdownProps = {
   categories: CategoryItem[]
   currencyCode: string
-  totalSpendMinor: number
   isLoading: boolean
   isEmpty: boolean
+  isError?: boolean
   referenceCategories?: ReferenceCategoryDTO[]
 }
 
@@ -28,78 +25,49 @@ function CategoryBreakdown({
   currencyCode,
   isLoading,
   isEmpty,
+  isError,
   referenceCategories,
 }: CategoryBreakdownProps) {
   return (
-    <Card>
+    <StateCard
+      emptyDescription={t('app.overview.categoryBreakdown.empty')}
+      isEmpty={isEmpty}
+      isError={isError}
+      isLoading={isLoading}
+      title={t('app.overview.categoryBreakdown.title')}>
       <CardHeader>
         <CardTitle>{t('app.overview.categoryBreakdown.title')}</CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <LoadingSkeleton />
-        ) : isEmpty ? (
-          <EmptyState />
-        ) : (
-          <div className='flex flex-col gap-3'>
-            {categories.map((cat) => {
-              const presentation = getCategoryPresentation(
-                cat.categoryKey,
-                referenceCategories,
-              )
+        <div className='flex flex-col gap-3'>
+          {categories.map((cat) => {
+            const presentation = getCategoryPresentation(
+              cat.categoryKey,
+              referenceCategories,
+            )
 
-              return (
-                <div key={cat.categoryKey} className='flex flex-col gap-1'>
-                  <div className='flex items-center justify-between'>
-                    <span className='text-sm font-medium'>
-                      {presentation.label}
+            return (
+              <div key={cat.categoryKey} className='flex flex-col gap-1'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm font-medium'>
+                    {presentation.label}
+                  </span>
+                  <div className='flex items-center gap-2'>
+                    <span className='font-mono text-sm text-muted-foreground tabular-nums'>
+                      {cat.percentOfTotal}%
                     </span>
-                    <div className='flex items-center gap-2'>
-                      <span className='font-mono text-sm text-muted-foreground tabular-nums'>
-                        {cat.percentOfTotal}%
-                      </span>
-                      <span className='font-mono text-sm tabular-nums'>
-                        {formatCurrency(cat.totalSpendMinor, currencyCode)}
-                      </span>
-                    </div>
+                    <span className='font-mono text-sm tabular-nums'>
+                      {formatCurrency(cat.totalSpendMinor, currencyCode)}
+                    </span>
                   </div>
-                  <Progress value={cat.percentOfTotal} />
                 </div>
-              )
-            })}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className='flex flex-col gap-4'>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className='flex flex-col gap-1'>
-          <div className='flex items-center justify-between'>
-            <Skeleton className='h-4 w-20' />
-            <div className='flex items-center gap-2'>
-              <Skeleton className='h-4 w-10' />
-              <Skeleton className='h-4 w-16' />
-            </div>
-          </div>
-          <Skeleton className='h-2 w-full rounded-full' />
+                <Progress value={cat.percentOfTotal} />
+              </div>
+            )
+          })}
         </div>
-      ))}
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className='py-4 text-center'>
-      <p className='text-sm text-muted-foreground'>
-        {t('app.overview.categoryBreakdown.empty')}
-      </p>
-    </div>
+      </CardContent>
+    </StateCard>
   )
 }
 
