@@ -35,7 +35,7 @@ This change upgrades the authenticated home dashboard so it looks intentionally 
 
 - The plan must be self-contained and executable without the original conversation.
 - The implementation must preserve current `/home` data truthfulness and route behavior.
-- All touched visual styling must comply with `docs/design-docs/design-system.md` and `docs/design-docs/ui-implementation-rules.md`.
+- All touched UI should use shadcn components as the baseline.
 - Before editing any function, class, or method, run GitNexus upstream impact analysis for the symbols being changed and warn if risk is `HIGH` or `CRITICAL`.
 - Because this is TypeScript/TSX work, use the TypeScript reviewer workflow before merge.
 - Run `pnpm lint:fix` from repo root after code changes as required by `AGENTS.md`.
@@ -64,7 +64,7 @@ This change upgrades the authenticated home dashboard so it looks intentionally 
 ## Decision Log
 
 - Decision: keep this rollout frontend-only and preserve existing hooks, contracts, and dashboard truthfulness.
-  Rationale: the user asked for current-home inspection and a beautification/refactor plan aligned to design-system docs, not a backend behavior change.
+  Rationale: the user asked for current-home inspection and a beautification/refactor plan, not a backend behavior change.
   Date/Author: 2026-05-12 / OpenCode orchestrator
 - Decision: use Structured Primitive Expansion rather than a patch-only swap or a domain-specific dashboard kit.
   Rationale: `/home` has real primitive gaps, but a dashboard-specific abstraction layer would overfit and conflict with the primitive-first contract.
@@ -72,7 +72,7 @@ This change upgrades the authenticated home dashboard so it looks intentionally 
 
 ## Outcomes & Retrospective
 
-- Completed as a frontend-only `/home` hardening pass that preserved the existing dashboard data model while bringing the route back in line with the current primitive-first visual contract. The most valuable additive primitive changes were small and reusable (`Badge` filter variant, chart tones on `Progress`, pill support across the toggle-group family), while touched home sections now rely on shared glass cards, financial typography, and localized copy. Inline placeholders in `overview-page.tsx` remain acceptable but could still be extracted later if the page grows again.
+- Completed as a frontend-only `/home` hardening pass that preserved the existing dashboard data model. The most valuable additive primitive changes were small and reusable (`Badge` filter variant, chart tones on `Progress`, pill support across the toggle-group family), while touched home sections improved financial typography and localized copy. Inline placeholders in `overview-page.tsx` remain acceptable but could still be extracted later if the page grows again.
 
 ## Context and Orientation
 
@@ -91,10 +91,8 @@ This change upgrades the authenticated home dashboard so it looks intentionally 
   - `apps/web/src/components/layouts/mobile-header.tsx`
 - Shared primitive ownership zone:
   - `apps/web/src/components/ui/*`
-- Relevant design contract references:
-  - `docs/design-docs/design-system.md`
-  - `docs/design-docs/ui-implementation-rules.md`
-  - `docs/design-docs/design-system-v2-spec.md`
+- UI guidance:
+  - `docs/design-docs/shadcn-first-ui-web-guide.md`
 - Required frontend implementation references:
   - `docs/references/frontend/project-folder-structure.md`
   - `docs/references/frontend/component-structure-pattern.md`

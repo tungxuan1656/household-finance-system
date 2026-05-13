@@ -95,10 +95,8 @@ This change improves the live quality of the authenticated `/home` screen after 
 - Related budget presentation references:
   - `apps/web/src/components/budget/budget-card.tsx`
   - any current inline home budget placeholder/presentation code in `overview-page.tsx`
-- Relevant design contract references:
-  - `docs/design-docs/design-system.md`
-  - `docs/design-docs/ui-implementation-rules.md`
-  - `docs/design-docs/2026-05-12-home-primitive-first-refactor-design.md`
+- UI guidance:
+  - `docs/design-docs/shadcn-first-ui-web-guide.md`
 
 Layer impact check using `ARCHITECTURE.md` layering (`Types -> Config -> Repo -> Service -> Runtime -> UI`):
 

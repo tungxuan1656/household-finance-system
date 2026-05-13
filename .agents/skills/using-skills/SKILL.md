@@ -26,7 +26,7 @@ Only read additional docs when your task scope requires them:
 - `docs/QUALITY_SCORE.md` — only for quality audits
 - `docs/RELIABILITY.md` — only for reliability work
 - `docs/SECURITY.md` — only for security-sensitive changes
-- `docs/DESIGN.md` and `docs/design-docs/*` — only when making design decisions
+- `docs/design-docs/*` — only when making design decisions
 
 ## Skill Routing
 

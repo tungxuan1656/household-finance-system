@@ -1,6 +1,10 @@
 # Design Docs Index
 
-Use this index as the discoverable map of design history.
+Use this index as the discoverable map of durable project guidance.
+
+The project does not maintain a custom visual design system. Web UI work should
+use shadcn components and their default composition patterns unless a separate
+product decision explicitly says otherwise.
 
 ## Accepted
 
@@ -9,11 +13,11 @@ Use this index as the discoverable map of design history.
 
 ## Proposed
 
-- `[add new design doc paths here]`
+- None.
 
 ## Deprecated
 
-- `[move old or superseded design docs here with replacement links]`
+- Removed custom design-system documentation and V2/glassmorphism guidance.
 
 ## Maintenance Rules
 
