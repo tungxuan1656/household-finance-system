@@ -3,11 +3,16 @@
 import { ArrowDown, ArrowUp } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
-import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
 type HeroStatsCardProps = {
@@ -21,13 +26,6 @@ type HeroStatsCardProps = {
   onRetry: () => void
   period: string
   onPeriodChange: (period: string) => void
-}
-
-function getProgressTone(percent: number): 'default' | 'warning' | 'danger' {
-  if (percent >= 100) return 'danger'
-  if (percent >= 80) return 'warning'
-
-  return 'default'
 }
 
 function HeroStatsCard({
@@ -45,7 +43,10 @@ function HeroStatsCard({
   if (isLoading) {
     return (
       <Card>
-        <CardContent className='space-y-4 p-5 md:p-6'>
+        <CardHeader>
+          <CardTitle>{t('app.overview.summary.title')}</CardTitle>
+        </CardHeader>
+        <CardContent className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <Skeleton className='h-4 w-32' />
             <Skeleton className='h-6 w-24' />
@@ -63,11 +64,14 @@ function HeroStatsCard({
   if (error) {
     return (
       <Card>
-        <CardContent className='p-5 md:p-6'>
-          <p className='mb-3 text-sm text-muted-foreground'>
+        <CardHeader>
+          <CardTitle>{t('app.overview.summary.title')}</CardTitle>
+        </CardHeader>
+        <CardContent className='flex flex-col items-start gap-3'>
+          <p className='text-sm text-muted-foreground'>
             {t('app.overview.summary.errorTitle')}
           </p>
-          <Button size='sm' variant='outline' onClick={onRetry}>
+          <Button variant='outline' onClick={onRetry}>
             {t('app.overview.actions.retrySummary')}
           </Button>
         </CardContent>
@@ -101,16 +105,14 @@ function HeroStatsCard({
 
   /* ── Populated state ───────────────────────────────────────────── */
   return (
-    <Card className='space-y-4 bg-linear-to-br from-card to-muted/20 p-0'>
-      <CardContent className='space-y-4 p-5 md:p-6'>
-        {/* Top row */}
-        <div className='flex items-center justify-between'>
-          <span className='text-sm text-muted-foreground'>
-            {t('app.overview.summary.title')}
-          </span>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('app.overview.summary.title')}</CardTitle>
+        <CardAction>
           <span className='text-sm font-medium tabular-nums'>{period}</span>
-        </div>
-
+        </CardAction>
+      </CardHeader>
+      <CardContent className='flex flex-col gap-4'>
         {/* Main number */}
         <div className='font-mono text-4xl font-bold tracking-tight tabular-nums md:text-5xl'>
           {formatCurrency(totalSpendMinor, currencyCode)}
@@ -120,12 +122,8 @@ function HeroStatsCard({
         {hasBudget ? (
           <>
             {/* Progress bar */}
-            <div className='space-y-2'>
-              <Progress
-                className='h-2'
-                tone={getProgressTone(percentUsed)}
-                value={Math.min(percentUsed, 100)}
-              />
+            <div className='flex flex-col gap-2'>
+              <Progress value={Math.min(percentUsed, 100)} />
               <div className='flex items-center justify-between'>
                 <span className='text-xs text-muted-foreground'>
                   {t('app.overview.hero.percentOfBudget', {
@@ -149,16 +147,8 @@ function HeroStatsCard({
 
             {/* Month-over-month trend */}
             {momPercent != null && momPercent !== 0 && (
-              <div
-                className={cn(
-                  'flex items-center gap-1 text-sm',
-                  delta! < 0 ? 'text-status-success' : 'text-status-warning',
-                )}>
-                {delta! < 0 ? (
-                  <ArrowDown className='size-4' />
-                ) : (
-                  <ArrowUp className='size-4' />
-                )}
+              <div className='flex items-center gap-1 text-sm'>
+                {delta! < 0 ? <ArrowDown data-icon /> : <ArrowUp data-icon />}
                 <span>
                   {t('app.overview.hero.monthOverMonth', {
                     percent: Math.abs(momPercent),
@@ -169,7 +159,7 @@ function HeroStatsCard({
 
             {/* Safe daily rate */}
             {dailyRate != null && (
-              <p className='mt-1 text-xs text-muted-foreground'>
+              <p className='text-xs text-muted-foreground'>
                 {t('app.overview.hero.dailyRate', {
                   days: daysRemaining,
                   amount: formatCurrency(dailyRate, currencyCode),

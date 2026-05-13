@@ -1,7 +1,5 @@
 'use client'
 
-import * as React from 'react'
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -43,43 +41,29 @@ function CategoryBreakdown({
         ) : isEmpty ? (
           <EmptyState />
         ) : (
-          <div className='space-y-3'>
+          <div className='flex flex-col gap-3'>
             {categories.map((cat) => {
               const presentation = getCategoryPresentation(
                 cat.categoryKey,
                 referenceCategories,
               )
-              const accentStyle = presentation.color
-                ? { color: presentation.color }
-                : undefined
-              const progressStyle = presentation.color
-                ? ({
-                    '--progress-background': presentation.color,
-                  } as React.CSSProperties)
-                : undefined
 
               return (
                 <div key={cat.categoryKey} className='flex flex-col gap-1'>
                   <div className='flex items-center justify-between'>
-                    <span className='text-sm font-medium' style={accentStyle}>
+                    <span className='text-sm font-medium'>
                       {presentation.label}
                     </span>
                     <div className='flex items-center gap-2'>
                       <span className='font-mono text-sm text-muted-foreground tabular-nums'>
                         {cat.percentOfTotal}%
                       </span>
-                      <span
-                        className='font-mono text-sm tabular-nums'
-                        style={accentStyle}>
+                      <span className='font-mono text-sm tabular-nums'>
                         {formatCurrency(cat.totalSpendMinor, currencyCode)}
                       </span>
                     </div>
                   </div>
-                  <Progress
-                    className='h-1.5 rounded-full'
-                    style={progressStyle}
-                    value={cat.percentOfTotal}
-                  />
+                  <Progress value={cat.percentOfTotal} />
                 </div>
               )
             })}
@@ -92,7 +76,7 @@ function CategoryBreakdown({
 
 function LoadingSkeleton() {
   return (
-    <div className='space-y-4'>
+    <div className='flex flex-col gap-4'>
       {Array.from({ length: 5 }).map((_, i) => (
         <div key={i} className='flex flex-col gap-1'>
           <div className='flex items-center justify-between'>

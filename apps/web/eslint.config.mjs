@@ -145,6 +145,7 @@ export default defineConfig([
       ],
 
       'no-console': 'off',
+      '@next/next/no-img-element': 'off',
     },
   },
   {

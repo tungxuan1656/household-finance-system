@@ -6,12 +6,11 @@ import { EmptyState } from '@/components/home/empty-state'
 import { GroupFilterBar } from '@/components/home/group-filter-bar'
 import { type GroupInfo } from '@/components/home/group-filter-bar'
 import { HeroStatsCard } from '@/components/home/hero-stats-card'
-import { LensSelector } from '@/components/home/lens-selector'
-import { type Lens } from '@/components/home/lens-selector'
 import { RecentExpenses } from '@/components/home/recent-expenses'
 import { type RecentExpenseItem } from '@/components/home/recent-expenses'
 import { Card, CardContent } from '@/components/ui/card'
 import { PageShell } from '@/components/ui/page-shell'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAnalyticsComparisonQuery } from '@/hooks/api/use-analytics'
 import { useAnalyticsOverviewQuery } from '@/hooks/api/use-analytics'
 import { useBudgetListQuery } from '@/hooks/api/use-budgets'
@@ -25,6 +24,10 @@ import { useHouseholdStore } from '@/stores/household.store'
 import { getCurrentPeriod } from '@/views/app/overview/overview-formatters'
 
 import { CategoryBreakdownPlaceholder } from './overview/category-breakdown-placeholder'
+
+type Lens =
+  | { type: 'personal' }
+  | { type: 'household'; householdId: string; householdName: string }
 
 const RECENT_LIMIT = 5
 
@@ -151,11 +154,51 @@ function OverviewPage() {
   if (isEntirelyEmpty) {
     return (
       <PageShell title='Home'>
-        <LensSelector
-          activeLens={activeLens}
-          lenses={lenses}
-          onLensChange={setActiveLens}
-        />
+        <Tabs
+          className='px-4 pt-4 md:px-6 lg:px-8'
+          value={
+            activeLens.type === 'personal' ? 'personal' : activeLens.householdId
+          }
+          onValueChange={(value) => {
+            if (value === 'personal') {
+              setActiveLens({ type: 'personal' })
+
+              return
+            }
+
+            const lens = lenses.find(
+              (item): item is Extract<Lens, { type: 'household' }> =>
+                item.type === 'household' && item.householdId === value,
+            )
+            if (lens) setActiveLens(lens)
+          }}>
+          <TabsList className='w-full justify-start overflow-x-auto'>
+            {lenses.map((lens) => (
+              <TabsTrigger
+                key={lens.type === 'personal' ? 'personal' : lens.householdId}
+                value={
+                  lens.type === 'personal' ? 'personal' : lens.householdId
+                }>
+                {lens.type === 'personal'
+                  ? t('app.overview.lenses.personal')
+                  : lens.householdName}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <TabsContent className='mt-0' value='personal' />
+          {lenses
+            .filter(
+              (lens): lens is Extract<Lens, { type: 'household' }> =>
+                lens.type === 'household',
+            )
+            .map((lens) => (
+              <TabsContent
+                key={lens.householdId}
+                className='mt-0'
+                value={lens.householdId}
+              />
+            ))}
+        </Tabs>
         <div className='px-4 py-6 md:px-6 md:py-8 lg:px-8'>
           <EmptyState
             onAddFirstExpense={() => {
@@ -170,12 +213,48 @@ function OverviewPage() {
   // ── Main layout ─────────────────────────────────────────────────
   return (
     <PageShell title='Home'>
-      {/* Lens + Group filter */}
-      <LensSelector
-        activeLens={activeLens}
-        lenses={lenses}
-        onLensChange={setActiveLens}
-      />
+      <Tabs
+        value={
+          activeLens.type === 'personal' ? 'personal' : activeLens.householdId
+        }
+        onValueChange={(value) => {
+          if (value === 'personal') {
+            setActiveLens({ type: 'personal' })
+
+            return
+          }
+
+          const lens = lenses.find(
+            (item): item is Extract<Lens, { type: 'household' }> =>
+              item.type === 'household' && item.householdId === value,
+          )
+          if (lens) setActiveLens(lens)
+        }}>
+        <TabsList className='justify-start overflow-x-auto'>
+          {lenses.map((lens) => (
+            <TabsTrigger
+              key={lens.type === 'personal' ? 'personal' : lens.householdId}
+              value={lens.type === 'personal' ? 'personal' : lens.householdId}>
+              {lens.type === 'personal'
+                ? t('app.overview.lenses.personal')
+                : lens.householdName}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsContent className='mt-0' value='personal' />
+        {lenses
+          .filter(
+            (lens): lens is Extract<Lens, { type: 'household' }> =>
+              lens.type === 'household',
+          )
+          .map((lens) => (
+            <TabsContent
+              key={lens.householdId}
+              className='mt-0'
+              value={lens.householdId}
+            />
+          ))}
+      </Tabs>
       <GroupFilterBar
         activeGroupIds={activeGroupIds}
         availableGroups={availableGroupItems}
@@ -211,42 +290,31 @@ function OverviewPage() {
           onRetry={() => overviewQuery.refetch()}
         />
 
-        {/* Budget summary */}
-        {/* {budgetListQuery.data && budgetListQuery.data.items.length > 0 ? (
-          <BudgetSummaryCards
-            budgets={budgetListQuery.data.items}
-            currencyCode={budgetListQuery.data.items[0]?.currencyCode ?? 'VND'}
-          />
-        ) : null} */}
+        <RecentExpenses
+          error={recentExpensesQuery.error}
+          expenses={recentItems}
+          isEmpty={recentItems.length === 0 && !recentExpensesQuery.isLoading}
+          isLoading={recentExpensesQuery.isLoading}
+          referenceCategories={referenceCategoriesQuery.data?.items}
+          onRetry={() => recentExpensesQuery.refetch()}
+        />
 
-        {/* 2-column grid: Recent Expenses + Category Breakdown */}
-        <div className='grid gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]'>
-          <RecentExpenses
-            error={recentExpensesQuery.error}
-            expenses={recentItems}
-            isEmpty={recentItems.length === 0 && !recentExpensesQuery.isLoading}
-            isLoading={recentExpensesQuery.isLoading}
+        {/* Category breakdown from analytics */}
+        {overviewData?.topCategories ? (
+          <CategoryBreakdownPlaceholder
+            categories={overviewData.topCategories}
+            currencyCode={overviewData.currencyCode}
             referenceCategories={referenceCategoriesQuery.data?.items}
-            onRetry={() => recentExpensesQuery.refetch()}
           />
-
-          {/* Category breakdown from analytics */}
-          {overviewData?.topCategories ? (
-            <CategoryBreakdownPlaceholder
-              categories={overviewData.topCategories}
-              currencyCode={overviewData.currencyCode}
-              referenceCategories={referenceCategoriesQuery.data?.items}
-            />
-          ) : overviewQuery.isLoading ? (
-            <Card>
-              <CardContent className='p-4'>
-                <p className='text-sm text-muted-foreground'>
-                  {t('app.overview.categoryBreakdown.loading')}
-                </p>
-              </CardContent>
-            </Card>
-          ) : null}
-        </div>
+        ) : overviewQuery.isLoading ? (
+          <Card>
+            <CardContent className='p-4'>
+              <p className='text-sm text-muted-foreground'>
+                {t('app.overview.categoryBreakdown.loading')}
+              </p>
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
     </PageShell>
   )

@@ -1,11 +1,16 @@
 'use client'
 
-import { ReceiptText } from 'lucide-react'
 import Link from 'next/link'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
 import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
@@ -55,14 +60,16 @@ function RecentExpenses({
 }: RecentExpensesProps) {
   return (
     <Card>
-      <CardHeader className='flex flex-row items-center justify-between gap-3'>
+      <CardHeader>
         <CardTitle>{t('app.overview.recentExpenses.title')}</CardTitle>
-        <Button asChild size='sm' variant='ghost'>
-          <Link href='/expenses'>
-            {t('app.overview.recentExpenses.viewAll')}
-            <span aria-hidden='true'>&nbsp;&rarr;</span>
-          </Link>
-        </Button>
+        <CardAction>
+          <Button asChild className='h-auto! px-0!' variant={'ghost'}>
+            <Link href='/expenses'>
+              {t('app.overview.recentExpenses.viewAll')}
+              <span aria-hidden='true'>&nbsp;&rarr;</span>
+            </Link>
+          </Button>
+        </CardAction>
       </CardHeader>
 
       <CardContent>
@@ -85,27 +92,14 @@ function RecentExpenses({
                   key={item.id}
                   className='flex items-start gap-3 py-3 first:pt-0 last:pb-0'>
                   <Badge
-                    className='size-10 rounded-full p-0'
-                    style={
-                      category.color
-                        ? {
-                            backgroundColor: `${category.color}14`,
-                            color: category.color,
-                          }
-                        : undefined
-                    }
-                    variant='outline'>
-                    {category.iconUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element -- remote category icons are user-provided metadata; keep local fallback without widening Next config
-                      <img
-                        alt=''
-                        aria-hidden='true'
-                        className='size-5 object-contain'
-                        src={category.iconUrl}
-                      />
-                    ) : (
-                      <ReceiptText className='size-5' />
-                    )}
+                    className='size-10'
+                    style={{ backgroundColor: category.color + '1A' }}
+                    variant='secondary'>
+                    <img
+                      alt={category.label}
+                      className='size-6'
+                      src={category.iconUrl}
+                    />
                   </Badge>
 
                   <div className='min-w-0 flex-1 py-0.5'>
@@ -136,7 +130,7 @@ function RecentExpenses({
                     </div>
                   </div>
 
-                  <span className='shrink-0 py-0.5 font-mono text-sm font-medium tabular-nums'>
+                  <span className='shrink-0 py-0.5 font-mono text-base font-medium tabular-nums'>
                     {formatCurrency(item.amountMinor, item.currencyCode)}
                   </span>
                 </li>
@@ -155,7 +149,7 @@ function LoadingSkeleton() {
       {Array.from({ length: 5 }).map((_, i) => (
         <div key={i} className='flex items-start gap-3 py-3'>
           <Skeleton className='size-10 shrink-0 rounded-full' />
-          <div className='flex-1 space-y-2'>
+          <div className='flex flex-1 flex-col gap-2'>
             <Skeleton className='h-4 w-3/5' />
             <Skeleton className='h-3 w-2/5' />
           </div>
@@ -168,12 +162,14 @@ function LoadingSkeleton() {
 function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className='py-6 text-center'>
-      <p className='mb-3 text-sm text-muted-foreground'>
-        {t('app.overview.recentExpenses.error')}
-      </p>
-      <Button size='sm' variant='outline' onClick={onRetry}>
-        {t('app.overview.actions.retrySummary')}
-      </Button>
+      <div className='flex flex-col items-center gap-3'>
+        <p className='text-sm text-muted-foreground'>
+          {t('app.overview.recentExpenses.error')}
+        </p>
+        <Button onClick={onRetry}>
+          {t('app.overview.actions.retrySummary')}
+        </Button>
+      </div>
     </div>
   )
 }

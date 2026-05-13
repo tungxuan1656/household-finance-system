@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-13 — Completed Home card-composition and sidebar card refactor
+
+- Who: Orchestrator + Fixer subagent
+- Summary: Reworked the protected Home overview and desktop sidebar toward the shadcn card-composition direction. `/home` now uses shadcn Tabs for lens switching and the old LensSelector component was removed; AppSidebar now composes the default Card anatomy; Home widgets were moved toward CardHeader/CardTitle/CardContent-based widget composition with default Tabs, Card, Button, Badge, Skeleton, and Progress primitives instead of custom visual overrides.
+- Files changed: Protected Home overview composition, Home widget components, desktop sidebar composition, the deleted lens selector, focused card-composition contract test, feat-035/feat-045 evidence, and this progress log.
+- Verification: TDD red-green completed for `apps/web/src/components/home/home-card-composition.test.ts`; focused Vitest passed (1 file, 6 tests); `pnpm lint:fix` passed with one pre-existing unrelated `<img>` warning in `apps/web/src/components/expense/category-picker.tsx`; `./init.sh` passed fully; `gitnexus_detect_changes(scope: all)` reported low risk and 0 affected processes.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
 ## 2026-05-13 — Completed responsive shadcn component variants
 
 - Who: Orchestrator + Fixer/Oracle subagents

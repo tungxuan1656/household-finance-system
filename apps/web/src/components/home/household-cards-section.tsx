@@ -1,6 +1,13 @@
 'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
@@ -34,18 +41,17 @@ function HouseholdCardsSection({
         <LoadingSkeleton />
       ) : household ? (
         <Card>
-          <CardContent className='space-y-3 p-4'>
-            <div className='flex items-center justify-between gap-2'>
-              <span className='truncate text-sm font-semibold'>
-                {household.name}
-              </span>
-              <span className='rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground'>
+          <CardHeader>
+            <CardTitle className='truncate'>{household.name}</CardTitle>
+            <CardDescription>
+              <Badge variant='secondary'>
                 {household.memberCount}{' '}
                 {t('app.overview.householdCard.members')}
-              </span>
-            </div>
-
-            <div className='space-y-2 text-sm'>
+              </Badge>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className='grid gap-2 text-sm'>
               <p>
                 <span className='text-muted-foreground'>
                   {t('app.overview.householdCard.totalSpend')}{' '}
@@ -81,12 +87,17 @@ function HouseholdCardsSection({
 function LoadingSkeleton() {
   return (
     <Card>
-      <CardContent className='space-y-2 p-4'>
+      <CardHeader>
+        <CardTitle>
+          <Skeleton className='h-4 w-32' />
+        </CardTitle>
+      </CardHeader>
+      <CardContent className='flex flex-col gap-2'>
         <div className='flex items-baseline gap-1'>
           <Skeleton className='h-4 w-32' />
           <Skeleton className='h-3 w-20' />
         </div>
-        <div className='space-y-1'>
+        <div className='flex flex-col gap-1'>
           <Skeleton className='h-4 w-40' />
           <Skeleton className='h-4 w-36' />
         </div>
