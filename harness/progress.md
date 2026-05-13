@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-13 — Added frontend component architecture reference
+
+- Who: Orchestrator
+- Summary: Reworked the frontend component architecture guide into a project-specific planning reference for Next.js App Router pages, `apps/web/src/components/<feature>`, `components/shared`, shadcn `components/ui`, hooks, API, stores, DTO handling, smart/presentational boundaries, and async-state patterns. Registered the guide as a mandatory frontend component planning pre-read and as a canonical frontend reference in the harness documentation index.
+- Files changed: Frontend component architecture reference, frontend governance docs, canonical references index, feature harness evidence, and this progress log.
+- Verification: `pnpm lint:fix` passed; updated harness JSON artifacts validated with `python3 -m json.tool`; `gitnexus_detect_changes(scope: all)` reported low risk with 0 affected processes for documentation changes; `./init.sh` passed fully.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
 ## 2026-05-13 — Simplified Home overview DTO flow and StateCard sections
 
 - Who: Orchestrator + Oracle reviewer

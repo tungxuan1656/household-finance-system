@@ -264,6 +264,11 @@
       "id": "feat-052",
       "name": "Responsive shadcn component variants",
       "status": "done"
+    },
+    {
+      "id": "feat-053",
+      "name": "Frontend component architecture reference",
+      "status": "done"
     }
   ]
 }
