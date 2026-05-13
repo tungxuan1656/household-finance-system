@@ -114,7 +114,7 @@ Implement full household settings behavior on top of existing household CRUD and
     - `docs/references/frontend/form-pattern.md`
     - `docs/references/frontend/dialog-and-form-pattern.md`
     - `docs/references/frontend/i18n-label-pattern.md`
-    - `docs/design-docs/shadcn-first-ui-web-guide.md`
+    - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
   - Shared:
     - `docs/references/shared/type-naming-pattern.md`
 - Companion skills to use during implementation:

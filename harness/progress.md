@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-13 — Standardized documentation clean architecture and minimal reading
+
+- Who: Orchestrator
+- Summary: Reworked root/task docs into parent-to-child routers so agents read minimum docs by task. Added explicit doc architecture rules to `AGENTS.md`, tightened `ARCHITECTURE.md`, rewrote frontend/backend/plan routers and key indexes in caveman-lite style, fixed stale shadcn guide links, and updated stale frontend folder/component structure references for Next.js App Router.
+- Files changed: Root docs, task router docs, reference/product/design/security/reliability/product-sense docs, selected frontend reference docs, ExecPlan records, feature harness evidence, and this progress log.
+- Verification: `pnpm lint:fix` passed; JSON validation passed for feature index and feat-054 record; `./init.sh` passed install, harness checks, linting, type checking, tests, GitNexus; `gitnexus_detect_changes(scope: all)` reported low risk with 0 affected processes.
+- Blockers: none.
+- Next steps: Run required verification and update feature evidence with final results.
+
 ## 2026-05-13 — Added frontend component architecture reference
 
 - Who: Orchestrator

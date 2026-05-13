@@ -1,40 +1,44 @@
 # Product Specs Index
 
-Use this folder for current user-facing behavior specs.
+User-visible behavior map. Specs describe behavior and acceptance criteria, not implementation architecture.
 
----
+Read exact spec for task domain only.
 
-## MVP Features (Domain-driven)
+## MVP Features
 
 ### User & Auth
+
 - `authentication.md`
 - `new-user-onboarding.md`
 - `profile-management.md`
 
 ### Expense Domain
+
 - `expense-tracking.md`
-- `expense-management.md`           # edit/delete, audit, lifecycle
-- `expense-ownership.md`            # payer vs creator
+- `expense-management.md`
+- `expense-ownership.md`
 - `expense-categorization.md`
-- `expense-grouping.md`             # event-based grouping (Core MVP)
+- `expense-grouping.md`
 
 ### Household Domain
+
 - `household-management.md`
-- `household-invitation.md`         # invite/join/leave/kick
+- `household-invitation.md`
 - `role-permission.md`
-- `data-visibility.md`              # who sees what, privacy rules
+- `data-visibility.md`
 
 ### Finance Control
+
 - `budget-management.md`
 
 ### Query & Insight
+
 - `expense-querying.md`
 - `analytics-overview.md`
 
 ### UX / System
-- `quick-add-experience.md`
 
----
+- `quick-add-experience.md`
 
 ## Phase 2+ / Roadmap
 
@@ -47,10 +51,9 @@ Use this folder for current user-facing behavior specs.
 - `audit-log.md`
 - `notification-system.md`
 
----
-
 ## Rules
 
-- Specs should describe user-visible behavior and acceptance criteria.
-- If implementation diverges from the spec, update one of them in the same session.
-- Keep this index current so a fresh agent can discover product scope quickly.
+- Product spec owns user-visible behavior.
+- If implementation changes visible behavior, update matching spec same session.
+- Treat ambiguous behavior as spec gap. Ask or write decision; do not guess.
+- Keep this index current. Do not duplicate feature rules here.

@@ -96,7 +96,7 @@ This change improves the live quality of the authenticated `/home` screen after 
   - `apps/web/src/components/budget/budget-card.tsx`
   - any current inline home budget placeholder/presentation code in `overview-page.tsx`
 - UI guidance:
-  - `docs/design-docs/shadcn-first-ui-web-guide.md`
+  - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
 
 Layer impact check using `ARCHITECTURE.md` layering (`Types -> Config -> Repo -> Service -> Runtime -> UI`):
 

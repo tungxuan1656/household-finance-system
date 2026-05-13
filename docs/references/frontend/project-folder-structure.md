@@ -1,98 +1,71 @@
-# Large Project Folder Structure (finalized per new proposal)
+# Frontend Project Folder Structure
 
-## 1) Standard Structure
+Canonical `apps/web` placement rules for Next.js App Router.
+
+## Standard Structure
 
 ```text
-src/
-  app.tsx
-  main.tsx
+apps/web/src/
+  app/                    # Next.js route tree
+    (protected)/
+    (public)/
+    layout.tsx
+    page.tsx
 
-  api/
-    client.ts
-    endpoints.ts
-    feature*/
-    ...
-
-  assets/
-
-  hooks/
-    shared/
-    feature*/
-    ...
+  api/                    # HTTP clients + endpoint functions
+    <feature>/
 
   components/
-    ui/
-    shared/
-    feature*/
-    ...
+    ui/                   # shadcn primitives only
+    shared/               # cross-feature reusable components
+    <feature>/            # feature-scoped smart/presentational components
 
-  stores/
-    auth.store.ts       # feature*.store.ts (placed directly, no subfolders)
-    control.store.ts
-    types.ts
-    ...
-
-  lib/
+  hooks/                  # reusable hooks
+  lib/                    # cross-feature pure/runtime helpers
     constants/
     forms/
     i18n/
-    storages/
     utils/
 
-  pages/
-    feature*/
-    ...
-
-  styles/
-  types/
+  stores/                 # Zustand stores, flat feature files
+  types/                  # shared frontend/internal types
+  views/                  # route-level view components used by app routes
 ```
 
-> `feature*` (replace with actual feature name).
+## Placement Rules
 
-## 2) Strict Boundaries for `lib`
+- `app/`: routing, layouts, metadata, server/client boundary glue.
+- `views/`: page-level orchestrators for app routes.
+- `components/<feature>`: feature UI and feature smart sections.
+- `components/shared`: cross-feature reusable UI/controller components.
+- `components/ui`: shadcn primitives. No feature logic.
+- `api/<feature>`: HTTP calls and endpoint mapping only.
+- `hooks`: reusable hooks. Feature-only hooks may stay near feature when clearer.
+- `stores/<feature>.store.ts`: global client state, flat files.
+- `lib`: cross-feature helpers only. Not feature dumping ground.
+- `types`: shared frontend/internal types; API DTOs should come from contracts/client types when available.
 
-`lib` only contains **cross-feature reusable code** (usable by 2 or more features).
+## Import Rules
 
-- `lib/constants`: app constants, config constants.
-- `lib/forms/*.schemas.ts`: Zod form schemas in the app.
-- `lib/i18n`: internationalization setup.
-- `lib/storages`: localStorage/sessionStorage/indexedDB wrappers.
-- `lib/utils`: pure utility functions shared across the entire app.
+- Prefer same-feature imports first.
+- Promote to `shared`/`lib` only after real reuse.
+- Import shadcn primitives from `@/components/ui/*`.
+- Import public feature components from folder barrel only when folder exposes stable public surface.
+- Keep internal subcomponents module-private.
 
-Do not place in `lib`:
+## Do Not
 
-- `hooks` (place in `src/hooks/shared` or `src/hooks/feature*`),
-- `stores` (place in `src/stores/feature*.store.ts`),
-- logic specific to 1 feature.
+- Do not create new root folders for one feature.
+- Do not put feature business logic in `components/shared`.
+- Do not put UI components in `lib`.
+- Do not wrap shadcn primitives with replacement primitives.
+- Do not keep giant route/page files when feature sections can own concerns.
 
-Do not put in `lib`:
+## Checklist
 
-- UI components for 1 feature,
-- API handlers for 1 feature.
-
-## 3) File Placement Rules by Layer
-
-- `api/<feature>`: HTTP calls only + endpoint mapping.
-- `hooks/shared`: hooks shared across multiple features.
-- `hooks/<feature>`: feature-specific hooks (including react-query hooks for the feature).
-- `stores/<feature>.store.ts`: zustand store per feature, placed **directly** in `stores/`, no subfolders.
-- `components/<feature>`: components belonging to that feature.
-- `pages/<feature>`: pages for the feature.
-- `types`: shared types or API contracts.
-
-## 4) Import Rules
-
-- Feature code should prioritize importing from within the same feature first.
-- Only promote to `lib` when proven reusable.
-- Shared hooks import from `hooks/shared`; feature-specific hooks import from `hooks/<feature>`.
-- Child components export via `index.ts` in each folder for clean imports.
-
-## 5) Application Checklist
-
-- [ ] Has `api/client.ts`, `api/endpoints.ts` as shared resources
-- [ ] Each feature has its own branch in `api/hooks/components/stores/pages`
-- [ ] `hooks` separates `shared/` and `feature*/`
-- [ ] `stores` placed outside `lib`, flat files as `stores/feature*.store.ts`
-- [ ] `lib` only contains `constants`, `forms`, `i18n`, `storages`, `utils`
-- [ ] `lib` is not used as a dumping ground for everything
-- [ ] Uses consistent import alias (`@/...`)
+- [ ] Route file stays thin.
+- [ ] Page/view orchestrates, not everything.
+- [ ] Feature components live under `components/<feature>`.
+- [ ] Cross-feature code is proven before promotion.
+- [ ] `lib` stays generic.
+- [ ] Import alias `@/...` stays consistent.

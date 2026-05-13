@@ -1,36 +1,38 @@
 # PLANS.md
 
-This file defines how execution plans are created, updated, completed, and
-archived.
+Plan router. Use ExecPlans for multi-step, risky, or multi-session work.
 
-## When A Plan Is Required
+## Create Plan When
 
-Create an execution plan when work:
+- Work spans more than one session.
+- Work changes more than one subsystem.
+- Verification/rollout risk is non-trivial.
+- Open decisions need durable log.
+- User asks for plan/spec before implementation.
 
-- spans more than one session
-- changes more than one subsystem
-- has non-trivial verification or rollout risk
-- depends on open decisions that should be logged
+## Plan Files
 
-## Plan Locations
+- Plans live in `docs/exec-plans/plans/`.
+- Plan index lives in `docs/exec-plans/index.md`.
+- Template lives in `docs/exec-plans/__plan-template__.md`.
+- Deferred debt lives in `docs/exec-plans/tech-debt-tracker.md`.
+- Active and completed plans stay in same folder. Move status in index only.
 
-- `docs/exec-plans/plans/`: all execution plans (active + completed) in one folder
-- `docs/exec-plans/index.md`: single index with two sections (`Active` and `Completed`)
-- `docs/exec-plans/__plan-template__.md`: canonical ExecPlan template
-- `docs/exec-plans/tech-debt-tracker.md`: deferred work and follow-ups
+## Minimum Sections
 
-## Minimum Plan Sections
-
-- objective
-- scope and out-of-scope
-- verification path
-- risks and blockers
-- progress log
-- open decisions
+- Objective / big picture.
+- Scope and out-of-scope.
+- Required standards/reference docs.
+- Plan of work.
+- Verification path.
+- Risks/blockers.
+- Progress log.
+- Open decisions / decision log.
 
 ## Operating Rules
 
-- One active plan should have one clearly owned current step.
-- Update the plan as work progresses; do not treat it as static prose.
-- If a decision changes implementation direction, record it in the plan.
-- Keep plan files in `docs/exec-plans/plans/` and update status placement in `docs/exec-plans/index.md` instead of moving files between folders.
+- One active plan has one current step.
+- Update plan while work changes. Plan is living doc.
+- Record direction-changing decisions.
+- Keep plan self-contained enough for a fresh agent.
+- Do not duplicate child reference docs; link exact docs needed.

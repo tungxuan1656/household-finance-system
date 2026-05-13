@@ -1,54 +1,46 @@
 # BACKEND.md
 
-Stable backend expectations so agents do not invent API or data patterns unpredictably.
+Backend router. Read this for `apps/worker` work, then read only exact reference docs needed.
 
-## API Principles
+## Defaults
 
-- Optimize for explicit contracts before convenience.
-- Keep endpoint behavior predictable and backward-compatible.
-- Prefer narrow handlers with clear ownership over large multipurpose modules.
-- Validation and authorization checks are part of normal implementation, not optional hardening.
+- Explicit contracts before convenience.
+- Predictable, backward-compatible endpoint behavior.
+- Narrow handlers. One use case per handler when practical.
+- Validation + authorization are normal implementation, not hardening.
+- No secrets in code/docs/logs.
 
-## Guardrails
+## Flow
 
-- Follow backend standards in `docs/references/index.md` (`backend/*` and `shared/*`).
-- Keep route -> handler -> data-access boundaries clear; do not place SQL in routes.
-- Use consistent status codes and error envelopes for all failure paths.
-- Enforce ownership checks for private data operations.
-- Do not hardcode secrets, credentials, or token material.
-- When a production bug is fixed, add or update a regression test.
+Default backend path:
 
-## Verification Expectations
+`route -> middleware -> handler -> repository -> D1`
 
-- Capture evidence for critical backend flows: happy path, validation failure, unauthorized/forbidden, not found, and conflict when applicable.
-- Record API-level validation steps in relevant plan (tests, curl, or integration checks).
-- Ensure logs contain enough context for debugging without exposing sensitive data.
+Rules:
+- Routes declare endpoints and middleware. No SQL.
+- Handlers orchestrate business flow. No ad hoc response shapes.
+- Repositories own D1 queries and row mapping.
+- Contracts own request/response schemas and transport DTOs.
+- Utils stay pure and framework-light.
 
----
+## Read Next By Task
 
-# Backend & Shared Reference Documents
+| Task | Read |
+|------|------|
+| Folder/file placement | `docs/references/backend/project-folder-structure.md` |
+| Route/handler/repo boundary | `docs/references/backend/architecture-and-boundaries.md` |
+| API contract/validation | `docs/references/backend/api-contract-and-validation.md` |
+| D1/query/data mapping | `docs/references/backend/database-pattern.md` |
+| Error envelope/status/logging | `docs/references/backend/error-handling-pattern.md` |
+| Auth/security/ownership | `docs/references/backend/security-and-auth-pattern.md` |
+| Backend tests | `docs/references/backend/testing-pattern.md` |
+| Workers/D1/Wrangler specifics | `docs/references/backend/cloudflare-workers.md` |
+| Shared type names | `docs/references/shared/type-naming-pattern.md` |
 
-## Backend Documents
+## Verification
 
-| Document Name | Description | Path |
-|--------------|-------------|------|
-| Project Folder Structure | Canonical backend folder layout and placement rules for routes/handlers/repositories/contracts/types/lib. | [references/backend/project-folder-structure.md](references/backend/project-folder-structure.md) |
-| Architecture and Boundaries | Layer organization standard, route/handler/middleware/utils separation. | [references/backend/architecture-and-boundaries.md](references/backend/architecture-and-boundaries.md) |
-| API Contract and Validation | API contract, versioning, validation, envelope rules. | [references/backend/api-contract-and-validation.md](references/backend/api-contract-and-validation.md) |
-| Database Pattern | Query, mapping, integrity, naming, pagination standard. | [references/backend/database-pattern.md](references/backend/database-pattern.md) |
-| Error Handling Pattern | Error code, status code, logging, error mapping rules. | [references/backend/error-handling-pattern.md](references/backend/error-handling-pattern.md) |
-| Security and Auth Pattern | Security, session, token, ownership, defensive rules. | [references/backend/security-and-auth-pattern.md](references/backend/security-and-auth-pattern.md) |
-| Testing Pattern | Backend testing, coverage, regression, scope rules. | [references/backend/testing-pattern.md](references/backend/testing-pattern.md) |
-| Cloudflare Workers | Cloudflare Workers guide, dev/deploy/types commands. | [references/backend/cloudflare-workers.md](references/backend/cloudflare-workers.md) |
-
-## Shared Documents
-
-| Document Name | Description | Path |
-|--------------|-------------|------|
-| Type Naming Pattern | Naming rules for DTO/Request/Response types shared by FE/BE. | [references/shared/type-naming-pattern.md](references/shared/type-naming-pattern.md) |
-
-## Reference Index
-
-| Document Name | Description | Path |
-|--------------|-------------|------|
-| References Index | Canonical reference index for agents. | [references/index.md](references/index.md) |
+- Cover happy path, validation failure, unauthorized/forbidden, not found, conflict when relevant.
+- Record API evidence in plan/harness.
+- Logs must help debug without exposing secrets/personal data.
+- Run `pnpm lint:fix` after edits.
+- Prefer `./init.sh` before done.

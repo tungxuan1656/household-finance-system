@@ -1,14 +1,18 @@
 # Design Docs Index
 
-Use this index as the discoverable map of durable project guidance.
+Durable design decision map. Read only when task changes lasting UI/product/architecture direction.
 
-The project does not maintain a custom visual design system. Web UI work should
-use shadcn components and their default composition patterns unless a separate
-product decision explicitly says otherwise.
+## Current Project Direction
+
+- No custom visual design system.
+- Web UI uses shadcn primitives and project-owned component references.
+- Product UI decisions live here only when they outlast one feature plan.
 
 ## Accepted
 
-- `core-beliefs.md`: agent-first operating beliefs and durable project norms
+- `core-beliefs.md`: agent-first operating beliefs.
+- `shadcn-card-composition-architecture-guide.md`: shadcn card composition and primitive-first UI guidance.
+- `backend-api-scenario-testing-design.md`: backend API scenario testing design.
 
 ## Proposed
 
@@ -16,10 +20,12 @@ product decision explicitly says otherwise.
 
 ## Deprecated
 
-- Removed custom design-system documentation and V2/glassmorphism guidance.
+- Removed custom design-system/V2/glassmorphism docs.
+- Removed stale shadcn-first guide path. Use accepted shadcn card composition guide plus frontend references.
 
 ## Maintenance Rules
 
-- Every design doc should have an owner or update trigger.
-- Remove stale docs or mark them deprecated instead of letting them drift.
-- Link active execution plans to the design docs they depend on.
+- Every design doc needs owner/update trigger.
+- Remove stale docs or mark deprecated.
+- Link active plans to exact design docs they depend on.
+- Do not duplicate frontend/backend reference rules here.

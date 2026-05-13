@@ -75,7 +75,7 @@ Build a production-ready responsive application shell for authenticated web rout
 - Auth redirect constants: `apps/web/src/lib/constants/auth.ts`
 - Frontend standards:
   - `docs/FRONTEND.md`
-  - `docs/design-docs/shadcn-first-ui-web-guide.md`
+  - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
   - `.agents/skills/shadcn/rules/styling.md`
   - `.agents/skills/shadcn/rules/forms.md`
   - `.agents/skills/shadcn/rules/composition.md`

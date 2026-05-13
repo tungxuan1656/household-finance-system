@@ -92,7 +92,7 @@ This change upgrades the authenticated home dashboard so it looks intentionally 
 - Shared primitive ownership zone:
   - `apps/web/src/components/ui/*`
 - UI guidance:
-  - `docs/design-docs/shadcn-first-ui-web-guide.md`
+  - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
 - Required frontend implementation references:
   - `docs/references/frontend/project-folder-structure.md`
   - `docs/references/frontend/component-structure-pattern.md`

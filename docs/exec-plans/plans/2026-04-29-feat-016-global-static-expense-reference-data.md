@@ -167,7 +167,7 @@ Current owned step: completed.
   - `docs/references/frontend/naming-and-conventions-pattern.md`
   - `docs/references/frontend/api-react-query-pattern.md`
   - `docs/references/frontend/i18n-label-pattern.md`
-  - `docs/design-docs/shadcn-first-ui-web-guide.md`
+  - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
   - `.agents/skills/shadcn/SKILL.md`
   - `.agents/skills/shadcn/rules/styling.md`
   - `.agents/skills/shadcn/rules/forms.md`

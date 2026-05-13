@@ -33,7 +33,7 @@ Deliver the household detail page with proper role-based UI (admin vs member) an
 - Backend defaults must be set at household creation time (not runtime fallback).
 - Member leave is blocked for the last admin.
 - All web copy i18n-backed; no hardcoded user-facing text.
-- shadcn-first composition; follow `docs/design-docs/shadcn-first-ui-web-guide.md`.
+- shadcn composition; follow `docs/design-docs/shadcn-card-composition-architecture-guide.md`.
 
 ## Progress
 
@@ -94,7 +94,7 @@ Deliver the household detail page with proper role-based UI (admin vs member) an
 
 - Standards to enforce:
   - Backend: `docs/references/backend/*`
-  - Frontend: `docs/references/frontend/*`, `docs/design-docs/shadcn-first-ui-web-guide.md`
+  - Frontend: `docs/references/frontend/*`, `docs/design-docs/shadcn-card-composition-architecture-guide.md`
 - Companion skills: `test-driven-development`, `security-reviewer`, `backend-patterns`, `frontend-patterns`, `verification-before-completion`
 - Pitfalls to avoid:
   - Do not reintroduce global active-household state.

@@ -1,26 +1,24 @@
 # PRODUCT_SENSE.md
 
-This file captures durable product judgment that agents cannot infer reliably
-from code alone.
+Durable product judgment. Read when exact product spec is missing or behavior choice affects user trust.
 
 ## Product Core
 
-- Primary user: Families/households that jointly manage shared finances (e.g., couples, multi-generation households)
-- Job to be done: Help families understand, control, and optimize shared household cash flows.
-- Main frustration to remove: Lack of shared visibility and clear ownership of transactions, causing missed budgets, duplicate payments, and confusion about who paid what.
-- Quality bar for acceptance: Fast, low-friction expense input; a single-source-of-truth household view that is understandable at a glance; budget alerts and insights that are timely and actionable (qualitative acceptance criteria).
+- Primary user: families/households managing shared finances.
+- Job: understand, control, optimize shared household cash flow.
+- Main pain: unclear visibility/ownership causes missed budgets, duplicate payments, confusion.
+- Quality bar: fast expense input, clear household truth, timely budget/insight feedback.
 
 ## Product Rules
 
-- Favor user-visible reliability over feature count.
-- Treat ambiguous behavior as a spec gap, not as permission to guess.
-- If implementation changes what users see or trust, update the matching spec.
-- Use product specs for concrete flows, and use this file for cross-cutting
-  product priorities.
+- User-visible reliability beats feature count.
+- Ambiguous behavior is spec gap, not permission to guess.
+- Visible/trust-changing behavior requires matching spec update.
+- Product specs own concrete flows; this doc owns cross-cutting judgment.
 
 ## No-Go Patterns
 
-- Hidden destructive actions
-- Silent failure without user feedback
-- Unclear source of truth for visible state
-- Features that cannot be explained in one sentence
+- Hidden destructive action.
+- Silent failure.
+- Unclear source of truth.
+- Feature that cannot be explained in one sentence.

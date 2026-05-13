@@ -79,7 +79,7 @@ Mỗi page/component cần được xem xét kỹ:
 - `apps/web/src/index.css` — All CSS variables (colors, radius, spacing, animation)
 
 **UI guidance:**
-- `docs/design-docs/shadcn-first-ui-web-guide.md` — shadcn-first UI governance
+- `docs/design-docs/shadcn-card-composition-architecture-guide.md` — shadcn card composition governance
 
 **Pages to refactor (with design questions to answer):**
 - `overview-page.tsx` + sub-components — Dashboard, critical info hierarchy
@@ -334,7 +334,7 @@ Steps are safe to re-run. No destructive operations. Backup by git commit before
 ## Artifacts and Notes
 
 Design reference:
-- `docs/design-docs/shadcn-first-ui-web-guide.md` — shadcn-first UI governance
+- `docs/design-docs/shadcn-card-composition-architecture-guide.md` — shadcn card composition governance
 - `feat-048.json` — Scope definition
 
 Current layout baseline:

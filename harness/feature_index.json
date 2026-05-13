@@ -269,6 +269,11 @@
       "id": "feat-053",
       "name": "Frontend component architecture reference",
       "status": "done"
+    },
+    {
+      "id": "feat-054",
+      "name": "Documentation clean architecture and minimal-reading workflow",
+      "status": "done"
     }
   ]
 }
