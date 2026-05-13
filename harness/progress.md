@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-13 — Completed responsive shadcn component variants
+
+- Who: Orchestrator + Fixer/Oracle subagents
+- Summary: Executed the responsive shadcn variants plan. Project-owned UI primitives now use mobile-first 44px/16px control sizing with compact `sm:` desktop sizing, Button supports existing `xl` consumers, DialogContent owns typed size, overlays and card-like containers use primitive-owned spacing, Progress tone maps to semantic tokens, and stale `surface` props were removed from consumers instead of preserving a misleading custom design-system compatibility layer.
+- Files changed: Shared shadcn UI primitives, the focused responsive variants contract test, touched Home/Insights/Households consumers that previously passed stale `surface` props, the ExecPlan index, feat-052 evidence, feature index, and this progress log.
+- Verification: TDD red-green completed for the responsive variants contract test; focused responsive test passed (17 files, 50 tests); `pnpm --filter web typecheck` passed; `pnpm lint:fix` passed with one pre-existing unrelated `<img>` warning in the expense category picker; spec and code-quality review loops approved; `gitnexus_detect_changes(scope: all)` reported low risk and 0 affected processes; `./init.sh` passed.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired; optional follow-up is browser/device measurement for representative mobile and desktop controls.
+
 ## 2026-05-13 — Planned responsive shadcn component variants
 
 - Who: Orchestrator

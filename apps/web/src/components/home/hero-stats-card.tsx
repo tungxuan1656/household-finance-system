@@ -44,7 +44,7 @@ function HeroStatsCard({
   /* ── Loading state ─────────────────────────────────────────────── */
   if (isLoading) {
     return (
-      <Card surface='glass'>
+      <Card>
         <CardContent className='space-y-4 p-5 md:p-6'>
           <div className='flex items-center justify-between'>
             <Skeleton className='h-4 w-32' />
@@ -62,7 +62,7 @@ function HeroStatsCard({
   /* ── Error state ───────────────────────────────────────────────── */
   if (error) {
     return (
-      <Card surface='glass'>
+      <Card>
         <CardContent className='p-5 md:p-6'>
           <p className='mb-3 text-sm text-muted-foreground'>
             {t('app.overview.summary.errorTitle')}
@@ -101,9 +101,7 @@ function HeroStatsCard({
 
   /* ── Populated state ───────────────────────────────────────────── */
   return (
-    <Card
-      className='space-y-4 bg-gradient-to-br from-card to-muted/20 p-0'
-      surface='glass'>
+    <Card className='space-y-4 bg-linear-to-br from-card to-muted/20 p-0'>
       <CardContent className='space-y-4 p-5 md:p-6'>
         {/* Top row */}
         <div className='flex items-center justify-between'>

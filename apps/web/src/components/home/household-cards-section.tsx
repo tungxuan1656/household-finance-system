@@ -33,7 +33,7 @@ function HouseholdCardsSection({
       {isLoading ? (
         <LoadingSkeleton />
       ) : household ? (
-        <Card surface='glass'>
+        <Card>
           <CardContent className='space-y-3 p-4'>
             <div className='flex items-center justify-between gap-2'>
               <span className='truncate text-sm font-semibold'>
@@ -80,7 +80,7 @@ function HouseholdCardsSection({
 
 function LoadingSkeleton() {
   return (
-    <Card surface='glass'>
+    <Card>
       <CardContent className='space-y-2 p-4'>
         <div className='flex items-baseline gap-1'>
           <Skeleton className='h-4 w-32' />

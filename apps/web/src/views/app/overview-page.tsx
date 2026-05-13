@@ -238,7 +238,7 @@ function OverviewPage() {
               referenceCategories={referenceCategoriesQuery.data?.items}
             />
           ) : overviewQuery.isLoading ? (
-            <Card surface='glass'>
+            <Card>
               <CardContent className='p-4'>
                 <p className='text-sm text-muted-foreground'>
                   {t('app.overview.categoryBreakdown.loading')}

@@ -12,7 +12,7 @@ type EmptyStateProps = {
 
 function EmptyState({ onAddFirstExpense }: EmptyStateProps) {
   return (
-    <Card className='mx-auto max-w-md' surface='glass'>
+    <Card className='mx-auto max-w-md'>
       <CardContent className='p-8 text-center'>
         <h2 className='mb-2 text-xl font-semibold'>
           {t('app.overview.homeEmpty.title')}

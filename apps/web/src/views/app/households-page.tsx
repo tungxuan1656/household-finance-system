@@ -129,7 +129,7 @@ function HouseholdsPage() {
       {!shouldShowLoadingState &&
       !shouldShowBlockingError &&
       households.length === 0 ? (
-        <Empty surface='outline'>
+        <Empty>
           <EmptyHeader>
             <EmptyMedia variant='icon'>
               <span aria-hidden='true'>▣</span>

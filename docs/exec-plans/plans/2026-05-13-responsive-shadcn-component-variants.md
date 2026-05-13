@@ -58,9 +58,9 @@ Out of scope:
 - [x] 2026-05-13: Analyze shadcn config and installed UI components.
 - [x] 2026-05-13: Fetch shadcn docs URLs for the main touched components and extract relevant usage notes.
 - [x] 2026-05-13: Run GitNexus upstream impact checks for representative primitives; all returned LOW risk, but graph did not report consumer edges, so text-search evidence must drive implementation review.
-- [ ] Implementation current owner: Orchestrator or assigned implementation agent. Start with contract tests/typecheck baseline, then update primitives in the order listed below.
-- [ ] Run verification and record evidence.
-- [ ] Mark `feat-052` done after implementation and successful verification.
+- [x] 2026-05-13: Implementation completed by Orchestrator with Fixer subagent support. Added a non-render responsive variants contract test, refactored shadcn primitives for mobile-first sizing, removed stale `surface` props from consumers, and preserved compatibility for existing `Button size='xl'` / `DialogContent size` usage.
+- [x] 2026-05-13: Verification completed: focused responsive variants test, web typecheck, lint:fix, GitNexus detect-changes, spec/code-quality review loops, and `./init.sh` passed.
+- [x] 2026-05-13: Marked `feat-052` done after implementation and successful verification.
 
 ## Surprises & Discoveries
 
@@ -85,7 +85,7 @@ Out of scope:
 
 ## Outcomes & Retrospective
 
-- To be completed after implementation. Expected outcome: responsive primitive classes are centralized, consumers compile without unsupported props, mobile touch targets meet 44px, desktop controls remain compact, and full verification passes.
+- Implemented. Responsive primitive classes are centralized in shadcn source components, consumers compile without unsupported props, mobile controls use 44px/16px-friendly defaults, desktop controls remain compact at `sm:`, stale `surface` props were removed instead of kept as no-op compatibility, and full verification passed via `./init.sh`.
 
 ## Context and Orientation
 

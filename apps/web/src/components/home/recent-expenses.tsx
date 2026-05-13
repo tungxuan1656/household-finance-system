@@ -54,7 +54,7 @@ function RecentExpenses({
   referenceCategories,
 }: RecentExpensesProps) {
   return (
-    <Card surface='glass'>
+    <Card>
       <CardHeader className='flex flex-row items-center justify-between gap-3'>
         <CardTitle>{t('app.overview.recentExpenses.title')}</CardTitle>
         <Button asChild size='sm' variant='ghost'>

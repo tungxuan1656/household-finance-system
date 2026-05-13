@@ -33,7 +33,7 @@ function CategoryBreakdown({
   referenceCategories,
 }: CategoryBreakdownProps) {
   return (
-    <Card surface='glass'>
+    <Card>
       <CardHeader>
         <CardTitle>{t('app.overview.categoryBreakdown.title')}</CardTitle>
       </CardHeader>
