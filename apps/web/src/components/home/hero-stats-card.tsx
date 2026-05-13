@@ -2,7 +2,7 @@
 
 import { ArrowDown, ArrowUp } from 'lucide-react'
 
-import { CardPlaceholder } from '@/components/shared/card-placeholder'
+import { StateCard } from '@/components/shared/state-card'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -41,7 +41,7 @@ function HeroStatsCard({
 }: HeroStatsCardProps) {
   /* ── Loading state ─────────────────────────────────────────────── */
   if (isLoading) {
-    return <CardPlaceholder isLoading title={t('app.overview.summary.title')} />
+    return <StateCard isLoading title={t('app.overview.summary.title')} />
   }
 
   /* ── Error state ───────────────────────────────────────────────── */
