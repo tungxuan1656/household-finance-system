@@ -3,29 +3,19 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmptyState } from '@/components/home/empty-state'
-import { GroupFilterBar } from '@/components/home/group-filter-bar'
-import { type GroupInfo } from '@/components/home/group-filter-bar'
 import { HeroStatsCard } from '@/components/home/hero-stats-card'
-import { RecentExpenses } from '@/components/home/recent-expenses'
-import { type RecentExpenseItem } from '@/components/home/recent-expenses'
-import { CardPlaceholder } from '@/components/shared/card-placeholder'
 import { PageShell } from '@/components/ui/page-shell'
 import { useAnalyticsComparisonQuery } from '@/hooks/api/use-analytics'
 import { useAnalyticsOverviewQuery } from '@/hooks/api/use-analytics'
 import { useBudgetListQuery } from '@/hooks/api/use-budgets'
 import { useExpenseSummaryQuery } from '@/hooks/api/use-expense'
-import { useInfiniteExpenseListQuery } from '@/hooks/api/use-expense'
-import { useExpenseGroupListQuery } from '@/hooks/api/use-groups'
-import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { householdActions } from '@/stores/household.store'
 import { useHouseholdStore } from '@/stores/household.store'
+import { OverviewCategoryStatisticsSection } from '@/views/app/overview/overview-category-statistics-section'
 import { getCurrentPeriod } from '@/views/app/overview/overview-formatters'
+import { OverviewRecentExpensesSection } from '@/views/app/overview/overview-recent-expenses-section'
 import type { Lens } from '@/views/app/overview/overview-tabs'
 import { OverviewTabs } from '@/views/app/overview/overview-tabs'
-
-import { CategoryBreakdownPlaceholder } from './overview/category-breakdown-placeholder'
-
-const RECENT_LIMIT = 5
 
 function getDaysRemaining(): number {
   const now = new Date()
@@ -41,7 +31,6 @@ function OverviewPage() {
 
   // ── Lens state ──────────────────────────────────────────────────
   const [activeLens, setActiveLens] = useState<Lens>({ type: 'personal' })
-  const [activeGroupIds, setActiveGroupIds] = useState<string[]>([])
 
   // ── Derived values ──────────────────────────────────────────────
   const householdId =
@@ -104,26 +93,10 @@ function OverviewPage() {
     period,
     household_id: householdId,
   })
-  const referenceCategoriesQuery = useReferenceCategoriesQuery()
   const budgetListQuery = useBudgetListQuery(householdId)
   const expenseSummaryQuery = useExpenseSummaryQuery(
     householdId ? { household_id: householdId } : undefined,
   )
-
-  const recentExpensesQuery = useInfiniteExpenseListQuery(
-    useMemo(
-      () => ({
-        limit: RECENT_LIMIT,
-        sort: 'occurred_at_desc' as const,
-        household_id: householdId,
-        ...(activeGroupIds.length === 1 ? { group_id: activeGroupIds[0] } : {}),
-      }),
-      [householdId, activeGroupIds],
-    ),
-  )
-
-  // Groups for filter bar: fetch for active lens context
-  const groupsQuery = useExpenseGroupListQuery(householdId ?? undefined)
 
   // ── Derived data ────────────────────────────────────────────────
   const overviewData = overviewQuery.data
@@ -137,31 +110,6 @@ function OverviewPage() {
     (budgetListQuery.data?.items.length ?? 0) === 0 &&
     !budgetListQuery.isLoading &&
     !overviewQuery.isLoading
-
-  // Transform for RecentExpenses
-  const recentItems: RecentExpenseItem[] = useMemo(() => {
-    const items = recentExpensesQuery.data?.pages?.[0]?.items ?? []
-
-    return items.map((item) => ({
-      id: item.id,
-      title: item.title,
-      categoryKey: item.categoryKey,
-      amountMinor: item.amountMinor,
-      currencyCode: item.currencyCode,
-      occurredAt: item.occurredAt,
-      visibility: item.visibility,
-    }))
-  }, [recentExpensesQuery.data])
-
-  // Available groups for filter bar
-  const availableGroupItems: GroupInfo[] = useMemo(
-    () =>
-      (groupsQuery.data?.items ?? []).map((g) => ({
-        id: g.id,
-        name: g.name,
-      })),
-    [groupsQuery.data],
-  )
 
   // ── Empty state guard ──────────────────────────────────────────
   if (isEntirelyEmpty) {
@@ -199,22 +147,6 @@ function OverviewPage() {
         }
         onValueChange={handleLensChange}
       />
-      <GroupFilterBar
-        activeGroupIds={activeGroupIds}
-        availableGroups={availableGroupItems}
-        onClearAll={() => setActiveGroupIds([])}
-        onOpenSelector={() => {
-          // Group selection popover TBD — for now, toggle is managed via chips
-        }}
-        onToggleGroup={(groupId: string) => {
-          setActiveGroupIds((prev) =>
-            prev.includes(groupId)
-              ? prev.filter((id) => id !== groupId)
-              : [...prev, groupId],
-          )
-        }}
-      />
-
       <div className='mt-4 flex flex-col gap-6 md:gap-8'>
         {/* Hero Stats */}
         <HeroStatsCard
@@ -234,23 +166,12 @@ function OverviewPage() {
           onRetry={() => overviewQuery.refetch()}
         />
 
-        <RecentExpenses
-          error={recentExpensesQuery.error}
-          expenses={recentItems}
-          isEmpty={recentItems.length === 0 && !recentExpensesQuery.isLoading}
-          isLoading={recentExpensesQuery.isLoading}
-          referenceCategories={referenceCategoriesQuery.data?.items}
-          onRetry={() => recentExpensesQuery.refetch()}
-        />
+        <OverviewRecentExpensesSection householdId={householdId} />
 
-        {/* Category breakdown from analytics */}
-        <CardPlaceholder isEmpty={true} isLoading={overviewQuery.isLoading}>
-          <CategoryBreakdownPlaceholder
-            categories={overviewData?.topCategories ?? []}
-            currencyCode={overviewData?.currencyCode ?? 'VND'}
-            referenceCategories={referenceCategoriesQuery.data?.items}
-          />
-        </CardPlaceholder>
+        <OverviewCategoryStatisticsSection
+          householdId={householdId}
+          period={period}
+        />
       </div>
     </PageShell>
   )
