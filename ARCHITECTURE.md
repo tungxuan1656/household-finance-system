@@ -1,64 +1,58 @@
 # ARCHITECTURE.md
 
-Top-level system map. Stay concise, point to deeper docs when needed.
+System map. Keep short. Route deeper behavior to exact docs.
 
 ## System Shape
 
-- Product: `Household Finance Web App`
-- Primary user workflow: `quick expense capture -> household aggregation -> budget & insights`
-- Runtime surfaces: `web (frontend)` / `Cloudflare Workers (backend)` / `D1 (database)`
-- Source of truth for product behavior: `docs/product-specs/`
+- Product: household finance web app.
+- Core flow: quick expense capture → household aggregation → budgets + insights.
+- Surfaces: web frontend, Cloudflare Worker backend, D1 database.
+- Product behavior source: `docs/product-specs/index.md` → exact feature spec.
 
 ## Domain Map
 
-| Domain | Purpose | Primary Entry Points | Related Spec |
-|--------|---------|----------------------|--------------|
-| `expenses` | Record, validate, store expense items | `apps/web` UI forms -> `apps/worker` routes (POST /expenses) | `docs/product-specs/expense-tracking.md` |
-| `households` | Household membership, roles, visibility | `apps/worker` routes (household CRUD, membership) -> `apps/web` views | `docs/product-specs/household-management.md` |
-| `auth` | Verify and map user identity (Firebase ID tokens -> local users) | `apps/web` (frontend auth) -> `apps/worker` (token verification via JWKS + `jose`) | `docs/product-specs/authentication.md` |
-| `insights` | Aggregation, budgets, basic analytics | `apps/worker` aggregation routes -> `apps/web` dashboards | `docs/product-specs/insight-analytics.md` |
+| Domain | Purpose | Entry | Spec |
+|--------|---------|-------|------|
+| `auth` | Verify identity, map provider user to local user | web auth → worker auth | `docs/product-specs/authentication.md` |
+| `households` | Membership, roles, visibility | worker routes + web views | `docs/product-specs/household-management.md` |
+| `expenses` | Capture, validate, query expenses | web forms → worker routes | `docs/product-specs/expense-tracking.md` |
+| `budgets` | Budget setup and tracking | worker aggregates + web budget views | `docs/product-specs/budget-management.md` |
+| `insights` | Analytics, comparisons, exports | worker analytics + web dashboards | `docs/product-specs/analytics-overview.md` |
 
 ## Layer Model
 
-Fixed directional model — agents must not invent ad hoc architecture:
+Direction is fixed:
 
 `Types -> Config -> Repo -> Service -> Runtime -> UI`
 
-Cross-cutting concerns enter through explicit provider or adapter boundaries, not across layers directly.
+Rules:
+- Lower layers do not depend on higher layers.
+- UI does not bypass runtime/service contracts.
+- Data access enters through repositories/adapters.
+- Shared utilities stay generic. No domain dumping ground.
+- New dependency needs plan/design justification.
 
-## Hard Dependency Rules
+## Boundaries
 
-- Lower layers must not depend on higher layers.
-- UI must not bypass runtime or service contracts.
-- Data access must enter through repositories or equivalent adapters.
-- Shared utilities must remain generic, must not accumulate domain logic.
-- New dependencies must be justified in matching plan or design doc.
+| Concern | Boundary |
+|---------|----------|
+| Frontend | `docs/FRONTEND.md` |
+| Backend | `docs/BACKEND.md` |
+| API contracts | `docs/references/backend/api-contract-and-validation.md` |
+| Auth/security | `docs/references/backend/security-and-auth-pattern.md`, `docs/SECURITY.md` |
+| Testing placement | `docs/testing/test-placement-and-sharding-convention.md` |
+| Product behavior | `docs/product-specs/index.md` |
 
-## Cross-Cutting Interfaces
+## File Organization Rules
 
-| Concern | Approved Boundary | Notes |
-|--------|-------------------|-------|
-| Logging and tracing | `packages/*/lib/log` (or `apps/*/src/lib/log`) | Structured logs only; avoid ad-hoc console use in production paths |
-| Auth | `apps/worker/src/lib/auth` | Worker verifies Firebase ID tokens using JWKS + `jose` (lightweight, Cloudflare-friendly). Do not couple UI directly to DB access. |
-| External APIs | `apps/worker/src/lib/clients` | External calls must implement retry and timeout policies. Keep clients behind adapters. |
-| Feature flags | `apps/worker/src/lib/flags` | Feature flags evaluated in backend when behavior changes are sensitive |
-
-## Current Hot Spots
-
-- `[area that is hardest for agents to change safely]`
-- `[area with weak boundaries or fragile tests]`
+- Descriptive paths are API for agents.
+- Prefer focused files over large mixed files.
+- Split when file mixes unrelated concerns or becomes hard to review.
+- Put reusable rules in `docs/references/*`; keep this file system-level only.
 
 ## Change Checklist
 
-When touching architecture-relevant code:
-
-1. Update this file if domain map or allowed boundaries changed.
-2. Update related design doc in `docs/design-docs/` if reasoning changed.
-3. Add or update executable check if rule should be enforced mechanically.
-
-## Meaningful Namespaces and File Organization
-
-- Agents navigate code primarily via filesystem; file and folder names are an important API.
-- Prefer descriptive paths (e.g., billing/invoices/compute.ts) over generic helpers — improves discoverability and intent signaling.
-- Keep files small and focused so agents can load and reason about whole files without truncation.
-- When a file is long and contains many tasks, split it into smaller files.
+When architecture changes:
+1. Update this file only for domain/layer/boundary changes.
+2. Update exact child reference/spec affected.
+3. Add executable check when rule can be enforced mechanically.

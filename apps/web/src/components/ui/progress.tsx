@@ -5,11 +5,20 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+const progressToneClasses = {
+  default: 'bg-primary',
+  warning: 'bg-status-warning',
+  danger: 'bg-destructive',
+} as const
+
 function Progress({
   className,
   value,
+  tone,
   ...props
-}: React.ComponentProps<typeof ProgressPrimitive.Root>) {
+}: React.ComponentProps<typeof ProgressPrimitive.Root> & {
+  tone?: 'default' | 'warning' | 'danger'
+}) {
   return (
     <ProgressPrimitive.Root
       className={cn(
@@ -19,7 +28,10 @@ function Progress({
       data-slot='progress'
       {...props}>
       <ProgressPrimitive.Indicator
-        className='size-full flex-1 bg-primary transition-all'
+        className={cn(
+          'size-full flex-1 transition-all',
+          progressToneClasses[tone ?? 'default'],
+        )}
         data-slot='progress-indicator'
         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
       />

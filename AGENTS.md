@@ -1,88 +1,99 @@
 # AGENTS.md
 
-Personal & Family Expense Management System — Open Source, Long-term Maintenance
+Personal & Family Expense Management System. Open-source household finance app for income, expenses, budgets, insights, categories, groups, recurring deductions, and family sharing.
 
-Repository support small team building reliable expense management app: income, expenses, statistics, grouping, templates, habits, recurring deductions, categorization, family group expense sharing.
+## Stack
 
-## Tech Stack
+- Web: `apps/web` — React 19, TypeScript, Next.js App Router, Tailwind CSS, shadcn/ui, sonner, date-fns.
+- Worker: `apps/worker` — Cloudflare Workers, Hono, D1, Wrangler, `zod`, `jose`, `ulid`.
+- Tooling: `pnpm` monorepo, ESLint, Prettier, Vitest, TypeScript.
 
-- Frontend (`apps/web`): React 19, TypeScript, Next.js App Router, Tailwind CSS, shadcn UI, sonner, date-fns
-- Backend/Edge (`apps/worker`): Cloudflare Workers, Hono, D1, Wrangler, `zod`, `jose`, `ulid`
-- Tooling: `pnpm` monorepo, ESLint, Prettier, Vitest, TypeScript
+## Doc Architecture
 
-## Quick Start
+- Parent docs route to child docs.
+- Child docs hold rules. Child docs do not need parent backrefs.
+- One rule area = one canonical home.
+- Index docs route only. Do not duplicate rule bodies in indexes.
+- Write prose short: caveman-lite/full. Keep technical terms exact.
 
-Before writing or changing code:
-1. Read `using-skills` skill first. Determine which workflow skill applies.
-2. Read this file + `ARCHITECTURE.md`.
-3. Run `./init.sh`.
-4. Review `harness/feature_index.json` + relevant file in `harness/features/`.
-5. For plan/product-behavior context, read `docs/PLANS.md` + `docs/product-specs/` as needed.
+## Minimal Reading Tree
+
+Read least docs that fully cover task.
+
+| Task | Read |
+|------|------|
+| Any session | `AGENTS.md` |
+| Architecture/layer change | `ARCHITECTURE.md` |
+| Frontend work | `docs/FRONTEND.md` → exact `docs/references/frontend/*` needed |
+| Backend work | `docs/BACKEND.md` → exact `docs/references/backend/*` needed |
+| Shared type/API naming | `docs/references/shared/type-naming-pattern.md` |
+| Product behavior | `docs/product-specs/index.md` → exact feature spec |
+| Plan creation/update | `docs/PLANS.md` → plan template/index as needed |
+| UI durable design decision | `docs/design-docs/index.md` → exact design doc |
+| Security-sensitive work | `docs/SECURITY.md` + exact backend/frontend refs |
+| Reliability/runtime health | `docs/RELIABILITY.md` |
+| Product judgment gap | `docs/PRODUCT_SENSE.md` |
+| Harness/session tracking | `harness/feature_index.json` + exact `harness/features/*.json` |
+
+Do not read broad folders by default. Use indexes to choose exact leaf docs.
 
 ## Session Rules
 
-- Work on one feature or plan per session. Do not mix scopes.
-- Run verification before claiming a feature is done.
-- MUST run `pnpm lint:fix` (or `--fix`) from repo root after writing/changing code. NOT lint-only when goal is apply fixes.
-- Use clear, consistent, maintainable code.
-- Commit with descriptive message.
-- Update `harness/progress.md` after each session.
-- Update harness feature state before end session.
-- Leave repo in clean, restartable state via standard startup path.
+- Use `using-skills` first. Load task skill if applies.
+- One feature/plan per session. Do not mix scopes.
+- Before code edits, run required GitNexus impact checks for touched symbols.
+- Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
+- Params: `install`, `lint`, `typecheck`, `test`, `build`, `sync`.
+- Manual one-file lint/test OK for focused debug.
+- Run full `./init.sh` only at final verification.
+- Before commit-ready summary, run `gitnexus_detect_changes(scope: "all")`.
+- Update harness feature state + `harness/progress.md` before end session.
+- Commit only when user explicitly asks.
 
 ## Required Artifacts
 
-- `harness/feature_index.json`: feature index and status
-- `harness/features/*.json`: per-feature records, dependencies, and evidence
-- `harness/progress.md`: newest-first session log with blockers and next steps
-- `harness/session-handoff.md`: handoff file for unfinished sessions when needed
-- `init.sh`: standard repository initialization and verification script
+- `harness/feature_index.json`: feature list and status.
+- `harness/features/*.json`: feature scope, dependencies, evidence.
+- `harness/progress.md`: newest-first session log.
+- `harness/session-handoff.md`: unfinished-session handoff when needed.
+- `init.sh`: standard restart/verification path.
 
 ## Definition of Done
 
-A feature is done only when:
-- Implementation is complete and committed.
-- All verification steps pass: lint, type-check, tests, build.
-- Evidence is recorded in `harness/features/*.json` and reflected in `harness/feature_index.json`.
-- Progress is logged in `harness/progress.md`.
-- Repository can be restarted cleanly from standard startup path.
+Done means:
+- Implementation/docs complete.
+- Verification passes: lint, type-check, tests, build as scope requires.
+- Evidence recorded in harness artifacts.
+- Progress logged.
+- Repo restart path works.
+- Changes committed only if user requested commit.
 
 ## Commands
 
-`./init.sh` is default full-workspace verification path. Runs: install, harness checks, lint, type-check, tests, web build.
+- Install: `./init.sh install`
+- Lint: `./init.sh lint`
+- Typecheck: `./init.sh typecheck`
+- Test: `./init.sh test`
+- Build: `./init.sh build`
+- Sync GitNexus: `./init.sh sync`
+- Final full verify: `./init.sh`
 
-## References
-
-Read before deeper changes:
-- `ARCHITECTURE.md`: system map, layer model, dependency rules
-- `docs/PLANS.md`: plan lifecycle and execution policy
-- `docs/product-specs/`: product behavior and acceptance targets
-- `docs/FRONTEND.md`: frontend constraints, accessibility, and design system rules
-- `docs/BACKEND.md`: backend API, data, validation, and security rules
-- `docs/design-docs/shadcn-first-ui-web-guide.md`: web UI governance
-- `docs/design-docs/index.md`, `docs/QUALITY_SCORE.md`, `docs/RELIABILITY.md`, `docs/SECURITY.md`: supporting operational guidance
-
----
+Full `./init.sh`: install, harness, lint, typecheck, test, sync. No build.
 
 ## GitNexus
 
-Use GitNexus for unfamiliar or high-risk code changes. If index stale, run `./scripts/sync_gitnexus.sh` (not `npx gitnexus analyze`) first.
+Use GitNexus for unfamiliar/high-risk changes. If index stale, run `./init.sh sync`.
 
 Required:
-- Before editing any function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius and risk.
-- Warn user before proceeding if impact returns HIGH or CRITICAL risk.
-- Before committing, run `gitnexus_detect_changes()`.
-- Use `gitnexus_query({query: "concept"})` to explore execution flows, `gitnexus_context({name: "symbolName"})` for full symbol context.
+- Before editing function/class/method: `gitnexus_impact({ target: "symbolName", direction: "upstream" })`.
+- Report blast radius and risk.
+- Warn before proceeding on HIGH/CRITICAL risk.
+- Before commit-ready summary: `gitnexus_detect_changes({ scope: "all" })`.
+- Explore flows with `gitnexus_query`; inspect symbols with `gitnexus_context`.
 
-Reference:
-- `gitnexus://repo/household-finance-system/context` for codebase overview and index freshness.
-- `gitnexus://repo/household-finance-system/clusters` for functional areas.
-- `gitnexus://repo/household-finance-system/processes` for execution flows.
-- `gitnexus://repo/household-finance-system/process/{name}` for a step-by-step trace.
-- `.agents/skills/gitnexus/gitnexus-exploring/SKILL.md` for architecture questions.
-- `.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` for blast-radius checks.
-- `.agents/skills/gitnexus/gitnexus-debugging/SKILL.md` for bug tracing.
-- `.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md` for rename/extract/split work.
-- `.agents/skills/gitnexus/gitnexus-guide/SKILL.md` for tool and schema reference.
-- `.agents/skills/gitnexus/gitnexus-cli/SKILL.md` for index/status/clean/wiki commands.
+Useful resources:
+- `gitnexus://repo/household-finance-system/context`
+- `gitnexus://repo/household-finance-system/clusters`
+- `gitnexus://repo/household-finance-system/processes`
+- `gitnexus://repo/household-finance-system/process/{name}`
 

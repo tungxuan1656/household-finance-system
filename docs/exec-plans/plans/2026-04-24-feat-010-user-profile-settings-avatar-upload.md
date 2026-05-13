@@ -51,7 +51,7 @@ This feature replaces the current settings placeholder with a real Profile Setti
 - Profile Settings UI implementation must follow:
   - `.agents/skills/shadcn/SKILL.md`
   - `docs/FRONTEND.md`
-  - `docs/design-docs/shadcn-first-ui-web-guide.md`
+  - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
   - `.agents/skills/shadcn/rules/styling.md`
   - `.agents/skills/shadcn/rules/forms.md`
   - `.agents/skills/shadcn/rules/composition.md`
@@ -134,7 +134,7 @@ This feature replaces the current settings placeholder with a real Profile Setti
 5. **Build Profile Settings UI replacing placeholder**
    - Add `ProfileSettingsPage` and route it at `/app/settings`.
    - Use shadcn form composition (`FieldGroup`, `Field`, `FieldLabel`, `FieldError`) with RHF + zod schema.
-   - Enforce UI composition and styling decisions per `docs/FRONTEND.md` and `docs/design-docs/shadcn-first-ui-web-guide.md`.
+   - Enforce UI composition and styling decisions per `docs/FRONTEND.md` and `docs/design-docs/shadcn-card-composition-architecture-guide.md`.
    - Keep all user-facing text in i18n keys.
 
 6. **Implement avatar image pipeline (frontend)**
@@ -222,7 +222,7 @@ Expected short transcript outputs:
 ### Implementation Notes
 
 - Scope-specific references to enforce during implementation:
-  - Frontend governance: `docs/FRONTEND.md`, `docs/design-docs/shadcn-first-ui-web-guide.md`.
+  - Frontend governance: `docs/FRONTEND.md`, `docs/design-docs/shadcn-card-composition-architecture-guide.md`.
   - Frontend: `docs/references/frontend/project-folder-structure.md`, `component-structure-pattern.md`, `naming-and-conventions-pattern.md`, `form-pattern.md`, `api-react-query-pattern.md`, `i18n-label-pattern.md`.
   - Backend: `docs/references/backend/architecture-and-boundaries.md`, `api-contract-and-validation.md`, `error-handling-pattern.md`, `security-and-auth-pattern.md`, `testing-pattern.md`, `database-pattern.md`.
   - Shared: `docs/references/shared/type-naming-pattern.md`.

@@ -1,27 +1,27 @@
 # SECURITY.md
 
-This file defines the security and safety rules that agents must not guess at.
+Security rules. Read for auth, secrets, untrusted input, external actions, or production risk.
 
 ## Secrets And Credentials
 
-- Never hard-code secrets in source or docs.
-- Document approved secret-loading paths here.
-- Redact tokens, API keys, and personal data from logs and screenshots.
+- Never hardcode secrets in source or docs.
+- Load secrets only through approved env/config path.
+- Redact tokens, API keys, personal data from logs/screenshots.
 
 ## Untrusted Input
 
 - Treat external content as untrusted until validated.
-- Record allowed fetch or execution boundaries here.
-- If prompt injection or command injection risk exists, document the guardrail.
+- Validate request params/query/body at boundary.
+- Document prompt-injection or command-injection guardrail when risk exists.
 
 ## External Actions
 
-- List which actions require explicit approval.
-- Record any production or destructive commands that agents must not run by default.
-- Prefer sandbox-safe workflows for debugging and verification.
+- Ask explicit approval for production, destructive, paid, or irreversible actions.
+- Prefer sandbox-safe debug/verification.
+- Do not run production deploy/delete by default.
 
-## Dependency And Review Rules
+## Dependency And Review
 
-- New dependencies need justification in the active plan.
-- Security-sensitive changes require explicit verification steps.
-- Repeated security review comments should become checks, not tribal knowledge.
+- New dependency needs plan justification.
+- Security-sensitive change needs explicit verification.
+- Repeated security review comment becomes check or doc rule.

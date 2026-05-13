@@ -27,7 +27,9 @@ function PageShell({
         title={title}
         onBack={onBack}
       />
-      <div className='flex-1 p-4 pb-24 md:p-6 md:pb-8 lg:p-8'>{children}</div>
+      <div className='flex-1 px-4 pb-24 md:px-6 md:pb-8 lg:px-8'>
+        {children}
+      </div>
     </div>
   )
 }

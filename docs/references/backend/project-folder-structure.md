@@ -1,107 +1,82 @@
 # Backend Project Folder Structure
 
-## 1) Standard Structure
+## Canonical `src/` layout
 
 ```text
 src/
   index.ts
-
   routes/
     feature*.ts
-    ...
-
   handlers/
     feature*/
-    ...
-
   middlewares/
     auth.ts
     request-context.ts
-    ...
-
   db/
     repositories/
       feature*-repository.ts
-      ...
-
   contracts/
     feature*.ts
     index.ts
-
   types/
     app.ts
     feature*.ts
     index.ts
-
   lib/
     auth/
     response.ts
     validation.ts
     env.ts
-    ...
-
   utils/
     id.ts
-    ...
 ```
 
-> `feature*` (replace with the real domain name such as `auth`, `profile`, `expenses`, `households`).
+`feature*` means the real domain name, such as `auth`, `profile`, `expenses`, or `households`.
 
-## 2) Strict Boundaries by Folder
+## Folder rules
 
-- `routes/`: declare HTTP endpoints, attach middleware, parse request inputs, and return response envelopes.
-- `handlers/`: orchestrate one use case at a time; business flow lives here.
+- `routes/`: HTTP endpoints, middleware wiring, input parsing, response envelopes.
+- `handlers/`: one use case per file or folder; business flow lives here.
 - `middlewares/`: reusable request guards and request-context setup.
-- `db/repositories/`: D1 access only, including SQL, row mapping, and persistence helpers.
-- `contracts/`: API-facing request/response schemas and transport contracts.
-- `types/`: runtime-only internal types that are not API transport contracts.
-- `lib/auth/`: auth/security infrastructure such as Firebase verification, JWT issuing/verification, token hashing.
-- `lib/`: cross-cutting runtime helpers that do not fit a single feature folder.
+- `db/repositories/`: D1 access only; SQL, row mapping, persistence helpers.
+- `contracts/`: API request/response schemas and transport contracts.
+- `types/`: runtime-only internal types, not HTTP transport contracts.
+- `lib/auth/`: auth/security infrastructure, including Firebase verification, JWT issue/verify, token hashing.
+- `lib/`: cross-cutting runtime helpers shared by multiple features.
 - `utils/`: small pure helpers with no framework or request-context dependency.
 
-## 3) Placement Rules
+## Placement rules
 
-- Keep `route -> handler -> repository` as the default backend flow.
-- Routes must not contain SQL.
-- Handlers must not construct ad hoc response shapes outside the shared contract/envelope pattern.
-- Repositories must not depend on Hono context.
-- `contracts/` should hold `Request`, `Response`, and transport-facing `DTO` shapes only.
-- `types/` should hold bindings, token payloads, and internal app/runtime types.
-- Put provider-specific auth code in `lib/auth`, not in `utils`.
-- Only promote code to `lib/` when it is shared across multiple features or is truly cross-cutting.
+- Default flow is `route -> handler -> repository`.
+- Routes do not hold SQL.
+- Handlers do not build ad hoc response shapes outside the shared contract/envelope pattern.
+- Repositories do not depend on Hono context.
+- `contracts/` holds `Request`, `Response`, and transport-facing `DTO` shapes only.
+- `types/` holds bindings, token payloads, and internal app/runtime types.
+- Provider-specific auth code goes in `lib/auth`, not `utils`.
+- Move code into `lib/` only when it is shared across features or truly cross-cutting.
 
-## 4) What Not To Do
+## Do not
 
 - Do not use `dto/` as a mixed bucket for API contracts, app bindings, env config, and auth token payloads.
-- Do not use `utils/` as a dumping ground for security-sensitive infrastructure.
+- Do not use `utils/` for security-sensitive infrastructure.
 - Do not put feature-specific SQL helpers in `lib/`.
-- Do not collapse multiple domains into one large repository file when separate repositories would keep ownership clearer.
+- Do not collapse separate domains into one large repository file when separate repositories keep ownership clearer.
 - Do not hide business orchestration inside route files.
 
-## 5) Naming Guidance
+## Naming rules
 
 - Route files: `routes/auth.ts`, `routes/profile.ts`
 - Handler files: `handlers/auth/exchange-provider-token.ts`
 - Repository files: `db/repositories/session-repository.ts`
 - Contract files: `contracts/auth.ts`, `contracts/profile.ts`
 - Type files: `types/app.ts`, `types/auth.ts`
-- Auth infrastructure files: `lib/auth/firebase.ts`, `lib/auth/jwt.ts`
+- Auth files: `lib/auth/firebase.ts`, `lib/auth/jwt.ts`
 
-## 6) Import Rules
+## Import rules
 
-- Feature code should first look within its own route/handler/repository area.
-- Import from `contracts` when the type is part of the HTTP contract.
-- Import from `types` when the type is runtime-only/internal.
-- Repositories may be used by handlers and middlewares, but not by routes for direct SQL execution.
-- `utils` must stay dependency-light and framework-agnostic.
-
-## 7) Backend Checklist
-
-- [ ] `src/routes`, `src/handlers`, and `src/db/repositories` are clearly separated
-- [ ] API request/response schemas live in `src/contracts`
-- [ ] Runtime-only types live in `src/types`
-- [ ] Auth/security infrastructure lives in `src/lib/auth`
-- [ ] `src/lib` is not used as a feature-specific dumping ground
-- [ ] `src/utils` only contains small pure helpers
-- [ ] Imports use the repo alias consistently (`@/...`)
-- [ ] New features extend the structure instead of inventing new mixed folders
+- First look inside the feature’s own route, handler, and repository area.
+- Import from `contracts` for HTTP contract types.
+- Import from `types` for runtime-only internal types.
+- Handlers and middlewares may use repositories; routes do not run direct SQL.
+- Keep `utils` dependency-light and framework-agnostic.

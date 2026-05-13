@@ -1,58 +1,57 @@
 'use client'
 
+import { DataState } from '@/components/shared/data-state'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
+import { t } from '@/lib/i18n/t'
+import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
+import type { AnalyticsTopCategoryDTO } from '@/types/analytics'
+import type { ReferenceCategoryDTO } from '@/types/reference-data'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
-type CategoryItem = {
-  categoryKey: string
-  totalSpendMinor: number
-  percentOfTotal: number
-}
+type CategoryItem = AnalyticsTopCategoryDTO
 
 type CategoryBreakdownProps = {
   categories: CategoryItem[]
   currencyCode: string
-  totalSpendMinor: number
   isLoading: boolean
   isEmpty: boolean
+  isError?: boolean
+  referenceCategories?: ReferenceCategoryDTO[]
 }
-
-const CHART_COLORS = [
-  '[&>div]:bg-chart-1',
-  '[&>div]:bg-chart-2',
-  '[&>div]:bg-chart-3',
-  '[&>div]:bg-chart-4',
-  '[&>div]:bg-chart-5',
-]
 
 function CategoryBreakdown({
   categories,
   currencyCode,
   isLoading,
   isEmpty,
+  isError,
+  referenceCategories,
 }: CategoryBreakdownProps) {
   return (
-    <section>
-      <h2 className='mb-3 text-base font-semibold'>Category Breakdown</h2>
-
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : isEmpty ? (
-        <EmptyState />
-      ) : (
-        <div className='rounded-xl border bg-card p-4'>
-          <div className='space-y-3'>
-            {categories.map((cat, index) => {
-              const colorClass = CHART_COLORS[index % CHART_COLORS.length]
+    <DataState
+      emptyDescription={t('app.overview.categoryBreakdown.empty')}
+      isEmpty={isEmpty}
+      isError={isError}
+      isLoading={isLoading}
+      title={t('app.overview.categoryBreakdown.title')}>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('app.overview.categoryBreakdown.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='flex flex-col gap-3'>
+            {categories.map((cat) => {
+              const presentation = getCategoryPresentation(
+                cat.categoryKey,
+                referenceCategories,
+              )
 
               return (
                 <div key={cat.categoryKey} className='flex flex-col gap-1'>
-                  {/* Top row: label + percent + amount */}
                   <div className='flex items-center justify-between'>
                     <span className='text-sm font-medium'>
-                      {cat.categoryKey}
+                      {presentation.label}
                     </span>
                     <div className='flex items-center gap-2'>
                       <span className='font-mono text-sm text-muted-foreground tabular-nums'>
@@ -63,47 +62,14 @@ function CategoryBreakdown({
                       </span>
                     </div>
                   </div>
-                  {/* Progress bar */}
-                  <Progress
-                    className={cn('h-1.5 rounded-full', colorClass)}
-                    value={cat.percentOfTotal}
-                  />
+                  <Progress value={cat.percentOfTotal} />
                 </div>
               )
             })}
           </div>
-        </div>
-      )}
-    </section>
-  )
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className='space-y-4'>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className='flex flex-col gap-1'>
-          <div className='flex items-center justify-between'>
-            <Skeleton className='h-4 w-20' />
-            <div className='flex items-center gap-2'>
-              <Skeleton className='h-4 w-10' />
-              <Skeleton className='h-4 w-16' />
-            </div>
-          </div>
-          <Skeleton className='h-2 w-full rounded-full' />
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className='py-4 text-center'>
-      <p className='text-sm text-muted-foreground'>
-        Start adding expenses to see your spending breakdown.
-      </p>
-    </div>
+        </CardContent>
+      </Card>
+    </DataState>
   )
 }
 

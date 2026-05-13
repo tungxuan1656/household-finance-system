@@ -107,7 +107,7 @@ Implement the first production-ready household invitation flow so admins can inv
   - `docs/references/frontend/api-react-query-pattern.md`
   - `docs/references/frontend/zustand-store-pattern.md`
   - `docs/references/frontend/i18n-label-pattern.md`
-  - `docs/design-docs/shadcn-first-ui-web-guide.md`
+  - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
 - Required shared standards:
   - `docs/references/shared/type-naming-pattern.md`
 - Companion skills for implementation phase:

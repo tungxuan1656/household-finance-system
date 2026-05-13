@@ -137,12 +137,52 @@
     },
     "overview": {
       "badge": "Bảng điều khiển",
+      "filters": {
+        "add": "+ Bộ lọc",
+        "clearAll": "Xoá tất cả"
+      },
+      "hero": {
+        "percentOfBudget": "{{percent}}% ngân sách tháng",
+        "dailyRate": "Còn {{days}} ngày — khoảng {{amount}}/ngày",
+        "monthOverMonth": "{{percent}}% so với tháng trước",
+        "noBudget": "Thiết lập ngân sách tháng để theo dõi chi tiêu",
+        "overBudget": "Vượt ngân sách {{amount}}",
+        "remaining": "Còn {{amount}}"
+      },
+      "recentExpenses": {
+        "empty": "Chưa có khoản chi nào. Nhấn + để thêm khoản đầu tiên.",
+        "error": "Không thể tải chi tiêu gần đây.",
+        "title": "Chi tiêu gần đây",
+        "today": "Hôm nay",
+        "viewAll": "Xem tất cả",
+        "yesterday": "Hôm qua"
+      },
+      "categoryBreakdown": {
+        "empty": "Hãy thêm chi tiêu để xem phân bổ theo danh mục.",
+        "loading": "Đang tải phân bổ danh mục...",
+        "title": "Phân bổ danh mục"
+      },
+      "householdCard": {
+        "members": "thành viên",
+        "totalSpend": "Tổng chi:",
+        "yourContribution": "Đóng góp của bạn:"
+      },
+      "homeEmpty": {
+        "cta": "Thêm khoản chi đầu tiên",
+        "description": "Bắt đầu theo dõi chi tiêu để xem phân tích và giữ đúng ngân sách.",
+        "title": "Chào mừng đến với Expense Tracker"
+      },
+      "lenses": {
+        "personal": "Cá nhân"
+      },
       "welcome": "Chào mừng trở lại, {{name}}",
       "budget": {
         "availableBudgets": "Đang hiển thị {{count}} ngân sách",
         "description": "Theo dõi nhanh số ngân sách hiện có cho bối cảnh gia đình đang chọn.",
         "errorDescription": "Bạn vẫn có thể xem các phần khác trong khi tải lại ngân sách.",
         "errorTitle": "Không thể tải phần ngân sách",
+        "limit": "Hạn mức: {{amount}}",
+        "placeholder": "Kết nối theo dõi ngân sách để xem chi tiêu thực tế",
         "selectHousehold": "Chọn một gia đình để xem ngân sách phù hợp.",
         "title": "Ngân sách"
       },

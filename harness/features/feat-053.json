@@ -1,0 +1,43 @@
+{
+  "id": "feat-053",
+  "name": "Frontend component architecture reference",
+  "status": "done",
+  "design_docs": [
+    "docs/FRONTEND.md",
+    "docs/references/frontend/frontend-component-architecture-guide.md",
+    "docs/references/index.md"
+  ],
+  "dependencies": ["feat-005", "feat-035", "feat-052"],
+  "scope": [
+    "Align the frontend component architecture guide with the actual Next.js App Router and apps/web/src folder layout",
+    "Document project-specific page, feature, shared, shadcn primitive, hook, API, store, and async-state boundaries",
+    "Register the guide in the canonical references index and frontend mandatory component decomposition policy so frontend work reads it before planning components"
+  ],
+  "components_affected": [
+    "Frontend documentation",
+    "Harness reference index",
+    "Frontend planning workflow"
+  ],
+  "implementation_phases": {
+    "completed": [
+      "Reviewed existing frontend guardrails and reference documents",
+      "Rewrote the component architecture guide to remove non-project folder conventions such as features/*, shared/ui/*, and shared/components/*",
+      "Linked the guide from docs/references/index.md and docs/FRONTEND.md",
+      "Registered feature evidence in the harness feature index"
+    ],
+    "pending": []
+  },
+  "evidence": {
+    "planned": [
+      "Initial ./init.sh passed before edits: install, harness checks, lint, type-check, tests, GitNexus",
+      "Reviewed docs/FRONTEND.md, docs/references/frontend/project-folder-structure.md, docs/references/frontend/component-structure-pattern.md, and docs/references/frontend/naming-and-conventions-pattern.md"
+    ],
+    "verification": [
+      "pnpm lint:fix passed for web and worker ESLint auto-fix",
+      "Updated harness JSON artifacts validated with python3 -m json.tool",
+      "gitnexus_detect_changes(scope: all) reported low risk with 0 affected processes for documentation changes",
+      "./init.sh passed: install, harness checks, lint, type-check, tests, GitNexus"
+    ]
+  },
+  "notes": "Documentation-only harness improvement. The guide is now a required pre-read for frontend component planning and reinforces shadcn-first primitive usage plus feature/shared boundary rules."
+}

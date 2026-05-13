@@ -1,6 +1,6 @@
-# Zustand Store Pattern (Short and Ready to Apply)
+# Zustand Store Pattern
 
-## 1) Standard Template
+## Template
 
 ```ts
 import { create } from 'zustand'
@@ -23,7 +23,7 @@ const _useExampleStore = create<ExampleState>()(
     persist(() => initialState, {
       name: 'example-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({ data: s.data }), // persist only required fields
+      partialize: (s) => ({ data: s.data }),
     }),
   ),
 )
@@ -37,16 +37,16 @@ export const exampleActions = {
 export const useExampleStore = createSelectors(_useExampleStore)
 ```
 
-## 2) Required Conventions
+## Rules
 
 - Naming: `_useXStore`, `useXStore`, `xActions`.
 - Update state only through `actions`.
 - Use key-based selectors: `useXStore.use.field()`.
 - If persist is used, always use `partialize`.
-- **Do not persist** transient flags (`loading`, `error`, `isSessionChecked`, ...).
-- **`reset` action is required** for state re-initialization and test isolation.
+- Do not persist transient flags (`loading`, `error`, `isSessionChecked`, ...).
+- `reset` action is required.
 
-## 2a) Testing Requirement (Required)
+## Tests
 
 Each new store **must include a matching test file** in the same PR, including:
 
@@ -57,7 +57,7 @@ Each new store **must include a matching test file** in the same PR, including:
 ```ts
 // stores/shift.store.test.ts
 beforeEach(() => { act(() => { shiftActions.reset() }) })
-aftEreach(() => { act(() => { shiftActions.reset() }) })
+afterEach(() => { act(() => { shiftActions.reset() }) })
 
 describe('shiftActions.setDateRange', () => {
   it('updates dateRange', () => { ... })
@@ -69,9 +69,9 @@ describe('shiftActions.reset', () => {
 })
 ```
 
-Standard test pattern: `src/stores/<feature>.store.test.ts`
+Standard test path: `src/stores/<feature>.store.test.ts`
 
-## 3) Usage in Components
+## Usage
 
 ```ts
 const data = useExampleStore.use.data()
@@ -81,7 +81,7 @@ exampleActions.setData('abc')
 exampleActions.markReady()
 ```
 
-## 4) New Store Checklist
+## Checklist
 
 - [ ] Has `State` + `initialState`
 - [ ] `create(...devtools(persist(...)))`

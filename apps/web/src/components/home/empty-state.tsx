@@ -3,6 +3,15 @@
 import { Plus } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { t } from '@/lib/i18n/t'
 
 type EmptyStateProps = {
   onAddFirstExpense: () => void
@@ -10,16 +19,21 @@ type EmptyStateProps = {
 
 function EmptyState({ onAddFirstExpense }: EmptyStateProps) {
   return (
-    <div className='mx-auto max-w-md rounded-2xl border bg-card p-8 text-center'>
-      <h2 className='mb-2 text-xl font-semibold'>Welcome to Expense Tracker</h2>
-      <p className='mx-auto mb-6 max-w-sm text-sm text-muted-foreground'>
-        Start tracking your spending to see insights and stay on budget.
-      </p>
-      <Button size='lg' onClick={onAddFirstExpense}>
-        <Plus className='mr-1.5 size-5' />
-        Add Your First Expense
-      </Button>
-    </div>
+    <Card className='mx-auto max-w-md'>
+      <CardHeader>
+        <CardTitle>{t('app.overview.homeEmpty.title')}</CardTitle>
+        <CardDescription>
+          {t('app.overview.homeEmpty.description')}
+        </CardDescription>
+      </CardHeader>
+      <CardContent />
+      <CardFooter>
+        <Button onClick={onAddFirstExpense}>
+          <Plus data-icon />
+          {t('app.overview.homeEmpty.cta')}
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }
 

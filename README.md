@@ -87,7 +87,7 @@ These files define scope, boundaries, verification, and quality expectations.
 From repository root:
 
 ```bash
-pnpm install
+./init.sh install
 ./init.sh
 ```
 
@@ -97,7 +97,9 @@ pnpm install
 - lint
 - typecheck
 - tests (web + worker)
-- web build
+- GitNexus sync
+
+Build is explicit-only: run `./init.sh build` when build evidence is required.
 
 ## Common commands
 
@@ -109,16 +111,16 @@ pnpm dev:web
 pnpm dev:worker
 
 # Quality
-pnpm lint
-pnpm lint:fix
-pnpm typecheck
-pnpm test:web
-pnpm test:worker
+./init.sh lint
+./init.sh typecheck
+./init.sh test
+./init.sh build
 
 # Build / deploy
-pnpm build:web
 pnpm deploy:worker
 ```
+
+AI agents: use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
 
 ## One-feature-at-a-time workflow
 
@@ -126,7 +128,7 @@ The project follows a strict execution workflow:
 
 1. Work on one feature/plan per session.
 2. Keep boundaries from `ARCHITECTURE.md`.
-3. Verify before claiming done (`./init.sh`).
+3. Verify before claiming done. Full `./init.sh` only final.
 4. Record evidence and progress in required artifacts.
 
 Expected project artifacts (per `AGENTS.md`):

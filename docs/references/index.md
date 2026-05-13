@@ -1,42 +1,51 @@
 # References Index
 
-Canonical standards index for agent execution and review.
+Canonical leaf standards map. Use this index to choose exact rule doc. Do not read every file by default.
 
-## Rule Priority
+## Priority
 
-1. Shared cross-cutting rules
-2. Domain-specific rules (frontend/backend)
-3. Templates/examples never override mandatory rules
+1. Shared cross-cutting rules.
+2. Frontend/backend domain rules.
+3. Templates/examples. Examples never override rules.
 
 ## Shared
 
-- `shared/type-naming-pattern.md`
+| Need | Doc |
+|------|-----|
+| DTO / Request / Response names | `shared/type-naming-pattern.md` |
 
 ## Frontend
 
-- `frontend/project-folder-structure.md`
-- `frontend/component-structure-pattern.md`
-- `frontend/naming-and-conventions-pattern.md`
-- `frontend/api-react-query-pattern.md`
-- `frontend/zustand-store-pattern.md`
-- `frontend/form-pattern.md`
-- `frontend/dialog-and-form-pattern.md`
-- `frontend/i18n-label-pattern.md`
-- `../testing/test-placement-and-sharding-convention.md` (canonical web/frontend test scope and placement policy)
+| Need | Doc |
+|------|-----|
+| Folder/file placement | `frontend/project-folder-structure.md` |
+| Page/child split, exports | `frontend/component-structure-pattern.md` |
+| Component layers and extraction | `frontend/frontend-component-architecture-guide.md` |
+| Naming/imports/constants | `frontend/naming-and-conventions-pattern.md` |
+| API client + React Query | `frontend/api-react-query-pattern.md` |
+| Zustand store | `frontend/zustand-store-pattern.md` |
+| Forms | `frontend/form-pattern.md` |
+| Dialog + field layout | `frontend/dialog-and-form-pattern.md` |
+| i18n labels/copy | `frontend/i18n-label-pattern.md` |
+| Responsive shell/navigation | `frontend/responsive-navigation-shell-pattern.md` |
+| Test placement/scope | `../testing/test-placement-and-sharding-convention.md` |
 
 ## Backend
 
-- `backend/project-folder-structure.md`
-- `backend/architecture-and-boundaries.md`
-- `backend/api-contract-and-validation.md`
-- `backend/database-pattern.md`
-- `backend/error-handling-pattern.md`
-- `backend/security-and-auth-pattern.md`
-- `backend/testing-pattern.md`
-- `backend/cloudflare-workers.md`
+| Need | Doc |
+|------|-----|
+| Folder/file placement | `backend/project-folder-structure.md` |
+| Route/handler/repo boundaries | `backend/architecture-and-boundaries.md` |
+| API contract + validation | `backend/api-contract-and-validation.md` |
+| D1 queries + mapping | `backend/database-pattern.md` |
+| Error envelope/status/logging | `backend/error-handling-pattern.md` |
+| Security/auth/ownership | `backend/security-and-auth-pattern.md` |
+| Backend tests | `backend/testing-pattern.md` |
+| Workers/D1/Wrangler | `backend/cloudflare-workers.md` |
 
 ## Maintenance Rules
 
-- Keep one canonical source per rule area.
-- Prefer linking to canonical docs instead of duplicating content.
-- Remove stale paths immediately when structure changes.
+- One rule area = one canonical doc.
+- Parent/index docs link. Leaf docs hold rules.
+- Remove stale paths same session they are discovered.
+- If two docs overlap, keep rule in leaf doc and make parent route only.

@@ -2,7 +2,7 @@
 
 ## Purpose / Big Picture
 
-Refactor toàn bộ web UI theo hướng **mobile-first**, sử dụng design system đã định nghĩa (`design-system.md`, `ui-implementation-rules.md`), với shell/layout hoàn hảo trước, sau đó từng page với visual polish cao.
+Refactor toàn bộ web UI theo hướng **mobile-first**, sử dụng shadcn components làm baseline, với shell/layout hoàn hảo trước, sau đó từng page với visual polish cao.
 
 **User-visible outcome:** Ứng dụng web nhìn đẹp, clean, nhất quán trên mobile. Desktop experience cũng premium. Navigation rõ ràng, typography dễ đọc, spacing consistent, hover states mượt.
 
@@ -75,12 +75,11 @@ Mỗi page/component cần được xem xét kỹ:
 - `apps/web/src/components/layouts/app-sidebar.tsx` — Desktop sidebar (240-280px)
 - `apps/web/src/components/layouts/bottom-tab.tsx` — Mobile bottom navigation
 
-**Design tokens:**
+**Theme entrypoint:**
 - `apps/web/src/index.css` — All CSS variables (colors, radius, spacing, animation)
 
-**Design docs (already complete):**
-- `docs/design-docs/design-system.md` — Tokens definition
-- `docs/design-docs/ui-implementation-rules.md` — Implementation rules
+**UI guidance:**
+- `docs/design-docs/shadcn-card-composition-architecture-guide.md` — shadcn card composition governance
 
 **Pages to refactor (with design questions to answer):**
 - `overview-page.tsx` + sub-components — Dashboard, critical info hierarchy
@@ -335,8 +334,7 @@ Steps are safe to re-run. No destructive operations. Backup by git commit before
 ## Artifacts and Notes
 
 Design reference:
-- `docs/design-docs/design-system.md` — Tokens
-- `docs/design-docs/ui-implementation-rules.md` — Rules
+- `docs/design-docs/shadcn-card-composition-architecture-guide.md` — shadcn card composition governance
 - `feat-048.json` — Scope definition
 
 Current layout baseline:

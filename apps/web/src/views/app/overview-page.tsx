@@ -1,31 +1,21 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EmptyState } from '@/components/home/empty-state'
-import { GroupFilterBar } from '@/components/home/group-filter-bar'
-import { type GroupInfo } from '@/components/home/group-filter-bar'
 import { HeroStatsCard } from '@/components/home/hero-stats-card'
-import { HouseholdCardsSection } from '@/components/home/household-cards-section'
-import { type HouseholdInfo } from '@/components/home/household-cards-section'
-import { LensSelector } from '@/components/home/lens-selector'
-import { type Lens } from '@/components/home/lens-selector'
-import { RecentExpenses } from '@/components/home/recent-expenses'
-import { type RecentExpenseItem } from '@/components/home/recent-expenses'
 import { PageShell } from '@/components/ui/page-shell'
 import { useAnalyticsComparisonQuery } from '@/hooks/api/use-analytics'
 import { useAnalyticsOverviewQuery } from '@/hooks/api/use-analytics'
 import { useBudgetListQuery } from '@/hooks/api/use-budgets'
 import { useExpenseSummaryQuery } from '@/hooks/api/use-expense'
-import { useInfiniteExpenseListQuery } from '@/hooks/api/use-expense'
-import { useExpenseGroupListQuery } from '@/hooks/api/use-groups'
+import { householdActions } from '@/stores/household.store'
 import { useHouseholdStore } from '@/stores/household.store'
-import {
-  formatCurrency,
-  getCurrentPeriod,
-} from '@/views/app/overview/overview-formatters'
-
-const RECENT_LIMIT = 5
+import { OverviewCategoryStatisticsSection } from '@/views/app/overview/overview-category-statistics-section'
+import { getCurrentPeriod } from '@/views/app/overview/overview-formatters'
+import { OverviewRecentExpensesSection } from '@/views/app/overview/overview-recent-expenses-section'
+import type { Lens } from '@/views/app/overview/overview-tabs'
+import { OverviewTabs } from '@/views/app/overview/overview-tabs'
 
 function getDaysRemaining(): number {
   const now = new Date()
@@ -36,11 +26,11 @@ function getDaysRemaining(): number {
 
 function OverviewPage() {
   const households = useHouseholdStore.use.households()
+  const householdsLoading = useHouseholdStore.use.isLoading()
   const period = getCurrentPeriod()
 
   // ── Lens state ──────────────────────────────────────────────────
   const [activeLens, setActiveLens] = useState<Lens>({ type: 'personal' })
-  const [activeGroupIds, setActiveGroupIds] = useState<string[]>([])
 
   // ── Derived values ──────────────────────────────────────────────
   const householdId =
@@ -58,6 +48,29 @@ function OverviewPage() {
 
     return list
   }, [households])
+
+  const handleLensChange = useCallback(
+    (value: string) => {
+      if (value === 'personal') {
+        setActiveLens({ type: 'personal' })
+
+        return
+      }
+
+      const lens = lenses.find(
+        (item): item is Extract<Lens, { type: 'household' }> =>
+          item.type === 'household' && item.householdId === value,
+      )
+      if (lens) setActiveLens(lens)
+    },
+    [lenses],
+  )
+
+  useEffect(() => {
+    if (households.length === 0 && !householdsLoading) {
+      void householdActions.fetchHouseholds()
+    }
+  }, [householdActions, households.length, householdsLoading])
 
   // Keep active lens in sync if selected household is removed
   useEffect(() => {
@@ -85,21 +98,6 @@ function OverviewPage() {
     householdId ? { household_id: householdId } : undefined,
   )
 
-  const recentExpensesQuery = useInfiniteExpenseListQuery(
-    useMemo(
-      () => ({
-        limit: RECENT_LIMIT,
-        sort: 'occurred_at_desc' as const,
-        household_id: householdId,
-        ...(activeGroupIds.length === 1 ? { group_id: activeGroupIds[0] } : {}),
-      }),
-      [householdId, activeGroupIds],
-    ),
-  )
-
-  // Groups for filter bar: fetch for active lens context
-  const groupsQuery = useExpenseGroupListQuery(householdId ?? undefined)
-
   // ── Derived data ────────────────────────────────────────────────
   const overviewData = overviewQuery.data
   const comparisonData = comparisonQuery.data
@@ -113,57 +111,22 @@ function OverviewPage() {
     !budgetListQuery.isLoading &&
     !overviewQuery.isLoading
 
-  // Transform for RecentExpenses
-  const recentItems: RecentExpenseItem[] = useMemo(() => {
-    const items = recentExpensesQuery.data?.pages?.[0]?.items ?? []
-
-    return items.map((item) => ({
-      id: item.id,
-      title: item.title,
-      categoryKey: item.categoryKey,
-      amountMinor: item.amountMinor,
-      currencyCode: item.currencyCode,
-      occurredAt: item.occurredAt,
-      visibility: item.visibility,
-    }))
-  }, [recentExpensesQuery.data])
-
-  // Transform for HouseholdCardsSection
-  const activeHousehold: HouseholdInfo | null = useMemo(() => {
-    if (activeLens.type !== 'household') return null
-
-    const h = households.find((hh) => hh.id === activeLens.householdId)
-    if (!h) return null
-
-    return {
-      id: h.id,
-      name: h.name,
-      memberCount: 0, // member count to be added when API supports it
-      totalSpendMinor: overviewData?.totalSpendMinor ?? 0,
-      currencyCode: overviewData?.currencyCode ?? 'VND',
-    }
-  }, [activeLens, households, overviewData])
-
-  // Available groups for filter bar
-  const availableGroupItems: GroupInfo[] = useMemo(
-    () =>
-      (groupsQuery.data?.items ?? []).map((g) => ({
-        id: g.id,
-        name: g.name,
-      })),
-    [groupsQuery.data],
-  )
-
   // ── Empty state guard ──────────────────────────────────────────
   if (isEntirelyEmpty) {
     return (
       <PageShell title='Home'>
-        <LensSelector
-          activeLens={activeLens}
-          lenses={lenses}
-          onLensChange={setActiveLens}
-        />
-        <div className='p-4 md:p-6 lg:p-8'>
+        <div className='px-4 pt-4 md:px-6 lg:px-8'>
+          <OverviewTabs
+            lenses={lenses}
+            value={
+              activeLens.type === 'personal'
+                ? 'personal'
+                : activeLens.householdId
+            }
+            onValueChange={handleLensChange}
+          />
+        </div>
+        <div className='px-4 py-6 md:px-6 md:py-8 lg:px-8'>
           <EmptyState
             onAddFirstExpense={() => {
               // FAB handles quick-add globally; empty state CTA does nothing for now
@@ -177,29 +140,14 @@ function OverviewPage() {
   // ── Main layout ─────────────────────────────────────────────────
   return (
     <PageShell title='Home'>
-      {/* Lens + Group filter */}
-      <LensSelector
-        activeLens={activeLens}
+      <OverviewTabs
         lenses={lenses}
-        onLensChange={setActiveLens}
+        value={
+          activeLens.type === 'personal' ? 'personal' : activeLens.householdId
+        }
+        onValueChange={handleLensChange}
       />
-      <GroupFilterBar
-        activeGroupIds={activeGroupIds}
-        availableGroups={availableGroupItems}
-        onClearAll={() => setActiveGroupIds([])}
-        onOpenSelector={() => {
-          // Group selection popover TBD — for now, toggle is managed via chips
-        }}
-        onToggleGroup={(groupId: string) => {
-          setActiveGroupIds((prev) =>
-            prev.includes(groupId)
-              ? prev.filter((id) => id !== groupId)
-              : [...prev, groupId],
-          )
-        }}
-      />
-
-      <div className='space-y-4 p-4 md:space-y-6 md:p-6 lg:p-8'>
+      <div className='mt-4 flex flex-col gap-6 md:gap-8'>
         {/* Hero Stats */}
         <HeroStatsCard
           budgetLimitMinor={budgetListQuery.data?.items?.[0]?.totalLimitMinor}
@@ -218,111 +166,14 @@ function OverviewPage() {
           onRetry={() => overviewQuery.refetch()}
         />
 
-        {/* Budget status (simplified: show budget cards with limits only for now) */}
-        {budgetListQuery.data && budgetListQuery.data.items.length > 0 ? (
-          <BudgetCardsPlaceholder
-            budgets={budgetListQuery.data.items}
-            currencyCode={budgetListQuery.data.items[0]?.currencyCode ?? 'VND'}
-          />
-        ) : null}
+        <OverviewRecentExpensesSection householdId={householdId} />
 
-        {/* 2-column grid: Recent Expenses + Category Breakdown */}
-        <div className='grid gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]'>
-          <RecentExpenses
-            error={recentExpensesQuery.error}
-            expenses={recentItems}
-            isEmpty={recentItems.length === 0 && !recentExpensesQuery.isLoading}
-            isLoading={recentExpensesQuery.isLoading}
-            onRetry={() => recentExpensesQuery.refetch()}
-          />
-
-          {/* Category breakdown from analytics */}
-          {overviewData?.topCategories ? (
-            <CategoryBreakdownPlaceholder
-              categories={overviewData.topCategories}
-              currencyCode={overviewData.currencyCode}
-            />
-          ) : overviewQuery.isLoading ? (
-            <div className='rounded-xl border bg-card p-4'>
-              <p className='text-sm text-muted-foreground'>
-                Loading categories...
-              </p>
-            </div>
-          ) : null}
-        </div>
-
-        {/* Household section (only when household lens active) */}
-        <HouseholdCardsSection
-          household={activeHousehold}
-          isLoading={overviewQuery.isLoading && activeLens.type === 'household'}
+        <OverviewCategoryStatisticsSection
+          householdId={householdId}
+          period={period}
         />
       </div>
     </PageShell>
-  )
-}
-
-// ── Inline placeholders (to avoid too many component files) ──────
-
-import { CategoryBreakdown } from '@/components/home/category-breakdown'
-import { Progress } from '@/components/ui/progress'
-import type { AnalyticsTopCategoryDTO } from '@/types/analytics'
-import type { BudgetDTO } from '@/types/budget'
-
-function CategoryBreakdownPlaceholder({
-  categories,
-  currencyCode,
-}: {
-  categories: AnalyticsTopCategoryDTO[]
-  currencyCode: string
-}) {
-  if (categories.length === 0) {
-    return (
-      <CategoryBreakdown
-        isEmpty
-        categories={[]}
-        currencyCode={currencyCode}
-        isLoading={false}
-        totalSpendMinor={0}
-      />
-    )
-  }
-
-  return (
-    <CategoryBreakdown
-      categories={categories}
-      currencyCode={currencyCode}
-      isEmpty={false}
-      isLoading={false}
-      totalSpendMinor={0}
-    />
-  )
-}
-
-function BudgetCardsPlaceholder({
-  budgets,
-  currencyCode: _currencyCode,
-}: {
-  budgets: BudgetDTO[]
-  currencyCode: string
-}) {
-  // Simple display of budget cards with limits
-  return (
-    <div className='flex snap-x snap-mandatory gap-3 overflow-x-auto px-0 pb-2 md:flex-wrap md:overflow-x-visible'>
-      {budgets.slice(0, 5).map((budget) => (
-        <div
-          key={budget.id}
-          className='max-w-[220px] min-w-[180px] shrink-0 snap-start space-y-2 rounded-xl border bg-card p-4 md:shrink'>
-          <span className='text-sm font-medium'>Budget</span>
-          <Progress className='h-2' value={0} />
-          <p className='text-xs text-muted-foreground'>
-            Limit: {formatCurrency(budget.totalLimitMinor, budget.currencyCode)}
-          </p>
-          <p className='text-xs text-muted-foreground'>
-            Connect budget tracking to see actual spend
-          </p>
-        </div>
-      ))}
-    </div>
   )
 }
 

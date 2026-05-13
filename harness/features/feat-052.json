@@ -1,0 +1,61 @@
+{
+  "id": "feat-052",
+  "name": "Responsive shadcn component variants",
+  "status": "done",
+  "design_docs": ["docs/design-docs/shadcn-first-ui-web-guide.md"],
+  "exec_plan": "docs/exec-plans/plans/2026-05-13-responsive-shadcn-component-variants.md",
+  "dependencies": ["feat-005", "feat-035", "feat-048"],
+  "scope": [
+    "Refactor project-owned shadcn UI primitives for mobile-first responsive sizing",
+    "Use 44px touch targets and 16px input text below 640px while preserving compact desktop controls at the sm breakpoint",
+    "Keep responsive sizing and padding primitive-owned without recreating a custom design system",
+    "Preserve compatibility for existing Button size and DialogContent usage during the transition"
+  ],
+  "components_affected": [
+    "Button",
+    "Toggle",
+    "ToggleGroup",
+    "Input",
+    "Textarea",
+    "Select",
+    "NativeSelect",
+    "InputGroup",
+    "Combobox",
+    "Card",
+    "Alert",
+    "Dialog",
+    "AlertDialog",
+    "Drawer"
+  ],
+  "implementation_phases": {
+    "completed": [
+      "Planning: shadcn config and installed component audit",
+      "Planning: shadcn docs review for touched primitives",
+      "Planning: GitNexus representative impact checks returned LOW risk",
+      "Implementation: added non-render responsive variant contract coverage",
+      "Implementation: refactored shadcn UI primitives for mobile-first sizing and primitive-owned spacing",
+      "Implementation: removed stale surface props from consumers and added semantic Progress tone support",
+      "Implementation: completed spec and code-quality review loops"
+    ],
+    "pending": []
+  },
+  "evidence": {
+    "planned": [
+      "ExecPlan created at docs/exec-plans/plans/2026-05-13-responsive-shadcn-component-variants.md",
+      "shadcn info confirmed Next.js, Tailwind v4, radix base, lucide icons, and UI path apps/web/src/components/ui",
+      "Representative GitNexus upstream impact checks for Button, Input, DialogContent, SelectTrigger, and Card returned LOW risk"
+    ],
+    "verification": [
+      "Baseline web typecheck failed on pre-existing unsupported primitive props, confirming the compatibility target before edits",
+      "TDD red-green completed for apps/web/src/components/ui/responsive-variants.test.ts",
+      "Focused responsive variants test passed: 17 files, 50 tests",
+      "pnpm --filter web typecheck passed after primitive compatibility fixes",
+      "pnpm lint:fix passed with one pre-existing unrelated Next.js img warning in apps/web/src/components/expense/category-picker.tsx",
+      "Spec compliance review approved after fixes",
+      "Code quality review approved after removing no-op surface compatibility and centralizing toggle active-state classes",
+      "gitnexus_detect_changes(scope: all) reported low risk with 0 affected processes",
+      "./init.sh passed: install, harness checks, lint, type-check, tests, GitNexus"
+    ]
+  },
+  "notes": "This feature follows the shadcn-only direction after custom design-system documentation removal. It is a responsive ergonomics pass over owned source primitives, not a new visual design system. Existing stale surface props were removed from consumers instead of preserving misleading no-op compatibility."
+}

@@ -1,38 +1,9 @@
 'use client'
 
-import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 import { Drawer as DrawerPrimitive } from 'vaul'
 
-import {
-  drawerFrameSurfaceVariants,
-  overlayGlassClass,
-} from '@/components/ui/primitive-styles'
 import { cn } from '@/lib/utils'
-
-const drawerContentVariants = cva(
-  'group/drawer-content fixed z-50 flex h-auto flex-col bg-transparent p-4 text-sm text-popover-foreground',
-  {
-    variants: {
-      size: {
-        sm: 'data-[vaul-drawer-direction=left]:sm:max-w-sm data-[vaul-drawer-direction=right]:sm:max-w-sm',
-        default:
-          'data-[vaul-drawer-direction=left]:sm:max-w-sm data-[vaul-drawer-direction=right]:sm:max-w-sm',
-        lg: 'data-[vaul-drawer-direction=left]:sm:max-w-lg data-[vaul-drawer-direction=right]:sm:max-w-lg',
-      },
-      surface: {
-        glass: drawerFrameSurfaceVariants({ surface: 'glass' }),
-        subtle: drawerFrameSurfaceVariants({ surface: 'subtle' }),
-        outline: drawerFrameSurfaceVariants({ surface: 'outline' }),
-        solid: drawerFrameSurfaceVariants({ surface: 'solid' }),
-      },
-    },
-    defaultVariants: {
-      size: 'default',
-      surface: 'glass',
-    },
-  },
-)
 
 function Drawer({
   ...props
@@ -65,7 +36,7 @@ function DrawerOverlay({
   return (
     <DrawerPrimitive.Overlay
       className={cn(
-        `fixed inset-0 z-50 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 ${overlayGlassClass}`,
+        'fixed inset-0 z-50 bg-black/30 supports-backdrop-filter:backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0',
         className,
       )}
       data-slot='drawer-overlay'
@@ -77,39 +48,30 @@ function DrawerOverlay({
 function DrawerContent({
   className,
   children,
-  size = 'default',
-  surface = 'glass',
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content> &
-  VariantProps<typeof drawerContentVariants>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
   return (
     <DrawerPortal data-slot='drawer-portal'>
       <DrawerOverlay />
       <DrawerPrimitive.Content
         className={cn(
-          dialogDirectionClasses,
-          drawerContentVariants({ size, surface }),
+          'group/drawer-content fixed z-50 flex h-auto flex-col bg-transparent p-5 text-sm before:absolute before:inset-2 before:-z-10 before:rounded-4xl before:border before:border-border before:bg-popover before:shadow-xl data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=left]:sm:max-w-sm data-[vaul-drawer-direction=right]:sm:max-w-sm',
           className,
         )}
-        data-size={size}
         data-slot='drawer-content'
-        data-surface={surface}
         {...props}>
-        <div className='mx-auto mt-4 hidden h-1.5 w-[100px] shrink-0 rounded-full bg-muted group-data-[vaul-drawer-direction=bottom]/drawer-content:block' />
+        <div className='mx-auto mt-4 hidden h-1.5 w-25 shrink-0 rounded-full bg-muted group-data-[vaul-drawer-direction=bottom]/drawer-content:block' />
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
   )
 }
 
-const dialogDirectionClasses =
-  'data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh]'
-
 function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex flex-col gap-0.5 p-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:gap-1.5 md:text-left',
+        'flex flex-col gap-0.5 p-5 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:gap-1.5 md:text-left',
         className,
       )}
       data-slot='drawer-header'
@@ -121,7 +83,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
 function DrawerFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn('mt-auto flex flex-col gap-2 p-4', className)}
+      className={cn('mt-auto flex flex-col gap-2 p-5', className)}
       data-slot='drawer-footer'
       {...props}
     />

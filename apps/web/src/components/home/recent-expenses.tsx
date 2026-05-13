@@ -1,30 +1,30 @@
 'use client'
 
-import { ReceiptText } from 'lucide-react'
 import Link from 'next/link'
 
+import { DataState } from '@/components/shared/data-state'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { t } from '@/lib/i18n/t'
+import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
+import type { ExpenseDTO } from '@/types/expense'
+import type { ReferenceCategoryDTO } from '@/types/reference-data'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
-type RecentExpenseItem = {
-  id: string
-  title: string
-  categoryKey: string
-  amountMinor: number
-  currencyCode: string
-  occurredAt: number
-  payerName?: string
-  groupNames?: string[]
-  visibility: 'private' | 'household'
-}
-
 type RecentExpensesProps = {
-  expenses: RecentExpenseItem[]
+  expenses: ExpenseDTO[]
   isLoading: boolean
   error: Error | null
   onRetry: () => void
   isEmpty: boolean
+  referenceCategories?: ReferenceCategoryDTO[]
 }
 
 function formatRelativeDate(timestampSec: number): string {
@@ -33,10 +33,10 @@ function formatRelativeDate(timestampSec: number): string {
   const diffDays = Math.floor(
     (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
   )
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
+  if (diffDays === 0) return t('app.overview.recentExpenses.today')
+  if (diffDays === 1) return t('app.overview.recentExpenses.yesterday')
 
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return date.toLocaleDateString('vi-VN', { month: 'short', day: 'numeric' })
 }
 
 function RecentExpenses({
@@ -45,117 +45,84 @@ function RecentExpenses({
   error,
   onRetry,
   isEmpty,
+  referenceCategories,
 }: RecentExpensesProps) {
+  const showError = Boolean(error) && expenses.length === 0
+
   return (
-    <section>
-      {/* Section header */}
-      <div className='mb-3 flex items-center justify-between'>
-        <h2 className='text-base font-semibold'>Recent Expenses</h2>
-        <Button asChild size='sm' variant='ghost'>
-          <Link href='/expenses'>
-            View all
-            <span aria-hidden='true'>&nbsp;&rarr;</span>
-          </Link>
-        </Button>
-      </div>
+    <DataState
+      action={
+        showError ? (
+          <Button onClick={onRetry}>
+            {t('app.overview.actions.retrySummary')}
+          </Button>
+        ) : undefined
+      }
+      errorDescription={
+        showError ? t('app.overview.recentExpenses.error') : undefined
+      }
+      isEmpty={isEmpty}
+      isError={showError}
+      isLoading={isLoading}
+      title={t('app.overview.recentExpenses.title')}>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('app.overview.recentExpenses.title')}</CardTitle>
+          <CardAction>
+            <Button asChild className='h-auto! px-0!' variant={'ghost'}>
+              <Link href='/expenses'>
+                {t('app.overview.recentExpenses.viewAll')}
+                <span aria-hidden='true'>&nbsp;&rarr;</span>
+              </Link>
+            </Button>
+          </CardAction>
+        </CardHeader>
 
-      {/* Content */}
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : error ? (
-        <ErrorState onRetry={onRetry} />
-      ) : isEmpty ? (
-        <EmptyState />
-      ) : (
-        <ul className='divide-y divide-border'>
-          {expenses.map((item) => (
-            <li key={item.id} className='flex items-start gap-3 py-3'>
-              {/* Category Icon */}
-              <div className='flex size-10 shrink-0 items-center justify-center rounded-full bg-muted/50'>
-                <ReceiptText className='size-5 text-muted-foreground' />
-              </div>
+        <CardContent>
+          <ul className='divide-y divide-border'>
+            {expenses.map((item) => {
+              const category = getCategoryPresentation(
+                item.categoryKey,
+                referenceCategories,
+              )
 
-              {/* Middle content */}
-              <div className='min-w-0 flex-1 py-0.5'>
-                <p className='truncate text-sm font-medium'>{item.title}</p>
-                <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
-                  <span>{formatRelativeDate(item.occurredAt)}</span>
+              return (
+                <li
+                  key={item.id}
+                  className='flex items-start gap-3 py-3 first:pt-0 last:pb-0'>
+                  <Badge
+                    className='size-10'
+                    style={{ backgroundColor: category.color + '1A' }}
+                    variant='secondary'>
+                    <img
+                      alt={category.label}
+                      className='size-6'
+                      src={category.iconUrl}
+                    />
+                  </Badge>
 
-                  {item.payerName && (
-                    <>
+                  <div className='min-w-0 flex-1 py-0.5'>
+                    <p className='truncate text-sm font-medium'>{item.title}</p>
+                    <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
+                      <span>{formatRelativeDate(item.occurredAt)}</span>
+
                       <span aria-hidden='true'>&middot;</span>
-                      <span>{item.payerName}</span>
-                    </>
-                  )}
+                      <span>{category.label}</span>
+                    </div>
+                  </div>
 
-                  <span aria-hidden='true'>&middot;</span>
-                  <span className='capitalize'>{item.categoryKey}</span>
-
-                  {item.groupNames && item.groupNames.length > 0 && (
-                    <>
-                      <span aria-hidden='true'>&middot;</span>
-                      {item.groupNames.map((group) => (
-                        <span
-                          key={group}
-                          className='rounded-full bg-muted px-2 py-0.5 text-[10px] tracking-wider text-foreground/80 uppercase'>
-                          {group}
-                        </span>
-                      ))}
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Amount */}
-              <span className='shrink-0 py-0.5 text-sm font-medium tabular-nums'>
-                {formatCurrency(item.amountMinor, item.currencyCode)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
+                  <span className='shrink-0 py-0.5 font-mono text-base font-medium tabular-nums'>
+                    {formatCurrency(item.amountMinor, item.currencyCode)}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+        </CardContent>
+      </Card>
+    </DataState>
   )
 }
 
-function LoadingSkeleton() {
-  return (
-    <div className='divide-y divide-border'>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className='flex items-start gap-3 py-3'>
-          <Skeleton className='size-10 shrink-0 rounded-full' />
-          <div className='flex-1 space-y-2'>
-            <Skeleton className='h-4 w-3/5' />
-            <Skeleton className='h-3 w-2/5' />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function ErrorState({ onRetry }: { onRetry: () => void }) {
-  return (
-    <div className='py-6 text-center'>
-      <p className='mb-3 text-sm text-muted-foreground'>
-        Could not load recent expenses.
-      </p>
-      <Button size='sm' variant='outline' onClick={onRetry}>
-        Retry
-      </Button>
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className='py-6 text-center'>
-      <p className='text-sm text-muted-foreground'>
-        No expenses yet. Tap + to add your first one.
-      </p>
-    </div>
-  )
-}
-
-export type { RecentExpenseItem, RecentExpensesProps }
+export type { RecentExpensesProps }
 export { RecentExpenses }

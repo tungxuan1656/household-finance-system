@@ -1,65 +1,75 @@
-# Component Structure Pattern (Page vs Child Component)
+# Component Structure Pattern
 
-## 1) Required Rules
+Page/view orchestrates. Feature components own bounded concerns. Shared components exist only for real reuse.
 
-- **Page**: declare as `export const ComponentName = () => {}` in the page file.
-- **Child component**: use `export const ComponentName = () => {}`.
-- **Each child component folder** must have an `index.ts` to aggregate and re-export all components in the folder.
+## Required Rules
 
-## 2) Page Template
+- Use named exports: `export const ComponentName = () => {}`.
+- Keep route files thin; move page UI orchestration to `views/` when useful.
+- Feature folder may expose `index.ts` for public components only.
+- Internal subcomponents are not exported from folder barrel.
+- Split near 200 lines or when 3+ concerns mix.
+
+## Page / View Pattern
 
 ```tsx
-// pages/goals-page.tsx
-export const GoalsPage = () => {
-  return <div>Goals page</div>
+export const ExpensesPage = () => {
+  return <ExpensesView />
 }
 ```
 
-## 3) Child Component Template
+Route/page owns routing glue. View owns top-level composition.
+
+## Feature Smart Component
 
 ```tsx
-// components/goals/goal-card.tsx
-type GoalCardProps = {
-  title: string
+type ExpenseFiltersProps = {
+  householdId?: string
 }
 
-export const GoalCard = ({ title }: GoalCardProps) => {
-  return <div>{title}</div>
+export const ExpenseFilters = ({ householdId }: ExpenseFiltersProps) => {
+  return <section>{householdId}</section>
 }
 ```
 
-## 4) `index.ts` Template in Component Folder
+Smart component may own local state, query/mutation hooks, handlers, and state rendering for one concern.
+
+## Dumb Component
+
+```tsx
+type AmountTextProps = {
+  value: string
+}
+
+export const AmountText = ({ value }: AmountTextProps) => {
+  return <span className="font-mono tabular-nums">{value}</span>
+}
+```
+
+Dumb component receives data via props. No feature API calls.
+
+## Folder Barrel
 
 ```ts
-// components/goals/index.ts  — only export PUBLIC components
-export * from './goal-card'
-export * from './goal-progress'
-export * from './goal-form'
-
-// NOTE: goal-card-skeleton, goal-row-item are internal — intentionally NOT exported here.
+export * from './expense-filters'
+export * from './expense-feed'
 ```
 
-**Distinguishing public vs internal:**
+Export only public components. Keep helpers/private subcomponents local.
 
-- **Public**: components used outside the folder → include in `index.ts`.
-- **Internal**: components only used within the folder (sub-components of a larger component) → **not** included in `index.ts`, kept as module-private.
+## Split Triggers
 
-## 5) Recommended Import Style
+- File exceeds ~200 lines.
+- Data wiring, forms, dialogs, tables, danger zone all mix.
+- Same UI shape appears in 2+ features.
+- Loading/empty/error branches duplicate across widgets.
+- Test or review needs too much unrelated context.
 
-```tsx
-import { GoalCard, GoalForm, GoalProgress } from '@/components/goals'
-```
+## Checklist
 
-## 6) File Size Rules
-
-- Files/components **over 200 lines** must be split by clear concerns (shell, list, mock data, utils, ...).
-- Each component/hook should be responsible for **one thing** — do not combine too many concerns in the same file.
-- Mock data must be separated into `<domain>.mock.ts` — not embedded directly in components.
-
-## 7) Quick Checklist for New Components
-
-- [ ] Child component uses `export const`
-- [ ] Component folder has `index.ts` — only exports public components
-- [ ] Internal sub-components are **not** in `index.ts`
-- [ ] File under 200 lines; if exceeded, split by concern
-- [ ] Consumer imports from folder (not individual files unless necessary)
+- [ ] Named export used.
+- [ ] Route/page file thin.
+- [ ] One component = one concern.
+- [ ] Public barrel exports only public components.
+- [ ] Internal subcomponents stay internal.
+- [ ] Shared extraction has real reuse.

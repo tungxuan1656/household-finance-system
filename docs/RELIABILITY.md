@@ -1,34 +1,37 @@
 # RELIABILITY.md
 
-This file defines how the system proves it is healthy and restartable.
+Reliability rules. Read for runtime health, restartability, or verification-path changes.
 
 ## Standard Paths
 
-- Bootstrap: `./init.sh` (installs deps, runs lint/type-check/test/build as defined in AGENTS.md)
-- Verification: `./init.sh` (full workspace verification) or `pnpm --filter <package> run typecheck && pnpm --filter <package> test`
-- Start app or service: `pnpm --filter web dev` (frontend) and `pnpm --filter worker dev` (Cloudflare Worker via Wrangler)
-- Debug or inspect runtime: `pnpm --filter worker dev` (local worker), use `wrangler tail` / `wrangler dev` logs for runtime traces
+- Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
+- Params: `install`, `lint`, `typecheck`, `test`, `build`, `sync`.
+- Run full `./init.sh` only at final verification.
+- Frontend dev: `pnpm --filter web dev`.
+- Worker dev: `pnpm --filter worker dev`.
+- Runtime logs: `wrangler tail` / `wrangler dev` when worker debugging needs traces.
 
-## Required Runtime Signals
+Full `./init.sh`: install, harness, lint, typecheck, test, sync. No build.
 
-- structured logs for startup, auth flows, and migration steps
-- health checks for key services (worker `/health`, D1 connectivity, migrations status)
-- trace/timing data for slow aggregation paths (insights) when available
-- error metrics and user-visible error states for recoverable failures
+## Required Signals
+
+- Startup/auth/migration structured logs.
+- Worker `/health` and D1/migration status where available.
+- Timing/trace data for slow aggregation paths when useful.
+- User-visible error states for recoverable failures.
 
 ## Golden Journeys
 
-- `Sign up / sign in` — frontend auth -> backend token verification -> local user mapping
-- `Create household and invite member` — create household, add member, verify role semantics
-- `Quick add expense -> view dashboard` — add expense (<=3s), verify it appears in household dashboard and budget calculations
+- Sign up/sign in → backend token verification → local user mapping.
+- Create household → invite member → verify role semantics.
+- Quick add expense → dashboard/budget reflects change.
 
-Each golden journey should have a repeatable verification path and clear failure
-signals; add automated integration checks where feasible.
+Each golden journey needs repeatable verification and clear failure signal.
 
-## Reliability Rules
+## Rules
 
-- No feature is complete if the system cannot restart cleanly afterward; `./init.sh` must succeed after changes.
-- Runtime failures should be diagnosable from repo-local signals (logs, health, migrations status).
-- Critical paths (auth verification, expense writes, budget calculations) must expose health endpoints and observable metrics.
-- If a repeated failure mode appears, add a benchmark or guardrail and include it in CI where possible.
-- Cleanup (migrations roll-forward/rollback, DB compaction) is part of reliability and must be documented in `docs/`.
+- Feature not done if repo cannot restart cleanly.
+- Runtime failure must be diagnosable from repo-local signals.
+- Critical paths expose health or verification evidence.
+- Repeated failure mode becomes guardrail/check.
+- Cleanup/rollback steps belong in docs when reliability risk exists.

@@ -28,7 +28,7 @@ export const AuthPanel = ({
     <div className='m-auto w-full max-w-md'>
       <Card className='relative overflow-hidden'>
         {/* Subtle top light effect */}
-        <div className='pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/5 to-transparent' />
+        <div className='pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-foreground/5 to-transparent' />
 
         <CardHeader className='text-center'>
           <CardTitle className='text-3xl font-bold'>{title}</CardTitle>
@@ -43,7 +43,7 @@ export const AuthPanel = ({
               <Button
                 className='w-full'
                 disabled={isSubmitting}
-                size='lg'
+                size={'lg'}
                 type='submit'>
                 {isSubmitting ? (
                   <span className='flex items-center gap-2'>
@@ -58,7 +58,7 @@ export const AuthPanel = ({
           </form>
 
           <div className='mt-8 flex flex-col items-center gap-4 text-center'>
-            <div className='h-px w-full bg-gradient-to-r from-transparent via-border to-transparent' />
+            <div className='h-px w-full bg-linear-to-r from-transparent via-border to-transparent' />
             <div className='text-sm text-muted-foreground'>{footer}</div>
           </div>
         </CardContent>

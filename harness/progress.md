@@ -9,6 +9,123 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+
+## 2026-05-14 — Improved init verification script ergonomics
+
+- Who: Orchestrator
+- Summary: Reworked `init.sh` into a quiet command dispatcher with optional `install`, `lint`, `typecheck`, `test`, `build`, and `sync` targets. The default full flow runs install first, then web/worker lint, typecheck, and test jobs in parallel, then syncs GitNexus and prints `Done!`; build is temporarily explicit-only through `./init.sh build`. Single-command success now prints `OK`; failures print the failing captured output; `--verbose` prints captured logs.
+- Files changed: Repository init verification script, feature harness evidence, and this progress log.
+- Verification: GitNexus upstream impact for `init.sh` returned LOW risk; `bash -n init.sh` passed; harness JSON validation passed; `./init.sh lint`, `./init.sh typecheck`, `./init.sh test`, and explicit `./init.sh build` passed and printed `OK`; `./init.sh` full flow passed and printed `Done!` with build excluded; `gitnexus_detect_changes(scope: all)` reported low risk with 3 changed files and 0 affected processes.
+- Blockers: none.
+- Next steps: Run final change scan and commit if desired.
+
+## 2026-05-13 — Refactored Home shared state handling to DataState
+
+- Who: Orchestrator
+- Summary: Renamed the shared Home state helper from `StateCard` to `DataState`, removed the success-state Card wrapper so successful children render directly, and updated Home widgets to own their explicit Card anatomy when populated.
+- Files changed: Shared web state component, Home widget consumers, Home source-contract test, feat-045 evidence, and this progress log.
+- Verification: TDD red-green completed for `apps/web/src/components/home/home-card-composition.test.ts`; focused web Vitest command passed (18 files, 58 tests); `pnpm lint:fix` passed; `pnpm --filter web typecheck` passed; `./init.sh` passed; `gitnexus_detect_changes(scope: all)` reported low risk with 0 affected processes.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
+## 2026-05-13 — Hardened frontend no-render-test rule
+
+- Who: Orchestrator
+- Summary: Promoted the `apps/web` no component/page render test policy into the frontend defaults before continuing the Home/DataState refactor. The frontend router now directs agents to write unit tests for pure logic/API/store/non-render helpers and use browser/manual evidence for UI behavior.
+- Files changed: Frontend governance doc and this progress log.
+- Verification: `pnpm lint:fix` passed.
+- Blockers: none.
+- Next steps: Refactor shared `StateCard` into `DataState` without adding component/page render tests.
+
+## 2026-05-13 — Caveman-refactored remaining leaf reference docs
+
+- Who: Orchestrator + fixer subagents
+- Summary: Refactored remaining verbose frontend/backend leaf references into shorter caveman-lite rule docs: component architecture, responsive navigation shell, dialog/form, form, API/React Query, Zustand, i18n, and backend project folder structure. Fixed stale `frontend/src` and generic shift examples in touched frontend references.
+- Files changed: `docs/references/frontend/*`, `docs/references/backend/project-folder-structure.md`, feat-054 ExecPlan/evidence, and this progress log.
+- Verification: `pnpm lint:fix` passed; JSON validation passed; `./init.sh` passed install, harness checks, linting, type checking, tests, GitNexus; `gitnexus_detect_changes(scope: all)` reported low risk with 0 affected processes.
+- Blockers: none.
+
+## 2026-05-13 — Standardized documentation clean architecture and minimal reading
+
+- Who: Orchestrator
+- Summary: Reworked root/task docs into parent-to-child routers so agents read minimum docs by task. Added explicit doc architecture rules to `AGENTS.md`, tightened `ARCHITECTURE.md`, rewrote frontend/backend/plan routers and key indexes in caveman-lite style, fixed stale shadcn guide links, and updated stale frontend folder/component structure references for Next.js App Router.
+- Files changed: Root docs, task router docs, reference/product/design/security/reliability/product-sense docs, selected frontend reference docs, ExecPlan records, feature harness evidence, and this progress log.
+- Verification: `pnpm lint:fix` passed; JSON validation passed for feature index and feat-054 record; `./init.sh` passed install, harness checks, linting, type checking, tests, GitNexus; `gitnexus_detect_changes(scope: all)` reported low risk with 0 affected processes.
+- Blockers: none.
+- Next steps: Run required verification and update feature evidence with final results.
+
+## 2026-05-13 — Added frontend component architecture reference
+
+- Who: Orchestrator
+- Summary: Reworked the frontend component architecture guide into a project-specific planning reference for Next.js App Router pages, `apps/web/src/components/<feature>`, `components/shared`, shadcn `components/ui`, hooks, API, stores, DTO handling, smart/presentational boundaries, and async-state patterns. Registered the guide as a mandatory frontend component planning pre-read and as a canonical frontend reference in the harness documentation index.
+- Files changed: Frontend component architecture reference, frontend governance docs, canonical references index, feature harness evidence, and this progress log.
+- Verification: `pnpm lint:fix` passed; updated harness JSON artifacts validated with `python3 -m json.tool`; `gitnexus_detect_changes(scope: all)` reported low risk with 0 affected processes for documentation changes; `./init.sh` passed fully.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
+## 2026-05-13 — Simplified Home overview DTO flow and StateCard sections
+
+- Who: Orchestrator + Oracle reviewer
+- Summary: Simplified the Home overview data flow by passing backend expense/group DTOs directly into UI boundaries instead of narrowing through mirror types and memoized mappings. Replaced the placeholder-specific card wrapper with reusable `StateCard` loading/empty/error handling, moved recent expenses and category statistics into smart overview sections that receive `householdId` and own their widget queries, and documented the StateCard plus smart-vs-dumb component break guide in the frontend guide.
+- Files changed: Home overview composition, smart overview widget sections, shared state-card handling, Home source-contract test coverage, frontend governance docs, and this progress log.
+- Verification: GitNexus upstream impact checks for touched Home overview symbols returned LOW risk; TDD red-green completed for the `StateCard` and smart-section source contracts; focused Vitest passed; `pnpm lint:fix` passed; `pnpm typecheck:web` passed; `pnpm test:web` passed; Oracle TypeScript/simplification review approved with no remaining warnings; `gitnexus_detect_changes(scope: all)` reported low risk and 0 affected processes; `./init.sh` passed fully.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
+## 2026-05-13 — Completed Home card-composition and sidebar card refactor
+
+- Who: Orchestrator + Fixer subagent
+- Summary: Reworked the protected Home overview and desktop sidebar toward the shadcn card-composition direction. `/home` now uses shadcn Tabs for lens switching and the old LensSelector component was removed; AppSidebar now composes the default Card anatomy; Home widgets were moved toward CardHeader/CardTitle/CardContent-based widget composition with default Tabs, Card, Button, Badge, Skeleton, and Progress primitives instead of custom visual overrides.
+- Files changed: Protected Home overview composition, Home widget components, desktop sidebar composition, the deleted lens selector, focused card-composition contract test, feat-035/feat-045 evidence, and this progress log.
+- Verification: TDD red-green completed for `apps/web/src/components/home/home-card-composition.test.ts`; focused Vitest passed (1 file, 6 tests); `pnpm lint:fix` passed with one pre-existing unrelated `<img>` warning in `apps/web/src/components/expense/category-picker.tsx`; `./init.sh` passed fully; `gitnexus_detect_changes(scope: all)` reported low risk and 0 affected processes.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
+## 2026-05-13 — Completed responsive shadcn component variants
+
+- Who: Orchestrator + Fixer/Oracle subagents
+- Summary: Executed the responsive shadcn variants plan. Project-owned UI primitives now use mobile-first 44px/16px control sizing with compact `sm:` desktop sizing, Button supports existing `xl` consumers, DialogContent owns typed size, overlays and card-like containers use primitive-owned spacing, Progress tone maps to semantic tokens, and stale `surface` props were removed from consumers instead of preserving a misleading custom design-system compatibility layer.
+- Files changed: Shared shadcn UI primitives, the focused responsive variants contract test, touched Home/Insights/Households consumers that previously passed stale `surface` props, the ExecPlan index, feat-052 evidence, feature index, and this progress log.
+- Verification: TDD red-green completed for the responsive variants contract test; focused responsive test passed (17 files, 50 tests); `pnpm --filter web typecheck` passed; `pnpm lint:fix` passed with one pre-existing unrelated `<img>` warning in the expense category picker; spec and code-quality review loops approved; `gitnexus_detect_changes(scope: all)` reported low risk and 0 affected processes; `./init.sh` passed.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired; optional follow-up is browser/device measurement for representative mobile and desktop controls.
+
+## 2026-05-13 — Planned responsive shadcn component variants
+
+- Who: Orchestrator
+- Summary: Wrote a frontend-only ExecPlan for project-owned shadcn source components to support mobile-first responsive sizing: 44px/16px controls below 640px, compact `sm:` desktop controls, primitive-owned padding, and compatibility cleanup for existing `Button size='xl'` and `DialogContent size` usage without recreating custom design-system docs.
+- Files changed: Added the responsive shadcn component variants ExecPlan, registered it in the ExecPlan index, added planned feature evidence for feat-052, updated the feature index, and logged this planning session.
+- Verification: Plan self-review completed; updated JSON artifacts validated with `python3 -m json.tool`; git diff/status reviewed.
+- Blockers: none.
+- Next steps: Choose an execution mode, then start with baseline web typecheck, compatibility grep, and primitive contract/test-first work from the ExecPlan.
+
+## 2026-05-13 — Removed custom design-system documentation
+
+- Who: Orchestrator
+- Summary: Removed the project-owned custom design-system documentation after the shadcn-only product decision. The remaining durable UI guidance now points at shadcn-first usage rather than a bespoke V2/glassmorphism token contract.
+- Files changed: Deleted custom design-system/design-entrypoint docs, deleted related design-system ExecPlans and obsolete feature evidence, updated design-doc and plan indexes, refreshed the mobile-first UI feature record, and logged this session.
+- Verification: Edited JSON artifacts validated with `python3 -m json.tool`; git diff/status reviewed and shows documentation/harness cleanup only.
+- Blockers: none.
+- Next steps: Review whether existing UI code should be refactored back toward stock shadcn defaults in a separate implementation plan.
+
+## 2026-05-12 — Completed `/home` overview refinement for category metadata and first-entry household lenses
+
+- Who: Orchestrator + Fixer/Oracle subagents
+- Summary: Executed the approved refinement follow-up for protected `/home` after the earlier primitive-first hardening pass. This round tightened the lens selector geometry, added a reusable category-presentation helper backed by the existing reference-data catalog, updated touched Home sections to use category labels/icons/colors instead of raw keys where metadata exists, improved household and budget summary card composition, and fixed the first-entry household-lens loading bug by wiring `/home` to the existing household store fetch path. The pass stayed frontend-only, kept the dashboard truthful, and did not add component render tests per user instruction.
+- Files changed: Home overview composition, touched Home section components, the reusable reference-data category presentation helper, refinement design/ExecPlan records, feature evidence, and this progress log.
+- Verification: GitNexus upstream impact checks for the refined Home symbols returned LOW risk before edits; `gitnexus_detect_changes` (scope `all`) returned low risk with 0 affected processes after edits; spec review passed after removing placeholder-like budget behavior; code-quality review surfaced and the final pass fixed a real store-action runtime crash plus unsafe category fallback typing; Playwright runtime validation on `/home` finished with 0 console errors and showed both personal and household lenses after load plus metadata-backed category labels/icons; `pnpm lint:fix` passed with 1 pre-existing unrelated `<img>` warning in `apps/web/src/components/expense/category-picker.tsx`; `pnpm --filter web test` passed (16 files, 47 tests); `./init.sh` passed fully.
+- Blockers: none.
+- Next steps: if desired, review the final diff and create a git commit for the refinement plus artifact updates.
+
+## 2026-05-12 — Completed `/home` primitive-first premium refactor hardening
+
+- Who: Orchestrator + Fixer subagent
+- Summary: Executed the approved follow-up plan for protected `/home` and brought the touched overview UI back into compliance with the hardened V2.1 primitive-first contract. The pass unified lens selection onto pill-style toggle-group primitives across mobile and desktop, added a reusable `Badge` filter variant and chart-tone support on `Progress`, migrated touched home sections and loading states onto shared glass `Card` composition, localized touched overview copy, and corrected financial amount styling to use `font-mono tabular-nums`. The implementation preserved current dashboard truthfulness and avoided component render tests per explicit user instruction.
+- Files changed: Home overview composition, touched home section components, shared badge/progress/toggle primitives, overview locale labels, the home design spec and ExecPlan records, the feature evidence record, and this progress log.
+- Verification: Required GitNexus upstream impact checks for all edited home symbols and touched shared primitives returned LOW risk before edits; `gitnexus_detect_changes` (scope `all`) returned low risk with 0 affected processes after edits; `pnpm --filter web test -- --run src/components/ui/toggle-group.test.tsx src/components/ui/progress.test.tsx` passed; `pnpm --filter web test` passed (17 files, 47 tests); `pnpm lint:fix` passed with 1 pre-existing unrelated `<img>` warning in `apps/web/src/components/expense/category-picker.tsx`; `./init.sh` passed fully.
+- Blockers: none.
+- Next steps: if desired, run final git review and create a commit for the `/home` hardening plus harness updates.
+
 ## 2026-05-12 — Removed `apps/web` render tests and hardened frontend test policy
 
 - Who: Orchestrator
@@ -70,7 +187,7 @@
 - Blockers: none.
 - Next steps: none.
 
-## 2026-05-12 — Home screen wireframe + 8 new components + overview-page rewrite (feat-050)
+## 2026-05-12 — Home screen wireframe + 8 new components + overview-page rewrite
 
 - Who: Orchestrator + Fixer subagents (parallel execution)
 - Summary: Designed Home screen wireframe (home.md) with corrected Lens Model (Groups are NOT a lens — they're cross-cutting filters). Fixed PRODUCT.md conflicts (§2, §5.1, §5.7, §5.9). Built 8 new components: LensSelector (desktop ToggleGroup + mobile tabs), GroupFilterBar (chip-based filter row), HeroStatsCard (spend, budget progress, MoM trend, daily rate), BudgetStatusCards (horizontal scroll, Overall-first, per-category bars), RecentExpenses (5-item list), CategoryBreakdown (top 5 with progress bars), HouseholdCardsSection (conditional card), EmptyState (welcome card). Rewrote overview-page.tsx to orchestrate new components with lens state management. Wired analytics/comparison/budget/expense/group query hooks.

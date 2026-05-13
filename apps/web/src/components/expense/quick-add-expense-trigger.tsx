@@ -57,11 +57,6 @@ export function QuickAddExpenseTrigger() {
 
   return (
     <>
-      <Button type='button' variant='outline' onClick={handleOpen}>
-        <PlusIcon data-icon='inline-start' />
-        {t('expense.quickAdd.headerOpen')}
-      </Button>
-
       <Button
         aria-label={t('expense.quickAdd.open')}
         className='fixed right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-40 rounded-full shadow-lg md:right-8 md:bottom-8'

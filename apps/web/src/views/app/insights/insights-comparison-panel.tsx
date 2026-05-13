@@ -29,7 +29,7 @@ export function InsightsComparisonPanel({
 }: InsightsComparisonPanelProps) {
   if (error) {
     return (
-      <Empty className='min-h-64' surface='outline'>
+      <Empty className='min-h-64'>
         <EmptyHeader>
           <EmptyTitle>{t('insights.error.comparisonTitle')}</EmptyTitle>
           <EmptyDescription>

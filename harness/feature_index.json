@@ -257,22 +257,27 @@
     },
     {
       "id": "feat-048",
-      "name": "Mobile-first UI redesign — Design System & Implementation Rules",
+      "name": "Mobile-first UI redesign",
       "status": "done"
     },
     {
-      "id": "feat-049",
-      "name": "Design system foundation: PageShell, tokens, shadcn components",
+      "id": "feat-052",
+      "name": "Responsive shadcn component variants",
       "status": "done"
     },
     {
-      "id": "feat-050",
-      "name": "Home screen redesign: wireframe, lens model correction, 8 new components, overview-page rewrite",
+      "id": "feat-053",
+      "name": "Frontend component architecture reference",
       "status": "done"
     },
     {
-      "id": "feat-051",
-      "name": "Comprehensive UI refactor to Minimal Glassmorphism V2.1",
+      "id": "feat-054",
+      "name": "Documentation clean architecture and minimal-reading workflow",
+      "status": "done"
+    },
+    {
+      "id": "feat-055",
+      "name": "Quiet parallel init verification commands",
       "status": "done"
     }
   ]
