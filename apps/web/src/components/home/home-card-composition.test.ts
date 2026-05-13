@@ -45,11 +45,39 @@ describe('home card composition source contracts', () => {
     const source = readSource(path)
 
     if (path === 'components/home/hero-stats-card.tsx') {
-      expect(source).toContain('CardPlaceholder')
+      expect(source).toContain('StateCard')
     }
     expect(source).toContain('<Card')
     expect(source).toContain('<CardHeader')
     expect(source).toContain('<CardTitle')
     expect(source).toContain('<CardContent')
+  })
+
+  it('uses StateCard as the shared loading, empty, and error wrapper', () => {
+    const source = readSource('components/shared/state-card.tsx')
+
+    expect(source).toContain('isLoading?: boolean')
+    expect(source).toContain('isEmpty?: boolean')
+    expect(source).toContain('isError?: boolean')
+    expect(source).toContain('emptyDescription?: string')
+    expect(source).toContain('errorDescription?: string')
+    expect(source).toContain('function StateCard')
+    expect(source).toContain("const ERROR_TITLE = 'Không thể tải dữ liệu'")
+
+    expect(source).toContain(
+      "const ERROR_DESCRIPTION = 'Đã có lỗi xảy ra, vui lòng thử lại sau'",
+    )
+
+    expect(source).toContain('if (isError || isEmpty)')
+  })
+
+  it('keeps overview page orchestration thin by delegating data widgets to smart sections', () => {
+    const source = readSource('views/app/overview-page.tsx')
+
+    expect(source).toContain('OverviewRecentExpensesSection')
+    expect(source).toContain('OverviewCategoryStatisticsSection')
+    expect(source).not.toContain('useInfiniteExpenseListQuery')
+    expect(source).not.toContain('useExpenseGroupListQuery')
+    expect(source).not.toContain('useReferenceCategoriesQuery')
   })
 })
