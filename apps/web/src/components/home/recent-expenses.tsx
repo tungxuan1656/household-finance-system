@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 
-import { StateCard } from '@/components/shared/state-card'
+import { DataState } from '@/components/shared/data-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
+  Card,
   CardAction,
   CardContent,
   CardHeader,
@@ -49,7 +50,7 @@ function RecentExpenses({
   const showError = Boolean(error) && expenses.length === 0
 
   return (
-    <StateCard
+    <DataState
       action={
         showError ? (
           <Button onClick={onRetry}>
@@ -64,60 +65,62 @@ function RecentExpenses({
       isError={showError}
       isLoading={isLoading}
       title={t('app.overview.recentExpenses.title')}>
-      <CardHeader>
-        <CardTitle>{t('app.overview.recentExpenses.title')}</CardTitle>
-        <CardAction>
-          <Button asChild className='h-auto! px-0!' variant={'ghost'}>
-            <Link href='/expenses'>
-              {t('app.overview.recentExpenses.viewAll')}
-              <span aria-hidden='true'>&nbsp;&rarr;</span>
-            </Link>
-          </Button>
-        </CardAction>
-      </CardHeader>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('app.overview.recentExpenses.title')}</CardTitle>
+          <CardAction>
+            <Button asChild className='h-auto! px-0!' variant={'ghost'}>
+              <Link href='/expenses'>
+                {t('app.overview.recentExpenses.viewAll')}
+                <span aria-hidden='true'>&nbsp;&rarr;</span>
+              </Link>
+            </Button>
+          </CardAction>
+        </CardHeader>
 
-      <CardContent>
-        <ul className='divide-y divide-border'>
-          {expenses.map((item) => {
-            const category = getCategoryPresentation(
-              item.categoryKey,
-              referenceCategories,
-            )
+        <CardContent>
+          <ul className='divide-y divide-border'>
+            {expenses.map((item) => {
+              const category = getCategoryPresentation(
+                item.categoryKey,
+                referenceCategories,
+              )
 
-            return (
-              <li
-                key={item.id}
-                className='flex items-start gap-3 py-3 first:pt-0 last:pb-0'>
-                <Badge
-                  className='size-10'
-                  style={{ backgroundColor: category.color + '1A' }}
-                  variant='secondary'>
-                  <img
-                    alt={category.label}
-                    className='size-6'
-                    src={category.iconUrl}
-                  />
-                </Badge>
+              return (
+                <li
+                  key={item.id}
+                  className='flex items-start gap-3 py-3 first:pt-0 last:pb-0'>
+                  <Badge
+                    className='size-10'
+                    style={{ backgroundColor: category.color + '1A' }}
+                    variant='secondary'>
+                    <img
+                      alt={category.label}
+                      className='size-6'
+                      src={category.iconUrl}
+                    />
+                  </Badge>
 
-                <div className='min-w-0 flex-1 py-0.5'>
-                  <p className='truncate text-sm font-medium'>{item.title}</p>
-                  <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
-                    <span>{formatRelativeDate(item.occurredAt)}</span>
+                  <div className='min-w-0 flex-1 py-0.5'>
+                    <p className='truncate text-sm font-medium'>{item.title}</p>
+                    <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
+                      <span>{formatRelativeDate(item.occurredAt)}</span>
 
-                    <span aria-hidden='true'>&middot;</span>
-                    <span>{category.label}</span>
+                      <span aria-hidden='true'>&middot;</span>
+                      <span>{category.label}</span>
+                    </div>
                   </div>
-                </div>
 
-                <span className='shrink-0 py-0.5 font-mono text-base font-medium tabular-nums'>
-                  {formatCurrency(item.amountMinor, item.currencyCode)}
-                </span>
-              </li>
-            )
-          })}
-        </ul>
-      </CardContent>
-    </StateCard>
+                  <span className='shrink-0 py-0.5 font-mono text-base font-medium tabular-nums'>
+                    {formatCurrency(item.amountMinor, item.currencyCode)}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+        </CardContent>
+      </Card>
+    </DataState>
   )
 }
 

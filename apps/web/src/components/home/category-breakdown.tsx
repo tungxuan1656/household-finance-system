@@ -1,7 +1,7 @@
 'use client'
 
-import { StateCard } from '@/components/shared/state-card'
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DataState } from '@/components/shared/data-state'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { t } from '@/lib/i18n/t'
 import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
@@ -29,45 +29,47 @@ function CategoryBreakdown({
   referenceCategories,
 }: CategoryBreakdownProps) {
   return (
-    <StateCard
+    <DataState
       emptyDescription={t('app.overview.categoryBreakdown.empty')}
       isEmpty={isEmpty}
       isError={isError}
       isLoading={isLoading}
       title={t('app.overview.categoryBreakdown.title')}>
-      <CardHeader>
-        <CardTitle>{t('app.overview.categoryBreakdown.title')}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className='flex flex-col gap-3'>
-          {categories.map((cat) => {
-            const presentation = getCategoryPresentation(
-              cat.categoryKey,
-              referenceCategories,
-            )
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('app.overview.categoryBreakdown.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='flex flex-col gap-3'>
+            {categories.map((cat) => {
+              const presentation = getCategoryPresentation(
+                cat.categoryKey,
+                referenceCategories,
+              )
 
-            return (
-              <div key={cat.categoryKey} className='flex flex-col gap-1'>
-                <div className='flex items-center justify-between'>
-                  <span className='text-sm font-medium'>
-                    {presentation.label}
-                  </span>
-                  <div className='flex items-center gap-2'>
-                    <span className='font-mono text-sm text-muted-foreground tabular-nums'>
-                      {cat.percentOfTotal}%
+              return (
+                <div key={cat.categoryKey} className='flex flex-col gap-1'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-sm font-medium'>
+                      {presentation.label}
                     </span>
-                    <span className='font-mono text-sm tabular-nums'>
-                      {formatCurrency(cat.totalSpendMinor, currencyCode)}
-                    </span>
+                    <div className='flex items-center gap-2'>
+                      <span className='font-mono text-sm text-muted-foreground tabular-nums'>
+                        {cat.percentOfTotal}%
+                      </span>
+                      <span className='font-mono text-sm tabular-nums'>
+                        {formatCurrency(cat.totalSpendMinor, currencyCode)}
+                      </span>
+                    </div>
                   </div>
+                  <Progress value={cat.percentOfTotal} />
                 </div>
-                <Progress value={cat.percentOfTotal} />
-              </div>
-            )
-          })}
-        </div>
-      </CardContent>
-    </StateCard>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    </DataState>
   )
 }
 

@@ -17,7 +17,7 @@ const EMPTY_DESCRIPTION =
 const ERROR_TITLE = 'Không thể tải dữ liệu'
 const ERROR_DESCRIPTION = 'Đã có lỗi xảy ra, vui lòng thử lại sau'
 
-type StateCardProps = React.ComponentProps<typeof Card> & {
+type DataStateProps = React.ComponentProps<typeof Card> & {
   isLoading?: boolean
   isEmpty?: boolean
   isError?: boolean
@@ -29,7 +29,7 @@ type StateCardProps = React.ComponentProps<typeof Card> & {
   action?: ReactNode
 }
 
-function StateCard({
+function DataState({
   isLoading,
   isEmpty,
   isError,
@@ -41,7 +41,7 @@ function StateCard({
   errorDescription,
   action,
   ...props
-}: StateCardProps) {
+}: DataStateProps) {
   if (isLoading) {
     return (
       <Card {...props}>
@@ -81,8 +81,8 @@ function StateCard({
     )
   }
 
-  return <Card {...props}>{children}</Card>
+  return <>{children}</>
 }
 
-export type { StateCardProps }
-export { StateCard }
+export type { DataStateProps }
+export { DataState }

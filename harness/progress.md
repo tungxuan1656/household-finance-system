@@ -9,6 +9,24 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-13 — Refactored Home shared state handling to DataState
+
+- Who: Orchestrator
+- Summary: Renamed the shared Home state helper from `StateCard` to `DataState`, removed the success-state Card wrapper so successful children render directly, and updated Home widgets to own their explicit Card anatomy when populated.
+- Files changed: Shared web state component, Home widget consumers, Home source-contract test, feat-045 evidence, and this progress log.
+- Verification: TDD red-green completed for `apps/web/src/components/home/home-card-composition.test.ts`; focused web Vitest command passed (18 files, 58 tests); `pnpm lint:fix` passed; `pnpm --filter web typecheck` passed; `./init.sh` passed; `gitnexus_detect_changes(scope: all)` reported low risk with 0 affected processes.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
+## 2026-05-13 — Hardened frontend no-render-test rule
+
+- Who: Orchestrator
+- Summary: Promoted the `apps/web` no component/page render test policy into the frontend defaults before continuing the Home/DataState refactor. The frontend router now directs agents to write unit tests for pure logic/API/store/non-render helpers and use browser/manual evidence for UI behavior.
+- Files changed: Frontend governance doc and this progress log.
+- Verification: `pnpm lint:fix` passed.
+- Blockers: none.
+- Next steps: Refactor shared `StateCard` into `DataState` without adding component/page render tests.
+
 ## 2026-05-13 — Caveman-refactored remaining leaf reference docs
 
 - Who: Orchestrator + fixer subagents

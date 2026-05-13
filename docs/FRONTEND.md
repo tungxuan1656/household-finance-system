@@ -9,6 +9,7 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 - shadcn/ui primitives from `@/components/ui/*`.
 - No custom primitive wrapper replacements for `Button`, `Input`, `Card`, `Dialog`, etc.
 - State coverage required: loading, empty, success, error, retry when relevant.
+- Tests: no component/page render tests in `apps/web`. Write unit tests for pure logic, API clients, stores, hooks/helpers that do not render UI; verify UI by browser/manual evidence.
 - Accessibility is normal verification, not polish.
 
 ## Component Boundaries
@@ -50,4 +51,4 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 - Run focused web checks for touched area.
 - Run `pnpm lint:fix` after edits.
 - Prefer `./init.sh` before done.
-- For `apps/web`, do not add component/page render tests. Prefer util/api/store/helper tests plus browser/manual evidence for UI behavior.
+- For `apps/web`, never add component/page render tests. Prefer util/api/store/helper unit tests plus browser/manual evidence for UI behavior.

@@ -2,7 +2,7 @@
 
 import { ArrowDown, ArrowUp } from 'lucide-react'
 
-import { StateCard } from '@/components/shared/state-card'
+import { DataState } from '@/components/shared/data-state'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -41,7 +41,7 @@ function HeroStatsCard({
 }: HeroStatsCardProps) {
   /* ── Loading state ─────────────────────────────────────────────── */
   if (isLoading) {
-    return <StateCard isLoading title={t('app.overview.summary.title')} />
+    return <DataState isLoading title={t('app.overview.summary.title')} />
   }
 
   /* ── Error state ───────────────────────────────────────────────── */

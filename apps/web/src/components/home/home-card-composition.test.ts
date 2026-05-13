@@ -45,7 +45,7 @@ describe('home card composition source contracts', () => {
     const source = readSource(path)
 
     if (path === 'components/home/hero-stats-card.tsx') {
-      expect(source).toContain('StateCard')
+      expect(source).toContain('DataState')
     }
     expect(source).toContain('<Card')
     expect(source).toContain('<CardHeader')
@@ -53,15 +53,16 @@ describe('home card composition source contracts', () => {
     expect(source).toContain('<CardContent')
   })
 
-  it('uses StateCard as the shared loading, empty, and error wrapper', () => {
-    const source = readSource('components/shared/state-card.tsx')
+  it('uses DataState for shared loading, empty, and error UI without wrapping success children', () => {
+    const source = readSource('components/shared/data-state.tsx')
+    const legacyName = ['State', 'Card'].join('')
 
     expect(source).toContain('isLoading?: boolean')
     expect(source).toContain('isEmpty?: boolean')
     expect(source).toContain('isError?: boolean')
     expect(source).toContain('emptyDescription?: string')
     expect(source).toContain('errorDescription?: string')
-    expect(source).toContain('function StateCard')
+    expect(source).toContain('function DataState')
     expect(source).toContain("const ERROR_TITLE = 'Không thể tải dữ liệu'")
 
     expect(source).toContain(
@@ -69,6 +70,9 @@ describe('home card composition source contracts', () => {
     )
 
     expect(source).toContain('if (isError || isEmpty)')
+    expect(source).toContain('return <>{children}</>')
+    expect(source).not.toContain('return <Card {...props}>{children}</Card>')
+    expect(source).not.toContain(legacyName)
   })
 
   it('keeps overview page orchestration thin by delegating data widgets to smart sections', () => {
