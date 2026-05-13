@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 
-import { CardPlaceholder } from '@/components/shared/card-placeholder'
+import { StateCard } from '@/components/shared/state-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,23 +13,12 @@ import {
 } from '@/components/ui/card'
 import { t } from '@/lib/i18n/t'
 import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
+import type { ExpenseDTO } from '@/types/expense'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
 import { formatCurrency } from '@/views/app/overview/overview-formatters'
 
-type RecentExpenseItem = {
-  id: string
-  title: string
-  categoryKey: string
-  amountMinor: number
-  currencyCode: string
-  occurredAt: number
-  payerName?: string
-  groupNames?: string[]
-  visibility: 'private' | 'household'
-}
-
 type RecentExpensesProps = {
-  expenses: RecentExpenseItem[]
+  expenses: ExpenseDTO[]
   isLoading: boolean
   error: Error | null
   onRetry: () => void
@@ -57,9 +46,22 @@ function RecentExpenses({
   isEmpty,
   referenceCategories,
 }: RecentExpensesProps) {
+  const showError = Boolean(error) && expenses.length === 0
+
   return (
-    <CardPlaceholder
+    <StateCard
+      action={
+        showError ? (
+          <Button onClick={onRetry}>
+            {t('app.overview.actions.retrySummary')}
+          </Button>
+        ) : undefined
+      }
+      errorDescription={
+        showError ? t('app.overview.recentExpenses.error') : undefined
+      }
       isEmpty={isEmpty}
+      isError={showError}
       isLoading={isLoading}
       title={t('app.overview.recentExpenses.title')}>
       <CardHeader>
@@ -75,86 +77,49 @@ function RecentExpenses({
       </CardHeader>
 
       <CardContent>
-        {error ? (
-          <ErrorState onRetry={onRetry} />
-        ) : (
-          <ul className='divide-y divide-border'>
-            {expenses.map((item) => {
-              const category = getCategoryPresentation(
-                item.categoryKey,
-                referenceCategories,
-              )
+        <ul className='divide-y divide-border'>
+          {expenses.map((item) => {
+            const category = getCategoryPresentation(
+              item.categoryKey,
+              referenceCategories,
+            )
 
-              return (
-                <li
-                  key={item.id}
-                  className='flex items-start gap-3 py-3 first:pt-0 last:pb-0'>
-                  <Badge
-                    className='size-10'
-                    style={{ backgroundColor: category.color + '1A' }}
-                    variant='secondary'>
-                    <img
-                      alt={category.label}
-                      className='size-6'
-                      src={category.iconUrl}
-                    />
-                  </Badge>
+            return (
+              <li
+                key={item.id}
+                className='flex items-start gap-3 py-3 first:pt-0 last:pb-0'>
+                <Badge
+                  className='size-10'
+                  style={{ backgroundColor: category.color + '1A' }}
+                  variant='secondary'>
+                  <img
+                    alt={category.label}
+                    className='size-6'
+                    src={category.iconUrl}
+                  />
+                </Badge>
 
-                  <div className='min-w-0 flex-1 py-0.5'>
-                    <p className='truncate text-sm font-medium'>{item.title}</p>
-                    <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
-                      <span>{formatRelativeDate(item.occurredAt)}</span>
+                <div className='min-w-0 flex-1 py-0.5'>
+                  <p className='truncate text-sm font-medium'>{item.title}</p>
+                  <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
+                    <span>{formatRelativeDate(item.occurredAt)}</span>
 
-                      {item.payerName && (
-                        <>
-                          <span aria-hidden='true'>&middot;</span>
-                          <span>{item.payerName}</span>
-                        </>
-                      )}
-
-                      <span aria-hidden='true'>&middot;</span>
-                      <span>{category.label}</span>
-
-                      {item.groupNames && item.groupNames.length > 0 && (
-                        <>
-                          <span aria-hidden='true'>&middot;</span>
-                          {item.groupNames.map((group) => (
-                            <Badge key={group} variant='secondary'>
-                              {group}
-                            </Badge>
-                          ))}
-                        </>
-                      )}
-                    </div>
+                    <span aria-hidden='true'>&middot;</span>
+                    <span>{category.label}</span>
                   </div>
+                </div>
 
-                  <span className='shrink-0 py-0.5 font-mono text-base font-medium tabular-nums'>
-                    {formatCurrency(item.amountMinor, item.currencyCode)}
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
-        )}
+                <span className='shrink-0 py-0.5 font-mono text-base font-medium tabular-nums'>
+                  {formatCurrency(item.amountMinor, item.currencyCode)}
+                </span>
+              </li>
+            )
+          })}
+        </ul>
       </CardContent>
-    </CardPlaceholder>
+    </StateCard>
   )
 }
 
-function ErrorState({ onRetry }: { onRetry: () => void }) {
-  return (
-    <div className='py-6 text-center'>
-      <div className='flex flex-col items-center gap-3'>
-        <p className='text-sm text-muted-foreground'>
-          {t('app.overview.recentExpenses.error')}
-        </p>
-        <Button onClick={onRetry}>
-          {t('app.overview.actions.retrySummary')}
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-export type { RecentExpenseItem, RecentExpensesProps }
+export type { RecentExpensesProps }
 export { RecentExpenses }
