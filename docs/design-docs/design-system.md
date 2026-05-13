@@ -1,7 +1,6 @@
 # Design System
 
 > **Purpose:** Operational contract for tokens and primitive-owned visuals.
-> **Aesthetic source of truth:** `docs/design-docs/design-system-v2-spec.md`.
 > **Use this file when:** Updating tokens, primitive defaults, or primitive APIs in `apps/web/src/components/ui`.
 > **Do not use this file for:** Page-level visual styling decisions. Page and feature authors must follow `ui-implementation-rules.md`.
 
@@ -11,7 +10,6 @@
 
 This repository has one visual ownership rule:
 
-- `docs/design-docs/design-system-v2-spec.md` defines the intended look.
 - `docs/design-docs/design-system.md` defines the operational token and primitive contract.
 - `docs/design-docs/ui-implementation-rules.md` defines how pages and shared feature components may consume primitives.
 - `apps/web/src/components/ui` owns visual styling.
@@ -19,9 +17,8 @@ This repository has one visual ownership rule:
 
 If these documents disagree, resolve them in this order:
 
-1. `design-system-v2-spec.md`
-2. `design-system.md`
-3. `ui-implementation-rules.md`
+1. `design-system.md`
+2. `ui-implementation-rules.md`
 
 Non-negotiable rules:
 
