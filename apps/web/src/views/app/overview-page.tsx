@@ -8,7 +8,7 @@ import { type GroupInfo } from '@/components/home/group-filter-bar'
 import { HeroStatsCard } from '@/components/home/hero-stats-card'
 import { RecentExpenses } from '@/components/home/recent-expenses'
 import { type RecentExpenseItem } from '@/components/home/recent-expenses'
-import { Card, CardContent } from '@/components/ui/card'
+import { CardPlaceholder } from '@/components/shared/card-placeholder'
 import { PageShell } from '@/components/ui/page-shell'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAnalyticsComparisonQuery } from '@/hooks/api/use-analytics'
@@ -300,21 +300,13 @@ function OverviewPage() {
         />
 
         {/* Category breakdown from analytics */}
-        {overviewData?.topCategories ? (
+        <CardPlaceholder isEmpty={true} isLoading={overviewQuery.isLoading}>
           <CategoryBreakdownPlaceholder
-            categories={overviewData.topCategories}
-            currencyCode={overviewData.currencyCode}
+            categories={overviewData?.topCategories ?? []}
+            currencyCode={overviewData?.currencyCode ?? 'VND'}
             referenceCategories={referenceCategoriesQuery.data?.items}
           />
-        ) : overviewQuery.isLoading ? (
-          <Card>
-            <CardContent className='p-4'>
-              <p className='text-sm text-muted-foreground'>
-                {t('app.overview.categoryBreakdown.loading')}
-              </p>
-            </CardContent>
-          </Card>
-        ) : null}
+        </CardPlaceholder>
       </div>
     </PageShell>
   )
