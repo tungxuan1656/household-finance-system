@@ -51,7 +51,7 @@ export function AppSidebar({ onSignOut }: AppSidebarProps) {
                   asChild
                   className='w-full justify-start gap-3'
                   variant={isActive ? 'default' : 'ghost'}>
-                  <Link href={item.to}>
+                  <Link className='gap-2!' href={item.to}>
                     <item.icon data-icon='inline-start' />
                     {t(item.labelKey)}
                   </Link>
