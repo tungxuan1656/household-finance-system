@@ -32,6 +32,7 @@
       "Rewrote root/task docs in short parent-router style",
       "Rewrote references, product specs, design docs, security, reliability, and product-sense indexes/docs in caveman-lite style",
       "Updated stale frontend folder and component structure references for Next.js App Router",
+      "Refactored remaining frontend/backend leaf reference docs into concise caveman-lite rules",
       "Replaced historical broken shadcn-first design-doc links with the active shadcn card composition guide"
     ],
     "pending": []
@@ -45,8 +46,9 @@
       "pnpm lint:fix exited 0 for web and worker ESLint --fix",
       "python3 -m json.tool validated harness/feature_index.json and harness/features/feat-054.json",
       "./init.sh passed: pnpm install, harness checks, linting, type checking, tests, GitNexus, Init Done",
-      "gitnexus_detect_changes(scope: all) reported low risk, 29 changed files, 116 changed symbols, 0 affected processes"
+      "gitnexus_detect_changes(scope: all) reported low risk, 29 changed files, 116 changed symbols, 0 affected processes",
+      "Leaf reference follow-up verification: pnpm lint:fix passed; JSON validation passed; ./init.sh passed; gitnexus_detect_changes(scope: all) reported low risk, 11 changed files, 69 changed symbols, 0 affected processes"
     ]
   },
-  "notes": "Docs-only cleanup. Goal is minimal sufficient reading: parent docs route, leaf docs hold exact rules, indexes stay maps, prose stays terse. Completed ExecPlans remain historical records but broken shadcn guide links were updated where found."
+  "notes": "Docs-only cleanup. Goal is minimal sufficient reading: parent docs route, leaf docs hold exact rules, indexes stay maps, prose stays terse. Completed ExecPlans remain historical records but broken shadcn guide links were updated where found. Leaf references were also shortened after follow-up review."
 }

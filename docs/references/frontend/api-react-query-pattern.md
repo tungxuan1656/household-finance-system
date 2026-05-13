@@ -1,146 +1,121 @@
-# API + React Query Pattern (Quick Implementation)
+# API + React Query Pattern
 
-## 1) Standard Structure
+Use API files for HTTP. Use hooks for cache/state. UI calls hooks only.
+
+## Structure
 
 ```text
-src/
+apps/web/src/
   api/
     client.ts
     endpoints.ts
     <domain>.ts
-    <domain>.mock.ts   ← mock fixtures (only used when backend is not ready)
+    <domain>.mock.ts
   hooks/api/
     use-<domain>.ts
 ```
 
-- API layer: HTTP calls only, fully typed.
-- Hook layer: manages cache, keys, invalidation, data transformation.
-- Mock layer: fixtures separated into `<domain>.mock.ts`, **not embedded directly** in components or hooks.
+## Hard Rules
 
-## 2) Hard Rules
+- Declare URLs in `API_ENDPOINTS`.
+- Put HTTP calls in `api/<domain>.ts`.
+- Put query keys + hooks in `hooks/api/use-<domain>.ts`.
+- UI imports hooks, not `api/*`.
+- Query keys come from `*_KEYS`; no inline key arrays in components.
+- Mutations invalidate exact affected scope.
+- `select` only transforms data. Never `select: (data) => data`.
+- Check existing query/store data before adding new query.
+- Mocks live in `api/<domain>.mock.ts`; never inline in components/hooks.
 
-- All endpoints must be declared in `API_ENDPOINTS`.
-- Hook queries must always have `queryKey` from `*_KEYS`.
-- Successful mutations must `invalidateQueries` with the correct scope.
-- UI should only call hooks, not directly call `api/*` files.
-- **Do not use `select: (data) => data`** — identity callbacks that don't transform anything must be removed entirely.
-- **Before adding a new query/hook**, check if the data can be derived from an existing store or query — avoid parallel API calls for data that has already been fetched.
-
-## 2a) Mock Data Pattern
-
-When backend is not ready, mocks must be placed in `api/<domain>.mock.ts`, **not embedded inline** in components:
+## API Module Shape
 
 ```ts
-// api/shifts.mock.ts
-import type { ShiftSlot } from '@/types/shift'
+// apps/web/src/api/expenses.ts
+import type { ApiResponse, CreateExpenseRequest, ExpenseDTO } from '@/types/api'
 
-// Mock fixtures — replace with real HTTP call once backend is available.
-export const MOCK_SHIFTS: ShiftSlot[] = [...]
-```
-
-API module imports and re-exports mock with a clear TODO:
-
-```ts
-// api/shifts.ts
-import { MOCK_SHIFTS } from './shifts.mock'
-
-// TODO: Replace with real HTTP call once backend endpoint is available.
-// Example: return client.get<ApiResponse<ShiftSlot[]>>(API_ENDPOINTS.shifts.slots)
-export const getShiftSlots = async (): Promise<ShiftSlot[]> => {
-  return Promise.resolve(MOCK_SHIFTS)
-}
-```
-
-## 3) API Module Template
-
-```ts
-// api/example.ts
-import type { ApiResponse, ExampleDTO, CreateExampleRequest } from '@/types/api'
 import { client } from './client'
 import { API_ENDPOINTS } from './endpoints'
 
-export const getExamples = async (): Promise<ApiResponse<ExampleDTO[]>> => {
-  const response = await client.get<ApiResponse<ExampleDTO[]>>(
-    API_ENDPOINTS.examples.list,
+export const getExpenses = async (): Promise<ApiResponse<ExpenseDTO[]>> => {
+  const response = await client.get<ApiResponse<ExpenseDTO[]>>(
+    API_ENDPOINTS.expenses.list,
   )
   return response.data
 }
 
-export const createExample = async (
-  payload: CreateExampleRequest,
-): Promise<ApiResponse<ExampleDTO>> => {
-  const response = await client.post<ApiResponse<ExampleDTO>>(
-    API_ENDPOINTS.examples.list,
+export const createExpense = async (
+  payload: CreateExpenseRequest,
+): Promise<ApiResponse<ExpenseDTO>> => {
+  const response = await client.post<ApiResponse<ExpenseDTO>>(
+    API_ENDPOINTS.expenses.list,
     payload,
   )
   return response.data
 }
 ```
 
-## 4) Hook Module Template
+## Hook Module Shape
 
 ```ts
-// hooks/api/use-example.ts
+// apps/web/src/hooks/api/use-expenses.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { createExample, getExamples } from '@/api/example'
+import { createExpense, getExpenses } from '@/api/expenses'
 
-export const EXAMPLE_KEYS = {
-  all: ['examples'] as const,
-  list: () => [...EXAMPLE_KEYS.all, 'list'] as const,
+export const EXPENSE_KEYS = {
+  all: ['expenses'] as const,
+  list: (params?: unknown) => [...EXPENSE_KEYS.all, 'list', params] as const,
+  detail: (id: string) => [...EXPENSE_KEYS.all, 'detail', id] as const,
 }
 
-export const useExamples = () => {
+export const useExpenses = (params?: unknown) => {
   return useQuery({
-    queryKey: EXAMPLE_KEYS.list(),
-    queryFn: getExamples,
-    select: (res) => res.data, // UI receives plain data
+    queryKey: EXPENSE_KEYS.list(params),
+    queryFn: getExpenses,
+    select: (res) => res.data,
   })
 }
 
-export const useCreateExample = () => {
+export const useCreateExpense = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: createExample,
+    mutationFn: createExpense,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: EXAMPLE_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
     },
   })
 }
 ```
 
-## 5) Query Key Pattern
-
-```ts
-export const DOMAIN_KEYS = {
-  all: ['domain'] as const,
-  list: (params?: unknown) => ['domain', 'list', params] as const,
-  detail: (id: string) => ['domain', 'detail', id] as const,
-}
-```
-
-## 6) Infinite Query Pattern
+## Infinite Query
 
 ```ts
 useInfiniteQuery({
-  queryKey: DOMAIN_KEYS.list(params),
-  queryFn: ({ pageParam }) => getItems({ ...params, cursor: pageParam }),
+  queryKey: EXPENSE_KEYS.list(params),
+  queryFn: ({ pageParam }) => getExpenses({ ...params, cursor: pageParam }),
   initialPageParam: undefined as string | undefined,
-  getNextPageParam: (lastPage) =>
-    lastPage.success && lastPage.data?.pagination.hasMore
-      ? lastPage.data.pagination.nextCursor
-      : undefined,
+  getNextPageParam: (lastPage) => lastPage.data?.pagination.nextCursor,
 })
 ```
 
-## 7) Checklist When Adding a New API
+## Mock Rule
 
-- [ ] Add endpoint to `API_ENDPOINTS`
-- [ ] Create function in `api/<domain>.ts`
-- [ ] Create `*_KEYS` in `hooks/api/use-<domain>.ts`
-- [ ] Write corresponding `useQuery`/`useMutation`
-- [ ] Add `invalidateQueries` for mutations
-- [ ] Use `select` to return plain data for UI — **remove `select: (data) => data`** if not transforming
-- [ ] If using mock: separate into `api/<domain>.mock.ts` + add comment `// TODO: replace with real HTTP call`
-- [ ] Check if data already exists in another store/query before creating a new hook
+```ts
+// apps/web/src/api/expenses.mock.ts
+import type { ExpenseDTO } from '@/types/api'
+
+export const MOCK_EXPENSES: ExpenseDTO[] = []
+```
+
+Use mock only while backend contract is missing. Add remove-mock follow-up.
+
+## Checklist
+
+- [ ] Endpoint in `API_ENDPOINTS`
+- [ ] Typed API function in `api/<domain>.ts`
+- [ ] `*_KEYS` in hook file
+- [ ] `useQuery` / `useMutation` wraps API function
+- [ ] Mutation invalidates correct key
+- [ ] UI imports hook only
+- [ ] Mock, if any, lives in `api/<domain>.mock.ts`

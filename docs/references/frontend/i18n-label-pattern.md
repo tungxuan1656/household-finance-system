@@ -1,62 +1,36 @@
 # I18n Label Pattern
 
-## Goal
+## Rules
 
-In this project, all labels/text displayed to users **must use i18n** to support multiple languages.
-
+- All user-facing labels/text must use i18n.
 - Do not hardcode text in components/pages.
-- Language strings are managed via `json` files.
-- Language keys use a nested structure accessed as `x.y.z`.
+- Strings live in JSON locale files.
+- Keys use nested `x.y.z` paths.
+- Form validation/error messages must use i18n keys too.
 
-## Directory Structure
+## Paths
 
 ```txt
 src/
   lib/
     i18n/
       index.ts
-      locales
+      locales/
         vi.json
 ```
 
-> `i18n.ts` and language files must be placed in `src/lib/i18n`.
+- i18n entry and locale files live in `apps/web/src/lib/i18n`.
 
-## Key Naming Rules
+## Key naming
 
-- Keys must be semantic based on the screen/feature context.
-- Use nested keys, for example:
-  - `common.actions.save`
-  - `auth.login.title`
-  - `auth.login.form.email.label`
+- Keys must be semantic for the screen/feature.
+- Use nested keys like `common.actions.save`, `auth.login.title`, `auth.login.form.email.label`.
 
-Example `vi.json`:
+## Usage
 
-```json
-{
-  "common": {
-    "actions": {
-      "save": "Save",
-      "cancel": "Cancel"
-    }
-  },
-  "auth": {
-    "login": {
-      "title": "Login",
-      "form": {
-        "email": {
-          "label": "Email"
-        }
-      }
-    }
-  }
-}
-```
-
-## Code Usage Rules
-
-- ✅ Correct: use the translation function from i18n, e.g. `t('auth.login.title')`.
-- ❌ Wrong: hardcode directly like `"Login"`, `"Save"`, `"Email"` in JSX.
-- ✅ Form validation/error messages must use i18n keys — do not embed strings directly in Zod schemas.
+- Use `t('auth.login.title')`.
+- Do not hardcode user-facing strings in JSX.
+- Do not embed raw strings in Zod schemas.
 
 Example:
 
@@ -66,40 +40,36 @@ Example:
 <Button>{t('common.actions.save')}</Button>
 ```
 
-## Locale Completeness (required)
+## Locale completeness
 
-- All new keys must be added **simultaneously** to all locale files (`en.json`, etc.).
-- Do not merge a key in one locale while leaving another locale empty — causes silent fallback, hard to debug.
-- If translation is not available, use English temporarily and add a `// TODO: translate` comment in the JSON file.
+- Add new keys to all locale files at once.
+- Do not leave one locale missing a key.
+- If translation is missing, use English temporarily and add `// TODO: translate` in JSON.
 
-## Interpolation for Numbers, Units, and Time
+## Interpolation
 
-Strings with quantities, units, or dynamic values must use interpolation — do not concatenate strings manually:
+- Use interpolation for quantities, units, and dynamic values.
 
 ```json
-// en.json
 {
-  "shifts": {
+  "expenses": {
     "stats": {
-      "totalDrivers": "/ {{count}} Total"
+      "totalAmount": "{{amount}} total"
     }
   }
 }
 ```
 
 ```tsx
-// ✅ Correct
-t('shifts.stats.totalDrivers', { count: totalDrivers })
-// ❌ Wrong
-`/ ${totalDrivers} Total`
+t('expenses.stats.totalAmount', { amount: formattedTotal })
 ```
 
-## Review Checklist
+## Checklist
 
 - [ ] No hardcoded user-facing text in components/pages.
 - [ ] Form validation/error messages use i18n keys.
 - [ ] All labels have corresponding i18n keys.
 - [ ] Keys have clear contextual nested structure (`x.y.z`).
-- [ ] All locale files (`en.json`) have synchronized keys.
-- [ ] Strings with dynamic values use interpolation, no manual concatenation.
-- [ ] `i18n.ts` placed at `src/lib/i18n/index.ts`.
+- [ ] All locale files have synchronized keys.
+- [ ] Strings with dynamic values use interpolation.
+- [ ] i18n entry placed at `apps/web/src/lib/i18n/index.ts`.

@@ -1,338 +1,138 @@
 # Frontend Component Architecture Guide
 
-## Core Principle
+Split by responsibility. Not line count alone.
 
-> Split components by responsibility, not by line count.
+## Layer Order
 
-A component should:
-- Have one clear responsibility
-- Have meaningful naming
-- Be easy to reuse and maintain
-
----
-
-## Architecture Layers
-
-```txt
-Next.js App Router page
-  ↓
-page composition / route orchestrator
-  ↓
-feature smart component
-  ↓
-feature presentational component
-  ↓
-shared component / shared hook
-  ↓
-shadcn ui primitive
+```text
+Next.js route/page
+  -> page view / route orchestrator
+  -> feature smart component
+  -> feature presentational component
+  -> shared component / shared hook
+  -> shadcn ui primitive
 ```
 
-Dependency direction must stay downward and generic:
+## Import Direction
 
-```txt
-app route/page → components/<feature> → components/shared → components/ui
-page/component → hooks/api or hooks/shared → api/*
-page/component → stores/*.store.ts when global app state is required
+Allowed:
+
+```text
+app route/page -> views/* -> components/shared/<feature> -> components/ui
+component/page -> hooks/api or hooks/shared -> api/*
+component/page -> stores/*.store.ts only for global app state
 ```
 
-Never allow:
+Forbidden:
 
-```txt
-components/shared → components/<feature> ❌
-components/ui → components/shared or components/<feature> ❌
-api/* → components/* ❌
-stores/* → components/* ❌
+```text
+components/ui -> domain/shared components
+shared generic component -> feature component
+api/* -> components/*
+stores/* -> components/*
 ```
 
----
+## Route / Page
 
-## 1. UI Primitive
+Owns route-level concerns only:
 
-Base UI components.
-
-Examples:
-```tsx
-<Button />
-<Input />
-<Card />
-```
-
-Rules:
-- No business logic
-- No API calls
-- Pure UI only
-
-Folder:
-
-```txt
-components/ui/
-```
-
----
-
-## 2. Shared Component
-
-Shared components are reusable patterns that work across multiple features.
-
-Examples:
-
-```tsx
-<DataState />
-<FieldInputController />
-<FieldSelectController />
-```
-
-Rules:
-- No domain knowledge
-- Reusable across features
-- Can contain generic behavior
-
-Folder:
-
-```txt
-components/shared/
-```
-
----
-
-## 3. Feature Component
-
-Feature components are domain-specific components owned by one feature area.
-
-Examples:
-
-```tsx
-<RecentExpenses />
-<BudgetStatusPanel />
-<ExpenseFeedItem />
-<InsightsChartsSection />
-```
+- route params/search params
+- public/protected route decision
+- page layout composition
+- top-level empty guard when whole page cannot render
 
 Rules:
 
-- May know domain DTOs, copy, filters, feature actions, and feature-specific UI state.
-- Belongs to exactly one feature folder under `components/<feature>`.
-- May be smart or presentational, but must keep one clear responsibility.
-- Export public child components from `components/<feature>/index.ts`; keep internal subcomponents module-private.
-- Prefer direct DTO usage at UI boundaries. Map data only when the UI needs a real derived value, shape change, or non-trivial calculation.
+- Keep `app/**/page.tsx` thin.
+- Put reusable UI outside `app/`.
+- If page mixes 3+ concerns, move sections to feature smart components or `views/`.
 
-Folder:
+## Feature Smart Component
 
-```txt
-components/<feature>/
+Owns one feature concern.
+
+May own:
+
+- API/query/mutation hook
+- filters and local UI state
+- loading/error/empty/success state
+- form submit or dialog state
+- feature-specific DTO reads, copy, actions
+
+Keep under feature folder. Do not promote to shared unless truly cross-feature.
+
+## Presentational Component
+
+UI-only. Props in, JSX out.
+
+- No feature API calls.
+- No mutations.
+- No global store writes.
+- Good for reusable rendering shape or pure helper under smart component.
+- Do not extract only because a file is long.
+
+## Shared Component
+
+Reusable across multiple features.
+
+- No domain knowledge.
+- Generic behavior allowed.
+- Examples: `DataState`, form field controller wrappers.
+- If it knows `expense`, `budget`, `household`, `group`, `invitation`, or `analytics`, it is not shared.
+
+## UI Primitive
+
+`components/ui/` is shadcn-first base UI only.
+
+- No business logic.
+- No API calls.
+- No project domain copy.
+- Prefer primitive props before custom wrappers/classes.
+
+## Async State
+
+Every user-facing async widget handles:
+
+```text
+loading -> error/retry -> empty -> success
 ```
 
----
+- Card-shaped widgets should use `DataState` when it fits.
+- Preserve retry action.
+- Use custom async markup only when `DataState` cannot express the shape.
 
-## 4. Smart Feature Component
+## DTO Rule
 
-Smart feature components own bounded orchestration for one UI concern.
+- Prefer direct DTO reads at UI boundary.
+- Map data only for real derived value, shape change, or non-trivial calculation.
+- Do not add mirror UI types that drop fields without need.
 
-Responsibilities:
-- API calls
-- Hooks
-- Data mapping
-- Loading/error state
+## Naming / Exports
 
-Example:
+- Files: `kebab-case`.
+- Components: `PascalCase` named exports.
+- Name by domain meaning or responsibility.
+- Use folder `index.ts` barrels for public components only.
+- Keep internal subcomponents module-private.
 
-```tsx
-type RecentExpensesProps = {
-  householdId?: string
-}
+Good: `ExpenseFeedItem`, `BudgetStatusPanel`, `RecentExpenses`.
+Bad: `ComponentA`, `LeftSection`, `TopArea`, `CardWrapper2`.
 
-export const RecentExpenses = ({ householdId }: RecentExpensesProps) => {
-  const { data, isError, isLoading, refetch } = useExpenseFeed({ householdId })
-  const expenses = data?.items ?? []
+## Extraction Checklist
 
-  return (
-    <DataState
-      isEmpty={expenses.length === 0}
-      isError={isError}
-      isLoading={isLoading}
-      onRetry={() => void refetch()}
-    >
-      <ExpenseList expenses={expenses} />
-    </DataState>
-  )
-}
-```
-
-Use smart feature components to split pages when a section owns its own query, filters, async states, form submission, dialog state, or retry behavior.
-
----
-
-## 5. Page Component / Route Orchestrator
-
-Next.js route files compose the page and own route-level concerns.
-
-Responsibilities:
-
-- Route params/search params.
-- Top-level protected/public route decisions.
-- High-level layout composition.
-- Global store sync when multiple sections depend on it.
-- Top-level empty guards when the whole page cannot render meaningfully.
-
-Rules:
-
-- Keep pages thin and orchestration-focused.
-- Do not keep child widget query wiring in the page unless multiple sibling sections must coordinate from the same query result.
-- Do not place reusable UI under `app/`; route files should import components from `components/*`.
-- Page files should stay readable; when they mix 3+ concerns, split into feature smart components.
-
-Example:
-
-```tsx
-function OverviewPage() {
-  return (
-    <>
-      <OverviewTabs />
-      <OverviewStats />
-      <RecentExpenses />
-    </>
-  )
-}
-```
-
-Folder:
-
-```txt
-app/**/page.tsx
-```
-
----
-
-## Smart vs Presentational Components
-
-### Presentational Component
-
-UI-only rendering controlled by props.
-
-```tsx
-type ExpenseFeedItemProps = {
-  expense: ExpenseDto
-}
-
-export const ExpenseFeedItem = ({ expense }: ExpenseFeedItemProps) => {
-  return <article>{expense.title}</article>
-}
-```
-
-Rules:
-
-- Receives data and callbacks through props.
-- No feature API calls or mutations.
-- Useful when multiple callers need the same rendering shape or a smart component needs a small pure helper.
-- Does not need to be extracted merely because it reduces line count.
-
-### Smart Component
-
-Data/state orchestration for one feature concern.
-
-```tsx
-export const CreateBudgetDialog = () => {
-  const createBudget = useCreateBudgetMutation()
-
-  return <BudgetForm onSubmit={(input) => createBudget.mutate(input)} />
-}
-```
-
-Rules:
-
-- Uses hooks/API/store where needed.
-- Handles async state and user actions.
-- Passes simple props to presentational children.
-- Stays feature-scoped unless its behavior is truly generic.
-
----
-
-## Async State Pattern
-
-Every user-facing async widget must account for:
-
-```txt
-loading → error/retry → empty → success
-```
-
-For card-shaped widgets, use `DataState`:
-
-```tsx
-<DataState isEmpty={!items.length} isError={isError} isLoading={isLoading} onRetry={retry}>
-  <Card>
-    <CardHeader>
-      <CardTitle>Recent expenses</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <ExpenseList expenses={items} />
-    </CardContent>
-  </Card>
-</DataState>
-```
-
-Rules:
-
-- Use `DataState` from `@/components/shared/data-state` for standard card loading/empty/error handling.
-- Preserve useful retry actions through `DataState` action props.
-- Use one-off async markup only when the widget shape is not card-like or `DataState` cannot represent the interaction.
-
----
-
-## Naming and Export Rules
-
-- Files use `kebab-case`.
-- Components use `PascalCase` and named exports: `export const ComponentName = (...) => {}`.
-- Name by domain meaning or responsibility, not visual position.
-- Use `index.ts` barrel files in feature/shared component folders to export only public components.
-- Import public child components from the folder barrel when available.
-
-Good:
-
-```tsx
-<ExpenseFeedItem />
-<BudgetStatusPanel />
-<RecentExpenses />
-<HouseholdCardsSection />
-```
-
-Bad:
-
-```tsx
-<ComponentA />
-<LeftSection />
-<TopArea />
-<CardWrapper2 />
-```
-
----
-
-## Extraction Decision Checklist
-
-Before creating or moving a component, answer:
-
-1. Which layer owns this responsibility: page, feature, shared, or UI primitive?
-2. Does it know a project domain such as expenses, budgets, households, invitations, auth, or analytics?
-   - Yes → keep it under `components/<feature>`.
-   - No → it may be shared only if it is reused across features.
-3. Does it need API/query/mutation/store logic?
-   - Yes → make it a smart feature component unless the logic is generic.
-4. Is the extraction for reuse or just line count?
-   - Reuse/clear concern boundary → extract.
-   - Line count only → prefer a smart feature section over many tiny dumb single-use pieces.
-5. Will a new mapped type or memoized data shape drop DTO fields or add rerender surfaces?
-   - Yes → avoid it unless the derived shape is necessary.
-
----
+1. Which layer owns it: page, view, feature, shared, UI primitive?
+2. Does it know a domain? Keep feature-local.
+3. Does it need API/query/mutation/store logic? Make smart feature component.
+4. Is extraction for reuse or concern boundary? Extract.
+5. Is extraction only for line count? Prefer clearer section split, not tiny fragments.
+6. Does mapping add derived shape or rerender surface? Avoid unless needed.
 
 ## Golden Rules
 
-1. Pages should mostly compose route-level flow and layout.
-2. Feature smart components should own bounded feature orchestration.
-3. Shared components must not know business logic.
-4. UI primitives must remain shadcn-first and domain-free.
-5. Prefer direct DTO reads over unnecessary mirror types and mapping layers.
-6. Only move components to shared when the abstraction is truly cross-feature.
-7. If a component knows `expense`, `budget`, `household`, `group`, `invitation`, or `analytics`, it belongs to a feature folder.
-8. Every async surface needs clear loading, empty, error/retry, and success states.
-9. Keep files focused; split when a file trends beyond ~200 lines or mixes 3+ concerns.
-10. Do not introduce new frontend folder conventions without updating the canonical reference docs first.
+- Pages compose route flow and layout.
+- Feature smart components orchestrate bounded feature work.
+- Presentational components render props only.
+- Shared components stay domain-free.
+- UI primitives stay shadcn-first.
+- Async surfaces cover loading, empty, error/retry, success.
+- New folder convention requires updating canonical reference docs first.

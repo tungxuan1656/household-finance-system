@@ -49,6 +49,7 @@ Out of scope:
 - `docs/FRONTEND.md` references missing `docs/design-docs/shadcn-first-ui-web-guide.md`.
 - `docs/references/frontend/project-folder-structure.md` still describes old SPA/Vite-style folders, not current Next.js App Router shape.
 - `docs/references/frontend/responsive-navigation-shell-pattern.md` exists but is missing from `docs/references/index.md`.
+- Follow-up review found remaining frontend/backend leaf references still verbose; refactored them into caveman-lite rule docs.
 
 ## Decision Log
 
@@ -64,9 +65,10 @@ Out of scope:
 - Root and task docs now route by task instead of duplicating leaf rules.
 - Reference/product/design indexes now act as maps.
 - Frontend folder/component references now match `apps/web/src` and Next.js App Router.
+- Remaining leaf refs were shortened: frontend component architecture, responsive shell, dialog/form, form, API/React Query, Zustand, i18n, and backend folder structure.
 - Broken active references to the removed shadcn-first design doc were replaced with `docs/design-docs/shadcn-card-composition-architecture-guide.md`.
-- Verification passed: `pnpm lint:fix`, JSON validation, `./init.sh`, and GitNexus change detection.
-- GitNexus reported docs-only low risk: 29 changed files, 116 changed symbols, 0 affected processes.
+- Verification passed after follow-up leaf-ref pass: `pnpm lint:fix`, JSON validation, `./init.sh`, and GitNexus change detection.
+- GitNexus reported docs-only low risk: 11 changed files, 69 changed symbols, 0 affected processes.
 
 ## Context and Orientation
 
