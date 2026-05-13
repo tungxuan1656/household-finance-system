@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-13 — Removed custom design-system documentation
+
+- Who: Orchestrator
+- Summary: Removed the project-owned custom design-system documentation after the shadcn-only product decision. The remaining durable UI guidance now points at shadcn-first usage rather than a bespoke V2/glassmorphism token contract.
+- Files changed: Deleted custom design-system/design-entrypoint docs, deleted related design-system ExecPlans and obsolete feature evidence, updated design-doc and plan indexes, refreshed the mobile-first UI feature record, and logged this session.
+- Verification: Edited JSON artifacts validated with `python3 -m json.tool`; git diff/status reviewed and shows documentation/harness cleanup only.
+- Blockers: none.
+- Next steps: Review whether existing UI code should be refactored back toward stock shadcn defaults in a separate implementation plan.
+
 ## 2026-05-12 — Completed `/home` overview refinement for category metadata and first-entry household lenses
 
 - Who: Orchestrator + Fixer/Oracle subagents
