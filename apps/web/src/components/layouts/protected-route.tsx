@@ -20,7 +20,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     }
   }, [isAuthenticated, isSessionChecked, router])
 
-  if (true) {
+  if (!isSessionChecked) {
     return (
       <div className='flex min-h-dvh w-full items-center justify-center'>
         <Card className='w-full max-w-sm animate-pulse'>
