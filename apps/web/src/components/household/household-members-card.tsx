@@ -4,7 +4,7 @@ import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import { HouseholdInviteDialog } from '@/components/household/household-invite-dialog'
+import { DataState } from '@/components/shared/data-state'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
@@ -96,30 +95,11 @@ export const HouseholdMembersCard = ({
               {t('app.householdDetail.members.description')}
             </CardDescription>
           </div>
-          {isAdmin && <HouseholdInviteDialog householdId={householdId} />}
         </div>
       </CardHeader>
-      <CardContent>
-        {isLoading && !members.length && (
-          <div className='flex flex-col gap-3'>
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div
-                key={index}
-                className='flex items-center justify-between gap-3 rounded-lg border p-3'>
-                <div className='flex flex-1 flex-col gap-2'>
-                  <Skeleton className='h-4 w-28' />
-                  <Skeleton className='h-3 w-40' />
-                </div>
-                <Skeleton className='h-8 w-20 rounded-full' />
-              </div>
-            ))}
-          </div>
-        )}
-        {memberErrorMessage && !members.length && (
-          <div className='flex flex-wrap items-center justify-between gap-2'>
-            <p className='text-sm text-destructive' role='alert'>
-              {memberErrorMessage}
-            </p>
+      <CardContent className='flex flex-col gap-3'>
+        <DataState
+          action={
             <Button
               type='button'
               variant='outline'
@@ -128,9 +108,13 @@ export const HouseholdMembersCard = ({
               }>
               {t('app.households.actions.retry')}
             </Button>
-          </div>
-        )}
-        {members.length > 0 ? (
+          }
+          emptyDescription={t('app.householdDetail.members.empty')}
+          errorDescription={memberErrorMessage ?? undefined}
+          isEmpty={!isLoading && !error && !members.length}
+          isError={Boolean(memberErrorMessage && !members.length)}
+          isLoading={isLoading && !members.length}
+          title={t('app.householdDetail.members.title')}>
           <div className='flex flex-col gap-3'>
             {memberErrorMessage ? (
               <div className='flex flex-wrap items-center justify-between gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3'>
@@ -175,7 +159,7 @@ export const HouseholdMembersCard = ({
                           size='icon'
                           type='button'
                           variant='ghost'>
-                          <Trash2 className='h-4 w-4' />
+                          <Trash2 />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -212,12 +196,7 @@ export const HouseholdMembersCard = ({
               </div>
             ))}
           </div>
-        ) : null}
-        {!isLoading && !error && !members.length ? (
-          <div className='rounded-lg border px-3 py-4 text-center text-sm text-muted-foreground'>
-            {t('app.householdDetail.members.empty')}
-          </div>
-        ) : null}
+        </DataState>
       </CardContent>
     </Card>
   )

@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
+import type { ReactElement } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -31,6 +32,7 @@ import { t } from '@/lib/i18n/t'
 type HouseholdCreateDialogProps = {
   isOpen: boolean
   isSubmitting: boolean
+  trigger?: ReactElement | null
   onOpenChange: (open: boolean) => void
   onSubmit: (values: CreateHouseholdFormValues) => Promise<boolean>
 }
@@ -38,6 +40,7 @@ type HouseholdCreateDialogProps = {
 export const HouseholdCreateDialog = ({
   isOpen,
   isSubmitting,
+  trigger,
   onOpenChange,
   onSubmit,
 }: HouseholdCreateDialogProps) => {
@@ -50,12 +53,16 @@ export const HouseholdCreateDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button size='xl' type='button'>
-          <Plus data-icon='inline-start' />
-          {t('app.households.actions.create')}
-        </Button>
-      </DialogTrigger>
+      {trigger === null ? null : (
+        <DialogTrigger asChild>
+          {trigger ?? (
+            <Button size='xl' type='button'>
+              <Plus data-icon='inline-start' />
+              {t('app.households.actions.create')}
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent size='default'>
         <DialogHeader>
           <DialogTitle>{t('app.households.create.title')}</DialogTitle>

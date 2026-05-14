@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactElement } from 'react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -22,10 +23,16 @@ import type { InvitationRoleDTO, InvitationTtlHours } from '@/types/invitation'
 
 type HouseholdInviteDialogProps = {
   householdId: string
+  isOpen?: boolean
+  trigger?: ReactElement | null
+  onOpenChange?: (open: boolean) => void
 }
 
 export const HouseholdInviteDialog = ({
   householdId,
+  isOpen,
+  trigger,
+  onOpenChange,
 }: HouseholdInviteDialogProps) => {
   const [invitationRole, setInvitationRole] =
     useState<InvitationRoleDTO>('member')
@@ -74,18 +81,25 @@ export const HouseholdInviteDialog = ({
 
   return (
     <Dialog
-      open={isDialogOpen}
+      open={isOpen ?? isDialogOpen}
       onOpenChange={(open) => {
-        setIsDialogOpen(open)
+        onOpenChange?.(open)
+        if (isOpen === undefined) {
+          setIsDialogOpen(open)
+        }
         if (!open) {
           setInviteLink('')
         }
       }}>
-      <DialogTrigger asChild>
-        <Button type='button' variant='outline'>
-          {t('app.householdDetail.members.actions.invite')}
-        </Button>
-      </DialogTrigger>
+      {trigger === null ? null : (
+        <DialogTrigger asChild>
+          {trigger ?? (
+            <Button type='button' variant='outline'>
+              {t('app.householdDetail.members.actions.invite')}
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>

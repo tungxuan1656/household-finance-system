@@ -5,10 +5,9 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
-None.
-
 ## Completed
 
+- [2026-05-14-household-action-card-refactor.md](plans/2026-05-14-household-action-card-refactor.md) - feat-059 frontend-only household page/detail refactor completed: households now use PageShell/DataState with an always-last create card, and household detail admins now see an always-below-member-list invite card wired to the existing invite dialog.
 - [2026-05-14-profile-more-settings-refactor.md](plans/2026-05-14-profile-more-settings-refactor.md) - feat-057 frontend-only More/Profile Settings refactor completed: More now renders icon-and-arrow shortcut rows with package version footer; Profile Settings now renders avatar/profile-security/account-actions stacked cards with reusable confirmation dialog, no tabs, and no households section.
 - [2026-05-14-home-category-chart-refactor.md](plans/2026-05-14-home-category-chart-refactor.md) - frontend-only Home category statistics refactor completed: replaced progress-only rows with a Recharts donut chart, accessible summary, center total, and color-coded amount/%/count list while preserving existing analytics/reference-data contracts.
 - [2026-05-13-doc-clean-architecture-and-minimal-reading.md](plans/2026-05-13-doc-clean-architecture-and-minimal-reading.md) - feat-054 docs-only cleanup: root/task docs now use clean parent-to-child routing, minimal task-driven reading, caveman-style prose, fixed stale shadcn link, current frontend folder/component references, and harness evidence for doc architecture consistency.
