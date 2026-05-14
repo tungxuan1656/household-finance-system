@@ -1,14 +1,14 @@
 'use client'
 
-import { format } from 'date-fns'
-
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { formatExpenseAmount } from '@/lib/format-expense-amount'
 import type { TranslationKey } from '@/lib/i18n/i18n-init'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import type { ExpenseDTO, ExpenseVisibility } from '@/types/expense'
+import { formatCurrency } from '@/utils/currency/format'
+import { DATE_TIME_FORMATS } from '@/utils/datetime/constants'
+import { formatDate } from '@/utils/datetime/format'
 
 type ExpenseFeedItemProps = {
   expense: ExpenseDTO
@@ -28,10 +28,6 @@ const VISIBILITY_BADGE_VARIANTS: Record<
   household: 'secondary',
 }
 
-function formatDate(occurredAt: number): string {
-  return format(new Date(occurredAt), 'dd/MM/yyyy')
-}
-
 export function ExpenseFeedItem({ expense, onClick }: ExpenseFeedItemProps) {
   const handleClick = () => {
     onClick?.(expense.id)
@@ -46,7 +42,7 @@ export function ExpenseFeedItem({ expense, onClick }: ExpenseFeedItemProps) {
 
   return (
     <Card
-      className='cursor-pointer transition-colors transition-shadow hover:bg-accent/50 hover:shadow-sm active:scale-[0.98]'
+      className='cursor-pointer transition-colors hover:bg-accent/50 hover:shadow-sm active:scale-[0.98]'
       role='button'
       size='sm'
       tabIndex={0}
@@ -59,12 +55,12 @@ export function ExpenseFeedItem({ expense, onClick }: ExpenseFeedItemProps) {
           </span>
           <span className='truncate text-sm font-medium'>{expense.title}</span>
           <span className='text-xs text-muted-foreground'>
-            {formatDate(expense.occurredAt)}
+            {formatDate(expense.occurredAt, DATE_TIME_FORMATS.date)}
           </span>
         </div>
         <div className='flex flex-col items-end gap-1.5'>
           <span className='text-sm font-semibold tabular-nums'>
-            {formatExpenseAmount(expense.amountMinor, expense.currencyCode)}
+            {formatCurrency(expense.amountMinor, expense.currencyCode)}
           </span>
           <Badge variant={VISIBILITY_BADGE_VARIANTS[expense.visibility]}>
             {t(VISIBILITY_BADGE_LABELS[expense.visibility])}

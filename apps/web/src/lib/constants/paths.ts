@@ -21,3 +21,6 @@ export const PATHS = {
   SETTINGS: '/settings',
   MORE: '/more',
 } as const
+
+export const getHouseholdHref = (householdId: string) =>
+  `${PATHS.HOUSEHOLDS}/${householdId}`

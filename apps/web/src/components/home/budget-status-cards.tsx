@@ -5,7 +5,7 @@ import { AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatCurrency } from '@/views/app/overview/overview-formatters'
+import { formatCurrency } from '@/utils/currency/format'
 
 type BudgetInfo = {
   id: string
@@ -33,7 +33,7 @@ function BudgetStatusCards({
     return (
       <div className='flex gap-3 overflow-x-auto px-4 pb-2'>
         {[1, 2, 3].map((i) => (
-          <Card key={i} className='min-w-[180px] shrink-0'>
+          <Card key={i} className='min-w-45 shrink-0'>
             <CardHeader>
               <CardTitle>
                 <Skeleton className='h-4 w-24' />
@@ -84,7 +84,7 @@ function BudgetStatusCards({
       {sorted.map((budget) => (
         <Card
           key={budget.id}
-          className='max-w-[220px] min-w-[180px] shrink-0 snap-start md:shrink'>
+          className='max-w-55 min-w-45 shrink-0 snap-start md:shrink'>
           <CardHeader>
             <CardTitle className='flex items-center gap-1'>
               <span>{budget.name}</span>

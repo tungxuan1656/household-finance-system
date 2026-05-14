@@ -18,21 +18,11 @@ import { useBudgetListQuery } from '@/hooks/api/use-budgets'
 import { useHouseholdMembersQuery } from '@/hooks/api/use-households'
 import { t } from '@/lib/i18n/t'
 import type { HouseholdDTO } from '@/types/household'
-
-const getHouseholdRoleLabel = (role: HouseholdDTO['role']) => {
-  if (role === 'admin') {
-    return t('app.householdDetail.members.invite.fields.role.options.admin')
-  }
-
-  return t('app.householdDetail.members.invite.fields.role.options.member')
-}
-
-const getHouseholdVisibilityLabel = (
-  visibility: HouseholdDTO['defaultVisibility'],
-) =>
-  t(
-    `app.householdDetail.fields.defaultVisibility.options.${visibility}` as const,
-  )
+import { formatCurrency } from '@/utils/currency/format'
+import {
+  getHouseholdRoleLabel,
+  getHouseholdVisibilityLabel,
+} from '@/utils/household/labels'
 
 const getCurrentPeriod = () => {
   const now = new Date()
@@ -41,17 +31,6 @@ const getCurrentPeriod = () => {
 
   return `${year}-${month}`
 }
-
-const getLocale = () =>
-  typeof navigator !== 'undefined' && navigator.language
-    ? navigator.language
-    : 'vi-VN'
-
-const formatCurrency = (amountMinor: number, currencyCode: string) =>
-  new Intl.NumberFormat(getLocale(), {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amountMinor / 100)
 
 type HouseholdSummaryCardProps = {
   household: HouseholdDTO

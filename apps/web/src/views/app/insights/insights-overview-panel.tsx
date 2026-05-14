@@ -15,7 +15,6 @@ import type { AnalyticsOverviewDTO } from '@/types/analytics'
 type InsightsOverviewPanelProps = {
   data: AnalyticsOverviewDTO | null | undefined
   error: Error | null
-  formatCurrency: (amount: number, currencyCode: string) => string
   isLoading: boolean
   onRetry: () => void
 }
@@ -23,7 +22,6 @@ type InsightsOverviewPanelProps = {
 export function InsightsOverviewPanel({
   data,
   error,
-  formatCurrency,
   isLoading,
   onRetry,
 }: InsightsOverviewPanelProps) {
@@ -64,5 +62,5 @@ export function InsightsOverviewPanel({
     )
   }
 
-  return <InsightsSummaryCards data={data} formatCurrency={formatCurrency} />
+  return <InsightsSummaryCards data={data} />
 }

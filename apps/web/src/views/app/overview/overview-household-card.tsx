@@ -15,12 +15,10 @@ import { useHouseholdMembersQuery } from '@/hooks/api/use-households'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
 import type { HouseholdDTO } from '@/types/household'
+import { formatCurrency } from '@/utils/currency/format'
+import { getHouseholdRoleLabel } from '@/utils/household/labels'
 
-import {
-  formatCurrency,
-  getCurrentPeriod,
-  getRoleLabel,
-} from './overview-formatters'
+import { getCurrentPeriod } from './overview-formatters'
 import { OverviewQueryState } from './overview-query-state'
 
 type HouseholdOverviewCardProps = {
@@ -69,7 +67,9 @@ function HouseholdOverviewCard({ household }: HouseholdOverviewCardProps) {
             <CardTitle className='text-base wrap-break-word'>
               {household.name}
             </CardTitle>
-            <CardDescription>{getRoleLabel(household.role)}</CardDescription>
+            <CardDescription>
+              {getHouseholdRoleLabel(household.role)}
+            </CardDescription>
           </div>
           <Button asChild className='min-h-11 shrink-0' variant='outline'>
             <Link href={`${PATHS.HOUSEHOLDS}/${household.id}`}>

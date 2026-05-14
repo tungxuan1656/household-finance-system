@@ -4,15 +4,10 @@ vi.mock('@/lib/i18n/t', () => ({ t: (key: string) => key }))
 
 import {
   buildPeriodOptions,
-  formatCurrency,
   getDefaultPeriod,
 } from '@/views/app/insights/insights-period'
 
 describe('insights-period', () => {
-  it('formats currency values with locale formatting', () => {
-    expect(formatCurrency(59000, 'VND')).toMatch(/59[,.]000/)
-  })
-
   it('builds six descending month options from selected period', () => {
     expect(buildPeriodOptions('2026-05')).toEqual([
       { value: '2026-05', label: '2026-05' },

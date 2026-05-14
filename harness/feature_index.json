@@ -279,6 +279,11 @@
       "id": "feat-055",
       "name": "Quiet parallel init verification commands",
       "status": "done"
+    },
+    {
+      "id": "feat-056",
+      "name": "Shared frontend formatting utilities",
+      "status": "done"
     }
   ]
 }

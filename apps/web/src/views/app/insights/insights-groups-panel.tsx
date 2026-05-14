@@ -15,7 +15,6 @@ import type { AnalyticsGroupsDTO } from '@/types/analytics'
 type InsightsGroupsPanelProps = {
   data: AnalyticsGroupsDTO | null | undefined
   error: Error | null
-  formatCurrency: (amount: number, currencyCode: string) => string
   isLoading: boolean
   onRetry: () => void
 }
@@ -23,7 +22,6 @@ type InsightsGroupsPanelProps = {
 export function InsightsGroupsPanel({
   data,
   error,
-  formatCurrency,
   isLoading,
   onRetry,
 }: InsightsGroupsPanelProps) {
@@ -52,5 +50,5 @@ export function InsightsGroupsPanel({
     )
   }
 
-  return <InsightsGroupsSection data={data} formatCurrency={formatCurrency} />
+  return <InsightsGroupsSection data={data} />
 }

@@ -1,7 +1,5 @@
 'use client'
 
-import { format } from 'date-fns'
-import { vi } from 'date-fns/locale'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -20,6 +18,8 @@ import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
 import { useAuthStore } from '@/stores/auth.store'
 import type { InvitationPreviewResponse } from '@/types/invitation'
+import { DATE_TIME_FORMATS } from '@/utils/datetime/constants'
+import { formatDate } from '@/utils/datetime/format'
 
 const toRoleLabel = (role: 'admin' | 'member'): string =>
   role === 'admin'
@@ -157,7 +157,7 @@ export function AcceptInvitationPage({ token }: { token: string }) {
                 {t('app.invitationAccept.meta.expiresAt')}
               </dt>
               <dd className='font-medium'>
-                {format(preview.expiresAt, 'dd/MM/yyyy HH:mm', { locale: vi })}
+                {formatDate(preview.expiresAt, DATE_TIME_FORMATS.dateTime)}
               </dd>
             </div>
           </dl>

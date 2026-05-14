@@ -3,13 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { t } from '@/lib/i18n/t'
 import type { GroupSummaryDTO } from '@/types/group'
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(amount)
-}
+import { formatCurrency } from '@/utils/currency/format'
 
 type GroupSummaryCardProps = {
   summary: GroupSummaryDTO
@@ -41,7 +35,7 @@ export function GroupSummaryCard({ summary }: GroupSummaryCardProps) {
               {t('groups.summary.totalSpend')}
             </span>
             <span className='text-lg font-semibold'>
-              {formatCurrency(totalSpendMinor)}
+              {formatCurrency(totalSpendMinor, 'VND')}
             </span>
           </div>
           <div className='flex flex-col gap-1'>
@@ -57,7 +51,7 @@ export function GroupSummaryCard({ summary }: GroupSummaryCardProps) {
                   {t('groups.summary.budget')}
                 </span>
                 <span className='text-lg font-semibold'>
-                  {formatCurrency(group.eventBudgetMinor!)}
+                  {formatCurrency(group.eventBudgetMinor!, 'VND')}
                 </span>
               </div>
               <div className='flex flex-col gap-1'>
@@ -66,7 +60,7 @@ export function GroupSummaryCard({ summary }: GroupSummaryCardProps) {
                 </span>
                 <span
                   className={`text-lg font-semibold ${isOverBudget ? 'text-destructive' : ''}`}>
-                  {formatCurrency(budgetRemainingMinor ?? 0)}
+                  {formatCurrency(budgetRemainingMinor ?? 0, 'VND')}
                 </span>
               </div>
             </>
@@ -106,7 +100,7 @@ export function GroupSummaryCard({ summary }: GroupSummaryCardProps) {
                       {member.expenseCount} {t('groups.summary.expenses')}
                     </span>
                     <span className='text-sm font-semibold'>
-                      {formatCurrency(member.totalSpendMinor)}
+                      {formatCurrency(member.totalSpendMinor, 'VND')}
                     </span>
                   </div>
                 </div>

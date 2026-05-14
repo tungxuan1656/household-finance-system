@@ -12,16 +12,13 @@ import {
 } from '@/components/ui/card'
 import { t } from '@/lib/i18n/t'
 import type { AnalyticsComparisonDTO } from '@/types/analytics'
+import { formatCurrency } from '@/utils/currency/format'
 
 type InsightsComparisonSectionProps = {
   data: AnalyticsComparisonDTO
-  formatCurrency: (amount: number, currencyCode: string) => string
 }
 
-function InsightsComparisonSection({
-  data,
-  formatCurrency,
-}: InsightsComparisonSectionProps) {
+function InsightsComparisonSection({ data }: InsightsComparisonSectionProps) {
   const deltaPositive = data.totalDeltaSpendMinor <= 0
   const TrendIcon = deltaPositive ? TrendingUpIcon : TrendingDownIcon
 
@@ -40,7 +37,7 @@ function InsightsComparisonSection({
               <span className='text-sm text-muted-foreground'>
                 {data.currentPeriod.period}
               </span>
-              <span className='min-w-0 font-heading text-2xl tracking-tight break-words'>
+              <span className='min-w-0 font-heading text-2xl tracking-tight wrap-break-word'>
                 {formatCurrency(
                   data.currentPeriod.totalSpendMinor,
                   data.currencyCode,
@@ -62,7 +59,7 @@ function InsightsComparisonSection({
               <div className='text-sm text-muted-foreground'>
                 {t('insights.comparison.currentPeriod')}
               </div>
-              <div className='min-w-0 font-heading text-xl break-words'>
+              <div className='min-w-0 font-heading text-xl wrap-break-word'>
                 {formatCurrency(
                   data.currentPeriod.totalSpendMinor,
                   data.currencyCode,
@@ -73,7 +70,7 @@ function InsightsComparisonSection({
               <div className='text-sm text-muted-foreground'>
                 {t('insights.comparison.previousPeriod')}
               </div>
-              <div className='min-w-0 font-heading text-xl break-words'>
+              <div className='min-w-0 font-heading text-xl wrap-break-word'>
                 {formatCurrency(
                   data.previousPeriod.totalSpendMinor,
                   data.currencyCode,

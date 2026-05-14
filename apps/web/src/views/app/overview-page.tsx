@@ -11,18 +11,12 @@ import { useBudgetListQuery } from '@/hooks/api/use-budgets'
 import { useExpenseSummaryQuery } from '@/hooks/api/use-expense'
 import { householdActions } from '@/stores/household.store'
 import { useHouseholdStore } from '@/stores/household.store'
+import { getDaysRemaining } from '@/utils/datetime/format'
 import { OverviewCategoryStatisticsSection } from '@/views/app/overview/overview-category-statistics-section'
 import { getCurrentPeriod } from '@/views/app/overview/overview-formatters'
 import { OverviewRecentExpensesSection } from '@/views/app/overview/overview-recent-expenses-section'
 import type { Lens } from '@/views/app/overview/overview-tabs'
 import { OverviewTabs } from '@/views/app/overview/overview-tabs'
-
-function getDaysRemaining(): number {
-  const now = new Date()
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-
-  return lastDay.getDate() - now.getDate() + 1
-}
 
 function OverviewPage() {
   const households = useHouseholdStore.use.households()

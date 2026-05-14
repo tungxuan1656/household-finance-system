@@ -195,7 +195,7 @@ Displays project info and `components.json` configuration. Run this first to dis
 | `tailwind.css`       | `string`  | Global CSS path — this is where custom CSS variables go                                    |
 | `iconLibrary`        | `string`  | Icon library — determines icon import package (e.g. `lucide-react`, `@tabler/icons-react`) |
 | `aliases.components` | `string`  | Component import alias (e.g. `@/components`)                                               |
-| `aliases.utils`      | `string`  | Utils import alias (e.g. `@/lib/utils`)                                                    |
+| `aliases.utils`      | `string`  | Utils import alias (e.g. `@/utils`)                                                        |
 | `aliases.ui`         | `string`  | UI component alias (e.g. `@/components/ui`)                                                |
 | `aliases.lib`        | `string`  | Lib alias (e.g. `@/lib`)                                                                   |
 | `aliases.hooks`      | `string`  | Hooks alias (e.g. `@/hooks`)                                                               |

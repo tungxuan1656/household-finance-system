@@ -368,7 +368,7 @@ Evidence to attach during implementation:
 - shadcn CLI: `pnpm dlx shadcn@latest`, used only for info/docs/diff previews.
 - UI primitive dependencies already installed: `class-variance-authority`, `radix-ui`, `vaul`, `lucide-react`.
 - No new npm dependencies planned.
-- Internal import aliases from shadcn info: `@/components`, `@/components/ui`, `@/lib/utils`, `@/hooks`, `@/lib`.
+- Internal import aliases from shadcn info: `@/components`, `@/components/ui`, `@/utils`, `@/hooks`, `@/lib`.
 - Layer impact under `ARCHITECTURE.md`: UI-only. This change stays in `UI`; it does not affect `Types -> Config -> Repo -> Service -> Runtime` layers and does not bypass runtime/service contracts.
 
 ## Standards Enforcement

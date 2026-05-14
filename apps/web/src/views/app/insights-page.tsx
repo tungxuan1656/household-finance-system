@@ -16,7 +16,6 @@ import { InsightsHeader } from '@/views/app/insights/insights-header'
 import { InsightsOverviewPanel } from '@/views/app/insights/insights-overview-panel'
 import {
   buildPeriodOptions,
-  formatCurrency,
   getDefaultPeriod,
 } from '@/views/app/insights/insights-period'
 
@@ -110,7 +109,6 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
       <InsightsOverviewPanel
         data={data}
         error={error}
-        formatCurrency={formatCurrency}
         isLoading={isLoading}
         onRetry={() => void refetchOverview()}
       />
@@ -121,21 +119,15 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
           <InsightsComparisonPanel
             data={comparisonData}
             error={comparisonError}
-            formatCurrency={formatCurrency}
             isLoading={isComparisonLoading}
             onRetry={() => void refetchComparison()}
           />
 
-          <InsightsChartsSection
-            categoryMap={categoryMap}
-            data={data}
-            formatCurrency={formatCurrency}
-          />
+          <InsightsChartsSection categoryMap={categoryMap} data={data} />
 
           <InsightsGroupsPanel
             data={groupsData}
             error={groupsError}
-            formatCurrency={formatCurrency}
             isLoading={isGroupsLoading}
             onRetry={() => void refetchGroups()}
           />

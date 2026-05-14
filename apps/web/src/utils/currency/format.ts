@@ -11,15 +11,23 @@ const getCurrencyFractionDigits = (currencyCode: string): number => {
   }
 }
 
-export function formatExpenseAmount(
+export const toMajorUnits = (
   amountMinor: number,
   currencyCode: string,
-): string {
-  const decimals = getCurrencyFractionDigits(currencyCode)
-  const divisor = 10 ** decimals
+): number => {
+  const fractionDigits = getCurrencyFractionDigits(currencyCode)
+
+  return amountMinor / 10 ** fractionDigits
+}
+
+export const formatCurrency = (
+  amountMinor: number,
+  currencyCode: string,
+): string => {
+  const majorAmount = toMajorUnits(amountMinor, currencyCode)
 
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: currencyCode,
-  }).format(amountMinor / divisor)
+  }).format(majorAmount)
 }

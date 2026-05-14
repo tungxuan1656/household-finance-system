@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\"",
-    "typecheck": "next typegen && tsc --noEmit --project tsconfig.json"
+    "typecheck": "next typegen && tsc --noEmit --project tsconfig.json",
+    "twlint": "pnpm dlx tailwind-lint \"src/**/*.tsx\""
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",

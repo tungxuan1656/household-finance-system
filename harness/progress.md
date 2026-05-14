@@ -10,6 +10,33 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-14 — Aligned frontend docs with new utils folder
+
+- Who: Orchestrator + Explorer subagent
+- Summary: Refreshed frontend folder structure docs and shadcn guidance after shared utilities moved from `apps/web/src/lib/utils` to `apps/web/src/utils`. Updated the shadcn components alias to `@/utils` and corrected stale `@/lib/utils` examples.
+- Files changed: Frontend project folder reference, shadcn skill docs/config, historical shadcn ExecPlan alias note, feature evidence, and this progress log.
+- Verification: `python3 -m json.tool` passed for updated JSON files; `./init.sh` passed and printed `Done!`.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
+## 2026-05-14 — Added Tailwind lint autofix to init lint flow
+
+- Who: Orchestrator
+- Summary: Updated `init.sh` so the web lint job runs `pnpm --filter web lint --fix` followed by `pnpm --filter web twlint --fix`; this applies to both explicit `./init.sh lint` and the default full flow because both reuse the web lint job.
+- Files changed: Repository init verification script, init workflow feature evidence, and this progress log.
+- Verification: GitNexus upstream impact for `run_parallel_checks` could not resolve the Bash function in the index; `bash -n init.sh` passed; `./init.sh lint` passed and printed `OK`; `python3 -m json.tool harness/features/feat-055.json` passed; `./init.sh` passed and printed `Done!`.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
+## 2026-05-14 — Consolidated shared formatting utilities
+
+- Who: GitHub Copilot
+- Summary: Centralized currency, date/time, label, and download helpers into shared utilities; removed formatCurrency prop threading in Insights; and standardized formatter imports across Home, budgets, households, and groups.
+- Files changed: Shared formatter/label helper modules, updated Home/Insights/Budget/Household/Group components and views to import them, new unit tests, and harness feature records.
+- Verification: `pnpm --filter web exec vitest run src/lib/format-currency.test.ts src/lib/format-date-time.test.ts src/lib/household-labels.test.ts src/lib/group-status-label.test.ts src/lib/analytics-export.test.ts src/lib/is-editable-target.test.ts src/lib/constants/paths.test.ts src/views/app/overview/overview-formatters.test.ts src/views/app/insights/insights-period.test.ts` passed; GitNexus impact checks skipped (tool unavailable).
+- Blockers: none.
+- Next steps: Run `./init.sh` for full verification if needed.
+
 ## 2026-05-14 — Improved init verification script ergonomics
 
 - Who: Orchestrator

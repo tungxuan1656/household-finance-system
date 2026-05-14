@@ -11,19 +11,13 @@ import {
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
-import { cn } from '@/lib/utils'
 import type {
   BudgetStatusCategoryKey,
   BudgetStatusDTO,
   BudgetTotalStatus,
 } from '@/types/budget'
-
-function formatCurrency(amount: number, currencyCode: string): string {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amount)
-}
+import { cn } from '@/utils/cn'
+import { formatCurrency } from '@/utils/currency/format'
 
 type BudgetStatusCardProps = { status: BudgetStatusDTO }
 

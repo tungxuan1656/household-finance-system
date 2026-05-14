@@ -7,7 +7,7 @@ import { t } from '@/lib/i18n/t'
 import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
 import type { AnalyticsTopCategoryDTO } from '@/types/analytics'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
-import { formatCurrency } from '@/views/app/overview/overview-formatters'
+import { formatCurrency } from '@/utils/currency/format'
 
 type CategoryItem = AnalyticsTopCategoryDTO
 

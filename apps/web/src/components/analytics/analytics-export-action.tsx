@@ -6,6 +6,7 @@ import { Button, type buttonVariants } from '@/components/ui/button'
 import { exportAnalyticsCsv } from '@/hooks/api/use-analytics'
 import { t } from '@/lib/i18n/t'
 import type { AnalyticsExportParams } from '@/types/analytics'
+import { downloadBlob, getFallbackFilename } from '@/utils/export/download'
 
 type AnalyticsExportActionProps = {
   params: AnalyticsExportParams
@@ -13,18 +14,6 @@ type AnalyticsExportActionProps = {
   className?: string
   variant?: VariantProps<typeof buttonVariants>['variant']
 }
-
-const downloadBlob = (blob: Blob, filename: string) => {
-  const url = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename
-  anchor.click()
-  window.setTimeout(() => URL.revokeObjectURL(url), 0)
-}
-
-const getFallbackFilename = (params: AnalyticsExportParams): string =>
-  `analytics-${params.period}-${params.household_id ? 'household' : 'personal'}.csv`
 
 function AnalyticsExportAction({
   params,
