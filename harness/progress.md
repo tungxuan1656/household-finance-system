@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-14 — Added Tailwind lint autofix to init lint flow
+
+- Who: Orchestrator
+- Summary: Updated `init.sh` so the web lint job runs `pnpm --filter web lint --fix` followed by `pnpm --filter web twlint --fix`; this applies to both explicit `./init.sh lint` and the default full flow because both reuse the web lint job.
+- Files changed: Repository init verification script, init workflow feature evidence, and this progress log.
+- Verification: GitNexus upstream impact for `run_parallel_checks` could not resolve the Bash function in the index; `bash -n init.sh` passed; `./init.sh lint` passed and printed `OK`; `python3 -m json.tool harness/features/feat-055.json` passed; `./init.sh` passed and printed `Done!`.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
 ## 2026-05-14 — Consolidated shared formatting utilities
 
 - Who: GitHub Copilot

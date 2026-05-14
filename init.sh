@@ -12,7 +12,7 @@ No argument runs the full flow:
 
 Command behavior:
   install    pnpm install
-  lint       run web and worker lint --fix in parallel
+  lint       run web lint --fix + twlint --fix and worker lint --fix in parallel
   typecheck  run web and worker typecheck in parallel
   test       run web and worker tests in parallel
   build      run web build and worker dry-run deploy build in parallel
@@ -69,6 +69,11 @@ run_worker_build() {
   pnpm --filter worker exec wrangler deploy --dry-run --outdir "$out_dir"
 }
 
+run_web_lint() {
+  pnpm --filter web lint --fix
+  pnpm --filter web twlint --fix
+}
+
 start_background_job() {
   local label="$1"
   local log_file="$2"
@@ -122,7 +127,7 @@ run_parallel_checks() {
     completed+=("0")
 
     case "$label" in
-      "web lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web lint --fix ;;
+      "web lint") start_background_job "$label" "$log_file" "$status_file" run_web_lint ;;
       "worker lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker lint --fix ;;
       "web typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web typecheck ;;
       "worker typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker typecheck ;;

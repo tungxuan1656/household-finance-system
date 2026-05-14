@@ -7,6 +7,7 @@
     "Add init.sh command selection for install, lint, typecheck, test, build, and sync",
     "Keep no-argument init.sh as full verification: install, harness check, parallel lint/typecheck/test jobs, sync, Done output",
     "Run web and worker lint/typecheck/test jobs in the default full flow with quiet output by default",
+    "Run web Tailwind lint autofix as part of the web lint job for both lint and full flows",
     "Keep build out of the default full flow temporarily; run build only through the explicit build command",
     "Print only failing job output on errors; print OK for successful single-command runs",
     "Support --verbose to print captured execution logs"
@@ -20,6 +21,7 @@
       "Replaced sequential init.sh flow with command dispatcher",
       "Added quiet command runner for install, harness, and sync",
       "Added parallel job runner for web and worker verification tasks",
+      "Chained web Tailwind lint autofix after web lint autofix inside the web lint job",
       "Added worker build check through wrangler deploy dry-run output",
       "Added --verbose log printing and successful single-command OK output",
       "Temporarily removed build from the no-argument full flow while keeping ./init.sh build available"
@@ -29,8 +31,12 @@
   "evidence": {
     "verification": [
       "GitNexus upstream impact for init.sh returned LOW risk with 0 impacted symbols/processes",
+      "GitNexus upstream impact for run_parallel_checks could not resolve the Bash function in the index; blast radius unknown from GitNexus",
       "bash -n init.sh passed",
+      "Follow-up bash -n init.sh passed after adding web twlint to the web lint job",
       "./init.sh lint passed and printed OK",
+      "Follow-up ./init.sh lint passed and printed OK with web twlint --fix included",
+      "Follow-up ./init.sh full flow passed and printed Done! with web twlint --fix included in the web lint job",
       "./init.sh typecheck passed and printed OK",
       "./init.sh test passed and printed OK",
       "./init.sh build passed and printed OK after build became explicit-only",
