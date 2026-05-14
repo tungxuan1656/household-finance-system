@@ -40,7 +40,7 @@ const ActionRow = ({
   onClick,
 }: ActionRowProps) => (
   <Button
-    className='h-auto w-full justify-between gap-3 rounded-2xl bg-muted/50 p-4 text-left hover:bg-muted'
+    className='h-auto w-full justify-between gap-3 rounded-2xl bg-muted/50 p-4 text-left hover:bg-muted sm:h-auto sm:px-6'
     type='button'
     variant='ghost'
     onClick={onClick}>
