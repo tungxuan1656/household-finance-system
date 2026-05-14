@@ -30,6 +30,7 @@
         "signUpFailed": "Không thể tạo tài khoản ngay lúc này. Vui lòng thử lại."
       },
       "loadingDescription": "Đang kiểm tra hoặc khôi phục phiên đăng nhập trước khi mở khung đã xác thực.",
+      "loadingPage": "Đang tải trang",
       "loadingTitle": "Đang khôi phục phiên"
     },
     "signIn": {
