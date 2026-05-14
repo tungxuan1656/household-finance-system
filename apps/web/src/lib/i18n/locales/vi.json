@@ -571,7 +571,9 @@
           "retry": "Thử lại",
           "save": "Lưu thay đổi",
           "saving": "Đang lưu...",
-          "uploadingAvatar": "Đang tải ảnh..."
+          "uploadingAvatar": "Đang tải ảnh...",
+          "avatarUpdated": "Đã cập nhật ảnh đại diện.",
+          "displayNameUpdated": "Đã cập nhật tên hiển thị."
         },
         "crop": {
           "description": "Ảnh sẽ được cắt vuông ở trung tâm và nén trước khi tải lên.",

@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner'
+
 import { Button } from '@/components/ui/button'
 import { PageShell } from '@/components/ui/page-shell'
 import {
@@ -52,6 +54,7 @@ export const ProfileSettingsPage = () => {
           isBusy={isBusy}
           onAvatarUploaded={async (avatarUrl) => {
             await updateProfileMutation.mutateAsync({ avatarUrl })
+            toast.success(t('app.settings.profile.actions.avatarUpdated'))
           }}
         />
         <ProfileDetailsCard
@@ -60,6 +63,7 @@ export const ProfileSettingsPage = () => {
           isBusy={isBusy}
           onDisplayNameSubmit={async (displayName) => {
             await updateProfileMutation.mutateAsync({ displayName })
+            toast.success(t('app.settings.profile.actions.displayNameUpdated'))
           }}
         />
         <ProfilePasswordCard isBusy={isBusy} />
