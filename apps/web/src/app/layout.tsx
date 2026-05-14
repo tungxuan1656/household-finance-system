@@ -5,7 +5,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import type { ReactNode } from 'react'
 
 import { AppProviders } from '@/app/providers/app-providers'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 

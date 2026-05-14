@@ -10,9 +10,9 @@ import {
   useDeletedExpenseListQuery,
   useRestoreExpenseMutation,
 } from '@/hooks/api/use-expense'
-import { formatExpenseAmount } from '@/lib/format-expense-amount'
 import { t } from '@/lib/i18n/t'
 import { useHouseholdStore } from '@/stores/household.store'
+import { formatCurrency } from '@/utils/currency/format'
 
 function ExpenseTrashPage() {
   const currentHousehold = useHouseholdStore.use.currentHousehold()
@@ -77,7 +77,7 @@ function ExpenseTrashPage() {
             <div>
               <CardTitle>{expense.title}</CardTitle>
               <p className='text-sm text-muted-foreground'>
-                {formatExpenseAmount(expense.amountMinor, expense.currencyCode)}
+                {formatCurrency(expense.amountMinor, expense.currencyCode)}
               </p>
             </div>
             <Button

@@ -13,13 +13,7 @@ import {
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
 import type { BudgetDTO } from '@/types/budget'
-
-function formatCurrency(amount: number, currencyCode: string): string {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amount)
-}
+import { formatCurrency } from '@/utils/currency/format'
 
 type BudgetCardProps = {
   budget: BudgetDTO

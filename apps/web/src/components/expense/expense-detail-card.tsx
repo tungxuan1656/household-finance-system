@@ -1,25 +1,17 @@
 'use client'
 
-import { format } from 'date-fns'
-
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { formatExpenseAmount } from '@/lib/format-expense-amount'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel, getSourceLabel } from '@/lib/reference-data/labels'
 import type { ExpenseDTO } from '@/types/expense'
+import { formatCurrency } from '@/utils/currency/format'
+import { DATE_TIME_FORMATS } from '@/utils/datetime/constants'
+import { formatDate } from '@/utils/datetime/format'
 
 type ExpenseDetailCardProps = {
   expense: ExpenseDTO
-}
-
-function formatDate(timestamp: number): string {
-  return format(new Date(timestamp), 'dd/MM/yyyy')
-}
-
-function formatDateTime(timestamp: number): string {
-  return format(new Date(timestamp), 'dd/MM/yyyy HH:mm')
 }
 
 function DetailRow({
@@ -58,7 +50,7 @@ export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
           {/* Core financial data */}
           <div className='flex flex-col gap-2'>
             <DetailRow label={t('expense.detail.amount')}>
-              {formatExpenseAmount(expense.amountMinor, expense.currencyCode)}
+              {formatCurrency(expense.amountMinor, expense.currencyCode)}
             </DetailRow>
             <DetailRow label={t('expense.detail.category')}>
               {getCategoryLabel(expense.categoryKey)}
@@ -67,7 +59,7 @@ export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
               {getSourceLabel(expense.sourceKey)}
             </DetailRow>
             <DetailRow label={t('expense.detail.date')}>
-              {formatDate(expense.occurredAt)}
+              {formatDate(expense.occurredAt, DATE_TIME_FORMATS.date)}
             </DetailRow>
           </div>
 
@@ -104,10 +96,10 @@ export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
           {/* Timestamps */}
           <div className='flex flex-col gap-2'>
             <DetailRow label={t('expense.detail.createdAt')}>
-              {formatDateTime(expense.createdAt)}
+              {formatDate(expense.createdAt, DATE_TIME_FORMATS.dateTime)}
             </DetailRow>
             <DetailRow label={t('expense.detail.updatedAt')}>
-              {formatDateTime(expense.updatedAt)}
+              {formatDate(expense.updatedAt, DATE_TIME_FORMATS.dateTime)}
             </DetailRow>
           </div>
         </div>

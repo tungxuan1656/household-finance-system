@@ -9,16 +9,13 @@ import {
 } from '@/components/ui/card'
 import { t } from '@/lib/i18n/t'
 import type { AnalyticsOverviewDTO } from '@/types/analytics'
+import { formatCurrency } from '@/utils/currency/format'
 
 type InsightsSummaryCardsProps = {
   data: AnalyticsOverviewDTO
-  formatCurrency: (amount: number, currencyCode: string) => string
 }
 
-function InsightsSummaryCards({
-  data,
-  formatCurrency,
-}: InsightsSummaryCardsProps) {
+function InsightsSummaryCards({ data }: InsightsSummaryCardsProps) {
   return (
     <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
       <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
@@ -27,7 +24,7 @@ function InsightsSummaryCards({
           <CardDescription>{data.period}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='min-w-0 font-heading text-3xl tracking-tight break-words'>
+          <div className='min-w-0 font-heading text-3xl tracking-tight wrap-break-word'>
             {formatCurrency(data.totalSpendMinor, data.currencyCode)}
           </div>
         </CardContent>
@@ -40,7 +37,7 @@ function InsightsSummaryCards({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='min-w-0 font-heading text-3xl tracking-tight break-words'>
+          <div className='min-w-0 font-heading text-3xl tracking-tight wrap-break-word'>
             {data.expenseCount}
           </div>
         </CardContent>
@@ -53,7 +50,7 @@ function InsightsSummaryCards({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='min-w-0 font-heading text-3xl tracking-tight break-words'>
+          <div className='min-w-0 font-heading text-3xl tracking-tight wrap-break-word'>
             {formatCurrency(
               data.expenseCount > 0
                 ? Math.round(data.totalSpendMinor / data.expenseCount)

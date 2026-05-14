@@ -5,20 +5,9 @@ import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { t } from '@/lib/i18n/t'
+import { isEditableTarget } from '@/utils/dom/is-editable-target'
 
 import { QuickAddExpenseDialog } from './quick-add-expense-dialog'
-
-function isEditableTarget(target: EventTarget | null) {
-  if (!(target instanceof HTMLElement)) {
-    return false
-  }
-
-  if (target.isContentEditable) {
-    return true
-  }
-
-  return !!target.closest("input, textarea, select, [contenteditable='true']")
-}
 
 export function QuickAddExpenseTrigger() {
   const [open, setOpen] = useState(false)

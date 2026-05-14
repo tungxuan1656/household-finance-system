@@ -16,7 +16,8 @@ import { t } from '@/lib/i18n/t'
 import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
 import type { ExpenseDTO } from '@/types/expense'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
-import { formatCurrency } from '@/views/app/overview/overview-formatters'
+import { formatCurrency } from '@/utils/currency/format'
+import { formatRelativeDate } from '@/utils/datetime/format'
 
 type RecentExpensesProps = {
   expenses: ExpenseDTO[]
@@ -25,18 +26,6 @@ type RecentExpensesProps = {
   onRetry: () => void
   isEmpty: boolean
   referenceCategories?: ReferenceCategoryDTO[]
-}
-
-function formatRelativeDate(timestampSec: number): string {
-  const now = new Date()
-  const date = new Date(timestampSec * 1000)
-  const diffDays = Math.floor(
-    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-  )
-  if (diffDays === 0) return t('app.overview.recentExpenses.today')
-  if (diffDays === 1) return t('app.overview.recentExpenses.yesterday')
-
-  return date.toLocaleDateString('vi-VN', { month: 'short', day: 'numeric' })
 }
 
 function RecentExpenses({

@@ -21,12 +21,10 @@ import {
   useCurrentUserProfileQuery,
   useUpdateCurrentUserProfileMutation,
 } from '@/hooks/api/use-profile'
-import { PATHS } from '@/lib/constants/paths'
+import { getHouseholdHref, PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
-
-const getHouseholdHref = (householdId: string) =>
-  `${PATHS.HOUSEHOLDS}/${householdId}`
+import { getHouseholdRoleLabel } from '@/utils/household/labels'
 
 export const ProfileSettingsPage = () => {
   const profileQuery = useCurrentUserProfileQuery()
@@ -193,9 +191,7 @@ export const ProfileSettingsPage = () => {
               href={getHouseholdHref(household.id)}>
               <span className='min-w-0 flex-1 truncate'>{household.name}</span>
               <Badge aria-hidden='true' variant='secondary'>
-                {t(
-                  `app.householdDetail.members.invite.fields.role.options.${household.role}`,
-                )}
+                {getHouseholdRoleLabel(household.role)}
               </Badge>
             </Link>
           ))}

@@ -24,17 +24,16 @@ import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import type { AnalyticsOverviewDTO } from '@/types/analytics'
 import type { CategoryKey, ReferenceCategoryDTO } from '@/types/reference-data'
+import { formatCurrency } from '@/utils/currency/format'
 
 type InsightsChartsSectionProps = {
   data: AnalyticsOverviewDTO
   categoryMap: Map<string, ReferenceCategoryDTO>
-  formatCurrency: (amount: number, currencyCode: string) => string
 }
 
 function InsightsChartsSection({
   data,
   categoryMap,
-  formatCurrency,
 }: InsightsChartsSectionProps) {
   const dailySpendSummary = data.dailySpend.length
     ? t('insights.dailySpend.description') +
@@ -60,7 +59,7 @@ function InsightsChartsSection({
           <p className='sr-only'>{dailySpendSummary}</p>
           <div
             aria-label={t('insights.dailySpend.title')}
-            className='h-[288px] w-full'
+            className='h-72 w-full'
             role='img'>
             <ResponsiveContainer height='100%' width='100%'>
               <BarChart
@@ -121,7 +120,7 @@ function InsightsChartsSection({
           </p>
           <div
             aria-label={t('insights.topCategories.title')}
-            className='h-[224px] w-full'
+            className='h-56 w-full'
             role='img'>
             <ResponsiveContainer height='100%' width='100%'>
               <PieChart>
@@ -178,13 +177,13 @@ function InsightsChartsSection({
                     </span>
                   </div>
                   <div className='min-w-0 text-right text-sm text-muted-foreground'>
-                    <div className='break-words'>
+                    <div className='wrap-break-word'>
                       {formatCurrency(
                         category.totalSpendMinor,
                         data.currencyCode,
                       )}
                     </div>
-                    <div className='break-words'>
+                    <div className='wrap-break-word'>
                       {category.percentOfTotal}% · {category.expenseCount}
                     </div>
                   </div>

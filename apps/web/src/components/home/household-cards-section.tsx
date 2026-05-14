@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
-import { formatCurrency } from '@/views/app/overview/overview-formatters'
+import { formatCurrency } from '@/utils/currency/format'
 
 type HouseholdInfo = {
   id: string

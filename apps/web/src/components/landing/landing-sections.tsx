@@ -21,7 +21,7 @@ export function Navigation() {
         <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20'>
           <Wallet className='h-6 w-6 text-primary-foreground' />
         </div>
-        <span className='bg-gradient-to-r from-primary to-sky-400 bg-clip-text text-xl font-bold tracking-tight text-transparent'>
+        <span className='bg-linear-to-r from-primary to-sky-400 bg-clip-text text-xl font-bold tracking-tight text-transparent'>
           Household Finance
         </span>
       </div>

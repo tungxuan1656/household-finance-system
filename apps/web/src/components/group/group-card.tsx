@@ -1,6 +1,4 @@
 'use client'
-
-import { format } from 'date-fns'
 import { Archive, Edit, Eye } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -15,33 +13,10 @@ import {
 } from '@/components/ui/card'
 import { t } from '@/lib/i18n/t'
 import type { ExpenseGroupDTO } from '@/types/group'
-
-function statusLabel(status: string): string {
-  if (status === 'active') {
-    return t('groups.card.statusActive')
-  }
-
-  if (status === 'archived') {
-    return t('groups.card.statusArchived')
-  }
-
-  return status
-}
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(amount)
-}
-
-function formatDate(timestamp: number | null): string | null {
-  if (timestamp == null) {
-    return null
-  }
-
-  return format(new Date(timestamp), 'dd/MM/yyyy')
-}
+import { formatCurrency } from '@/utils/currency/format'
+import { DATE_TIME_FORMATS } from '@/utils/datetime/constants'
+import { formatDate } from '@/utils/datetime/format'
+import { statusLabel } from '@/utils/household/status-label'
 
 type GroupCardProps = {
   group: ExpenseGroupDTO
@@ -58,8 +33,8 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
   const isOverBudget =
     hasBudget && group.totalSpendMinor > group.eventBudgetMinor!
 
-  const startDateStr = formatDate(group.startDate)
-  const endDateStr = formatDate(group.endDate)
+  const startDateStr = formatDate(group.startDate, DATE_TIME_FORMATS.date)
+  const endDateStr = formatDate(group.endDate, DATE_TIME_FORMATS.date)
 
   return (
     <Card
@@ -91,11 +66,11 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
           <div className='flex items-center justify-between'>
             <span className='text-sm text-muted-foreground'>
               {t('groups.card.spentLabel')}:{' '}
-              {formatCurrency(group.totalSpendMinor)}
+              {formatCurrency(group.totalSpendMinor, 'VND')}
             </span>
             <span className='text-sm text-muted-foreground'>
               {t('groups.card.budgetLabel')}:{' '}
-              {formatCurrency(group.eventBudgetMinor!)}
+              {formatCurrency(group.eventBudgetMinor!, 'VND')}
             </span>
           </div>
         ) : (

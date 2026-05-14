@@ -9,16 +9,13 @@ import {
 } from '@/components/ui/card'
 import { t } from '@/lib/i18n/t'
 import type { AnalyticsGroupsDTO } from '@/types/analytics'
+import { formatCurrency } from '@/utils/currency/format'
 
 type InsightsGroupsSectionProps = {
   data: AnalyticsGroupsDTO
-  formatCurrency: (amount: number, currencyCode: string) => string
 }
 
-function InsightsGroupsSection({
-  data,
-  formatCurrency,
-}: InsightsGroupsSectionProps) {
+function InsightsGroupsSection({ data }: InsightsGroupsSectionProps) {
   return (
     <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
       <CardHeader>
@@ -37,7 +34,7 @@ function InsightsGroupsSection({
                 {t('insights.groups.overlapShareLabel')}
               </span>
             </div>
-            <span className='min-w-0 font-medium break-words'>
+            <span className='min-w-0 font-medium wrap-break-word'>
               {formatCurrency(group.totalSpendMinor, data.currencyCode)}
             </span>
           </div>

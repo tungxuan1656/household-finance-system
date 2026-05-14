@@ -1,0 +1,35 @@
+{
+  "id": "feat-056",
+  "name": "Shared frontend formatting utilities",
+  "status": "done",
+  "description": "Centralized repeated frontend formatting and label helpers into shared utilities so Home, Insights, budgets, households, and analytics can import standardized currency, date/time, label, and download helpers without prop threading.",
+  "dependencies": ["feat-032"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "apps/web/src/lib/format-currency.ts",
+      "description": "Global currency formatter and minor-unit conversion helper."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/lib/format-date-time.ts",
+      "description": "Shared date/time formatter helpers and relative-date formatting."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/lib/household-labels.ts",
+      "description": "Household role and visibility label helpers shared across views."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/analytics/insights-summary-cards.tsx",
+      "description": "Insights cards consume shared formatters directly without prop threading."
+    },
+    {
+      "type": "command",
+      "command": "pnpm --filter web exec vitest run src/lib/format-currency.test.ts src/lib/format-date-time.test.ts src/lib/household-labels.test.ts src/lib/group-status-label.test.ts src/lib/analytics-export.test.ts src/lib/is-editable-target.test.ts src/lib/constants/paths.test.ts src/views/app/overview/overview-formatters.test.ts src/views/app/insights/insights-period.test.ts",
+      "output": "pass",
+      "description": "Focused formatter and period unit tests."
+    }
+  ]
+}

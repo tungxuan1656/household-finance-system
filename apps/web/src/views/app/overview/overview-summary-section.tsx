@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
+import { formatCurrency } from '@/utils/currency/format'
 
-import { formatCurrency } from './overview-formatters'
 import { OverviewQueryState } from './overview-query-state'
 
 type OverviewSummarySectionProps = {

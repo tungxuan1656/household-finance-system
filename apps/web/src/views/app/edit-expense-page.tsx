@@ -14,16 +14,7 @@ import {
 } from '@/hooks/api/use-households'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
-
-function toMajorUnits(amountMinor: number, currencyCode: string): number {
-  const fractionDigits =
-    new Intl.NumberFormat('en', {
-      style: 'currency',
-      currency: currencyCode,
-    }).resolvedOptions().maximumFractionDigits ?? 0
-
-  return amountMinor / 10 ** fractionDigits
-}
+import { toMajorUnits } from '@/utils/currency/format'
 
 function EditExpensePage() {
   const params = useParams<{ id: string }>()

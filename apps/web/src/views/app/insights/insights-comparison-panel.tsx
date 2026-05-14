@@ -15,7 +15,6 @@ import type { AnalyticsComparisonDTO } from '@/types/analytics'
 type InsightsComparisonPanelProps = {
   data: AnalyticsComparisonDTO | null | undefined
   error: Error | null
-  formatCurrency: (amount: number, currencyCode: string) => string
   isLoading: boolean
   onRetry: () => void
 }
@@ -23,7 +22,6 @@ type InsightsComparisonPanelProps = {
 export function InsightsComparisonPanel({
   data,
   error,
-  formatCurrency,
   isLoading,
   onRetry,
 }: InsightsComparisonPanelProps) {
@@ -54,7 +52,5 @@ export function InsightsComparisonPanel({
     )
   }
 
-  return (
-    <InsightsComparisonSection data={data} formatCurrency={formatCurrency} />
-  )
+  return <InsightsComparisonSection data={data} />
 }

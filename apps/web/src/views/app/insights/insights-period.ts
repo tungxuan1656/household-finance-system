@@ -6,12 +6,6 @@ export const getDefaultPeriod = () => {
   return `${year}-${month}`
 }
 
-export const formatCurrency = (amount: number, currencyCode: string) =>
-  new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amount)
-
 export const buildPeriodOptions = (selectedPeriod: string) => {
   const [yearValue, monthValue] = selectedPeriod.split('-')
   const year = Number(yearValue)
