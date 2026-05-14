@@ -2,16 +2,16 @@
 
 import * as React from 'react'
 
-import { Button } from '@/components/ui/button'
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { t } from '@/lib/i18n/t'
 
 export type ConfirmDialogHandle = {
@@ -31,8 +31,8 @@ export type ConfirmDialogProps = {
   onCancel?: () => Promise<void> | void
   children?: React.ReactNode
 } & Omit<
-  React.ComponentProps<typeof DialogContent>,
-  'children' | 'onInteractOutside' | 'onEscapeKeyDown'
+  React.ComponentProps<typeof AlertDialogContent>,
+  'children' | 'onEscapeKeyDown'
 >
 
 export const ConfirmDialog = React.forwardRef<
@@ -78,6 +78,11 @@ export const ConfirmDialog = React.forwardRef<
       setIsOpen(false)
     }
 
+    const handleCancelClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault()
+      void handleCancel()
+    }
+
     const handleConfirm = async () => {
       if (isConfirmDisabled) {
         return
@@ -87,14 +92,25 @@ export const ConfirmDialog = React.forwardRef<
         setIsSubmitting(true)
         await onConfirm()
         setIsOpen(false)
+      } catch {
+        // Keep the alert open so callers can surface retryable errors nearby.
       } finally {
         setIsSubmitting(false)
       }
     }
 
+    const handleConfirmClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault()
+      void handleConfirm()
+    }
+
     const handleOpenChange = (nextOpen: boolean) => {
       if (isConfirmBusy && !nextOpen) {
         return
+      }
+
+      if (!nextOpen) {
+        void onCancel?.()
       }
 
       setIsOpen(nextOpen)
@@ -107,38 +123,34 @@ export const ConfirmDialog = React.forwardRef<
     }
 
     return (
-      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogContent
+      <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
+        <AlertDialogContent
           onEscapeKeyDown={preventDismissWhileBusy}
-          onInteractOutside={preventDismissWhileBusy}
           {...dialogContentProps}>
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{title}</AlertDialogTitle>
             {description ? (
-              <DialogDescription>{description}</DialogDescription>
+              <AlertDialogDescription>{description}</AlertDialogDescription>
             ) : null}
-          </DialogHeader>
+          </AlertDialogHeader>
           {children}
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                disabled={isConfirmBusy}
-                type='button'
-                variant='outline'
-                onClick={handleCancel}>
-                {cancelLabel}
-              </Button>
-            </DialogClose>
-            <Button
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={isConfirmBusy}
+              type='button'
+              onClick={handleCancelClick}>
+              {cancelLabel}
+            </AlertDialogCancel>
+            <AlertDialogAction
               disabled={isConfirmDisabled}
               type='button'
               variant={variant}
-              onClick={handleConfirm}>
+              onClick={handleConfirmClick}>
               {isConfirmBusy ? t('common.actions.processing') : confirmLabel}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     )
   },
 )

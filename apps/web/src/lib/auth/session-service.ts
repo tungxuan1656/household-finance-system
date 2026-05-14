@@ -1,5 +1,7 @@
 import { exchangeProviderToken, logoutSession } from '@/api/auth'
 import {
+  changeFirebasePassword,
+  deleteCurrentFirebaseUser,
   getFirebaseIdToken,
   getFirebaseProvider,
   signInWithFirebaseEmailPassword,
@@ -83,4 +85,27 @@ export const signOutCurrentSession = async () => {
 
     authActions.clearSession()
   }
+}
+
+export const changeCurrentUserPassword = async (input: {
+  currentPassword: string
+  newPassword: string
+}) => {
+  await changeFirebasePassword(input)
+}
+
+export const deleteCurrentUserAccount = async (input: {
+  currentPassword: string
+}) => {
+  await deleteCurrentFirebaseUser(input)
+
+  try {
+    if (useAuthStore.getState().isAuthenticated) {
+      await logoutSession()
+    }
+  } catch {
+    // Best effort only after Firebase account deletion succeeds.
+  }
+
+  authActions.clearSession()
 }

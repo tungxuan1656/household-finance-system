@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-14 — Added AlertDialog and Firebase account security flows
+
+- Who: Orchestrator + Oracle reviewer
+- Summary: Switched the shared confirmation component from Dialog to AlertDialog, fixed More shortcut text wrapping at narrow widths, wired Firebase current-password reauthentication for password change and Firebase sign-in account deletion, and restyled sign-out/delete as danger-zone action rows.
+- Files changed: Shared confirm dialog, Firebase auth/session services, More shortcut card, Profile Settings profile/security and account-action cards, Vietnamese i18n, focused source-contract/Firebase tests, ExecPlan evidence, feature evidence, and this progress log.
+- Verification: GitNexus impact checks returned `Not connected`; focused Vitest passed with 8 tests across 2 files; `./init.sh lint`, `./init.sh typecheck`, and `./init.sh test` passed; Playwright CLI mocked authenticated session confirmed More wrapping, password form, danger-zone rows, and AlertDialog confirmations; harness JSON validation passed; final full `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned `Not connected`.
+- Blockers: GitNexus MCP unavailable.
+- Next steps: Review diff and commit if desired.
+
 ## 2026-05-14 — Applied PageShell to settings pages
 
 - Who: Orchestrator

@@ -2,7 +2,7 @@
   "id": "feat-057",
   "name": "More and profile settings card refactor",
   "status": "done",
-  "description": "Refactored protected More and Profile Settings into mobile-first shadcn card compositions wrapped by the shared PageShell. More now uses an icon-and-arrow shortcut list with root package version footer. Profile Settings now shows avatar, readonly account details/profile security, and account actions cards with reusable confirmation dialogs and no household membership section.",
+  "description": "Refactored protected More and Profile Settings into mobile-first shadcn card compositions wrapped by the shared PageShell. More now uses wrapping icon-and-arrow shortcut rows with root package version footer. Profile Settings now shows avatar, readonly account details/profile security with Firebase password change, and danger-zone account action rows with AlertDialog confirmations and no household membership section.",
   "dependencies": ["feat-010", "feat-032", "feat-035", "feat-037"],
   "evidence": [
     {
@@ -13,12 +13,12 @@
     {
       "type": "file",
       "path": "apps/web/src/views/app/more/more-shortcuts-card.tsx",
-      "description": "Shortcut-list card with left icons, right arrows, separators, and no keyboard shortcut key pills."
+      "description": "Shortcut-list card with left icons, right arrows, separators, wrapping labels/descriptions for narrow widths, and no keyboard shortcut key pills."
     },
     {
       "type": "file",
       "path": "apps/web/src/views/app/profile-settings-page.tsx",
-      "description": "Profile Settings orchestrator renders loading, error, and success states inside PageShell, with avatar, profile details/security, and account actions cards without tabs or household membership data."
+      "description": "Profile Settings orchestrator renders loading, error, and success states inside PageShell, with avatar, profile details/security, and danger-zone account actions cards without tabs or household membership data."
     },
     {
       "type": "file",
@@ -28,13 +28,33 @@
     {
       "type": "file",
       "path": "apps/web/src/components/shared/confirm-dialog.tsx",
-      "description": "Reusable ref-based confirm dialog with async confirm handling, destructive button variant support, busy-state dismissal guard, and explicit button types."
+      "description": "Reusable ref-based confirm dialog built on shadcn AlertDialog with async confirm handling, destructive button variant support, busy-state dismissal guard, cancel cleanup, and explicit button types."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/lib/auth/firebase-auth.ts",
+      "description": "Firebase helpers reauthenticate the current email/password user before changing password or deleting the Firebase sign-in account."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/lib/auth/session-service.ts",
+      "description": "Session-service functions expose Firebase password change and delete the Firebase user before best-effort backend logout/local session cleanup."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/profile-settings/profile-details-card.tsx",
+      "description": "Profile details card includes an active password-change form using passwordChangeSchema, autocomplete hints, and Firebase session-service action."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/profile-settings/account-actions-card.tsx",
+      "description": "Account actions render danger-zone row buttons with icons, descriptions, arrows, AlertDialog confirmations, and password-gated Firebase account deletion."
     },
     {
       "type": "command",
-      "command": "pnpm --filter web exec vitest run src/views/app/profile-settings-source-contract.test.ts",
-      "output": "pass: 5 tests, 1 file",
-      "description": "Focused source-contract coverage for More shortcuts, Profile Settings composition, PageShell usage, confirmation dialogs, deferred password UI safety, and FRONTEND PageShell docs."
+      "command": "pnpm --filter web exec vitest run src/views/app/profile-settings-source-contract.test.ts src/lib/auth/firebase-auth.test.ts",
+      "output": "pass: 8 tests, 2 files",
+      "description": "Focused source-contract and Firebase auth tests cover More wrapping, PageShell usage, AlertDialog-based confirmation, danger-zone account rows, active password form, and Firebase reauth/update/delete helpers."
     },
     {
       "type": "command",
@@ -64,7 +84,7 @@
       "type": "manual",
       "command": "playwright-cli mocked browser session against http://localhost:3000/more and /settings",
       "output": "pass",
-      "description": "More showed four icon/arrow shortcut rows and version 0.1.0. Settings showed avatar, profile/security, and account actions cards with no households; sign-out and delete buttons opened confirmation dialogs."
+      "description": "More showed four wrapping icon/arrow shortcut rows and version 0.1.0. Settings showed avatar, account details/password form, and danger-zone cards with no households; sign-out and Firebase delete rows opened alert dialogs, and delete required a current password before enabling confirm."
     },
     {
       "type": "analysis",

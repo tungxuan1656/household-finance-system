@@ -30,8 +30,6 @@ export const ProfileDetailsCard = ({
   isBusy,
   onDisplayNameSubmit,
 }: Props) => {
-  const deferredPasswordCopy = t('app.settings.profile.security.deferred')
-
   return (
     <Card>
       <CardHeader>
@@ -58,13 +56,6 @@ export const ProfileDetailsCard = ({
           isSubmitting={isBusy}
           onSubmit={onDisplayNameSubmit}
         />
-
-        <Field>
-          <FieldLabel>{t('app.settings.profile.security.title')}</FieldLabel>
-          <FieldContent>
-            <FieldDescription>{deferredPasswordCopy}</FieldDescription>
-          </FieldContent>
-        </Field>
       </CardContent>
     </Card>
   )

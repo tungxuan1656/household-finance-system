@@ -26,6 +26,10 @@ describe('profile and more settings source contracts', () => {
 
     expect(cardSource).toContain('ArrowRight')
     expect(cardSource).toContain('LucideIcon')
+    expect(cardSource).toContain('whitespace-normal')
+    expect(cardSource).toContain('wrap-break-word')
+    expect(cardSource).toContain('shrink-0')
+    expect(cardSource).not.toContain('truncate')
     expect(cardSource).toContain('<Separator')
     expect(cardSource).not.toContain('⌘')
     expect(cardSource).not.toContain('shortcutKey')
@@ -45,6 +49,7 @@ describe('profile and more settings source contracts', () => {
     expect(source).not.toContain('<h1')
     expect(source).toContain('ProfileAvatarCard')
     expect(source).toContain('ProfileDetailsCard')
+    expect(source).toContain('ProfilePasswordCard')
     expect(source).toContain('AccountActionsCard')
     expect(source).not.toContain('@/components/ui/tabs')
     expect(source).not.toContain('Tabs')
@@ -65,34 +70,52 @@ describe('profile and more settings source contracts', () => {
     expect(dialogSource).toContain('close: () => void')
     expect(dialogSource).toContain("variant?: 'default' | 'destructive'")
     expect(dialogSource).toContain('useImperativeHandle')
-    expect(dialogSource).toContain('<Dialog')
-    expect(dialogSource).toContain('<DialogTitle')
-    expect(dialogSource).toContain('<DialogFooter')
+    expect(dialogSource).toContain('<AlertDialog')
+    expect(dialogSource).toContain('<AlertDialogTitle')
+    expect(dialogSource).toContain('<AlertDialogFooter')
+    expect(dialogSource).not.toContain('@/components/ui/dialog')
 
     expect(actionsSource).toContain('ConfirmDialog')
     expect(actionsSource).toContain('signOutCurrentSession')
+    expect(actionsSource).toContain('deleteCurrentUserAccount')
     expect(actionsSource).toContain('deleteAccountDialogReference')
+    expect(actionsSource).toContain('danger zone')
+    expect(actionsSource).toContain('ArrowRight')
     expect(actionsSource).toContain("variant='destructive'")
   })
 
-  it('keeps password API deferred without collecting secrets in the UI', () => {
+  it('wires password change to Firebase without editing email', () => {
     const schemaSource = readSource('lib/forms/profile.schema.ts')
+    const passwordCardSource = readSource(
+      'views/app/profile-settings/profile-password-card.tsx',
+    )
     const detailsSource = readSource(
       'views/app/profile-settings/profile-details-card.tsx',
     )
+    const pageSource = readSource('views/app/profile-settings-page.tsx')
 
     expect(schemaSource).toContain('passwordChangeSchema')
     expect(schemaSource).toContain('PasswordChangeFormValues')
-    expect(schemaSource).toContain('confirmPassword')
-    expect(schemaSource).toContain('refine')
+    expect(schemaSource).toContain('currentPassword')
+    expect(schemaSource).toContain('newPassword')
+    expect(schemaSource).not.toContain('confirmPassword')
+    expect(schemaSource).not.toContain('refine')
+
+    expect(passwordCardSource).toContain('passwordChangeSchema')
+    expect(passwordCardSource).toContain('currentPassword')
+    expect(passwordCardSource).toContain('newPassword')
+    expect(passwordCardSource).toContain('changeCurrentUserPassword')
+    expect(passwordCardSource).toContain('placeholder')
+    expect(passwordCardSource).toContain('autoComplete=')
 
     expect(detailsSource).not.toContain('passwordChangeSchema')
-    expect(detailsSource).not.toContain('currentPassword')
-    expect(detailsSource).not.toContain('newPassword')
     expect(detailsSource).not.toContain('confirmPassword')
-    expect(detailsSource).toContain('app.settings.profile.security.deferred')
-    expect(detailsSource).not.toContain('apiClient')
-    expect(detailsSource).not.toContain('useMutation')
+    expect(detailsSource).not.toContain('refine')
+
+    expect(pageSource).toContain('ProfilePasswordCard')
+
+    expect(passwordCardSource).not.toContain('apiClient')
+    expect(passwordCardSource).not.toContain('useMutation')
   })
 
   it('documents PageShell as the app page layout contract', () => {

@@ -516,17 +516,25 @@
     },
     "settings": {
       "accountActions": {
-        "title": "Hành động tài khoản",
-        "description": "Quản lý đăng xuất và các tác vụ tài khoản khác.",
+        "title": "Khu vực nguy hiểm",
+        "description": "Các thao tác nhạy cảm cần xác nhận trước khi tiếp tục.",
         "signOut": {
           "title": "Đăng xuất khỏi phiên hiện tại?",
           "description": "Bạn sẽ thoát khỏi phiên đăng nhập đang dùng trên thiết bị này.",
+          "rowDescription": "Xoá phiên đăng nhập trên thiết bị này.",
           "done": "Đã xoá phiên đăng nhập trên thiết bị này."
         },
         "delete": {
-          "title": "Xoá tài khoản?",
-          "description": "Chức năng này hiện chưa sẵn sàng.",
-          "deferred": "Tính năng xoá tài khoản sẽ mở sau."
+          "title": "Xoá tài khoản đăng nhập Firebase?",
+          "description": "Bạn cần nhập mật khẩu hiện tại để xoá tài khoản Firebase. Dữ liệu ứng dụng trên máy chủ có thể cần bước dọn dẹp riêng sau này.",
+          "rowTitle": "Xoá đăng nhập Firebase",
+          "rowDescription": "Xoá tài khoản đăng nhập Firebase.",
+          "passwordLabel": "Mật khẩu hiện tại",
+          "passwordDescription": "Firebase yêu cầu xác thực lại trước khi xoá tài khoản.",
+          "done": "Đã xoá tài khoản đăng nhập và xoá phiên trên thiết bị này.",
+          "errors": {
+            "failed": "Không thể xoá tài khoản đăng nhập. Vui lòng kiểm tra mật khẩu hiện tại và thử lại."
+          }
         }
       },
       "account": {
@@ -584,21 +592,28 @@
         "emailReadonly": "Email dùng để đăng nhập và chưa thể thay đổi trong phiên bản này.",
         "security": {
           "title": "Mật khẩu",
+          "description": "Nhập mật khẩu hiện tại để xác thực lại, sau đó đặt mật khẩu mới.",
           "actions": {
             "save": "Lưu mật khẩu",
             "saving": "Đang lưu..."
           },
-          "deferred": "Đổi mật khẩu sẽ được triển khai sau.",
+          "success": "Đã cập nhật mật khẩu.",
           "errors": {
             "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu mới.",
             "currentPasswordRequired": "Vui lòng nhập mật khẩu hiện tại.",
             "newPasswordTooShort": "Mật khẩu mới phải có ít nhất 8 ký tự.",
-            "passwordMismatch": "Mật khẩu xác nhận không khớp."
+            "passwordMismatch": "Mật khẩu xác nhận không khớp.",
+            "updateFailed": "Không thể cập nhật mật khẩu. Vui lòng kiểm tra mật khẩu hiện tại và thử lại."
           },
           "fields": {
-            "confirmPassword": { "label": "Xác nhận mật khẩu mới" },
-            "currentPassword": { "label": "Mật khẩu hiện tại" },
-            "newPassword": { "label": "Mật khẩu mới" }
+            "currentPassword": {
+              "label": "Mật khẩu hiện tại",
+              "placeholder": "Nhập mật khẩu hiện tại"
+            },
+            "newPassword": {
+              "label": "Mật khẩu mới",
+              "placeholder": "Nhập mật khẩu mới"
+            }
           }
         },
         "fields": {

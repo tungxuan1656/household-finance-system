@@ -10,6 +10,7 @@ import { t } from '@/lib/i18n/t'
 import { AccountActionsCard } from '@/views/app/profile-settings/account-actions-card'
 import { ProfileAvatarCard } from '@/views/app/profile-settings/profile-avatar-card'
 import { ProfileDetailsCard } from '@/views/app/profile-settings/profile-details-card'
+import { ProfilePasswordCard } from '@/views/app/profile-settings/profile-password-card'
 
 export const ProfileSettingsPage = () => {
   const profileQuery = useCurrentUserProfileQuery()
@@ -61,6 +62,7 @@ export const ProfileSettingsPage = () => {
             await updateProfileMutation.mutateAsync({ displayName })
           }}
         />
+        <ProfilePasswordCard isBusy={isBusy} />
         <AccountActionsCard />
       </div>
     </PageShell>
