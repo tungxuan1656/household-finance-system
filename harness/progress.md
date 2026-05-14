@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-05-14 — Aligned frontend docs with new utils folder
+
+- Who: Orchestrator + Explorer subagent
+- Summary: Refreshed frontend folder structure docs and shadcn guidance after shared utilities moved from `apps/web/src/lib/utils` to `apps/web/src/utils`. Updated the shadcn components alias to `@/utils` and corrected stale `@/lib/utils` examples.
+- Files changed: Frontend project folder reference, shadcn skill docs/config, historical shadcn ExecPlan alias note, feature evidence, and this progress log.
+- Verification: `python3 -m json.tool` passed for updated JSON files; `./init.sh` passed and printed `Done!`.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
 ## 2026-05-14 — Added Tailwind lint autofix to init lint flow
 
 - Who: Orchestrator

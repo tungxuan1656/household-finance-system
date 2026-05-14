@@ -21,11 +21,25 @@ apps/web/src/
     <feature>/            # feature-scoped smart/presentational components
 
   hooks/                  # reusable hooks
-  lib/                    # cross-feature pure/runtime helpers
+  lib/                    # runtime/domain helpers, not generic utils
+    auth/
     constants/
+    firebase/
     forms/
     i18n/
-    utils/
+    images/
+    media/
+    metrics/
+    reference-data/
+    storages/
+
+  utils/                  # shared pure utilities
+    cn.ts
+    currency/
+    datetime/
+    dom/
+    export/
+    household/
 
   stores/                 # Zustand stores, flat feature files
   types/                  # shared frontend/internal types
@@ -42,14 +56,16 @@ apps/web/src/
 - `api/<feature>`: HTTP calls and endpoint mapping only.
 - `hooks`: reusable hooks. Feature-only hooks may stay near feature when clearer.
 - `stores/<feature>.store.ts`: global client state, flat files.
-- `lib`: cross-feature helpers only. Not feature dumping ground.
+- `lib`: runtime/domain helper areas. Keep generic utilities out of `lib`.
+- `utils`: shared pure utilities: class-name merging, formatting, DOM helpers, download/export helpers, and labels.
 - `types`: shared frontend/internal types; API DTOs should come from contracts/client types when available.
 
 ## Import Rules
 
 - Prefer same-feature imports first.
-- Promote to `shared`/`lib` only after real reuse.
+- Promote reusable UI/controller code to `components/shared`; promote runtime/domain helpers to `lib`; promote generic pure helpers to `utils`.
 - Import shadcn primitives from `@/components/ui/*`.
+- Import `cn` from `@/utils/cn` and utility groups from `@/utils/<group>`.
 - Import public feature components from folder barrel only when folder exposes stable public surface.
 - Keep internal subcomponents module-private.
 
@@ -67,5 +83,6 @@ apps/web/src/
 - [ ] Page/view orchestrates, not everything.
 - [ ] Feature components live under `components/<feature>`.
 - [ ] Cross-feature code is proven before promotion.
-- [ ] `lib` stays generic.
+- [ ] `lib` stays runtime/domain-scoped.
+- [ ] Generic pure helpers live under `utils`, not `lib`.
 - [ ] Import alias `@/...` stays consistent.

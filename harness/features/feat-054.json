@@ -17,7 +17,8 @@
     "Make AGENTS.md the root router with task-driven minimal reading",
     "Normalize top-level docs into clean parent-to-child routers",
     "Move exact frontend/backend rules to canonical leaf reference docs",
-    "Fix stale shadcn design-doc links and current frontend folder/component references"
+    "Fix stale shadcn design-doc links and current frontend folder/component references",
+    "Keep frontend folder docs and shadcn aliases aligned after shared utilities moved from lib to utils"
   ],
   "components_affected": [
     "Documentation architecture",
@@ -33,7 +34,8 @@
       "Rewrote references, product specs, design docs, security, reliability, and product-sense indexes/docs in caveman-lite style",
       "Updated stale frontend folder and component structure references for Next.js App Router",
       "Refactored remaining frontend/backend leaf reference docs into concise caveman-lite rules",
-      "Replaced historical broken shadcn-first design-doc links with the active shadcn card composition guide"
+      "Replaced historical broken shadcn-first design-doc links with the active shadcn card composition guide",
+      "Updated frontend folder structure guidance and shadcn utility alias docs for apps/web/src/utils"
     ],
     "pending": []
   },
@@ -47,7 +49,8 @@
       "python3 -m json.tool validated harness/feature_index.json and harness/features/feat-054.json",
       "./init.sh passed: pnpm install, harness checks, linting, type checking, tests, GitNexus, Init Done",
       "gitnexus_detect_changes(scope: all) reported low risk, 29 changed files, 116 changed symbols, 0 affected processes",
-      "Leaf reference follow-up verification: pnpm lint:fix passed; JSON validation passed; ./init.sh passed; gitnexus_detect_changes(scope: all) reported low risk, 11 changed files, 69 changed symbols, 0 affected processes"
+      "Leaf reference follow-up verification: pnpm lint:fix passed; JSON validation passed; ./init.sh passed; gitnexus_detect_changes(scope: all) reported low risk, 11 changed files, 69 changed symbols, 0 affected processes",
+      "Frontend utils structure follow-up: updated project-folder docs, shadcn utility alias docs, historical shadcn ExecPlan alias note, and apps/web/components.json after utilities moved to apps/web/src/utils; JSON validation passed and ./init.sh passed"
     ]
   },
   "notes": "Docs-only cleanup. Goal is minimal sufficient reading: parent docs route, leaf docs hold exact rules, indexes stay maps, prose stays terse. Completed ExecPlans remain historical records but broken shadcn guide links were updated where found. Leaf references were also shortened after follow-up review."
