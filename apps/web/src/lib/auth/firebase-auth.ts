@@ -3,12 +3,15 @@ import {
   type Auth,
   browserLocalPersistence,
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   getAuth,
   getIdToken,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   setPersistence,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
   updateProfile,
   type User,
 } from 'firebase/auth'
@@ -135,6 +138,52 @@ export const signUpWithFirebaseEmailPassword = async (input: {
 
 export const signOutFirebaseSession = async () => {
   await signOut(await getFirebaseAuth())
+}
+
+const getCurrentEmailPasswordUser = async () => {
+  const user = await getFirebaseCurrentUser()
+
+  if (!user) {
+    throw new Error('No Firebase user is signed in.')
+  }
+
+  if (!user.email) {
+    throw new Error('Current Firebase user does not have an email address.')
+  }
+
+  return user
+}
+
+const reauthenticateFirebaseUser = async (
+  user: User,
+  currentPassword: string,
+) => {
+  if (!user.email) {
+    throw new Error('Current Firebase user does not have an email address.')
+  }
+
+  const credential = EmailAuthProvider.credential(user.email, currentPassword)
+
+  await reauthenticateWithCredential(user, credential)
+}
+
+export const changeFirebasePassword = async (input: {
+  currentPassword: string
+  newPassword: string
+}) => {
+  const user = await getCurrentEmailPasswordUser()
+
+  await reauthenticateFirebaseUser(user, input.currentPassword)
+  await updatePassword(user, input.newPassword)
+}
+
+export const deleteCurrentFirebaseUser = async (input: {
+  currentPassword: string
+}) => {
+  const user = await getCurrentEmailPasswordUser()
+
+  await reauthenticateFirebaseUser(user, input.currentPassword)
+  await user.delete()
 }
 
 export const getFirebaseIdToken = async (firebaseUser: User) =>

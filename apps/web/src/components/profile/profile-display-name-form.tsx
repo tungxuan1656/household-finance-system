@@ -71,7 +71,7 @@ export const ProfileDisplayNameForm = ({
         <FieldError>{form.formState.errors.root.message}</FieldError>
       ) : null}
 
-      <div className='flex gap-2'>
+      <div className='flex justify-end gap-2'>
         <Button disabled={isSubmitting} size='sm' type='submit'>
           {isSubmitting
             ? t('app.settings.profile.actions.saving')

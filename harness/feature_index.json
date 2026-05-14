@@ -284,6 +284,16 @@
       "id": "feat-056",
       "name": "Shared frontend formatting utilities",
       "status": "done"
+    },
+    {
+      "id": "feat-057",
+      "name": "More and profile settings card refactor",
+      "status": "done"
+    },
+    {
+      "id": "feat-058",
+      "name": "Redesigned loading session checker with premium skeletons",
+      "status": "done"
     }
   ]
 }

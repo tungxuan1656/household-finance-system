@@ -1,0 +1,17 @@
+{
+  "id": "feat-058",
+  "name": "Redesigned loading session checker with premium skeletons",
+  "description": "Upgraded the ProtectedRoute loading state from a simple div to a premium Card-based composition with Skeleton elements that mimic the app layout.",
+  "status": "done",
+  "evidence": {
+    "files": [
+      "apps/web/src/components/layouts/protected-route.tsx",
+      "apps/web/src/lib/i18n/locales/vi.json",
+      "apps/web/src/index.css"
+    ],
+    "verification": {
+      "commands": ["./init.sh lint", "./init.sh typecheck", "./init.sh"],
+      "results": "All verification commands passed (OK, OK, Done!). UI layout matches the wireframe image provided by the user."
+    }
+  }
+}

@@ -5,10 +5,12 @@
       "backToShell": "Quay lại khung ứng dụng",
       "backToSignIn": "Quay lại đăng nhập",
       "cancel": "Huỷ",
+      "confirm": "Xác nhận",
       "createAccount": "Tạo tài khoản",
       "delete": "Xoá",
       "edit": "Chỉnh sửa",
       "openOnboarding": "Mở hướng dẫn thiết lập",
+      "processing": "Đang xử lý...",
       "save": "Lưu thay đổi",
       "signIn": "Đăng nhập",
       "signOut": "Đăng xuất"
@@ -28,6 +30,7 @@
         "signUpFailed": "Không thể tạo tài khoản ngay lúc này. Vui lòng thử lại."
       },
       "loadingDescription": "Đang kiểm tra hoặc khôi phục phiên đăng nhập trước khi mở khung đã xác thực.",
+      "loadingPage": "Đang tải trang",
       "loadingTitle": "Đang khôi phục phiên"
     },
     "signIn": {
@@ -493,7 +496,6 @@
       "title": "Cài đặt gia đình"
     },
     "more": {
-      "description": "Các điều hướng mở rộng cho app.",
       "links": {
         "households": "Gia đình",
         "onboarding": "Thiết lập gia đình",
@@ -503,9 +505,38 @@
         "description": "Truy cập nhanh các trang không nằm trong tab chính.",
         "title": "Lối tắt"
       },
+      "shortcuts": {
+        "addExpenseDescription": "Thêm nhanh khoản chi mới.",
+        "householdsDescription": "Xem và quản lý gia đình.",
+        "onboardingDescription": "Hoàn tất thiết lập hoặc tham gia bằng lời mời.",
+        "settingsDescription": "Mở cài đặt tài khoản."
+      },
+      "version": "Phiên bản {{version}}",
       "title": "Thêm"
     },
     "settings": {
+      "accountActions": {
+        "title": "Khu vực nguy hiểm",
+        "description": "Các thao tác nhạy cảm cần xác nhận trước khi tiếp tục.",
+        "signOut": {
+          "title": "Đăng xuất khỏi phiên hiện tại?",
+          "description": "Bạn sẽ thoát khỏi phiên đăng nhập đang dùng trên thiết bị này.",
+          "rowDescription": "Xoá phiên đăng nhập trên thiết bị này.",
+          "done": "Đã xoá phiên đăng nhập trên thiết bị này."
+        },
+        "delete": {
+          "title": "Xoá tài khoản đăng nhập Firebase?",
+          "description": "Bạn cần nhập mật khẩu hiện tại để xoá tài khoản Firebase. Dữ liệu ứng dụng trên máy chủ có thể cần bước dọn dẹp riêng sau này.",
+          "rowTitle": "Xoá đăng nhập Firebase",
+          "rowDescription": "Xoá tài khoản đăng nhập Firebase.",
+          "passwordLabel": "Mật khẩu hiện tại",
+          "passwordDescription": "Firebase yêu cầu xác thực lại trước khi xoá tài khoản.",
+          "done": "Đã xoá tài khoản đăng nhập và xoá phiên trên thiết bị này.",
+          "errors": {
+            "failed": "Không thể xoá tài khoản đăng nhập. Vui lòng kiểm tra mật khẩu hiện tại và thử lại."
+          }
+        }
+      },
       "account": {
         "title": "Tài khoản",
         "description": "Xem nhanh thông tin tài khoản hiện có của bạn.",
@@ -540,7 +571,9 @@
           "retry": "Thử lại",
           "save": "Lưu thay đổi",
           "saving": "Đang lưu...",
-          "uploadingAvatar": "Đang tải ảnh..."
+          "uploadingAvatar": "Đang tải ảnh...",
+          "avatarUpdated": "Đã cập nhật ảnh đại diện.",
+          "displayNameUpdated": "Đã cập nhật tên hiển thị."
         },
         "crop": {
           "description": "Ảnh sẽ được cắt vuông ở trung tâm và nén trước khi tải lên.",
@@ -555,6 +588,35 @@
           "displayNameTooLong": "Tên hiển thị không được vượt quá 100 ký tự.",
           "loadFailed": "Không thể tải dữ liệu hồ sơ. Vui lòng thử lại.",
           "saveFailed": "Không thể lưu hồ sơ lúc này. Vui lòng thử lại."
+        },
+        "accountDetailsTitle": "Thông tin tài khoản",
+        "accountDetailsDescription": "Tên hiển thị, email và đổi mật khẩu.",
+        "emailReadonly": "Email dùng để đăng nhập và chưa thể thay đổi trong phiên bản này.",
+        "security": {
+          "title": "Mật khẩu",
+          "description": "Nhập mật khẩu hiện tại để xác thực lại, sau đó đặt mật khẩu mới.",
+          "actions": {
+            "save": "Lưu mật khẩu",
+            "saving": "Đang lưu..."
+          },
+          "success": "Đã cập nhật mật khẩu.",
+          "errors": {
+            "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu mới.",
+            "currentPasswordRequired": "Vui lòng nhập mật khẩu hiện tại.",
+            "newPasswordTooShort": "Mật khẩu mới phải có ít nhất 8 ký tự.",
+            "passwordMismatch": "Mật khẩu xác nhận không khớp.",
+            "updateFailed": "Không thể cập nhật mật khẩu. Vui lòng kiểm tra mật khẩu hiện tại và thử lại."
+          },
+          "fields": {
+            "currentPassword": {
+              "label": "Mật khẩu hiện tại",
+              "placeholder": "Nhập mật khẩu hiện tại"
+            },
+            "newPassword": {
+              "label": "Mật khẩu mới",
+              "placeholder": "Nhập mật khẩu mới"
+            }
+          }
         },
         "fields": {
           "displayName": {

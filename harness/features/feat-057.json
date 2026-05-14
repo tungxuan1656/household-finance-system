@@ -1,0 +1,96 @@
+{
+  "id": "feat-057",
+  "name": "More and profile settings card refactor",
+  "status": "done",
+  "description": "Refactored protected More and Profile Settings into mobile-first shadcn card compositions wrapped by the shared PageShell. More now uses wrapping icon-and-arrow shortcut rows with root package version footer. Profile Settings now shows avatar, readonly account details/profile security with Firebase password change, and danger-zone account action rows with AlertDialog confirmations and no household membership section.",
+  "dependencies": ["feat-010", "feat-032", "feat-035", "feat-037"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/more-page.tsx",
+      "description": "More page uses PageShell for the route title/header, imports the root package version, and renders the shortcut card plus version footer."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/more/more-shortcuts-card.tsx",
+      "description": "Shortcut-list card with left icons, right arrows, separators, wrapping labels/descriptions for narrow widths, and no keyboard shortcut key pills."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/profile-settings-page.tsx",
+      "description": "Profile Settings orchestrator renders loading, error, and success states inside PageShell, with avatar, profile details/security, and danger-zone account actions cards without tabs or household membership data."
+    },
+    {
+      "type": "file",
+      "path": "docs/FRONTEND.md",
+      "description": "Frontend guide documents PageShell as the route-level app page layout contract and routes shell details to the responsive navigation shell reference."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/shared/confirm-dialog.tsx",
+      "description": "Reusable ref-based confirm dialog built on shadcn AlertDialog with async confirm handling, destructive button variant support, busy-state dismissal guard, cancel cleanup, and explicit button types."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/lib/auth/firebase-auth.ts",
+      "description": "Firebase helpers reauthenticate the current email/password user before changing password or deleting the Firebase sign-in account."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/lib/auth/session-service.ts",
+      "description": "Session-service functions expose Firebase password change and delete the Firebase user before best-effort backend logout/local session cleanup."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/profile-settings/profile-details-card.tsx",
+      "description": "Profile details card includes an active password-change form using passwordChangeSchema, autocomplete hints, and Firebase session-service action."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/profile-settings/account-actions-card.tsx",
+      "description": "Account actions render danger-zone row buttons with icons, descriptions, arrows, AlertDialog confirmations, and password-gated Firebase account deletion."
+    },
+    {
+      "type": "command",
+      "command": "pnpm --filter web exec vitest run src/views/app/profile-settings-source-contract.test.ts src/lib/auth/firebase-auth.test.ts",
+      "output": "pass: 8 tests, 2 files",
+      "description": "Focused source-contract and Firebase auth tests cover More wrapping, PageShell usage, AlertDialog-based confirmation, danger-zone account rows, active password form, and Firebase reauth/update/delete helpers."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh lint",
+      "output": "OK",
+      "description": "Repository lint verification passed after implementation and review fixes."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh typecheck",
+      "output": "OK",
+      "description": "Repository typecheck verification passed after implementation and review fixes."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh test",
+      "output": "OK",
+      "description": "Full repository test target passed."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh",
+      "output": "Done!",
+      "description": "Final full verification passed, including install, harness, lint, typecheck, test, and GitNexus sync steps."
+    },
+    {
+      "type": "manual",
+      "command": "playwright-cli mocked browser session against http://localhost:3000/more and /settings",
+      "output": "pass",
+      "description": "More showed four wrapping icon/arrow shortcut rows and version 0.1.0. Settings showed avatar, account details/password form, and danger-zone cards with no households; sign-out and Firebase delete rows opened alert dialogs, and delete required a current password before enabling confirm."
+    },
+    {
+      "type": "analysis",
+      "command": "gitnexus_impact and gitnexus_detect_changes(scope: all)",
+      "output": "unavailable: MCP connection closed / Not connected after ./init.sh sync and final ./init.sh",
+      "description": "Required GitNexus impact/change checks were attempted but the MCP connection remained unavailable after sync."
+    }
+  ]
+}

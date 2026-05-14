@@ -5,9 +5,11 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+None.
 
 ## Completed
 
+- [2026-05-14-profile-more-settings-refactor.md](plans/2026-05-14-profile-more-settings-refactor.md) - feat-057 frontend-only More/Profile Settings refactor completed: More now renders icon-and-arrow shortcut rows with package version footer; Profile Settings now renders avatar/profile-security/account-actions stacked cards with reusable confirmation dialog, no tabs, and no households section.
 - [2026-05-14-home-category-chart-refactor.md](plans/2026-05-14-home-category-chart-refactor.md) - frontend-only Home category statistics refactor completed: replaced progress-only rows with a Recharts donut chart, accessible summary, center total, and color-coded amount/%/count list while preserving existing analytics/reference-data contracts.
 - [2026-05-13-doc-clean-architecture-and-minimal-reading.md](plans/2026-05-13-doc-clean-architecture-and-minimal-reading.md) - feat-054 docs-only cleanup: root/task docs now use clean parent-to-child routing, minimal task-driven reading, caveman-style prose, fixed stale shadcn link, current frontend folder/component references, and harness evidence for doc architecture consistency.
 - [2026-05-13-responsive-shadcn-component-variants.md](plans/2026-05-13-responsive-shadcn-component-variants.md) - feat-052 frontend-only responsive shadcn primitive pass completed: project-owned UI components now use mobile-first 44px/16px controls with compact `sm:` desktop sizing, primitive-owned padding/touch targets, `Button size='xl'` and `DialogContent size` compatibility, semantic `Progress tone`, and removal of stale `surface` consumer props without restoring custom design-system docs.
