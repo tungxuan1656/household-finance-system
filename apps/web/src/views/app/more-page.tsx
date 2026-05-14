@@ -11,13 +11,9 @@ const { version } = rootPackage
 function MorePage() {
   return (
     <PageShell title={t('app.more.title')}>
-      <div className='flex flex-col gap-4'>
-        <p className='text-sm text-muted-foreground'>
-          {t('app.more.description')}
-        </p>
-
+      <div className='flex flex-col'>
         <MoreShortcutsCard />
-        <p className='text-center text-sm text-muted-foreground'>
+        <p className='mt-4 text-center text-sm text-muted-foreground'>
           {t('app.more.version', { version })}
         </p>
       </div>

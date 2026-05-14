@@ -66,16 +66,16 @@ export const MoreShortcutsCard = () => {
           {t('app.more.quickLinks.description')}
         </CardDescription>
       </CardHeader>
-      <CardContent className='flex flex-col gap-3'>
+      <CardContent className='flex flex-col'>
         {rows.map(({ href, label, description, Icon }, index) => (
           <div key={href}>
-            {index > 0 ? <Separator className='my-1' /> : null}
+            {index > 0 ? <Separator className='my-1.5' /> : null}
             <Link
-              className='flex min-h-11 items-start gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none'
+              className='flex min-h-11 items-center gap-3 rounded-lg px-1 py-2 transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none'
               href={href}>
               <Icon
                 aria-hidden='true'
-                className='mt-0.5 size-4 shrink-0 text-muted-foreground'
+                className='size-4 shrink-0 text-muted-foreground'
               />
               <span className='flex min-w-0 flex-1 flex-col'>
                 <span className='font-medium wrap-break-word whitespace-normal'>
