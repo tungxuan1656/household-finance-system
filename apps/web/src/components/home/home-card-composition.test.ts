@@ -84,4 +84,22 @@ describe('home card composition source contracts', () => {
     expect(source).not.toContain('useExpenseGroupListQuery')
     expect(source).not.toContain('useReferenceCategoriesQuery')
   })
+
+  it('renders Home category statistics as a Recharts donut with a value list', () => {
+    const source = readSource('components/home/category-breakdown.tsx')
+
+    expect(source).toContain("from 'recharts'")
+    expect(source).toContain('ResponsiveContainer')
+    expect(source).toContain('<PieChart')
+    expect(source).toContain('<Pie')
+    expect(source).toContain('<Cell')
+    expect(source).toContain('<Tooltip')
+    expect(source).toContain("role='img'")
+    expect(source).toContain('aria-describedby')
+    expect(source).toContain('formatCurrency')
+    expect(source).toContain('percentOfTotal')
+    expect(source).toContain('expenseCount')
+    expect(source).not.toContain('@/components/ui/progress')
+    expect(source).not.toContain('<Progress')
+  })
 })
