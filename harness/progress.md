@@ -9,6 +9,17 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+12: 
+13: ## 2026-05-14 — Redesigned loading session checker with premium skeletons
+14: 
+15: - Who: Orchestrator + User
+16: - Summary: Replaced the basic loading div in `ProtectedRoute` with a premium `Card` composition featuring `Skeleton` elements that mimic the wireframe. Added a localized "loading page" label and fixed a high-frequency flickering issue in `prefers-reduced-motion` by removing the stale duration override.
+17: - Files changed: Protected route layout, Vietnamese i18n, global CSS, feature evidence, and this progress log.
+18: - Verification: `./init.sh lint`, `./init.sh typecheck`, and full `./init.sh` passed; manual visual verification via browser confirmed layout matches user-provided image.
+19: - Blockers: none.
+20: - Next steps: Create PR.
+21: 
+22: <!-- End log -->
 
 ## 2026-05-14 — Added AlertDialog and Firebase account security flows
 
