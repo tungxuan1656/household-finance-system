@@ -21,6 +21,15 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 - Prefer DTO passthrough. Map only for real derived value or shape change.
 - Split near 200 lines or when 3+ concerns mix.
 
+## Page Shell Pattern
+
+- `route-level app pages` use `PageShell` from `@/components/ui/page-shell`.
+- `PageShell` owns page title/header and standard content padding.
+- Do not duplicate page `<header>`/`<h1>` or outer `px-*` padding inside app pages.
+- Put page body content directly inside `PageShell`; add an inner `flex flex-col gap-*` wrapper only for vertical rhythm.
+- Loading, empty, error, and success states should all render inside the same `PageShell` when they belong to the same route.
+- For shell/nav details, read `docs/references/frontend/responsive-navigation-shell-pattern.md`.
+
 ## shadcn Rules
 
 - Use shadcn primitives directly.

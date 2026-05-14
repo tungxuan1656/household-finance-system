@@ -5,10 +5,12 @@
       "backToShell": "Quay lại khung ứng dụng",
       "backToSignIn": "Quay lại đăng nhập",
       "cancel": "Huỷ",
+      "confirm": "Xác nhận",
       "createAccount": "Tạo tài khoản",
       "delete": "Xoá",
       "edit": "Chỉnh sửa",
       "openOnboarding": "Mở hướng dẫn thiết lập",
+      "processing": "Đang xử lý...",
       "save": "Lưu thay đổi",
       "signIn": "Đăng nhập",
       "signOut": "Đăng xuất"
@@ -503,9 +505,30 @@
         "description": "Truy cập nhanh các trang không nằm trong tab chính.",
         "title": "Lối tắt"
       },
+      "shortcuts": {
+        "addExpenseDescription": "Thêm nhanh khoản chi mới.",
+        "householdsDescription": "Xem và quản lý gia đình.",
+        "onboardingDescription": "Hoàn tất thiết lập hoặc tham gia bằng lời mời.",
+        "settingsDescription": "Mở cài đặt tài khoản."
+      },
+      "version": "Phiên bản {{version}}",
       "title": "Thêm"
     },
     "settings": {
+      "accountActions": {
+        "title": "Hành động tài khoản",
+        "description": "Quản lý đăng xuất và các tác vụ tài khoản khác.",
+        "signOut": {
+          "title": "Đăng xuất khỏi phiên hiện tại?",
+          "description": "Bạn sẽ thoát khỏi phiên đăng nhập đang dùng trên thiết bị này.",
+          "done": "Đã xoá phiên đăng nhập trên thiết bị này."
+        },
+        "delete": {
+          "title": "Xoá tài khoản?",
+          "description": "Chức năng này hiện chưa sẵn sàng.",
+          "deferred": "Tính năng xoá tài khoản sẽ mở sau."
+        }
+      },
       "account": {
         "title": "Tài khoản",
         "description": "Xem nhanh thông tin tài khoản hiện có của bạn.",
@@ -555,6 +578,28 @@
           "displayNameTooLong": "Tên hiển thị không được vượt quá 100 ký tự.",
           "loadFailed": "Không thể tải dữ liệu hồ sơ. Vui lòng thử lại.",
           "saveFailed": "Không thể lưu hồ sơ lúc này. Vui lòng thử lại."
+        },
+        "accountDetailsTitle": "Thông tin tài khoản",
+        "accountDetailsDescription": "Tên hiển thị, email và đổi mật khẩu.",
+        "emailReadonly": "Email dùng để đăng nhập và chưa thể thay đổi trong phiên bản này.",
+        "security": {
+          "title": "Mật khẩu",
+          "actions": {
+            "save": "Lưu mật khẩu",
+            "saving": "Đang lưu..."
+          },
+          "deferred": "Đổi mật khẩu sẽ được triển khai sau.",
+          "errors": {
+            "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu mới.",
+            "currentPasswordRequired": "Vui lòng nhập mật khẩu hiện tại.",
+            "newPasswordTooShort": "Mật khẩu mới phải có ít nhất 8 ký tự.",
+            "passwordMismatch": "Mật khẩu xác nhận không khớp."
+          },
+          "fields": {
+            "confirmPassword": { "label": "Xác nhận mật khẩu mới" },
+            "currentPassword": { "label": "Mật khẩu hiện tại" },
+            "newPassword": { "label": "Mật khẩu mới" }
+          }
         },
         "fields": {
           "displayName": {
