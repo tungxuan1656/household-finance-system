@@ -129,7 +129,7 @@ export const ConfirmDialog = React.forwardRef<
 
     return (
       <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
-        <AlertDialogTrigger className={triggerClassName}>
+        <AlertDialogTrigger asChild className={triggerClassName}>
           {trigger}
         </AlertDialogTrigger>
         <AlertDialogContent

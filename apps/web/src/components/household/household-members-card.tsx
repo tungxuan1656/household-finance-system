@@ -16,15 +16,18 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemMedia,
+  ItemTitle,
+} from '@/components/ui/item'
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 import type { HouseholdRoleDTO } from '@/types/household'
+
+import { NativeSelect, NativeSelectOption } from '../ui/native-select'
 
 type HouseholdMembersCardProps = {
   householdId: string
@@ -76,6 +79,24 @@ export const HouseholdMembersCard = ({
     }
   }
 
+  const handleMemberRoleChange = async (
+    userId: string,
+    role: HouseholdRoleDTO,
+  ) => {
+    try {
+      await householdActions.updateHouseholdMemberRole(
+        householdId,
+        userId,
+        role,
+      )
+
+      setMemberErrorMessage(null)
+    } catch {
+      setMemberErrorMessage(t('app.householdDetail.feedback.updateFailed'))
+      toast.error(t('app.householdDetail.feedback.updateFailed'))
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -123,11 +144,9 @@ export const HouseholdMembersCard = ({
               </div>
             ) : null}
             {members.map((member) => (
-              <div
-                key={member.userId}
-                className='flex items-center justify-between gap-3 rounded-lg border p-3'>
-                <div className='flex min-w-0 flex-1 items-center gap-3'>
-                  <Avatar size='sm'>
+              <Item key={member.userId} variant='outline'>
+                <ItemMedia variant='image'>
+                  <Avatar>
                     {member.avatarUrl ? (
                       <AvatarImage alt={member.name} src={member.avatarUrl} />
                     ) : null}
@@ -135,69 +154,54 @@ export const HouseholdMembersCard = ({
                       {member.name.slice(0, 1).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-medium'>
-                      {member.name}
-                    </p>
-                    <p className='truncate text-xs text-muted-foreground'>
-                      {member.email}
-                    </p>
-                  </div>
-                </div>
-                <div className='flex shrink-0 items-center gap-2'>
-                  {isAdmin ? (
-                    <>
-                      <Select
-                        value={member.role}
-                        onValueChange={(role) =>
-                          void householdActions.updateHouseholdMemberRole(
-                            householdId,
-                            member.userId,
-                            role as HouseholdRoleDTO,
-                          )
-                        }>
-                        <SelectTrigger className='w-28'>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='admin'>
-                            {t('app.householdDetail.members.roleOptions.admin')}
-                          </SelectItem>
-                          <SelectItem value='member'>
-                            {t(
-                              'app.householdDetail.members.roleOptions.member',
-                            )}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <ConfirmDialog
-                        confirmLabel={t(
-                          'app.householdDetail.members.removeDialog.confirm',
-                        )}
-                        description={t(
-                          'app.householdDetail.members.removeDialog.description',
-                        )}
-                        title={t(
-                          'app.householdDetail.members.removeDialog.title',
-                        )}
-                        variant='destructive'
-                        onConfirm={() =>
-                          void handleRemoveMember(member.userId)
-                        }>
-                        <Button
-                          aria-label={t(
-                            'app.householdDetail.members.actions.remove',
-                          )}
-                          size='icon'
-                          type='button'
-                          variant='ghost'>
-                          <Trash2 />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle className='truncate'>{member.name}</ItemTitle>
+                  <ItemDescription className='truncate text-xs'>
+                    {member.email}
+                  </ItemDescription>
+                </ItemContent>
+                {isAdmin ? (
+                  <ItemFooter className='justify-end'>
+                    <NativeSelect
+                      labelClassName='text-sm'
+                      size='sm'
+                      value={member.role}
+                      onChange={(event) =>
+                        void handleMemberRoleChange(
+                          member.userId,
+                          event.target.value as HouseholdRoleDTO,
+                        )
+                      }>
+                      <NativeSelectOption value='member'>
+                        {t('app.householdDetail.members.roleOptions.member')}
+                      </NativeSelectOption>
+                      <NativeSelectOption value='admin'>
+                        {t('app.householdDetail.members.roleOptions.admin')}
+                      </NativeSelectOption>
+                    </NativeSelect>
+                    <ConfirmDialog
+                      confirmLabel={t(
+                        'app.householdDetail.members.removeDialog.confirm',
+                      )}
+                      description={t(
+                        'app.householdDetail.members.removeDialog.description',
+                      )}
+                      title={t(
+                        'app.householdDetail.members.removeDialog.title',
+                      )}
+                      trigger={
+                        <Button size={'sm'} type='button' variant='destructive'>
+                          <Trash2 className='size-3.5' />
+                          {t('app.householdDetail.actions.delete')}
                         </Button>
-                      </ConfirmDialog>
-                    </>
-                  ) : null}
-                </div>
-              </div>
+                      }
+                      variant='destructive'
+                      onConfirm={() => void handleRemoveMember(member.userId)}
+                    />
+                  </ItemFooter>
+                ) : null}
+              </Item>
             ))}
           </div>
         </DataState>
