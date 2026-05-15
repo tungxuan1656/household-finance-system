@@ -90,6 +90,7 @@ export const ProfilePasswordCard = ({ isBusy }: Props) => {
                       placeholder={t(
                         'app.settings.profile.security.fields.currentPassword.placeholder',
                       )}
+                      size={'sm'}
                       type='password'
                     />
                     <FieldError errors={[fieldState.error]} />
@@ -117,6 +118,7 @@ export const ProfilePasswordCard = ({ isBusy }: Props) => {
                       placeholder={t(
                         'app.settings.profile.security.fields.newPassword.placeholder',
                       )}
+                      size={'sm'}
                       type='password'
                     />
                     <FieldError errors={[fieldState.error]} />
