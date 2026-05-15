@@ -1,8 +1,6 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus } from 'lucide-react'
-import type { ReactElement } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -13,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import {
   Field,
@@ -32,7 +29,6 @@ import { t } from '@/lib/i18n/t'
 type HouseholdCreateDialogProps = {
   isOpen: boolean
   isSubmitting: boolean
-  trigger?: ReactElement | null
   onOpenChange: (open: boolean) => void
   onSubmit: (values: CreateHouseholdFormValues) => Promise<boolean>
 }
@@ -40,7 +36,6 @@ type HouseholdCreateDialogProps = {
 export const HouseholdCreateDialog = ({
   isOpen,
   isSubmitting,
-  trigger,
   onOpenChange,
   onSubmit,
 }: HouseholdCreateDialogProps) => {
@@ -53,17 +48,7 @@ export const HouseholdCreateDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      {trigger === null ? null : (
-        <DialogTrigger asChild>
-          {trigger ?? (
-            <Button size='xl' type='button'>
-              <Plus data-icon='inline-start' />
-              {t('app.households.actions.create')}
-            </Button>
-          )}
-        </DialogTrigger>
-      )}
-      <DialogContent size='default'>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('app.households.create.title')}</DialogTitle>
           <DialogDescription>
@@ -107,14 +92,15 @@ export const HouseholdCreateDialog = ({
               )}
             />
           </FieldGroup>
-          <DialogFooter className='flex-col sm:flex-row'>
+          <DialogFooter className='flex-row justify-end'>
             <Button
+              size={'sm'}
               type='button'
-              variant='ghost'
+              variant='outline'
               onClick={() => onOpenChange(false)}>
               {t('common.actions.cancel')}
             </Button>
-            <Button disabled={isSubmitting} type='submit'>
+            <Button disabled={isSubmitting} size={'sm'} type='submit'>
               {isSubmitting
                 ? t('app.households.actions.creating')
                 : t('app.households.actions.create')}

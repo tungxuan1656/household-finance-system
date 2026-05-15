@@ -34,7 +34,6 @@ export const HouseholdsListSection = ({
       <HouseholdCreateDialog
         isOpen={isCreateDialogOpen}
         isSubmitting={isCreating}
-        trigger={null}
         onOpenChange={onCreateDialogOpenChange}
         onSubmit={onCreateSubmit}
       />

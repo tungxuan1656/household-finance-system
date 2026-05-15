@@ -8,6 +8,8 @@ import type {
   ListHouseholdMembersResponse,
   ListHouseholdsResponse,
   RemoveMemberResponse,
+  UpdateHouseholdMemberRoleRequest,
+  UpdateHouseholdMemberRoleResponse,
   UpdateHouseholdRequest,
 } from '@/types/household'
 
@@ -78,6 +80,19 @@ export const removeHouseholdMember = async (
 export const leaveHousehold = async (householdId: string) => {
   const response = await client.delete<LeaveHouseholdResponse>(
     API_ENDPOINTS.households.leave(householdId),
+  )
+
+  return response.data
+}
+
+export const updateHouseholdMemberRole = async (
+  householdId: string,
+  userId: string,
+  payload: UpdateHouseholdMemberRoleRequest,
+) => {
+  const response = await client.patch<UpdateHouseholdMemberRoleResponse>(
+    API_ENDPOINTS.households.member(householdId, userId),
+    payload,
   )
 
   return response.data

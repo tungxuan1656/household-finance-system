@@ -449,6 +449,10 @@
           "description": "Thành viên này sẽ bị xoá khỏi gia đình hiện tại.",
           "title": "Xoá thành viên này?"
         },
+        "roleOptions": {
+          "admin": "Quản trị viên",
+          "member": "Thành viên"
+        },
         "title": "Thành viên gia đình",
         "invite": {
           "actions": {

@@ -9,6 +9,7 @@ import {
   type ListHouseholdsResponse,
   type UpdateHouseholdRequest,
   updateHouseholdRequestSchema,
+  updateMemberRoleRequestSchema,
 } from '@/contracts'
 import { archiveHousehold } from '@/handlers/households/archive-household'
 import { createHousehold } from '@/handlers/households/create-household'
@@ -18,6 +19,7 @@ import { handleLeaveHousehold } from '@/handlers/households/leave-household'
 import { listHouseholds } from '@/handlers/households/list-households'
 import { handleRemoveHouseholdMember } from '@/handlers/households/remove-household-member'
 import { updateHousehold } from '@/handlers/households/update-household'
+import { updateMemberRole } from '@/handlers/households/update-member-role'
 import { notFound } from '@/lib/errors'
 import { success } from '@/lib/response'
 import { readJsonBody } from '@/lib/validation'
@@ -154,6 +156,37 @@ householdRoutes.delete('/households/:id/members/me', async (ctx) => {
 
   return success(ctx, result)
 })
+
+householdRoutes.patch(
+  '/households/:id/members/:userId',
+  requireRole(['admin']),
+  validateTargetUserIdParam,
+  async (ctx) => {
+    const locale = ctx.get('locale')
+    const { householdId } = getResolvedHouseholdContext(ctx)
+    const targetUserId = ctx.get('requestTargetUserId')
+
+    if (!targetUserId) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
+
+    const body = await readJsonBody(
+      ctx.req.raw,
+      updateMemberRoleRequestSchema,
+      locale,
+    )
+
+    const result = await updateMemberRole(
+      ctx.env,
+      householdId,
+      targetUserId,
+      locale,
+      body,
+    )
+
+    return success(ctx, result)
+  },
+)
 
 householdRoutes.delete(
   '/households/:id/members/:userId',

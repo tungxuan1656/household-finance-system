@@ -126,6 +126,7 @@ export interface HouseholdMemberDTO {
   userId: string
   name: string
   email: string
+  avatarUrl: string | null
   role: HouseholdRoleDTO
   joinedAt: number
 }
@@ -133,3 +134,15 @@ export interface HouseholdMemberDTO {
 export interface ListHouseholdMembersResponse {
   items: HouseholdMemberDTO[]
 }
+
+export interface UpdateMemberRoleResponse {
+  updated: true
+}
+
+export const updateMemberRoleRequestSchema = z.object({
+  role: z.enum(['admin', 'member']),
+})
+
+export type UpdateMemberRoleRequest = z.infer<
+  typeof updateMemberRoleRequestSchema
+>

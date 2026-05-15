@@ -4,19 +4,9 @@ import { Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 import { DataState } from '@/components/shared/data-state'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -25,8 +15,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
+import type { HouseholdRoleDTO } from '@/types/household'
 
 type HouseholdMembersCardProps = {
   householdId: string
@@ -40,9 +38,6 @@ export const HouseholdMembersCard = ({
   const members = useHouseholdStore.use.members()
   const isLoading = useHouseholdStore.use.isLoading()
   const error = useHouseholdStore.use.error()
-  const [failedRemovalUserId, setFailedRemovalUserId] = useState<string | null>(
-    null,
-  )
   const [memberErrorMessage, setMemberErrorMessage] = useState<string | null>(
     null,
   )
@@ -58,7 +53,6 @@ export const HouseholdMembersCard = ({
 
     if (!error) {
       setMemberErrorMessage(null)
-      setFailedRemovalUserId(null)
 
       return
     }
@@ -71,12 +65,9 @@ export const HouseholdMembersCard = ({
   const handleRemoveMember = async (userId: string) => {
     try {
       await householdActions.removeHouseholdMember(householdId, userId)
-      setFailedRemovalUserId(null)
       setMemberErrorMessage(null)
       toast.success(t('app.householdDetail.feedback.removeMemberSuccess'))
     } catch {
-      setFailedRemovalUserId(userId)
-
       setMemberErrorMessage(
         t('app.householdDetail.feedback.removeMemberFailed'),
       )
@@ -124,15 +115,9 @@ export const HouseholdMembersCard = ({
                 <Button
                   type='button'
                   variant='outline'
-                  onClick={() => {
-                    if (failedRemovalUserId) {
-                      void handleRemoveMember(failedRemovalUserId)
-
-                      return
-                    }
-
+                  onClick={() =>
                     void householdActions.fetchHouseholdMembers(householdId)
-                  }}>
+                  }>
                   {t('app.households.actions.retry')}
                 </Button>
               </div>
@@ -140,18 +125,65 @@ export const HouseholdMembersCard = ({
             {members.map((member) => (
               <div
                 key={member.userId}
-                className='flex items-start justify-between gap-3 rounded-lg border p-3'>
-                <div className='min-w-0 flex-1'>
-                  <p className='truncate text-sm font-medium'>{member.name}</p>
-                  <p className='truncate text-xs text-muted-foreground'>
-                    {member.email}
-                  </p>
+                className='flex items-center justify-between gap-3 rounded-lg border p-3'>
+                <div className='flex min-w-0 flex-1 items-center gap-3'>
+                  <Avatar size='sm'>
+                    {member.avatarUrl ? (
+                      <AvatarImage alt={member.name} src={member.avatarUrl} />
+                    ) : null}
+                    <AvatarFallback>
+                      {member.name.slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className='min-w-0 flex-1'>
+                    <p className='truncate text-sm font-medium'>
+                      {member.name}
+                    </p>
+                    <p className='truncate text-xs text-muted-foreground'>
+                      {member.email}
+                    </p>
+                  </div>
                 </div>
                 <div className='flex shrink-0 items-center gap-2'>
-                  <Badge variant='secondary'>{member.role}</Badge>
                   {isAdmin ? (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
+                    <>
+                      <Select
+                        value={member.role}
+                        onValueChange={(role) =>
+                          void householdActions.updateHouseholdMemberRole(
+                            householdId,
+                            member.userId,
+                            role as HouseholdRoleDTO,
+                          )
+                        }>
+                        <SelectTrigger className='w-28'>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='admin'>
+                            {t('app.householdDetail.members.roleOptions.admin')}
+                          </SelectItem>
+                          <SelectItem value='member'>
+                            {t(
+                              'app.householdDetail.members.roleOptions.member',
+                            )}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <ConfirmDialog
+                        confirmLabel={t(
+                          'app.householdDetail.members.removeDialog.confirm',
+                        )}
+                        description={t(
+                          'app.householdDetail.members.removeDialog.description',
+                        )}
+                        title={t(
+                          'app.householdDetail.members.removeDialog.title',
+                        )}
+                        variant='destructive'
+                        onConfirm={() =>
+                          void handleRemoveMember(member.userId)
+                        }>
                         <Button
                           aria-label={t(
                             'app.householdDetail.members.actions.remove',
@@ -161,36 +193,8 @@ export const HouseholdMembersCard = ({
                           variant='ghost'>
                           <Trash2 />
                         </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            {t(
-                              'app.householdDetail.members.removeDialog.title',
-                            )}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {t(
-                              'app.householdDetail.members.removeDialog.description',
-                            )}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter className='flex-col sm:flex-row'>
-                          <AlertDialogCancel>
-                            {t('common.actions.cancel')}
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            variant='destructive'
-                            onClick={() =>
-                              void handleRemoveMember(member.userId)
-                            }>
-                            {t(
-                              'app.householdDetail.members.removeDialog.confirm',
-                            )}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                      </ConfirmDialog>
+                    </>
                   ) : null}
                 </div>
               </div>
