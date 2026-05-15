@@ -50,6 +50,7 @@ function CreateHouseholdForm({
                   placeholder={t(
                     'app.onboarding.fields.householdName.placeholder',
                   )}
+                  size={'sm'}
                 />
                 {fieldState.invalid ? (
                   <FieldError errors={[fieldState.error]} />

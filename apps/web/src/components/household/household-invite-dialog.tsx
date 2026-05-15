@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactElement } from 'react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -14,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { t } from '@/lib/i18n/t'
@@ -22,10 +23,16 @@ import type { InvitationRoleDTO, InvitationTtlHours } from '@/types/invitation'
 
 type HouseholdInviteDialogProps = {
   householdId: string
+  isOpen?: boolean
+  trigger?: ReactElement | null
+  onOpenChange?: (open: boolean) => void
 }
 
 export const HouseholdInviteDialog = ({
   householdId,
+  isOpen,
+  trigger,
+  onOpenChange,
 }: HouseholdInviteDialogProps) => {
   const [invitationRole, setInvitationRole] =
     useState<InvitationRoleDTO>('member')
@@ -74,18 +81,25 @@ export const HouseholdInviteDialog = ({
 
   return (
     <Dialog
-      open={isDialogOpen}
+      open={isOpen ?? isDialogOpen}
       onOpenChange={(open) => {
-        setIsDialogOpen(open)
+        onOpenChange?.(open)
+        if (isOpen === undefined) {
+          setIsDialogOpen(open)
+        }
         if (!open) {
           setInviteLink('')
         }
       }}>
-      <DialogTrigger asChild>
-        <Button type='button' variant='outline'>
-          {t('app.householdDetail.members.actions.invite')}
-        </Button>
-      </DialogTrigger>
+      {trigger === null ? null : (
+        <DialogTrigger asChild>
+          {trigger ?? (
+            <Button type='button' variant='outline'>
+              {t('app.householdDetail.members.actions.invite')}
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
@@ -96,89 +110,88 @@ export const HouseholdInviteDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className='flex flex-col gap-4'>
-          <FieldGroup>
-            <div className='flex flex-col gap-2'>
-              <FieldLabel htmlFor='invite-role'>
-                {t('app.householdDetail.members.invite.fields.role.label')}
-              </FieldLabel>
-              <NativeSelect
-                id='invite-role'
-                value={invitationRole}
-                onChange={(event) => {
-                  const nextRole = event.target.value
-                  if (nextRole === 'admin' || nextRole === 'member') {
-                    setInvitationRole(nextRole)
-                  }
-                }}>
-                <NativeSelectOption value='member'>
-                  {t(
-                    'app.householdDetail.members.invite.fields.role.options.member',
-                  )}
-                </NativeSelectOption>
-                <NativeSelectOption value='admin'>
-                  {t(
-                    'app.householdDetail.members.invite.fields.role.options.admin',
-                  )}
-                </NativeSelectOption>
-              </NativeSelect>
-            </div>
-
-            <div className='flex flex-col gap-2'>
-              <FieldLabel htmlFor='invite-ttl'>
-                {t('app.householdDetail.members.invite.fields.ttl.label')}
-              </FieldLabel>
-              <NativeSelect
-                id='invite-ttl'
-                value={String(invitationTtlHours)}
-                onChange={(event) => {
-                  const nextTtlHours = Number(event.target.value)
-                  if (
-                    nextTtlHours === 24 ||
-                    nextTtlHours === 72 ||
-                    nextTtlHours === 168
-                  ) {
-                    setInvitationTtlHours(nextTtlHours)
-                  }
-                }}>
-                <NativeSelectOption value='24'>
-                  {t(
-                    'app.householdDetail.members.invite.fields.ttl.options.24h',
-                  )}
-                </NativeSelectOption>
-                <NativeSelectOption value='72'>
-                  {t(
-                    'app.householdDetail.members.invite.fields.ttl.options.72h',
-                  )}
-                </NativeSelectOption>
-                <NativeSelectOption value='168'>
-                  {t(
-                    'app.householdDetail.members.invite.fields.ttl.options.7d',
-                  )}
-                </NativeSelectOption>
-              </NativeSelect>
-            </div>
-
-            <div className='flex flex-col gap-2'>
-              <FieldLabel htmlFor='invite-link'>
-                {t('app.householdDetail.members.invite.fields.link.label')}
-              </FieldLabel>
-              <Input
-                readOnly
-                className='bg-muted text-muted-foreground'
-                id='invite-link'
-                placeholder={t(
-                  'app.householdDetail.members.invite.fields.link.placeholder',
+        <FieldGroup className='flex flex-row'>
+          <Field>
+            <FieldLabel htmlFor='invite-role'>
+              {t('app.householdDetail.members.invite.fields.role.label')}
+            </FieldLabel>
+            <NativeSelect
+              id='invite-role'
+              labelClassName='text-sm'
+              size='sm'
+              value={invitationRole}
+              onChange={(event) => {
+                const nextRole = event.target.value
+                if (nextRole === 'admin' || nextRole === 'member') {
+                  setInvitationRole(nextRole)
+                }
+              }}>
+              <NativeSelectOption value='member'>
+                {t(
+                  'app.householdDetail.members.invite.fields.role.options.member',
                 )}
-                value={inviteLink}
-              />
-            </div>
-          </FieldGroup>
-        </div>
+              </NativeSelectOption>
+              <NativeSelectOption value='admin'>
+                {t(
+                  'app.householdDetail.members.invite.fields.role.options.admin',
+                )}
+              </NativeSelectOption>
+            </NativeSelect>
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor='invite-ttl'>
+              {t('app.householdDetail.members.invite.fields.ttl.label')}
+            </FieldLabel>
+            <NativeSelect
+              id='invite-ttl'
+              labelClassName='text-sm'
+              size='sm'
+              value={String(invitationTtlHours)}
+              onChange={(event) => {
+                const nextTtlHours = Number(event.target.value)
+                if (
+                  nextTtlHours === 24 ||
+                  nextTtlHours === 72 ||
+                  nextTtlHours === 168
+                ) {
+                  setInvitationTtlHours(nextTtlHours)
+                }
+              }}>
+              <NativeSelectOption value='24'>
+                {t('app.householdDetail.members.invite.fields.ttl.options.24h')}
+              </NativeSelectOption>
+              <NativeSelectOption value='72'>
+                {t('app.householdDetail.members.invite.fields.ttl.options.72h')}
+              </NativeSelectOption>
+              <NativeSelectOption value='168'>
+                {t('app.householdDetail.members.invite.fields.ttl.options.7d')}
+              </NativeSelectOption>
+            </NativeSelect>
+          </Field>
+        </FieldGroup>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor='invite-link'>
+              {t('app.householdDetail.members.invite.fields.link.label')}
+            </FieldLabel>
+            <Input
+              readOnly
+              className='bg-muted text-muted-foreground'
+              id='invite-link'
+              placeholder={t(
+                'app.householdDetail.members.invite.fields.link.placeholder',
+              )}
+              size={'sm'}
+              value={inviteLink}
+            />
+          </Field>
+        </FieldGroup>
 
         <DialogFooter className='flex-col sm:flex-row'>
           <Button
             disabled={!inviteLink}
+            size={'sm'}
             type='button'
             variant='outline'
             onClick={() => void handleCopyInviteLink()}>
@@ -186,6 +199,7 @@ export const HouseholdInviteDialog = ({
           </Button>
           <Button
             disabled={isCreatingInvite}
+            size={'sm'}
             type='button'
             onClick={() => void handleGenerateInviteLink()}>
             {isCreatingInvite

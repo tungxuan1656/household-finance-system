@@ -113,7 +113,8 @@
       },
       "feedback": {
         "createFailed": "Không thể tạo gia đình lúc này. Vui lòng thử lại.",
-        "createSuccess": "Đã tạo gia đình thành công."
+        "createSuccess": "Đã tạo gia đình thành công.",
+        "loadFailed": "Không thể tải danh sách gia đình. Vui lòng thử lại."
       },
       "fields": {
         "currency": {
@@ -328,7 +329,8 @@
       },
       "feedback": {
         "createFailed": "Không thể tạo gia đình lúc này. Vui lòng thử lại.",
-        "createSuccess": "Đã tạo gia đình thành công."
+        "createSuccess": "Đã tạo gia đình thành công.",
+        "loadFailed": "Không thể tải danh sách gia đình. Vui lòng thử lại."
       },
       "fields": {
         "currency": {
@@ -447,12 +449,20 @@
           "description": "Thành viên này sẽ bị xoá khỏi gia đình hiện tại.",
           "title": "Xoá thành viên này?"
         },
+        "roleOptions": {
+          "admin": "Quản trị viên",
+          "member": "Thành viên"
+        },
         "title": "Thành viên gia đình",
         "invite": {
           "actions": {
             "copy": "Sao chép liên kết",
             "generate": "Tạo liên kết",
             "generating": "Đang tạo..."
+          },
+          "card": {
+            "description": "Mời thêm người thân để cùng theo dõi chi tiêu trong gia đình này.",
+            "title": "Mời thêm thành viên"
           },
           "description": "Tạo liên kết mời một lần sử dụng với vai trò và thời hạn cụ thể.",
           "feedback": {

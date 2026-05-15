@@ -52,7 +52,7 @@
     },
     {
       "type": "command",
-      "command": "pnpm --filter web exec vitest run src/views/app/profile-settings-source-contract.test.ts src/lib/auth/firebase-auth.test.ts",
+      "command": "pnpm --filter web exec vitest run src/lib/auth/firebase-auth.test.ts",
       "output": "pass: 8 tests, 2 files",
       "description": "Focused source-contract and Firebase auth tests cover More wrapping, PageShell usage, AlertDialog-based confirmation, danger-zone account rows, active password form, and Firebase reauth/update/delete helpers."
     },

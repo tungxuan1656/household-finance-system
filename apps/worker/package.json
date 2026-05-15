@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.12.1",
   "scripts": {
     "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --ip=0.0.0.0",
     "lint": "eslint .",
     "start": "wrangler dev",
     "test": "vitest run",

@@ -61,6 +61,7 @@ export const ProfileDisplayNameForm = ({
           control={form.control}
           description={t('app.settings.profile.fields.displayName.description')}
           id='profile-display-name'
+          inputProps={{ size: 'sm' }}
           label={t('app.settings.profile.fields.displayName.label')}
           name='displayName'
           placeholder={t('app.settings.profile.fields.displayName.placeholder')}

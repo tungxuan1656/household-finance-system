@@ -1,8 +1,8 @@
 'use client'
 
+import { User2Icon } from 'lucide-react'
 import Link from 'next/link'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -14,15 +14,13 @@ import {
 } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAnalyticsOverviewQuery } from '@/hooks/api/use-analytics'
-import { useBudgetListQuery } from '@/hooks/api/use-budgets'
 import { useHouseholdMembersQuery } from '@/hooks/api/use-households'
 import { t } from '@/lib/i18n/t'
 import type { HouseholdDTO } from '@/types/household'
 import { formatCurrency } from '@/utils/currency/format'
-import {
-  getHouseholdRoleLabel,
-  getHouseholdVisibilityLabel,
-} from '@/utils/household/labels'
+import { getHouseholdRoleLabel } from '@/utils/household/labels'
+
+import { Badge } from '../ui/badge'
 
 const getCurrentPeriod = () => {
   const now = new Date()
@@ -48,62 +46,44 @@ export const HouseholdSummaryCard = ({
       enabled: true,
     },
   )
-  const budgetQuery = useBudgetListQuery(household.id)
   const memberQuery = useHouseholdMembersQuery(household.id)
-  const hasBudget = (budgetQuery.data?.items.length ?? 0) > 0
 
   return (
     <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
       <CardHeader>
-        <div className='flex items-start justify-between gap-2'>
-          <div className='flex flex-col gap-1'>
-            <CardTitle>{household.name}</CardTitle>
-            <CardDescription className='flex flex-wrap gap-x-2 gap-y-1 text-xs'>
-              <span>{household.defaultCurrencyCode}</span>
-              <span aria-hidden='true'>·</span>
-              <span>{household.timezone}</span>
-              {memberQuery.data ? (
-                <>
-                  <span aria-hidden='true'>·</span>
-                  <span>
-                    {t('app.householdDetail.memberCount', {
-                      count: memberQuery.data.items.length,
-                    })}
-                  </span>
-                </>
-              ) : null}
-            </CardDescription>
-          </div>
+        <CardTitle className='uppercase'>{household.name}</CardTitle>
+        <CardDescription className='flex flex-wrap items-center gap-2 text-sm'>
           <Badge variant='secondary'>
             {getHouseholdRoleLabel(household.role)}
           </Badge>
-        </div>
+        </CardDescription>
       </CardHeader>
       <CardContent className='flex flex-col gap-3'>
-        <p className='text-sm text-muted-foreground'>
-          {getHouseholdVisibilityLabel(household.defaultVisibility)}
-        </p>
-        {budgetQuery.data ? (
-          <p className='text-sm text-muted-foreground'>
-            {t('groups.card.budgetLabel')} ·{' '}
-            {hasBudget
-              ? t('groups.card.statusActive')
-              : t('groups.card.noBudget')}
-          </p>
-        ) : null}
         {analyticsQuery.data ? (
-          <p className='text-sm font-medium text-foreground'>
-            {t('groups.card.spentLabel')} ·{' '}
-            {formatCurrency(
-              analyticsQuery.data.totalSpendMinor,
-              analyticsQuery.data.currencyCode,
-            )}{' '}
-            · {analyticsQuery.data.expenseCount} {t('groups.summary.expenses')}
+          <p className='space-x-2'>
+            <span className='font-mono text-2xl text-foreground'>
+              {formatCurrency(
+                analyticsQuery.data.totalSpendMinor,
+                analyticsQuery.data.currencyCode,
+              )}
+            </span>
+            <span className='font-medium text-muted-foreground'>
+              {' / '}
+              {analyticsQuery.data.expenseCount} {t('groups.summary.expenses')}
+            </span>
           </p>
         ) : null}
       </CardContent>
-      <CardFooter className='justify-end'>
-        <Button asChild size='xl' variant='outline'>
+      <CardFooter className='items-center justify-between'>
+        {memberQuery.data ? (
+          <span className='flex items-center gap-2 font-mono'>
+            <User2Icon className='size-4' />
+            {t('app.householdDetail.memberCount', {
+              count: memberQuery.data.items.length,
+            })}
+          </span>
+        ) : null}
+        <Button asChild size='sm' variant='outline'>
           <Link href={`/households/${household.id}`}>
             {t('app.households.actions.viewDetail')}
           </Link>

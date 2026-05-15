@@ -1,7 +1,6 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -12,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import {
   Field,
@@ -50,13 +48,7 @@ export const HouseholdCreateDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button size='xl' type='button'>
-          <Plus data-icon='inline-start' />
-          {t('app.households.actions.create')}
-        </Button>
-      </DialogTrigger>
-      <DialogContent size='default'>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('app.households.create.title')}</DialogTitle>
           <DialogDescription>
@@ -91,6 +83,7 @@ export const HouseholdCreateDialog = ({
                       placeholder={t(
                         'app.households.fields.householdName.placeholder',
                       )}
+                      size={'sm'}
                     />
                     {fieldState.invalid ? (
                       <FieldError errors={[fieldState.error]} />
@@ -100,14 +93,15 @@ export const HouseholdCreateDialog = ({
               )}
             />
           </FieldGroup>
-          <DialogFooter className='flex-col sm:flex-row'>
+          <DialogFooter className='flex-row justify-end'>
             <Button
+              size={'sm'}
               type='button'
-              variant='ghost'
+              variant='outline'
               onClick={() => onOpenChange(false)}>
               {t('common.actions.cancel')}
             </Button>
-            <Button disabled={isSubmitting} type='submit'>
+            <Button disabled={isSubmitting} size={'sm'} type='submit'>
               {isSubmitting
                 ? t('app.households.actions.creating')
                 : t('app.households.actions.create')}

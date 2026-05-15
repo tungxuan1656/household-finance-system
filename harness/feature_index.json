@@ -294,6 +294,11 @@
       "id": "feat-058",
       "name": "Redesigned loading session checker with premium skeletons",
       "status": "done"
+    },
+    {
+      "id": "feat-059",
+      "name": "Household action card page refactor",
+      "status": "done"
     }
   ]
 }

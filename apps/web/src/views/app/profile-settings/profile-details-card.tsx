@@ -44,7 +44,12 @@ export const ProfileDetailsCard = ({
             {t('app.settings.account.fields.email')}
           </FieldLabel>
           <FieldContent>
-            <Input readOnly id='profile-email' value={email ?? ''} />
+            <Input
+              readOnly
+              id='profile-email'
+              size={'sm'}
+              value={email ?? ''}
+            />
             <FieldDescription>
               {t('app.settings.profile.emailReadonly')}
             </FieldDescription>

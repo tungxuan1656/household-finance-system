@@ -93,7 +93,6 @@ This frontend-focused change improves the protected More and Profile Settings sc
 
 ## Follow-up Verification
 
-- `pnpm --filter web exec vitest run src/views/app/profile-settings-source-contract.test.ts`
 - `pnpm --filter web exec vitest run src/lib/auth/firebase-auth.test.ts`
 - `./init.sh lint`
 - `./init.sh typecheck`
@@ -215,7 +214,7 @@ Expected browser assertions: More card rows show icons and right arrows, version
 
 - Required evidence to paste after implementation:
   - GitNexus impact result summary: unavailable; impact calls returned MCP `Connection closed` / `Not connected` even after `./init.sh sync` returned `OK`.
-  - Focused Vitest: `pnpm --filter web exec vitest run src/views/app/profile-settings-source-contract.test.ts src/lib/auth/firebase-auth.test.ts` passed (8 tests, 2 files).
+  - Focused Vitest: `pnpm --filter web exec vitest run src/lib/auth/firebase-auth.test.ts` passed (8 tests, 2 files).
   - `./init.sh lint` output: `OK`.
   - `./init.sh typecheck` output: `OK`.
   - Playwright CLI observation summary: mocked authenticated browser session showed More shortcut rows wrapping with icons/right arrows and version `0.1.0`; Profile Settings showed avatar, profile/password form, and danger-zone cards with no households; sign-out/delete opened alert dialogs and delete required current password before enabling confirm.

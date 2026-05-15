@@ -37,6 +37,7 @@ export type HouseholdMemberDTO = {
   userId: string
   name: string
   email: string
+  avatarUrl: string | null
   role: HouseholdRoleDTO
   joinedAt: number
 }
@@ -51,4 +52,12 @@ export type RemoveMemberResponse = {
 
 export type LeaveHouseholdResponse = {
   left: true
+}
+
+export type UpdateHouseholdMemberRoleRequest = {
+  role: HouseholdRoleDTO
+}
+
+export type UpdateHouseholdMemberRoleResponse = {
+  updated: true
 }

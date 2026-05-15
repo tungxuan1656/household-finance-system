@@ -1,0 +1,86 @@
+{
+  "id": "feat-059",
+  "name": "Household action card page refactor",
+  "status": "done",
+  "description": "Refactored household list and household detail surfaces to use PageShell/DataState and a shared callback-driven ActionCard. The household create card now always appears as the final households grid item, while the admin invite-member card always appears below the household member list and opens the existing invite dialog through parent-owned dialog state.",
+  "dependencies": [
+    "feat-011",
+    "feat-013",
+    "feat-014",
+    "feat-032",
+    "feat-035",
+    "feat-042"
+  ],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/households-page.tsx",
+      "description": "Households route now uses PageShell and DataState, keeps list loading/error retry handling localized, and delegates success content to the households list section."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/shared/action-card.tsx",
+      "description": "Generic reusable ActionCard supports optional outer title/description, dashed card content, composed icon content, action title/description/label, and a centered default small button that emits onAction to the caller."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/households/households-list-section.tsx",
+      "description": "Responsive household grid maps existing summary cards, always appends CreateHouseholdActionCard as the final grid item, and opens the create dialog through an onAction callback with triggerless controlled dialog state."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/household/household-action-card.tsx",
+      "description": "Household-specific create and invite variants adapt the shared ActionCard with localized copy and composed Plus/Avatar media."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/household/household-members-card.tsx",
+      "description": "Member card now uses DataState for loading/empty/error states and no longer nests the invite-member action card."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/household-detail-page.tsx",
+      "description": "Household detail route now uses PageShell and DataState while rendering the admin invite-member action card as a sibling card outside the members card."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/household/household-create-dialog.tsx",
+      "description": "Create dialog accepts optional custom or null trigger props while preserving the default create button and form behavior."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/household/household-invite-dialog.tsx",
+      "description": "Invite dialog accepts optional controlled open state and custom or null trigger props while preserving invite-link generation and copy behavior."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh lint",
+      "output": "OK",
+      "description": "Repository lint verification passed."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh typecheck",
+      "output": "OK",
+      "description": "Repository typecheck verification passed after adding the localized load-failure key."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh test",
+      "output": "OK",
+      "description": "Full repository test target passed."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh",
+      "output": "Done!",
+      "description": "Final full verification passed, including install, harness, lint, typecheck, test, and GitNexus sync steps."
+    },
+    {
+      "type": "analysis",
+      "command": "gitnexus_detect_changes(scope: all)",
+      "output": "risk_level: low; changed_files: 12; affected_count: 0",
+      "description": "Final GitNexus change detection found no affected execution processes."
+    }
+  ]
+}

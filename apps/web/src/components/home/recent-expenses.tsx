@@ -58,7 +58,11 @@ function RecentExpenses({
         <CardHeader>
           <CardTitle>{t('app.overview.recentExpenses.title')}</CardTitle>
           <CardAction>
-            <Button asChild className='h-auto! px-0!' variant={'ghost'}>
+            <Button
+              asChild
+              className='h-auto! px-0!'
+              size={'sm'}
+              variant={'ghost'}>
               <Link href='/expenses'>
                 {t('app.overview.recentExpenses.viewAll')}
                 <span aria-hidden='true'>&nbsp;&rarr;</span>

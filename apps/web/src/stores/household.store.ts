@@ -10,12 +10,14 @@ import {
   listHouseholds,
   removeHouseholdMember,
   updateHousehold,
+  updateHouseholdMemberRole,
 } from '@/api/household'
 import { createSelectors } from '@/stores/types'
 import type {
   CreateHouseholdRequest,
   HouseholdDTO,
   HouseholdMemberDTO,
+  HouseholdRoleDTO,
   UpdateHouseholdRequest,
 } from '@/types/household'
 
@@ -217,6 +219,31 @@ const householdActions = {
       _useHouseholdStore.setState({
         error:
           error instanceof Error ? error.message : 'Update household failed',
+        isLoading: false,
+      })
+
+      throw error
+    }
+  },
+  updateHouseholdMemberRole: async (
+    householdId: string,
+    userId: string,
+    role: HouseholdRoleDTO,
+  ) => {
+    _useHouseholdStore.setState({ error: null, isLoading: true })
+    try {
+      await updateHouseholdMemberRole(householdId, userId, { role })
+
+      _useHouseholdStore.setState((state) => ({
+        members: state.members.map((m) =>
+          m.userId === userId ? { ...m, role } : m,
+        ),
+        isLoading: false,
+      }))
+    } catch (error) {
+      _useHouseholdStore.setState({
+        error:
+          error instanceof Error ? error.message : 'Update member role failed',
         isLoading: false,
       })
 

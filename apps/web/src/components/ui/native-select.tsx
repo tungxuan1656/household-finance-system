@@ -5,11 +5,13 @@ import { cn } from '@/utils/cn'
 
 type NativeSelectProps = Omit<React.ComponentProps<'select'>, 'size'> & {
   size?: 'sm' | 'default'
+  labelClassName?: string
 }
 
 function NativeSelect({
   className,
   size = 'default',
+  labelClassName,
   ...props
 }: NativeSelectProps) {
   return (
@@ -21,7 +23,10 @@ function NativeSelect({
       data-size={size}
       data-slot='native-select-wrapper'>
       <select
-        className='h-11 w-full min-w-0 appearance-none rounded-3xl border border-transparent bg-input/50 py-1 pr-10 pl-4 text-base transition-[color,box-shadow,background-color] outline-none select-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=sm]:h-9 sm:h-9 sm:pr-8 sm:pl-3 sm:text-sm data-[size=sm]:sm:h-8 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40'
+        className={cn(
+          'h-11 w-full min-w-0 appearance-none rounded-3xl border border-transparent bg-input/50 py-1 pr-10 pl-4 text-base transition-[color,box-shadow,background-color] outline-none select-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=sm]:h-9 sm:h-9 sm:pr-8 sm:pl-3 sm:text-sm data-[size=sm]:sm:h-8 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+          labelClassName,
+        )}
         data-size={size}
         data-slot='native-select'
         {...props}

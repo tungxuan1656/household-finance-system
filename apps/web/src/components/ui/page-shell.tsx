@@ -28,6 +28,9 @@ function PageShell({
         onBack={onBack}
       />
       <div className='flex-1 px-4 py-5 pb-24 sm:py-8 md:px-6 md:pb-8 lg:px-8'>
+        <h1 className='sr-only md:not-sr-only md:mb-6 md:font-heading md:text-2xl md:tracking-tight'>
+          {title}
+        </h1>
         {children}
       </div>
     </div>

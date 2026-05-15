@@ -17,7 +17,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle,
+} from '@/components/ui/item'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
 
@@ -66,30 +74,27 @@ export const MoreShortcutsCard = () => {
           {t('app.more.quickLinks.description')}
         </CardDescription>
       </CardHeader>
-      <CardContent className='flex flex-col'>
+      <CardContent className='px-2'>
         {rows.map(({ href, label, description, Icon }, index) => (
           <div key={href}>
-            {index > 0 ? <Separator className='my-1.5' /> : null}
-            <Link
-              className='flex min-h-11 items-center gap-3 rounded-lg px-1 py-2 transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none'
-              href={href}>
-              <Icon
-                aria-hidden='true'
-                className='size-4 shrink-0 text-muted-foreground'
-              />
-              <span className='flex min-w-0 flex-1 flex-col'>
-                <span className='font-medium wrap-break-word whitespace-normal'>
-                  {label}
-                </span>
-                <span className='text-sm wrap-break-word whitespace-normal text-muted-foreground'>
-                  {description}
-                </span>
-              </span>
-              <ArrowRight
-                aria-hidden='true'
-                className='mt-0.5 size-4 shrink-0 text-muted-foreground'
-              />
-            </Link>
+            {index > 0 ? <ItemSeparator className='mx-3' /> : null}
+            <Item asChild variant='default'>
+              <Link href={href}>
+                <ItemMedia
+                  aria-hidden='true'
+                  className='shrink-0 text-muted-foreground'
+                  variant='icon'>
+                  <Icon className='size-5' />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>{label}</ItemTitle>
+                  <ItemDescription>{description}</ItemDescription>
+                </ItemContent>
+                <ItemActions className='text-muted-foreground'>
+                  <ArrowRight aria-hidden='true' className='size-4' />
+                </ItemActions>
+              </Link>
+            </Item>
           </div>
         ))}
       </CardContent>

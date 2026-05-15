@@ -68,6 +68,7 @@ export const listHouseholdMembers = async (
       `SELECT u.id as user_id,
               u.display_name as name,
               COALESCE(u.primary_email, '') as email,
+              u.avatar_url as avatarUrl,
               hm.role,
               hm.joined_at as joinedAt
          FROM household_memberships hm
@@ -83,6 +84,7 @@ export const listHouseholdMembers = async (
       user_id: string
       name: string
       email: string
+      avatarUrl: string | null
       role: HouseholdRoleDTO
       joinedAt: number
     }>()
@@ -91,6 +93,7 @@ export const listHouseholdMembers = async (
     userId: row.user_id,
     name: row.name,
     email: row.email,
+    avatarUrl: row.avatarUrl,
     role: row.role,
     joinedAt: row.joinedAt,
   }))
@@ -111,6 +114,27 @@ export const removeHouseholdMember = async (
           AND state = 'active'`,
     )
     .bind(Date.now(), householdId, userId)
+    .run()
+
+  return Number(result.meta.changes ?? 0) === 1
+}
+
+export const updateHouseholdMemberRole = async (
+  db: D1Database,
+  householdId: string,
+  userId: string,
+  role: HouseholdRoleDTO,
+): Promise<boolean> => {
+  const result = await db
+    .prepare(
+      `UPDATE household_memberships
+          SET role = ?,
+              updated_at = ?
+        WHERE household_id = ?
+          AND user_id = ?
+          AND state = 'active'`,
+    )
+    .bind(role, Date.now(), householdId, userId)
     .run()
 
   return Number(result.meta.changes ?? 0) === 1

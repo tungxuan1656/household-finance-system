@@ -1,3 +1,4 @@
+import { type PropsWithoutRef } from 'react'
 import {
   type Control,
   Controller,
@@ -24,6 +25,7 @@ type FieldInputControllerProps<TFieldValues extends FieldValues> = {
   placeholder?: string
   description?: string
   readOnly?: boolean
+  inputProps?: PropsWithoutRef<React.ComponentProps<typeof Input>>
 }
 
 export const FieldInputController = <TFieldValues extends FieldValues>({
@@ -36,6 +38,7 @@ export const FieldInputController = <TFieldValues extends FieldValues>({
   name,
   placeholder,
   readOnly = false,
+  inputProps,
 }: FieldInputControllerProps<TFieldValues>) => (
   <Controller
     control={control}
@@ -51,6 +54,7 @@ export const FieldInputController = <TFieldValues extends FieldValues>({
             maxLength={maxLength}
             placeholder={placeholder}
             readOnly={readOnly}
+            {...inputProps}
           />
           {description ? (
             <FieldDescription>{description}</FieldDescription>
