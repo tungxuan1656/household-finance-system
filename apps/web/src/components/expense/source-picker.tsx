@@ -19,26 +19,25 @@ export const SourcePicker = ({
   onValueChange,
   disabled = false,
   size = 'default',
-}: SourcePickerProps) => (
-  <NativeSelect
-    aria-label={t('app.expenseReference.sourcePicker.ariaLabel')}
-    disabled={disabled}
-    id={id}
-    size={size}
-    value={value ?? ''}
-    onChange={(event) => {
-      const val = event.target.value
-      if (val) {
-        onValueChange(val as SourceKey)
-      }
-    }}>
-    <NativeSelectOption value=''>
-      {t('app.expenseReference.sourcePicker.placeholder')}
-    </NativeSelectOption>
-    {SOURCE_KEYS.map((sourceKey) => (
-      <NativeSelectOption key={sourceKey} value={sourceKey}>
-        {getSourceLabel(sourceKey)}
+}: SourcePickerProps) => {
+  return (
+    <NativeSelect
+      aria-label={t('app.expenseReference.sourcePicker.ariaLabel')}
+      disabled={disabled}
+      id={id}
+      size={size}
+      value={value}
+      onChange={(event) => {
+        onValueChange(event.target.value as SourceKey)
+      }}>
+      <NativeSelectOption value=''>
+        {t('app.expenseReference.sourcePicker.placeholder')}
       </NativeSelectOption>
-    ))}
-  </NativeSelect>
-)
+      {SOURCE_KEYS.map((sourceKey) => (
+        <NativeSelectOption key={sourceKey} value={sourceKey}>
+          {getSourceLabel(sourceKey)}
+        </NativeSelectOption>
+      ))}
+    </NativeSelect>
+  )
+}

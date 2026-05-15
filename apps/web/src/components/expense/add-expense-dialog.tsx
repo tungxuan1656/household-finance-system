@@ -248,7 +248,7 @@ export function AddExpenseDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <FieldGroup className='grid gap-4 md:grid-cols-2'>
+        <FieldGroup className='grid grid-cols-2 gap-4'>
           <Field data-invalid={!!errors.amountInput}>
             <FieldLabel htmlFor='add-expense-amount'>
               {t('expense.amount')}
@@ -312,6 +312,7 @@ export function AddExpenseDialog({
               categories={categories}
               disabled={isSubmitting}
               id='add-expense-category'
+              size='sm'
               value={formState.categoryKey}
               onValueChange={(value: any) => {
                 setField('categoryKey', value)

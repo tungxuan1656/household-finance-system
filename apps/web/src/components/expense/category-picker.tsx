@@ -1,13 +1,13 @@
 'use client'
 
 import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import type { CategoryKey, ReferenceCategoryDTO } from '@/types/reference-data'
@@ -18,6 +18,7 @@ type CategoryPickerProps = {
   onValueChange: (value: CategoryKey | null) => void
   disabled?: boolean
   id?: string
+  size?: 'sm' | 'default'
 }
 
 export const CategoryPicker = ({
@@ -26,6 +27,7 @@ export const CategoryPicker = ({
   onValueChange,
   disabled = false,
   id,
+  size = 'default',
 }: CategoryPickerProps) => {
   const expenseCategories = categories.filter(
     (category) => category.kind === 'expense',
@@ -34,45 +36,56 @@ export const CategoryPicker = ({
   const iconByKey = new Map(
     expenseCategories.map((category) => [category.key, category.iconUrl]),
   )
-
-  const expenseCategoryKeys = expenseCategories.map((category) => category.key)
+  const selectedLabel = value ? getCategoryLabel(value) : null
+  const selectedIcon = value ? iconByKey.get(value) : null
 
   return (
-    <Combobox
-      id={id}
-      itemToStringLabel={(categoryKey) => getCategoryLabel(categoryKey)}
-      items={expenseCategoryKeys}
-      value={value}
+    <Select
+      disabled={disabled}
+      value={value ?? undefined}
       onValueChange={(nextValue) => {
-        onValueChange(nextValue as CategoryKey | null)
+        onValueChange(nextValue as CategoryKey)
       }}>
-      <ComboboxInput
-        showClear
+      <SelectTrigger
         aria-label={t('app.expenseReference.categoryPicker.ariaLabel')}
-        disabled={disabled}
-        placeholder={t('app.expenseReference.categoryPicker.placeholder')}
-      />
-      <ComboboxContent>
-        <ComboboxEmpty>
-          {t('app.expenseReference.categoryPicker.empty')}
-        </ComboboxEmpty>
-        <ComboboxList>
-          {(categoryKey) => {
-            const label = getCategoryLabel(categoryKey)
+        className='w-full'
+        id={id}
+        size={size}>
+        {selectedLabel ? (
+          <span className='flex items-center gap-1.5 truncate'>
+            {selectedIcon ? (
+              <img
+                alt={selectedLabel}
+                className='size-4 rounded-sm object-contain'
+                src={selectedIcon}
+              />
+            ) : null}
+            <span className='truncate'>{selectedLabel}</span>
+          </span>
+        ) : (
+          <SelectValue
+            placeholder={t('app.expenseReference.categoryPicker.placeholder')}
+          />
+        )}
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {expenseCategories.map((category) => {
+            const label = getCategoryLabel(category.key)
 
             return (
-              <ComboboxItem key={categoryKey} value={categoryKey}>
+              <SelectItem key={category.key} value={category.key}>
                 <img
                   alt={label}
                   className='size-4 rounded-sm object-contain'
-                  src={iconByKey.get(categoryKey)}
+                  src={category.iconUrl}
                 />
                 <span>{label}</span>
-              </ComboboxItem>
+              </SelectItem>
             )
-          }}
-        </ComboboxList>
-      </ComboboxContent>
-    </Combobox>
+          })}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   )
 }
