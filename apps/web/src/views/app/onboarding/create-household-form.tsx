@@ -46,6 +46,7 @@ function CreateHouseholdForm({
                 <Input
                   {...field}
                   aria-invalid={fieldState.invalid}
+                  className='h-10 text-sm'
                   id='household-name'
                   placeholder={t(
                     'app.onboarding.fields.householdName.placeholder',

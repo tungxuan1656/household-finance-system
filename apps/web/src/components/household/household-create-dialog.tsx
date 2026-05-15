@@ -79,6 +79,7 @@ export const HouseholdCreateDialog = ({
                     <Input
                       {...field}
                       aria-invalid={fieldState.invalid}
+                      className='h-10 text-sm'
                       id='household-name'
                       placeholder={t(
                         'app.households.fields.householdName.placeholder',
