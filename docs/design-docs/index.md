@@ -16,7 +16,7 @@ Durable design decision map. Read only when task changes lasting UI/product/arch
 
 ## Proposed
 
-- None.
+- `2026-05-15-add-expense-dialog-domain-and-ui-design.md`: canonical add-expense dialog, dialog-only VND amount input semantics, nested category-picker fix, independent group vs household domain model, and add-expense page removal.
 
 ## Deprecated
 

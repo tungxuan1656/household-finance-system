@@ -9,6 +9,14 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-15 — Wrote add-expense dialog redesign spec
+
+- Who: Orchestrator + User
+- Summary: Captured the proposed redesign spec for replacing quick-add and the dedicated add-expense page with a new shadcn-first `AddExpenseDialog`. The spec locks the compact dialog layout, dialog-only VND thousand-shortcut amount input, nested category-picker fix inside dialog, new static source keys, and the product/domain change that makes group independent from household.
+- Files changed: Design docs index, new add-expense redesign design doc, and this progress log.
+- Blockers: none.
+- Next steps: User reviews the proposed design doc, then convert it into an implementation plan before touching code.
+
 ## 2026-05-14 — Refactored household pages with shared action cards
 
 - Who: Orchestrator + fixer
