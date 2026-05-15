@@ -7,7 +7,6 @@ import { toast } from 'sonner'
 import { ApiClientError } from '@/api/client'
 import {
   HouseholdDangerZoneCard,
-  HouseholdDetailHeader,
   HouseholdInviteDialog,
   HouseholdMembersCard,
   HouseholdSettingsCard,
@@ -95,52 +94,49 @@ function HouseholdDetailPage() {
 
   return (
     <PageShell title={t('app.householdDetail.title')}>
-      <div className='flex flex-col gap-6'>
-        <HouseholdDetailHeader />
-        <DataState
-          action={
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() => void householdActions.fetchHouseholdById(id)}>
-              {t('app.householdDetail.actions.retry')}
-            </Button>
-          }
-          errorDescription={error ?? undefined}
-          isError={Boolean(!isLoading && error && !currentHousehold)}
-          isLoading={isLoading && !currentHousehold}
-          title={t('app.householdDetail.title')}>
-          {currentHousehold ? (
-            <div className='grid gap-4'>
-              <HouseholdSettingsCard
-                household={currentHousehold}
-                isAdmin={isAdmin}
-                isSubmitting={isLoading}
-                memberCount={members.length}
-                onSubmit={handleSaveSettings}
-              />
-              <HouseholdMembersCard
-                householdId={currentHousehold.id}
-                isAdmin={isAdmin}
-              />
-              {isAdmin ? (
-                <>
-                  <InviteMembersActionCard
-                    onAction={() => setIsInviteDialogOpen(true)}
-                  />
-                  <HouseholdInviteDialog
-                    householdId={currentHousehold.id}
-                    isOpen={isInviteDialogOpen}
-                    trigger={null}
-                    onOpenChange={setIsInviteDialogOpen}
-                  />
-                </>
-              ) : null}
-              {isAdmin && <HouseholdDangerZoneCard onArchive={handleArchive} />}
-            </div>
-          ) : null}
-        </DataState>
-      </div>
+      <DataState
+        action={
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => void householdActions.fetchHouseholdById(id)}>
+            {t('app.householdDetail.actions.retry')}
+          </Button>
+        }
+        errorDescription={error ?? undefined}
+        isError={Boolean(!isLoading && error && !currentHousehold)}
+        isLoading={isLoading && !currentHousehold}
+        title={t('app.householdDetail.title')}>
+        {currentHousehold ? (
+          <div className='grid gap-4'>
+            <HouseholdSettingsCard
+              household={currentHousehold}
+              isAdmin={isAdmin}
+              isSubmitting={isLoading}
+              memberCount={members.length}
+              onSubmit={handleSaveSettings}
+            />
+            <HouseholdMembersCard
+              householdId={currentHousehold.id}
+              isAdmin={isAdmin}
+            />
+            {isAdmin ? (
+              <>
+                <InviteMembersActionCard
+                  onAction={() => setIsInviteDialogOpen(true)}
+                />
+                <HouseholdInviteDialog
+                  householdId={currentHousehold.id}
+                  isOpen={isInviteDialogOpen}
+                  trigger={null}
+                  onOpenChange={setIsInviteDialogOpen}
+                />
+              </>
+            ) : null}
+            {isAdmin && <HouseholdDangerZoneCard onArchive={handleArchive} />}
+          </div>
+        ) : null}
+      </DataState>
     </PageShell>
   )
 }

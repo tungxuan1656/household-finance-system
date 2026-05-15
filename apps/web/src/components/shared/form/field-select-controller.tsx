@@ -28,6 +28,7 @@ type FieldSelectControllerProps<TFieldValues extends FieldValues> = {
   options: SelectOption[]
   valueFallback?: string
   description?: string
+  className?: string
 }
 
 export const FieldSelectController = <TFieldValues extends FieldValues>({
@@ -38,13 +39,14 @@ export const FieldSelectController = <TFieldValues extends FieldValues>({
   name,
   onValueChange,
   options,
+  className,
   valueFallback = '',
 }: FieldSelectControllerProps<TFieldValues>) => (
   <Controller
     control={control}
     name={name}
     render={({ field, fieldState }) => (
-      <Field data-invalid={fieldState.invalid}>
+      <Field className={className} data-invalid={fieldState.invalid}>
         <FieldLabel htmlFor={id}>{label}</FieldLabel>
         <FieldContent>
           <NativeSelect

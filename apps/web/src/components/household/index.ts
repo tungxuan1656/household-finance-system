@@ -1,7 +1,6 @@
 export * from './household-action-card'
 export * from './household-create-dialog'
 export * from './household-danger-zone-card'
-export * from './household-detail-header'
 export * from './household-invite-dialog'
 export * from './household-members-card'
 export * from './household-settings-card'

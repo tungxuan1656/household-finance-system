@@ -11,6 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { t } from '@/lib/i18n/t'
 
@@ -30,6 +31,8 @@ export type ConfirmDialogProps = {
   onConfirm: () => Promise<void> | void
   onCancel?: () => Promise<void> | void
   children?: React.ReactNode
+  trigger?: React.ReactNode
+  triggerClassName?: string
 } & Omit<
   React.ComponentProps<typeof AlertDialogContent>,
   'children' | 'onEscapeKeyDown'
@@ -50,6 +53,8 @@ export const ConfirmDialog = React.forwardRef<
       confirmLoading = false,
       onConfirm,
       onCancel,
+      triggerClassName,
+      trigger,
       children,
       ...dialogContentProps
     },
@@ -124,6 +129,9 @@ export const ConfirmDialog = React.forwardRef<
 
     return (
       <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
+        <AlertDialogTrigger className={triggerClassName}>
+          {trigger}
+        </AlertDialogTrigger>
         <AlertDialogContent
           onEscapeKeyDown={preventDismissWhileBusy}
           {...dialogContentProps}>
@@ -134,15 +142,19 @@ export const ConfirmDialog = React.forwardRef<
             ) : null}
           </AlertDialogHeader>
           {children}
-          <AlertDialogFooter>
+          <AlertDialogFooter className='flex-row justify-end'>
             <AlertDialogCancel
+              className='flex-1'
               disabled={isConfirmBusy}
+              size={'sm'}
               type='button'
               onClick={handleCancelClick}>
               {cancelLabel}
             </AlertDialogCancel>
             <AlertDialogAction
+              className='flex-1'
               disabled={isConfirmDisabled}
+              size={'sm'}
               type='button'
               variant={variant}
               onClick={handleConfirmClick}>

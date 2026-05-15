@@ -4,10 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import {
-  FieldInputController,
-  FieldSelectController,
-} from '@/components/shared/form'
+import { FieldInputController } from '@/components/shared/form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -56,15 +53,15 @@ export const HouseholdSettingsCard = ({
   return (
     <Card>
       <CardHeader>
-        <div className='flex flex-wrap items-center justify-between gap-3'>
-          <div className='flex flex-col gap-1'>
-            <CardTitle>{household.name}</CardTitle>
-            <CardDescription>
-              {t('app.householdDetail.memberCount', { count: memberCount })}
-            </CardDescription>
-          </div>
-          <Badge variant='secondary'>{household.role}</Badge>
-        </div>
+        <CardTitle className='flex justify-between font-semibold uppercase'>
+          {household.name}
+          <Badge className='uppercase' variant='secondary'>
+            {household.role}
+          </Badge>
+        </CardTitle>
+        <CardDescription className='font-mono'>
+          {t('app.householdDetail.memberCount', { count: memberCount })}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {isAdmin ? (
@@ -76,9 +73,6 @@ export const HouseholdSettingsCard = ({
             <FieldGroup>
               <FieldInputController
                 control={form.control}
-                description={t(
-                  'app.householdDetail.fields.householdName.description',
-                )}
                 id='settings-household-name'
                 label={t('app.householdDetail.fields.householdName.label')}
                 name='name'
@@ -86,39 +80,10 @@ export const HouseholdSettingsCard = ({
                   'app.householdDetail.fields.householdName.placeholder',
                 )}
               />
-
-              <FieldSelectController
-                control={form.control}
-                description={t(
-                  'app.householdDetail.fields.defaultVisibility.description',
-                )}
-                id='settings-default-visibility'
-                label={t('app.householdDetail.fields.defaultVisibility.label')}
-                name='defaultVisibility'
-                options={[
-                  {
-                    label: t(
-                      'app.householdDetail.fields.defaultVisibility.options.private',
-                    ),
-                    value: 'private',
-                  },
-                  {
-                    label: t(
-                      'app.householdDetail.fields.defaultVisibility.options.household',
-                    ),
-                    value: 'household',
-                  },
-                ]}
-                onValueChange={(value) =>
-                  value === 'private' || value === 'household'
-                    ? value
-                    : undefined
-                }
-              />
             </FieldGroup>
 
             <div className='flex justify-end'>
-              <Button disabled={isSubmitting} type='submit'>
+              <Button disabled={isSubmitting} size={'sm'} type='submit'>
                 {t('app.householdDetail.actions.save')}
               </Button>
             </div>
