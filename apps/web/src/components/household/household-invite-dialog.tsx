@@ -177,11 +177,12 @@ export const HouseholdInviteDialog = ({
             </FieldLabel>
             <Input
               readOnly
-              className='h-10 bg-muted text-sm text-muted-foreground'
+              className='bg-muted text-muted-foreground'
               id='invite-link'
               placeholder={t(
                 'app.householdDetail.members.invite.fields.link.placeholder',
               )}
+              size={'sm'}
               value={inviteLink}
             />
           </Field>

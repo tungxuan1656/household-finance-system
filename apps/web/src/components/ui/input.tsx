@@ -21,9 +21,10 @@ const inputVariants = cva(
 function Input({
   className,
   type,
-  size,
+  size = 'default',
   ...props
-}: React.ComponentProps<'input'> & VariantProps<typeof inputVariants>) {
+}: Omit<React.ComponentProps<'input'>, 'size'> &
+  VariantProps<typeof inputVariants>) {
   return (
     <input
       className={cn(inputVariants({ size, className }))}
