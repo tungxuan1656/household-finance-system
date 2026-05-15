@@ -18,7 +18,6 @@ type CategoryPickerProps = {
   onValueChange: (value: CategoryKey | null) => void
   disabled?: boolean
   id?: string
-  portal?: boolean
 }
 
 export const CategoryPicker = ({
@@ -27,7 +26,6 @@ export const CategoryPicker = ({
   onValueChange,
   disabled = false,
   id,
-  portal = true,
 }: CategoryPickerProps) => {
   const expenseCategories = categories.filter(
     (category) => category.kind === 'expense',
@@ -54,7 +52,7 @@ export const CategoryPicker = ({
         disabled={disabled}
         placeholder={t('app.expenseReference.categoryPicker.placeholder')}
       />
-      <ComboboxContent portal={portal}>
+      <ComboboxContent>
         <ComboboxEmpty>
           {t('app.expenseReference.categoryPicker.empty')}
         </ComboboxEmpty>

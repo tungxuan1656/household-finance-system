@@ -312,9 +312,8 @@ export function AddExpenseDialog({
               categories={categories}
               disabled={isSubmitting}
               id='add-expense-category'
-              portal={false}
               value={formState.categoryKey}
-              onValueChange={(value) => {
+              onValueChange={(value: any) => {
                 setField('categoryKey', value)
               }}
             />
