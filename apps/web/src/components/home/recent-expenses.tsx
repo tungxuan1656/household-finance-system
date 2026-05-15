@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 import { DataState } from '@/components/shared/data-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -60,14 +62,11 @@ function RecentExpenses({
               asChild
               className='h-auto! px-0!'
               size={'sm'}
-              variant={'ghost'}
-              onClick={() => {
-                navigator.vibrate(1000)
-              }}>
-              <span>
+              variant={'ghost'}>
+              <Link href='/expenses'>
                 {t('app.overview.recentExpenses.viewAll')}
                 <span aria-hidden='true'>&nbsp;&rarr;</span>
-              </span>
+              </Link>
             </Button>
           </CardAction>
         </CardHeader>
