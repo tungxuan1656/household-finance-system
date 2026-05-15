@@ -7,23 +7,25 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 ## Entry Conditions
 
 - User is authenticated and in a household (or using app solo).
-- User invokes quick-add or navigates to the "Add Expense" UI.
+- User invokes the canonical add-expense dialog from any supported CTA.
 
 ## User Flow
 
-1. User opens quick-add (global) or dedicated Add Expense screen.
-2. User enters amount; picks category, source (mandatory), payer, date, and note.
-3. Optionally assigns the expense to one or more Groups (Events).
-4. Expense scope defaults to personal/private.
-5. If the user switches the expense to household-shared, the UI must require an explicit household selection for that submission; category choice is independent from the household decision.
-6. User confirms; expense is stored and appears in the transaction list.
+1. User opens the canonical add-expense dialog.
+2. User enters amount with VND shortcut semantics, then picks category, source, date, and `Nội dung`.
+3. User may optionally select a family and/or one group.
+4. Expense scope defaults to private when no family is selected.
+5. If the user selects a family, the submission becomes household-shared for that household only.
+6. Group selection is an independent personal tag decision and may be used with private, household, or mixed cases.
+7. User confirms; expense is stored and appears in the transaction list.
 
 ## Acceptance Criteria
 
-- Quick-add accepts amount and creates an expense with defaults filled where applicable.
-- Add Expense screen requires fields: amount, category, source, payer.
-- Add Expense screen supports optional fields: note, date, group assignment.
-- Visibility/scope is explicit, defaults to personal/private, and requires an explicit household selection only when the user chooses household sharing.
+- Add-expense dialog accepts amount and creates an expense with defaults filled where applicable.
+- Required create fields: amount, category, source, date, content.
+- Optional create fields: family selection and single group tag.
+- Visibility/scope is derived from family selection: no family = private, selected family = household.
+- Payer is derived from the current account during create and is not chosen in the create dialog.
 - New expense appears immediately in UI and is indexed for query & analytics.
 
 ## Failure States
@@ -35,6 +37,6 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 ---
 
 Notes:
-- Categories and sources come from global static reference-data catalogs. Expense flows treat category selection and household selection as separate decisions.
-- Prefer conservative defaults (selected household only when the user explicitly chooses household sharing, creator=payer if not specified).
-- Track telemetry: time-to-add, fields used, and quick-add conversion.
+- Categories and sources come from global static reference-data catalogs. Expense flows treat category selection, family sharing, and group tagging as separate decisions.
+- Group is not household-scoped product truth; the same create surface supports private-only, family-only, group-only, or family+group records.
+- Prefer conservative defaults (no family selected, last source restored, current account as payer).

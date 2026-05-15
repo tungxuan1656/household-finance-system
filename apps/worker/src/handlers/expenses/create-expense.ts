@@ -107,20 +107,16 @@ export const createExpenseHandler = async (
   // Validate group assignments before creation
   let groupIds: string[] = []
   if (body.groupIds && body.groupIds.length > 0) {
-    if (body.visibility === 'private') {
-      throw conflict(locale, 'expenses.cannotAssignGroupToPrivateExpense')
-    }
-
-    if (!householdId) {
-      throw conflict(locale, 'expenses.cannotAssignGroupToPrivateExpense')
-    }
-
     for (const groupId of body.groupIds) {
       const group = await findExpenseGroupById(db, groupId)
       if (!group) {
         throw notFound(locale, 'errors.resourceNotFound')
       }
-      if (group.householdId !== householdId) {
+
+      const hasAccess =
+        (group.householdId !== null && group.householdId === householdId) ||
+        (group.householdId === null && group.createdByUserId === currentUser.id)
+      if (!hasAccess) {
         throw conflict(locale, 'errors.conflict')
       }
     }
@@ -149,11 +145,10 @@ export const createExpenseHandler = async (
   const created = await createExpense(db, input)
 
   // Wire group assignments after successful creation
-  if (groupIds.length > 0 && created.householdId) {
+  if (groupIds.length > 0) {
     await replaceExpenseGroupAssignments(
       db,
       created.id,
-      created.householdId,
       groupIds,
       currentUser.id,
     )

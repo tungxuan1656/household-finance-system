@@ -26,7 +26,8 @@ describe('reference-data contract schema', () => {
 
   it('accepts canonical source keys and rejects unknown keys', () => {
     expect(referenceSourceKeySchema.safeParse('cash').success).toBe(true)
-    expect(referenceSourceKeySchema.safeParse('e-wallet').success).toBe(true)
+    expect(referenceSourceKeySchema.safeParse('momo').success).toBe(true)
+    expect(referenceSourceKeySchema.safeParse('zalo-pay').success).toBe(true)
     expect(referenceSourceKeySchema.safeParse('crypto').success).toBe(false)
   })
 

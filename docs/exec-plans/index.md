@@ -5,6 +5,8 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-15-add-expense-dialog-domain-refactor.md](plans/2026-05-15-add-expense-dialog-domain-refactor.md) - proposed fullstack expense-create refactor: replace quick-add and `/expenses/new` with one shadcn-first `AddExpenseDialog`, add dialog-only VND shortcut amount entry with exact submit normalization, decouple group from household semantics across docs/API/data flows, update fixed source keys, and remove legacy create surfaces after migration.
+
 ## Completed
 
 - [2026-05-14-household-action-card-refactor.md](plans/2026-05-14-household-action-card-refactor.md) - feat-059 frontend-only household page/detail refactor completed: households now use PageShell/DataState with an always-last create card, and household detail admins now see an always-below-member-list invite card wired to the existing invite dialog.

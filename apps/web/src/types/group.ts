@@ -7,14 +7,14 @@ export type ExpenseGroupDTO = {
   endDate: number | null
   eventBudgetMinor: number | null
   totalSpendMinor: number
-  householdId: string
+  householdId: string | null
   createdByUserId: string
   createdAt: number
   updatedAt: number
 }
 
 export type CreateExpenseGroupRequest = {
-  householdId: string
+  householdId?: string
   name: string
   description?: string
   startDate?: number

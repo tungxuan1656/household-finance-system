@@ -10,7 +10,6 @@ export const PATHS = {
   // Protected features
   ONBOARDING: '/onboarding',
   EXPENSES: '/expenses',
-  ADD_EXPENSE: '/expenses/new',
   EXPENSE_DETAIL: '/expenses/[id]',
   EDIT_EXPENSE: '/expenses/[id]/edit',
   EXPENSE_TRASH: '/expenses/deleted',

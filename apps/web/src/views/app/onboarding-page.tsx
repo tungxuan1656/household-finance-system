@@ -41,7 +41,6 @@ function OnboardingPage() {
     string | null
   >(null)
   const [stage, setStage] = useState<OnboardingStage>('setup')
-  const [quickAddOpen, setQuickAddOpen] = useState(false)
   const form = useForm<CreateHouseholdFormValues>({
     defaultValues: {
       name: '',
@@ -123,13 +122,7 @@ function OnboardingPage() {
   }
 
   if (stage === 'complete') {
-    return (
-      <OnboardingCompleteCard
-        activeHouseholdId={activeHouseholdId}
-        quickAddOpen={quickAddOpen}
-        setQuickAddOpen={setQuickAddOpen}
-      />
-    )
+    return <OnboardingCompleteCard activeHouseholdId={activeHouseholdId} />
   }
 
   return (

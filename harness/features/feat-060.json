@@ -1,0 +1,87 @@
+{
+  "id": "feat-060",
+  "name": "Canonical add-expense dialog and independent group/source refactor",
+  "status": "done",
+  "description": "Replaced quick-add and the dedicated `/expenses/new` create surface with one global `AddExpenseDialog`, added dialog-only VND thousand-shortcut amount entry, fixed category-picker dialog nesting, switched canonical source keys to `cash|bank-transfer|card|momo|zalo-pay|shopee-pay|other`, and decoupled expense groups from household scope so expenses may be private-only, household-only, group-only, or household+group.",
+  "dependencies": [
+    "feat-017",
+    "feat-018",
+    "feat-019",
+    "feat-021",
+    "feat-022",
+    "feat-023",
+    "feat-024",
+    "feat-025",
+    "feat-030",
+    "feat-032",
+    "feat-035"
+  ],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/add-expense-dialog.tsx",
+      "description": "New canonical create dialog owns source/category/household/group queries, VND amount helper usage, validation, create mutation, profile last-source persistence, and undo toast flow without sending payerUserId."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/add-expense/provider.tsx",
+      "description": "Global provider mounts one shared AddExpenseDialog, preserves FAB + q shortcut behavior, and exposes openDialog/closeDialog for all entry points."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/expenses-page.tsx",
+      "description": "Expenses page header CTA now opens the dialog, supports `/expenses?add-expense=1`, and merges personal plus household group options for the filter surface."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/ui/combobox.tsx",
+      "description": "Combobox content now supports `portal={false}` so dialog-hosted category selection stays inside the dialog focus/overlay boundary."
+    },
+    {
+      "type": "file",
+      "path": "apps/worker/migrations/0008_independent_groups.sql",
+      "description": "Worker migration decouples group storage/assignment from household scope and remaps legacy `e-wallet` rows to `momo`."
+    },
+    {
+      "type": "file",
+      "path": "docs/product-specs/quick-add-experience.md",
+      "description": "Product spec now documents the canonical add-expense dialog, VND shortcut amount semantics, independent family/group decisions, and retirement of `/expenses/new`."
+    },
+    {
+      "type": "command",
+      "command": "pnpm --filter web test -- src/components/expense/dialog-amount-helper.test.ts",
+      "output": "PASS",
+      "description": "Focused web helper test verified `3 -> 3.000 đ` display and `3000` submit amount behavior."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh typecheck",
+      "output": "OK",
+      "description": "Repository typecheck passed after removing stale route types and aligning nullable group household typing."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh lint",
+      "output": "OK",
+      "description": "Repository lint verification passed."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh test",
+      "output": "OK",
+      "description": "Full repository test target passed after updating stale worker contract/integrity tests to match the new source/group product truth."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh",
+      "output": "Done!",
+      "description": "Final full verification passed, including install, harness, lint, typecheck, test, and GitNexus sync steps."
+    },
+    {
+      "type": "analysis",
+      "command": "gitnexus_detect_changes(scope: all)",
+      "output": "risk_level: high; changed_files: 49; affected_processes: 6",
+      "description": "Final GitNexus change detection found high risk with affected processes in onboarding, create-expense, and group list/assignment/read flows, so those paths deserve focused regression attention when reviewing the diff."
+    }
+  ]
+}

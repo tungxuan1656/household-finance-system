@@ -1,8 +1,9 @@
 'use client'
 
-import Link from 'next/link'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
+import { useAddExpenseDialog } from '@/components/expense/add-expense/provider'
 import { ExpenseActiveFilterSummary } from '@/components/expense/expense-active-filter-summary'
 import {
   ExpenseFeedFilters,
@@ -13,11 +14,11 @@ import { ExpenseFeedSummary } from '@/components/expense/expense-feed-summary'
 import { Button } from '@/components/ui/button'
 import { useExpenseGroupListQuery } from '@/hooks/api/use-groups'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
-import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 import type { ExpenseListParams } from '@/types/expense'
+import type { ExpenseGroupDTO } from '@/types/group'
 
 const DEFAULT_FILTER_VALUES: ExpenseFeedFilterValues = {
   amountMax: '',
@@ -53,7 +54,24 @@ const toNumber = (value: string) => {
   return Number.isNaN(parsed) ? undefined : parsed
 }
 
+const mergeGroups = (
+  personalGroups: ExpenseGroupDTO[],
+  householdGroups: ExpenseGroupDTO[],
+) => {
+  const deduped = new Map<string, ExpenseGroupDTO>()
+
+  for (const group of [...personalGroups, ...householdGroups]) {
+    deduped.set(group.id, group)
+  }
+
+  return [...deduped.values()]
+}
+
 function ExpensesPage() {
+  const { openDialog } = useAddExpenseDialog()
+  const pathname = usePathname()
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const currentHousehold = useHouseholdStore.use.currentHousehold()
   const households = useHouseholdStore.use.households()
   const selectedHouseholdId = currentHousehold?.id ?? households[0]?.id
@@ -62,7 +80,8 @@ function ExpensesPage() {
   )
 
   const { data: referenceCategories } = useReferenceCategoriesQuery()
-  const { data: expenseGroupsResponse } =
+  const { data: personalGroupsResponse } = useExpenseGroupListQuery(undefined)
+  const { data: householdGroupsResponse } =
     useExpenseGroupListQuery(selectedHouseholdId)
 
   useEffect(() => {
@@ -70,6 +89,23 @@ function ExpensesPage() {
       void householdActions.fetchHouseholds()
     }
   }, [households.length])
+
+  useEffect(() => {
+    if (searchParams.get('add-expense') !== '1') {
+      return
+    }
+
+    openDialog()
+
+    const nextParams = new URLSearchParams(searchParams.toString())
+    nextParams.delete('add-expense')
+
+    const nextQuery = nextParams.toString()
+
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+      scroll: false,
+    })
+  }, [openDialog, pathname, router, searchParams])
 
   const categories = useMemo(
     () =>
@@ -79,7 +115,14 @@ function ExpensesPage() {
     [referenceCategories?.items],
   )
 
-  const groups = expenseGroupsResponse?.items ?? []
+  const groups = useMemo(
+    () =>
+      mergeGroups(
+        personalGroupsResponse?.items ?? [],
+        householdGroupsResponse?.items ?? [],
+      ),
+    [householdGroupsResponse?.items, personalGroupsResponse?.items],
+  )
   const selectedCategory = categories.find(
     (category) => category.key === filterValues.categoryKey,
   )
@@ -146,8 +189,8 @@ function ExpensesPage() {
             {t('expense.feed.description')}
           </p>
         </div>
-        <Button asChild size='xl'>
-          <Link href={PATHS.ADD_EXPENSE}>{t('expense.addTitle')}</Link>
+        <Button size='xl' type='button' onClick={openDialog}>
+          {t('expense.addTitle')}
         </Button>
       </header>
 

@@ -25,7 +25,7 @@ import {
 type GroupFormProps = {
   mode: 'create' | 'edit'
   initialValues?: Partial<CreateExpenseGroupRequest>
-  householdId: string
+  householdId?: string | null
   onSubmit: (
     values: CreateExpenseGroupRequest | UpdateExpenseGroupRequest,
   ) => void
@@ -55,12 +55,12 @@ function GroupForm({
   const handleSubmit = (values: GroupFormValues) => {
     if (mode === 'create') {
       const payload: CreateExpenseGroupRequest = {
-        householdId,
         name: values.name,
         description: values.description,
         startDate: values.startDate,
         endDate: values.endDate,
         eventBudget: values.eventBudget,
+        ...(householdId ? { householdId } : {}),
       }
 
       onSubmit(payload)

@@ -2,7 +2,7 @@ import { newId } from '@/utils/id'
 
 export interface StoredExpenseGroup {
   id: string
-  householdId: string
+  householdId: string | null
   name: string
   description: string | null
   status: 'active' | 'archived'
@@ -17,7 +17,7 @@ export interface StoredExpenseGroup {
 }
 
 export interface CreateExpenseGroupInput {
-  householdId: string
+  householdId: string | null
   name: string
   description?: string | null
   startDate?: number | null
@@ -37,7 +37,7 @@ export interface UpdateExpenseGroupInput {
 // Internal shape for mapping DB rows to StoredExpenseGroup
 type ExpenseGroupRow = {
   id: string
-  household_id: string
+  household_id: string | null
   name: string
   description: string | null
   status: 'active' | 'archived'
@@ -157,6 +157,30 @@ export const listExpenseGroupsByHousehold = async (
         ORDER BY eg.created_at DESC`,
     )
     .bind(householdId)
+    .all<ExpenseGroupRow>()
+
+  return result.results.map((row) => mapRow(row))
+}
+
+export const listExpenseGroupsByOwner = async (
+  db: D1Database,
+  userId: string,
+): Promise<StoredExpenseGroup[]> => {
+  const result = await db
+    .prepare(
+      `SELECT ${BASE_COLUMNS},
+              COALESCE(SUM(e.amount_minor), 0) AS total_spend_minor
+         FROM expense_groups eg
+         LEFT JOIN expense_group_items egi ON egi.group_id = eg.id
+         LEFT JOIN expenses e ON e.id = egi.expense_id AND e.deleted_at IS NULL
+        WHERE eg.created_by_user_id = ?
+          AND eg.household_id IS NULL
+          AND eg.status = 'active'
+          AND eg.archived_at IS NULL
+        GROUP BY eg.id
+        ORDER BY eg.created_at DESC`,
+    )
+    .bind(userId)
     .all<ExpenseGroupRow>()
 
   return result.results.map((row) => mapRow(row))

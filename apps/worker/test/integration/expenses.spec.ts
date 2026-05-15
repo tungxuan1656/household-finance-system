@@ -60,6 +60,58 @@ describe('POST /api/v1/expenses - integration tests', () => {
     expect(payload.data.sourceKey).toBe('cash')
   })
 
+  it('accepts momo as a valid expense source key and persists it', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-expense-momo:user-momo@example.com',
+    )
+
+    const response = await SELF.fetch('https://example.com/api/v1/expenses', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 100000,
+        categoryKey: 'food',
+        sourceKey: 'momo',
+        visibility: 'private',
+        title: 'Momo expense',
+        occurredAt: Date.now(),
+      }),
+    })
+
+    expect(response.status).toBe(201)
+
+    const payload =
+      await parseJson<ApiEnvelope<{ sourceKey: string }>>(response)
+    expect(payload.data.sourceKey).toBe('momo')
+  })
+
+  it('rejects removed e-wallet as a source key', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-expense-ewallet:user-ewallet@example.com',
+    )
+
+    const response = await SELF.fetch('https://example.com/api/v1/expenses', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: 100000,
+        categoryKey: 'food',
+        sourceKey: 'e-wallet',
+        visibility: 'private',
+        title: 'Old source expense',
+        occurredAt: Date.now(),
+      }),
+    })
+
+    expect(response.status).toBe(400)
+  })
+
   it('Happy path: create household expense with valid membership', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-expense-household:user-household-expense@example.com',
@@ -270,7 +322,7 @@ describe('POST /api/v1/expenses - integration tests', () => {
     expect(response.status).toBe(401)
   })
 
-  it('Error: zero/negative amount -> 400', async () => {
+  it('Error: negative amount -> 400', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-expense-amount:user-amount@example.com',
     )
@@ -292,6 +344,9 @@ describe('POST /api/v1/expenses - integration tests', () => {
     })
 
     expect(response.status).toBe(400)
+
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+    expect(payload.error.code).toBe('INVALID_INPUT')
   })
 
   it('Error: missing required fields -> 400', async () => {

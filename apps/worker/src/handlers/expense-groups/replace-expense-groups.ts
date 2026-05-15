@@ -60,11 +60,13 @@ export const replaceExpenseGroupsHandler = async (
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
   } else {
-    const membership = await findActiveHouseholdMembership(
-      db,
-      currentUser.id,
-      expense.householdId!,
-    )
+    const membership = expense.householdId
+      ? await findActiveHouseholdMembership(
+          db,
+          currentUser.id,
+          expense.householdId,
+        )
+      : null
     if (!membership) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
@@ -81,16 +83,18 @@ export const replaceExpenseGroupsHandler = async (
 
   // Validate all groups belong to the same household as the expense
   if (body.groupIds.length > 0) {
-    if (!expense.householdId) {
-      throw conflict(locale, 'expenses.cannotAssignGroupToPrivateExpense')
-    }
-
     for (const groupId of body.groupIds) {
       const group = await findExpenseGroupById(db, groupId)
       if (!group) {
         throw notFound(locale, 'errors.resourceNotFound')
       }
-      if (group.householdId !== expense.householdId) {
+
+      const hasAccess =
+        (group.householdId !== null &&
+          group.householdId === expense.householdId) ||
+        (group.householdId === null && group.createdByUserId === currentUser.id)
+
+      if (!hasAccess) {
         throw conflict(locale, 'errors.conflict')
       }
     }
@@ -98,21 +102,11 @@ export const replaceExpenseGroupsHandler = async (
     await replaceExpenseGroupAssignments(
       db,
       expenseId,
-      expense.householdId,
       body.groupIds,
       currentUser.id,
     )
   } else {
-    // Clear all assignments
-    if (expense.householdId) {
-      await replaceExpenseGroupAssignments(
-        db,
-        expenseId,
-        expense.householdId,
-        [],
-        currentUser.id,
-      )
-    }
+    await replaceExpenseGroupAssignments(db, expenseId, [], currentUser.id)
   }
 
   return mapStoredExpenseToDto(expense, body.groupIds)

@@ -10,6 +10,7 @@ type SourcePickerProps = {
   value: SourceKey | undefined
   onValueChange: (value: SourceKey) => void
   disabled?: boolean
+  size?: 'sm' | 'default'
 }
 
 export const SourcePicker = ({
@@ -17,11 +18,13 @@ export const SourcePicker = ({
   value,
   onValueChange,
   disabled = false,
+  size = 'default',
 }: SourcePickerProps) => (
   <NativeSelect
     aria-label={t('app.expenseReference.sourcePicker.ariaLabel')}
     disabled={disabled}
     id={id}
+    size={size}
     value={value ?? ''}
     onChange={(event) => {
       const val = event.target.value

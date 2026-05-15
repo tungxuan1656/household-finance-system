@@ -304,10 +304,12 @@
         "placeholder": "Chọn nguồn"
       },
       "sources": {
-        "bank-transfer": "Chuyển khoản ngân hàng",
+        "bank-transfer": "CK Ngân hàng",
         "card": "Thẻ",
         "cash": "Tiền mặt",
-        "e-wallet": "Ví điện tử",
+        "momo": "MoMo",
+        "zalo-pay": "ZaloPay",
+        "shopee-pay": "ShopeePay",
         "other": "Khác"
       }
     },
@@ -673,9 +675,16 @@
     "editTitle": "Chỉnh sửa chi tiêu",
     "amount": "Số tiền",
     "category": "Danh mục",
+    "content": "Nội dung",
+    "createDialog": {
+      "description": "Ghi nhanh một khoản chi với số tiền VND, danh mục, gia đình và nhóm phù hợp."
+    },
     "source": "Nguồn",
     "date": "Ngày",
+    "group": "Nhóm",
+    "household": "Gia đình",
     "note": "Ghi chú",
+    "none": "Không",
     "visibilityLabel": "Chia sẻ",
     "visibility": {
       "private": "Riêng tư",

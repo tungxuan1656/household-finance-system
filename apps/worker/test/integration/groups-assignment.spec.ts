@@ -173,6 +173,101 @@ describe('Worker integration: expense-to-group assignment', () => {
     expect(errorPayload.error.code).toBe('CONFLICT')
   })
 
+  it('allows private expense group assignment without a household when owner selected the group', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-group-personal:group-personal@example.com',
+    )
+
+    const groupResponse = await createExpenseGroup(auth.accessToken, {
+      name: 'Personal tag',
+    })
+    const groupId = groupResponse.data.id
+
+    const expenseResponse = await createExpense(auth.accessToken, {
+      title: 'Lunch',
+      amount: 50000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      occurredAt: Date.now(),
+      visibility: 'private',
+      groupIds: [groupId],
+    })
+
+    expect(expenseResponse.data.id).toBeTruthy()
+  })
+
+  it('allows assigning an unscoped personal tag across households', async () => {
+    const auth1 = await exchangeAccessToken(
+      'test:firebase-user-group-personal-1:group-personal-1@example.com',
+    )
+    const auth2 = await exchangeAccessToken(
+      'test:firebase-user-group-personal-2:group-personal-2@example.com',
+    )
+
+    const household1 = await createHousehold(auth1.accessToken, 'Household 1')
+
+    const groupResponse = await createExpenseGroup(auth2.accessToken, {
+      name: 'Independent tag',
+    })
+    const otherGroupId = groupResponse.data.id
+
+    await createExpense(auth1.accessToken, {
+      householdId: household1,
+      title: 'Coffee',
+      amount: 25000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      occurredAt: Date.now(),
+      visibility: 'household',
+    })
+    const expenseResponse = await createExpense(auth1.accessToken, {
+      householdId: household1,
+      title: 'Coffee',
+      amount: 25000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      occurredAt: Date.now(),
+      visibility: 'household',
+    })
+    const expenseId = expenseResponse.data.id
+
+    const replaceResponse = await SELF.fetch(
+      `https://example.com/api/v1/expenses/${expenseId}/groups`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${auth1.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ groupIds: [otherGroupId] }),
+      },
+    )
+
+    expect(replaceResponse.status).toBe(409)
+  })
+
+  it('persists private expense group assignments for owned unscoped groups', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-group-private:group-private@example.com',
+    )
+
+    const groupResponse = await createExpenseGroup(auth.accessToken, {
+      name: 'Private tag',
+    })
+
+    const expenseResponse = await createExpense(auth.accessToken, {
+      title: 'Snack',
+      amount: 12000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      occurredAt: Date.now(),
+      visibility: 'private',
+      groupIds: [groupResponse.data.id],
+    })
+
+    expect(expenseResponse.data.groupIds).toEqual([groupResponse.data.id])
+  })
+
   it('returns group summary with computed totals', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-group-summary:group-summary@example.com',

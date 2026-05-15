@@ -33,7 +33,9 @@ const SOURCE_LABEL_KEYS: Record<SourceKey, TranslationKey> = {
   cash: 'app.expenseReference.sources.cash',
   'bank-transfer': 'app.expenseReference.sources.bank-transfer',
   card: 'app.expenseReference.sources.card',
-  'e-wallet': 'app.expenseReference.sources.e-wallet',
+  momo: 'app.expenseReference.sources.momo',
+  'zalo-pay': 'app.expenseReference.sources.zalo-pay',
+  'shopee-pay': 'app.expenseReference.sources.shopee-pay',
   other: 'app.expenseReference.sources.other',
 }
 

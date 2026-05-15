@@ -47,7 +47,6 @@ export const findGroupIdsForExpenses = async (
 export const replaceExpenseGroupAssignments = async (
   db: D1Database,
   expenseId: string,
-  householdId: string,
   groupIds: string[],
   assignedByUserId: string,
 ): Promise<void> => {
@@ -57,9 +56,9 @@ export const replaceExpenseGroupAssignments = async (
     db
       .prepare(
         `DELETE FROM expense_group_items
-          WHERE expense_id = ? AND household_id = ?`,
+          WHERE expense_id = ?`,
       )
-      .bind(expenseId, householdId),
+      .bind(expenseId),
   )
 
   const now = Date.now()
@@ -71,7 +70,7 @@ export const replaceExpenseGroupAssignments = async (
             id, household_id, expense_id, group_id, assigned_by_user_id, created_at
           ) VALUES (?, ?, ?, ?, ?, ?)`,
         )
-        .bind(newId(), householdId, expenseId, groupId, assignedByUserId, now),
+        .bind(newId(), null, expenseId, groupId, assignedByUserId, now),
     )
   }
 

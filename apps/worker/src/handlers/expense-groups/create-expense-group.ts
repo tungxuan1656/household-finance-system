@@ -26,14 +26,10 @@ export const createExpenseGroupHandler = async (
     throw invalidInput(locale, 'errors.invalidJsonBody')
   }
 
-  if (typeof raw?.householdId !== 'string' || !raw.householdId.trim()) {
-    throw invalidInput(locale, 'errors.invalidRequestBody', {
-      formErrors: [],
-      fieldErrors: { householdId: ['Required'] },
-    })
-  }
-
-  const householdId = raw.householdId.trim()
+  const householdId =
+    typeof raw?.householdId === 'string' && raw.householdId.trim()
+      ? raw.householdId.trim()
+      : null
 
   // Validate the remaining fields with the existing schema
   const { householdId: _ignored, ...rest } = raw
@@ -47,17 +43,19 @@ export const createExpenseGroupHandler = async (
   }
 
   // Validate membership and permissions
-  const membership = await findActiveHouseholdMembership(
-    db,
-    currentUser.id,
-    householdId,
-  )
-  if (!membership) {
-    throw notFound(locale, 'errors.resourceNotFound')
-  }
+  if (householdId) {
+    const membership = await findActiveHouseholdMembership(
+      db,
+      currentUser.id,
+      householdId,
+    )
+    if (!membership) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
 
-  if (!canManageGroups(membership.role)) {
-    throw forbidden(locale, 'errors.forbidden')
+    if (!canManageGroups(membership.role)) {
+      throw forbidden(locale, 'errors.forbidden')
+    }
   }
 
   // Create group via repository

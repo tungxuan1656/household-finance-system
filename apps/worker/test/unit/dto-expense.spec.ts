@@ -43,7 +43,7 @@ describe('expense contract schema', () => {
       const parsed = createExpenseRequestSchema().safeParse({
         amount: 1000,
         categoryKey: 'shopping',
-        sourceKey: 'e-wallet',
+        sourceKey: 'momo',
         title: 'Item',
         occurredAt: 1750000000000,
         note: 'a'.repeat(1000),

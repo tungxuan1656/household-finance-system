@@ -22,11 +22,11 @@ export const createExpenseGroup = async (
   return response.data
 }
 
-export const listExpenseGroups = async (householdId: string) => {
+export const listExpenseGroups = async (householdId?: string) => {
   const response = await client.get<ListExpenseGroupsResponse>(
     API_ENDPOINTS.groups.list,
     {
-      params: { household_id: householdId },
+      params: householdId ? { household_id: householdId } : undefined,
     },
   )
 

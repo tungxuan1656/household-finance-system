@@ -29,7 +29,8 @@ import type {
 export const GROUP_KEYS = {
   all: ['groups'] as const,
   lists: () => [...GROUP_KEYS.all, 'list'] as const,
-  list: (householdId: string) => [...GROUP_KEYS.lists(), householdId] as const,
+  list: (householdId: string | undefined) =>
+    [...GROUP_KEYS.lists(), householdId ?? 'personal'] as const,
   detail: (id: string) => [...GROUP_KEYS.all, id] as const,
   detailSummary: (id: string) => [...GROUP_KEYS.all, id, 'summary'] as const,
 }
@@ -69,9 +70,8 @@ export const useArchiveExpenseGroupMutation = () => {
 
 export const useExpenseGroupListQuery = (householdId: string | undefined) => {
   return useQuery<ListExpenseGroupsResponse, Error>({
-    queryKey: GROUP_KEYS.list(householdId ?? 'unknown'),
-    queryFn: () => listExpenseGroups(householdId!),
-    enabled: !!householdId,
+    queryKey: GROUP_KEYS.list(householdId),
+    queryFn: () => listExpenseGroups(householdId),
   })
 }
 

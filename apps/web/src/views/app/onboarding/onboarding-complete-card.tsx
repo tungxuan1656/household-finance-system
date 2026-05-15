@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 
-import { QuickAddExpenseDialog } from '@/components/expense/quick-add-expense-dialog'
+import { useAddExpenseDialog } from '@/components/expense/add-expense/provider'
 import { HouseholdInviteDialog } from '@/components/household/household-invite-dialog'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,15 +17,13 @@ import { t } from '@/lib/i18n/t'
 
 interface OnboardingCompleteCardProps {
   activeHouseholdId: string | null
-  quickAddOpen: boolean
-  setQuickAddOpen: (open: boolean) => void
 }
 
 function OnboardingCompleteCard({
   activeHouseholdId,
-  quickAddOpen,
-  setQuickAddOpen,
 }: OnboardingCompleteCardProps) {
+  const { openDialog } = useAddExpenseDialog()
+
   return (
     <div className='mx-auto flex w-full max-w-2xl flex-col gap-4'>
       <Card>
@@ -48,10 +46,7 @@ function OnboardingCompleteCard({
               {t('app.onboarding.actions.openBudgetSetup')}
             </Link>
           </Button>
-          <Button
-            type='button'
-            variant='outline'
-            onClick={() => setQuickAddOpen(true)}>
+          <Button type='button' variant='outline' onClick={openDialog}>
             {t('app.onboarding.actions.openQuickAdd')}
           </Button>
           <Button asChild type='button'>
@@ -61,11 +56,6 @@ function OnboardingCompleteCard({
           </Button>
         </CardContent>
       </Card>
-
-      <QuickAddExpenseDialog
-        open={quickAddOpen}
-        onOpenChange={setQuickAddOpen}
-      />
     </div>
   )
 }

@@ -299,6 +299,11 @@
       "id": "feat-059",
       "name": "Household action card page refactor",
       "status": "done"
+    },
+    {
+      "id": "feat-060",
+      "name": "Canonical add-expense dialog and independent group/source refactor",
+      "status": "done"
     }
   ]
 }

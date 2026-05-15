@@ -130,3 +130,10 @@ export const replaceExpenseGroupsRequestSchema = () =>
         .min(0, 'Group IDs must be an array'),
     })
     .strict()
+
+export const expenseGroupHouseholdQuerySchema = () =>
+  z
+    .object({
+      household_id: z.string().trim().min(1).optional(),
+    })
+    .strict()
