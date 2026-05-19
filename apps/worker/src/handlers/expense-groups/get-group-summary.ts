@@ -39,9 +39,9 @@ export const getGroupSummaryHandler = async (
   const membership = await findActiveHouseholdMembership(
     db,
     currentUser.id,
-    group.householdId,
+    group.householdId ?? '',
   )
-  if (!membership) {
+  if (!membership && group.createdByUserId !== currentUser.id) {
     throw notFound(locale, 'errors.resourceNotFound')
   }
 

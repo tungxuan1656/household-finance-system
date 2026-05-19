@@ -2,6 +2,7 @@ import type { z } from 'zod'
 
 import type {
   createExpenseGroupRequestSchema,
+  expenseGroupHouseholdQuerySchema,
   expenseGroupPathParamsSchema,
   replaceExpenseGroupsRequestSchema,
   updateExpenseGroupRequestSchema,
@@ -23,6 +24,10 @@ export type ReplaceExpenseGroupsRequest = z.output<
   ReturnType<typeof replaceExpenseGroupsRequestSchema>
 >
 
+export type ExpenseGroupHouseholdQuery = z.output<
+  ReturnType<typeof expenseGroupHouseholdQuerySchema>
+>
+
 export interface ExpenseGroupDTO {
   id: string
   name: string
@@ -32,7 +37,7 @@ export interface ExpenseGroupDTO {
   endDate: number | null
   eventBudgetMinor: number | null
   totalSpendMinor: number
-  householdId: string
+  householdId: string | null
   createdByUserId: string
   createdAt: number
   updatedAt: number

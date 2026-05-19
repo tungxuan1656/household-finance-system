@@ -63,7 +63,9 @@ Provide clear, maintainable categorization for expenses to power budgets and ana
 - `cash`
 - `bank-transfer`
 - `card`
-- `e-wallet`
+- `momo`
+- `zalo-pay`
+- `shopee-pay`
 - `other`
 
 ## User Flow

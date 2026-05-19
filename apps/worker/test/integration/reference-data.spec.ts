@@ -89,7 +89,9 @@ describe('Worker integration: reference data', () => {
       { key: 'cash' },
       { key: 'bank-transfer' },
       { key: 'card' },
-      { key: 'e-wallet' },
+      { key: 'momo' },
+      { key: 'zalo-pay' },
+      { key: 'shopee-pay' },
       { key: 'other' },
     ])
   })

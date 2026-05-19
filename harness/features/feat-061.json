@@ -1,0 +1,59 @@
+{
+  "id": "feat-061",
+  "name": "Shared expense entry form for add/edit with VND amount normalization",
+  "status": "done",
+  "description": "Unify add-expense and edit-expense on one canonical shared form, preserve the approved add-expense row UI, normalize field/control code structure, and make VND thousand-shortcut amount mapping symmetric for create and edit.",
+  "dependencies": ["feat-017", "feat-019", "feat-024", "feat-053", "feat-060"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "docs/design-docs/2026-05-19-expense-entry-form-unification-design.md",
+      "description": "Proposed design doc defines the shared add/edit expense-entry form, locked UI preservation rule, canonical create/edit field set, code normalization boundaries, and symmetric VND amount mapping requirements."
+    },
+    {
+      "type": "file",
+      "path": "docs/design-docs/index.md",
+      "description": "Design docs index now links the new proposed expense-entry unification design."
+    },
+    {
+      "type": "file",
+      "path": "harness/progress.md",
+      "description": "Progress log records user-approved direction and next-step planning for the expense-entry unification work."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/expense-entry-form.tsx",
+      "description": "Canonical shared row-based expense entry UI now serves both add-expense and edit-expense with the locked 7-field layout."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/use-expense-entry-form.ts",
+      "description": "Shared expense entry hook now owns create/edit state, validation, VND hydration, create submit, and edit submit behavior."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/views/app/edit-expense-page.tsx",
+      "description": "Edit expense page now renders the canonical shared expense-entry form and uses the same group/category option logic as the add dialog."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/dialog-amount-helper.test.ts",
+      "description": "Focused VND amount tests verify display/submit symmetry and reverse hydration from stored minor values."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/use-expense-entry-form.test.ts",
+      "description": "Focused shared-hook tests verify create defaults, edit hydration, validation, private/household payloads, and update payload wiring."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/expense-entry-options.test.ts",
+      "description": "Focused helper tests verify expense-only category filtering and merged personal/household group option behavior."
+    },
+    {
+      "type": "command",
+      "path": "./init.sh",
+      "description": "Final full repository verification passed after the shared expense-entry unification and cleanup work."
+    }
+  ]
+}

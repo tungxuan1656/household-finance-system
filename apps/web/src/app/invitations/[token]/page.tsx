@@ -1,4 +1,4 @@
-import { AcceptInvitationPage } from '@/views/invitations/accept-invitation-page'
+import { AcceptInvitationPage } from '@/features/invitations/pages/accept-invitation-page'
 
 export default async function InvitationAcceptRoute({
   params,

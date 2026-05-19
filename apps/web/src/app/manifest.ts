@@ -35,7 +35,7 @@ export default function manifest(): MetadataRoute.Manifest {
     shortcuts: [
       {
         name: 'Add Expense',
-        url: '/expenses/new',
+        url: '/expenses?add-expense=1',
       },
       {
         name: 'Overview',

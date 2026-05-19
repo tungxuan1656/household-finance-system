@@ -5,11 +5,11 @@ description: Use when executing implementation plans with independent tasks in t
 
 # Subagent-Driven Development
 
-Execute plan by dispatching fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
+Execute plan by dispatching fresh subagents per task or per lane, with two-stage review after each implemented unit: spec compliance review first, then code quality review.
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
-**Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
+**Core principle:** Fresh subagent per task/lane + safe phase-based parallelism + two-stage review (spec then quality) = high quality, fast iteration
 
 **Continuous execution:** Do not pause to check in with your human partner between tasks. Execute all tasks from the plan without stopping. The only reasons to stop are: BLOCKED status you cannot resolve, ambiguity that genuinely prevents progress, or all tasks complete. "Should I continue?" prompts and progress summaries waste their time — they asked you to execute the plan, so execute it.
 
@@ -41,43 +41,95 @@ Tasks mostly independent?
 - Two-stage review after each task: spec compliance first, then code quality
 - Faster iteration (no human-in-loop between tasks)
 
+## Parallelism Default
+
+**Default mode is still sequential.** Do **not** parallelize implementation by reflex.
+
+Parallel implementation is allowed only when it is **provably safer and faster** than sequential execution.
+
+Use parallel lanes only when all of these are true:
+- Shared contract or architecture boundary is already defined and stable enough for implementers to target
+- File overlap is none or very low
+- Tasks do not modify the same active integration point or shared mutable core at the same time
+- Orchestrator owns the reintegration step and final acceptance decisions
+- Each lane can still be reviewed independently before merge into the main line of work
+
+If any of those are false, stay sequential.
+
+## Safe Parallelization Model
+
+Think in **phases**, not "everything at once."
+
+### Phase types
+
+**Usually sequential:**
+- Preflight discovery, impact analysis, and risk checks
+- Architecture choices and shared contract definition
+- Core/shared module changes that every lane depends on
+- Final integration, dead-code cleanup, and final verification
+
+**Sometimes parallel:**
+- Independent implementation lanes with stable contracts
+- Isolated tests/helpers for one bounded area
+- Consumer rewires after shared core is stable
+- Docs or harness updates that do not change code behavior (only if they truly do not depend on final verification state)
+
+### Good parallel examples
+
+- Helper/test lane + presentational UI extraction lane
+- Two consumers rewired to the same already-stable shared module
+- Separate folders with separate ownership boundaries and no shared core edits
+
+### Bad parallel examples
+
+- Two subagents both editing the same shared hook/class/module
+- Contract still changing while consumers are being updated
+- Deleting old code before all consumers are migrated
+- Broad refactors where each lane would need architectural judgment independently
+
 ## The Process
 
 ```
 Read plan, extract all tasks with full text, note context, create TodoWrite
     |
     v
-For each task:
+Classify tasks: sequential core vs parallel-safe lanes
     |
     v
-Dispatch implementer subagent (./implementer-prompt.md)
+Complete sequential preflight/contract/core tasks first
     |
     v
-Implementer asks questions? ──YES──> Answer, provide context, re-dispatch
+Any parallel-safe lanes ready? ──NO──> Dispatch next implementer sequentially
     |
-    NO
+    YES
     v
-Implementer implements, tests, commits, self-reviews
+Dispatch implementer subagents for one batch of independent lanes
     |
     v
-Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)
+Implementers ask questions? ──YES──> Answer, provide context, re-dispatch affected lane
+    |
+    v
+Implementers implement, test, and self-review in their lane
+    |
+    v
+Dispatch spec reviewer subagent per completed task/lane (or per tightly bounded batch)
     |
     v
 Spec reviewer confirms code matches spec? ──NO──> Implementer fixes, re-review
     |
     YES
     v
-Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)
+Dispatch code quality reviewer subagent per completed task/lane (or per tightly bounded batch)
     |
     v
 Code quality reviewer approves? ──NO──> Implementer fixes, re-review
     |
     YES
     v
-Mark task complete in TodoWrite
+Orchestrator reintegrates approved lanes, resolves conflicts, and updates TodoWrite
     |
     v
-More tasks? ──YES──> Next task
+More tasks? ──YES──> Next sequential task or next safe parallel batch
     |
     NO
     v
@@ -138,7 +190,7 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 - Start implementation on main/master branch without explicit user consent
 - Skip reviews (spec compliance OR code quality)
 - Proceed with unfixed issues
-- Dispatch multiple implementation subagents in parallel (conflicts)
+- Dispatch multiple implementation subagents in parallel **by default**
 - Make subagent read plan file (provide full text instead)
 - Skip scene-setting context (subagent needs to understand where task fits)
 - Ignore subagent questions (answer before letting them proceed)
@@ -147,6 +199,18 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 - Let implementer self-review replace actual review (both are needed)
 - **Start code quality review before spec compliance is ✅** (wrong order)
 - Move to next task while either review has open issues
+- Parallelize lanes that share the same unstable core module or contract
+- Let subagents independently decide reintegration strategy for overlapping changes
+- Delete old modules while migration lanes are still incomplete
+
+**Parallel only when all safety checks pass:**
+- Shared contract stable enough
+- Minimal overlap in touched files
+- Lane boundaries are explicit
+- Reintegration owner is explicit
+- Review happens for each completed lane before acceptance
+
+If you cannot explain why the lanes are independent, they are not independent enough.
 
 **If subagent asks questions:**
 - Answer clearly and completely
@@ -158,6 +222,12 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 - Reviewer reviews again
 - Repeat until approved
 - Don't skip the re-review
+
+**If running parallel lanes:**
+- Keep each lane narrowly scoped
+- Prefer one parallel batch at a time, not unlimited fan-out
+- Re-check whether later lanes are still independent after earlier lanes land
+- Collapse back to sequential mode immediately if contract drift or merge tension appears
 
 **If subagent fails task:**
 - Dispatch fix subagent with specific instructions

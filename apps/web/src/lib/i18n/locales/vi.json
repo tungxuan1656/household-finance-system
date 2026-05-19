@@ -146,12 +146,17 @@
         "clearAll": "Xoá tất cả"
       },
       "hero": {
+        "budgetRemaining": "Ngân sách còn lại",
+        "changeFromPrevious": "{{percent}}% so với tháng trước",
+        "daysRemaining": "Số ngày còn lại",
+        "dailyRateLabel": "Mức chi tiêu mỗi ngày",
         "percentOfBudget": "{{percent}}% ngân sách tháng",
         "dailyRate": "Còn {{days}} ngày — khoảng {{amount}}/ngày",
         "monthOverMonth": "{{percent}}% so với tháng trước",
         "noBudget": "Thiết lập ngân sách tháng để theo dõi chi tiêu",
         "overBudget": "Vượt ngân sách {{amount}}",
-        "remaining": "Còn {{amount}}"
+        "remaining": "Còn {{amount}}",
+        "withinBudget": "Trong ngân sách"
       },
       "recentExpenses": {
         "empty": "Chưa có khoản chi nào. Nhấn + để thêm khoản đầu tiên.",
@@ -304,10 +309,12 @@
         "placeholder": "Chọn nguồn"
       },
       "sources": {
-        "bank-transfer": "Chuyển khoản ngân hàng",
+        "bank-transfer": "CK Ngân hàng",
         "card": "Thẻ",
         "cash": "Tiền mặt",
-        "e-wallet": "Ví điện tử",
+        "momo": "MoMo",
+        "zalo-pay": "ZaloPay",
+        "shopee-pay": "ShopeePay",
         "other": "Khác"
       }
     },
@@ -673,9 +680,16 @@
     "editTitle": "Chỉnh sửa chi tiêu",
     "amount": "Số tiền",
     "category": "Danh mục",
+    "content": "Nội dung",
+    "createDialog": {
+      "description": "Ghi nhanh một khoản chi với số tiền VND, danh mục, gia đình và nhóm phù hợp."
+    },
     "source": "Nguồn",
     "date": "Ngày",
+    "group": "Nhóm",
+    "household": "Gia đình",
     "note": "Ghi chú",
+    "none": "Không",
     "visibilityLabel": "Chia sẻ",
     "visibility": {
       "private": "Riêng tư",

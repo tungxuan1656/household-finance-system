@@ -59,7 +59,7 @@ describe('Worker integration: database integrity constraints', () => {
     ).rejects.toThrow()
   })
 
-  it('rejects cross-household expense group assignment', async () => {
+  it('rejects expense group assignment when the target group does not exist', async () => {
     await insertHouseholdFixture(env.DB)
 
     await expect(
@@ -71,7 +71,7 @@ describe('Worker integration: database integrity constraints', () => {
           group_id,
           assigned_by_user_id
         )
-        VALUES ('egi1', 'h2', 'exp1', 'grp2', 'u3')`,
+        VALUES ('egi1', 'h2', 'exp1', 'grp_missing', 'u3')`,
       ).run(),
     ).rejects.toThrow()
   })

@@ -1,6 +1,6 @@
 'use client'
 
-import { InsightsPage } from '@/views/app/insights-page'
+import { InsightsPage } from '@/features/insights/pages/insights-page'
 
 export default function InsightsRoutePage() {
   return <InsightsPage />

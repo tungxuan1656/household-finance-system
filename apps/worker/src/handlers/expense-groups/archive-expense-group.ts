@@ -37,16 +37,15 @@ export const archiveExpenseGroupHandler = async (
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  const membership = await findActiveHouseholdMembership(
-    db,
-    currentUser.id,
-    group.householdId,
-  )
-  if (!membership) {
+  const membership = group.householdId
+    ? await findActiveHouseholdMembership(db, currentUser.id, group.householdId)
+    : null
+
+  if (!membership && group.createdByUserId !== currentUser.id) {
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  if (!canManageGroups(membership.role)) {
+  if (membership && !canManageGroups(membership.role)) {
     throw forbidden(locale, 'errors.forbidden')
   }
 

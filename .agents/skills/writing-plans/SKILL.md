@@ -96,8 +96,8 @@ When creating the plan, explicitly note companion skills that should be used dur
 - `systematic-debugging` for bugs, failures, or unexpected behavior.
 - `requesting-code-review` before merge or after major features.
 - `verification-before-completion` before claiming completion.
-- `subagent-driven-development` when tasks can be split and executed in the same session.
-- `executing-plans` when the plan will be executed in a separate session.
+- `subagent-driven-development` as the default execution mode after plan handoff. Prefer splitting implementation into bounded subagent tasks whenever possible.
+- `executing-plans` only when the user explicitly overrides the default and requests inline execution.
 - Add a dedicated research step when framework/library/API behavior or version specifics are uncertain.
 - Add domain-specific review steps in the plan when frontend, backend, data, or security constraints need explicit verification.
 
@@ -189,20 +189,18 @@ If you find issues, fix them inline. If a requirement has no task, add the task.
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving the plan, default directly to subagent-driven execution handoff. Do not ask the user to choose between subagent-driven and inline by default.
 
-"Plan complete and saved to `docs/exec-plans/plans/<filename>.md`. Two execution options:
+Use this handoff text:
 
-1. **Subagent-Driven** (recommended) — Dispatch a fresh subagent per task, review between tasks, fast iteration.
-2. **Inline Execution** — Execute tasks in this session using `executing-plans`, batch execution with checkpoints.
+"Plan complete and saved to `docs/exec-plans/plans/<filename>.md`. Next step: execute via **Subagent-Driven** mode so bounded tasks can be dispatched to the most suitable agents with review between steps."
 
-Which approach?"
-
-If Subagent-Driven is chosen:
+Default behavior:
 - Use `subagent-driven-development`.
 - Fresh subagent per task plus two-stage review.
 
-If Inline Execution is chosen:
+Inline execution is exception-only:
+- Only use `executing-plans` when the user explicitly asks for inline execution.
 - Use `executing-plans`.
 - Batch execution with checkpoints for review.
 

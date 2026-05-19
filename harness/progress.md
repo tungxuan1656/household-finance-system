@@ -9,6 +9,100 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-19 — Completed web feature-first folder architecture refactor
+
+- Who: Orchestrator + fixer + oracle reviewers
+- Summary: Finished the `apps/web/src` migration from mixed `views/` + domain-component layering to feature-first ownership. Protected/public route files now stay thin and import from `@/features/**/pages/*`; domain-local pages/components/hooks/api/types moved under feature roots across more, onboarding, settings, insights, overview, auth, invitations, budgets, households, groups, and expenses; the old `views/` tree is gone; system not-found UI moved to shared components; and the canonical frontend docs now describe the feature-first structure.
+- Files changed: Web route/page imports, new `apps/web/src/features/**` trees, compatibility shims for selected shared-consumer modules, shared not-found component placement, canonical frontend reference docs, plans index, feat-062 records, and this progress log.
+- Verification: `./init.sh typecheck` passed with `OK`; final full `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 22 changed symbols, 68 changed files, 0 affected symbols, and 0 affected processes.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
+
+## 2026-05-19 — Wrote web feature-first folder refactor ExecPlan
+
+- Who: Orchestrator + User
+- Summary: Converted the approved web folder-architecture design into an implementation-ready ExecPlan. The plan moves `apps/web/src` to feature-first ownership, keeps App Router route files thin, removes `views/`, locks canonical feature naming for overview/settings/insights, and requires doc + harness alignment with pre-edit GitNexus impact checks and final verification.
+- Files changed: Web folder-architecture ExecPlan, plans index, new feature record, feature index, and this progress log.
+- Blockers: none.
+- Next steps: Execute the plan by mapping current ownership, running impact checks, then migrating features into `apps/web/src/features/**` in low-risk batches.
+
+## 2026-05-19 — Fixed raw money input display in shared expense-entry form
+
+- Who: Orchestrator
+- Summary: Adjusted the shared expense amount display helper so the amount input keeps raw typed digits instead of inline formatting them to VND display text. The `.000 đ` suffix now remains solely in the input addon, while submit scaling and edit hydration keep the existing `*1000` storage semantics unchanged.
+- Files changed: Expense amount display helper, focused helper test, and this progress log.
+- Verification: `pnpm --filter web exec vitest run src/components/expense/dialog-amount-helper.test.ts src/components/expense/use-expense-entry-form.test.ts` passed with 2 files / 13 tests; `pnpm exec tsc -p apps/web/tsconfig.json --noEmit` passed; full `./init.sh` passed with `Done!` before this log entry.
+- Blockers: none.
+- Next steps: Re-run final verification after the progress log update if preparing a commit-ready handoff.
+
+## 2026-05-19 — Shipped shared expense-entry add/edit unification
+
+- Who: Orchestrator + fixer + oracle reviewer
+- Summary: Unified add-expense and edit-expense onto one canonical shared expense-entry path. Preserved the approved add-expense row UI, made VND thousand-shortcut amount behavior symmetric for create and edit, rewired the edit page to the same 7-field form, extracted neutral option/date helpers, and removed the obsolete dual-form stack plus transition wrappers.
+- Files changed: Shared expense-entry form/hook/helper modules, add/edit expense shells, focused expense-entry tests, obsolete expense form stack cleanup, feature records, and this progress log.
+- Verification: `pnpm --filter web exec vitest run src/components/expense/expense-entry-helpers.test.ts src/components/expense/expense-entry-options.test.ts src/components/expense/dialog-amount-helper.test.ts src/components/expense/use-expense-entry-form.test.ts` passed with 4 files / 18 tests; `pnpm exec tsc -p apps/web/tsconfig.json --noEmit` passed; final full `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 24 changed symbols, 9 changed files, and 0 affected processes.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
+
+## 2026-05-19 — Wrote expense-entry unification ExecPlan
+
+- Who: Orchestrator + User
+- Summary: Converted the approved expense-entry unification design into an implementation-ready ExecPlan. The plan locks one canonical shared add/edit form, preserves the shipped add-expense field visuals, requires symmetric VND thousand-shortcut amount mapping for edit/create, schedules pre-edit GitNexus impact checks, and defines dead-code cleanup plus final verification/harness updates.
+- Files changed: ExecPlan file, plans index, and this progress log.
+- Blockers: none.
+- Next steps: Choose execution mode, then run impact checks and begin implementation.
+
+## 2026-05-19 — Approved shared expense-entry form refactor
+
+- Who: Orchestrator + User
+- Summary: Agreed to refactor expense entry around one shared add/edit form instead of keeping separate create/edit stacks. The approved add-expense row UI remains the canonical visual design; the work should normalize code organization only, remove dead form code, and make the VND thousand-shortcut amount behavior symmetric so edit maps stored amounts back into the same input semantics without scaling bugs.
+- Files changed: Expense-entry design doc/index, new feature record, feature index, and this progress log.
+- Blockers: none.
+- Next steps: User reviews the proposed design doc, then convert it into an implementation plan before editing code.
+
+## 2026-05-19 — Refactored add-expense dialog structure
+
+- Who: Orchestrator + explorer + oracle reviewer
+- Summary: Split the canonical add-expense dialog into bounded feature-local modules while preserving existing behavior. The dialog file now focuses on data queries and responsive shell composition, a new presentational form file renders the field tree, and a new hook file owns reset/validation/payload/submit logic plus source persistence and undo side effects. Added focused pure-helper tests for the extracted logic without adding forbidden component render tests.
+- Files changed: Add-expense dialog/form/hook frontend modules, focused helper test, ExecPlan records, feat-060 evidence, and this progress log.
+- Verification: `gitnexus_impact` for `AddExpenseDialog` returned LOW risk with 0 direct dependents and 0 affected processes; `pnpm --filter web exec vitest run src/components/expense/use-add-expense-form.test.ts` passed with 6 tests; `./init.sh lint` passed with `OK`; `./init.sh typecheck` passed with `OK`; oracle review returned PASS with low-severity non-blocking notes only; final `./init.sh` passed with `Done!`.
+- Blockers: none.
+- Next steps: Run final GitNexus change detection and review diff/commit if desired.
+
+## 2026-05-15 — Shipped add-expense shell/layout follow-up
+
+- Who: Orchestrator + fixer + oracle reviewer
+- Summary: Refined the canonical add-expense surface so desktop keeps a dialog while mobile uses a bottom drawer with internal scrolling and footer actions. Rebuilt the form into the approved row-based vertical order (amount, content, date, category, source, household, group), kept native date and source controls, and simplified category back to native select while preserving the existing amount shortcut, submit payload, profile source persistence, and undo flow.
+- Files changed: Add-expense dialog shell/layout and category picker implementation, follow-up design/plan records, feature evidence, and this progress log.
+- Verification: `./init.sh typecheck` passed during implementation and review; `./init.sh lint` passed during implementation and review; final full `./init.sh` passed with `Done!`; oracle spec compliance review ended PASS and oracle quality re-review ended PASS.
+- Blockers: none.
+- Next steps: Review diff and commit the frontend follow-up if desired.
+
+## 2026-05-15 — Approved add-expense shell/layout follow-up
+
+- Who: Orchestrator + User
+- Summary: Agreed on a follow-up UI adjustment for the canonical add-expense surface. Desktop remains a dialog, mobile changes to a bottom drawer capped around 80vh with internal scrolling and explicit close action. The form layout changes from the prior two-column arrangement to a vertical row layout with label-left/control-right ordering. The category field is simplified from the custom picker back to native select, while source remains native select and date stays native date input.
+- Files changed: Add-expense design doc update and this progress log.
+- Blockers: none.
+- Next steps: User reviews the updated design note, then convert it into a focused implementation plan/update before editing code.
+
+## 2026-05-15 — Shipped canonical add-expense dialog refactor
+
+- Who: Orchestrator + fixer + oracle reviewer
+- Summary: Replaced the old quick-add plus dedicated `/expenses/new` flow with one global `AddExpenseDialog` mounted from the protected shell. The new flow uses VND thousand-shortcut amount entry, native source/family/group selects, a dialog-safe category picker, last-source persistence, query-param open support on `/expenses`, and independent group-vs-household semantics across web, worker, migrations, and product docs. Also retired the legacy quick-add files and add-expense page route, updated source contracts from `e-wallet` to `momo`/`zalo-pay`/`shopee-pay`, and refreshed stale worker tests that still asserted the old domain truth.
+- Files changed: Worker contracts/repositories/handlers/migration/tests for independent groups and new source keys; new add-expense dialog/provider and supporting web hooks/types/i18n; expenses/onboarding/more/manifest entry points; product specs, exec plan records, harness feature record, and this progress log.
+- Verification: Focused `pnpm --filter web test -- src/components/expense/dialog-amount-helper.test.ts` passed; `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and final full `./init.sh` all passed; `gitnexus_detect_changes(scope: all)` reported high risk with 49 changed files and 6 affected processes (onboarding, create-expense, and group list/assignment/read flows).
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
+## 2026-05-15 — Wrote add-expense dialog redesign spec
+
+- Who: Orchestrator + User
+- Summary: Captured the proposed redesign spec for replacing quick-add and the dedicated add-expense page with a new shadcn-first `AddExpenseDialog`. The spec locks the compact dialog layout, dialog-only VND thousand-shortcut amount input, nested category-picker fix inside dialog, new static source keys, and the product/domain change that makes group independent from household.
+- Files changed: Design docs index, new add-expense redesign design doc, and this progress log.
+- Blockers: none.
+- Next steps: User reviews the proposed design doc, then convert it into an implementation plan before touching code.
+
 ## 2026-05-14 — Refactored household pages with shared action cards
 
 - Who: Orchestrator + fixer

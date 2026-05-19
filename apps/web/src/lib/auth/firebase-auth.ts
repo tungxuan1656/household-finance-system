@@ -16,7 +16,7 @@ import {
   type User,
 } from 'firebase/auth'
 
-import type { AuthProvider } from '@/types/auth'
+import type { AuthProvider } from '@/features/auth/types/auth'
 
 type FirebaseAuthConfig = {
   apiKey: string

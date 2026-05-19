@@ -9,7 +9,7 @@ import {
 } from './profile-patch.test-setup'
 
 describe('Worker integration: profile patch updates', () => {
-  it('updates display name only on profile patch', async () => {
+  it('updates display name and quick-add source on profile patch', async () => {
     const exchange = await exchangeProfileToken(
       'test:firebase-user-profile-name:user-profile-name@example.com',
     )
@@ -60,6 +60,31 @@ describe('Worker integration: profile patch updates', () => {
       avatar_url: null,
       quick_add_last_source_key: 'cash',
     })
+  })
+
+  it('accepts new source keys for quick-add last source preference', async () => {
+    const exchange = await exchangeProfileToken(
+      'test:firebase-user-profile-source:user-profile-source@example.com',
+    )
+
+    const response = await SELF.fetch('https://example.com/api/v1/users/me', {
+      method: 'PATCH',
+      headers: {
+        authorization: `Bearer ${exchange.payload.data.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        quickAddLastSourceKey: 'momo',
+      }),
+    })
+
+    const payload =
+      await parseJson<ApiEnvelope<{ quickAddLastSourceKey: string | null }>>(
+        response,
+      )
+
+    expect(response.status).toBe(200)
+    expect(payload.data.quickAddLastSourceKey).toBe('momo')
   })
 
   it('updates avatar URL only on profile patch', async () => {

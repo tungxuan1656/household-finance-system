@@ -1,41 +1,44 @@
-# Quick Add Experience
+# Add Expense Dialog Experience
 
 ## Goal
 
-Provide an ultra-fast, low-friction entry path for recording expenses (target: 2–3 seconds) to maximize capture rates and reduce cognitive load.
+Provide one ultra-fast, low-friction dialog for recording expenses (target: 2–3 seconds) to maximize capture rates and reduce cognitive load.
 
 ## Entry Conditions
 
 - User is authenticated and has at least one household or is in single-player mode.
-- Quick-add UI is accessible globally (header, floating action button, keyboard shortcut).
+- Add-expense dialog is accessible globally (floating action button, keyboard shortcut, and CTA entry points).
 
 ## User Flow
 
-1. User opens quick-add via shortcut/fab/global input.
-2. UI focuses on amount input first; user types amount.
-3. User picks Source (mandatory - default to last used) and optionally Category, Group, Payer, Date, Note.
-4. Expense scope defaults to personal/private. If the user switches the entry to household-shared, quick-add must require an explicit household selection or a locally scoped household from the launch surface; it must never rely on a hidden global active household.
-5. User confirms (Enter/Done); expense is created and a brief success toast appears with an "Undo" action.
-6. If save fails because of network or server problems, quick-add surfaces a failure state and lets the user retry manually.
+1. User opens the canonical add-expense dialog from shortcut, FAB, onboarding, expenses page, or shortcuts surface.
+2. UI focuses on the amount field first; the user types digits using VND thousand-shortcut semantics (`3` → `3.000 đ`).
+3. User picks Source and Category, then enters `Nội dung`, date, optional family share, and optional group tag.
+4. Family (`Gia đình`) and Group (`Nhóm`) are independent decisions:
+   - no family = private expense
+   - family selected = shared household expense
+   - group may be empty or selected in either case
+5. Payer is not chosen in create UI; create flow always records the current account as payer.
+6. User confirms; expense is created and a brief success toast appears with an `Undo` action.
+7. If save fails because of network or server problems, the dialog surfaces a failure state and lets the user retry manually.
 
 ## Acceptance Criteria
 
-- Quick-add creates an expense with minimal required input (amount) and sensible defaults.
+- Canonical add-expense dialog creates an expense with sensible defaults and no route change.
 - Undo is available for a short window after creation.
 - Offline or no-internet expense capture is not supported.
-- Time-to-add metric (from open to save) is tracked and averages under 3s for targeted users.
+- Every add-expense entry point opens the same dialog instead of `/expenses/new`.
 
 ## Failure States
 
-- Invalid amount: show inline error and prevent submission.
+- Invalid amount/date/category/source/content: show inline error and prevent submission.
 - Network failure: show a clear error state and allow manual retry. Do not imply queued save, background retry, or offline recovery.
-- Permission error writing to household: surface clear message and allow saving as private (if user chooses).
+- Permission error writing to household: surface clear message and keep the dialog open for correction.
 
 ---
 
 Notes:
-- Keep visual design minimal; prefer single-line compact inputs on mobile.
-- Expose advanced "Add expense" screen for full metadata editing when needed.
-- Categories are chosen from the global static catalog; MVP quick-add does not depend on per-user category history or suggestion logic.
+- Keep visual design minimal; prefer compact fields and a two-column layout on wider screens.
+- Categories are chosen from the global static catalog; source keys are `cash`, `bank-transfer`, `card`, `momo`, `zalo-pay`, `shopee-pay`, `other`.
+- The dialog is the only canonical expense-create surface; dedicated add-expense page is retired.
 - Offline queueing, background sync, and pending-entry recovery are out of scope for this product.
-- Consider microcopy to explain visibility and payer concepts in the quick-add UI.

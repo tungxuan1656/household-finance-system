@@ -39,7 +39,9 @@ export const SOURCE_KEYS = [
   'cash',
   'bank-transfer',
   'card',
-  'e-wallet',
+  'momo',
+  'zalo-pay',
+  'shopee-pay',
   'other',
 ] as const
 

@@ -6,21 +6,33 @@ Canonical `apps/web` placement rules for Next.js App Router.
 
 ```text
 apps/web/src/
-  app/                    # Next.js route tree
+  app/                    # Next.js route tree + Next.js-only files
     (protected)/
     (public)/
     layout.tsx
     page.tsx
 
-  api/                    # HTTP clients + endpoint functions
-    <feature>/
+  features/
+    <domain>/
+      api/                # domain-local API adapters/hooks glue if not shared
+      components/         # domain-local smart/presentational UI
+      hooks/              # domain-local hooks
+      lib/                # domain-local runtime helpers/forms
+      pages/              # route-level feature page orchestrators
+      stores/             # domain-local client state when needed
+      types/              # domain-local types
+      utils/              # domain-local pure helpers
+      index.ts            # optional stable public surface
 
   components/
     ui/                   # shadcn primitives only
     shared/               # cross-feature reusable components
-    <feature>/            # feature-scoped smart/presentational components
+    layouts/              # app shell/layout components
+    shadcn-studio/        # generated/demo block assets kept shared
 
-  hooks/                  # reusable hooks
+  api/                    # shared HTTP clients + shared endpoint modules
+
+  hooks/                  # shared reusable hooks
   lib/                    # runtime/domain helpers, not generic utils
     auth/
     constants/
@@ -43,18 +55,17 @@ apps/web/src/
 
   stores/                 # Zustand stores, flat feature files
   types/                  # shared frontend/internal types
-  views/                  # route-level view components used by app routes
 ```
 
 ## Placement Rules
 
-- `app/`: routing, layouts, metadata, server/client boundary glue.
-- `views/`: page-level orchestrators for app routes.
-- `components/<feature>`: feature UI and feature smart sections.
+- `app/`: routing, layouts, metadata, loading/error/not-found, and server/client boundary glue only.
+- `features/<domain>`: primary home for domain-local pages, components, hooks, api modules, types, utils, tests, and feature-only helpers.
 - `components/shared`: cross-feature reusable UI/controller components.
+- `components/layouts`: app shell/navigation/layout pieces shared across features.
 - `components/ui`: shadcn primitives. No feature logic.
-- `api/<feature>`: HTTP calls and endpoint mapping only.
-- `hooks`: reusable hooks. Feature-only hooks may stay near feature when clearer.
+- `api`: shared HTTP clients and shared endpoint modules only.
+- `hooks`: shared reusable hooks. Keep feature-only hooks inside `features/<domain>/hooks`.
 - `stores/<feature>.store.ts`: global client state, flat files.
 - `lib`: runtime/domain helper areas. Keep generic utilities out of `lib`.
 - `utils`: shared pure utilities: class-name merging, formatting, DOM helpers, download/export helpers, and labels.
@@ -63,16 +74,18 @@ apps/web/src/
 ## Import Rules
 
 - Prefer same-feature imports first.
-- Promote reusable UI/controller code to `components/shared`; promote runtime/domain helpers to `lib`; promote generic pure helpers to `utils`.
+- Promote reusable UI/controller code to `components/shared`; promote app-shell pieces to `components/layouts`; promote runtime/domain helpers to shared `lib`; promote generic pure helpers to shared `utils`.
 - Import shadcn primitives from `@/components/ui/*`.
 - Import `cn` from `@/utils/cn` and utility groups from `@/utils/<group>`.
-- Import public feature components from folder barrel only when folder exposes stable public surface.
+- Import route pages from `@/features/<domain>/pages/*`.
+- Import public feature modules from folder barrel only when folder exposes a stable public surface.
 - Keep internal subcomponents module-private.
 
 ## Do Not
 
 - Do not create new root folders for one feature.
 - Do not put feature business logic in `components/shared`.
+- Do not add new domain code to `views/`; `views/` is removed.
 - Do not put UI components in `lib`.
 - Do not wrap shadcn primitives with replacement primitives.
 - Do not keep giant route/page files when feature sections can own concerns.
@@ -80,8 +93,8 @@ apps/web/src/
 ## Checklist
 
 - [ ] Route file stays thin.
-- [ ] Page/view orchestrates, not everything.
-- [ ] Feature components live under `components/<feature>`.
+- [ ] Feature page orchestrator lives under `features/<domain>/pages`.
+- [ ] Feature-local UI/hooks/api/types live under `features/<domain>`.
 - [ ] Cross-feature code is proven before promotion.
 - [ ] `lib` stays runtime/domain-scoped.
 - [ ] Generic pure helpers live under `utils`, not `lib`.

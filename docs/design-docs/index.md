@@ -16,7 +16,9 @@ Durable design decision map. Read only when task changes lasting UI/product/arch
 
 ## Proposed
 
-- None.
+- `2026-05-19-web-feature-first-folder-architecture-design.md`: move `apps/web` to feature-first ownership, keep App Router thin, remove `views/`, and standardize feature naming/placement rules.
+- `2026-05-15-add-expense-dialog-domain-and-ui-design.md`: canonical add-expense dialog, dialog-only VND amount input semantics, nested category-picker fix, independent group vs household domain model, and add-expense page removal.
+- `2026-05-19-expense-entry-form-unification-design.md`: shared create/edit expense entry form, code-only UI normalization, and symmetric VND edit/create amount semantics.
 
 ## Deprecated
 

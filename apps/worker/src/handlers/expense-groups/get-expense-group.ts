@@ -33,12 +33,11 @@ export const getExpenseGroupHandler = async (
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  const membership = await findActiveHouseholdMembership(
-    db,
-    currentUser.id,
-    group.householdId,
-  )
-  if (!membership) {
+  const membership = group.householdId
+    ? await findActiveHouseholdMembership(db, currentUser.id, group.householdId)
+    : null
+
+  if (!membership && group.createdByUserId !== currentUser.id) {
     throw notFound(locale, 'errors.resourceNotFound')
   }
 

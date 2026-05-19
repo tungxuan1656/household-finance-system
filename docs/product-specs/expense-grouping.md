@@ -11,14 +11,15 @@ Allow users to group expenses into events/projects (e.g., "Vacation", "Tet shopp
 ## User Flow
 
 1. User creates a group with a name, optional dates, and optional event budget.
-2. When adding/editing an expense, user can assign it to one or more groups (tags).
+2. When adding/editing an expense, user can assign it to a group tag.
 3. User views group summary with aggregated spend, list of contained expenses, and remaining event budget.
 4. Allow bulk assignment of expenses to a group during reconciliation.
 
 ## Acceptance Criteria
 
 - Groups can be created, edited, and archived.
-- Expenses can belong to multiple groups (tags) if household allows.
+- Groups are independent from household scope and may be used on private or household expenses.
+- Create dialog currently allows zero or one group selection per expense; later bulk/edit flows may still support broader assignment operations.
 - Group aggregates compute correctly and update when member expenses change.
 
 ## Failure States

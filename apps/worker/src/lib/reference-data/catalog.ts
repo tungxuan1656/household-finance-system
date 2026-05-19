@@ -175,7 +175,9 @@ const REFERENCE_SOURCES: readonly ReferenceSourceDTO[] = [
   { key: 'cash' },
   { key: 'bank-transfer' },
   { key: 'card' },
-  { key: 'e-wallet' },
+  { key: 'momo' },
+  { key: 'zalo-pay' },
+  { key: 'shopee-pay' },
   { key: 'other' },
 ]
 
