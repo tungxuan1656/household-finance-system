@@ -20,7 +20,7 @@
     {
       "type": "file",
       "path": "apps/web/src/components/expense/add-expense-dialog.tsx",
-      "description": "New canonical create dialog owns source/category/household/group queries, VND amount helper usage, validation, create mutation, profile last-source persistence, and undo toast flow without sending payerUserId."
+      "description": "Canonical create surface owns source/category/household/group queries, VND amount helper usage, validation, create mutation, profile last-source persistence, and undo toast flow without sending payerUserId; the 2026-05-15 follow-up also adapts it into desktop dialog + mobile drawer shells with the approved row-based layout and native category/source controls."
     },
     {
       "type": "file",

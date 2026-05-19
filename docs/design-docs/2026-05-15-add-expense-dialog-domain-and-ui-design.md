@@ -114,18 +114,29 @@ The system keeps a fixed frontend/backend source catalog, but updates its values
 
 ## UX and Layout
 
+### 2026-05-15 follow-up UI shell update
+
+This follow-up decision overrides the earlier shell/layout section for the create surface only.
+
+- Desktop keeps `Dialog`.
+- Mobile switches from dialog to bottom `Drawer`.
+- Mobile drawer target height is approximately `80vh`.
+- The drawer body must scroll internally when content exceeds available height.
+- The drawer must expose an explicit close action.
+- The primary submit button stays in the footer.
+
 ### Layout order
 
-Desktop/tablet (`sm+`):
-
-- Row 1: `Số tiền | Ngày`
-- Row 2: `Nguồn tiền | Danh mục`
-- Row 3: `Nội dung`
-- Row 4: `Gia đình | Nhóm`
-
-Mobile:
-
-- Same order, stacked to one column.
+- Both desktop and mobile now use one vertical form flow.
+- Each field renders on its own row with `label on the left` and `control on the right`.
+- Field order is:
+  1. Amount
+  2. Content
+  3. Date
+  4. Category
+  5. Source
+  6. Household
+  7. Group
 
 ### UI rules
 
@@ -133,8 +144,8 @@ Mobile:
 - Use `FieldGroup > Field > FieldLabel + control + FieldError` composition.
 - Use primitive props before custom styling.
 - Text-like inputs use `size='sm'` where supported.
-- `Source`, `Household`, and `Group` use native select.
-- `Category` keeps custom picker/icon behavior, but its popover/dialog behavior must be corrected for use inside `Dialog`.
+- `Source`, `Category`, `Household`, and `Group` use native select.
+- The earlier dialog-safe custom category combobox decision is superseded by the simpler native-select category control.
 
 ## Amount Input Design
 
@@ -170,6 +181,11 @@ The new amount input behavior applies only inside `AddExpenseDialog`.
 - Empty or zero-like input is invalid.
 - Non-digit input is rejected at the UI layer.
 
+### Date control rule
+
+- Keep the date field as native date input.
+- No custom mask or custom picker is introduced in this follow-up.
+
 ## Category Picker Nested Dialog Fix
 
 ### Problem
@@ -178,15 +194,13 @@ The current category picker misbehaves when nested inside a dialog: options may 
 
 ### Design requirement
 
-- The category picker must work reliably inside `AddExpenseDialog`.
-- It must render above the dialog content correctly and position predictably.
-- It must remain keyboard-usable and accessible.
+- The category field must work reliably inside both desktop dialog and mobile drawer shells.
+- The category field must remain keyboard-usable and accessible.
 
 ### Implementation constraint
 
-- Keep the category picker experience/icon affordance.
-- Fix the overlay/container/composition issue instead of downgrading category to a plain native select.
-- If the current picker primitive is incompatible with nested dialog composition, replace its internals with a shadcn-compatible overlay composition while preserving the category-specific feature API.
+- Do not keep the combobox/popover implementation for category in this follow-up.
+- Replace it with native select so shell nesting issues disappear entirely.
 
 ## Architecture and File Structure
 

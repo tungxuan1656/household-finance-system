@@ -9,6 +9,23 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-15 — Shipped add-expense shell/layout follow-up
+
+- Who: Orchestrator + fixer + oracle reviewer
+- Summary: Refined the canonical add-expense surface so desktop keeps a dialog while mobile uses a bottom drawer with internal scrolling and footer actions. Rebuilt the form into the approved row-based vertical order (amount, content, date, category, source, household, group), kept native date and source controls, and simplified category back to native select while preserving the existing amount shortcut, submit payload, profile source persistence, and undo flow.
+- Files changed: Add-expense dialog shell/layout and category picker implementation, follow-up design/plan records, feature evidence, and this progress log.
+- Verification: `./init.sh typecheck` passed during implementation and review; `./init.sh lint` passed during implementation and review; final full `./init.sh` passed with `Done!`; oracle spec compliance review ended PASS and oracle quality re-review ended PASS.
+- Blockers: none.
+- Next steps: Review diff and commit the frontend follow-up if desired.
+
+## 2026-05-15 — Approved add-expense shell/layout follow-up
+
+- Who: Orchestrator + User
+- Summary: Agreed on a follow-up UI adjustment for the canonical add-expense surface. Desktop remains a dialog, mobile changes to a bottom drawer capped around 80vh with internal scrolling and explicit close action. The form layout changes from the prior two-column arrangement to a vertical row layout with label-left/control-right ordering. The category field is simplified from the custom picker back to native select, while source remains native select and date stays native date input.
+- Files changed: Add-expense design doc update and this progress log.
+- Blockers: none.
+- Next steps: User reviews the updated design note, then convert it into a focused implementation plan/update before editing code.
+
 ## 2026-05-15 — Shipped canonical add-expense dialog refactor
 
 - Who: Orchestrator + fixer + oracle reviewer

@@ -5,10 +5,11 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
-- [2026-05-15-add-expense-dialog-domain-refactor.md](plans/2026-05-15-add-expense-dialog-domain-refactor.md) - proposed fullstack expense-create refactor: replace quick-add and `/expenses/new` with one shadcn-first `AddExpenseDialog`, add dialog-only VND shortcut amount entry with exact submit normalization, decouple group from household semantics across docs/API/data flows, update fixed source keys, and remove legacy create surfaces after migration.
 
 ## Completed
 
+- [2026-05-15-add-expense-shell-layout-follow-up.md](plans/2026-05-15-add-expense-shell-layout-follow-up.md) - frontend-only follow-up completed: the canonical add-expense entry now switches between desktop dialog and mobile bottom drawer, uses the approved row-based one-column field layout, keeps native date/source controls, and simplifies category to native select while preserving existing create behavior.
+- [2026-05-15-add-expense-dialog-domain-refactor.md](plans/2026-05-15-add-expense-dialog-domain-refactor.md) - feat-060 fullstack expense-create refactor completed in commit `5878ac1`: unified quick-add and `/expenses/new` into one canonical global add-expense flow, added exact VND shortcut amount entry, decoupled group from household semantics across web/worker/docs, updated fixed source keys, and retired legacy create surfaces.
 - [2026-05-14-household-action-card-refactor.md](plans/2026-05-14-household-action-card-refactor.md) - feat-059 frontend-only household page/detail refactor completed: households now use PageShell/DataState with an always-last create card, and household detail admins now see an always-below-member-list invite card wired to the existing invite dialog.
 - [2026-05-14-profile-more-settings-refactor.md](plans/2026-05-14-profile-more-settings-refactor.md) - feat-057 frontend-only More/Profile Settings refactor completed: More now renders icon-and-arrow shortcut rows with package version footer; Profile Settings now renders avatar/profile-security/account-actions stacked cards with reusable confirmation dialog, no tabs, and no households section.
 - [2026-05-14-home-category-chart-refactor.md](plans/2026-05-14-home-category-chart-refactor.md) - frontend-only Home category statistics refactor completed: replaced progress-only rows with a Recharts donut chart, accessible summary, center total, and color-coded amount/%/count list while preserving existing analytics/reference-data contracts.
