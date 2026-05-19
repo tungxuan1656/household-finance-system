@@ -309,6 +309,11 @@
       "id": "feat-061",
       "name": "Shared expense entry form for add/edit with VND amount normalization",
       "status": "done"
+    },
+    {
+      "id": "feat-062",
+      "name": "Web feature-first folder architecture refactor",
+      "status": "done"
     }
   ]
 }

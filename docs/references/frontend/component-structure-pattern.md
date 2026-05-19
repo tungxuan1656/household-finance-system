@@ -1,24 +1,24 @@
 # Component Structure Pattern
 
-Page/view orchestrates. Feature components own bounded concerns. Shared components exist only for real reuse.
+Feature page orchestrates. Feature components own bounded concerns. Shared components exist only for real reuse.
 
 ## Required Rules
 
 - Use named exports: `export const ComponentName = () => {}`.
-- Keep route files thin; move page UI orchestration to `views/` when useful.
+- Keep route files thin; move page UI orchestration to `features/<domain>/pages/` when useful.
 - Feature folder may expose `index.ts` for public components only.
 - Internal subcomponents are not exported from folder barrel.
 - Split near 200 lines or when 3+ concerns mix.
 
-## Page / View Pattern
+## Route / Feature Page Pattern
 
 ```tsx
 export const ExpensesPage = () => {
-  return <ExpensesView />
+  return <ExpenseFeedScreen />
 }
 ```
 
-Route/page owns routing glue. View owns top-level composition.
+Route/page owns routing glue. Feature page owns top-level composition.
 
 ## Feature Smart Component
 

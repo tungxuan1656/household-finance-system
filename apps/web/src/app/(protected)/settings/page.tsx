@@ -1,5 +1,5 @@
-import { ProfileSettingsPage } from '@/views/app/profile-settings-page'
+import { SettingsPage } from '@/features/settings/pages/settings-page'
 
 export default function SettingsRoutePage() {
-  return <ProfileSettingsPage />
+  return <SettingsPage />
 }

@@ -1,4 +1,4 @@
-import { SignInPage } from '@/views/auth/sign-in-page'
+import { SignInPage } from '@/features/auth/pages/sign-in-page'
 
 export default function SignInRoutePage() {
   return <SignInPage />

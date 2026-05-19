@@ -9,6 +9,23 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-19 — Completed web feature-first folder architecture refactor
+
+- Who: Orchestrator + fixer + oracle reviewers
+- Summary: Finished the `apps/web/src` migration from mixed `views/` + domain-component layering to feature-first ownership. Protected/public route files now stay thin and import from `@/features/**/pages/*`; domain-local pages/components/hooks/api/types moved under feature roots across more, onboarding, settings, insights, overview, auth, invitations, budgets, households, groups, and expenses; the old `views/` tree is gone; system not-found UI moved to shared components; and the canonical frontend docs now describe the feature-first structure.
+- Files changed: Web route/page imports, new `apps/web/src/features/**` trees, compatibility shims for selected shared-consumer modules, shared not-found component placement, canonical frontend reference docs, plans index, feat-062 records, and this progress log.
+- Verification: `./init.sh typecheck` passed with `OK`; final full `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 22 changed symbols, 68 changed files, 0 affected symbols, and 0 affected processes.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
+
+## 2026-05-19 — Wrote web feature-first folder refactor ExecPlan
+
+- Who: Orchestrator + User
+- Summary: Converted the approved web folder-architecture design into an implementation-ready ExecPlan. The plan moves `apps/web/src` to feature-first ownership, keeps App Router route files thin, removes `views/`, locks canonical feature naming for overview/settings/insights, and requires doc + harness alignment with pre-edit GitNexus impact checks and final verification.
+- Files changed: Web folder-architecture ExecPlan, plans index, new feature record, feature index, and this progress log.
+- Blockers: none.
+- Next steps: Execute the plan by mapping current ownership, running impact checks, then migrating features into `apps/web/src/features/**` in low-risk batches.
+
 ## 2026-05-19 — Fixed raw money input display in shared expense-entry form
 
 - Who: Orchestrator

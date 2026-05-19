@@ -146,12 +146,17 @@
         "clearAll": "Xoá tất cả"
       },
       "hero": {
+        "budgetRemaining": "Ngân sách còn lại",
+        "changeFromPrevious": "{{percent}}% so với tháng trước",
+        "daysRemaining": "Số ngày còn lại",
+        "dailyRateLabel": "Mức chi tiêu mỗi ngày",
         "percentOfBudget": "{{percent}}% ngân sách tháng",
         "dailyRate": "Còn {{days}} ngày — khoảng {{amount}}/ngày",
         "monthOverMonth": "{{percent}}% so với tháng trước",
         "noBudget": "Thiết lập ngân sách tháng để theo dõi chi tiêu",
         "overBudget": "Vượt ngân sách {{amount}}",
-        "remaining": "Còn {{amount}}"
+        "remaining": "Còn {{amount}}",
+        "withinBudget": "Trong ngân sách"
       },
       "recentExpenses": {
         "empty": "Chưa có khoản chi nào. Nhấn + để thêm khoản đầu tiên.",

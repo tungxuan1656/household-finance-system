@@ -10,9 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import type { BudgetDTO } from '@/features/budgets/types/budget'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
-import type { BudgetDTO } from '@/types/budget'
 import { formatCurrency } from '@/utils/currency/format'
 
 type BudgetCardProps = {

@@ -6,7 +6,7 @@ Split by responsibility. Not line count alone.
 
 ```text
 Next.js route/page
-  -> page view / route orchestrator
+  -> feature page / route orchestrator
   -> feature smart component
   -> feature presentational component
   -> shared component / shared hook
@@ -18,7 +18,7 @@ Next.js route/page
 Allowed:
 
 ```text
-app route/page -> views/* -> components/shared/<feature> -> components/ui
+app route/page -> features/<domain>/pages/* -> feature-local components -> shared components -> components/ui
 component/page -> hooks/api or hooks/shared -> api/*
 component/page -> stores/*.store.ts only for global app state
 ```
@@ -45,7 +45,7 @@ Rules:
 
 - Keep `app/**/page.tsx` thin.
 - Put reusable UI outside `app/`.
-- If page mixes 3+ concerns, move sections to feature smart components or `views/`.
+- If page mixes 3+ concerns, move sections to feature smart components under the owning `features/<domain>/` tree.
 
 ## Feature Smart Component
 
@@ -120,7 +120,7 @@ Bad: `ComponentA`, `LeftSection`, `TopArea`, `CardWrapper2`.
 
 ## Extraction Checklist
 
-1. Which layer owns it: page, view, feature, shared, UI primitive?
+1. Which layer owns it: route page, feature page, feature, shared, or UI primitive?
 2. Does it know a domain? Keep feature-local.
 3. Does it need API/query/mutation/store logic? Make smart feature component.
 4. Is extraction for reuse or concern boundary? Extract.

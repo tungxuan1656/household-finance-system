@@ -1,4 +1,4 @@
-import { exchangeProviderToken, logoutSession } from '@/api/auth'
+import { exchangeProviderToken, logoutSession } from '@/features/auth/api/auth'
 import {
   changeFirebasePassword,
   deleteCurrentFirebaseUser,

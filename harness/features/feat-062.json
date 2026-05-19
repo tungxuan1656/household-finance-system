@@ -1,0 +1,44 @@
+{
+  "id": "feat-062",
+  "name": "Web feature-first folder architecture refactor",
+  "status": "done",
+  "description": "Refactor apps/web/src from mixed app/views/components layering into feature-first ownership, keep App Router thin, remove views, normalize feature naming, and update canonical frontend docs.",
+  "dependencies": ["feat-038", "feat-053", "feat-054", "feat-057", "feat-061"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "docs/design-docs/2026-05-19-web-feature-first-folder-architecture-design.md",
+      "description": "Approved design doc defines feature-first ownership, thin App Router rule, views deprecation, naming decisions, and migration phases."
+    },
+    {
+      "type": "file",
+      "path": "docs/exec-plans/plans/2026-05-19-web-feature-first-folder-refactor.md",
+      "description": "Active ExecPlan defines phased migration, standards constraints, GitNexus impact checks, verification path, and harness/doc updates."
+    },
+    {
+      "type": "file",
+      "path": "docs/exec-plans/index.md",
+      "description": "Plans index now records the web feature-first folder refactor as completed."
+    },
+    {
+      "type": "file",
+      "path": "docs/references/frontend/project-folder-structure.md",
+      "description": "Canonical frontend folder-structure reference now defines feature-first ownership and removes views as a valid placement layer."
+    },
+    {
+      "type": "file",
+      "path": "docs/references/frontend/component-structure-pattern.md",
+      "description": "Component structure reference now points thin route files at feature page orchestrators under features/<domain>/pages."
+    },
+    {
+      "type": "file",
+      "path": "docs/references/frontend/frontend-component-architecture-guide.md",
+      "description": "Frontend architecture guide now codifies app route -> feature page -> feature-local component -> shared component import direction."
+    },
+    {
+      "type": "file",
+      "path": "harness/progress.md",
+      "description": "Progress log records the full migration completion, final verification, and low-risk GitNexus change detection result for the feature-first web refactor."
+    }
+  ]
+}

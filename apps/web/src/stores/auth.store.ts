@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { createJSONStorage, devtools, persist } from 'zustand/middleware'
 
+import type { AuthenticatedUserDTO } from '@/features/auth/types/auth'
 import { createSelectors } from '@/stores/types'
-import type { AuthenticatedUserDTO } from '@/types/auth'
 
 type AuthSessionState = {
   accessToken: string | null

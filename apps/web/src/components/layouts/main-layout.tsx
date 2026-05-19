@@ -3,9 +3,9 @@
 import { useRouter } from 'next/navigation'
 import type { ReactNode } from 'react'
 
-import { AddExpenseDialogProvider } from '@/components/expense/add-expense/provider'
 import { AppSidebar } from '@/components/layouts/app-sidebar'
 import { BottomTab } from '@/components/layouts/bottom-tab'
+import { AddExpenseDialogProvider } from '@/features/expenses/components/add-expense/provider'
 import { useIsMobile } from '@/hooks/shared/use-mobile'
 import { signOutCurrentSession } from '@/lib/auth/session-service'
 import { PATHS } from '@/lib/constants/paths'

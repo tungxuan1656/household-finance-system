@@ -1,4 +1,4 @@
-import { OnboardingPage } from '@/views/app/onboarding-page'
+import { OnboardingPage } from '@/features/onboarding/pages/onboarding-page'
 
 export default function OnboardingRoutePage() {
   return <OnboardingPage />

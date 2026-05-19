@@ -1,6 +1,6 @@
 'use client'
 
-import { GroupsPage } from '@/views/app/groups-page'
+import { GroupsPage } from '@/features/groups/pages/groups-page'
 
 export default function GroupsRoutePage() {
   return <GroupsPage />
