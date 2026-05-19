@@ -20,7 +20,22 @@
     {
       "type": "file",
       "path": "apps/web/src/components/expense/add-expense-dialog.tsx",
-      "description": "Canonical create surface owns source/category/household/group queries, VND amount helper usage, validation, create mutation, profile last-source persistence, and undo toast flow without sending payerUserId; the 2026-05-15 follow-up also adapts it into desktop dialog + mobile drawer shells with the approved row-based layout and native category/source controls."
+      "description": "Canonical create surface now acts as a thinner smart orchestrator: it owns source/category/household/group queries, composes the desktop dialog + mobile drawer shells, and delegates form rendering plus submit/reset logic to feature-local modules while preserving VND amount helper usage, profile last-source persistence, and undo toast flow without sending payerUserId."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/add-expense-form.tsx",
+      "description": "Presentational add-expense form extracted from the dialog. It renders the row-based field layout, field errors, and submit form wrapper with no API/query logic."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/use-add-expense-form.ts",
+      "description": "Feature-local hook now owns add-expense state reset, validation, payload assembly, submit side effects, source persistence update, and undo delete wiring; pure helpers are exported for focused unit coverage."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/components/expense/use-add-expense-form.test.ts",
+      "description": "Focused pure-logic test coverage for the add-expense refactor verifies initial-state defaults, required-field validation, and payload construction without adding forbidden component render tests."
     },
     {
       "type": "file",
@@ -55,6 +70,12 @@
     },
     {
       "type": "command",
+      "command": "pnpm --filter web exec vitest run src/components/expense/use-add-expense-form.test.ts",
+      "output": "PASS",
+      "description": "Focused pure-helper test verified add-expense initial-state defaults, validation, and payload mapping after the structure refactor."
+    },
+    {
+      "type": "command",
       "command": "./init.sh typecheck",
       "output": "OK",
       "description": "Repository typecheck passed after removing stale route types and aligning nullable group household typing."
@@ -76,6 +97,12 @@
       "command": "./init.sh",
       "output": "Done!",
       "description": "Final full verification passed, including install, harness, lint, typecheck, test, and GitNexus sync steps."
+    },
+    {
+      "type": "analysis",
+      "command": "gitnexus_detect_changes(scope: all)",
+      "output": "risk_level: low; changed_symbols: 12; affected_processes: 0",
+      "description": "Final GitNexus change detection for the structure-only follow-up stayed low risk and found no affected execution flows beyond the touched add-expense dialog symbol."
     },
     {
       "type": "analysis",

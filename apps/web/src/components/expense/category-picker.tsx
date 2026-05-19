@@ -28,8 +28,10 @@ export const CategoryPicker = ({
 
   return (
     <NativeSelect
+      className='w-full'
       disabled={disabled}
       id={id}
+      labelClassName='border-none bg-transparent text-sm text-right ring-0!'
       size={size}
       value={value ?? ''}
       onChange={(event) => {

@@ -23,8 +23,10 @@ export const SourcePicker = ({
   return (
     <NativeSelect
       aria-label={t('app.expenseReference.sourcePicker.ariaLabel')}
+      className='w-full'
       disabled={disabled}
       id={id}
+      labelClassName='border-none bg-transparent text-sm text-right! ring-0!'
       size={size}
       value={value}
       onChange={(event) => {
