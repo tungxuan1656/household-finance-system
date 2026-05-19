@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-19-expense-entry-form-unification.md](plans/2026-05-19-expense-entry-form-unification.md) - feat-061 frontend-only expense-entry refactor planned: unify add-expense dialog and edit-expense page on one canonical shared form, preserve the approved row UI, normalize field/select code structure, and make VND thousand-shortcut amount semantics symmetric for create and edit.
 
 ## Completed
 

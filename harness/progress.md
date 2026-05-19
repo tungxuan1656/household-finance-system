@@ -9,6 +9,22 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-19 — Wrote expense-entry unification ExecPlan
+
+- Who: Orchestrator + User
+- Summary: Converted the approved expense-entry unification design into an implementation-ready ExecPlan. The plan locks one canonical shared add/edit form, preserves the shipped add-expense field visuals, requires symmetric VND thousand-shortcut amount mapping for edit/create, schedules pre-edit GitNexus impact checks, and defines dead-code cleanup plus final verification/harness updates.
+- Files changed: ExecPlan file, plans index, and this progress log.
+- Blockers: none.
+- Next steps: Choose execution mode, then run impact checks and begin implementation.
+
+## 2026-05-19 — Approved shared expense-entry form refactor
+
+- Who: Orchestrator + User
+- Summary: Agreed to refactor expense entry around one shared add/edit form instead of keeping separate create/edit stacks. The approved add-expense row UI remains the canonical visual design; the work should normalize code organization only, remove dead form code, and make the VND thousand-shortcut amount behavior symmetric so edit maps stored amounts back into the same input semantics without scaling bugs.
+- Files changed: Expense-entry design doc/index, new feature record, feature index, and this progress log.
+- Blockers: none.
+- Next steps: User reviews the proposed design doc, then convert it into an implementation plan before editing code.
+
 ## 2026-05-19 — Refactored add-expense dialog structure
 
 - Who: Orchestrator + explorer + oracle reviewer

@@ -304,6 +304,11 @@
       "id": "feat-060",
       "name": "Canonical add-expense dialog and independent group/source refactor",
       "status": "done"
+    },
+    {
+      "id": "feat-061",
+      "name": "Shared expense entry form for add/edit with VND amount normalization",
+      "status": "proposed"
     }
   ]
 }

@@ -1,0 +1,24 @@
+{
+  "id": "feat-061",
+  "name": "Shared expense entry form for add/edit with VND amount normalization",
+  "status": "proposed",
+  "description": "Unify add-expense and edit-expense on one canonical shared form, preserve the approved add-expense row UI, normalize field/control code structure, and make VND thousand-shortcut amount mapping symmetric for create and edit.",
+  "dependencies": ["feat-017", "feat-019", "feat-024", "feat-053", "feat-060"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "docs/design-docs/2026-05-19-expense-entry-form-unification-design.md",
+      "description": "Proposed design doc defines the shared add/edit expense-entry form, locked UI preservation rule, canonical create/edit field set, code normalization boundaries, and symmetric VND amount mapping requirements."
+    },
+    {
+      "type": "file",
+      "path": "docs/design-docs/index.md",
+      "description": "Design docs index now links the new proposed expense-entry unification design."
+    },
+    {
+      "type": "file",
+      "path": "harness/progress.md",
+      "description": "Progress log records user-approved direction and next-step planning for the expense-entry unification work."
+    }
+  ]
+}
