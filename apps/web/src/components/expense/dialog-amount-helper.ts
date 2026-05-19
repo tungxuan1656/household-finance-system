@@ -1,4 +1,4 @@
-// const MINOR_MULTIPLIER = 1000
+const MINOR_MULTIPLIER = 1000
 
 const stripNonDigits = (value: string) => value.replace(/\D+/g, '')
 
@@ -15,5 +15,5 @@ export const parseDialogAmountSubmitMinor = (value: string) => {
   const digits = stripNonDigits(value)
   if (!digits) return null
 
-  return Number(BigInt(digits))
+  return Number(BigInt(digits)) * MINOR_MULTIPLIER
 }
