@@ -9,7 +9,6 @@ import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { useIsMobile } from '@/hooks/shared/use-mobile'
 import { t } from '@/lib/i18n/t'
-import type { ExpenseGroupDTO } from '@/types/group'
 
 import { Button } from '../ui/button'
 import {
@@ -28,26 +27,17 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '../ui/drawer'
+import { ExpenseEntryForm } from './expense-entry-form'
 import {
-  type AddExpenseCategoryOption,
-  AddExpenseForm,
-  type AddExpenseHouseholdOption,
-} from './add-expense-form'
-import { useAddExpenseForm } from './use-add-expense-form'
+  filterExpenseEntryCategories,
+  mergeExpenseEntryGroups,
+} from './expense-entry-options'
+import { useExpenseEntryForm } from './use-expense-entry-form'
 
 export type AddExpenseDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
-
-const mergeGroups = (
-  personalGroups: ExpenseGroupDTO[],
-  householdGroups: ExpenseGroupDTO[],
-) => [
-  ...new Map(
-    [...personalGroups, ...householdGroups].map((group) => [group.id, group]),
-  ).values(),
-]
 
 export const AddExpenseDialog = ({
   open,
@@ -66,7 +56,8 @@ export const AddExpenseDialog = ({
     setField,
     titlePlaceholder,
     handleSubmit,
-  } = useAddExpenseForm({
+  } = useExpenseEntryForm({
+    mode: 'create',
     open,
     lastSourceKey: profile?.quickAddLastSourceKey ?? null,
     onOpenChange,
@@ -76,21 +67,16 @@ export const AddExpenseDialog = ({
   const { data: householdGroupsResponse } =
     useExpenseGroupListQuery(selectedHouseholdId)
 
-  const categories = useMemo<AddExpenseCategoryOption[]>(
-    () =>
-      (categoriesResponse?.items ?? []).filter(
-        (category): category is AddExpenseCategoryOption =>
-          category.kind === 'expense',
-      ),
+  const categories = useMemo(
+    () => filterExpenseEntryCategories(categoriesResponse?.items ?? []),
     [categoriesResponse?.items],
   )
 
-  const households = (householdsResponse?.items ??
-    []) as AddExpenseHouseholdOption[]
+  const households = householdsResponse?.items ?? []
 
   const groups = useMemo(
     () =>
-      mergeGroups(
+      mergeExpenseEntryGroups(
         personalGroupsResponse?.items ?? [],
         selectedHouseholdId ? (householdGroupsResponse?.items ?? []) : [],
       ),
@@ -106,10 +92,11 @@ export const AddExpenseDialog = ({
     : t('expense.addTitle')
 
   const form = (
-    <AddExpenseForm
+    <ExpenseEntryForm
       amountDisplay={amountDisplay}
       categories={categories}
       errors={errors}
+      formId='add-expense-form'
       formState={formState}
       groups={groups}
       households={households}

@@ -1,20 +1,23 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
+import { useMemo } from 'react'
 import { toast } from 'sonner'
 
-import { ExpenseForm } from '@/components/expense/expense-form'
+import {
+  ExpenseEntryForm,
+  filterExpenseEntryCategories,
+  mergeExpenseEntryGroups,
+  useExpenseEntryForm,
+} from '@/components/expense'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useExpenseDetailQuery } from '@/hooks/api/use-expense'
-import {
-  useHouseholdMembersQuery,
-  useHouseholdsQuery,
-} from '@/hooks/api/use-households'
+import { useExpenseGroupListQuery } from '@/hooks/api/use-groups'
+import { useHouseholdsQuery } from '@/hooks/api/use-households'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
-import { toMajorUnits } from '@/utils/currency/format'
 
 function EditExpensePage() {
   const params = useParams<{ id: string }>()
@@ -24,26 +27,55 @@ function EditExpensePage() {
   const expenseQuery = useExpenseDetailQuery(id)
   const categoriesQuery = useReferenceCategoriesQuery()
   const householdsQuery = useHouseholdsQuery()
-  const householdMembersQuery = useHouseholdMembersQuery(
-    expenseQuery.data?.householdId ?? undefined,
-  )
+  const personalGroupsQuery = useExpenseGroupListQuery(undefined)
+  const expense = expenseQuery.data
+  const entryForm = useExpenseEntryForm({
+    mode: 'edit',
+    open: true,
+    expense,
+    expenseId: id,
+    callbacks: {
+      onSuccess: (updatedExpense) => {
+        toast.success(t('expense.updateSuccess'))
+        router.push(`/expenses/${updatedExpense.id}`)
+      },
+      onError: () => {
+        toast.error(t('expense.updateError'))
+      },
+    },
+  })
+  const selectedHouseholdId = entryForm.formState.householdId || undefined
+  const householdGroupsQuery = useExpenseGroupListQuery(selectedHouseholdId)
 
   const isLoading =
     expenseQuery.isLoading ||
     categoriesQuery.isLoading ||
     householdsQuery.isLoading ||
-    householdMembersQuery.isLoading
-  const error =
-    expenseQuery.error ||
-    categoriesQuery.error ||
-    householdsQuery.error ||
-    householdMembersQuery.error ||
-    !id
+    personalGroupsQuery.isLoading ||
+    householdGroupsQuery.isLoading
+  const hasError =
+    !id ||
+    !!expenseQuery.error ||
+    !!categoriesQuery.error ||
+    !!householdsQuery.error ||
+    !!personalGroupsQuery.error ||
+    !!householdGroupsQuery.error
 
-  const categories = categoriesQuery.data?.items ?? []
+  const categories = useMemo(
+    () => filterExpenseEntryCategories(categoriesQuery.data?.items ?? []),
+    [categoriesQuery.data?.items],
+  )
   const households = householdsQuery.data?.items ?? []
-  const payerOptions = householdMembersQuery.data?.items ?? []
-  const expense = expenseQuery.data
+  const personalGroups = personalGroupsQuery.data?.items ?? []
+  const householdGroups = householdGroupsQuery.data?.items ?? []
+  const groups = useMemo(
+    () =>
+      mergeExpenseEntryGroups(
+        personalGroups,
+        selectedHouseholdId ? householdGroups : [],
+      ),
+    [householdGroups, personalGroups, selectedHouseholdId],
+  )
 
   if (isLoading) {
     return (
@@ -61,7 +93,7 @@ function EditExpensePage() {
     )
   }
 
-  if (error || !expense || !id) {
+  if (hasError || !expense || !id) {
     return (
       <Card>
         <CardContent className='flex items-center justify-between gap-2 pt-6'>
@@ -85,29 +117,32 @@ function EditExpensePage() {
         </p>
       </header>
 
-      <ExpenseForm
+      <ExpenseEntryForm
+        amountDisplay={entryForm.amountDisplay}
         categories={categories}
-        expenseId={id}
+        errors={entryForm.errors}
+        formId='edit-expense-form'
+        formState={entryForm.formState}
+        groups={groups}
         households={households}
-        initialValues={{
-          amount: toMajorUnits(expense.amountMinor, expense.currencyCode),
-          categoryKey: expense.categoryKey,
-          sourceKey: expense.sourceKey,
-          title: expense.title,
-          occurredAt: expense.occurredAt,
-          note: expense.note ?? '',
-          payerUserId: expense.payerUserId ?? undefined,
-          visibility: expense.visibility,
-          householdId: expense.householdId ?? undefined,
-        }}
-        mode='edit'
-        payerOptions={payerOptions}
-        onCancel={() => router.back()}
-        onSuccess={(updatedExpense) => {
-          toast.success(t('expense.updateSuccess'))
-          router.push(`/expenses/${updatedExpense.id}`)
-        }}
+        isSubmitting={entryForm.isSubmitting}
+        setField={entryForm.setField}
+        titlePlaceholder={entryForm.titlePlaceholder}
+        onSubmit={entryForm.handleSubmit}
       />
+      <div className='flex justify-end gap-2'>
+        <Button type='button' variant='outline' onClick={() => router.back()}>
+          {t('common.actions.cancel')}
+        </Button>
+        <Button
+          disabled={entryForm.isSubmitting}
+          form='edit-expense-form'
+          type='submit'>
+          {entryForm.isSubmitting
+            ? t('expense.updating')
+            : t('expense.saveChanges')}
+        </Button>
+      </div>
     </div>
   )
 }

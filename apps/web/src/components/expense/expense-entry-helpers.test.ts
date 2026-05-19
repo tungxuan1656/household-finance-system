@@ -1,7 +1,4 @@
-'use client'
-
-import { describe, expect, it } from 'vitest'
-import { vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/i18n/t', () => ({
   t: (key: string) => key,
@@ -15,9 +12,9 @@ import {
   formatOccurredAtDate,
   getExpenseTitlePlaceholder,
   parseOccurredAtDate,
-} from '@/components/expense/form-fields/field-helpers'
+} from '@/components/expense/expense-entry-helpers'
 
-describe('field-helpers', () => {
+describe('expense-entry-helpers', () => {
   it('formats and parses occurredAt values with local date helpers', () => {
     const date = '2026-05-08'
 

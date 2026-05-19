@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-19 — Shipped shared expense-entry add/edit unification
+
+- Who: Orchestrator + fixer + oracle reviewer
+- Summary: Unified add-expense and edit-expense onto one canonical shared expense-entry path. Preserved the approved add-expense row UI, made VND thousand-shortcut amount behavior symmetric for create and edit, rewired the edit page to the same 7-field form, extracted neutral option/date helpers, and removed the obsolete dual-form stack plus transition wrappers.
+- Files changed: Shared expense-entry form/hook/helper modules, add/edit expense shells, focused expense-entry tests, obsolete expense form stack cleanup, feature records, and this progress log.
+- Verification: `pnpm --filter web exec vitest run src/components/expense/expense-entry-helpers.test.ts src/components/expense/expense-entry-options.test.ts src/components/expense/dialog-amount-helper.test.ts src/components/expense/use-expense-entry-form.test.ts` passed with 4 files / 18 tests; `pnpm exec tsc -p apps/web/tsconfig.json --noEmit` passed; final full `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 24 changed symbols, 9 changed files, and 0 affected processes.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
+
 ## 2026-05-19 — Wrote expense-entry unification ExecPlan
 
 - Who: Orchestrator + User

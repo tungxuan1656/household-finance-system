@@ -308,7 +308,7 @@
     {
       "id": "feat-061",
       "name": "Shared expense entry form for add/edit with VND amount normalization",
-      "status": "proposed"
+      "status": "done"
     }
   ]
 }

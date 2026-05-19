@@ -13,7 +13,6 @@ import type { ReactNode } from 'react'
 
 import { t } from '@/lib/i18n/t'
 import type { ExpenseGroupDTO } from '@/types/group'
-import type { CategoryKey } from '@/types/reference-data'
 import { cn } from '@/utils/cn'
 
 import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field'
@@ -26,39 +25,15 @@ import {
 } from '../ui/input-group'
 import { NativeSelect, NativeSelectOption } from '../ui/native-select'
 import { CategoryPicker } from './category-picker'
+import type {
+  ExpenseEntryCategoryOption,
+  ExpenseEntryHouseholdOption,
+} from './expense-entry-options'
 import { SourcePicker } from './source-picker'
 import type {
-  AddExpenseFormErrors,
-  AddExpenseFormState,
-} from './use-add-expense-form'
-
-export type AddExpenseCategoryOption = {
-  key: CategoryKey
-  kind: 'expense'
-  iconUrl: string
-  color: string
-}
-
-export type AddExpenseHouseholdOption = {
-  id: string
-  name: string
-}
-
-type AddExpenseFormProps = {
-  formState: AddExpenseFormState
-  setField: <K extends keyof AddExpenseFormState>(
-    key: K,
-    value: AddExpenseFormState[K],
-  ) => void
-  errors: AddExpenseFormErrors
-  isSubmitting: boolean
-  amountDisplay: string
-  categories: AddExpenseCategoryOption[]
-  households: AddExpenseHouseholdOption[]
-  groups: ExpenseGroupDTO[]
-  titlePlaceholder: string
-  onSubmit: () => void
-}
+  ExpenseEntryFormErrors,
+  ExpenseEntryFormState,
+} from './use-expense-entry-form'
 
 type FieldRowProps = {
   label: string
@@ -68,29 +43,48 @@ type FieldRowProps = {
   className?: string
 }
 
+const ROW_BASE_CLASS_NAME =
+  'flex-row items-center gap-2 rounded-2xl border border-border px-3 py-1'
+const ROW_LABEL_CLASS_NAME = 'flex w-28! flex-row items-center gap-2'
+const ROW_CONTROL_CLASS_NAME = 'flex w-auto flex-1 flex-row justify-end'
+const NATIVE_SELECT_LABEL_CLASS_NAME =
+  'border-none bg-transparent text-sm text-right ring-0!'
+
 const FieldRow = ({
   label,
   icon,
   htmlFor,
   children,
   className,
-}: FieldRowProps) => {
-  return (
-    <Field
-      className={cn(
-        `flex-row items-center gap-2 rounded-2xl border border-border px-3 py-1`,
-        className,
-      )}>
-      <div className='flex w-28! flex-row items-center gap-2'>
-        {icon}
-        <FieldLabel htmlFor={htmlFor}>{label}</FieldLabel>
-      </div>
-      <div className='flex w-auto flex-1 flex-row justify-end'>{children}</div>
-    </Field>
-  )
+}: FieldRowProps) => (
+  <Field className={cn(ROW_BASE_CLASS_NAME, className)}>
+    <div className={ROW_LABEL_CLASS_NAME}>
+      {icon}
+      <FieldLabel htmlFor={htmlFor}>{label}</FieldLabel>
+    </div>
+    <div className={ROW_CONTROL_CLASS_NAME}>{children}</div>
+  </Field>
+)
+
+export type ExpenseEntryFormProps = {
+  formId: string
+  formState: ExpenseEntryFormState
+  setField: <K extends keyof ExpenseEntryFormState>(
+    key: K,
+    value: ExpenseEntryFormState[K],
+  ) => void
+  errors: ExpenseEntryFormErrors
+  isSubmitting: boolean
+  amountDisplay: string
+  categories: ExpenseEntryCategoryOption[]
+  households: ExpenseEntryHouseholdOption[]
+  groups: ExpenseGroupDTO[]
+  titlePlaceholder: string
+  onSubmit: () => void
 }
 
-export const AddExpenseForm = ({
+export const ExpenseEntryForm = ({
+  formId,
   formState,
   setField,
   errors,
@@ -101,11 +95,11 @@ export const AddExpenseForm = ({
   groups,
   titlePlaceholder,
   onSubmit,
-}: AddExpenseFormProps) => {
+}: ExpenseEntryFormProps) => {
   return (
     <form
       className='flex min-h-0 flex-1 flex-col'
-      id='add-expense-form'
+      id={formId}
       onSubmit={(event) => {
         event.preventDefault()
         onSubmit()
@@ -114,7 +108,7 @@ export const AddExpenseForm = ({
         <FieldGroup className='flex flex-col gap-3'>
           <FieldRow
             className='border-none px-0 pl-2'
-            htmlFor='add-expense-amount'
+            htmlFor='expense-amount'
             icon={<DollarSign className='size-4' />}
             label={t('expense.amount')}>
             <InputGroup className='rounded-none border-0 border-b-2 border-border bg-transparent ring-0!'>
@@ -122,7 +116,7 @@ export const AddExpenseForm = ({
                 aria-invalid={!!errors.amountInput}
                 className='h-auto! px-0! text-right font-mono text-2xl! tabular-nums'
                 disabled={isSubmitting}
-                id='add-expense-amount'
+                id='expense-amount'
                 inputMode='numeric'
                 placeholder='0'
                 type='text'
@@ -140,14 +134,14 @@ export const AddExpenseForm = ({
             <FieldError>{errors.amountInput}</FieldError>
           </FieldRow>
           <FieldRow
-            htmlFor='add-expense-title'
+            htmlFor='expense-title'
             icon={<Pencil className='size-4' />}
             label={t('expense.content')}>
             <Input
               aria-invalid={!!errors.title}
               className='border-none bg-transparent text-right ring-0!'
               disabled={isSubmitting}
-              id='add-expense-title'
+              id='expense-title'
               placeholder={titlePlaceholder}
               size='sm'
               value={formState.title}
@@ -156,14 +150,14 @@ export const AddExpenseForm = ({
             <FieldError>{errors.title}</FieldError>
           </FieldRow>
           <FieldRow
-            htmlFor='add-expense-date'
+            htmlFor='expense-date'
             icon={<CalendarIcon className='size-4' />}
             label={t('expense.date')}>
             <Input
               aria-invalid={!!errors.occurredOn}
               className='w-auto border-none bg-transparent text-right ring-0!'
               disabled={isSubmitting}
-              id='add-expense-date'
+              id='expense-date'
               size='sm'
               type='date'
               value={formState.occurredOn}
@@ -172,13 +166,13 @@ export const AddExpenseForm = ({
             <FieldError>{errors.occurredOn}</FieldError>
           </FieldRow>
           <FieldRow
-            htmlFor='add-expense-category'
+            htmlFor='expense-category'
             icon={<LayoutDashboardIcon className='size-4' />}
             label={t('expense.category')}>
             <CategoryPicker
               categories={categories}
               disabled={isSubmitting}
-              id='add-expense-category'
+              id='expense-category'
               size='sm'
               value={formState.categoryKey}
               onValueChange={(value) => setField('categoryKey', value)}
@@ -186,12 +180,12 @@ export const AddExpenseForm = ({
             <FieldError>{errors.categoryKey}</FieldError>
           </FieldRow>
           <FieldRow
-            htmlFor='add-expense-source'
+            htmlFor='expense-source'
             icon={<WalletIcon className='size-4' />}
             label={t('expense.source')}>
             <SourcePicker
               disabled={isSubmitting}
-              id='add-expense-source'
+              id='expense-source'
               size='sm'
               value={formState.sourceKey || undefined}
               onValueChange={(value) => setField('sourceKey', value)}
@@ -199,14 +193,14 @@ export const AddExpenseForm = ({
             <FieldError>{errors.sourceKey}</FieldError>
           </FieldRow>
           <FieldRow
-            htmlFor='add-expense-household'
+            htmlFor='expense-household'
             icon={<HomeIcon className='size-4' />}
             label={t('expense.household')}>
             <NativeSelect
               className='w-full'
               disabled={isSubmitting}
-              id='add-expense-household'
-              labelClassName='border-none bg-transparent text-sm text-right ring-0!'
+              id='expense-household'
+              labelClassName={NATIVE_SELECT_LABEL_CLASS_NAME}
               size='sm'
               value={formState.householdId}
               onChange={(event) => setField('householdId', event.target.value)}>
@@ -221,14 +215,14 @@ export const AddExpenseForm = ({
             </NativeSelect>
           </FieldRow>
           <FieldRow
-            htmlFor='add-expense-group'
+            htmlFor='expense-group'
             icon={<GroupIcon className='size-4' />}
             label={t('expense.group')}>
             <NativeSelect
               className='w-full'
               disabled={isSubmitting}
-              id='add-expense-group'
-              labelClassName='border-none bg-transparent text-sm text-right! ring-0!'
+              id='expense-group'
+              labelClassName={NATIVE_SELECT_LABEL_CLASS_NAME}
               size='sm'
               value={formState.groupId}
               onChange={(event) => setField('groupId', event.target.value)}>
