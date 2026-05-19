@@ -7,8 +7,8 @@ import {
 } from '@/components/expense/dialog-amount-helper'
 
 describe('dialog amount helper', () => {
-  it('formats raw digit input into display and canonical submit amount', () => {
-    expect(formatDialogAmountDisplay('3')).toBe('3.000 đ')
+  it('keeps small raw input unchanged while preserving canonical submit amount', () => {
+    expect(formatDialogAmountDisplay('3')).toBe('3')
     expect(parseDialogAmountSubmitMinor('3')).toBe(3000)
   })
 
@@ -17,8 +17,11 @@ describe('dialog amount helper', () => {
     expect(parseDialogAmountSubmitMinor('')).toBeNull()
   })
 
-  it('supports multi digit input', () => {
-    expect(formatDialogAmountDisplay('1234')).toBe('1.234.000 đ')
+  it('formats grouped thousands without adding currency display text', () => {
+    expect(formatDialogAmountDisplay('1000')).toBe('1.000')
+    expect(parseDialogAmountSubmitMinor('1000')).toBe(1000000)
+
+    expect(formatDialogAmountDisplay('1234')).toBe('1.234')
     expect(parseDialogAmountSubmitMinor('1234')).toBe(1234000)
   })
 

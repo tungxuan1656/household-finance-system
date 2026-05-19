@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-19 — Fixed raw money input display in shared expense-entry form
+
+- Who: Orchestrator
+- Summary: Adjusted the shared expense amount display helper so the amount input keeps raw typed digits instead of inline formatting them to VND display text. The `.000 đ` suffix now remains solely in the input addon, while submit scaling and edit hydration keep the existing `*1000` storage semantics unchanged.
+- Files changed: Expense amount display helper, focused helper test, and this progress log.
+- Verification: `pnpm --filter web exec vitest run src/components/expense/dialog-amount-helper.test.ts src/components/expense/use-expense-entry-form.test.ts` passed with 2 files / 13 tests; `pnpm exec tsc -p apps/web/tsconfig.json --noEmit` passed; full `./init.sh` passed with `Done!` before this log entry.
+- Blockers: none.
+- Next steps: Re-run final verification after the progress log update if preparing a commit-ready handoff.
+
 ## 2026-05-19 — Shipped shared expense-entry add/edit unification
 
 - Who: Orchestrator + fixer + oracle reviewer
