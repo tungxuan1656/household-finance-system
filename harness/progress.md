@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-20 — Completed portable skill-system ceremony alignment
+
+- Who: Orchestrator
+- Summary: Finished feat-064 by moving shared skill guidance into portable folder-based skills, adding project-level `.agents` guidance, and rewriting the core workflow skills around minimum-sufficient ceremony. `using-skills` now acts as the single entrypoint, Level 0 work is no longer forced through heavy process, verification and review expectations scale by ceremony level, the deferred subagent refactor stays out of scope, and stale skill references were removed without expanding skill metadata.
+- Files changed: Project-level agent-skill guidance, new shared ceremony/maintenance skill folders, core workflow skill docs, stale reference cleanup in supporting skills, new feat-064 harness record, feature index, and this progress log.
+- Verification: `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 9 changed files, 0 changed symbols, and 0 affected processes.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
+
 ## 2026-05-20 — Completed frontend shim cleanup and ownership normalization
 
 - Who: Orchestrator + fixer + oracle reviewers

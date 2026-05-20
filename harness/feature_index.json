@@ -319,6 +319,11 @@
       "id": "feat-063",
       "name": "Frontend shim cleanup and ownership normalization",
       "status": "done"
+    },
+    {
+      "id": "feat-064",
+      "name": "Portable skill system ceremony alignment",
+      "status": "done"
     }
   ]
 }

@@ -7,6 +7,12 @@ description: Use when executing implementation plans with independent tasks in t
 
 Execute plan by dispatching fresh subagents per task or per lane, with two-stage review after each implemented unit: spec compliance review first, then code quality review.
 
+## Scope Note
+
+This skill documents when subagents are appropriate.
+
+Actual subagent registry or model-routing refactor is deferred in this phase.
+
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
 **Core principle:** Fresh subagent per task/lane + safe phase-based parallelism + two-stage review (spec then quality) = high quality, fast iteration
@@ -20,6 +26,16 @@ AGENTS.md is read at session start. For plan execution, also read:
 - Scope-specific reference docs only when the plan references them
 
 ## When to Use
+
+Default threshold: Level 3 work or explicit user request.
+
+Use this skill when:
+- a written plan exists
+- tasks can be bounded clearly
+- independent lanes can be justified safely
+- the coordination overhead is worth it
+
+Do not use this skill by default for small inline plan execution. Use `executing-plans` first.
 
 ```
 Have implementation plan?
@@ -40,6 +56,8 @@ Tasks mostly independent?
 - Fresh subagent per task (no context pollution)
 - Two-stage review after each task: spec compliance first, then code quality
 - Faster iteration (no human-in-loop between tasks)
+
+Sequential execution remains the default even inside this skill.
 
 ## Parallelism Default
 

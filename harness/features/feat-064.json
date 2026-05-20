@@ -1,0 +1,54 @@
+{
+  "id": "feat-064",
+  "name": "Portable skill system ceremony alignment",
+  "status": "done",
+  "description": "Restructure project-owned skill guidance into portable skill folders, make `using-skills` the single entry workflow router, align core workflow skills around minimum-sufficient ceremony levels, and remove stale skill-reference guidance without expanding metadata.",
+  "dependencies": ["feat-001", "feat-002", "feat-040", "feat-054"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": ".agents/README.md",
+      "description": "Project-level agent skills guide documents the portable folder-only skill structure, ownership rules, and `using-skills` entrypoint policy."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/ceremony-levels/SKILL.md",
+      "description": "Shared ceremony definitions establish Level 0-3 workflow expectations and escalation rules for lightweight versus high-ceremony tasks."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/skill-maintenance/SKILL.md",
+      "description": "Skill maintenance guidance replaces loose shared markdown with a portable discoverable skill and preserves the minimal-metadata policy."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/using-skills/SKILL.md",
+      "description": "The entrypoint skill now routes to the minimum sufficient process instead of forcing high ceremony for simple tasks."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/verification-before-completion/SKILL.md",
+      "description": "Completion policy now requires fresh verification evidence with operational reporting instead of threat-heavy wording."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/requesting-code-review/SKILL.md",
+      "description": "Code-review workflow now scales review expectations by ceremony level and only calls domain reviewers when warranted."
+    },
+    {
+      "type": "file",
+      "path": "harness/progress.md",
+      "description": "Progress log records the completed skill-system upgrade and its verification results."
+    },
+    {
+      "type": "command",
+      "path": "./init.sh",
+      "description": "Full repository verification passed after the skill-doc and harness updates."
+    },
+    {
+      "type": "command",
+      "path": "gitnexus_detect_changes(scope: all)",
+      "description": "Final GitNexus change detection reported LOW risk with 9 changed files, 0 changed symbols, and 0 affected processes."
+    }
+  ]
+}
