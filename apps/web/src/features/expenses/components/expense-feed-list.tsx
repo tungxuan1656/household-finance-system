@@ -2,10 +2,8 @@
 
 import { useRouter } from 'next/navigation'
 
+import { DataState } from '@/components/shared/data-state'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Empty, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
-import { Skeleton } from '@/components/ui/skeleton'
 import { t } from '@/lib/i18n/t'
 
 import { useInfiniteExpenseListQuery } from '../hooks/use-expense'
@@ -36,74 +34,47 @@ export function ExpenseFeedList({ filters, search }: ExpenseFeedListProps) {
     router.push(`/expenses/${id}`)
   }
 
-  if (isLoading) {
-    return (
-      <div className='flex flex-col gap-3'>
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Card key={i} size='sm'>
-            <CardContent className='flex items-center justify-between gap-3'>
-              <div className='flex flex-col gap-2'>
-                <Skeleton className='h-3 w-16' />
-                <Skeleton className='h-4 w-32' />
-                <Skeleton className='h-3 w-20' />
-              </div>
-              <div className='flex flex-col items-end gap-2'>
-                <Skeleton className='h-4 w-20' />
-                <Skeleton className='h-4 w-12' />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyTitle>{t('expense.feed.error')}</EmptyTitle>
-        </EmptyHeader>
-        <Button variant='outline' onClick={() => refetch()}>
-          {t('app.households.actions.retry')}
-        </Button>
-      </Empty>
-    )
-  }
-
   const expenses = data?.pages.flatMap((page) => page.items) ?? []
 
-  if (expenses.length === 0) {
-    return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyTitle>{t('expense.feed.empty')}</EmptyTitle>
-        </EmptyHeader>
-      </Empty>
-    )
-  }
-
   return (
-    <div className='flex flex-col gap-3'>
-      {expenses.map((expense) => (
-        <ExpenseFeedItem
-          key={expense.id}
-          expense={expense}
-          onClick={handleExpenseClick}
-        />
-      ))}
-      {hasNextPage && (
+    <DataState
+      action={
         <Button
-          className='w-full sm:w-auto'
-          disabled={isFetchingNextPage}
-          size='xl'
           variant='outline'
-          onClick={() => fetchNextPage()}>
-          {isFetchingNextPage
-            ? t('expense.feed.loading')
-            : t('expense.feed.loadMore')}
+          onClick={() => {
+            void refetch()
+          }}>
+          {t('app.households.actions.retry')}
         </Button>
-      )}
-    </div>
+      }
+      emptyDescription=''
+      emptyTitle={t('expense.feed.empty')}
+      errorDescription={t('expense.loadError')}
+      errorTitle={t('expense.feed.error')}
+      isEmpty={!isLoading && expenses.length === 0}
+      isError={isError}
+      isLoading={isLoading}>
+      <div className='flex flex-col gap-3'>
+        {expenses.map((expense) => (
+          <ExpenseFeedItem
+            key={expense.id}
+            expense={expense}
+            onClick={handleExpenseClick}
+          />
+        ))}
+        {hasNextPage && (
+          <Button
+            className='w-full sm:w-auto'
+            disabled={isFetchingNextPage}
+            size='xl'
+            variant='outline'
+            onClick={() => fetchNextPage()}>
+            {isFetchingNextPage
+              ? t('expense.feed.loading')
+              : t('expense.feed.loadMore')}
+          </Button>
+        )}
+      </div>
+    </DataState>
   )
 }

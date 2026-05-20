@@ -72,7 +72,9 @@ function DataState({
       <Card {...props}>
         <CardHeader className='text-center'>
           <CardTitle>{placeholderTitle}</CardTitle>
-          <CardDescription>{placeholderDescription}</CardDescription>
+          {placeholderDescription ? (
+            <CardDescription>{placeholderDescription}</CardDescription>
+          ) : null}
         </CardHeader>
         {action && (
           <CardContent className='flex justify-center'>{action}</CardContent>
