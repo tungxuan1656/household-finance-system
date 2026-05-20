@@ -37,11 +37,12 @@ export const ExpenseDetailActions = ({
 
   return (
     <div className='flex items-center gap-2'>
-      <Button type='button' variant='outline' onClick={onEdit}>
+      <Button size='sm' type='button' variant='outline' onClick={onEdit}>
         {t('expense.editAction')}
       </Button>
       <Button
         disabled={isDeleting}
+        size='sm'
         type='button'
         variant='destructive'
         onClick={handleDelete}>
