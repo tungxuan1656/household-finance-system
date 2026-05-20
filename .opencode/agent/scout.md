@@ -1,7 +1,8 @@
 ---
 description: Fast read-only codebase scout. Use to find relevant files, symbols, docs, existing patterns, and likely impact areas before planning or implementation.
 mode: subagent
-model: openai/gpt-5.4-mini
+model: opencode-go/deepseek-v4-flash
+variant: high
 temperature: 0.1
 permission:
   edit: deny

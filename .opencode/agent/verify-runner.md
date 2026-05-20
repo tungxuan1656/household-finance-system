@@ -1,7 +1,8 @@
 ---
 description: Verification runner. Use to run or inspect lint, typecheck, tests, build, or init verification commands and report evidence before completion.
 mode: subagent
-model: openai/gpt-5.4-mini
+model: opencode-go/deepseek-v4-flash
+variant: high
 temperature: 0.1
 permission:
   edit: deny

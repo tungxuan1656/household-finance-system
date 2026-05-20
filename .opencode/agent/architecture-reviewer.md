@@ -1,7 +1,8 @@
 ---
 description: Read-only architecture reviewer. Use for cross-layer or boundary-sensitive changes to check alignment with ARCHITECTURE.md and domain ownership rules.
 mode: subagent
-model: openai/gpt-5.4
+model: openai/gpt-5.5
+variant: xhigh
 temperature: 0.1
 permission:
   edit: deny

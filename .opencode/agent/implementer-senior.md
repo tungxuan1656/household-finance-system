@@ -2,6 +2,7 @@
 description: Multi-file or boundary-sensitive implementer for clear planned changes involving API, architecture boundaries, cross-layer work, or correctness-sensitive logic.
 mode: subagent
 model: openai/gpt-5.4
+variant: medium
 temperature: 0.1
 permission:
   edit: ask

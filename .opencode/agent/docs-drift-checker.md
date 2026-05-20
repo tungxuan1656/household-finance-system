@@ -1,7 +1,8 @@
 ---
 description: Read-only docs drift checker. Use to compare code changes against docs, specs, harness records, and required progress updates.
 mode: subagent
-model: openai/gpt-5.4-mini
+model: opencode-go/mimo-v2.5
+variant: low
 temperature: 0.1
 permission:
   edit: deny

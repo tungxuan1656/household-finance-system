@@ -1,7 +1,7 @@
 ---
 description: Small-scope implementer for clear, low-risk changes touching one or two files, with targeted verification and no architecture decision-making.
 mode: subagent
-model: openai/gpt-5.4-mini
+model: opencode-go/qwen3.6-plus
 temperature: 0.1
 permission:
   edit: ask

@@ -1,7 +1,7 @@
 ---
 description: Read-only code reviewer. Use after implementation to review correctness, maintainability, regression risk, project conventions, and verification concerns.
 mode: subagent
-model: openai/gpt-5.4
+model: opencode-go/kimi-k2.6
 temperature: 0.1
 permission:
   edit: deny

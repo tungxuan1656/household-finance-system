@@ -1,7 +1,7 @@
 ---
 description: Focused test author. Use to add or update regression and acceptance tests after behavior or acceptance criteria are clear.
 mode: subagent
-model: openai/gpt-5.4-mini
+model: opencode-go/qwen3.6-plus
 temperature: 0.1
 permission:
   edit: ask
