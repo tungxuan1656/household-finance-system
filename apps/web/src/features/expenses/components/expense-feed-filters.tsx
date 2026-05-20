@@ -10,8 +10,12 @@ import {
   LayoutDashboardIcon,
   SearchIcon,
 } from 'lucide-react'
-import type { ReactNode } from 'react'
 
+import {
+  FIELD_ROW_INPUT_CLASS,
+  FIELD_ROW_SELECT_CLASS,
+  FieldRow,
+} from '@/components/shared/form'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,17 +24,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { FieldGroup } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import type { ExpenseGroupDTO } from '@/features/groups/types/group'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
+import { formatAmountInput } from '@/utils/currency/format'
 
 import type { ExpenseListParams } from '../types/expense'
 
-type ExpenseFeedFilterValues = {
+export type ExpenseFeedFilterValues = {
   amountMax: string
   amountMin: string
   categoryKey: string
@@ -49,41 +54,6 @@ type ExpenseFeedFiltersProps = {
   onChange: (key: keyof ExpenseFeedFilterValues, value: string) => void
 }
 
-const formatAmountInput = (value: string): string => {
-  const digits = value.replace(/\D/g, '')
-  if (!digits) return ''
-
-  return new Intl.NumberFormat('vi-VN').format(Number(digits))
-}
-
-const ROW_BASE_CLASS_NAME =
-  'flex-row items-center gap-2 rounded-2xl border border-border px-3 py-1'
-const ROW_LABEL_CLASS_NAME =
-  'flex w-28! shrink-0 flex-row items-center gap-2 sm:w-32!'
-const ROW_CONTROL_CLASS_NAME = 'flex min-w-0 flex-1 w-auto flex-row justify-end'
-const NATIVE_SELECT_LABEL_CLASS_NAME =
-  'border-none bg-transparent text-sm text-right ring-0!'
-const INPUT_CLASS_NAME = 'w-full border-none bg-transparent text-right ring-0!'
-
-type FieldRowProps = {
-  label: string
-  icon?: ReactNode
-  htmlFor: string
-  children: ReactNode
-}
-
-const FieldRow = ({ label, icon, htmlFor, children }: FieldRowProps) => (
-  <Field className={ROW_BASE_CLASS_NAME}>
-    <div className={ROW_LABEL_CLASS_NAME}>
-      {icon}
-      <FieldLabel className='font-normal' htmlFor={htmlFor}>
-        {label}
-      </FieldLabel>
-    </div>
-    <div className={ROW_CONTROL_CLASS_NAME}>{children}</div>
-  </Field>
-)
-
 export function ExpenseFeedFilters({
   categories,
   groups,
@@ -92,6 +62,7 @@ export function ExpenseFeedFilters({
 }: ExpenseFeedFiltersProps) {
   return (
     <div className='flex items-center gap-3'>
+      {/* Search stays visible outside the dialog for fast access on mobile. */}
       <div className='relative flex-1'>
         <SearchIcon className='absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground' />
         <Input
@@ -113,6 +84,8 @@ export function ExpenseFeedFilters({
             </span>
           </Button>
         </DialogTrigger>
+
+        {/* Title is pinned; inner div scrolls independently. */}
         <DialogContent className='grid max-h-[85vh] grid-rows-[auto_1fr] gap-0 overflow-hidden p-0 sm:max-w-md'>
           <DialogHeader className='px-5 pt-5 pb-3'>
             <DialogTitle>{t('expense.feed.filters.advancedTitle')}</DialogTitle>
@@ -127,7 +100,7 @@ export function ExpenseFeedFilters({
                 <NativeSelect
                   className='w-full'
                   id='expense-feed-sort'
-                  labelClassName={NATIVE_SELECT_LABEL_CLASS_NAME}
+                  labelClassName={FIELD_ROW_SELECT_CLASS}
                   size='sm'
                   value={values.sort}
                   onChange={(event) => onChange('sort', event.target.value)}>
@@ -147,7 +120,7 @@ export function ExpenseFeedFilters({
                 <NativeSelect
                   className='w-full'
                   id='expense-feed-visibility'
-                  labelClassName={NATIVE_SELECT_LABEL_CLASS_NAME}
+                  labelClassName={FIELD_ROW_SELECT_CLASS}
                   size='sm'
                   value={values.visibility}
                   onChange={(event) =>
@@ -172,7 +145,7 @@ export function ExpenseFeedFilters({
                 <NativeSelect
                   className='w-full'
                   id='expense-feed-category'
-                  labelClassName={NATIVE_SELECT_LABEL_CLASS_NAME}
+                  labelClassName={FIELD_ROW_SELECT_CLASS}
                   size='sm'
                   value={values.categoryKey}
                   onChange={(event) =>
@@ -193,34 +166,28 @@ export function ExpenseFeedFilters({
                 htmlFor='expense-feed-date-from'
                 icon={<CalendarIcon className='size-4' />}
                 label={t('expense.feed.filters.dateFrom')}>
-                <div>
-                  <Input
-                    className={INPUT_CLASS_NAME}
-                    id='expense-feed-date-from'
-                    size='sm'
-                    type='date'
-                    value={values.dateFrom}
-                    onChange={(event) =>
-                      onChange('dateFrom', event.target.value)
-                    }
-                  />
-                </div>
+                <Input
+                  className={FIELD_ROW_INPUT_CLASS}
+                  id='expense-feed-date-from'
+                  size='sm'
+                  type='date'
+                  value={values.dateFrom}
+                  onChange={(event) => onChange('dateFrom', event.target.value)}
+                />
               </FieldRow>
 
               <FieldRow
                 htmlFor='expense-feed-date-to'
                 icon={<CalendarIcon className='size-4' />}
                 label={t('expense.feed.filters.dateTo')}>
-                <div>
-                  <Input
-                    className={INPUT_CLASS_NAME}
-                    id='expense-feed-date-to'
-                    size='sm'
-                    type='date'
-                    value={values.dateTo}
-                    onChange={(event) => onChange('dateTo', event.target.value)}
-                  />
-                </div>
+                <Input
+                  className={FIELD_ROW_INPUT_CLASS}
+                  id='expense-feed-date-to'
+                  size='sm'
+                  type='date'
+                  value={values.dateTo}
+                  onChange={(event) => onChange('dateTo', event.target.value)}
+                />
               </FieldRow>
 
               <FieldRow
@@ -228,17 +195,16 @@ export function ExpenseFeedFilters({
                 icon={<DollarSign className='size-4' />}
                 label={t('expense.feed.filters.amountMin')}>
                 <Input
-                  className={INPUT_CLASS_NAME}
+                  className={FIELD_ROW_INPUT_CLASS}
                   id='expense-feed-amount-min'
                   inputMode='numeric'
                   placeholder='0'
                   size='sm'
                   type='text'
                   value={values.amountMin}
-                  onChange={(event) => {
-                    const formatted = formatAmountInput(event.target.value)
-                    onChange('amountMin', formatted)
-                  }}
+                  onChange={(event) =>
+                    onChange('amountMin', formatAmountInput(event.target.value))
+                  }
                 />
               </FieldRow>
 
@@ -247,17 +213,16 @@ export function ExpenseFeedFilters({
                 icon={<DollarSign className='size-4' />}
                 label={t('expense.feed.filters.amountMax')}>
                 <Input
-                  className={INPUT_CLASS_NAME}
+                  className={FIELD_ROW_INPUT_CLASS}
                   id='expense-feed-amount-max'
                   inputMode='numeric'
                   placeholder='0'
                   size='sm'
                   type='text'
                   value={values.amountMax}
-                  onChange={(event) => {
-                    const formatted = formatAmountInput(event.target.value)
-                    onChange('amountMax', formatted)
-                  }}
+                  onChange={(event) =>
+                    onChange('amountMax', formatAmountInput(event.target.value))
+                  }
                 />
               </FieldRow>
 
@@ -268,7 +233,7 @@ export function ExpenseFeedFilters({
                 <NativeSelect
                   className='w-full'
                   id='expense-feed-group'
-                  labelClassName={NATIVE_SELECT_LABEL_CLASS_NAME}
+                  labelClassName={FIELD_ROW_SELECT_CLASS}
                   size='sm'
                   value={values.groupId}
                   onChange={(event) => onChange('groupId', event.target.value)}>
@@ -289,5 +254,3 @@ export function ExpenseFeedFilters({
     </div>
   )
 }
-
-export type { ExpenseFeedFilterValues }

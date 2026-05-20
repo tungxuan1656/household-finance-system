@@ -22,7 +22,7 @@ import {
   useDeleteExpenseMutation,
   useExpenseDetailQuery,
 } from '@/features/expenses/hooks/use-expense'
-import { useHouseholdsQuery } from '@/hooks/api/use-households'
+import { useHouseholdsQuery } from '@/features/households/hooks/use-households'
 import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'

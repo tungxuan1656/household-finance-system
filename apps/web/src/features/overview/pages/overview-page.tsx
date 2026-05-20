@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { PageShell } from '@/components/ui/page-shell'
+import { useBudgetListQuery } from '@/features/budgets/hooks/use-budgets'
 import { useExpenseSummaryQuery } from '@/features/expenses/hooks/use-expense'
+import {
+  useAnalyticsComparisonQuery,
+  useAnalyticsOverviewQuery,
+} from '@/features/insights/api/use-analytics'
 import { EmptyState } from '@/features/overview/components/empty-state'
 import { HeroStatsCard } from '@/features/overview/components/hero-stats-card'
 import { OverviewCategoryStatisticsSection } from '@/features/overview/components/overview-category-statistics-section'
@@ -11,11 +16,6 @@ import { OverviewRecentExpensesSection } from '@/features/overview/components/ov
 import type { Lens } from '@/features/overview/components/overview-tabs'
 import { OverviewTabs } from '@/features/overview/components/overview-tabs'
 import { getCurrentPeriod } from '@/features/overview/utils/overview-formatters'
-import {
-  useAnalyticsComparisonQuery,
-  useAnalyticsOverviewQuery,
-} from '@/hooks/api/use-analytics'
-import { useBudgetListQuery } from '@/hooks/api/use-budgets'
 import { PATHS } from '@/lib/constants/paths'
 import { householdActions } from '@/stores/household.store'
 import { useHouseholdStore } from '@/stores/household.store'

@@ -17,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useHouseholdMembersQuery } from '@/features/households/hooks/use-households'
 import type { HouseholdDTO } from '@/features/households/types/household'
 import { getHouseholdRoleLabel } from '@/features/households/utils/labels'
-import { useAnalyticsOverviewQuery } from '@/hooks/api/use-analytics'
+import { useAnalyticsOverviewQuery } from '@/features/insights/api/use-analytics'
 import { t } from '@/lib/i18n/t'
 import { formatCurrency } from '@/utils/currency/format'
 

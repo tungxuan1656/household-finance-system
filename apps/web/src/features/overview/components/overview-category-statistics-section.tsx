@@ -1,7 +1,7 @@
 'use client'
 
+import { useAnalyticsOverviewQuery } from '@/features/insights/api/use-analytics'
 import { CategoryBreakdown } from '@/features/overview/components/category-breakdown'
-import { useAnalyticsOverviewQuery } from '@/hooks/api/use-analytics'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 
 type OverviewCategoryStatisticsSectionProps = {

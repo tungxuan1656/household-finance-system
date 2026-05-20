@@ -9,6 +9,31 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-20 — Completed frontend shim cleanup and ownership normalization
+
+- Who: Orchestrator + fixer + oracle reviewers
+- Summary: Finished feat-063 by removing the leftover frontend compatibility shims created during the feature-first migration. Deleted the old `components/expense`, `components/budget`, and household shim entrypoints; rewired onboarding, overview, expenses, households, stores, and tests to canonical feature-first imports; normalized budget field ownership under `features/budgets/components/fields`; and kept only genuinely shared root infrastructure.
+- Files changed: Expense/budget/household legacy shim trees, feature-first consumer imports across onboarding/overview/expenses/households/stores/tests, shared field-row/format helper consolidation, feat-063 plan/index/harness records, and this progress log.
+- Verification: `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned MEDIUM risk with 52 changed symbols, 26 changed files, and 1 affected process (`ExpensesPage -> LocalDateToTimestamp`); final oracle review for feat-063 returned PASS with no blocking issues.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
+
+## 2026-05-20 — Wrote frontend shim-cleanup ExecPlan
+
+- Who: Orchestrator + User
+- Summary: Converted the approved shim-cleanup design into an implementation-ready ExecPlan. The plan removes leftover frontend compatibility shims after feat-062, normalizes budget field ownership under feature paths, rewires household/store/onboarding/overview consumers to canonical feature-first imports, and requires pre-delete impact checks plus final verification.
+- Files changed: Shim-cleanup ExecPlan, plans index, and this progress log.
+- Blockers: none.
+- Next steps: Run pre-edit GitNexus impact checks, then execute cleanup batches for expense, budget, and household/root shim removal.
+
+## 2026-05-20 — Approved frontend shim cleanup direction
+
+- Who: Orchestrator + User
+- Summary: Agreed to remove the leftover frontend compatibility shims created during the feature-first migration. The approved direction is to normalize canonical ownership first where needed (especially budget fields), then delete legacy `components/expense`, `components/budget`, household shim entrypoints, and old hook/type shims once all consumers point at feature-first paths.
+- Files changed: New shim-cleanup design doc, design-docs index, new feature record, feature index, and this progress log.
+- Blockers: none.
+- Next steps: Convert the approved shim-cleanup design into an ExecPlan before editing code.
+
 ## 2026-05-20 — Refactored expenses feed UI
 
 - Who: Orchestrator

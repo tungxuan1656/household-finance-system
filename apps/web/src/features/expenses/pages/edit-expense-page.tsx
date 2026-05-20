@@ -15,7 +15,7 @@ import {
 } from '@/features/expenses/components'
 import { useExpenseDetailQuery } from '@/features/expenses/hooks/use-expense'
 import { useExpenseGroupListQuery } from '@/features/groups/hooks/use-groups'
-import { useHouseholdsQuery } from '@/hooks/api/use-households'
+import { useHouseholdsQuery } from '@/features/households/hooks/use-households'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
 

@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 
-import { HouseholdInviteDialog } from '@/components/household/household-invite-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -12,6 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { useAddExpenseDialog } from '@/features/expenses/components/add-expense/provider'
+import { HouseholdInviteDialog } from '@/features/households/components/household-invite-dialog'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
 

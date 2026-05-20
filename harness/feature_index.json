@@ -314,6 +314,11 @@
       "id": "feat-062",
       "name": "Web feature-first folder architecture refactor",
       "status": "done"
+    },
+    {
+      "id": "feat-063",
+      "name": "Frontend shim cleanup and ownership normalization",
+      "status": "done"
     }
   ]
 }

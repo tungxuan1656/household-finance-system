@@ -7,7 +7,7 @@ import {
   getHousehold,
   listHouseholds,
   updateHousehold,
-} from '@/api/household'
+} from '@/features/households/api/household'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 const baseHousehold = {
@@ -21,7 +21,7 @@ const baseHousehold = {
   timezone: 'UTC',
 }
 
-vi.mock('@/api/household', () => ({
+vi.mock('@/features/households/api/household', () => ({
   archiveHousehold: vi.fn(async () => ({ archived: true })),
   createHousehold: vi.fn(async () => ({ ...baseHousehold })),
   getHousehold: vi.fn(async () => ({ ...baseHousehold })),
