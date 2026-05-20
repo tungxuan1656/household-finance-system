@@ -1,24 +1,54 @@
 ---
 name: writing-plans
-description: 'Use when you have a spec or requirements for a multi-step task, before touching code. Write a self-contained ExecPlan that follows docs/exec-plans and harness state.'
+description: Use for Level 2 or Level 3 work, or when sequencing is unclear. Write or update an ExecPlan that fits the harness and exact task scope.
 argument-hint: 'Describe feature goal, scope (frontend/backend/fullstack), constraints, and expected verification artifacts.'
 ---
 
 # Writing Plans
 
-Create a high-quality, implementation-ready ExecPlan that minimizes ambiguity and makes delivery repeatable for both humans and coding agents.
+Create or update an implementation-ready ExecPlan only when the task needs that level of ceremony.
 
-## When To Use
+## Relationship to Initial Thinking and Brainstorming
 
-Use this skill when you need to:
-- Create a new execution plan in `docs/exec-plans/plans/`.
-- Rewrite or tighten an existing plan before implementation.
-- Ensure a plan is fully aligned with harness workflow and quality gates.
-- Force scope-based standards and pattern selection before coding starts.
+`writing-plans` starts after the task direction is sufficiently clear.
+
+It may follow:
+- direct initial triage from `using-skills`
+- a formal `brainstorming` pass
+
+Do not require brainstorming before every plan.
+
+Require brainstorming first only when the plan would otherwise encode unresolved ambiguity, unchosen tradeoffs, or unclear acceptance criteria.
+
+## When to Write a Plan
+
+Use this skill for:
+- Level 2 planned feature work
+- Level 3 high-risk work
+- existing plans that need tightening before execution
+- tasks with unclear sequencing, acceptance criteria, or multi-stage verification
+- tasks with multiple implementation steps
+- tasks spanning multiple files, layers, or domains
+- tasks that need progress tracking in harness artifacts
 
 Do not use this skill for:
-- One-off tiny edits that do not need a plan.
-- Generic brainstorming without concrete implementation intent.
+- Level 0 direct tasks
+- most Level 1 small changes
+- generic brainstorming with no implementation intent
+
+Do not create a full ExecPlan for Level 0 direct tasks.
+
+For Level 1 tasks, prefer a brief inline plan unless risk or ambiguity is discovered.
+
+For Level 1, a short inline plan is enough:
+
+```text
+Inline plan:
+1. Inspect affected file and relevant reference.
+2. Make scoped change.
+3. Run targeted verification.
+4. Report result.
+```
 
 ## Additional Reading
 
@@ -91,15 +121,15 @@ Must combine all required frontend + backend + shared references relevant to tou
 
 ## Companion Skills To Note In The Plan
 
-When creating the plan, explicitly note companion skills that should be used during implementation:
-- `test-driven-development` for new features, bug fixes, and refactoring with behavior changes.
-- `systematic-debugging` for bugs, failures, or unexpected behavior.
-- `requesting-code-review` before merge or after major features.
-- `verification-before-completion` before claiming completion.
-- `subagent-driven-development` as the default execution mode after plan handoff. Prefer splitting implementation into bounded subagent tasks whenever possible.
-- `executing-plans` only when the user explicitly overrides the default and requests inline execution.
-- Add a dedicated research step when framework/library/API behavior or version specifics are uncertain.
-- Add domain-specific review steps in the plan when frontend, backend, data, or security constraints need explicit verification.
+When useful, note companion skills that should be used during implementation:
+- `test-driven-development` for behavior changes
+- `systematic-debugging` for bugs or failures
+- `requesting-code-review` for Level 2 or Level 3 review checkpoints
+- `verification-before-completion` before completion claims
+- `subagent-driven-development` only when the work is large enough, parallelizable enough, or explicitly requested
+- `executing-plans` when execution will stay inline in the current session
+
+Add a dedicated research or domain-review step only when the task actually needs it.
 
 If uncertainty is high, include a dedicated research step in the plan before implementation.
 
@@ -124,7 +154,7 @@ Follow this sequence strictly.
    - File-by-file planned edits.
    - Data flow and interface contracts.
 6. **Add concrete commands** with working directory and expected short outputs.
-   - Include `./init.sh` baseline verification from repo root unless not applicable, and explain why if it is not.
+   - Include targeted verification and final broader verification appropriate to the task level.
 7. **Add validation matrix:**
    - Happy path.
    - Validation/error paths.
@@ -189,20 +219,11 @@ If you find issues, fix them inline. If a requirement has no task, add the task.
 
 ## Execution Handoff
 
-After saving the plan, default directly to subagent-driven execution handoff. Do not ask the user to choose between subagent-driven and inline by default.
+After saving the plan, recommend the execution mode that matches the actual work:
+- small or moderate plan in current session: `executing-plans`
+- large, parallelizable, or high-risk plan: candidate for `subagent-driven-development`
 
-Use this handoff text:
-
-"Plan complete and saved to `docs/exec-plans/plans/<filename>.md`. Next step: execute via **Subagent-Driven** mode so bounded tasks can be dispatched to the most suitable agents with review between steps."
-
-Default behavior:
-- Use `subagent-driven-development`.
-- Fresh subagent per task plus two-stage review.
-
-Inline execution is exception-only:
-- Only use `executing-plans` when the user explicitly asks for inline execution.
-- Use `executing-plans`.
-- Batch execution with checkpoints for review.
+Do not force subagent execution by default in this phase.
 
 ## Quick Prompt Examples
 

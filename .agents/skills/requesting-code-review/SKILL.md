@@ -1,25 +1,26 @@
 ---
 name: requesting-code-review
-description: Use when completing tasks, implementing major features, or before merging to verify work meets requirements
+description: Use for review checkpoints on Level 2 or Level 3 work, and on risky Level 1 changes, before claiming the implementation is ready.
 ---
 
 # Requesting Code Review
 
-Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
-
-**Core principle:** Review early, review often.
+Use review with intent. Not every small change needs formal review, but risky work should not skip it.
 
 ## When to Request Review
 
-**Mandatory:**
-- After each task in subagent-driven development
-- After completing major feature
-- Before merge to main
+Level guidance:
+- Level 0: no formal review skill unless requested
+- Level 1: optional lightweight self-review or formal review when risk is higher than the size suggests
+- Level 2: review recommended before completion
+- Level 3: review required before completion
 
-**Optional but valuable:**
-- When stuck (fresh perspective)
-- Before refactoring (baseline check)
-- After fixing complex bug
+For Level 3, add domain review as needed:
+- `security-reviewer`
+- `database-reviewer`
+- `architect`
+- `typescript-reviewer`
+- other exact domain skills relevant to the change
 
 ## How to Request
 
@@ -72,6 +73,20 @@ You: [Fix progress indicators]
 [Continue to Task 3]
 ```
 
+## Review Output
+
+Ask for output in this format:
+
+```text
+Review:
+- Scope reviewed:
+- Issues found:
+- Severity:
+- Required fixes:
+- Suggestions:
+- Verdict:
+```
+
 ## Integration with Workflows
 
 **Subagent-Driven Development:**
@@ -94,6 +109,8 @@ You: [Fix progress indicators]
 - Ignore Critical issues
 - Proceed with unfixed Important issues
 - Argue with valid technical feedback
+
+Do not make domain review skills automatic for every change. Tie them to ceremony level and actual risk.
 
 **If reviewer wrong:**
 - Push back with technical reasoning

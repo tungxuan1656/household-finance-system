@@ -1,15 +1,24 @@
 ---
 name: executing-plans
-description: Use when you have a written implementation plan to execute in a separate session with review checkpoints
+description: Use when you have a written implementation plan and will execute it inline, sequentially by default, with review and verification checkpoints.
 ---
 
 # Executing Plans
 
-Load plan, review critically, execute all tasks, report when complete.
+Load the plan, review it critically, execute it step by step, and verify results before completion.
 
-**Announce at start:** "Using the executing-plans skill to implement this plan."
+## Relationship to Thinking and Planning
 
-**Note:** If subagents are available, `subagent-driven-development` is preferred for faster iteration and two-stage review. Use this skill when executing in a separate session or when subagents are not available.
+This skill executes an existing plan.
+
+Do not restart brainstorming unless execution reveals:
+- invalid assumptions
+- missing acceptance criteria
+- unexpected architecture constraints
+- new product or design tradeoffs
+- unclear implementation direction
+
+If that happens, stop and escalate back to `using-skills` for triage, then use `brainstorming` or `writing-plans` as needed.
 
 ## Additional Reading
 
@@ -44,7 +53,12 @@ After all tasks complete and verified:
    - `harness/features/*.json` — update status and evidence
    - `harness/feature_index.json` — update feature status
    - `harness/progress.md` — add session entry
-5. Commit with descriptive message
+
+## Execution Mode Rule
+
+Sequential execution is the default.
+
+If the plan is clearly large, parallelizable, or high-risk, mark it as a candidate for `subagent-driven-development`, but do not switch automatically in this phase.
 
 ## When to Stop and Ask for Help
 
@@ -67,6 +81,7 @@ After all tasks complete and verified:
 ## Harness Integration
 
 - Update `harness/progress.md` after each significant task completion
+- Update `harness/progress.md` when a meaningful milestone lands, not after every trivial file touch
 - Update `harness/session-handoff.md` if stopping mid-plan
 - Record evidence in `harness/features/*.json` as tasks complete
 - Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
@@ -79,7 +94,6 @@ After all tasks complete and verified:
 - Don't skip verifications
 - Reference skills when the plan says to
 - Stop when blocked, don't guess
-- Never start implementation on main/master branch without explicit user consent
 
 ## Integration
 

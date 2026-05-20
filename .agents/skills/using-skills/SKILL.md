@@ -1,129 +1,150 @@
 ---
 name: using-skills
-description: 'Entry point skill. Load at the start of every conversation to determine which workflow skill to use. Routes tasks to the correct skill based on task type and specifies minimal reading requirements.'
+description: Entry point for the project skill system. Use at the start of every task to perform initial thinking, classify task ceremony level, select applicable skills, and require verification evidence before completion.
 ---
 
 # Using Skills
 
-Entry point for every conversation. Determines which workflow skill applies and what to read.
+Use this skill first.
 
-## Reading Requirements
+Its job is to do initial triage, then choose the minimum sufficient process for the current task.
 
-AGENTS.md is read at session start and covers baseline reading (architecture, frontend/backend rules, harness state, verification commands). Do NOT re-read documents that AGENTS.md already summarizes.
+## Think Before Selecting Skills
 
-Only read additional docs when your task scope requires them:
+Every task requires initial thinking before selecting skills.
 
-| When | Additional Reading |
-|------|-------------------|
-| Creating a plan | `docs/PLANS.md`, `docs/exec-plans/__plan-template__.md`, `docs/exec-plans/index.md` |
-| Frontend implementation | `docs/references/frontend/*` as needed by the specific pattern |
-| Backend implementation | `docs/references/backend/*` as needed by the specific pattern |
-| Debugging | `harness/progress.md` (recent changes) |
-| Before claiming done | Run `./init.sh` — no additional reading needed |
+Before choosing a ceremony level or workflow skill, determine:
+- what the user is actually asking for
+- whether the requirement is clear or ambiguous
+- whether the task changes product behavior, API contract, data shape, UX flow, security, architecture, or verification expectations
+- whether there are multiple reasonable implementation approaches
+- what evidence is required before claiming completion
 
-**Do NOT read unless specifically needed:**
+This initial thinking is mandatory.
 
-- `docs/QUALITY_SCORE.md` — only for quality audits
-- `docs/RELIABILITY.md` — only for reliability work
-- `docs/SECURITY.md` — only for security-sensitive changes
-- `docs/design-docs/*` — only when making design decisions
+This initial thinking is not the same as the `brainstorming` skill.
 
-## Skill Routing
+Use `brainstorming` only when initial thinking reveals ambiguity, competing approaches, unclear acceptance criteria, or non-trivial product, design, or architecture tradeoffs.
 
-Match your task to the correct skill:
+## Role of This Skill
 
-| Task Type | Skill | When |
-|-----------|-------|------|
-| New feature, creative work, modifying behavior | `brainstorming` | Before any implementation |
-| Have a spec or requirements for multi-step task | `writing-plans` | Before touching code |
-| Have a written plan, executing with subagents | `subagent-driven-development` | Plan exists, same session |
-| Have a written plan, executing in separate session | `executing-plans` | Plan exists, separate session |
-| Bug, test failure, unexpected behavior | `systematic-debugging` | Before proposing fixes |
-| Implementing feature, bugfix, refactoring | `test-driven-development` | Before writing production code |
-| About to claim work is complete | `verification-before-completion` | Before ANY completion claim |
-| After completing task or before merge | `requesting-code-review` | After implementation |
-| Received code review feedback | `receiving-code-review` | When review arrives |
-| 2+ independent tasks or failures | `dispatching-parallel-agents` | Multiple independent problems |
-| Building or improving agent harness | `harness-creator` | Harness setup/improvement |
+`using-skills` is the entrypoint for the skill system.
+
+It is responsible for:
+1. performing initial task triage
+2. choosing the minimum sufficient ceremony level
+3. selecting applicable workflow and domain skills
+4. avoiding unnecessary ceremony for simple tasks
+5. escalating to deeper skills when ambiguity or risk is detected
+6. requiring verification evidence before any completion claim
+
+This skill is not a replacement for reasoning.
+
+It is also not a replacement for `brainstorming`.
+
+It decides whether formal brainstorming is needed.
+
+## Core Rules
+
+- Always check whether a skill applies.
+- Use the minimum sufficient ceremony level.
+- Do not force Level 0 work through unnecessary workflow ceremony.
+- Do not skip verification evidence before claiming completion.
+- Escalate to a higher ceremony level if scope or risk grows.
+
+## Shared Inputs
+
+`AGENTS.md` is already read at session start.
+
+Read more only when scope requires it:
+- `ceremony-levels` for Level 0/1/2/3 classification
+- `skill-maintenance` when changing `.agents/skills/**`
+- `docs/PLANS.md`, `docs/exec-plans/__plan-template__.md`, `docs/exec-plans/index.md` when a plan is required
+- exact `docs/references/frontend/*` or `docs/references/backend/*` leaf docs for the touched area
+- exact product or design doc only when behavior or UX decisions depend on it
+
+Avoid broad-folder reading by default.
 
 ## Decision Flow
 
+1. Perform initial thinking.
+2. Classify the task using `ceremony-levels`.
+3. Identify whether a workflow skill is needed.
+4. Identify whether a domain skill is needed.
+5. Read only the minimum exact docs needed for this level.
+6. Decide required verification depth.
+7. Re-check level if scope expands.
+
+## Minimum Sufficient Process
+
+Use the lightest process that can safely satisfy the request.
+
+Recommended default:
+- Level 0: direct task with initial thinking and verification evidence
+- Level 1: small scoped change with brief inline plan and targeted verification
+- Level 2: planned feature with ExecPlan or existing plan update
+- Level 3: high-risk change with explicit risk review, relevant domain reviews, and stronger verification
+
+Do not invoke workflow skills just because they exist.
+
+Do invoke them when the initial triage shows they are needed.
+
+## Workflow Selection
+
+- Level 0: usually act directly; use a domain skill only if it clearly helps.
+- Level 1: short inline plan; optionally use `test-driven-development`, `systematic-debugging`, or one domain skill.
+- Level 2: usually use `writing-plans`; use `brainstorming` only if requirements or direction are still ambiguous.
+- Level 3: require plan, stronger review, stronger verification, and relevant domain skills.
+
+Use these workflow skills when they match:
+- `brainstorming`: ambiguity, tradeoffs, or design choice
+- `writing-plans`: Level 2/3 work or unclear sequencing
+- `executing-plans`: executing an existing plan inline
+- `subagent-driven-development`: large or high-risk planned work when subagents are appropriate
+- `systematic-debugging`: bug, failure, or unexpected behavior
+- `test-driven-development`: feature or bugfix where a failing test should lead
+- `requesting-code-review`: review checkpoint for Level 2/3 or risky Level 1 work
+- `receiving-code-review`: implement or challenge review feedback correctly
+- `verification-before-completion`: always before completion claims
+
+Use domain skills only when the domain actually matters.
+
+## When to Escalate
+
+Escalate from direct execution to `brainstorming`, `writing-plans`, or domain review when any of these are true:
+- the user request is ambiguous
+- the acceptance criteria are unclear
+- the task changes user-visible behavior
+- the task changes API contracts
+- the task changes data shape, persistence, migration, or financial calculations
+- the task crosses architecture boundaries
+- the task affects security, reliability, correctness, or permissions
+- there are multiple reasonable implementation approaches
+- the implementation path is not obvious
+- the change may require docs, specs, or harness state updates
+
+## Decision Output
+
+When useful, express the choice in this format:
+
+```text
+Skill decision:
+- Initial read:
+- Ceremony level:
+- Skills used:
+- Skills intentionally skipped:
+- Reason:
+- Verification expected:
 ```
-User message received
-    |
-    v
-Simple, one-shot task? ──YES──> Do directly, no skill needed
-    |
-    NO
-    v
-Creative/new feature work? ──YES──> brainstorming → writing-plans → execute
-    |
-    NO
-    v
-Bug/failure/unexpected? ──YES──> systematic-debugging → TDD for fix
-    |
-    NO
-    v
-Plan already exists? ──YES──> subagent-driven-development OR executing-plans
-    |
-    NO
-    v
-About to claim done? ──YES──> verification-before-completion
-    |
-    NO
-    v
-Need code review? ──YES──> requesting-code-review
-    |
-    NO
-    v
-Received review feedback? ──YES──> receiving-code-review
-    |
-    NO
-    v
-Multiple independent problems? ──YES──> dispatching-parallel-agents
-    |
-    NO
-    v
-Any skill applies with even 1% chance? ──YES──> Load that skill
-    |
-    NO
-    v
-Do directly
-```
 
-## Skill Priority
+## Artifact Expectations
 
-When multiple skills could apply:
+- Level 0: usually no plan artifact; update docs or harness only if touched by the task.
+- Level 1: short inline plan is enough unless scope expands.
+- Level 2/3: update required harness artifacts and progress records.
 
-1. **Process skills first** (brainstorming, debugging) — these determine HOW to approach the task
-2. **Implementation skills second** (TDD, verification) — these guide execution
+## Forbidden Behavior
 
-Example: "Let's build X" → brainstorming first, then implementation skills.
-Example: "Fix this bug" → systematic-debugging first, then TDD.
-
-## Skill Types
-
-**Rigid** (TDD, debugging, verification): Follow exactly. Don't adapt away discipline.
-
-**Flexible** (patterns, brainstorming): Adapt principles to context.
-
-The skill itself tells you which type it is.
-
-## Rules
-
-- If a skill applies, you MUST use it. No exceptions.
-- User instructions always override skills.
-- If unsure, ask a targeted question before proceeding.
-- Do not skip skills because the task seems "too simple."
-
-## Red Flags
-
-These thoughts mean STOP — you're rationalizing:
-
-| Thought | Reality |
-|---------|---------|
-| "This is too simple for a skill" | Simple things become complex. Use it. |
-| "I'll just do this one thing first" | Check BEFORE doing anything. |
-| "I remember this skill" | Skills evolve. Read current version. |
-| "The skill is overkill" | Discipline prevents mistakes. Use it. |
-| "I can skip verification this time" | No exceptions. Run the command. |
+- Do not say a skill is required just because it exists.
+- Do not read whole doc trees when one exact leaf doc is enough.
+- Do not claim completion without fresh verification evidence.
