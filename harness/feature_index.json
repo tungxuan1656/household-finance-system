@@ -329,6 +329,11 @@
       "id": "feat-065",
       "name": "Expense page orchestration refactor",
       "status": "done"
+    },
+    {
+      "id": "feat-066",
+      "name": "Planning default and inline-plan clarification",
+      "status": "done"
     }
   ]
 }

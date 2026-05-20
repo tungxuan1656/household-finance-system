@@ -1,0 +1,56 @@
+{
+  "id": "feat-066",
+  "name": "Planning default and inline-plan clarification",
+  "status": "done",
+  "description": "Clarify the harness and project-owned workflow skills so non-trivial tasks always show a plan artifact before execution, distinguish tiny one-shot exceptions from normal Level 1 multi-step work, and make verification-before-completion explicit before done claims.",
+  "dependencies": ["feat-054", "feat-064"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "AGENTS.md",
+      "description": "Session rules now require the orchestrator to state the planning mode before execution and to apply verification-before-completion discipline explicitly before any done/ready claim."
+    },
+    {
+      "type": "file",
+      "path": "docs/PLANS.md",
+      "description": "Plan router now distinguishes tiny direct-task notes, explicit inline plans, and full ExecPlans so small multi-step work is no longer implicitly plan-less."
+    },
+    {
+      "type": "file",
+      "path": ".agents/README.md",
+      "description": "Project-owned skill overview now states that every task has a planning mode and that completion claims require an explicit verification-before-completion pass."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/using-skills/SKILL.md",
+      "description": "Entrypoint triage rules now require a visible planning mode for every task and explicitly push multi-step small work into visible inline planning."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/ceremony-levels/SKILL.md",
+      "description": "Ceremony guidance now narrows Level 0 to truly one-shot mechanical work and requires explicit inline plans for normal Level 1 multi-step tasks."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/writing-plans/SKILL.md",
+      "description": "Plan-writing guidance now states clearly that full ExecPlans are only one planning mode and that smaller tasks still require direct-task notes or inline plans."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/verification-before-completion/SKILL.md",
+      "description": "Verification guidance now requires the final verification pass to be explicit in the handoff rather than left implicit."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh",
+      "output": "Done!",
+      "description": "Full repository verification passed after the workflow-doc and harness updates."
+    },
+    {
+      "type": "analysis",
+      "command": "gitnexus_detect_changes(scope: all)",
+      "output": "risk_level: low; affected_processes: 0",
+      "description": "Final GitNexus change detection reported LOW risk with no affected execution flows."
+    }
+  ]
+}

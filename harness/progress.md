@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-20 — Clarified planning defaults for non-trivial tasks
+
+- Who: Orchestrator + User
+- Summary: Added a follow-up workflow clarification so the harness no longer leaves small-but-real implementation tasks in a gray area. The repo contract now says every task needs a planning mode, keeps tiny one-shot exceptions narrow, requires explicit inline plans for normal Level 1 multi-step work, and makes verification-before-completion explicit before done/ready claims.
+- Files changed: Root agent contract, plan router, project-owned workflow skills, feat-066 harness evidence, and this progress log.
+- Verification: `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 0 affected processes.
+- Blockers: none.
+- Next steps: Apply the clarified workflow in future sessions; review diff and commit if desired.
+
 ## 2026-05-20 — Refactored expense feed and detail page orchestration
 
 - Who: Orchestrator
