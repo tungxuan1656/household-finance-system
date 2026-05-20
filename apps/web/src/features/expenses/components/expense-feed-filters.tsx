@@ -26,6 +26,11 @@ import {
 } from '@/components/ui/dialog'
 import { FieldGroup } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@/components/ui/input-group'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import type { ExpenseGroupDTO } from '@/features/groups/types/group'
 import { t } from '@/lib/i18n/t'
@@ -62,18 +67,19 @@ export function ExpenseFeedFilters({
 }: ExpenseFeedFiltersProps) {
   return (
     <div className='flex items-center gap-3'>
-      {/* Search stays visible outside the dialog for fast access on mobile. */}
-      <div className='relative flex-1'>
-        <SearchIcon className='absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground' />
-        <Input
+      <InputGroup>
+        <InputGroupAddon>
+          <SearchIcon className='text-muted-foreground' />
+        </InputGroupAddon>
+        <InputGroupInput
           aria-label='expense feed search'
-          className='h-10 pl-9'
+          className='text-sm'
           placeholder={t('expense.feed.filters.searchPlaceholder')}
           type='search'
           value={values.search}
           onChange={(event) => onChange('search', event.target.value)}
         />
-      </div>
+      </InputGroup>
 
       <Dialog>
         <DialogTrigger asChild>

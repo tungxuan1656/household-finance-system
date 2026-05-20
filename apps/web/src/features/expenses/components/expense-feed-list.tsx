@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 
 import { DataState } from '@/components/shared/data-state'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { t } from '@/lib/i18n/t'
 
 import { useInfiniteExpenseListQuery } from '../hooks/use-expense'
@@ -54,13 +55,16 @@ export function ExpenseFeedList({ filters, search }: ExpenseFeedListProps) {
       isEmpty={!isLoading && expenses.length === 0}
       isError={isError}
       isLoading={isLoading}>
-      <div className='flex flex-col gap-3'>
+      <div className='flex flex-col gap-1'>
         {expenses.map((expense) => (
-          <ExpenseFeedItem
-            key={expense.id}
-            expense={expense}
-            onClick={handleExpenseClick}
-          />
+          <>
+            <ExpenseFeedItem
+              key={expense.id}
+              expense={expense}
+              onClick={handleExpenseClick}
+            />
+            <Separator className='mx-1' />
+          </>
         ))}
         {hasNextPage && (
           <Button
