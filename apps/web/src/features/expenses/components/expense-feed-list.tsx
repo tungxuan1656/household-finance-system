@@ -39,22 +39,14 @@ export function ExpenseFeedList({ filters, search }: ExpenseFeedListProps) {
 
   return (
     <DataState
-      action={
-        <Button
-          variant='outline'
-          onClick={() => {
-            void refetch()
-          }}>
-          {t('app.households.actions.retry')}
-        </Button>
-      }
       emptyDescription=''
       emptyTitle={t('expense.feed.empty')}
       errorDescription={t('expense.loadError')}
       errorTitle={t('expense.feed.error')}
       isEmpty={!isLoading && expenses.length === 0}
       isError={isError}
-      isLoading={isLoading}>
+      isLoading={isLoading}
+      retryAction={refetch}>
       <div className='flex flex-col gap-1'>
         {expenses.map((expense) => (
           <>

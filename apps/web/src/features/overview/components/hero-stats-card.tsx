@@ -41,19 +41,16 @@ function HeroStatsCard({
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('app.overview.summary.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className='flex flex-col items-start gap-3'>
-          <p className='text-sm text-muted-foreground'>
-            {t('app.overview.summary.errorTitle')}
-          </p>
+      <DataState
+        isError
+        customAction={
           <Button variant='outline' onClick={onRetry}>
             {t('app.overview.actions.retrySummary')}
           </Button>
-        </CardContent>
-      </Card>
+        }
+        errorDescription={t('app.overview.summary.errorTitle')}
+        title={t('app.overview.summary.title')}
+      />
     )
   }
 

@@ -80,7 +80,7 @@ export function EditExpensePage() {
       title={t('expense.editTitle')}
       onBack={() => router.back()}>
       <DataState
-        action={
+        customAction={
           <Button type='button' variant='outline' onClick={() => router.back()}>
             {t('app.householdDetail.actions.back')}
           </Button>

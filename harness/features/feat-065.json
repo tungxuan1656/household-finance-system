@@ -7,13 +7,18 @@
   "evidence": [
     {
       "type": "file",
+      "path": "apps/web/src/components/shared/data-state.tsx",
+      "description": "Shared DataState now supports `retryAction`, `showRetryAction`, and `customAction`, renders the default retry button when a retry callback exists, and suppresses that retry affordance whenever a custom action component is supplied."
+    },
+    {
+      "type": "file",
       "path": "apps/web/src/features/expenses/pages/expenses-page.tsx",
       "description": "Expenses page now uses the shared PageShell route pattern, keeps route-surface composition focused on top-level orchestration, and delegates filter/category/group derivation to a dedicated helper module."
     },
     {
       "type": "file",
       "path": "apps/web/src/features/expenses/pages/expense-detail-page.tsx",
-      "description": "Expense detail page now renders loading, not-found, forbidden, error, and success states inside one PageShell and reuses shared fallback building blocks instead of duplicating state markup."
+      "description": "Expense detail page now derives loading, not-found, forbidden, and generic-error props into one shared DataState instance inside the PageShell while keeping the existing success content and edit/delete actions intact."
     },
     {
       "type": "file",

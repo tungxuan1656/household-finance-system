@@ -9,6 +9,24 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-20 — Corrected expense detail DataState integration
+
+- Who: Orchestrator + User
+- Summary: Reworked `apps/web/src/features/expenses/pages/expense-detail-page.tsx` so the page now integrates with one shared `DataState` instance fed by derived loading/empty/error/action props, instead of rendering separate `DataState` components per branch. The success layout and existing edit/delete flow remain unchanged, while not-found/forbidden/generic-error actions are computed centrally before render.
+- Files changed: Expense detail page orchestration, feat-065 evidence wording, and this progress log.
+- Verification: `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with no affected processes.
+- Blockers: none.
+- Next steps: Review the expense detail states in browser and commit if desired.
+
+## 2026-05-20 — Unified DataState retry/custom action API
+
+- Who: Orchestrator
+- Summary: Refactored the shared `DataState` contract to use `retryAction`, `showRetryAction`, and `customAction` instead of the old generic action slot. The shared component now renders the default outline retry button automatically when a retry callback exists, suppresses that retry affordance when a custom action component is provided, and the migration was applied across expense, household, and overview surfaces. The expense detail page now routes its async states through the shared `DataState` pattern while keeping the existing success actions and content layout.
+- Files changed: Shared state component API, expense detail/edit/feed surfaces, household list/detail/member surfaces, overview widgets, feat-065 evidence, and this progress log.
+- Verification: `./init.sh` passed with `Done!` after fixing the initial retry callback type mismatch.
+- Blockers: none.
+- Next steps: Review the visual state changes for overview/expense/household pages in browser and commit if desired.
+
 ## 2026-05-20 — Clarified planning defaults for non-trivial tasks
 
 - Who: Orchestrator + User

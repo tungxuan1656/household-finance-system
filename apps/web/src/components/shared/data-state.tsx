@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react'
 
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -10,6 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { t } from '@/lib/i18n/t'
 
 const EMPTY_TITLE = 'Không có dữ liệu'
 const EMPTY_DESCRIPTION =
@@ -26,7 +28,9 @@ type DataStateProps = React.ComponentProps<typeof Card> & {
   emptyDescription?: string
   errorTitle?: string
   errorDescription?: string
-  action?: ReactNode
+  showRetryAction?: boolean
+  retryAction?: () => unknown
+  customAction?: ReactNode
 }
 
 function DataState({
@@ -39,9 +43,29 @@ function DataState({
   emptyDescription,
   errorTitle,
   errorDescription,
-  action,
+  showRetryAction,
+  retryAction,
+  customAction,
   ...props
 }: DataStateProps) {
+  const shouldShowRetryAction =
+    !customAction &&
+    Boolean(retryAction) &&
+    (showRetryAction ?? Boolean(retryAction))
+  const resolvedAction =
+    customAction ??
+    (shouldShowRetryAction ? (
+      <Button
+        variant='outline'
+        onClick={() => {
+          if (!retryAction) return
+
+          void retryAction()
+        }}>
+        {t('app.households.actions.retry')}
+      </Button>
+    ) : null)
+
   if (isLoading) {
     return (
       <Card {...props}>
@@ -76,8 +100,10 @@ function DataState({
             <CardDescription>{placeholderDescription}</CardDescription>
           ) : null}
         </CardHeader>
-        {action && (
-          <CardContent className='flex justify-center'>{action}</CardContent>
+        {resolvedAction && (
+          <CardContent className='flex justify-center'>
+            {resolvedAction}
+          </CardContent>
         )}
       </Card>
     )
