@@ -21,7 +21,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { useExpenseGroupListQuery } from '@/features/groups/hooks/use-groups'
-import { useHouseholdsQuery } from '@/hooks/api/use-households'
+import { useHouseholdsQuery } from '@/features/households/hooks/use-households'
 import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { useIsMobile } from '@/hooks/shared/use-mobile'

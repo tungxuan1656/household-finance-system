@@ -5,7 +5,7 @@ vi.mock('@/lib/i18n/t', () => ({ t: (key: string) => key }))
 import {
   getHouseholdRoleLabel,
   getHouseholdVisibilityLabel,
-} from '@/utils/household/labels'
+} from '@/features/households/utils/labels'
 
 describe('household/labels', () => {
   it('maps roles to translation keys', () => {

@@ -11,15 +11,15 @@ import {
   removeHouseholdMember,
   updateHousehold,
   updateHouseholdMemberRole,
-} from '@/api/household'
-import { createSelectors } from '@/stores/types'
+} from '@/features/households/api/household'
 import type {
   CreateHouseholdRequest,
   HouseholdDTO,
   HouseholdMemberDTO,
   HouseholdRoleDTO,
   UpdateHouseholdRequest,
-} from '@/types/household'
+} from '@/features/households/types/household'
+import { createSelectors } from '@/stores/types'
 
 type HouseholdState = {
   households: HouseholdDTO[]

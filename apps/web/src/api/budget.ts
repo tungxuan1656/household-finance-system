@@ -6,7 +6,7 @@ import type {
   GetBudgetStatusResponse,
   ListBudgetsResponse,
   UpdateBudgetMutationInput,
-} from '@/types/budget'
+} from '@/features/budgets/types/budget'
 
 export const createBudget = async (payload: CreateBudgetRequest) => {
   const response = await client.post<BudgetDTO>(

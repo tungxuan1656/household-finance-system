@@ -8,6 +8,10 @@ import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import {
+  type CreateHouseholdFormValues,
+  createHouseholdSchema,
+} from '@/features/households/lib/forms/household.schema'
+import {
   acceptInvitation,
   getInvitationPreview,
 } from '@/features/invitations/api/invitation'
@@ -17,10 +21,6 @@ import { JoinHouseholdCard } from '@/features/onboarding/components/join-househo
 import { OnboardingCompleteCard } from '@/features/onboarding/components/onboarding-complete-card'
 import { normalizeInviteToken } from '@/features/onboarding/utils/invite-token'
 import { PATHS } from '@/lib/constants/paths'
-import {
-  type CreateHouseholdFormValues,
-  createHouseholdSchema,
-} from '@/lib/forms/household.schema'
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 

@@ -12,14 +12,19 @@ import {
 } from '@/features/expenses/components/expense-feed-filters'
 import { ExpenseFeedList } from '@/features/expenses/components/expense-feed-list'
 import { ExpenseFeedSummary } from '@/features/expenses/components/expense-feed-summary'
-import type { ExpenseListParams } from '@/features/expenses/types/expense'
-import type { ExpenseVisibility } from '@/features/expenses/types/expense'
+import type {
+  ExpenseListParams,
+  ExpenseVisibility,
+} from '@/features/expenses/types/expense'
 import { useExpenseGroupListQuery } from '@/features/groups/hooks/use-groups'
 import type { ExpenseGroupDTO } from '@/features/groups/types/group'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
+import { useDebounce } from '@/hooks/shared/use-debounce'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
+import { parseAmountInput } from '@/utils/currency/format'
+import { localDateToTimestamp } from '@/utils/datetime/helpers'
 
 const DEFAULT_FILTER_VALUES: ExpenseFeedFilterValues = {
   amountMax: '',
@@ -38,28 +43,30 @@ const VISIBILITY_LABEL_KEYS = {
   private: 'expense.visibility.private',
 } as const satisfies Record<ExpenseVisibility, string>
 
-const toTimestamp = (value: string, endOfDay: boolean) => {
+// localDateToTimestamp returns the start of day (local midnight).
+// For end-of-day we add one full day minus 1ms.
+const ONE_DAY_MS = 24 * 60 * 60 * 1000 - 1
+
+const dateFilterFrom = (value: string): number | undefined => {
   if (!value) return undefined
 
-  const parsed = new Date(
-    endOfDay ? `${value}T23:59:59.999Z` : `${value}T00:00:00.000Z`,
-  ).getTime()
+  const ts = localDateToTimestamp(value)
 
-  return Number.isNaN(parsed) ? undefined : parsed
+  return Number.isNaN(ts) ? undefined : ts
 }
 
-const toNumber = (value: string) => {
+const dateFilterTo = (value: string): number | undefined => {
   if (!value) return undefined
 
-  const parsed = Number(value)
+  const ts = localDateToTimestamp(value)
 
-  return Number.isNaN(parsed) ? undefined : parsed
+  return Number.isNaN(ts) ? undefined : ts + ONE_DAY_MS
 }
 
 const mergeGroups = (
   personalGroups: ExpenseGroupDTO[],
   householdGroups: ExpenseGroupDTO[],
-) => {
+): ExpenseGroupDTO[] => {
   const deduped = new Map<string, ExpenseGroupDTO>()
   for (const group of [...personalGroups, ...householdGroups])
     deduped.set(group.id, group)
@@ -75,9 +82,15 @@ export function ExpensesPage() {
   const currentHousehold = useHouseholdStore.use.currentHousehold()
   const households = useHouseholdStore.use.households()
   const selectedHouseholdId = currentHousehold?.id ?? households[0]?.id
+
   const [filterValues, setFilterValues] = useState<ExpenseFeedFilterValues>(
     DEFAULT_FILTER_VALUES,
   )
+
+  // Debounce free-text and amount inputs to avoid rapid re-fetching while typing.
+  const debouncedSearch = useDebounce(filterValues.search, 500)
+  const debouncedAmountMin = useDebounce(filterValues.amountMin, 500)
+  const debouncedAmountMax = useDebounce(filterValues.amountMax, 500)
 
   const { data: referenceCategories } = useReferenceCategoriesQuery()
   const { data: personalGroupsResponse } = useExpenseGroupListQuery(undefined)
@@ -88,6 +101,7 @@ export function ExpensesPage() {
     if (households.length === 0) void householdActions.fetchHouseholds()
   }, [households.length])
 
+  // Handle deep-link: ?add-expense=1 auto-opens the add expense dialog.
   useEffect(() => {
     if (searchParams.get('add-expense') !== '1') return
     openDialog()
@@ -104,11 +118,10 @@ export function ExpensesPage() {
 
   const categories = useMemo(
     () =>
-      (referenceCategories?.items ?? []).filter(
-        (category) => category.kind === 'expense',
-      ),
+      (referenceCategories?.items ?? []).filter((c) => c.kind === 'expense'),
     [referenceCategories?.items],
   )
+
   const groups = useMemo(
     () =>
       mergeGroups(
@@ -117,22 +130,32 @@ export function ExpensesPage() {
       ),
     [householdGroupsResponse?.items, personalGroupsResponse?.items],
   )
+
   const selectedCategory = categories.find(
-    (category) => category.key === filterValues.categoryKey,
+    (c) => c.key === filterValues.categoryKey,
   )
 
   const filters = useMemo<ExpenseListParams>(
     () => ({
-      amount_max: toNumber(filterValues.amountMax),
-      amount_min: toNumber(filterValues.amountMin),
+      amount_max: parseAmountInput(debouncedAmountMax),
+      amount_min: parseAmountInput(debouncedAmountMin),
       category_key: filterValues.categoryKey || undefined,
-      date_from: toTimestamp(filterValues.dateFrom, false),
-      date_to: toTimestamp(filterValues.dateTo, true),
+      date_from: dateFilterFrom(filterValues.dateFrom),
+      date_to: dateFilterTo(filterValues.dateTo),
       group_id: filterValues.groupId || undefined,
       sort: filterValues.sort || undefined,
       visibility: filterValues.visibility || undefined,
     }),
-    [filterValues],
+    [
+      debouncedAmountMax,
+      debouncedAmountMin,
+      filterValues.categoryKey,
+      filterValues.dateFrom,
+      filterValues.dateTo,
+      filterValues.groupId,
+      filterValues.sort,
+      filterValues.visibility,
+    ],
   )
 
   const activeFilterLabels = useMemo(
@@ -195,8 +218,8 @@ export function ExpensesPage() {
         labels={activeFilterLabels}
         onReset={() => setFilterValues(DEFAULT_FILTER_VALUES)}
       />
-      <ExpenseFeedSummary filters={filters} search={filterValues.search} />
-      <ExpenseFeedList filters={filters} search={filterValues.search} />
+      <ExpenseFeedSummary filters={filters} search={debouncedSearch} />
+      <ExpenseFeedList filters={filters} search={debouncedSearch} />
     </div>
   )
 }

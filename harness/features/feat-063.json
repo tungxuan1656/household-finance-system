@@ -1,0 +1,44 @@
+{
+  "id": "feat-063",
+  "name": "Frontend shim cleanup and ownership normalization",
+  "status": "done",
+  "description": "Remove redundant frontend compatibility shims left after feat-062, normalize canonical feature ownership for budgets/expenses/households-related paths, and eliminate duplicate old import paths.",
+  "dependencies": ["feat-062", "feat-061", "feat-059", "feat-060"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "docs/design-docs/2026-05-20-web-shim-cleanup-and-ownership-normalization-design.md",
+      "description": "Approved design for removing legacy frontend shim paths and normalizing canonical feature ownership."
+    },
+    {
+      "type": "file",
+      "path": "docs/design-docs/index.md",
+      "description": "Design docs index links the shim cleanup proposal."
+    },
+    {
+      "type": "file",
+      "path": "docs/exec-plans/plans/2026-05-20-web-shim-cleanup-and-ownership-normalization.md",
+      "description": "ExecPlan defines the three cleanup batches, pre-delete impact checks, and final verification path for feat-063."
+    },
+    {
+      "type": "file",
+      "path": "docs/exec-plans/index.md",
+      "description": "Plans index records feat-063 as completed."
+    },
+    {
+      "type": "file",
+      "path": "harness/progress.md",
+      "description": "Progress log records both the approved shim-cleanup direction and the completed cleanup/verification session."
+    },
+    {
+      "type": "command",
+      "path": "./init.sh",
+      "description": "Final full repository verification passed after deleting legacy shim trees and rewiring canonical feature-first imports."
+    },
+    {
+      "type": "command",
+      "path": "gitnexus_detect_changes(scope: all)",
+      "description": "Final GitNexus change detection reported MEDIUM risk with 52 changed symbols, 26 changed files, and 1 affected process (`ExpensesPage -> LocalDateToTimestamp`) after the cleanup and harness updates."
+    }
+  ]
+}

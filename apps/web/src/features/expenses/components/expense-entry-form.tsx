@@ -12,6 +12,11 @@ import {
 import type { ReactNode } from 'react'
 
 import {
+  FIELD_ROW_INPUT_CLASS,
+  FIELD_ROW_SELECT_CLASS,
+  FieldRow,
+} from '@/components/shared/form'
+import {
   Field,
   FieldError,
   FieldGroup,
@@ -40,34 +45,26 @@ import type {
   ExpenseEntryFormState,
 } from './use-expense-entry-form'
 
-type FieldRowProps = {
+// Amount field uses a borderless underline style — different from the standard FieldRow.
+type AmountFieldRowProps = {
   label: string
   icon?: ReactNode
   htmlFor: string
   children: ReactNode
-  className?: string
 }
 
-const ROW_BASE_CLASS_NAME =
-  'flex-row items-center gap-2 rounded-2xl border border-border px-3 py-1'
-const ROW_LABEL_CLASS_NAME = 'flex w-28! flex-row items-center gap-2'
-const ROW_CONTROL_CLASS_NAME = 'flex w-auto flex-1 flex-row justify-end'
-const NATIVE_SELECT_LABEL_CLASS_NAME =
-  'border-none bg-transparent text-sm text-right ring-0!'
-
-const FieldRow = ({
+const AmountFieldRow = ({
   label,
   icon,
   htmlFor,
   children,
-  className,
-}: FieldRowProps) => (
-  <Field className={cn(ROW_BASE_CLASS_NAME, className)}>
-    <div className={ROW_LABEL_CLASS_NAME}>
+}: AmountFieldRowProps) => (
+  <Field className='flex-row items-center gap-2 border-none px-0 pl-2'>
+    <div className='flex w-28! shrink-0 flex-row items-center gap-2'>
       {icon}
       <FieldLabel htmlFor={htmlFor}>{label}</FieldLabel>
     </div>
-    <div className={ROW_CONTROL_CLASS_NAME}>{children}</div>
+    <div className='flex w-auto flex-1 flex-row justify-end'>{children}</div>
   </Field>
 )
 
@@ -111,8 +108,8 @@ export const ExpenseEntryForm = ({
       }}>
       <div className='min-h-0 flex-1 overflow-y-auto px-3 pt-2 pb-4'>
         <FieldGroup className='flex flex-col gap-3'>
-          <FieldRow
-            className='border-none px-0 pl-2'
+          {/* Amount uses a special underline style, not the standard FieldRow border. */}
+          <AmountFieldRow
             htmlFor='expense-amount'
             icon={<DollarSign className='size-4' />}
             label={t('expense.amount')}>
@@ -137,14 +134,15 @@ export const ExpenseEntryForm = ({
               </InputGroupAddon>
             </InputGroup>
             <FieldError>{errors.amountInput}</FieldError>
-          </FieldRow>
+          </AmountFieldRow>
+
           <FieldRow
             htmlFor='expense-title'
             icon={<Pencil className='size-4' />}
             label={t('expense.content')}>
             <Input
               aria-invalid={!!errors.title}
-              className='border-none bg-transparent text-right ring-0!'
+              className={cn(FIELD_ROW_INPUT_CLASS)}
               disabled={isSubmitting}
               id='expense-title'
               placeholder={titlePlaceholder}
@@ -154,13 +152,14 @@ export const ExpenseEntryForm = ({
             />
             <FieldError>{errors.title}</FieldError>
           </FieldRow>
+
           <FieldRow
             htmlFor='expense-date'
             icon={<CalendarIcon className='size-4' />}
             label={t('expense.date')}>
             <Input
               aria-invalid={!!errors.occurredOn}
-              className='w-auto border-none bg-transparent text-right ring-0!'
+              className={cn(FIELD_ROW_INPUT_CLASS, 'w-auto')}
               disabled={isSubmitting}
               id='expense-date'
               size='sm'
@@ -170,6 +169,7 @@ export const ExpenseEntryForm = ({
             />
             <FieldError>{errors.occurredOn}</FieldError>
           </FieldRow>
+
           <FieldRow
             htmlFor='expense-category'
             icon={<LayoutDashboardIcon className='size-4' />}
@@ -184,6 +184,7 @@ export const ExpenseEntryForm = ({
             />
             <FieldError>{errors.categoryKey}</FieldError>
           </FieldRow>
+
           <FieldRow
             htmlFor='expense-source'
             icon={<WalletIcon className='size-4' />}
@@ -197,6 +198,7 @@ export const ExpenseEntryForm = ({
             />
             <FieldError>{errors.sourceKey}</FieldError>
           </FieldRow>
+
           <FieldRow
             htmlFor='expense-household'
             icon={<HomeIcon className='size-4' />}
@@ -205,7 +207,7 @@ export const ExpenseEntryForm = ({
               className='w-full'
               disabled={isSubmitting}
               id='expense-household'
-              labelClassName={NATIVE_SELECT_LABEL_CLASS_NAME}
+              labelClassName={FIELD_ROW_SELECT_CLASS}
               size='sm'
               value={formState.householdId}
               onChange={(event) => setField('householdId', event.target.value)}>
@@ -219,6 +221,7 @@ export const ExpenseEntryForm = ({
               ))}
             </NativeSelect>
           </FieldRow>
+
           <FieldRow
             htmlFor='expense-group'
             icon={<GroupIcon className='size-4' />}
@@ -227,7 +230,7 @@ export const ExpenseEntryForm = ({
               className='w-full'
               disabled={isSubmitting}
               id='expense-group'
-              labelClassName={NATIVE_SELECT_LABEL_CLASS_NAME}
+              labelClassName={FIELD_ROW_SELECT_CLASS}
               size='sm'
               value={formState.groupId}
               onChange={(event) => setField('groupId', event.target.value)}>
