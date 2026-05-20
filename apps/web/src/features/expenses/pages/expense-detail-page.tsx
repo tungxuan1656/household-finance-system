@@ -1,8 +1,9 @@
 'use client'
 
-import { AlertTriangle, LockKeyhole, X } from 'lucide-react'
+import { AlertTriangle, LockKeyhole, type LucideIcon, X } from 'lucide-react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
+import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
@@ -15,6 +16,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
+import { PageShell } from '@/components/ui/page-shell'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ExpenseDetailActions } from '@/features/expenses/components/expense-detail-actions'
 import { ExpenseDetailCard } from '@/features/expenses/components/expense-detail-card'
@@ -29,55 +31,50 @@ import { t } from '@/lib/i18n/t'
 
 const EMPTY_STATE_ICON = 'size-5 text-muted-foreground'
 
-const notFoundState = (
+const BackToExpensesAction = () => (
+  <Button asChild variant='outline'>
+    <Link href={PATHS.EXPENSES}>{t('common.actions.backToOverview')}</Link>
+  </Button>
+)
+
+type ExpenseDetailEmptyStateProps = {
+  icon: LucideIcon
+  title: string
+}
+
+const ExpenseDetailEmptyState = ({
+  icon: Icon,
+  title,
+}: ExpenseDetailEmptyStateProps) => (
   <Empty>
     <EmptyHeader>
       <EmptyMedia variant='icon'>
-        <X aria-hidden='true' className={EMPTY_STATE_ICON} />
+        <Icon aria-hidden='true' className={EMPTY_STATE_ICON} />
       </EmptyMedia>
-      <EmptyTitle>{t('expense.detail.notFound')}</EmptyTitle>
+      <EmptyTitle>{title}</EmptyTitle>
     </EmptyHeader>
     <EmptyContent>
-      <Button asChild variant='outline'>
-        <Link href={PATHS.EXPENSES}>{t('common.actions.backToOverview')}</Link>
-      </Button>
+      <BackToExpensesAction />
     </EmptyContent>
   </Empty>
 )
 
-const forbiddenState = (
-  <Empty>
-    <EmptyHeader>
-      <EmptyMedia variant='icon'>
-        <LockKeyhole aria-hidden='true' className={EMPTY_STATE_ICON} />
-      </EmptyMedia>
-      <EmptyTitle>{t('expense.detail.forbidden')}</EmptyTitle>
-    </EmptyHeader>
-    <EmptyContent>
-      <Button asChild variant='outline'>
-        <Link href={PATHS.EXPENSES}>{t('common.actions.backToOverview')}</Link>
-      </Button>
-    </EmptyContent>
-  </Empty>
+const ExpenseDetailLoadingState = () => (
+  <Card>
+    <CardContent className='flex flex-col gap-4 pt-6'>
+      <Skeleton className='h-5 w-32' />
+      <Skeleton className='h-4 w-24' />
+      <Skeleton className='h-4 w-full' />
+      <Skeleton className='h-4 w-20' />
+      <Skeleton className='h-4 w-40' />
+    </CardContent>
+  </Card>
 )
 
-const errorState = (
-  <Empty>
-    <EmptyHeader>
-      <EmptyMedia variant='icon'>
-        <AlertTriangle aria-hidden='true' className={EMPTY_STATE_ICON} />
-      </EmptyMedia>
-      <EmptyTitle>{t('expense.feed.error')}</EmptyTitle>
-    </EmptyHeader>
-    <EmptyContent>
-      <Button asChild variant='outline'>
-        <Link href={PATHS.EXPENSES}>{t('common.actions.backToOverview')}</Link>
-      </Button>
-    </EmptyContent>
-  </Empty>
-)
+const isExpenseStatusError = (error: unknown, status: number): boolean =>
+  error instanceof ApiClientError && error.status === status
 
-export function ExpenseDetailPage() {
+export const ExpenseDetailPage = () => {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const id = params?.id
@@ -85,39 +82,16 @@ export function ExpenseDetailPage() {
   const { data: households } = useHouseholdsQuery()
   const deleteExpense = useDeleteExpenseMutation()
   const { data: expense, isLoading, error } = useExpenseDetailQuery(id)
-  if (!id) return notFoundState
-  if (isLoading) {
-    return (
-      <div className='flex flex-col gap-6'>
-        <header className='flex flex-col gap-1'>
-          <Skeleton className='h-7 w-48' />
-        </header>
-        <Card>
-          <CardContent className='flex flex-col gap-4 pt-6'>
-            <Skeleton className='h-5 w-32' />
-            <Skeleton className='h-4 w-24' />
-            <Skeleton className='h-4 w-full' />
-            <Skeleton className='h-4 w-20' />
-            <Skeleton className='h-4 w-40' />
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-  if (error && error instanceof ApiClientError && error.status === 403)
-    return forbiddenState
-  if (error && error instanceof ApiClientError && error.status === 404)
-    return notFoundState
-  if (error || !expense) return errorState
-
   const isAdmin =
-    expense.householdId != null &&
+    expense?.householdId != null &&
     (households?.items.some(
       (household) =>
         household.id === expense.householdId && household.role === 'admin',
     ) ??
       false)
-  const handleDelete = () =>
+  const handleDelete = () => {
+    if (!expense) return
+
     deleteExpense.mutate(expense.id, {
       onSuccess: () => {
         toast.success(t('expense.deleteSuccess'))
@@ -127,28 +101,69 @@ export function ExpenseDetailPage() {
         toast.error(t('expense.deleteError'))
       },
     })
+  }
 
-  return (
-    <div className='flex flex-col gap-6'>
-      <header className='flex items-center justify-between gap-3'>
-        <div className='flex items-center gap-3'>
-          <Button variant='outline' onClick={() => router.back()}>
+  const detailActions = expense ? (
+    <ExpenseDetailActions
+      currentUserId={currentUser?.id}
+      expense={expense}
+      isAdmin={isAdmin}
+      isDeleting={deleteExpense.isPending}
+      onDelete={handleDelete}
+      onEdit={() => router.push(PATHS.EDIT_EXPENSE.replace('[id]', expense.id))}
+    />
+  ) : null
+
+  let content: ReactNode
+
+  if (!id) {
+    content = (
+      <ExpenseDetailEmptyState icon={X} title={t('expense.detail.notFound')} />
+    )
+  } else if (isLoading) {
+    content = <ExpenseDetailLoadingState />
+  } else if (isExpenseStatusError(error, 403)) {
+    content = (
+      <ExpenseDetailEmptyState
+        icon={LockKeyhole}
+        title={t('expense.detail.forbidden')}
+      />
+    )
+  } else if (isExpenseStatusError(error, 404)) {
+    content = (
+      <ExpenseDetailEmptyState icon={X} title={t('expense.detail.notFound')} />
+    )
+  } else if (error || !expense) {
+    content = (
+      <ExpenseDetailEmptyState
+        icon={AlertTriangle}
+        title={t('expense.feed.error')}
+      />
+    )
+  } else {
+    content = (
+      <div className='flex flex-col gap-6'>
+        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+          <Button
+            className='hidden sm:inline-flex'
+            type='button'
+            variant='outline'
+            onClick={() => router.back()}>
             {t('app.householdDetail.actions.back')}
           </Button>
-          <h1 className='font-heading text-2xl tracking-tight'>
-            {t('expense.detail.title')}
-          </h1>
+          {detailActions}
         </div>
-        <ExpenseDetailActions
-          currentUserId={currentUser?.id}
-          expense={expense}
-          isAdmin={isAdmin}
-          isDeleting={deleteExpense.isPending}
-          onDelete={handleDelete}
-          onEdit={() => router.push(`/expenses/${expense.id}/edit`)}
-        />
-      </header>
-      <ExpenseDetailCard expense={expense} />
-    </div>
+        <ExpenseDetailCard expense={expense} />
+      </div>
+    )
+  }
+
+  return (
+    <PageShell
+      showBack
+      title={t('expense.detail.title')}
+      onBack={() => router.back()}>
+      {content}
+    </PageShell>
   )
 }

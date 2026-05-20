@@ -1,0 +1,47 @@
+{
+  "id": "feat-065",
+  "name": "Expense page orchestration refactor",
+  "status": "done",
+  "description": "Refactor the expense feed and expense detail route surfaces to better match the frontend architecture guidance: keep page orchestration thin, move pure filter logic into focused helpers with unit coverage, adopt the shared PageShell route pattern, and consolidate repeated async fallback UI without changing expense behavior.",
+  "dependencies": ["feat-018", "feat-019", "feat-021", "feat-053", "feat-062"],
+  "evidence": [
+    {
+      "type": "file",
+      "path": "apps/web/src/features/expenses/pages/expenses-page.tsx",
+      "description": "Expenses page now uses the shared PageShell route pattern, keeps route-surface composition focused on top-level orchestration, and delegates filter/category/group derivation to a dedicated helper module."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/features/expenses/pages/expense-detail-page.tsx",
+      "description": "Expense detail page now renders loading, not-found, forbidden, error, and success states inside one PageShell and reuses shared fallback building blocks instead of duplicating state markup."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/features/expenses/pages/expense-feed-page-helpers.ts",
+      "description": "Pure expense-feed helpers now own category filtering, group deduplication, API filter building, and active-filter label generation so the page file stays smaller and easier to review."
+    },
+    {
+      "type": "file",
+      "path": "apps/web/src/features/expenses/pages/expense-feed-page-helpers.test.ts",
+      "description": "Focused Vitest coverage locks the extracted helper behavior for categories, group merging, API filter conversion, and active-filter labels without adding forbidden component render tests."
+    },
+    {
+      "type": "command",
+      "command": "pnpm --filter web exec vitest run src/features/expenses/pages/expense-feed-page-helpers.test.ts",
+      "output": "PASS",
+      "description": "Focused web helper test passed with 4 assertions after adjusting the expectations to the canonical amount parser semantics."
+    },
+    {
+      "type": "command",
+      "command": "./init.sh",
+      "output": "Done!",
+      "description": "Full repository verification passed after the expense-page refactor and harness updates."
+    },
+    {
+      "type": "analysis",
+      "command": "gitnexus_detect_changes(scope: all)",
+      "output": "risk_level: low; changed_symbols: 26; changed_files: 4; affected_processes: 0",
+      "description": "Final GitNexus change detection reported LOW risk with no affected execution flows."
+    }
+  ]
+}

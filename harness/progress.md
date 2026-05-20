@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-20 — Refactored expense feed and detail page orchestration
+
+- Who: Orchestrator
+- Summary: Refactored the two main expense route surfaces to align with the frontend architecture docs. The expense feed page now uses `PageShell`, keeps page-level composition leaner, and delegates category/group/filter derivation to a new pure helper module with focused Vitest coverage. The expense detail page now keeps all loading/error/forbidden/not-found/success states inside one `PageShell`, reuses shared fallback building blocks, and preserves existing edit/delete behavior while reducing repeated markup.
+- Files changed: Expense feed/detail page orchestration, new pure helper + focused helper test, new feat-065 harness record, feature index, and this progress log.
+- Verification: `pnpm --filter web exec vitest run src/features/expenses/pages/expense-feed-page-helpers.test.ts` passed with 1 file / 4 tests; final `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 26 changed symbols, 4 changed files, and 0 affected processes.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
+
 ## 2026-05-20 — Clarified initial-thinking versus brainstorming in skill routing
 
 - Who: Orchestrator + User
