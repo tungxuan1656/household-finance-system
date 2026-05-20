@@ -7,6 +7,16 @@ description: Classify task complexity and choose the minimum sufficient workflow
 
 Use the minimum sufficient process for the task.
 
+## Initial Thinking Comes Before Ceremony Level
+
+Ceremony level selection must happen after initial thinking.
+
+Do not assign levels mechanically.
+
+A task that appears small may still be Level 2 or Level 3 if it changes behavior, API contracts, data shape, security, architecture, or financial correctness.
+
+A task that appears large may still avoid formal brainstorming if the direction is already fully specified by an approved ExecPlan.
+
 ## Level 0 - Direct Task
 
 Use for trivial, mechanical, one-shot work.

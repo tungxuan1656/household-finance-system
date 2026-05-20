@@ -2,7 +2,7 @@
   "id": "feat-064",
   "name": "Portable skill system ceremony alignment",
   "status": "done",
-  "description": "Restructure project-owned skill guidance into portable skill folders, make `using-skills` the single entry workflow router, align core workflow skills around minimum-sufficient ceremony levels, and remove stale skill-reference guidance without expanding metadata.",
+  "description": "Restructure project-owned skill guidance into portable skill folders, make `using-skills` the single entry workflow router with mandatory initial triage, align core workflow skills around minimum-sufficient ceremony levels, clarify that every task requires initial thinking but not formal brainstorming, and remove stale skill-reference guidance without expanding metadata.",
   "dependencies": ["feat-001", "feat-002", "feat-040", "feat-054"],
   "evidence": [
     {
@@ -23,12 +23,27 @@
     {
       "type": "file",
       "path": ".agents/skills/using-skills/SKILL.md",
-      "description": "The entrypoint skill now routes to the minimum sufficient process instead of forcing high ceremony for simple tasks."
+      "description": "The entrypoint skill now explicitly requires initial thinking for every task, owns initial triage, and routes to the minimum sufficient process instead of forcing high ceremony for simple tasks."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/brainstorming/SKILL.md",
+      "description": "Brainstorming is now defined as deeper structured exploration that follows initial triage only when ambiguity, tradeoffs, or unclear direction remain."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/writing-plans/SKILL.md",
+      "description": "Plan writing now starts once direction is clear and no longer implies that brainstorming must precede every plan."
+    },
+    {
+      "type": "file",
+      "path": ".agents/skills/executing-plans/SKILL.md",
+      "description": "Plan execution now escalates back to triage or brainstorming only when execution exposes invalid assumptions, ambiguity, or new tradeoffs."
     },
     {
       "type": "file",
       "path": ".agents/skills/verification-before-completion/SKILL.md",
-      "description": "Completion policy now requires fresh verification evidence with operational reporting instead of threat-heavy wording."
+      "description": "Completion policy now requires fresh verification evidence for every ceremony level, including Level 0 direct tasks, with operational reporting instead of threat-heavy wording."
     },
     {
       "type": "file",
@@ -38,7 +53,7 @@
     {
       "type": "file",
       "path": "harness/progress.md",
-      "description": "Progress log records the completed skill-system upgrade and its verification results."
+      "description": "Progress log records both the original portable skill-system upgrade and this follow-up clarification about initial thinking versus formal brainstorming."
     },
     {
       "type": "command",

@@ -7,6 +7,19 @@ description: Use when you have a written implementation plan and will execute it
 
 Load the plan, review it critically, execute it step by step, and verify results before completion.
 
+## Relationship to Thinking and Planning
+
+This skill executes an existing plan.
+
+Do not restart brainstorming unless execution reveals:
+- invalid assumptions
+- missing acceptance criteria
+- unexpected architecture constraints
+- new product or design tradeoffs
+- unclear implementation direction
+
+If that happens, stop and escalate back to `using-skills` for triage, then use `brainstorming` or `writing-plans` as needed.
+
 ## Additional Reading
 
 AGENTS.md is read at session start. For plan execution, also read:

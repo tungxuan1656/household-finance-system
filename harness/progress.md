@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-20 — Clarified initial-thinking versus brainstorming in skill routing
+
+- Who: Orchestrator + User
+- Summary: Refined feat-064 after reviewing the new skill set semantics. `using-skills` now states that every task requires mandatory initial thinking before ceremony selection, and explicitly frames itself as entrypoint plus light triage rather than mechanical classification. `brainstorming` now clearly covers deeper structured exploration only when triage finds ambiguity, tradeoffs, unclear acceptance criteria, or non-trivial behavior/design/architecture impact. `writing-plans`, `executing-plans`, `verification-before-completion`, and `ceremony-levels` were aligned to the same distinction so the system keeps thought mandatory without forcing formal brainstorming on trivial work.
+- Files changed: Skill-routing and workflow-skill wording, feat-064 evidence description, and this progress log.
+- Verification: `./init.sh` passed with `Done!`; stale wording search across `.agents/skills` found no matches for the targeted contradictory patterns.
+- Blockers: none.
+- Next steps: Review the wording tone and commit if desired.
+
 ## 2026-05-20 — Completed portable skill-system ceremony alignment
 
 - Who: Orchestrator

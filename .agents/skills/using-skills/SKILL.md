@@ -1,13 +1,48 @@
 ---
 name: using-skills
-description: Entry point skill. Use first to classify ceremony level, choose the minimum necessary workflow skills, and enforce verification evidence before completion.
+description: Entry point for the project skill system. Use at the start of every task to perform initial thinking, classify task ceremony level, select applicable skills, and require verification evidence before completion.
 ---
 
 # Using Skills
 
 Use this skill first.
 
-Its job is to choose the minimum sufficient process for the current task.
+Its job is to do initial triage, then choose the minimum sufficient process for the current task.
+
+## Think Before Selecting Skills
+
+Every task requires initial thinking before selecting skills.
+
+Before choosing a ceremony level or workflow skill, determine:
+- what the user is actually asking for
+- whether the requirement is clear or ambiguous
+- whether the task changes product behavior, API contract, data shape, UX flow, security, architecture, or verification expectations
+- whether there are multiple reasonable implementation approaches
+- what evidence is required before claiming completion
+
+This initial thinking is mandatory.
+
+This initial thinking is not the same as the `brainstorming` skill.
+
+Use `brainstorming` only when initial thinking reveals ambiguity, competing approaches, unclear acceptance criteria, or non-trivial product, design, or architecture tradeoffs.
+
+## Role of This Skill
+
+`using-skills` is the entrypoint for the skill system.
+
+It is responsible for:
+1. performing initial task triage
+2. choosing the minimum sufficient ceremony level
+3. selecting applicable workflow and domain skills
+4. avoiding unnecessary ceremony for simple tasks
+5. escalating to deeper skills when ambiguity or risk is detected
+6. requiring verification evidence before any completion claim
+
+This skill is not a replacement for reasoning.
+
+It is also not a replacement for `brainstorming`.
+
+It decides whether formal brainstorming is needed.
 
 ## Core Rules
 
@@ -32,12 +67,27 @@ Avoid broad-folder reading by default.
 
 ## Decision Flow
 
-1. Classify the task using `ceremony-levels`.
-2. Identify whether a workflow skill is needed.
-3. Identify whether a domain skill is needed.
-4. Read only the minimum exact docs needed for this level.
-5. Decide required verification depth.
-6. Re-check level if scope expands.
+1. Perform initial thinking.
+2. Classify the task using `ceremony-levels`.
+3. Identify whether a workflow skill is needed.
+4. Identify whether a domain skill is needed.
+5. Read only the minimum exact docs needed for this level.
+6. Decide required verification depth.
+7. Re-check level if scope expands.
+
+## Minimum Sufficient Process
+
+Use the lightest process that can safely satisfy the request.
+
+Recommended default:
+- Level 0: direct task with initial thinking and verification evidence
+- Level 1: small scoped change with brief inline plan and targeted verification
+- Level 2: planned feature with ExecPlan or existing plan update
+- Level 3: high-risk change with explicit risk review, relevant domain reviews, and stronger verification
+
+Do not invoke workflow skills just because they exist.
+
+Do invoke them when the initial triage shows they are needed.
 
 ## Workflow Selection
 
@@ -59,16 +109,30 @@ Use these workflow skills when they match:
 
 Use domain skills only when the domain actually matters.
 
+## When to Escalate
+
+Escalate from direct execution to `brainstorming`, `writing-plans`, or domain review when any of these are true:
+- the user request is ambiguous
+- the acceptance criteria are unclear
+- the task changes user-visible behavior
+- the task changes API contracts
+- the task changes data shape, persistence, migration, or financial calculations
+- the task crosses architecture boundaries
+- the task affects security, reliability, correctness, or permissions
+- there are multiple reasonable implementation approaches
+- the implementation path is not obvious
+- the change may require docs, specs, or harness state updates
+
 ## Decision Output
 
 When useful, express the choice in this format:
 
 ```text
 Skill decision:
+- Initial read:
 - Ceremony level:
 - Skills used:
 - Skills intentionally skipped:
-- Docs/files read:
 - Reason:
 - Verification expected:
 ```

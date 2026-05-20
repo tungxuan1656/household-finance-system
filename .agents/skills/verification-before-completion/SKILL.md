@@ -18,6 +18,29 @@ Before claiming a task is complete, fixed, passing, or ready:
 
 If verification cannot run, say so explicitly and mark the result as unverified.
 
+## Verification Is Always Required for Completion Claims
+
+Every task, including Level 0 direct tasks, requires evidence before claiming completion.
+
+The amount of verification depends on ceremony level and risk:
+- Level 0: targeted check when possible
+- Level 1: targeted lint, test, or typecheck relevant to the changed area
+- Level 2: planned verification from the ExecPlan
+- Level 3: broader verification and relevant domain checks
+
+If verification cannot be run, report:
+- what was not run
+- why it was not run
+- what risk remains
+
+Use wording like:
+
+```text
+Implemented, but not fully verified because...
+```
+
+Do not say the task is complete without verification evidence.
+
 ## Verification Format
 
 Use this structure when reporting final status:

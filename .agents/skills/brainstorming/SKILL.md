@@ -1,30 +1,47 @@
 ---
 name: brainstorming
-description: Use when requirements, behavior, UX, or architecture direction is still ambiguous and a design decision is needed before implementation.
+description: Use for deeper structured exploration when initial thinking reveals ambiguity, competing approaches, unclear acceptance criteria, or product/design/architecture tradeoffs. Do not use for every task.
 ---
 
 # Brainstorming
 
 Use this skill only when the right implementation direction is not yet clear.
 
-## When to Use
+## Relationship to Initial Thinking
 
-- ambiguous user requirements
-- new feature behavior
-- product or UX tradeoff
-- architecture decision
-- unclear acceptance criteria
-- multiple plausible approaches
-- risky change where wrong direction is expensive
+All tasks require initial thinking.
 
-## When Not to Use
+This skill is not the same as initial thinking.
 
-- Level 0 direct tasks
-- mechanical rename
-- copy-only or config-only update
-- simple bug with known root cause
-- test maintenance with no behavior decision
-- implementation already defined by an approved ExecPlan
+This skill is for deeper structured exploration when initial thinking reveals ambiguity, tradeoffs, multiple viable approaches, unclear acceptance criteria, or meaningful behavior, design, or architecture impact.
+
+Skipping this skill for a simple task does not mean skipping thought.
+
+It means the initial triage found no need for formal brainstorming.
+
+## Use This Skill When
+
+- requirements are ambiguous
+- the user is asking for a new behavior or feature
+- acceptance criteria are unclear
+- there are multiple viable approaches
+- there are product, UX, API, data, architecture, security, reliability, or correctness tradeoffs
+- the implementation direction is not obvious
+- the change may affect long-term maintainability
+- the user explicitly asks to explore options
+
+## Do Not Use This Skill When
+
+- typo fixes
+- copy-only changes
+- mechanical renames
+- one-line config updates
+- stale path or reference cleanup
+- simple bug fixes with known cause and narrow scope
+- test-only maintenance with clear expected behavior
+- executing an already-approved ExecPlan
+
+For these tasks, still perform initial thinking through `using-skills`, then proceed with the minimum sufficient process.
 
 ## Required Reading
 
@@ -50,11 +67,13 @@ Use a compact structure:
 
 ```text
 Brainstorm result:
-- Open question:
-- Options:
+- Problem understanding:
+- Key assumptions:
+- Options considered:
+- Tradeoffs:
 - Recommendation:
-- Reason:
-- Acceptance criteria or next step:
+- Open questions:
+- Whether this should become an ExecPlan:
 ```
 
 ## Artifact Rule
@@ -66,5 +85,6 @@ Brainstorm result:
 ## Forbidden Behavior
 
 - Do not require brainstorming for every modification.
+- Do not treat `brainstorming` as a substitute for the mandatory initial thinking done in `using-skills`.
 - Do not create a parallel upstream doc tree for skill-specific notes.
 - Do not block obvious low-risk execution with unnecessary design ceremony.

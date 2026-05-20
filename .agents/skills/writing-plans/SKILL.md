@@ -8,18 +8,37 @@ argument-hint: 'Describe feature goal, scope (frontend/backend/fullstack), const
 
 Create or update an implementation-ready ExecPlan only when the task needs that level of ceremony.
 
-## When To Use
+## Relationship to Initial Thinking and Brainstorming
+
+`writing-plans` starts after the task direction is sufficiently clear.
+
+It may follow:
+- direct initial triage from `using-skills`
+- a formal `brainstorming` pass
+
+Do not require brainstorming before every plan.
+
+Require brainstorming first only when the plan would otherwise encode unresolved ambiguity, unchosen tradeoffs, or unclear acceptance criteria.
+
+## When to Write a Plan
 
 Use this skill for:
 - Level 2 planned feature work
 - Level 3 high-risk work
 - existing plans that need tightening before execution
 - tasks with unclear sequencing, acceptance criteria, or multi-stage verification
+- tasks with multiple implementation steps
+- tasks spanning multiple files, layers, or domains
+- tasks that need progress tracking in harness artifacts
 
 Do not use this skill for:
 - Level 0 direct tasks
 - most Level 1 small changes
 - generic brainstorming with no implementation intent
+
+Do not create a full ExecPlan for Level 0 direct tasks.
+
+For Level 1 tasks, prefer a brief inline plan unless risk or ambiguity is discovered.
 
 For Level 1, a short inline plan is enough:
 
