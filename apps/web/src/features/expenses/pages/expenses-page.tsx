@@ -3,7 +3,6 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
-import { Button } from '@/components/ui/button'
 import { PageShell } from '@/components/ui/page-shell'
 import { useAddExpenseDialog } from '@/features/expenses/components/add-expense/provider'
 import { ExpenseActiveFilterSummary } from '@/features/expenses/components/expense-active-filter-summary'
@@ -134,15 +133,7 @@ export const ExpensesPage = () => {
   return (
     <PageShell title={t('expense.feed.title')}>
       <div className='flex flex-col gap-4 md:gap-6'>
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-          <p className='text-sm text-muted-foreground'>
-            {t('expense.feed.description')}
-          </p>
-          <Button size='xl' type='button' onClick={openDialog}>
-            {t('expense.addTitle')}
-          </Button>
-        </div>
-
+        <ExpenseFeedSummary filters={filters} search={debouncedSearch} />
         <ExpenseFeedFilters
           categories={categories}
           groups={groups}
@@ -153,7 +144,6 @@ export const ExpensesPage = () => {
           labels={activeFilterLabels}
           onReset={() => setFilterValues(DEFAULT_EXPENSE_FEED_FILTER_VALUES)}
         />
-        <ExpenseFeedSummary filters={filters} search={debouncedSearch} />
         <ExpenseFeedList filters={filters} search={debouncedSearch} />
       </div>
     </PageShell>
