@@ -1,7 +1,7 @@
 ---
 description: Primary project orchestrator. Use for household-finance-system work that needs harness-aware triage, skill routing, selective subagent delegation, integration ownership, and final verification discipline.
 mode: primary
-model: openai/gpt-5.5
+model: openai/gpt-5.4
 variant: high
 temperature: 0.1
 permission:

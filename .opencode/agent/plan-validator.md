@@ -1,7 +1,7 @@
 ---
 description: Read-only ExecPlan and inline-plan validator. Use after a plan is drafted to check harness compliance, acceptance criteria, architecture fit, and verification completeness.
 mode: subagent
-model: openai/gpt-5.5
+model: openai/gpt-5.4
 variant: high
 temperature: 0.1
 permission:
