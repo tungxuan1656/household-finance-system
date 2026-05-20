@@ -6,6 +6,7 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 
 - Clarity before novelty.
 - Mobile-first layout.
+- `apps/web/src` uses feature-first ownership: route files stay in `app/`, domain-local code lives in `features/<domain>/`, shared UI stays in `components/shared`, and primitives stay in `components/ui`.
 - shadcn/ui primitives from `@/components/ui/*`.
 - No custom primitive wrapper replacements for `Button`, `Input`, `Card`, `Dialog`, etc.
 - State coverage required: loading, empty, success, error, retry when relevant.
@@ -14,12 +15,22 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 
 ## Component Boundaries
 
-- Page file owns route params, URL/state sync, top-level orchestration.
+- Route file under `app/**` owns route params, URL/state sync, and Next.js boundary glue only.
+- Feature page under `features/<domain>/pages/**` owns top-level orchestration for that route surface.
 - Feature smart component owns one bounded concern: local state, hooks, mutations, composed UI.
 - Shared component exists only after cross-feature reuse is real.
 - Dumb component is presentational only; no feature API calls.
 - Prefer DTO passthrough. Map only for real derived value or shape change.
 - Split near 200 lines or when 3+ concerns mix.
+
+## Folder Direction
+
+- `app/`: Next.js route tree, layouts, metadata, loading/error/not-found, server/client boundary glue.
+- `features/<domain>/`: primary home for domain-local pages, components, hooks, api modules, types, utils, tests, and feature-only helpers.
+- `components/shared`: cross-feature reusable UI/controller components.
+- `components/layouts`: app shell/navigation/layout pieces shared across features.
+- `components/ui`: shadcn primitives only.
+- `views/`: removed. Do not add new code there.
 
 ## Page Shell Pattern
 
@@ -43,7 +54,7 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 | Task | Read |
 |------|------|
 | Folder/file placement | `docs/references/frontend/project-folder-structure.md` |
-| Page vs child split | `docs/references/frontend/component-structure-pattern.md` |
+| Route page vs feature page split | `docs/references/frontend/component-structure-pattern.md` |
 | Component architecture | `docs/references/frontend/frontend-component-architecture-guide.md` |
 | Naming/imports/constants | `docs/references/frontend/naming-and-conventions-pattern.md` |
 | API hooks / React Query | `docs/references/frontend/api-react-query-pattern.md` |

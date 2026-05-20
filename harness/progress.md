@@ -9,6 +9,14 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-20 — Refactored expenses feed UI
+
+- Who: Orchestrator
+- Summary: Refactored the expenses feed list and filters to match the recent expenses item design and improved mobile layout. Changed `ExpenseFeedItem` to match the badge/icon and layout of recent expenses. Wrapped `ExpenseFeedFilters` inputs in a scrollable shadcn `Dialog` with a Filter button, keeping the search input exposed for better UX on smaller screens.
+- Files changed: Expense feed item and expense feed filters components.
+- Verification: `./init.sh typecheck` and `./init.sh lint` passed successfully.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
 ## 2026-05-19 — Completed web feature-first folder architecture refactor
 
 - Who: Orchestrator + fixer + oracle reviewers

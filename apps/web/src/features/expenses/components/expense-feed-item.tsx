@@ -2,12 +2,12 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import type { TranslationKey } from '@/lib/i18n/i18n-init'
 import { t } from '@/lib/i18n/t'
-import { getCategoryLabel } from '@/lib/reference-data/labels'
+import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
 import { formatCurrency } from '@/utils/currency/format'
-import { DATE_TIME_FORMATS } from '@/utils/datetime/constants'
-import { formatDate } from '@/utils/datetime/format'
+import { formatRelativeDate } from '@/utils/datetime/format'
 
 import type { ExpenseDTO, ExpenseVisibility } from '../types/expense'
 
@@ -19,14 +19,6 @@ type ExpenseFeedItemProps = {
 const VISIBILITY_BADGE_LABELS: Record<ExpenseVisibility, TranslationKey> = {
   private: 'expense.visibilityBadge.private',
   household: 'expense.visibilityBadge.household',
-}
-
-const VISIBILITY_BADGE_VARIANTS: Record<
-  ExpenseVisibility,
-  'outline' | 'secondary'
-> = {
-  private: 'outline',
-  household: 'secondary',
 }
 
 export function ExpenseFeedItem({ expense, onClick }: ExpenseFeedItemProps) {
@@ -41,6 +33,12 @@ export function ExpenseFeedItem({ expense, onClick }: ExpenseFeedItemProps) {
     }
   }
 
+  const referenceCategoriesQuery = useReferenceCategoriesQuery()
+  const category = getCategoryPresentation(
+    expense.categoryKey,
+    referenceCategoriesQuery.data?.items,
+  )
+
   return (
     <Card
       className='cursor-pointer transition-colors hover:bg-accent/50 hover:shadow-sm active:scale-[0.98]'
@@ -49,24 +47,36 @@ export function ExpenseFeedItem({ expense, onClick }: ExpenseFeedItemProps) {
       tabIndex={0}
       onClick={handleClick}
       onKeyDown={handleKeyDown}>
-      <CardContent className='flex items-center justify-between gap-3'>
-        <div className='flex min-w-0 flex-1 flex-col gap-1'>
-          <span className='text-xs text-muted-foreground'>
-            {getCategoryLabel(expense.categoryKey)}
-          </span>
-          <span className='truncate text-sm font-medium'>{expense.title}</span>
-          <span className='text-xs text-muted-foreground'>
-            {formatDate(expense.occurredAt, DATE_TIME_FORMATS.date)}
-          </span>
+      <CardContent className='flex items-start gap-3'>
+        <Badge
+          className='size-10 shrink-0'
+          style={{ backgroundColor: category.color + '1A' }}
+          variant='secondary'>
+          {category.iconUrl && (
+            <img
+              alt={category.label}
+              className='size-6'
+              src={category.iconUrl}
+            />
+          )}
+        </Badge>
+        <div className='min-w-0 flex-1 py-0.5'>
+          <p className='truncate text-sm font-medium'>{expense.title}</p>
+          <div className='mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground'>
+            <span>{formatRelativeDate(expense.occurredAt)}</span>
+            <span aria-hidden='true'>&middot;</span>
+            <span>{category.label}</span>
+            {expense.visibility !== 'household' && (
+              <>
+                <span aria-hidden='true'>&middot;</span>
+                <span>{t(VISIBILITY_BADGE_LABELS[expense.visibility])}</span>
+              </>
+            )}
+          </div>
         </div>
-        <div className='flex flex-col items-end gap-1.5'>
-          <span className='text-sm font-semibold tabular-nums'>
-            {formatCurrency(expense.amountMinor, expense.currencyCode)}
-          </span>
-          <Badge variant={VISIBILITY_BADGE_VARIANTS[expense.visibility]}>
-            {t(VISIBILITY_BADGE_LABELS[expense.visibility])}
-          </Badge>
-        </div>
+        <span className='shrink-0 py-0.5 font-mono text-base font-medium tabular-nums'>
+          {formatCurrency(expense.amountMinor, expense.currencyCode)}
+        </span>
       </CardContent>
     </Card>
   )
