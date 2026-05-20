@@ -17,6 +17,7 @@ import type { ExpenseVisibility } from '@/features/expenses/types/expense'
 import { useExpenseGroupListQuery } from '@/features/groups/hooks/use-groups'
 import type { ExpenseGroupDTO } from '@/features/groups/types/group'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
+import { useDebounce } from '@/hooks/shared/use-debounce'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
@@ -51,7 +52,8 @@ const toTimestamp = (value: string, endOfDay: boolean) => {
 const toNumber = (value: string) => {
   if (!value) return undefined
 
-  const parsed = Number(value)
+  const rawValue = value.replace(/\./g, '')
+  const parsed = Number(rawValue)
 
   return Number.isNaN(parsed) ? undefined : parsed
 }
@@ -78,6 +80,10 @@ export function ExpensesPage() {
   const [filterValues, setFilterValues] = useState<ExpenseFeedFilterValues>(
     DEFAULT_FILTER_VALUES,
   )
+
+  const debouncedSearch = useDebounce(filterValues.search, 500)
+  const debouncedAmountMin = useDebounce(filterValues.amountMin, 500)
+  const debouncedAmountMax = useDebounce(filterValues.amountMax, 500)
 
   const { data: referenceCategories } = useReferenceCategoriesQuery()
   const { data: personalGroupsResponse } = useExpenseGroupListQuery(undefined)
@@ -123,8 +129,8 @@ export function ExpensesPage() {
 
   const filters = useMemo<ExpenseListParams>(
     () => ({
-      amount_max: toNumber(filterValues.amountMax),
-      amount_min: toNumber(filterValues.amountMin),
+      amount_max: toNumber(debouncedAmountMax),
+      amount_min: toNumber(debouncedAmountMin),
       category_key: filterValues.categoryKey || undefined,
       date_from: toTimestamp(filterValues.dateFrom, false),
       date_to: toTimestamp(filterValues.dateTo, true),
@@ -132,7 +138,16 @@ export function ExpensesPage() {
       sort: filterValues.sort || undefined,
       visibility: filterValues.visibility || undefined,
     }),
-    [filterValues],
+    [
+      debouncedAmountMax,
+      debouncedAmountMin,
+      filterValues.categoryKey,
+      filterValues.dateFrom,
+      filterValues.dateTo,
+      filterValues.groupId,
+      filterValues.sort,
+      filterValues.visibility,
+    ],
   )
 
   const activeFilterLabels = useMemo(
@@ -195,8 +210,8 @@ export function ExpensesPage() {
         labels={activeFilterLabels}
         onReset={() => setFilterValues(DEFAULT_FILTER_VALUES)}
       />
-      <ExpenseFeedSummary filters={filters} search={filterValues.search} />
-      <ExpenseFeedList filters={filters} search={filterValues.search} />
+      <ExpenseFeedSummary filters={filters} search={debouncedSearch} />
+      <ExpenseFeedList filters={filters} search={debouncedSearch} />
     </div>
   )
 }

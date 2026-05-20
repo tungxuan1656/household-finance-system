@@ -49,6 +49,13 @@ type ExpenseFeedFiltersProps = {
   onChange: (key: keyof ExpenseFeedFilterValues, value: string) => void
 }
 
+const formatAmountInput = (value: string): string => {
+  const digits = value.replace(/\D/g, '')
+  if (!digits) return ''
+
+  return new Intl.NumberFormat('vi-VN').format(Number(digits))
+}
+
 const ROW_BASE_CLASS_NAME =
   'flex-row items-center gap-2 rounded-2xl border border-border px-3 py-1'
 const ROW_LABEL_CLASS_NAME =
@@ -226,11 +233,12 @@ export function ExpenseFeedFilters({
                   inputMode='numeric'
                   placeholder='0'
                   size='sm'
-                  type='number'
+                  type='text'
                   value={values.amountMin}
-                  onChange={(event) =>
-                    onChange('amountMin', event.target.value)
-                  }
+                  onChange={(event) => {
+                    const formatted = formatAmountInput(event.target.value)
+                    onChange('amountMin', formatted)
+                  }}
                 />
               </FieldRow>
 
@@ -244,11 +252,12 @@ export function ExpenseFeedFilters({
                   inputMode='numeric'
                   placeholder='0'
                   size='sm'
-                  type='number'
+                  type='text'
                   value={values.amountMax}
-                  onChange={(event) =>
-                    onChange('amountMax', event.target.value)
-                  }
+                  onChange={(event) => {
+                    const formatted = formatAmountInput(event.target.value)
+                    onChange('amountMax', formatted)
+                  }}
                 />
               </FieldRow>
 
