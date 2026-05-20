@@ -20,6 +20,14 @@ Do not require brainstorming before every plan.
 
 Require brainstorming first only when the plan would otherwise encode unresolved ambiguity, unchosen tradeoffs, or unclear acceptance criteria.
 
+This skill governs full ExecPlans, not planning in general.
+All tasks still need some planning artifact before execution:
+- tiny direct-task note for true one-shot work
+- explicit inline plan for normal Level 1 multi-step work
+- full ExecPlan for the cases covered by this skill
+
+Normal inline-plan work should stay inline. Do not invoke `writing-plans` just to satisfy the idea that every task needs a plan.
+
 ## When to Write a Plan
 
 Use this skill for:
@@ -39,6 +47,8 @@ Do not use this skill for:
 Do not create a full ExecPlan for Level 0 direct tasks.
 
 For Level 1 tasks, prefer a brief inline plan unless risk or ambiguity is discovered.
+Do not treat "small" as permission to skip planning entirely.
+Also do not treat "needs a plan" as permission to over-escalate normal Level 1 work into a full ExecPlan.
 
 For Level 1, a short inline plan is enough:
 
@@ -49,6 +59,8 @@ Inline plan:
 3. Run targeted verification.
 4. Report result.
 ```
+
+If the task includes several meaningful steps such as reading docs, comparing patterns, extracting a helper, updating a page, and running focused verification, it should usually show an inline plan even if it still does not deserve a full ExecPlan.
 
 ## Additional Reading
 

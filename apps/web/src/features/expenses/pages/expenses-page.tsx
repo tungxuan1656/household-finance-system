@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
-import { Button } from '@/components/ui/button'
+import { PageShell } from '@/components/ui/page-shell'
 import { useAddExpenseDialog } from '@/features/expenses/components/add-expense/provider'
 import { ExpenseActiveFilterSummary } from '@/features/expenses/components/expense-active-filter-summary'
 import {
@@ -12,69 +12,23 @@ import {
 } from '@/features/expenses/components/expense-feed-filters'
 import { ExpenseFeedList } from '@/features/expenses/components/expense-feed-list'
 import { ExpenseFeedSummary } from '@/features/expenses/components/expense-feed-summary'
-import type {
-  ExpenseListParams,
-  ExpenseVisibility,
-} from '@/features/expenses/types/expense'
 import { useExpenseGroupListQuery } from '@/features/groups/hooks/use-groups'
-import type { ExpenseGroupDTO } from '@/features/groups/types/group'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { useDebounce } from '@/hooks/shared/use-debounce'
 import { t } from '@/lib/i18n/t'
-import { getCategoryLabel } from '@/lib/reference-data/labels'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
-import { parseAmountInput } from '@/utils/currency/format'
-import { localDateToTimestamp } from '@/utils/datetime/helpers'
 
-const DEFAULT_FILTER_VALUES: ExpenseFeedFilterValues = {
-  amountMax: '',
-  amountMin: '',
-  categoryKey: '',
-  dateFrom: '',
-  dateTo: '',
-  groupId: '',
-  search: '',
-  sort: 'occurred_at_desc',
-  visibility: '',
-}
+import {
+  buildExpenseFeedActiveFilterLabels,
+  buildExpenseFeedFilters,
+  DEFAULT_EXPENSE_FEED_FILTER_VALUES,
+  getExpenseFeedCategories,
+  mergeExpenseFeedGroups,
+} from './expense-feed-page-helpers'
 
-const VISIBILITY_LABEL_KEYS = {
-  household: 'expense.visibility.household',
-  private: 'expense.visibility.private',
-} as const satisfies Record<ExpenseVisibility, string>
+const INPUT_DEBOUNCE_MS = 500
 
-// localDateToTimestamp returns the start of day (local midnight).
-// For end-of-day we add one full day minus 1ms.
-const ONE_DAY_MS = 24 * 60 * 60 * 1000 - 1
-
-const dateFilterFrom = (value: string): number | undefined => {
-  if (!value) return undefined
-
-  const ts = localDateToTimestamp(value)
-
-  return Number.isNaN(ts) ? undefined : ts
-}
-
-const dateFilterTo = (value: string): number | undefined => {
-  if (!value) return undefined
-
-  const ts = localDateToTimestamp(value)
-
-  return Number.isNaN(ts) ? undefined : ts + ONE_DAY_MS
-}
-
-const mergeGroups = (
-  personalGroups: ExpenseGroupDTO[],
-  householdGroups: ExpenseGroupDTO[],
-): ExpenseGroupDTO[] => {
-  const deduped = new Map<string, ExpenseGroupDTO>()
-  for (const group of [...personalGroups, ...householdGroups])
-    deduped.set(group.id, group)
-
-  return [...deduped.values()]
-}
-
-export function ExpensesPage() {
+export const ExpensesPage = () => {
   const { openDialog } = useAddExpenseDialog()
   const pathname = usePathname()
   const router = useRouter()
@@ -84,13 +38,19 @@ export function ExpensesPage() {
   const selectedHouseholdId = currentHousehold?.id ?? households[0]?.id
 
   const [filterValues, setFilterValues] = useState<ExpenseFeedFilterValues>(
-    DEFAULT_FILTER_VALUES,
+    DEFAULT_EXPENSE_FEED_FILTER_VALUES,
   )
 
   // Debounce free-text and amount inputs to avoid rapid re-fetching while typing.
-  const debouncedSearch = useDebounce(filterValues.search, 500)
-  const debouncedAmountMin = useDebounce(filterValues.amountMin, 500)
-  const debouncedAmountMax = useDebounce(filterValues.amountMax, 500)
+  const debouncedSearch = useDebounce(filterValues.search, INPUT_DEBOUNCE_MS)
+  const debouncedAmountMin = useDebounce(
+    filterValues.amountMin,
+    INPUT_DEBOUNCE_MS,
+  )
+  const debouncedAmountMax = useDebounce(
+    filterValues.amountMax,
+    INPUT_DEBOUNCE_MS,
+  )
 
   const { data: referenceCategories } = useReferenceCategoriesQuery()
   const { data: personalGroupsResponse } = useExpenseGroupListQuery(undefined)
@@ -117,14 +77,13 @@ export function ExpensesPage() {
   }, [openDialog, pathname, router, searchParams])
 
   const categories = useMemo(
-    () =>
-      (referenceCategories?.items ?? []).filter((c) => c.kind === 'expense'),
+    () => getExpenseFeedCategories(referenceCategories?.items ?? []),
     [referenceCategories?.items],
   )
 
   const groups = useMemo(
     () =>
-      mergeGroups(
+      mergeExpenseFeedGroups(
         personalGroupsResponse?.items ?? [],
         householdGroupsResponse?.items ?? [],
       ),
@@ -135,17 +94,13 @@ export function ExpensesPage() {
     (c) => c.key === filterValues.categoryKey,
   )
 
-  const filters = useMemo<ExpenseListParams>(
-    () => ({
-      amount_max: parseAmountInput(debouncedAmountMax),
-      amount_min: parseAmountInput(debouncedAmountMin),
-      category_key: filterValues.categoryKey || undefined,
-      date_from: dateFilterFrom(filterValues.dateFrom),
-      date_to: dateFilterTo(filterValues.dateTo),
-      group_id: filterValues.groupId || undefined,
-      sort: filterValues.sort || undefined,
-      visibility: filterValues.visibility || undefined,
-    }),
+  const filters = useMemo(
+    () =>
+      buildExpenseFeedFilters({
+        values: filterValues,
+        debouncedAmountMax,
+        debouncedAmountMin,
+      }),
     [
       debouncedAmountMax,
       debouncedAmountMin,
@@ -160,28 +115,11 @@ export function ExpensesPage() {
 
   const activeFilterLabels = useMemo(
     () =>
-      [
-        filterValues.visibility
-          ? t(VISIBILITY_LABEL_KEYS[filterValues.visibility])
-          : null,
-        selectedCategory ? getCategoryLabel(selectedCategory.key) : null,
-        filterValues.sort === 'amount_desc'
-          ? t('expense.feed.filters.sortHighestAmount')
-          : null,
-        filterValues.dateFrom
-          ? `${t('expense.feed.filters.dateFrom')}: ${filterValues.dateFrom}`
-          : null,
-        filterValues.dateTo
-          ? `${t('expense.feed.filters.dateTo')}: ${filterValues.dateTo}`
-          : null,
-        filterValues.amountMin
-          ? `${t('expense.feed.filters.amountMin')}: ${filterValues.amountMin}`
-          : null,
-        filterValues.amountMax
-          ? `${t('expense.feed.filters.amountMax')}: ${filterValues.amountMax}`
-          : null,
-        groups.find((group) => group.id === filterValues.groupId)?.name ?? null,
-      ].filter((value): value is string => Boolean(value)),
+      buildExpenseFeedActiveFilterLabels({
+        values: filterValues,
+        groups,
+        selectedCategory,
+      }),
     [filterValues, groups, selectedCategory],
   )
 
@@ -193,33 +131,21 @@ export function ExpensesPage() {
   }
 
   return (
-    <div className='flex flex-col gap-4 md:gap-6'>
-      <header className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <div className='flex flex-col gap-1'>
-          <h1 className='font-heading text-xl tracking-tight md:text-2xl'>
-            {t('expense.feed.title')}
-          </h1>
-          <p className='text-sm text-muted-foreground'>
-            {t('expense.feed.description')}
-          </p>
-        </div>
-        <Button size='xl' type='button' onClick={openDialog}>
-          {t('expense.addTitle')}
-        </Button>
-      </header>
-
-      <ExpenseFeedFilters
-        categories={categories}
-        groups={groups}
-        values={filterValues}
-        onChange={handleFilterChange}
-      />
-      <ExpenseActiveFilterSummary
-        labels={activeFilterLabels}
-        onReset={() => setFilterValues(DEFAULT_FILTER_VALUES)}
-      />
-      <ExpenseFeedSummary filters={filters} search={debouncedSearch} />
-      <ExpenseFeedList filters={filters} search={debouncedSearch} />
-    </div>
+    <PageShell title={t('expense.feed.title')}>
+      <div className='flex flex-col gap-4 md:gap-6'>
+        <ExpenseFeedSummary filters={filters} search={debouncedSearch} />
+        <ExpenseFeedFilters
+          categories={categories}
+          groups={groups}
+          values={filterValues}
+          onChange={handleFilterChange}
+        />
+        <ExpenseActiveFilterSummary
+          labels={activeFilterLabels}
+          onReset={() => setFilterValues(DEFAULT_EXPENSE_FEED_FILTER_VALUES)}
+        />
+        <ExpenseFeedList filters={filters} search={debouncedSearch} />
+      </div>
+    </PageShell>
   )
 }

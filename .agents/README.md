@@ -33,11 +33,11 @@ Do not place loose markdown files directly inside `.agents/skills/`.
 
 ## Workflow Direction
 
-- Level 0 tasks stay small.
-- Level 1 tasks use a short inline plan.
+- Level 0 tasks stay tiny and may use only a direct-task note when they are truly one-shot mechanical work.
+- Level 1 tasks use an explicit short inline plan in-session; they do not need `writing-plans` or an ExecPlan by default.
 - Level 2 tasks usually need `writing-plans`.
 - Level 3 tasks require stricter planning, review, and verification.
-- Completion claims always require fresh verification evidence.
+- Completion claims always require an explicit verification-before-completion pass with fresh evidence.
 
 ## Ownership
 

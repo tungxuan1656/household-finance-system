@@ -40,19 +40,13 @@ function RecentExpenses({
 
   return (
     <DataState
-      action={
-        showError ? (
-          <Button onClick={onRetry}>
-            {t('app.overview.actions.retrySummary')}
-          </Button>
-        ) : undefined
-      }
       errorDescription={
         showError ? t('app.overview.recentExpenses.error') : undefined
       }
       isEmpty={isEmpty}
       isError={showError}
       isLoading={isLoading}
+      retryAction={onRetry}
       title={t('app.overview.recentExpenses.title')}>
       <Card>
         <CardHeader>

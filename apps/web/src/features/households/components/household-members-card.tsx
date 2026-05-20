@@ -100,21 +100,14 @@ export const HouseholdMembersCard = ({
       </CardHeader>
       <CardContent className='flex flex-col gap-3'>
         <DataState
-          action={
-            <Button
-              type='button'
-              variant='outline'
-              onClick={() =>
-                void householdActions.fetchHouseholdMembers(householdId)
-              }>
-              {t('app.households.actions.retry')}
-            </Button>
-          }
           emptyDescription={t('app.householdDetail.members.empty')}
           errorDescription={memberErrorMessage ?? undefined}
           isEmpty={!isLoading && !error && !members.length}
           isError={Boolean(memberErrorMessage && !members.length)}
           isLoading={isLoading && !members.length}
+          retryAction={() =>
+            householdActions.fetchHouseholdMembers(householdId)
+          }
           title={t('app.householdDetail.members.title')}>
           <div className='flex flex-col gap-3'>
             {memberErrorMessage ? (

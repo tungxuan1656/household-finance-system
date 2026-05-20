@@ -4,9 +4,9 @@ import { useParams, useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import { toast } from 'sonner'
 
+import { DataState } from '@/components/shared/data-state'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { PageShell } from '@/components/ui/page-shell'
 import {
   ExpenseEntryForm,
   filterExpenseEntryCategories,
@@ -73,68 +73,58 @@ export function EditExpensePage() {
       ),
     [householdGroups, personalGroups, selectedHouseholdId],
   )
-  if (isLoading)
-    return (
-      <Card>
-        <CardContent className='pt-6'>
-          <div className='flex flex-col gap-4'>
-            <Skeleton className='h-12 w-full' />
-            <Skeleton className='h-12 w-full' />
-            <Skeleton className='h-12 w-full' />
-            <Skeleton className='h-12 w-full' />
-            <Skeleton className='h-24 w-full' />
-          </div>
-        </CardContent>
-      </Card>
-    )
-  if (hasError || !expense || !id)
-    return (
-      <Card>
-        <CardContent className='flex items-center justify-between gap-2 pt-6'>
-          <p className='text-sm text-destructive'>{t('expense.loadError')}</p>
+
+  return (
+    <PageShell
+      showBack
+      title={t('expense.editTitle')}
+      onBack={() => router.back()}>
+      <DataState
+        customAction={
           <Button type='button' variant='outline' onClick={() => router.back()}>
             {t('app.householdDetail.actions.back')}
           </Button>
-        </CardContent>
-      </Card>
-    )
-
-  return (
-    <div className='flex flex-col gap-6'>
-      <header className='flex flex-col gap-1'>
-        <h1 className='font-heading text-2xl tracking-tight'>
-          {t('expense.editTitle')}
-        </h1>
-        <p className='text-sm text-muted-foreground'>
-          {t('expense.editDescription')}
-        </p>
-      </header>
-      <ExpenseEntryForm
-        amountDisplay={entryForm.amountDisplay}
-        categories={categories}
-        errors={entryForm.errors}
-        formId='edit-expense-form'
-        formState={entryForm.formState}
-        groups={groups}
-        households={households}
-        isSubmitting={entryForm.isSubmitting}
-        setField={entryForm.setField}
-        titlePlaceholder={entryForm.titlePlaceholder}
-        onSubmit={entryForm.handleSubmit}
-      />
-      <div className='flex justify-end gap-2'>
-        <Button type='button' variant='outline' onClick={() => router.back()}>
-          {t('common.actions.cancel')}
-        </Button>
-        <Button
-          disabled={entryForm.isSubmitting}
-          form='edit-expense-form'
-          type='submit'>
-          {entryForm.isSubmitting
-            ? t('expense.updating')
-            : t('expense.saveChanges')}
-        </Button>
-      </div>
-    </div>
+        }
+        errorDescription=''
+        errorTitle={t('expense.loadError')}
+        isError={hasError || !expense || !id}
+        isLoading={isLoading}
+        title={t('expense.editTitle')}>
+        <div className='flex flex-col gap-6'>
+          <p className='text-sm text-muted-foreground'>
+            {t('expense.editDescription')}
+          </p>
+          <ExpenseEntryForm
+            amountDisplay={entryForm.amountDisplay}
+            categories={categories}
+            errors={entryForm.errors}
+            formId='edit-expense-form'
+            formState={entryForm.formState}
+            groups={groups}
+            households={households}
+            isSubmitting={entryForm.isSubmitting}
+            setField={entryForm.setField}
+            titlePlaceholder={entryForm.titlePlaceholder}
+            onSubmit={entryForm.handleSubmit}
+          />
+          <div className='flex justify-end gap-2'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => router.back()}>
+              {t('common.actions.cancel')}
+            </Button>
+            <Button
+              disabled={entryForm.isSubmitting}
+              form='edit-expense-form'
+              type='submit'>
+              {entryForm.isSubmitting
+                ? t('expense.updating')
+                : t('expense.saveChanges')}
+            </Button>
+          </div>
+        </div>
+      </DataState>
+    </PageShell>
   )
 }

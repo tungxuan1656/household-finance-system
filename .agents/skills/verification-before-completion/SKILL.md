@@ -16,6 +16,8 @@ Before claiming a task is complete, fixed, passing, or ready:
 3. Read the actual result.
 4. Report the verified status, not the hoped-for status.
 
+Do this explicitly in the final handoff. Do not keep the verification pass implicit in your head.
+
 If verification cannot run, say so explicitly and mark the result as unverified.
 
 ## Verification Is Always Required for Completion Claims
@@ -66,6 +68,7 @@ Verification:
 - If checks passed, say what passed and cite the command.
 - If checks failed, say what failed and cite the command.
 - If checks did not run, say `implemented but unverified`.
+- For non-trivial tasks, present the final verification block explicitly instead of burying it in narrative prose.
 
 ## Forbidden Behavior
 

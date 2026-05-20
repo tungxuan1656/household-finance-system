@@ -1,0 +1,137 @@
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/lib/i18n/t', () => ({
+  t: (key: string) => key,
+}))
+
+vi.mock('@/lib/reference-data/labels', () => ({
+  getCategoryLabel: (key: string) => `category.${key}`,
+}))
+
+import type { ReferenceCategoryDTO } from '@/types/reference-data'
+import { localDateToTimestamp } from '@/utils/datetime/helpers'
+
+import {
+  buildExpenseFeedActiveFilterLabels,
+  buildExpenseFeedFilters,
+  DEFAULT_EXPENSE_FEED_FILTER_VALUES,
+  getExpenseFeedCategories,
+  mergeExpenseFeedGroups,
+} from './expense-feed-page-helpers'
+
+describe('expense feed page helpers', () => {
+  it('keeps only expense categories for the feed filters', () => {
+    const categories: ReferenceCategoryDTO[] = [
+      { key: 'food', kind: 'expense', iconUrl: '', color: '#000000' },
+      { key: 'money-in', kind: 'income', iconUrl: '', color: '#ffffff' },
+    ]
+
+    expect(getExpenseFeedCategories(categories)).toEqual([categories[0]])
+  })
+
+  it('deduplicates personal and household groups by id', () => {
+    const sharedGroup = {
+      id: 'group-shared',
+      name: 'Trip',
+      description: null,
+      status: 'active' as const,
+      startDate: null,
+      endDate: null,
+      eventBudgetMinor: null,
+      totalSpendMinor: 0,
+      householdId: null,
+      createdByUserId: 'user-1',
+      createdAt: 1,
+      updatedAt: 1,
+    }
+
+    expect(
+      mergeExpenseFeedGroups(
+        [sharedGroup],
+        [
+          {
+            ...sharedGroup,
+            name: 'Trip household copy',
+          },
+        ],
+      ),
+    ).toEqual([
+      {
+        ...sharedGroup,
+        name: 'Trip household copy',
+      },
+    ])
+  })
+
+  it('builds API filters from page filter values', () => {
+    expect(
+      buildExpenseFeedFilters({
+        values: {
+          ...DEFAULT_EXPENSE_FEED_FILTER_VALUES,
+          amountMin: '12',
+          amountMax: '20',
+          categoryKey: 'food',
+          dateFrom: '2026-05-20',
+          dateTo: '2026-05-21',
+          groupId: 'group-1',
+          visibility: 'private',
+        },
+        debouncedAmountMin: '12',
+        debouncedAmountMax: '20',
+      }),
+    ).toEqual({
+      amount_max: 20,
+      amount_min: 12,
+      category_key: 'food',
+      date_from: localDateToTimestamp('2026-05-20'),
+      date_to: localDateToTimestamp('2026-05-21') + 86399999,
+      group_id: 'group-1',
+      sort: 'occurred_at_desc',
+      visibility: 'private',
+    })
+  })
+
+  it('builds translated active filter labels from selected values', () => {
+    expect(
+      buildExpenseFeedActiveFilterLabels({
+        values: {
+          ...DEFAULT_EXPENSE_FEED_FILTER_VALUES,
+          amountMin: '12',
+          dateFrom: '2026-05-20',
+          groupId: 'group-1',
+          visibility: 'household',
+          sort: 'amount_desc',
+        },
+        groups: [
+          {
+            id: 'group-1',
+            name: 'Weekend trip',
+            description: null,
+            status: 'active',
+            startDate: null,
+            endDate: null,
+            eventBudgetMinor: null,
+            totalSpendMinor: 0,
+            householdId: null,
+            createdByUserId: 'user-1',
+            createdAt: 1,
+            updatedAt: 1,
+          },
+        ],
+        selectedCategory: {
+          key: 'food',
+          kind: 'expense',
+          iconUrl: '',
+          color: '#000000',
+        },
+      }),
+    ).toEqual([
+      'expense.visibility.household',
+      'category.food',
+      'expense.feed.filters.sortHighestAmount',
+      'expense.feed.filters.dateFrom: 2026-05-20',
+      'expense.feed.filters.amountMin: 12',
+      'Weekend trip',
+    ])
+  })
+})

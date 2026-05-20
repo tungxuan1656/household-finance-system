@@ -25,23 +25,19 @@ export function ExpenseFeedSummary({
 
   return (
     <Card size='sm'>
-      <CardContent className='flex items-center justify-between gap-4'>
-        <div className='flex flex-col gap-1'>
-          <span className='text-sm text-muted-foreground'>
-            {t('groups.summary.expenseCount')}
-          </span>
-          <span className='font-medium'>
-            {isLoading ? '—' : (data?.expenseCount ?? 0).toString()}
-          </span>
+      <CardContent className='flex flex-row items-center justify-between gap-2'>
+        <div className='font-medium text-foreground'>
+          {t('groups.summary.totalSpend')}
         </div>
-        <div className='flex flex-col items-end gap-1'>
-          <span className='text-sm text-muted-foreground'>
-            {t('groups.summary.totalSpend')}
-          </span>
-          <span className='font-medium'>
+        <div>
+          <span className='font-mono text-xl font-medium'>
             {isLoading
               ? '—'
               : formatCurrency(data?.totalSpendMinor ?? 0, currencyCode)}
+          </span>
+          <span className='mx-2'>{' / '}</span>
+          <span className='font-medium'>
+            {isLoading ? '—' : (data?.expenseCount ?? 0).toString()}
           </span>
         </div>
       </CardContent>

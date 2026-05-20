@@ -22,6 +22,9 @@ A task that appears large may still avoid formal brainstorming if the direction 
 Use for trivial, mechanical, one-shot work.
 
 Examples:
+- create commit
+- create PR
+- one obvious text replacement
 - typo fix
 - copy-only change
 - one-line config update
@@ -31,6 +34,7 @@ Examples:
 Required:
 - use `AGENTS.md` baseline context
 - read only directly relevant file or leaf doc
+- state at least a tiny direct-task note so the action is explicit
 - make the change
 - run targeted verification when possible
 - report evidence
@@ -45,15 +49,19 @@ Not required:
 
 Use for small scoped implementation.
 
+Default here when the task has multiple meaningful steps even if the code change is small. If the work looks like inspect -> compare pattern -> edit -> verify, it is Level 1, not a plan-less direct task.
+
 Examples:
 - one component update
 - one endpoint fix
 - one hook or service bug
 - small focused test addition
+- small refactor that touches a few files but stays in one bounded area
 
 Required:
 - read the relevant leaf reference or product rule
-- make a short inline plan
+- make and state a short inline plan explicitly
+- keep that plan inline in-session; do not create an ExecPlan unless the work escalates beyond Level 1
 - update docs only if behavior changes
 - run targeted verification
 

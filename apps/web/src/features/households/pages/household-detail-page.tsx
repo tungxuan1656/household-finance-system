@@ -6,7 +6,6 @@ import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
 import { DataState } from '@/components/shared/data-state'
-import { Button } from '@/components/ui/button'
 import { PageShell } from '@/components/ui/page-shell'
 import type { UpdateHouseholdSettingsFormValues } from '@/features/households/lib/forms/household.schema'
 import { PATHS } from '@/lib/constants/paths'
@@ -77,17 +76,10 @@ function HouseholdDetailPage() {
   return (
     <PageShell title={t('app.householdDetail.title')}>
       <DataState
-        action={
-          <Button
-            type='button'
-            variant='outline'
-            onClick={() => void householdActions.fetchHouseholdById(id)}>
-            {t('app.householdDetail.actions.retry')}
-          </Button>
-        }
         errorDescription={error ?? undefined}
         isError={Boolean(!isLoading && error && !currentHousehold)}
         isLoading={isLoading && !currentHousehold}
+        retryAction={() => void householdActions.fetchHouseholdById(id)}
         title={t('app.householdDetail.title')}>
         {currentHousehold ? (
           <div className='grid gap-4'>

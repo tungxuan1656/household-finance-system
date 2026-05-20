@@ -9,6 +9,42 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-20 — Corrected expense detail DataState integration
+
+- Who: Orchestrator + User
+- Summary: Reworked `apps/web/src/features/expenses/pages/expense-detail-page.tsx` so the page now integrates with one shared `DataState` instance fed by derived loading/empty/error/action props, instead of rendering separate `DataState` components per branch. The success layout and existing edit/delete flow remain unchanged, while not-found/forbidden/generic-error actions are computed centrally before render.
+- Files changed: Expense detail page orchestration, feat-065 evidence wording, and this progress log.
+- Verification: `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with no affected processes.
+- Blockers: none.
+- Next steps: Review the expense detail states in browser and commit if desired.
+
+## 2026-05-20 — Unified DataState retry/custom action API
+
+- Who: Orchestrator
+- Summary: Refactored the shared `DataState` contract to use `retryAction`, `showRetryAction`, and `customAction` instead of the old generic action slot. The shared component now renders the default outline retry button automatically when a retry callback exists, suppresses that retry affordance when a custom action component is provided, and the migration was applied across expense, household, and overview surfaces. The expense detail page now routes its async states through the shared `DataState` pattern while keeping the existing success actions and content layout.
+- Files changed: Shared state component API, expense detail/edit/feed surfaces, household list/detail/member surfaces, overview widgets, feat-065 evidence, and this progress log.
+- Verification: `./init.sh` passed with `Done!` after fixing the initial retry callback type mismatch.
+- Blockers: none.
+- Next steps: Review the visual state changes for overview/expense/household pages in browser and commit if desired.
+
+## 2026-05-20 — Clarified planning defaults for non-trivial tasks
+
+- Who: Orchestrator + User
+- Summary: Added a follow-up workflow clarification so the harness no longer leaves small-but-real implementation tasks in a gray area. The repo contract now says every task needs a planning mode, keeps tiny one-shot exceptions narrow, requires explicit inline plans for normal Level 1 multi-step work, and makes verification-before-completion explicit before done/ready claims.
+- Files changed: Root agent contract, plan router, project-owned workflow skills, feat-066 harness evidence, and this progress log.
+- Verification: `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 0 affected processes.
+- Blockers: none.
+- Next steps: Apply the clarified workflow in future sessions; review diff and commit if desired.
+
+## 2026-05-20 — Refactored expense feed and detail page orchestration
+
+- Who: Orchestrator
+- Summary: Refactored the two main expense route surfaces to align with the frontend architecture docs. The expense feed page now uses `PageShell`, keeps page-level composition leaner, and delegates category/group/filter derivation to a new pure helper module with focused Vitest coverage. The expense detail page now keeps all loading/error/forbidden/not-found/success states inside one `PageShell`, reuses shared fallback building blocks, and preserves existing edit/delete behavior while reducing repeated markup.
+- Files changed: Expense feed/detail page orchestration, new pure helper + focused helper test, new feat-065 harness record, feature index, and this progress log.
+- Verification: `pnpm --filter web exec vitest run src/features/expenses/pages/expense-feed-page-helpers.test.ts` passed with 1 file / 4 tests; final `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 26 changed symbols, 4 changed files, and 0 affected processes.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
+
 ## 2026-05-20 — Clarified initial-thinking versus brainstorming in skill routing
 
 - Who: Orchestrator + User

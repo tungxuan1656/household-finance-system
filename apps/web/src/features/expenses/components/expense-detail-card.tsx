@@ -3,8 +3,10 @@
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
-import { getCategoryLabel, getSourceLabel } from '@/lib/reference-data/labels'
+import { getCategoryPresentation } from '@/lib/reference-data/category-presentation'
+import { getSourceLabel } from '@/lib/reference-data/labels'
 import { formatCurrency } from '@/utils/currency/format'
 import { DATE_TIME_FORMATS } from '@/utils/datetime/constants'
 import { formatDate } from '@/utils/datetime/format'
@@ -31,12 +33,17 @@ function DetailRow({
 }
 
 export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
+  const { data: referenceCategories } = useReferenceCategoriesQuery()
   const visibilityBadgeVariant =
     expense.visibility === 'private' ? 'outline' : 'secondary'
   const visibilityBadgeLabel =
     expense.visibility === 'private'
       ? t('expense.visibilityBadge.private')
       : t('expense.visibilityBadge.household')
+  const category = getCategoryPresentation(
+    expense.categoryKey,
+    referenceCategories?.items,
+  )
 
   return (
     <Card>
@@ -51,10 +58,28 @@ export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
           {/* Core financial data */}
           <div className='flex flex-col gap-2'>
             <DetailRow label={t('expense.detail.amount')}>
-              {formatCurrency(expense.amountMinor, expense.currencyCode)}
+              <span className='font-mono text-2xl font-semibold tabular-nums'>
+                {formatCurrency(expense.amountMinor, expense.currencyCode)}
+              </span>
             </DetailRow>
             <DetailRow label={t('expense.detail.category')}>
-              {getCategoryLabel(expense.categoryKey)}
+              <span className='inline-flex items-center gap-2'>
+                {category.iconUrl ? (
+                  <Badge
+                    className='size-6 p-1'
+                    style={{
+                      backgroundColor: (category.color ?? '#000000') + '1A',
+                    }}
+                    variant='secondary'>
+                    <img
+                      alt={category.label}
+                      className='size-4'
+                      src={category.iconUrl}
+                    />
+                  </Badge>
+                ) : null}
+                <span>{category.label}</span>
+              </span>
             </DetailRow>
             <DetailRow label={t('expense.detail.source')}>
               {getSourceLabel(expense.sourceKey)}
@@ -77,22 +102,14 @@ export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
 
           <Separator />
 
-          {/* People & household */}
-          <div className='flex flex-col gap-2'>
-            <DetailRow label={t('expense.detail.payer')}>
-              {expense.payerUserId}
-            </DetailRow>
-            <DetailRow label={t('expense.detail.creator')}>
-              {expense.createdByUserId}
-            </DetailRow>
-            {expense.householdId && (
+          {expense.householdId && (
+            <>
               <DetailRow label={t('expense.detail.household')}>
                 {expense.householdId}
               </DetailRow>
-            )}
-          </div>
-
-          <Separator />
+              <Separator />
+            </>
+          )}
 
           {/* Timestamps */}
           <div className='flex flex-col gap-2'>

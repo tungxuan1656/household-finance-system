@@ -48,6 +48,7 @@ It decides whether formal brainstorming is needed.
 
 - Always check whether a skill applies.
 - Use the minimum sufficient ceremony level.
+- Every task needs a visible planning mode: direct-task note, inline plan, or ExecPlan.
 - Do not force Level 0 work through unnecessary workflow ceremony.
 - Do not skip verification evidence before claiming completion.
 - Escalate to a higher ceremony level if scope or risk grows.
@@ -80,10 +81,14 @@ Avoid broad-folder reading by default.
 Use the lightest process that can safely satisfy the request.
 
 Recommended default:
-- Level 0: direct task with initial thinking and verification evidence
-- Level 1: small scoped change with brief inline plan and targeted verification
+- Level 0: tiny direct task note + verification evidence
+- Level 1: explicit inline plan + targeted verification
 - Level 2: planned feature with ExecPlan or existing plan update
 - Level 3: high-risk change with explicit risk review, relevant domain reviews, and stronger verification
+
+Only truly one-shot mechanical tasks should stay at the direct-task-note level.
+If the task has multiple meaningful steps such as inspect -> compare patterns -> edit -> verify, default to an explicit inline plan even when the work still stays Level 1.
+That inline plan should be stated directly in-session; do not escalate normal Level 1 work into `writing-plans` or an ExecPlan unless scope or risk expands.
 
 Do not invoke workflow skills just because they exist.
 
@@ -92,7 +97,7 @@ Do invoke them when the initial triage shows they are needed.
 ## Workflow Selection
 
 - Level 0: usually act directly; use a domain skill only if it clearly helps.
-- Level 1: short inline plan; optionally use `test-driven-development`, `systematic-debugging`, or one domain skill.
+- Level 1: state the inline plan explicitly; optionally use `test-driven-development`, `systematic-debugging`, or one domain skill.
 - Level 2: usually use `writing-plans`; use `brainstorming` only if requirements or direction are still ambiguous.
 - Level 3: require plan, stronger review, stronger verification, and relevant domain skills.
 
@@ -139,8 +144,8 @@ Skill decision:
 
 ## Artifact Expectations
 
-- Level 0: usually no plan artifact; update docs or harness only if touched by the task.
-- Level 1: short inline plan is enough unless scope expands.
+- Level 0: tiny direct-task note is enough; update docs or harness only if touched by the task.
+- Level 1: short inline plan must be stated explicitly unless the task collapses to a true one-shot action.
 - Level 2/3: update required harness artifacts and progress records.
 
 ## Forbidden Behavior

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { DataState } from '@/components/shared/data-state'
-import { Button } from '@/components/ui/button'
 import { PageShell } from '@/components/ui/page-shell'
 import type { CreateHouseholdFormValues } from '@/features/households/lib/forms/household.schema'
 import { t } from '@/lib/i18n/t'
@@ -68,23 +67,18 @@ function HouseholdsPage() {
   return (
     <PageShell title={t('app.households.title')}>
       <DataState
-        action={
-          <Button
-            size='sm'
-            variant='outline'
-            onClick={() => {
-              setIsInitialLoading(true)
-
-              void loadHouseholds().finally(() => {
-                setIsInitialLoading(false)
-              })
-            }}>
-            {t('app.households.actions.retry')}
-          </Button>
-        }
         errorDescription={listLoadError ?? undefined}
         isError={Boolean(shouldShowBlockingError)}
         isLoading={shouldShowLoadingState}
+        retryAction={async () => {
+          setIsInitialLoading(true)
+
+          try {
+            await loadHouseholds()
+          } finally {
+            setIsInitialLoading(false)
+          }
+        }}
         title={t('app.households.title')}>
         <HouseholdsListSection
           households={households}

@@ -18,7 +18,7 @@ export function ExpenseActiveFilterSummary({
   }
 
   return (
-    <div className='flex flex-col gap-3 rounded-lg border border-border bg-card px-4 py-3 sm:flex-row sm:items-start sm:justify-between'>
+    <div className='flex flex-col gap-3 rounded-2xl border border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between'>
       <div className='flex flex-col gap-2'>
         <p className='text-sm font-medium'>
           {t('expense.feed.filters.activeTitle')}
@@ -36,8 +36,8 @@ export function ExpenseActiveFilterSummary({
       </div>
       <Button
         className='w-full sm:w-auto'
-        size='xl'
-        variant='outline'
+        size='sm'
+        variant='secondary'
         onClick={onReset}>
         {t('expense.feed.filters.reset')}
       </Button>
