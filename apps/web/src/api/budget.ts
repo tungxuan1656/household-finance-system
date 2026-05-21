@@ -3,6 +3,7 @@ import { API_ENDPOINTS } from '@/api/endpoints'
 import type {
   BudgetDTO,
   CreateBudgetRequest,
+  DeleteBudgetResponse,
   GetBudgetStatusResponse,
   ListBudgetsResponse,
   UpdateBudgetMutationInput,
@@ -40,6 +41,14 @@ export const getBudget = async (id: string) => {
 export const getBudgetStatus = async (id: string) => {
   const response = await client.get<GetBudgetStatusResponse>(
     API_ENDPOINTS.budgets.status(id),
+  )
+
+  return response.data
+}
+
+export const deleteBudget = async (id: string) => {
+  const response = await client.delete<DeleteBudgetResponse>(
+    API_ENDPOINTS.budgets.detail(id),
   )
 
   return response.data

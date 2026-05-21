@@ -17,6 +17,7 @@ import {
   useBudgetListQuery,
   useBudgetStatusQuery,
   useCreateBudgetMutation,
+  useDeleteBudgetMutation,
   useUpdateBudgetMutation,
 } from '@/features/budgets/hooks/use-budgets'
 import type {
@@ -33,9 +34,11 @@ function BudgetsPage() {
   const selectedHouseholdId = currentHousehold?.id ?? households[0]?.id
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [deletingBudgetId, setDeletingBudgetId] = useState<string | null>(null)
   const [editingBudget, setEditingBudget] = useState<BudgetDTO | null>(null)
 
   const createMutation = useCreateBudgetMutation()
+  const deleteMutation = useDeleteBudgetMutation()
   const updateMutation = useUpdateBudgetMutation()
   const { data: budgetsData } = useBudgetListQuery(selectedHouseholdId)
   const latestBudget = budgetsData?.items.reduce<BudgetDTO | null>(
@@ -89,6 +92,26 @@ function BudgetsPage() {
     }
   }
 
+  const handleDelete = async (budget: BudgetDTO) => {
+    try {
+      setDeletingBudgetId(budget.id)
+      await deleteMutation.mutateAsync(budget.id)
+
+      if (editingBudget?.id === budget.id) {
+        setEditingBudget(null)
+      }
+
+      toast.success(t('budgets.feedback.deleteSuccess'))
+    } catch {
+      toast.error(t('budgets.feedback.deleteFailed'))
+      throw new Error('Delete budget failed')
+    } finally {
+      setDeletingBudgetId((currentId) =>
+        currentId === budget.id ? null : currentId,
+      )
+    }
+  }
+
   return (
     <PageShell title={t('budgets.title')}>
       <div className='flex flex-col gap-4 md:gap-6'>
@@ -127,7 +150,9 @@ function BudgetsPage() {
               />
 
               <BudgetList
+                deletingBudgetId={deletingBudgetId}
                 householdId={selectedHouseholdId}
+                onDelete={handleDelete}
                 onEdit={setEditingBudget}
               />
             </>

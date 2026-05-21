@@ -15,6 +15,7 @@ Allow households to define and track budgets (monthly and per-category) and comp
 3. Users can set budget start day, currency, and optionally recurring monthly rules.
 4. When expenses are added/edited, budget aggregates update in near real-time; warnings appear when thresholds are crossed.
 5. Admins can adjust budget mid-period; change history is recorded.
+6. Admins can delete an obsolete budget; deleted budgets no longer appear in active budget lists or dashboard summaries.
 
 ## Acceptance Criteria
 
@@ -22,6 +23,7 @@ Allow households to define and track budgets (monthly and per-category) and comp
 - Dashboard shows Planned vs Actual and remaining budget for the period.
 - Threshold notifications (e.g., 80%, 100%) are tracked and can be surfaced via UI/notification system.
 - Budget changes are auditable and reflected in subsequent calculations.
+- Deleted budgets disappear from active views without exposing them to members who can no longer access them.
 
 ## Failure States
 

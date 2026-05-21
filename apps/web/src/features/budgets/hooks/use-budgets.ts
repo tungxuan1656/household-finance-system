@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import {
   createBudget,
+  deleteBudget,
   getBudget,
   getBudgetStatus,
   listBudgets,
@@ -10,6 +11,7 @@ import {
 import type {
   BudgetDTO,
   CreateBudgetRequest,
+  DeleteBudgetResponse,
   GetBudgetStatusResponse,
   ListBudgetsResponse,
   UpdateBudgetMutationInput,
@@ -42,6 +44,17 @@ export const useUpdateBudgetMutation = () => {
 
   return useMutation<BudgetDTO, Error, UpdateBudgetMutationInput>({
     mutationFn: updateBudget,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: BUDGET_KEYS.all })
+    },
+  })
+}
+
+export const useDeleteBudgetMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation<DeleteBudgetResponse, Error, string>({
+    mutationFn: deleteBudget,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: BUDGET_KEYS.all })
     },

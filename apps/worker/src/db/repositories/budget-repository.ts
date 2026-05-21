@@ -271,6 +271,44 @@ export const updateBudget = async (
   return true
 }
 
+export const softDeleteBudget = async (
+  db: D1Database,
+  budgetId: string,
+): Promise<boolean> => {
+  const now = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE budgets
+          SET archived_at = ?,
+              updated_at = ?
+        WHERE id = ?
+          AND archived_at IS NULL`,
+    )
+    .bind(now, now, budgetId)
+    .run()
+
+  return (result.meta.changes ?? 0) > 0
+}
+
+export const restoreBudget = async (
+  db: D1Database,
+  budgetId: string,
+): Promise<boolean> => {
+  const now = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE budgets
+          SET archived_at = NULL,
+              updated_at = ?
+        WHERE id = ?
+          AND archived_at IS NOT NULL`,
+    )
+    .bind(now, budgetId)
+    .run()
+
+  return (result.meta.changes ?? 0) > 0
+}
+
 export const deleteBudgetLimits = async (
   db: D1Database,
   budgetId: string,

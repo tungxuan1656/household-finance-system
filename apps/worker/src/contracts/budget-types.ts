@@ -64,6 +64,9 @@ export interface BudgetStatusDTO {
 
 export type CreateBudgetResponse = BudgetDTO
 export type UpdateBudgetResponse = BudgetDTO
+export interface DeleteBudgetResponse {
+  deleted: true
+}
 export type GetBudgetStatusResponse = BudgetStatusDTO
 
 export interface ListBudgetsResponse {

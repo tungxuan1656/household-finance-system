@@ -11,9 +11,17 @@ import { BudgetCard } from './budget-card'
 type BudgetListProps = {
   householdId: string
   period?: string
+  deletingBudgetId?: string | null
+  onDelete: (budget: BudgetDTO) => Promise<void>
   onEdit: (budget: BudgetDTO) => void
 }
-function BudgetList({ householdId, period, onEdit }: BudgetListProps) {
+function BudgetList({
+  householdId,
+  period,
+  deletingBudgetId,
+  onDelete,
+  onEdit,
+}: BudgetListProps) {
   const { data, isLoading, isError, refetch } = useBudgetListQuery(
     householdId,
     period,
@@ -46,6 +54,8 @@ function BudgetList({ householdId, period, onEdit }: BudgetListProps) {
             <BudgetCard
               key={budget.id}
               budget={budget}
+              isDeleting={deletingBudgetId === budget.id}
+              onDelete={() => onDelete(budget)}
               onEdit={() => onEdit(budget)}
             />
           ))}

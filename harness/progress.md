@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-21 — Added budget delete lifecycle across worker and web
+
+- Who: Orchestrator + code-reviewer
+- Summary: Added admin-only budget deletion end to end. Worker now exposes `DELETE /api/v1/budgets/:id` through a dedicated handler with path validation, household membership permission checks, soft delete via `archived_at`, audit logging, and rollback on audit failure. Web budget cards now show a destructive confirm-dialog action that calls the new mutation, refreshes budget queries, closes the edit dialog if the deleted budget was being edited, and shows localized success/failure toast feedback. The budget product spec and harness records now document that deleted budgets disappear from active budget lists and current dashboard views.
+- Files changed: Budget worker contract/repository/route/handler/test layers, budget web API/hook/types/page/list/card orchestration, Vietnamese locale copy, budget product spec, new feat-068 harness record, feature index, and this progress log.
+- Verification: TDD red step confirmed the new delete tests failed before implementation; targeted `pnpm --filter worker exec vitest run test/integration/budgets-read-update.spec.ts` passed with 13/13 tests after implementation; `pnpm --filter worker lint`, `pnpm --filter worker typecheck`, `pnpm --filter web lint`, and `pnpm --filter web typecheck` all passed; read-only code review returned APPROVE with no blocking findings; final `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned MEDIUM risk with 30 changed symbols across 14 files and 3 affected helper processes (`SoftDeleteBudget`, `RestoreBudget`, `DeleteBudgetLimits`).
+- Blockers: none.
+- Next steps: Optional follow-up only: add one extra regression test proving deleted budgets stay hidden from list queries, then review diff and commit if desired.
+
 ## 2026-05-21 — Completed protected-page PageShell/DataState normalization
 
 - Who: Orchestrator + code-reviewer
