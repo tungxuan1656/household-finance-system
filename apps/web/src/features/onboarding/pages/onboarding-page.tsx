@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { PageShell } from '@/components/ui/page-shell'
 import {
   type CreateHouseholdFormValues,
   createHouseholdSchema,
@@ -125,57 +126,58 @@ function OnboardingPage() {
   }
 
   if (stage === 'complete') {
-    return <OnboardingCompleteCard activeHouseholdId={activeHouseholdId} />
+    return (
+      <PageShell title={t('app.onboarding.title')}>
+        <OnboardingCompleteCard activeHouseholdId={activeHouseholdId} />
+      </PageShell>
+    )
   }
 
   return (
-    <div className='mx-auto flex w-full max-w-2xl flex-col gap-4'>
-      <header className='mb-6 space-y-2'>
-        <h1 className='font-heading text-2xl tracking-tight'>
-          {t('app.onboarding.title')}
-        </h1>
+    <PageShell title={t('app.onboarding.title')}>
+      <div className='mx-auto flex w-full max-w-2xl flex-col gap-4'>
         <p className='text-sm text-muted-foreground'>
           {t('app.onboarding.description')}
         </p>
-      </header>
 
-      <div className='flex gap-3'>
-        <Button
-          type='button'
-          variant={mode === 'create' ? 'default' : 'outline'}
-          onClick={() => setMode('create')}>
-          {t('app.onboarding.actions.createPath')}
-        </Button>
-        <Button
-          type='button'
-          variant={mode === 'join' ? 'default' : 'outline'}
-          onClick={() => setMode('join')}>
-          {t('app.onboarding.actions.joinPath')}
-        </Button>
+        <div className='flex gap-3'>
+          <Button
+            type='button'
+            variant={mode === 'create' ? 'default' : 'outline'}
+            onClick={() => setMode('create')}>
+            {t('app.onboarding.actions.createPath')}
+          </Button>
+          <Button
+            type='button'
+            variant={mode === 'join' ? 'default' : 'outline'}
+            onClick={() => setMode('join')}>
+            {t('app.onboarding.actions.joinPath')}
+          </Button>
+        </div>
+
+        {mode === 'create' ? (
+          <CreateHouseholdForm
+            form={form}
+            isLoading={isLoading}
+            onSubmit={onSubmit}
+          />
+        ) : (
+          <JoinHouseholdCard
+            invitePreview={invitePreview}
+            inviteToken={inviteToken}
+            isAcceptingInvite={isAcceptingInvite}
+            isPreviewLoading={isPreviewLoading}
+            previewToken={previewToken}
+            onAcceptInvite={() => void handleAcceptInvite()}
+            onInviteTokenChange={(value) => {
+              setInviteToken(value)
+              setInvitePreview(null)
+            }}
+            onPreviewInvite={() => void handlePreviewInvite()}
+          />
+        )}
       </div>
-
-      {mode === 'create' ? (
-        <CreateHouseholdForm
-          form={form}
-          isLoading={isLoading}
-          onSubmit={onSubmit}
-        />
-      ) : (
-        <JoinHouseholdCard
-          invitePreview={invitePreview}
-          inviteToken={inviteToken}
-          isAcceptingInvite={isAcceptingInvite}
-          isPreviewLoading={isPreviewLoading}
-          previewToken={previewToken}
-          onAcceptInvite={() => void handleAcceptInvite()}
-          onInviteTokenChange={(value) => {
-            setInviteToken(value)
-            setInvitePreview(null)
-          }}
-          onPreviewInvite={() => void handlePreviewInvite()}
-        />
-      )}
-    </div>
+    </PageShell>
   )
 }
 

@@ -49,10 +49,10 @@ Refactor eight protected web route surfaces so they follow the canonical `PageSh
 
 - [x] 2026-05-21: Audited `docs/FRONTEND.md`, frontend reference docs, and the eight target pages plus their key child components.
 - [x] 2026-05-21: Ran GitNexus upstream impact checks for `SettingsPage`, `ExpenseTrashPage`, `GroupDetailPage`, `BudgetsPage`, `GroupsPage`, `InsightsPage`, `OnboardingPage`, and `OverviewPage`; all returned LOW risk with 0 affected processes.
-- [ ] 2026-05-21: Execute Batch 1 (current step) — normalize `settings-page.tsx`, `expense-trash-page.tsx`, and `overview-page.tsx`.
-- [ ] 2026-05-21: Execute Batch 2 — normalize `budgets-page.tsx`, `groups-page.tsx`, `group-detail-page.tsx`, and the touched budget/group list widgets.
-- [ ] 2026-05-21: Execute Batch 3 — normalize `insights-page.tsx`, `onboarding-page.tsx`, and the touched `InsightsHeader` composition.
-- [ ] 2026-05-21: Run final verification, update harness evidence, and record `gitnexus_detect_changes(scope: all)` before any done/ready claim.
+- [x] 2026-05-21: Executed Batch 1 — normalized `settings-page.tsx`, `expense-trash-page.tsx`, and `overview-page.tsx` around the planned `PageShell`/`DataState` rules.
+- [x] 2026-05-21: Executed Batch 2 — normalized `budgets-page.tsx`, `groups-page.tsx`, `group-detail-page.tsx`, and the touched budget/group list widgets.
+- [x] 2026-05-21: Executed Batch 3 — normalized `insights-page.tsx`, `onboarding-page.tsx`, and the touched `InsightsHeader` composition.
+- [x] 2026-05-21: Ran final verification, addressed code-review feedback on group-detail back navigation, updated harness evidence, and recorded `gitnexus_detect_changes(scope: all)` before the final handoff.
 
 ## Surprises & Discoveries
 
@@ -74,8 +74,8 @@ Refactor eight protected web route surfaces so they follow the canonical `PageSh
 
 ## Outcomes & Retrospective
 
-- Plan created from completed research and impact analysis; no implementation edits have been made yet.
-- Expected end state: all eight protected pages follow one route-shell convention, duplicated page headers/padding are removed, and touched async states use either `DataState` or an explicitly justified custom layout.
+- Implemented the protected-page normalization across all three batches without changing backend contracts, hooks, or store semantics.
+- End state reached: all eight protected pages now follow one route-shell convention, duplicated page headers/padding are removed, and touched async states use either `DataState` or an explicitly justified custom layout.
 
 ## Context and Orientation
 

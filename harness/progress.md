@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-21 — Completed protected-page PageShell/DataState normalization
+
+- Who: Orchestrator + code-reviewer
+- Summary: Finished feat-067 by normalizing the remaining protected route pages around the repo-standard `PageShell` and `DataState` rules. Settings and expense trash now keep their blocking states inside one shell; home no longer duplicates shell padding in its empty branch; budgets and groups moved to shell-owned titles with normalized async-state widgets; group detail now uses shell-owned back navigation and blocking state handling; insights moved title ownership to `PageShell` while keeping specialized chart/loading layouts; onboarding setup and completion now both render inside the shared shell.
+- Files changed: Protected frontend route orchestrators for settings, expense trash, home, budgets, groups, group detail, insights, and onboarding; touched budget/group/insights child components; plan/index/harness tracking files; and this progress log.
+- Verification: `./init.sh lint` OK; `./init.sh typecheck` OK; `./init.sh test` OK; final `./init.sh` passed with `Done!`; code review requested and the required group-detail mobile back-navigation fix was applied; final `gitnexus_detect_changes(scope: all)` returned MEDIUM risk with 26 changed symbols across 18 files and 1 affected onboarding process (`OnboardingPage -> NormalizeInviteToken`).
+- Blockers: none.
+- Next steps: Perform manual browser smoke checks for the touched protected routes if desired, then review diff and commit if desired.
+
 ## 2026-05-21 — Wrote protected-page PageShell/DataState ExecPlan
 
 - Who: Orchestrator + User

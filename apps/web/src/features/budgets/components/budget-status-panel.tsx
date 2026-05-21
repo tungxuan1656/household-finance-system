@@ -1,14 +1,6 @@
 'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty'
-import { Skeleton } from '@/components/ui/skeleton'
+import { DataState } from '@/components/shared/data-state'
 import type {
   BudgetStatusDTO,
   BudgetStatusErrorMessage,
@@ -21,49 +13,30 @@ type BudgetStatusPanelProps = {
   status?: BudgetStatusDTO | null
   isLoading?: boolean
   errorMessage?: BudgetStatusErrorMessage | null
+  onRetry?: () => unknown
 }
 function BudgetStatusPanel({
   status,
   isLoading,
   errorMessage,
+  onRetry,
 }: BudgetStatusPanelProps) {
-  if (isLoading)
-    return (
-      <Card>
-        <CardContent className='pt-6'>
-          <Skeleton className='h-6 w-40' />
-          <Skeleton className='mt-4 h-24 w-full' />
-        </CardContent>
-      </Card>
-    )
-  if (errorMessage)
-    return (
-      <Empty className='border'>
-        <EmptyHeader>
-          <EmptyMedia variant='icon'>
-            <span aria-hidden='true'>⚠️</span>
-          </EmptyMedia>
-          <EmptyTitle>{t('budgets.status.error.title')}</EmptyTitle>
-          <EmptyDescription>{t(errorMessage)}</EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    )
-  if (!status)
-    return (
-      <Empty className='border'>
-        <EmptyHeader>
-          <EmptyMedia variant='icon'>
-            <span aria-hidden='true'>📊</span>
-          </EmptyMedia>
-          <EmptyTitle>{t('budgets.status.empty.title')}</EmptyTitle>
-          <EmptyDescription>
-            {t('budgets.status.empty.description')}
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    )
+  const isEmpty = !isLoading && !errorMessage && !status
 
-  return <BudgetStatusCard status={status} />
+  return (
+    <DataState
+      emptyDescription={t('budgets.status.empty.description')}
+      emptyTitle={t('budgets.status.empty.title')}
+      errorDescription={errorMessage ? t(errorMessage) : ''}
+      errorTitle={t('budgets.status.error.title')}
+      isEmpty={isEmpty}
+      isError={Boolean(errorMessage)}
+      isLoading={isLoading}
+      retryAction={errorMessage ? onRetry : undefined}
+      title={t('budgets.status.title')}>
+      {status ? <BudgetStatusCard status={status} /> : null}
+    </DataState>
+  )
 }
 
 export { BudgetStatusPanel }

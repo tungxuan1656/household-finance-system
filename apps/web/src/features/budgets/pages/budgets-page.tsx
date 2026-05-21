@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
+import { DataState } from '@/components/shared/data-state'
+import { PageShell } from '@/components/ui/page-shell'
 import {
   BudgetList,
   BudgetStatusPanel,
@@ -45,6 +47,7 @@ function BudgetsPage() {
     data: budgetStatus,
     isLoading: isStatusLoading,
     error: statusError,
+    refetch: refetchBudgetStatus,
   } = useBudgetStatusQuery(latestBudget?.id)
 
   useEffect(() => {
@@ -87,55 +90,60 @@ function BudgetsPage() {
   }
 
   return (
-    <div className='flex flex-col gap-4 md:gap-6'>
-      <header className='flex flex-wrap items-center justify-between gap-3'>
-        <div className='flex flex-col gap-1'>
-          <h1 className='font-heading text-xl tracking-tight md:text-2xl'>
-            {t('budgets.title')}
-          </h1>
+    <PageShell title={t('budgets.title')}>
+      <div className='flex flex-col gap-4 md:gap-6'>
+        <div className='flex flex-wrap items-start justify-between gap-3'>
           <p className='text-sm text-muted-foreground'>
             {t('budgets.description')}
           </p>
+          <div>
+            {selectedHouseholdId && (
+              <CreateBudgetDialog
+                householdId={selectedHouseholdId}
+                isSubmitting={createMutation.isPending}
+                open={isCreateDialogOpen}
+                onOpenChange={setIsCreateDialogOpen}
+                onSubmit={handleCreate}
+              />
+            )}
+          </div>
         </div>
-        {selectedHouseholdId && (
-          <CreateBudgetDialog
-            householdId={selectedHouseholdId}
-            isSubmitting={createMutation.isPending}
-            open={isCreateDialogOpen}
-            onOpenChange={setIsCreateDialogOpen}
-            onSubmit={handleCreate}
-          />
-        )}
-      </header>
 
-      {latestBudget && <BudgetSummaryCard budget={latestBudget} />}
+        <DataState
+          emptyDescription={t('budgets.empty.description')}
+          emptyTitle={t('budgets.empty.title')}
+          isEmpty={!selectedHouseholdId}>
+          {selectedHouseholdId ? (
+            <>
+              {latestBudget && <BudgetSummaryCard budget={latestBudget} />}
 
-      <BudgetStatusPanel
-        errorMessage={statusError ? 'budgets.status.error.loadFailed' : null}
-        isLoading={isStatusLoading}
-        status={budgetStatus ?? null}
-      />
+              <BudgetStatusPanel
+                errorMessage={
+                  statusError ? 'budgets.status.error.loadFailed' : null
+                }
+                isLoading={isStatusLoading}
+                status={budgetStatus ?? null}
+                onRetry={() => void refetchBudgetStatus()}
+              />
 
-      {selectedHouseholdId ? (
-        <BudgetList
-          householdId={selectedHouseholdId}
-          onEdit={setEditingBudget}
+              <BudgetList
+                householdId={selectedHouseholdId}
+                onEdit={setEditingBudget}
+              />
+            </>
+          ) : null}
+        </DataState>
+
+        <EditBudgetDialog
+          budget={editingBudget}
+          isSubmitting={updateMutation.isPending}
+          onOpenChange={(open) => {
+            if (!open) setEditingBudget(null)
+          }}
+          onSubmit={handleUpdate}
         />
-      ) : (
-        <p className='text-sm text-muted-foreground'>
-          {t('budgets.empty.description')}
-        </p>
-      )}
-
-      <EditBudgetDialog
-        budget={editingBudget}
-        isSubmitting={updateMutation.isPending}
-        onOpenChange={(open) => {
-          if (!open) setEditingBudget(null)
-        }}
-        onSubmit={handleUpdate}
-      />
-    </div>
+      </div>
+    </PageShell>
   )
 }
 

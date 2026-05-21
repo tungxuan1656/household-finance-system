@@ -1,7 +1,7 @@
 {
   "id": "feat-067",
   "name": "Protected page PageShell and DataState normalization",
-  "status": "planned",
+  "status": "done",
   "description": "Refactor eight protected frontend route surfaces so they follow the canonical PageShell/DataState route pattern from docs/FRONTEND.md. The work standardizes title ownership, shell padding, and blocking async state presentation across settings, expense trash, group detail, budgets, groups, insights, onboarding, and home empty-state flows without changing backend contracts, store semantics, or product behavior.",
   "dependencies": [
     "feat-022",
@@ -23,7 +23,17 @@
       "ExecPlan created at docs/exec-plans/plans/2026-05-21-protected-page-pageshell-datastate-refactor.md.",
       "Plans index records feat-067 as active and scheduled in three implementation batches."
     ],
-    "verification": []
+    "verification": [
+      "Batch 1 normalized settings, expense trash, and overview page orchestration around PageShell/DataState without changing mutation or query behavior.",
+      "Batch 2 normalized budgets, groups, and group detail pages plus the touched budget/group async-state widgets.",
+      "Batch 3 normalized insights and onboarding shell ownership while preserving specialized analytics and onboarding layouts.",
+      "Code review requested after implementation; the required back-navigation fix for group detail mobile flow was applied before final verification.",
+      "./init.sh lint returned OK.",
+      "./init.sh typecheck returned OK.",
+      "./init.sh test returned OK.",
+      "Final ./init.sh returned Done!.",
+      "Final gitnexus_detect_changes(scope: all) returned MEDIUM risk with 26 changed symbols across 18 files and 1 affected process (OnboardingPage -> NormalizeInviteToken)."
+    ]
   },
   "notes": "Frontend-only orchestration refactor. DataState should be used for blocking card-shaped states where it fits, but specialized Insights and Onboarding layouts may keep custom async markup when a generic card would reduce clarity."
 }
