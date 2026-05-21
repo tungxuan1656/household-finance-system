@@ -21,7 +21,7 @@ function MobileHeader({ title, showBack, onBack, actions }: MobileHeaderProps) {
             <ArrowLeft className='size-5' />
           </Button>
         )}
-        <h1 className='truncate text-sm font-medium'>{title}</h1>
+        <h1 className='truncate text-lg font-semibold'>{title}</h1>
       </div>
       {actions && <div className='flex items-center gap-2'>{actions}</div>}
     </header>
