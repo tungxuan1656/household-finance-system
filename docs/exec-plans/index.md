@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-21-protected-page-pageshell-datastate-refactor.md](plans/2026-05-21-protected-page-pageshell-datastate-refactor.md) - feat-067 frontend-only protected page refactor planned: normalize eight protected app routes around `PageShell` title/padding ownership, adopt `DataState` for blocking card-shaped route/widget states where it fits, preserve specialized Insights/Onboarding layouts where it does not, and verify the refactor in three low-risk batches.
 - [2026-05-19-expense-entry-form-unification.md](plans/2026-05-19-expense-entry-form-unification.md) - feat-061 frontend-only expense-entry refactor planned: unify add-expense dialog and edit-expense page on one canonical shared form, preserve the approved row UI, normalize field/select code structure, and make VND thousand-shortcut amount semantics symmetric for create and edit.
 
 ## Completed

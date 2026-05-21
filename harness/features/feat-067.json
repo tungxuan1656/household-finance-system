@@ -1,0 +1,29 @@
+{
+  "id": "feat-067",
+  "name": "Protected page PageShell and DataState normalization",
+  "status": "planned",
+  "description": "Refactor eight protected frontend route surfaces so they follow the canonical PageShell/DataState route pattern from docs/FRONTEND.md. The work standardizes title ownership, shell padding, and blocking async state presentation across settings, expense trash, group detail, budgets, groups, insights, onboarding, and home empty-state flows without changing backend contracts, store semantics, or product behavior.",
+  "dependencies": [
+    "feat-022",
+    "feat-023",
+    "feat-026",
+    "feat-027",
+    "feat-028",
+    "feat-029",
+    "feat-030",
+    "feat-057",
+    "feat-059",
+    "feat-062",
+    "feat-065"
+  ],
+  "evidence": {
+    "planned": [
+      "Research audit completed across the eight target protected pages plus the key budget/group/insights child components.",
+      "GitNexus upstream impact checks for SettingsPage, ExpenseTrashPage, GroupDetailPage, BudgetsPage, GroupsPage, InsightsPage, OnboardingPage, and OverviewPage all returned LOW risk with 0 affected processes.",
+      "ExecPlan created at docs/exec-plans/plans/2026-05-21-protected-page-pageshell-datastate-refactor.md.",
+      "Plans index records feat-067 as active and scheduled in three implementation batches."
+    ],
+    "verification": []
+  },
+  "notes": "Frontend-only orchestration refactor. DataState should be used for blocking card-shaped states where it fits, but specialized Insights and Onboarding layouts may keep custom async markup when a generic card would reduce clarity."
+}

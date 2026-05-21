@@ -9,6 +9,14 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-21 — Wrote protected-page PageShell/DataState ExecPlan
+
+- Who: Orchestrator + User
+- Summary: Converted the completed PageShell/DataState page audit into an implementation-ready ExecPlan for eight protected routes. The plan keeps the work frontend-only, sequences it into three low-risk batches, preserves specialized Insights/Onboarding layouts where generic `DataState` cards would be a poor fit, and records the existing LOW-risk GitNexus impact evidence before any code edits begin.
+- Files changed: New ExecPlan, plans index, new feat-067 harness record, feature index, and this progress log.
+- Blockers: none.
+- Next steps: Execute Batch 1 (`settings-page.tsx`, `expense-trash-page.tsx`, `overview-page.tsx`), then continue through the remaining batches with targeted verification and final full `./init.sh`.
+
 ## 2026-05-20 — Corrected expense detail DataState integration
 
 - Who: Orchestrator + User
