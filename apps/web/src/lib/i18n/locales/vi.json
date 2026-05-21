@@ -761,7 +761,9 @@
         "reset": "Đặt lại",
         "searchPlaceholder": "Tìm trong ghi chú chi tiêu",
         "sortHighestAmount": "Số tiền cao nhất",
-        "sortLatest": "Mới nhất"
+        "sortLatest": "Mới nhất",
+        "household": "Gia đình",
+        "allHouseholds": "Tất cả gia đình"
       }
     },
     "detail": {

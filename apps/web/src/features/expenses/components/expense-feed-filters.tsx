@@ -4,9 +4,8 @@ import {
   ArrowDownUpIcon,
   CalendarIcon,
   DollarSign,
-  EyeIcon,
   FilterIcon,
-  GroupIcon,
+  HomeIcon,
   LayoutDashboardIcon,
   SearchIcon,
 } from 'lucide-react'
@@ -33,6 +32,7 @@ import {
 } from '@/components/ui/input-group'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import type { ExpenseGroupDTO } from '@/features/groups/types/group'
+import type { HouseholdDTO } from '@/features/households/types/household'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
@@ -49,12 +49,13 @@ export type ExpenseFeedFilterValues = {
   groupId: string
   search: string
   sort: NonNullable<ExpenseListParams['sort']> | ''
-  visibility: ExpenseListParams['visibility'] | ''
+  householdId: string
 }
 
 type ExpenseFeedFiltersProps = {
   categories: ReferenceCategoryDTO[]
   groups: ExpenseGroupDTO[]
+  households: HouseholdDTO[]
   values: ExpenseFeedFilterValues
   onChange: (key: keyof ExpenseFeedFilterValues, value: string) => void
 }
@@ -62,6 +63,7 @@ type ExpenseFeedFiltersProps = {
 export function ExpenseFeedFilters({
   categories,
   groups,
+  households,
   values,
   onChange,
 }: ExpenseFeedFiltersProps) {
@@ -120,27 +122,26 @@ export function ExpenseFeedFilters({
               </FieldRow>
 
               <FieldRow
-                htmlFor='expense-feed-visibility'
-                icon={<EyeIcon className='size-4' />}
-                label={t('expense.visibility.household')}>
+                htmlFor='expense-feed-household'
+                icon={<HomeIcon className='size-4' />}
+                label={t('expense.feed.filters.household')}>
                 <NativeSelect
                   className='w-full'
-                  id='expense-feed-visibility'
+                  id='expense-feed-household'
                   labelClassName={FIELD_ROW_SELECT_CLASS}
                   size='sm'
-                  value={values.visibility}
+                  value={values.householdId}
                   onChange={(event) =>
-                    onChange('visibility', event.target.value)
+                    onChange('householdId', event.target.value)
                   }>
                   <NativeSelectOption value=''>
-                    {t('expense.feed.filters.allVisibility')}
+                    {t('expense.feed.filters.allHouseholds')}
                   </NativeSelectOption>
-                  <NativeSelectOption value='household'>
-                    {t('expense.visibility.household')}
-                  </NativeSelectOption>
-                  <NativeSelectOption value='private'>
-                    {t('expense.visibility.private')}
-                  </NativeSelectOption>
+                  {households.map((household) => (
+                    <NativeSelectOption key={household.id} value={household.id}>
+                      {household.name}
+                    </NativeSelectOption>
+                  ))}
                 </NativeSelect>
               </FieldRow>
 
@@ -240,7 +241,7 @@ export function ExpenseFeedFilters({
 
               <FieldRow
                 htmlFor='expense-feed-group'
-                icon={<GroupIcon className='size-4' />}
+                icon={<FilterIcon className='size-4' />}
                 label={t('expense.groupPicker.label')}>
                 <NativeSelect
                   className='w-full'

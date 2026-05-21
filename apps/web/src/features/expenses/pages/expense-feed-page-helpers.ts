@@ -1,8 +1,5 @@
 import type { ExpenseFeedFilterValues } from '@/features/expenses/components/expense-feed-filters'
-import type {
-  ExpenseListParams,
-  ExpenseVisibility,
-} from '@/features/expenses/types/expense'
+import type { ExpenseListParams } from '@/features/expenses/types/expense'
 import type { ExpenseGroupDTO } from '@/features/groups/types/group'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
@@ -19,13 +16,8 @@ export const DEFAULT_EXPENSE_FEED_FILTER_VALUES: ExpenseFeedFilterValues = {
   groupId: '',
   search: '',
   sort: 'occurred_at_desc',
-  visibility: '',
+  householdId: '',
 }
-
-const VISIBILITY_LABEL_KEYS = {
-  household: 'expense.visibility.household',
-  private: 'expense.visibility.private',
-} as const satisfies Record<ExpenseVisibility, string>
 
 // localDateToTimestamp returns the start of day (local midnight).
 // Add one full day minus 1ms to cover the full selected end date.
@@ -79,21 +71,23 @@ export const buildExpenseFeedFilters = ({
   date_from: getDateFilterFrom(values.dateFrom),
   date_to: getDateFilterTo(values.dateTo),
   group_id: values.groupId || undefined,
+  household_id: values.householdId || undefined,
   sort: values.sort || undefined,
-  visibility: values.visibility || undefined,
 })
 
 export const buildExpenseFeedActiveFilterLabels = ({
   groups,
+  households,
   selectedCategory,
   values,
 }: {
   values: ExpenseFeedFilterValues
   groups: ExpenseGroupDTO[]
+  households: Array<{ id: string; name: string }>
   selectedCategory?: ReferenceCategoryDTO
 }): string[] =>
   [
-    values.visibility ? t(VISIBILITY_LABEL_KEYS[values.visibility]) : null,
+    households.find((h) => h.id === values.householdId)?.name ?? null,
     selectedCategory ? getCategoryLabel(selectedCategory.key) : null,
     values.sort === 'amount_desc'
       ? t('expense.feed.filters.sortHighestAmount')
