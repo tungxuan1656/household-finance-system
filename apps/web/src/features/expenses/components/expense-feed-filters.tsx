@@ -172,28 +172,34 @@ export function ExpenseFeedFilters({
                 htmlFor='expense-feed-date-from'
                 icon={<CalendarIcon className='size-4' />}
                 label={t('expense.feed.filters.dateFrom')}>
-                <Input
-                  className={FIELD_ROW_INPUT_CLASS}
-                  id='expense-feed-date-from'
-                  size='sm'
-                  type='date'
-                  value={values.dateFrom}
-                  onChange={(event) => onChange('dateFrom', event.target.value)}
-                />
+                <div>
+                  <Input
+                    className={FIELD_ROW_INPUT_CLASS}
+                    id='expense-feed-date-from'
+                    size='sm'
+                    type='date'
+                    value={values.dateFrom}
+                    onChange={(event) =>
+                      onChange('dateFrom', event.target.value)
+                    }
+                  />
+                </div>
               </FieldRow>
 
               <FieldRow
                 htmlFor='expense-feed-date-to'
                 icon={<CalendarIcon className='size-4' />}
                 label={t('expense.feed.filters.dateTo')}>
-                <Input
-                  className={FIELD_ROW_INPUT_CLASS}
-                  id='expense-feed-date-to'
-                  size='sm'
-                  type='date'
-                  value={values.dateTo}
-                  onChange={(event) => onChange('dateTo', event.target.value)}
-                />
+                <div>
+                  <Input
+                    className={FIELD_ROW_INPUT_CLASS}
+                    id='expense-feed-date-to'
+                    size='sm'
+                    type='date'
+                    value={values.dateTo}
+                    onChange={(event) => onChange('dateTo', event.target.value)}
+                  />
+                </div>
               </FieldRow>
 
               <FieldRow

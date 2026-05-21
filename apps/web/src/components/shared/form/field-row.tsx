@@ -15,7 +15,7 @@ export const FIELD_ROW_BASE_CLASS =
 
 /** Class for the label+icon slot of a FieldRow. */
 export const FIELD_ROW_LABEL_CLASS =
-  'flex w-28! shrink-0 flex-row items-center gap-2 sm:w-32!'
+  'flex w-32! shrink-0 flex-row items-center gap-2 sm:w-32!'
 
 /** Class for the control slot of a FieldRow. */
 export const FIELD_ROW_CONTROL_CLASS =
