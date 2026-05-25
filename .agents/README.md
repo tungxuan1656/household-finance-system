@@ -2,6 +2,8 @@
 
 Project-owned agent skills live under `.agents/skills/<skill-name>/SKILL.md`.
 
+Project-owned sub-agent prompts live under `.agents/agents/<agent-name>.md`.
+
 ## Entry Point
 
 Use `using-skills` first.
@@ -19,6 +21,8 @@ Keep skill files portable across Codex, Claude Code, Copilot/VS Code, and OpenCo
 
 ```text
 .agents/
+  agents/
+    <agent-name>.md
   skills/
     <skill-name>/
       SKILL.md
@@ -45,6 +49,12 @@ These skills are project-owned.
 
 Some workflow ideas were adapted from prior skill systems, but this repo owns the current behavior and wording. Do not overwrite project skills blindly from upstream sources.
 
+## Sub-agent Prompts
+
+Sub-agent prompts are reusable runtime personas. They are not skills.
+
+Use them when a task benefits from a fresh, narrow context window, such as independent UI/UX review. Keep prompt files minimal and point to the exact skill or checklist files they require.
+
 ## Scope Note
 
-Subagent registry/model refactor is deferred. `subagent-driven-development` remains available, but this phase only aligns it with ceremony levels and current harness rules.
+Subagent registry/model refactor is deferred. Prompt files may exist under `.agents/agents/`, but runtime registration remains tool-dependent. `subagent-driven-development` remains available, but this phase only aligns it with ceremony levels and current harness rules.

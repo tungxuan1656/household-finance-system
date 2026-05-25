@@ -1,0 +1,20 @@
+{
+  "id": "feat-069",
+  "name": "UI/UX review skill and reviewer sub-agent",
+  "status": "done",
+  "description": "Add a project-owned UI/UX review flow for independent screenshot or rendered-UI review. The new skill defines objective review priorities, anti-bias rules, rubric scoring, output format, and page-type checklists for mobile, dashboard, forms, navigation, and finance-app screens. The new sub-agent prompt defines a minimal-context ui-ux-reviewer persona that uses the skill without reading builder reasoning or redesigning from scratch.",
+  "dependencies": ["feat-064"],
+  "evidence": {
+    "planned": [
+      "Used using-skills first and classified this as a Level 1 skill-maintenance task.",
+      "Read the project skill-maintenance rules and .agents README before adding new artifacts.",
+      "Adapted the requested .claude-style layout into the repo's portable .agents structure."
+    ],
+    "verification": [
+      "Focused artifact checks passed: listed all new ui-ux-review skill/sub-agent files and parsed harness/feature_index.json plus harness/features/feat-069.json with Node JSON.parse.",
+      "Final ./init.sh returned Done!.",
+      "Final gitnexus_detect_changes(scope: all) returned LOW risk with 2 changed indexed symbols across 3 indexed files and 0 affected processes."
+    ]
+  },
+  "notes": "This feature adds reusable agent instructions only. It does not change application runtime behavior or product UI."
+}

@@ -344,6 +344,11 @@
       "id": "feat-068",
       "name": "Budget delete lifecycle",
       "status": "done"
+    },
+    {
+      "id": "feat-069",
+      "name": "UI/UX review skill and reviewer sub-agent",
+      "status": "done"
     }
   ]
 }

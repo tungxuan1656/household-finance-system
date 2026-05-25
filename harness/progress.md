@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-25 — Added UI/UX review skill and reviewer sub-agent
+
+- Who: Orchestrator
+- Summary: Added the new `feat-069` portable UI/UX review flow. Created `.agents/skills/ui-ux-review/` with core review workflow, anti-bias rules, scoring rubric, exact output format, and focused checklists for mobile, dashboard, forms, navigation, and finance-app screens. Added `.agents/agents/ui-ux-reviewer.md` as the minimal-context review-only sub-agent prompt and documented the `.agents/agents/` convention.
+- Files changed: `.agents/skills/ui-ux-review/**`, `.agents/agents/ui-ux-reviewer.md`, `.agents/README.md`, `harness/features/feat-069.json`, `harness/feature_index.json`, `harness/progress.md`.
+- Verification: Focused artifact checks passed by listing new skill/sub-agent files and parsing `harness/feature_index.json` plus `harness/features/feat-069.json`; final `./init.sh` returned `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 2 changed indexed symbols across 3 indexed files and 0 affected processes.
+- Blockers: none.
+- Next steps: Review diff and commit if desired.
+
 ## 2026-05-21 — Fixed insights month selector regression
 
 - Who: Orchestrator
