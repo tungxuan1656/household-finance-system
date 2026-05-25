@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-21 — Fixed insights month selector regression
+
+- Who: Orchestrator
+- Summary: Fixed the insights month dropdown regression where selecting an older month rebuilt the option list from that older selection and removed newer months like the current `05-2026` option. Root cause was `buildPeriodOptions` anchoring the six-month window to the selected month instead of the current/latest anchor month. The util now anchors options to the newer of the selected period and current UTC period, so moving backward in history keeps the latest month visible while still supporting newer explicit periods.
+- Files changed: Insights period helper, its focused regression test, feat-028 harness evidence, and this progress log.
+- Verification: Red step: `pnpm --filter web exec vitest run src/features/insights/utils/insights-period.test.ts` failed with the new regression expectation before the fix; green step: the same focused test passed with 2/2 tests after the fix; read-only code review returned PASS with no blocking findings; final `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 5 changed symbols across 4 files and 0 affected processes.
+- Blockers: none.
+- Next steps: Optional only: smoke-check the Insights dropdown in browser, then review diff and commit if desired.
+
 ## 2026-05-21 — Added budget delete lifecycle across worker and web
 
 - Who: Orchestrator + code-reviewer
