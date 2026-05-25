@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 
 import { createBudgetHandler } from '@/handlers/budgets/create-budget'
+import { deleteBudgetHandler } from '@/handlers/budgets/delete-budget'
 import { getBudgetHandler } from '@/handlers/budgets/get-budget'
 import { getBudgetStatusHandler } from '@/handlers/budgets/get-budget-status'
 import { listBudgetsHandler } from '@/handlers/budgets/list-budgets'
@@ -48,4 +49,11 @@ budgetsRoutes.patch('/budgets/:id', async (ctx) => {
   const dto = await updateBudgetHandler(ctx)
 
   return success<typeof dto>(ctx, dto)
+})
+
+// DELETE /api/v1/budgets/:id
+budgetsRoutes.delete('/budgets/:id', async (ctx) => {
+  const result = await deleteBudgetHandler(ctx)
+
+  return success<typeof result>(ctx, result)
 })

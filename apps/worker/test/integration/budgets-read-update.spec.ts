@@ -27,6 +27,10 @@ type BudgetDTO = {
   updatedAt: number
 }
 
+type DeleteBudgetResponse = {
+  deleted: true
+}
+
 describe('Worker integration: budgets read and update', () => {
   it('gets a budget by id', async () => {
     await insertHouseholdFixture(env.DB)
@@ -163,6 +167,44 @@ describe('Worker integration: budgets read and update', () => {
     })
   })
 
+  it('deletes a budget for admin and hides it from future reads', async () => {
+    await insertHouseholdFixture(env.DB)
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-budget-delete:budget-delete@example.com',
+    )
+
+    await env.DB.prepare(
+      `INSERT INTO household_memberships (id, household_id, user_id, role, state)
+       VALUES (?, 'h1', ?, 'admin', 'active')`,
+    )
+      .bind('hm-budget-delete', owner.user.id)
+      .run()
+
+    const deleteResponse = await SELF.fetch(
+      'https://example.com/api/v1/budgets/bud1',
+      {
+        method: 'DELETE',
+        headers: { authorization: `Bearer ${owner.accessToken}` },
+      },
+    )
+    const deletePayload =
+      await parseJson<ApiEnvelope<DeleteBudgetResponse>>(deleteResponse)
+
+    expect(deleteResponse.status).toBe(200)
+    expect(deletePayload.data).toEqual({ deleted: true })
+
+    const getResponse = await SELF.fetch(
+      'https://example.com/api/v1/budgets/bud1',
+      {
+        headers: { authorization: `Bearer ${owner.accessToken}` },
+      },
+    )
+    const getPayload = await parseJson<ApiErrorEnvelope>(getResponse)
+
+    expect(getResponse.status).toBe(404)
+    expect(getPayload.error.code).toBe('NOT_FOUND')
+  })
+
   it('rejects update budget with empty body', async () => {
     await insertHouseholdFixture(env.DB)
     const owner = await exchangeAccessToken(
@@ -262,6 +304,32 @@ describe('Worker integration: budgets read and update', () => {
     expect(payload.error.code).toBe('FORBIDDEN')
   })
 
+  it('rejects non-admin member delete budget', async () => {
+    await insertHouseholdFixture(env.DB)
+    const member = await exchangeAccessToken(
+      'test:firebase-user-budget-member-delete:budget-member-delete@example.com',
+    )
+
+    await env.DB.prepare(
+      `INSERT INTO household_memberships (id, household_id, user_id, role, state)
+       VALUES (?, 'h1', ?, 'member', 'active')`,
+    )
+      .bind('hm-budget-member-delete', member.user.id)
+      .run()
+
+    const response = await SELF.fetch(
+      'https://example.com/api/v1/budgets/bud1',
+      {
+        method: 'DELETE',
+        headers: { authorization: `Bearer ${member.accessToken}` },
+      },
+    )
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+
+    expect(response.status).toBe(403)
+    expect(payload.error.code).toBe('FORBIDDEN')
+  })
+
   it('returns not found for a non-member budget get', async () => {
     await insertHouseholdFixture(env.DB)
     const outsider = await exchangeAccessToken(
@@ -296,6 +364,32 @@ describe('Worker integration: budgets read and update', () => {
     const response = await SELF.fetch(
       'https://example.com/api/v1/budgets/non-existent',
       {
+        headers: { authorization: `Bearer ${owner.accessToken}` },
+      },
+    )
+    const payload = await parseJson<ApiErrorEnvelope>(response)
+
+    expect(response.status).toBe(404)
+    expect(payload.error.code).toBe('NOT_FOUND')
+  })
+
+  it('returns not found when deleting a missing budget id', async () => {
+    await insertHouseholdFixture(env.DB)
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-budget-missing-delete:budget-missing-delete@example.com',
+    )
+
+    await env.DB.prepare(
+      `INSERT INTO household_memberships (id, household_id, user_id, role, state)
+       VALUES (?, 'h1', ?, 'admin', 'active')`,
+    )
+      .bind('hm-budget-missing-delete', owner.user.id)
+      .run()
+
+    const response = await SELF.fetch(
+      'https://example.com/api/v1/budgets/non-existent',
+      {
+        method: 'DELETE',
         headers: { authorization: `Bearer ${owner.accessToken}` },
       },
     )

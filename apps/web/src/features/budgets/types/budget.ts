@@ -51,6 +51,9 @@ export type BudgetStatusDTO = {
 
 export type CreateBudgetResponse = BudgetDTO
 export type UpdateBudgetResponse = BudgetDTO
+export type DeleteBudgetResponse = {
+  deleted: true
+}
 export type GetBudgetStatusResponse = BudgetStatusDTO
 
 export type ListBudgetsResponse = {

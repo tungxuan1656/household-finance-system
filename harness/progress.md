@@ -9,6 +9,41 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-21 — Fixed insights month selector regression
+
+- Who: Orchestrator
+- Summary: Fixed the insights month dropdown regression where selecting an older month rebuilt the option list from that older selection and removed newer months like the current `05-2026` option. Root cause was `buildPeriodOptions` anchoring the six-month window to the selected month instead of the current/latest anchor month. The util now anchors options to the newer of the selected period and current UTC period, so moving backward in history keeps the latest month visible while still supporting newer explicit periods.
+- Files changed: Insights period helper, its focused regression test, feat-028 harness evidence, and this progress log.
+- Verification: Red step: `pnpm --filter web exec vitest run src/features/insights/utils/insights-period.test.ts` failed with the new regression expectation before the fix; green step: the same focused test passed with 2/2 tests after the fix; read-only code review returned PASS with no blocking findings; final `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 5 changed symbols across 4 files and 0 affected processes.
+- Blockers: none.
+- Next steps: Optional only: smoke-check the Insights dropdown in browser, then review diff and commit if desired.
+
+## 2026-05-21 — Added budget delete lifecycle across worker and web
+
+- Who: Orchestrator + code-reviewer
+- Summary: Added admin-only budget deletion end to end. Worker now exposes `DELETE /api/v1/budgets/:id` through a dedicated handler with path validation, household membership permission checks, soft delete via `archived_at`, audit logging, and rollback on audit failure. Web budget cards now show a destructive confirm-dialog action that calls the new mutation, refreshes budget queries, closes the edit dialog if the deleted budget was being edited, and shows localized success/failure toast feedback. The budget product spec and harness records now document that deleted budgets disappear from active budget lists and current dashboard views.
+- Files changed: Budget worker contract/repository/route/handler/test layers, budget web API/hook/types/page/list/card orchestration, Vietnamese locale copy, budget product spec, new feat-068 harness record, feature index, and this progress log.
+- Verification: TDD red step confirmed the new delete tests failed before implementation; targeted `pnpm --filter worker exec vitest run test/integration/budgets-read-update.spec.ts` passed with 13/13 tests after implementation; `pnpm --filter worker lint`, `pnpm --filter worker typecheck`, `pnpm --filter web lint`, and `pnpm --filter web typecheck` all passed; read-only code review returned APPROVE with no blocking findings; final `./init.sh` passed with `Done!`; final `gitnexus_detect_changes(scope: all)` returned MEDIUM risk with 30 changed symbols across 14 files and 3 affected helper processes (`SoftDeleteBudget`, `RestoreBudget`, `DeleteBudgetLimits`).
+- Blockers: none.
+- Next steps: Optional follow-up only: add one extra regression test proving deleted budgets stay hidden from list queries, then review diff and commit if desired.
+
+## 2026-05-21 — Completed protected-page PageShell/DataState normalization
+
+- Who: Orchestrator + code-reviewer
+- Summary: Finished feat-067 by normalizing the remaining protected route pages around the repo-standard `PageShell` and `DataState` rules. Settings and expense trash now keep their blocking states inside one shell; home no longer duplicates shell padding in its empty branch; budgets and groups moved to shell-owned titles with normalized async-state widgets; group detail now uses shell-owned back navigation and blocking state handling; insights moved title ownership to `PageShell` while keeping specialized chart/loading layouts; onboarding setup and completion now both render inside the shared shell.
+- Files changed: Protected frontend route orchestrators for settings, expense trash, home, budgets, groups, group detail, insights, and onboarding; touched budget/group/insights child components; plan/index/harness tracking files; and this progress log.
+- Verification: `./init.sh lint` OK; `./init.sh typecheck` OK; `./init.sh test` OK; final `./init.sh` passed with `Done!`; code review requested and the required group-detail mobile back-navigation fix was applied; final `gitnexus_detect_changes(scope: all)` returned MEDIUM risk with 26 changed symbols across 18 files and 1 affected onboarding process (`OnboardingPage -> NormalizeInviteToken`).
+- Blockers: none.
+- Next steps: Perform manual browser smoke checks for the touched protected routes if desired, then review diff and commit if desired.
+
+## 2026-05-21 — Wrote protected-page PageShell/DataState ExecPlan
+
+- Who: Orchestrator + User
+- Summary: Converted the completed PageShell/DataState page audit into an implementation-ready ExecPlan for eight protected routes. The plan keeps the work frontend-only, sequences it into three low-risk batches, preserves specialized Insights/Onboarding layouts where generic `DataState` cards would be a poor fit, and records the existing LOW-risk GitNexus impact evidence before any code edits begin.
+- Files changed: New ExecPlan, plans index, new feat-067 harness record, feature index, and this progress log.
+- Blockers: none.
+- Next steps: Execute Batch 1 (`settings-page.tsx`, `expense-trash-page.tsx`, `overview-page.tsx`), then continue through the remaining batches with targeted verification and final full `./init.sh`.
+
 ## 2026-05-20 — Corrected expense detail DataState integration
 
 - Who: Orchestrator + User

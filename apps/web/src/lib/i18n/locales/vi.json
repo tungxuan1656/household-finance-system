@@ -761,7 +761,9 @@
         "reset": "Đặt lại",
         "searchPlaceholder": "Tìm trong ghi chú chi tiêu",
         "sortHighestAmount": "Số tiền cao nhất",
-        "sortLatest": "Mới nhất"
+        "sortLatest": "Mới nhất",
+        "household": "Gia đình",
+        "allHouseholds": "Tất cả gia đình"
       }
     },
     "detail": {
@@ -959,6 +961,11 @@
       "title": "Chỉnh sửa ngân sách",
       "description": "Cập nhật tổng ngân sách hoặc phân bổ theo danh mục."
     },
+    "delete": {
+      "title": "Xoá ngân sách này?",
+      "description": "Ngân sách sẽ không còn hiển thị trong danh sách và dashboard hiện tại.",
+      "confirm": "Xác nhận xoá"
+    },
     "fields": {
       "period": {
         "label": "Kỳ ngân sách",
@@ -981,7 +988,9 @@
       "createFailed": "Không thể tạo ngân sách. Vui lòng thử lại.",
       "duplicatePeriod": "Ngân sách cho tháng này đã tồn tại.",
       "updateSuccess": "Đã cập nhật ngân sách",
-      "updateFailed": "Không thể cập nhật ngân sách. Vui lòng thử lại."
+      "updateFailed": "Không thể cập nhật ngân sách. Vui lòng thử lại.",
+      "deleteSuccess": "Đã xoá ngân sách",
+      "deleteFailed": "Không thể xoá ngân sách. Vui lòng thử lại."
     },
     "card": {
       "periodLabel": "Kỳ",

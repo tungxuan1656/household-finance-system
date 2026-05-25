@@ -99,18 +99,14 @@ function OverviewPage() {
   if (isEntirelyEmpty) {
     return (
       <PageShell title='Home'>
-        <div className='px-4 pt-4 md:px-6 lg:px-8'>
-          <OverviewTabs
-            lenses={lenses}
-            value={
-              activeLens.type === 'personal'
-                ? 'personal'
-                : activeLens.householdId
-            }
-            onValueChange={handleLensChange}
-          />
-        </div>
-        <div className='px-4 py-6 md:px-6 md:py-8 lg:px-8'>
+        <OverviewTabs
+          lenses={lenses}
+          value={
+            activeLens.type === 'personal' ? 'personal' : activeLens.householdId
+          }
+          onValueChange={handleLensChange}
+        />
+        <div className='mt-6 md:mt-8'>
           <EmptyState addExpenseHref={PATHS.EXPENSES} />
         </div>
       </PageShell>

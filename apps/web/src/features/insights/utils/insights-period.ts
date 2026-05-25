@@ -7,7 +7,10 @@ export const getDefaultPeriod = () => {
 }
 
 export const buildPeriodOptions = (selectedPeriod: string) => {
-  const [yearValue, monthValue] = selectedPeriod.split('-')
+  const basePeriod =
+    selectedPeriod > getDefaultPeriod() ? selectedPeriod : getDefaultPeriod()
+
+  const [yearValue, monthValue] = basePeriod.split('-')
   const year = Number(yearValue)
   const month = Number(monthValue) - 1
   const baseDate = new Date(Date.UTC(year, month, 1))

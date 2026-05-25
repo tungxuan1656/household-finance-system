@@ -23,15 +23,7 @@ function InsightsHeader({
   periodOptions,
 }: InsightsHeaderProps) {
   return (
-    <header className='flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between'>
-      <div className='flex flex-col gap-1'>
-        <h1 className='font-heading text-xl tracking-tight md:text-2xl'>
-          {t('insights.title')}
-        </h1>
-        <p className='text-sm text-muted-foreground'>
-          {t('insights.description')}
-        </p>
-      </div>
+    <div className='flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between'>
       <div className='flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-end'>
         <label className='flex w-full flex-col gap-1.5 text-sm text-muted-foreground sm:min-w-56 sm:flex-1'>
           <span>{t('insights.periodLabel')}</span>
@@ -54,7 +46,7 @@ function InsightsHeader({
           variant='outline'
         />
       </div>
-    </header>
+    </div>
   )
 }
 

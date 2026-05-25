@@ -1,0 +1,22 @@
+{
+  "id": "feat-068",
+  "name": "Budget delete lifecycle",
+  "status": "done",
+  "description": "Add admin-only budget deletion across worker and web. Backend adds DELETE /api/v1/budgets/:id with path validation, household permission enforcement, audit logging, and rollback-safe soft delete via archived_at so deleted budgets disappear from active reads without erasing historical rows. Frontend adds destructive delete affordances on budget cards, confirm-dialog UX, localized success/failure feedback, and query invalidation so active budget lists/dashboard views refresh immediately.",
+  "dependencies": ["feat-015a", "feat-026", "feat-027", "feat-045"],
+  "evidence": {
+    "planned": [
+      "Read the canonical budget product spec plus exact frontend/backend leaf references for API mutation, route/handler boundaries, and backend endpoint testing expectations.",
+      "Ran GitNexus upstream impact checks for the touched budget worker/frontend symbols plus API route impact for /budgets/:id; all returned LOW risk before edits.",
+      "Followed TDD by adding failing worker integration coverage for admin delete, forbidden member delete, and not-found delete before implementing the route."
+    ],
+    "verification": [
+      "Targeted worker integration coverage passed after implementation: pnpm --filter worker exec vitest run test/integration/budgets-read-update.spec.ts (13/13 tests).",
+      "Targeted package verification passed: pnpm --filter worker lint, pnpm --filter worker typecheck, pnpm --filter web lint, pnpm --filter web typecheck.",
+      "Read-only code review of the uncommitted diff returned APPROVE with no blocking findings; non-blocking suggestions were left around extra list regression coverage and long-term soft-delete data hygiene.",
+      "Final ./init.sh returned Done!.",
+      "Final gitnexus_detect_changes(scope: all) returned MEDIUM risk with 30 changed symbols across 14 files and 3 affected repository helper processes (SoftDeleteBudget, RestoreBudget, DeleteBudgetLimits)."
+    ]
+  },
+  "notes": "Deletion is intentionally soft delete only. The repository marks archived_at/updated_at, active budget queries keep filtering archived rows, and audit-log failure triggers a restore rollback before surfacing the error."
+}

@@ -74,7 +74,7 @@ describe('expense feed page helpers', () => {
           dateFrom: '2026-05-20',
           dateTo: '2026-05-21',
           groupId: 'group-1',
-          visibility: 'private',
+          householdId: 'household-1',
         },
         debouncedAmountMin: '12',
         debouncedAmountMax: '20',
@@ -86,8 +86,8 @@ describe('expense feed page helpers', () => {
       date_from: localDateToTimestamp('2026-05-20'),
       date_to: localDateToTimestamp('2026-05-21') + 86399999,
       group_id: 'group-1',
+      household_id: 'household-1',
       sort: 'occurred_at_desc',
-      visibility: 'private',
     })
   })
 
@@ -99,7 +99,7 @@ describe('expense feed page helpers', () => {
           amountMin: '12',
           dateFrom: '2026-05-20',
           groupId: 'group-1',
-          visibility: 'household',
+          householdId: 'household-1',
           sort: 'amount_desc',
         },
         groups: [
@@ -118,6 +118,7 @@ describe('expense feed page helpers', () => {
             updatedAt: 1,
           },
         ],
+        households: [{ id: 'household-1', name: 'My Household' }],
         selectedCategory: {
           key: 'food',
           kind: 'expense',
@@ -126,7 +127,7 @@ describe('expense feed page helpers', () => {
         },
       }),
     ).toEqual([
-      'expense.visibility.household',
+      'My Household',
       'category.food',
       'expense.feed.filters.sortHighestAmount',
       'expense.feed.filters.dateFrom: 2026-05-20',

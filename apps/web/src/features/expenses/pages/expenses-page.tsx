@@ -108,8 +108,8 @@ export const ExpensesPage = () => {
       filterValues.dateFrom,
       filterValues.dateTo,
       filterValues.groupId,
+      filterValues.householdId,
       filterValues.sort,
-      filterValues.visibility,
     ],
   )
 
@@ -118,9 +118,10 @@ export const ExpensesPage = () => {
       buildExpenseFeedActiveFilterLabels({
         values: filterValues,
         groups,
+        households,
         selectedCategory,
       }),
-    [filterValues, groups, selectedCategory],
+    [filterValues, groups, households, selectedCategory],
   )
 
   const handleFilterChange = (
@@ -137,6 +138,7 @@ export const ExpensesPage = () => {
         <ExpenseFeedFilters
           categories={categories}
           groups={groups}
+          households={households}
           values={filterValues}
           onChange={handleFilterChange}
         />

@@ -334,6 +334,16 @@
       "id": "feat-066",
       "name": "Planning default and inline-plan clarification",
       "status": "done"
+    },
+    {
+      "id": "feat-067",
+      "name": "Protected page PageShell and DataState normalization",
+      "status": "done"
+    },
+    {
+      "id": "feat-068",
+      "name": "Budget delete lifecycle",
+      "status": "done"
     }
   ]
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
+import { PageShell } from '@/components/ui/page-shell'
 import {
   useAnalyticsComparisonQuery,
   useAnalyticsGroupsQuery,
@@ -17,6 +18,7 @@ import {
   getDefaultPeriod,
 } from '@/features/insights/utils/insights-period'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
+import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 type InsightsPageProps = {
@@ -97,42 +99,48 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
     data.expenseCount === 0
 
   return (
-    <div className='flex flex-col gap-4 md:gap-6'>
-      <InsightsHeader
-        isExportDisabled={isExportDisabled}
-        params={analyticsParams}
-        period={period}
-        periodOptions={periodOptions}
-        onPeriodChange={setPeriod}
-      />
+    <PageShell title={t('insights.title')}>
+      <div className='flex flex-col gap-4 md:gap-6'>
+        <p className='text-sm text-muted-foreground'>
+          {t('insights.description')}
+        </p>
 
-      <InsightsOverviewPanel
-        data={data}
-        error={error}
-        isLoading={isLoading}
-        onRetry={() => void refetchOverview()}
-      />
+        <InsightsHeader
+          isExportDisabled={isExportDisabled}
+          params={analyticsParams}
+          period={period}
+          periodOptions={periodOptions}
+          onPeriodChange={setPeriod}
+        />
 
-      {!isLoading && !error && data && data.expenseCount > 0 ? (
-        <>
-          <InsightsComparisonPanel
-            data={comparisonData}
-            error={comparisonError}
-            isLoading={isComparisonLoading}
-            onRetry={() => void refetchComparison()}
-          />
+        <InsightsOverviewPanel
+          data={data}
+          error={error}
+          isLoading={isLoading}
+          onRetry={() => void refetchOverview()}
+        />
 
-          <InsightsChartsSection categoryMap={categoryMap} data={data} />
+        {!isLoading && !error && data && data.expenseCount > 0 ? (
+          <>
+            <InsightsComparisonPanel
+              data={comparisonData}
+              error={comparisonError}
+              isLoading={isComparisonLoading}
+              onRetry={() => void refetchComparison()}
+            />
 
-          <InsightsGroupsPanel
-            data={groupsData}
-            error={groupsError}
-            isLoading={isGroupsLoading}
-            onRetry={() => void refetchGroups()}
-          />
-        </>
-      ) : null}
-    </div>
+            <InsightsChartsSection categoryMap={categoryMap} data={data} />
+
+            <InsightsGroupsPanel
+              data={groupsData}
+              error={groupsError}
+              isLoading={isGroupsLoading}
+              onRetry={() => void refetchGroups()}
+            />
+          </>
+        ) : null}
+      </div>
+    </PageShell>
   )
 }
 

@@ -1,7 +1,8 @@
 'use client'
 
-import { Edit } from 'lucide-react'
+import { Edit, Trash2 } from 'lucide-react'
 
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -15,9 +16,19 @@ import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
 import { formatCurrency } from '@/utils/currency/format'
 
-type BudgetCardProps = { budget: BudgetDTO; onEdit?: () => void }
+type BudgetCardProps = {
+  budget: BudgetDTO
+  onDelete?: () => Promise<void>
+  onEdit?: () => void
+  isDeleting?: boolean
+}
 
-function BudgetCard({ budget, onEdit }: BudgetCardProps) {
+function BudgetCard({
+  budget,
+  onDelete,
+  onEdit,
+  isDeleting = false,
+}: BudgetCardProps) {
   const { data: categoriesData } = useReferenceCategoriesQuery()
   const categories = categoriesData?.items ?? []
   const categoryMap = new Map<string, (typeof categories)[number]>(
@@ -37,18 +48,45 @@ function BudgetCard({ budget, onEdit }: BudgetCardProps) {
               {formatCurrency(budget.totalLimitMinor, budget.currencyCode)}
             </CardDescription>
           </div>
-          {onEdit && (
-            <Button
-              className='shrink-0 gap-2'
-              size='xl'
-              type='button'
-              variant='outline'
-              onClick={onEdit}>
-              <Edit className='size-4' data-icon='inline-start' />
-              <span className='hidden sm:inline'>
-                {t('common.actions.edit')}
-              </span>
-            </Button>
+          {(onEdit || onDelete) && (
+            <div className='flex shrink-0 flex-wrap justify-end gap-2'>
+              {onEdit && (
+                <Button
+                  className='gap-2'
+                  size='xl'
+                  type='button'
+                  variant='outline'
+                  onClick={onEdit}>
+                  <Edit className='size-4' data-icon='inline-start' />
+                  <span className='hidden sm:inline'>
+                    {t('common.actions.edit')}
+                  </span>
+                </Button>
+              )}
+              {onDelete && (
+                <ConfirmDialog
+                  confirmLabel={t('budgets.delete.confirm')}
+                  confirmLoading={isDeleting}
+                  description={t('budgets.delete.description')}
+                  title={t('budgets.delete.title')}
+                  trigger={
+                    <Button
+                      className='gap-2'
+                      disabled={isDeleting}
+                      size='xl'
+                      type='button'
+                      variant='destructive'>
+                      <Trash2 className='size-4' data-icon='inline-start' />
+                      <span className='hidden sm:inline'>
+                        {t('common.actions.delete')}
+                      </span>
+                    </Button>
+                  }
+                  variant='destructive'
+                  onConfirm={onDelete}
+                />
+              )}
+            </div>
           )}
         </div>
       </CardHeader>
