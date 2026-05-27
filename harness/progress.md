@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Clarified product direction v2 in Vietnamese, English, and design docs
+
+- Who: Orchestrator + User
+- Summary: Rewrote both product overview docs so they now describe the same product truth: the app serves both personal and household finance, each expense is recorded by the spender, household is an optional family-sharing context, and group/event is an independent classification axis. Added a durable design doc that explains the v1 -> v2 direction shift, including the removal of family-first positioning, `payer vs creator`, and `private/public` as core product concepts.
+- Files changed: Vietnamese and English product overview docs, design-docs index, new product-direction design doc, new harness feature record, feature index, and this progress log.
+- Verification: `python3 -m json.tool` validated `harness/feature_index.json` and `harness/features/feat-070.json`; targeted wording search confirmed the old-model terms remain only in explicit contrast/de-scope text; final `./init.sh` returned `Done!`; final `gitnexus_detect_changes(scope: all)` returned `LOW` risk with 79 changed indexed sections across 5 indexed files and 0 affected processes.
+- Blockers: none.
+- Next steps: Optionally align downstream product specs and user-facing copy that still assume the old model.
+
 ## 2026-05-25 — Added UI/UX review skill and reviewer sub-agent
 
 - Who: Orchestrator

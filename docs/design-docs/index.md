@@ -11,6 +11,7 @@ Durable design decision map. Read only when task changes lasting UI/product/arch
 ## Accepted
 
 - `core-beliefs.md`: agent-first operating beliefs.
+- `product-direction-v2.md`: v1 -> v2 product-direction shift for personal, household, and group semantics.
 
 ## Proposed
 

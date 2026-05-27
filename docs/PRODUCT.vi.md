@@ -2,9 +2,15 @@
 
 ## **1. Tầm nhìn sản phẩm (Vision)**
 
-Xây dựng một nền tảng giúp các gia đình **hiểu, kiểm soát và tối ưu dòng tiền chung**, thông qua việc ghi nhận chi tiêu minh bạch, theo dõi ngân sách và cung cấp insight dễ hiểu.
+Xây dựng một công cụ giúp người dùng **ghi chép, hiểu, kiểm soát và tối ưu chi tiêu** trong đời sống hằng ngày.
 
-> Không phải để “chia tiền”, mà để **quản lý tài chính cùng nhau**.
+Sản phẩm phải dùng tốt cho:
+
+* một cá nhân sống một mình
+* một cặp vợ chồng
+* một gia đình nhiều thành viên
+
+> Cốt lõi là ghi chép chi tiêu rõ ràng. Gia đình là lớp cộng tác thêm vào, không phải điều kiện bắt buộc để dùng sản phẩm.
 
 ---
 
@@ -12,38 +18,49 @@ Xây dựng một nền tảng giúp các gia đình **hiểu, kiểm soát và 
 
 Một công cụ:
 
-* Đơn giản như app ghi chép chi tiêu
-* Nhưng mạnh như một **dashboard tài chính gia đình**
+* Đơn giản như app ghi chép chi tiêu cá nhân
+* Nhưng mở rộng được thành dashboard tài chính cho gia đình
 
 👉 Khác biệt cốt lõi:
 
-* **Family-first (household-centric)**, không phải cá nhân-first
-* Không tập trung vào “ai nợ ai”
-* Mà tập trung vào:
-
-  * dòng tiền
-  * hành vi chi tiêu
-  * kiểm soát ngân sách
+* Dùng được ngay ở chế độ cá nhân
+* Khi cần, có thể gắn khoản chi vào household để cả nhà cùng theo dõi
+* Group/Event là lớp phân loại độc lập với household
+* Không tập trung vào chia tiền, nợ ai, hay split bill
+* Tập trung vào:
+  * ghi chép đúng
+  * theo dõi dòng tiền
+  * kiểm soát hành vi chi tiêu
+  * tối ưu ngân sách
 
 ---
 
 ## **3. Đối tượng người dùng (Target Users)**
 
-* Vợ chồng quản lý tài chính chung
-* Gia đình nhiều thế hệ
-* Người muốn kiểm soát chi tiêu gia đình thay vì cá nhân
+* Người muốn ghi chép chi tiêu cá nhân hằng ngày
+* Cặp vợ chồng muốn theo dõi chi tiêu chung
+* Gia đình nhiều thành viên muốn minh bạch khoản chi chung
+* Người muốn vừa quản lý tài chính cá nhân, vừa quản lý phần tài chính gia đình
 
 ---
 
 ## **4. Core Value Proposition**
 
-Ứng dụng giúp trả lời các câu hỏi quan trọng:
+Ứng dụng giúp trả lời song song hai nhóm câu hỏi:
+
+### **4.1. Ở mức cá nhân**
+
+* Tháng này tôi đã chi bao nhiêu?
+* Tôi đang tiêu nhiều nhất vào đâu?
+* Tôi có vượt ngân sách cá nhân không?
+* Xu hướng chi tiêu của tôi đang tăng hay giảm?
+
+### **4.2. Ở mức gia đình**
 
 * Gia đình đang tiêu bao nhiêu mỗi tháng?
-* Tiền đang đi vào đâu?
-* Có vượt ngân sách không?
-* Xu hướng chi tiêu đang tăng hay giảm?
-* Ai đang đóng góp chính về tài chính?
+* Các khoản chi chung đang đi vào đâu?
+* Gia đình có vượt ngân sách không?
+* Thành viên nào đã ghi nhận khoản chi nào?
 
 ---
 
@@ -51,7 +68,13 @@ Một công cụ:
 
 ---
 
-### **5.1. Quản lý chi tiêu (Expense Tracking)**
+### **5.1. Mô hình khoản chi (Expense Model)**
+
+#### Một khoản chi là gì:
+
+* Một khoản chi là một bản ghi do chính người chi tiêu tạo ra.
+* Không có khái niệm tách riêng giữa `người trả tiền` và `người ghi chi tiêu`.
+* Trong product model: **ai chi thì người đó ghi**.
 
 #### Mỗi khoản chi bao gồm:
 
@@ -60,11 +83,8 @@ Một công cụ:
 * Nguồn tiền (chọn từ catalog toàn cục, immutable)
 * Ghi chú
 * Thời gian
-
-#### Ownership model:
-
-* **Creator**: người nhập
-* **Payer**: người trả tiền (có thể khác creator)
+* Household tùy chọn
+* Group/Event tùy chọn
 
 #### Mô hình reference data:
 
@@ -74,27 +94,85 @@ Một công cụ:
 
 ---
 
-### **5.2. Phân loại chi tiêu: Cá nhân vs Gia đình**
+### **5.2. Household là gì**
 
-* Mỗi expense có thể là:
+#### Vai trò của household:
 
-  * **Cá nhân (private)** → chỉ mình thấy
-  * **Gia đình (household)** → shared trong group
+* Household là ngữ cảnh để đánh dấu một khoản chi là **chi cho gia đình**.
+* Một khoản chi có thể:
+  * không thuộc household nào
+  * hoặc thuộc đúng một household
 
-#### Mặc định:
+#### Quy tắc hiển thị:
 
-* Expense mới mặc định là **cá nhân/private**.
-* Nếu muốn đánh dấu là chi tiêu cho gia đình, user phải chủ động chuyển scope và chọn household đích cho lần nhập đó.
-* Category không quyết định expense là cá nhân hay gia đình.
+* Nếu khoản chi **không gắn household**:
+  * đó là khoản chi cá nhân của người tạo
+* Nếu khoản chi **gắn household**:
+  * đó là khoản chi của household đó
+  * tất cả thành viên trong household đều nhìn thấy
 
-👉 Đảm bảo:
+#### Quy tắc sản phẩm:
 
-* Minh bạch khi cần
-* Riêng tư khi cần
+* Không dùng khái niệm `private/public` như một mode riêng.
+* Chỉ có hai trạng thái thực tế:
+  * không gắn household
+  * có gắn household
+* Category không quyết định khoản chi là cá nhân hay gia đình.
 
 ---
 
-### **5.3. Household (Gia đình)**
+### **5.3. Group / Event là gì**
+
+#### Vai trò của group:
+
+* Group dùng để gom các khoản chi theo mục đích, sự kiện, hoặc ngữ cảnh.
+* Group **không liên quan** đến household.
+
+#### Ví dụ group:
+
+* Đi ăn cưới
+* Đi du lịch
+* Mua sắm Tết
+* Đi ăn nhậu
+
+#### Quy tắc:
+
+* Một khoản chi có thể không thuộc group nào.
+* Một khoản chi có thể thuộc một hoặc nhiều group.
+* Một khoản chi có thể:
+  * thuộc household nhưng không thuộc group
+  * thuộc group nhưng không thuộc household
+  * thuộc cả household và group cùng lúc
+
+#### Chức năng:
+
+* Tạo/Sửa/Xóa Group
+* Gán khoản chi vào Group
+* Xem các khoản chi nằm trong một Group
+* Xem tổng chi, breakdown category, và ngân sách theo Group
+
+---
+
+### **5.4. Ví dụ nghiệp vụ chuẩn**
+
+* `Đi ăn cưới chị họ 1.000.000`
+  * do user tạo
+  * có thể gắn vào household của gia đình nhỏ
+  * đồng thời gắn vào group `Đi ăn cưới`
+
+* `Đi du lịch`
+  * nếu đi một mình: không gắn household
+  * nếu là chuyến đi của cả nhà: gắn vào household
+  * cả hai trường hợp đều có thể gắn group `Du lịch`
+
+* `Đi cắt tóc`
+  * là khoản chi cá nhân thông thường
+  * không gắn household
+  * không gắn group
+
+---
+
+### **5.5. Household (Gia đình)**
 
 #### Cấu trúc:
 
@@ -103,26 +181,24 @@ Một công cụ:
 
 #### Trong household:
 
-* Xem toàn bộ chi tiêu chung
+* Xem toàn bộ khoản chi đã gắn vào household đó
 * Biết:
-
-  * Ai chi
+  * Ai đã ghi khoản chi
   * Chi gì
   * Khi nào
+  * Thuộc group nào nếu có
 
 ---
 
-### **5.4. Role & Permission**
+### **5.6. Role & Permission**
 
 #### Vai trò:
 
 * **Admin**
-
   * Quản lý thành viên
   * Toàn quyền chỉnh sửa
 * **Member**
-
-  * Thêm chi tiêu
+  * Thêm khoản chi
   * Hạn chế chỉnh sửa/xóa
 
 #### Optional (future-ready):
@@ -131,12 +207,13 @@ Một công cụ:
 
 ---
 
-### **5.5. Budget Management (Trọng tâm giữ user)**
+### **5.7. Budget Management**
 
 #### Thiết lập:
 
 * Budget theo tháng
 * Có thể theo category từ cùng catalog toàn cục
+* Có thể theo ngữ cảnh cá nhân, household, hoặc group
 
 #### Theo dõi:
 
@@ -147,67 +224,53 @@ Một công cụ:
 
 ---
 
-### **5.6. Filtering & Search**
+### **5.8. Filtering & Search**
 
 * Theo:
-
   * Ngày / tuần / tháng / khoảng thời gian
   * Category
-  * Người chi (payer)
+  * Household
+  * Group
 * Tìm kiếm:
-
   * Theo note
   * Theo số tiền
-  * Theo Group (Event/Project)
+  * Theo tên group / event
 
 ---
 
-### **5.7. Nhóm chi tiêu (Grouping / Events)**
-
-#### Khái niệm:
-* Gom nhóm các khoản chi theo sự kiện (Du lịch, Đám cưới, Mua sắm Tết...)
-* Theo dõi ngân sách riêng cho từng nhóm.
-
-#### Chức năng:
-* Tạo/Sửa/Xóa Group.
-* Gán khoản chi vào một hoặc nhiều Group.
-* Xem báo cáo tổng kết theo Group.
-
----
-
-### **5.8. Insight & Analytics (Mức cơ bản – đúng trọng tâm)**
+### **5.9. Insight & Analytics**
 
 #### Bao gồm:
 
 * Tổng chi theo thời gian
 * Breakdown theo category dựa trên stable key của catalog toàn cục
-* So sánh:
-
-  * Tháng này vs tháng trước
+* So sánh tháng này vs tháng trước
+* Tổng kết theo group
+* Dashboard cá nhân
+* Dashboard household
 
 #### Highlight:
 
 * Category chi nhiều nhất
 * Xu hướng tăng/giảm
+* Group nào đang tiêu nhiều nhất
 
-👉 Không cần AI phức tạp, chỉ cần:
-
-> đúng – rõ – dễ hiểu
+👉 Không cần AI phức tạp. Chỉ cần: đúng, rõ, dễ hiểu.
 
 ---
 
 ## **6. User Experience Principles**
 
 * **Fast input first**
-
   * Thêm chi tiêu trong 2–3 giây
-* **Mobile-friendly (dù là web app)**
+* **Mobile-friendly**
 * **Low cognitive load**
-
-  * Ít lựa chọn, default hợp lý
+  * Mặc định không household, không group
+  * User chỉ gắn thêm khi cần
 * **Single-player usable**
-
-  * Dùng tốt ngay cả khi chưa mời family
+  * Dùng tốt ngay cả khi chưa tạo hay tham gia household nào
+* **Personal + Family side by side**
+  * Có cả góc nhìn tài chính cá nhân và tài chính gia đình
 
 ---
 
@@ -219,11 +282,9 @@ Một công cụ:
 
 ### Flow:
 
-
 1. User signs up/signs in via Firebase Authentication (email/password) on the frontend.
 2. Frontend sends the Firebase ID token to the backend.
 3. Backend:
-
   * Verifies the Firebase ID token (e.g., Firebase Admin SDK) and maps/creates a local user record.
   * Issues an application `access token` (short-lived) and a `refresh token` (longer-lived) for the client.
 4. Quản lý profile tại hệ thống riêng
@@ -234,17 +295,32 @@ Một công cụ:
 
 Bao gồm:
 
-* Auth (Google)
- - Auth (Firebase email/password)
+* Auth (Firebase email/password)
 * Global static category/source catalogs làm reference data
-* CRUD expense (Số tiền, Category, Nguồn tiền, Group, Payer, Creator, Visibility)
-* Cá nhân vs household
+* CRUD expense:
+  * Số tiền
+  * Category
+  * Nguồn tiền
+  * Note
+  * Thời gian
+  * Household tùy chọn
+  * Group/Event tùy chọn
 * Household + role (admin/member)
-* Payer vs creator
-* Budget theo tháng
 * Grouping (Events/Projects)
-* Basic insight (month comparison, category breakdown, group summary)
+* Budget theo tháng
+* Basic insight:
+  * month comparison
+  * category breakdown
+  * group summary
+  * personal dashboard
+  * household dashboard
 * Filter & search
+
+Không bao gồm trong core model MVP:
+
+* tách riêng người trả tiền và người ghi chi tiêu
+* mode hiển thị private/public như khái niệm sản phẩm chính
+* split bill / debt tracking
 
 ---
 
@@ -256,55 +332,4 @@ Bao gồm:
 * Automation phức tạp
 * Bank integration
 
-👉 Giữ scope đủ nhỏ để ship nhanh
-
----
-
-## **10. Roadmap (Sau MVP)**
-
-### Phase 2:
-
-* Recurring expense
-* Smart suggestion category
-* Notification (vượt budget)
-
-### Phase 3:
-
-* Advanced insight
-* Financial health score
-* Multi-device optimization
-
----
-
-## **11. Điểm khác biệt (USP)**
-
-* Không phải:
-
-  * app ghi chép cá nhân đơn thuần
-  * cũng không phải app chia tiền
-
-👉 Mà là:
-
-> **“Nguồn sự thật duy nhất (single source of truth) cho tài chính gia đình”**
-
----
-
-## **12. Kết luận**
-
-Sản phẩm này:
-
-* Không chạy theo fintech phức tạp
-* Mà tập trung vào:
-
-  * hành vi thực tế
-  * nhu cầu rất đời
-
-👉 Nếu làm đúng:
-
-* UX cực đơn giản
-* Budget + insight rõ ràng
-* Family model hợp lý
-
-→ có thể trở thành:
-
-> **công cụ quản lý tài chính gia đình hàng ngày**
+👉 Giữ scope đủ nhỏ để ship nhanh.

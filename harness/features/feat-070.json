@@ -1,0 +1,21 @@
+{
+  "id": "feat-070",
+  "name": "Product direction v2 clarification docs",
+  "status": "done",
+  "description": "Align the Vietnamese and English product overview docs around the new personal-plus-household expense model, then add a durable design doc that records the v1 -> v2 shift in product direction and semantics.",
+  "dependencies": ["feat-054"],
+  "evidence": {
+    "planned": [
+      "Used using-skills first and kept the work at Level 1 with an inline plan because the scope was documentation-only plus required harness updates.",
+      "Read the Vietnamese and English product overviews and compared them with the requested product truth before editing.",
+      "Read docs/design-docs/index.md to choose the canonical home for the durable v1 -> v2 direction-change document."
+    ],
+    "verification": [
+      "Validated harness/feature_index.json and harness/features/feat-070.json with python3 -m json.tool.",
+      "Checked the rewritten product docs and the new design doc for the targeted old-model terms to confirm they remain only as explicit contrast or de-scoping language.",
+      "Final ./init.sh returned Done!.",
+      "Final gitnexus_detect_changes(scope: all) returned LOW risk with 79 changed indexed sections across 5 indexed files and 0 affected processes."
+    ]
+  },
+  "notes": "Docs-only clarification. No runtime code, API contracts, or database schema changed in this session."
+}

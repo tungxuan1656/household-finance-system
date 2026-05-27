@@ -349,6 +349,11 @@
       "id": "feat-069",
       "name": "UI/UX review skill and reviewer sub-agent",
       "status": "done"
+    },
+    {
+      "id": "feat-070",
+      "name": "Product direction v2 clarification docs",
+      "status": "done"
     }
   ]
 }
