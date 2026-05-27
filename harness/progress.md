@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Completed Product V2 spec rewrite phase
+
+- Who: Orchestrator + User
+- Summary: Executed Phase 0 and Phase 1 of the Product V2 reset plan. Ran the required GitNexus impact checks and confirmed the broadest early blast radius is the expense contract (`ExpenseDTO`), while the initial handler/form/page symbols stayed LOW risk. Rewrote the current product spec tree to align with V2, replaced `expense-ownership.md` with `expense-spender-model.md`, replaced `data-visibility.md` with `expense-household-context.md`, updated the specs index, and removed V1 product-model terminology from `docs/product-specs/`.
+- Files changed: Product spec docs, specs index, active ExecPlan progress/discoveries, feat-071 harness record, feature index, and this progress log.
+- Verification: `python3 -m json.tool` validated harness JSON; stale-term scan on `docs/product-specs` returned no matches for `payer|creator|visibility|private|public|lens|defaultVisibility`; final `./init.sh` returned `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 100 changed indexed sections across 19 indexed files and 0 affected processes.
+- Blockers: none.
+- Next steps: Begin Phase 2 and Phase 3 together so migration reset and backend contract changes land in one coherent block.
+
 ## 2026-05-27 — Wrote Product V2 full-project reset ExecPlan
 
 - Who: Orchestrator + User

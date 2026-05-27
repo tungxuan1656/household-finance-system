@@ -2,30 +2,30 @@
 
 ## Goal
 
-Provide deeper analytics beyond basic rollups: cohort analysis, trend decomposition, anomaly detection, and segmentation to surface actionable insights (Phase 2+).
+Provide deeper analytics beyond basic rollups in Phase 2+.
 
 ## Entry Conditions
 
-- Sufficient historical data exists for a household (several months).
+- Sufficient historical data exists for personal or household analysis.
 
 ## Features
 
-- Trend decomposition: separate seasonal vs baseline spend across categories and groups.
-- Anomaly detection: flag unusual spikes in categories, payers, or groups.
-- Cohort analysis: compare spending behavior across groups or time-based cohorts.
-- Custom reports: allow users to define and save report queries.
+- Trend decomposition across categories and groups
+- Anomaly detection for unusual spikes in categories, spending contexts, or groups
+- Cohort analysis across groups or time-based cohorts
+- Custom reports that users can save and rerun
 
 ## User Flow
 
 1. User opens advanced analytics and selects analysis type and time range.
-2. Server computes results (may use precomputed rollups or background jobs) and returns visualizations and explanations.
-3. User can export results or save as a custom report.
+2. Server computes results and returns visualizations and explanations.
+3. User can export results or save a report.
 
 ## Acceptance Criteria
 
-- Advanced reports run within acceptable latency (use background jobs with progress indicators if needed).
+- Advanced reports run within acceptable latency or provide progress feedback.
 - Anomalies include explanation and example transactions for verification.
-- Users can save and re-run custom reports.
+- Users can save and rerun custom reports.
 
 ## Failure States
 
@@ -35,5 +35,4 @@ Provide deeper analytics beyond basic rollups: cohort analysis, trend decomposit
 ---
 
 Notes:
-- Prioritize UX clarity: show why a metric changed and provide drilldowns to transactions.
-- Consider privacy and access controls for sensitive analyses.
+- Keep explanations tied to raw transactions and visible scopes.

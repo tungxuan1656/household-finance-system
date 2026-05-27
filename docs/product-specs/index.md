@@ -16,7 +16,7 @@ Read exact spec for task domain only.
 
 - `expense-tracking.md`
 - `expense-management.md`
-- `expense-ownership.md`
+- `expense-spender-model.md`
 - `expense-categorization.md`
 - `expense-grouping.md`
 
@@ -25,7 +25,7 @@ Read exact spec for task domain only.
 - `household-management.md`
 - `household-invitation.md`
 - `role-permission.md`
-- `data-visibility.md`
+- `expense-household-context.md`
 
 ### Finance Control
 

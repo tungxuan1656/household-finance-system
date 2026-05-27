@@ -58,8 +58,8 @@ Out of scope:
 
 - [x] 2026-05-27 Inventory stale V1 product-model references across docs, app code, tests, migrations, and harness.
 - [x] 2026-05-27 Create this ExecPlan.
-- [ ] Phase 0: Run pre-edit impact checks and freeze the V2 contract map.
-- [ ] Phase 1: Rewrite current product specs and remove stale spec docs.
+- [x] 2026-05-27 Phase 0: Run pre-edit impact checks and freeze the V2 contract map.
+- [x] 2026-05-27 Phase 1: Rewrite current product specs and remove stale spec docs.
 - [ ] Phase 2: Reset D1 migrations to a single canonical V2 schema.
 - [ ] Phase 3: Refactor worker contracts, repositories, handlers, analytics, budgets, and tests.
 - [ ] Phase 4: Refactor web API types, forms, filters, pages, analytics views, copy, and tests.
@@ -75,6 +75,7 @@ Out of scope:
 - Current `createExpenseHandler` already makes payer equal creator, which confirms the app has drifted toward V2 behavior while retaining V1 field names.
 - Current personal feed logic returns the caller's private expenses plus all household expenses for memberships. V2 requires personal views to use the current user's own spending, while household views use household membership.
 - Initial stale-term scan found about 160 `payer` hits, 437 `visibility/private` hits, 41 lens hits, and 150 creator-related hits across current apps/docs/harness search scope.
+- After Phase 1 rewrites, `docs/product-specs/` no longer matches the stale-term scan for `payer|creator|visibility|private|public|lens|defaultVisibility`.
 
 ## Decision Log
 
@@ -818,6 +819,12 @@ Create/update these artifacts during execution:
 - `harness/progress.md`
 - `harness/session-handoff.md` only if unfinished work must be handed off
 
+Current execution status:
+
+- Phase 0 complete.
+- Phase 1 complete.
+- Phase 2 intentionally not started yet in this session because rewriting migrations before the backend contract refactor would leave the repo temporarily broken between phases.
+
 Minimum final evidence:
 
 - `./init.sh lint` result
@@ -855,4 +862,3 @@ Internal dependencies:
 
 - No blocking product decision remains at plan time.
 - Implementation may record follow-up decisions in the Decision Log if code reveals a hidden dependency between groups, budgets, and household access.
-

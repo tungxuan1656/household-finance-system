@@ -2,35 +2,34 @@
 
 ## Goal
 
-Define lifecycle rules for expenses: edit, delete, recovery, and audit to minimize disputes and preserve data integrity.
+Define lifecycle rules for edit, delete, restore, and audit so expense data stays understandable and recoverable.
 
 ## Entry Conditions
 
-- User views an existing expense and has appropriate permissions to modify it.
+- User views an existing expense and has permission to modify it.
 
 ## User Flow
 
-1. User selects an expense and clicks Edit.
-2. Edit screen shows original values and the ability to change mutable fields (amount, category, note, date, payer, visibility) depending on permissions.
-3. On save, system records a versioned audit entry and updates derived aggregates.
-4. For Delete: user may soft-delete (archived) with confirmation; admins can permanently delete after a retention window.
-5. Recovery: soft-deleted items can be restored by allowed roles within retention window.
+1. User opens an expense.
+2. Edit screen shows mutable fields: amount, category, source, note, date, optional household, and optional groups.
+3. On save, system records an audit entry and refreshes derived aggregates.
+4. User may soft-delete an expense with confirmation.
+5. Allowed roles may restore a deleted expense.
 
 ## Acceptance Criteria
 
-- Edits create immutable audit entries recording who changed what and when.
-- Soft-delete hides expense from normal lists but retains data for recovery and audit.
-- Permanent delete is restricted to admins and only after retention/consent rules.
-- Derived metrics (budgets, analytics) update consistently after edits or deletions.
+- Edit creates immutable audit entries recording actor, changed fields, old/new values, and timestamp.
+- Soft-delete hides expense from normal lists but preserves recovery and audit history.
+- Restore returns the expense to active lists and recalculates downstream summaries.
+- Derived metrics for personal, household, and group scopes update consistently after edit/delete/restore.
 
 ## Failure States
 
-- Concurrent edit conflict: surface conflict UI showing both versions and require user confirmation to overwrite.
 - Unauthorized edit/delete: deny action and explain required role.
-- Audit write failure: block destructive actions and surface error for retry.
+- Audit write failure: block destructive action and surface retry path.
+- Restore of an unavailable expense: show not found or forbidden state.
 
 ---
 
 Notes:
-- Audit entries should include actor id, changed fields, old/new values, and timestamp.
-- Consider retention policy and GDPR-like deletion flows where applicable.
+- Product V2 does not support changing expense ownership to another person.
