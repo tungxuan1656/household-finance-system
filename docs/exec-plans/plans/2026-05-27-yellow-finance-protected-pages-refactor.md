@@ -71,7 +71,7 @@ This work is frontend-only plus current docs and harness updates. The user-visib
 - [ ] Run `gitnexus_impact` on the first-edit shell/page symbols (`MainLayout`, `AppSidebar`, `BottomTab`, `MobileHeader`, `PageShell`, `ExpensesPage`, `InsightsPage`, `HouseholdsPage`, `HouseholdDetailPage`, `SettingsPage`, add-expense provider symbols). Owner: implementation session.
 - [ ] Batch 1 — shell foundation and route contract. Owner: implementation session.
 - [x] 2026-05-27 Batch 2 — shared page wrappers and `PageShell` migration helpers. Owner: Orchestrator.
-- [ ] Batch 3 — Expense surface and 3-step add-expense flow. Owner: implementation session.
+- [x] 2026-05-27 Batch 3 — Expense surface and 3-step add-expense flow (partial first pass). Owner: Orchestrator.
 - [ ] Batch 4 — Analysis surface. Owner: implementation session.
 - [ ] Batch 5 — Household list, add-household sheet, and household detail. Owner: implementation session.
 - [ ] Batch 6 — Settings surface plus contextual budgets/groups entry points. Owner: implementation session.
@@ -84,6 +84,7 @@ This work is frontend-only plus current docs and harness updates. The user-visib
 - Current docs still describe `PageShell` as canonical, so docs must be updated before execution to keep future page work aligned.
 - The approved Stitch screens already define stronger screen composition than the current repo state, so shell/page work must be staged before deeper page polish.
 - GitNexus `detect_changes(scope: all)` does not currently report the new shared page-wrapper files while they remain untracked, so per-symbol impact evidence and direct file verification are more useful than blast-radius output during this early batch.
+- The Expense first pass can improve structural composition and timeline readability without yet rebuilding the full Stitch-style 3-step add-expense drawer; the dialog/provider can stay intact until the dedicated drawer rebuild batch.
 
 ## Decision Log
 

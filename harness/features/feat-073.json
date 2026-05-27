@@ -12,7 +12,8 @@
       "Mapped the current protected route pages, shell/layout files, auth redirect touchpoints, route constants, and current PageShell dependency points so the plan names exact files instead of generic frontend areas.",
       "Updated canonical frontend docs so future page work now points to the new protected page-surface wrapper pattern and the four-tab responsive shell model instead of creating new PageShell-based pages.",
       "Started implementation with the shared wrapper foundation batch: added `apps/web/src/components/shared/page/` and defined `PageContainer`, `PageHeader`, `PageContent`, `PageFooter`, plus the shared barrel export.",
-      "Continued implementation with the first navigation batch: moved the protected default entry to Expense semantics, turned `/home` into a compatibility redirect, reduced shared mobile/desktop navigation to the four approved top-level tabs, and restyled the mobile bottom tab bar closer to the approved Yellow Finance surface."
+      "Continued implementation with the first navigation batch: moved the protected default entry to Expense semantics, turned `/home` into a compatibility redirect, reduced shared mobile/desktop navigation to the four approved top-level tabs, and restyled the mobile bottom tab bar closer to the approved Yellow Finance surface.",
+      "Started the Expense surface migration: moved `ExpensesPage` onto the new shared page wrappers, grouped the feed into timeline sections, and added context badges for household/group-linked expenses while preserving the current hook-based data flow and global add-expense entry point."
     ],
     "verification": [
       "Validated harness/feature_index.json and harness/features/feat-073.json with python3 -m json.tool.",
@@ -23,8 +24,11 @@
       "Early gitnexus_detect_changes(scope: all) during the implementation session returned no changed symbols because the new shared wrapper files were still untracked.",
       "Pre-edit GitNexus impact checks for `BottomTab`, `AppSidebar`, and `HomeRoutePage` all returned LOW risk with 0 direct dependents and 0 affected processes before the navigation batch.",
       "Navigation batch verification passed: ./init.sh typecheck returned OK and ./init.sh lint returned OK.",
-      "Post-batch gitnexus_detect_changes(scope: all) returned LOW risk with 10 changed symbols across 7 files and 0 affected processes."
+      "Post-batch gitnexus_detect_changes(scope: all) returned LOW risk with 10 changed symbols across 7 files and 0 affected processes.",
+      "Pre-edit GitNexus impact checks for `ExpensesPage` and `AddExpenseDialogProvider` both returned LOW risk with 0 direct dependents and 0 affected processes before the Expense batch.",
+      "Expense batch verification passed: `pnpm --filter web exec vitest run src/features/expenses/pages/expense-feed-page-helpers.test.ts` passed with 5 tests; `./init.sh typecheck` returned OK; `./init.sh lint` returned OK.",
+      "Post-Expense gitnexus_detect_changes(scope: all) returned LOW risk with 5 changed symbols across 5 files and 0 affected processes."
     ]
   },
-  "notes": "Execution has started. The shared page-wrapper foundation batch and the first bottom-tab / four-tab navigation batch are complete, while deeper shell/page adoption and visual browser verification remain pending."
+  "notes": "Execution has started. The shared page-wrapper foundation batch, the first bottom-tab / four-tab navigation batch, and the first Expense page adoption batch are complete. The full Stitch-style add-expense drawer rebuild and browser-based visual verification remain pending."
 }

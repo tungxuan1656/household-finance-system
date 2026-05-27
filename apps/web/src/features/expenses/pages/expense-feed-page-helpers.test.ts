@@ -14,6 +14,7 @@ import { localDateToTimestamp } from '@/utils/datetime/helpers'
 import {
   buildExpenseFeedActiveFilterLabels,
   buildExpenseFeedFilters,
+  buildExpenseTimelineGroups,
   DEFAULT_EXPENSE_FEED_FILTER_VALUES,
   getExpenseFeedCategories,
   mergeExpenseFeedGroups,
@@ -133,6 +134,51 @@ describe('expense feed page helpers', () => {
       'expense.feed.filters.dateFrom: 2026-05-20',
       'expense.feed.filters.amountMin: 12',
       'Weekend trip',
+    ])
+  })
+
+  it('groups expenses into timeline sections by local day', () => {
+    expect(
+      buildExpenseTimelineGroups([
+        {
+          id: 'expense-1',
+          amountMinor: 10_000,
+          currencyCode: 'VND',
+          categoryKey: 'food',
+          sourceKey: 'cash',
+          title: 'Breakfast',
+          occurredAt: Math.floor(new Date().getTime() / 1000),
+          note: null,
+          householdId: null,
+          spentByUserId: 'user-1',
+          groupIds: [],
+          createdAt: 1,
+          updatedAt: 1,
+        },
+        {
+          id: 'expense-2',
+          amountMinor: 20_000,
+          currencyCode: 'VND',
+          categoryKey: 'food',
+          sourceKey: 'cash',
+          title: 'Lunch',
+          occurredAt: Math.floor(new Date().getTime() / 1000),
+          note: null,
+          householdId: 'household-1',
+          spentByUserId: 'user-1',
+          groupIds: [],
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      ]),
+    ).toEqual([
+      {
+        label: expect.any(String),
+        items: [
+          expect.objectContaining({ id: 'expense-1' }),
+          expect.objectContaining({ id: 'expense-2' }),
+        ],
+      },
     ])
   })
 })

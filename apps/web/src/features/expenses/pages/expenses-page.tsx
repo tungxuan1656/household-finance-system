@@ -3,7 +3,11 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
-import { PageShell } from '@/components/ui/page-shell'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
 import { useAddExpenseDialog } from '@/features/expenses/components/add-expense/provider'
 import { ExpenseActiveFilterSummary } from '@/features/expenses/components/expense-active-filter-summary'
 import {
@@ -132,22 +136,28 @@ export const ExpensesPage = () => {
   }
 
   return (
-    <PageShell title={t('expense.feed.title')}>
-      <div className='flex flex-col gap-4 md:gap-6'>
-        <ExpenseFeedSummary filters={filters} search={debouncedSearch} />
-        <ExpenseFeedFilters
-          categories={categories}
-          groups={groups}
-          households={households}
-          values={filterValues}
-          onChange={handleFilterChange}
-        />
-        <ExpenseActiveFilterSummary
-          labels={activeFilterLabels}
-          onReset={() => setFilterValues(DEFAULT_EXPENSE_FEED_FILTER_VALUES)}
-        />
-        <ExpenseFeedList filters={filters} search={debouncedSearch} />
-      </div>
-    </PageShell>
+    <PageContainer>
+      <PageHeader
+        description={t('expense.feed.description')}
+        title={t('shell.protected.nav.expenses')}
+      />
+      <PageContent>
+        <div className='flex flex-col gap-4 md:gap-6'>
+          <ExpenseFeedSummary filters={filters} search={debouncedSearch} />
+          <ExpenseFeedFilters
+            categories={categories}
+            groups={groups}
+            households={households}
+            values={filterValues}
+            onChange={handleFilterChange}
+          />
+          <ExpenseActiveFilterSummary
+            labels={activeFilterLabels}
+            onReset={() => setFilterValues(DEFAULT_EXPENSE_FEED_FILTER_VALUES)}
+          />
+          <ExpenseFeedList filters={filters} search={debouncedSearch} />
+        </div>
+      </PageContent>
+    </PageContainer>
   )
 }

@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Migrated the Expense page to shared wrappers and timeline sections
+
+- Who: Orchestrator + User
+- Summary: Started the first protected page adoption batch on the new Expense entry surface. Replaced the route-level `PageShell` usage in `ExpensesPage` with `PageContainer`, `PageHeader`, and `PageContent`, keeping the existing dialog deep-link and hook orchestration intact. Refined the feed into timeline sections grouped by day, upgraded each section into a card-like block, and added context badges so household- and group-linked expenses read more like the approved Yellow Finance timeline. The current add-expense provider and dialog remain in place for now; the full Stitch-style 3-step drawer rebuild is deferred to the dedicated add-expense batch.
+- Files changed: Expense page orchestrator, expense feed helper/test, expense feed list/item components, feat-073 evidence, active ExecPlan progress/discovery notes, and this progress log.
+- Verification: `gitnexus_impact` for `ExpensesPage` and `AddExpenseDialogProvider` returned `LOW` risk with 0 direct dependents and 0 affected processes; `pnpm --filter web exec vitest run src/features/expenses/pages/expense-feed-page-helpers.test.ts` passed with 5 tests; `./init.sh typecheck` returned `OK`; `./init.sh lint` returned `OK`; `gitnexus_detect_changes(scope: all)` returned `LOW` risk with 5 changed symbols across 5 files and 0 affected processes.
+- Blockers: No local dev server was attached in this thread, so the Expense page has not been visually browser-verified yet.
+- Next steps: Rebuild the add-expense flow toward the approved 3-step drawer or move to the Analysis surface, depending on whether we want to finish the Expense slice end-to-end first.
+
 ## 2026-05-27 — Refactored bottom tabs and four-tab protected navigation
 
 - Who: Orchestrator + User
