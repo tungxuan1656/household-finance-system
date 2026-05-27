@@ -24,7 +24,6 @@ describe('GET /api/v1/expenses personal visibility', () => {
         amount: 10000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'To be deleted',
         occurredAt: Date.now(),
       }),
@@ -43,7 +42,6 @@ describe('GET /api/v1/expenses personal visibility', () => {
         amount: 20000,
         categoryKey: 'transport',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Keep me',
         occurredAt: Date.now(),
       }),
@@ -88,7 +86,6 @@ describe('GET /api/v1/expenses personal visibility', () => {
         amount: 15000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: "User A's private expense",
         occurredAt: Date.now(),
       }),
@@ -103,7 +100,6 @@ describe('GET /api/v1/expenses personal visibility', () => {
         amount: 25000,
         categoryKey: 'transport',
         sourceKey: 'cash',
-        visibility: 'private',
         title: "User B's private expense",
         occurredAt: Date.now(),
       }),
@@ -114,15 +110,14 @@ describe('GET /api/v1/expenses personal visibility', () => {
     })
     expect(response.status).toBe(200)
 
-    const payload =
-      await parseJson<
-        ApiEnvelope<{
-          items: Array<{ title: string; createdByUserId: string }>
-        }>
-      >(response)
+    const payload = await parseJson<
+      ApiEnvelope<{
+        items: Array<{ title: string; spentByUserId: string }>
+      }>
+    >(response)
     expect(payload.success).toBe(true)
     expect(payload.data.items).toHaveLength(1)
     expect(payload.data.items[0].title).toBe("User B's private expense")
-    expect(payload.data.items[0].createdByUserId).toBe(userB.user.id)
+    expect(payload.data.items[0].spentByUserId).toBe(userB.user.id)
   })
 })

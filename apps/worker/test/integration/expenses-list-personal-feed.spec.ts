@@ -24,7 +24,6 @@ describe('GET /api/v1/expenses personal feed', () => {
           amount: 50000,
           categoryKey: 'food',
           sourceKey: 'cash',
-          visibility: 'private',
           title,
           occurredAt: Date.now(),
         }),
@@ -37,18 +36,16 @@ describe('GET /api/v1/expenses personal feed', () => {
     })
     expect(response.status).toBe(200)
 
-    const payload =
-      await parseJson<
-        ApiEnvelope<{
-          items: Array<{
-            id: string
-            title: string
-            visibility: string
-            currencyCode: string
-          }>
-          nextCursor: string | null
+    const payload = await parseJson<
+      ApiEnvelope<{
+        items: Array<{
+          id: string
+          title: string
+          currencyCode: string
         }>
-      >(response)
+        nextCursor: string | null
+      }>
+    >(response)
 
     expect(payload.success).toBe(true)
     expect(payload.data.items).toHaveLength(2)
@@ -56,9 +53,6 @@ describe('GET /api/v1/expenses personal feed', () => {
       'Groceries',
       'Transport',
     ])
-    expect(payload.data.items.every((i) => i.visibility === 'private')).toBe(
-      true,
-    )
     expect(payload.data.items.every((i) => i.currencyCode === 'VND')).toBe(true)
     expect(payload.data.nextCursor).toBeNull()
   })
@@ -80,7 +74,6 @@ describe('GET /api/v1/expenses personal feed', () => {
         amount: 30000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Old expense',
         occurredAt: oneWeekAgo,
       }),
@@ -95,7 +88,6 @@ describe('GET /api/v1/expenses personal feed', () => {
         amount: 40000,
         categoryKey: 'transport',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Recent expense',
         occurredAt: now,
       }),
@@ -131,7 +123,6 @@ describe('GET /api/v1/expenses personal feed', () => {
         amount: 50000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Lunch',
         occurredAt: Date.now(),
       }),
@@ -146,7 +137,6 @@ describe('GET /api/v1/expenses personal feed', () => {
         amount: 20000,
         categoryKey: 'transport',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Bus fare',
         occurredAt: Date.now(),
       }),
@@ -183,7 +173,6 @@ describe('GET /api/v1/expenses personal feed', () => {
         amount: 15000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Match note',
         note: 'shared groceries receipt',
         occurredAt: Date.now() - 1000,
@@ -199,7 +188,6 @@ describe('GET /api/v1/expenses personal feed', () => {
         amount: 25000,
         categoryKey: 'transport',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Wrong note',
         note: 'commute receipt',
         occurredAt: Date.now(),
@@ -207,27 +195,26 @@ describe('GET /api/v1/expenses personal feed', () => {
     })
 
     const response = await SELF.fetch(
-      `https://example.com/api/v1/expenses?query=groceries&amount_min=10000&amount_max=20000&creator_id=${auth.user.id}&sort=amount_desc`,
+      `https://example.com/api/v1/expenses?query=groceries&amount_min=10000&amount_max=20000&spent_by_user_id=${auth.user.id}&sort=amount_desc`,
       { headers: { authorization: `Bearer ${auth.accessToken}` } },
     )
     expect(response.status).toBe(200)
 
-    const payload =
-      await parseJson<
-        ApiEnvelope<{
-          items: Array<{
-            title: string
-            note: string | null
-            amountMinor: number
-            createdByUserId: string
-          }>
+    const payload = await parseJson<
+      ApiEnvelope<{
+        items: Array<{
+          title: string
+          note: string | null
+          amountMinor: number
+          spentByUserId: string
         }>
-      >(response)
+      }>
+    >(response)
     expect(payload.success).toBe(true)
     expect(payload.data.items).toHaveLength(1)
     expect(payload.data.items[0].title).toBe('Match note')
     expect(payload.data.items[0].note).toBe('shared groceries receipt')
     expect(payload.data.items[0].amountMinor).toBe(15000)
-    expect(payload.data.items[0].createdByUserId).toBe(auth.user.id)
+    expect(payload.data.items[0].spentByUserId).toBe(auth.user.id)
   })
 })
