@@ -4,7 +4,6 @@ export interface StoredHousehold {
   slug: string
   defaultCurrencyCode: string
   timezone: string
-  defaultVisibility: 'private' | 'household'
   role: 'admin' | 'member'
   createdAt: number
 }
@@ -15,7 +14,6 @@ export interface StoredHouseholdDetail {
   slug: string
   defaultCurrencyCode: string
   timezone: string
-  defaultVisibility: 'private' | 'household'
   createdAt: number
 }
 
@@ -25,7 +23,6 @@ export const toStoredHousehold = (row: {
   slug: string
   default_currency_code: string
   timezone: string
-  default_visibility: 'private' | 'household'
   role: 'admin' | 'member'
   created_at: number
 }): StoredHousehold => ({
@@ -34,7 +31,6 @@ export const toStoredHousehold = (row: {
   slug: row.slug,
   defaultCurrencyCode: row.default_currency_code,
   timezone: row.timezone,
-  defaultVisibility: row.default_visibility,
   role: row.role,
   createdAt: row.created_at,
 })
@@ -45,7 +41,6 @@ export const toStoredHouseholdDetail = (row: {
   slug: string
   default_currency_code: string
   timezone: string
-  default_visibility: 'private' | 'household'
   created_at: number
 }): StoredHouseholdDetail => ({
   id: row.id,
@@ -53,6 +48,5 @@ export const toStoredHouseholdDetail = (row: {
   slug: row.slug,
   defaultCurrencyCode: row.default_currency_code,
   timezone: row.timezone,
-  defaultVisibility: row.default_visibility,
   createdAt: row.created_at,
 })

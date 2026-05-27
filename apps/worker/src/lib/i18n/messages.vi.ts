@@ -45,8 +45,6 @@ export const viMessages = {
   'households.atLeastOneFieldRequired':
     'Cần cung cấp ít nhất một trường để cập nhật hộ gia đình.',
   'households.timezoneInvalid': 'Múi giờ phải theo định dạng IANA hợp lệ.',
-  'households.defaultVisibilityInvalid':
-    'Chế độ hiển thị mặc định phải là "private" hoặc "household".',
   'households.deleteBlockedByActiveMembers':
     'Không thể xóa hộ gia đình khi vẫn còn thành viên đang hoạt động khác.',
   'households.cannotLeaveAsLastAdmin':

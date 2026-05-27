@@ -62,6 +62,7 @@ Out of scope:
 - [x] 2026-05-27 Phase 1: Rewrite current product specs and remove stale spec docs.
 - [ ] Phase 2: Reset D1 migrations to a single canonical V2 schema.
 - [ ] Phase 3: Refactor worker contracts, repositories, handlers, analytics, budgets, and tests.
+- [x] 2026-05-27 Phase 3 milestone: remove household `defaultVisibility` from worker/web contracts, handlers, store types, i18n, tests, and `0001_init.sql`.
 - [ ] Phase 4: Refactor web API types, forms, filters, pages, analytics views, copy, and tests.
 - [ ] Phase 5: Clean current docs, exec-plan index, harness feature records, and progress artifacts.
 - [ ] Phase 6: Run final verification and GitNexus change detection.
@@ -76,6 +77,9 @@ Out of scope:
 - Current personal feed logic returns the caller's private expenses plus all household expenses for memberships. V2 requires personal views to use the current user's own spending, while household views use household membership.
 - Initial stale-term scan found about 160 `payer` hits, 437 `visibility/private` hits, 41 lens hits, and 150 creator-related hits across current apps/docs/harness search scope.
 - After Phase 1 rewrites, `docs/product-specs/` no longer matches the stale-term scan for `payer|creator|visibility|private|public|lens|defaultVisibility`.
+- Household `defaultVisibility` was removed cleanly from worker/web slices with focused tests green, which confirms the household settings surface can move to pure name/currency/timezone semantics before the broader expense contract reset.
+
+## Decision Log
 
 ## Decision Log
 
@@ -101,6 +105,10 @@ Out of scope:
 
 - Decision: Preserve `product-direction-v2.md` as the only doc allowed to describe old V1 terms intentionally.
   Rationale: The user requested a V1 -> V2 difference document, so that one file must retain contrast language.
+  Date/Author: 2026-05-27 / Orchestrator
+
+- Decision: Remove household `defaultVisibility` before the broader expense contract reset.
+  Rationale: It is a bounded V1 artifact with limited blast radius, and removing it first reduces future noise in contracts, i18n, tests, and settings UI before the much larger expense refactor.
   Date/Author: 2026-05-27 / Orchestrator
 
 ## Outcomes & Retrospective

@@ -12,7 +12,8 @@
       "Scanned the project for stale V1 model terms and found broad references across worker, web, product specs, and harness records.",
       "Created an ExecPlan for the full reset and registered it as the active plan.",
       "Completed Phase 0 by running GitNexus impact checks for the first shared symbols called out in the plan.",
-      "Completed Phase 1 by rewriting current product specs and replacing the V1-heavy ownership/visibility specs."
+      "Completed Phase 1 by rewriting current product specs and replacing the V1-heavy ownership/visibility specs.",
+      "Completed one Phase 3 milestone by removing household defaultVisibility from worker/web contracts, handlers, tests, i18n, and the base migration."
     ],
     "verification": [
       "Plan artifact verification: python3 -m json.tool validated harness/feature_index.json and harness/features/feat-071.json.",
@@ -20,8 +21,11 @@
       "Pre-edit impact checks: createExpenseHandler LOW, buildVisibleExpenseConditions LOW, ExpenseDTO MEDIUM with broad contract/import reach, buildExpenseEntryPayload LOW, OverviewPage LOW.",
       "Phase 1 stale-term scan for docs/product-specs returned no matches for payer|creator|visibility|private|public|lens|defaultVisibility after rewrites.",
       "Final ./init.sh returned Done! after the Phase 1 docs and harness updates.",
-      "Final gitnexus_detect_changes(scope: all) returned LOW risk with 100 changed indexed sections across 19 indexed files and 0 affected processes."
+      "Final gitnexus_detect_changes(scope: all) returned LOW risk with 100 changed indexed sections across 19 indexed files and 0 affected processes.",
+      "Focused household slice verification passed: ./init.sh typecheck returned OK; pnpm --filter worker exec vitest run test/unit/dto-household.spec.ts test/integration/households-read-update.spec.ts passed with 16 tests; pnpm --filter web exec vitest run src/stores/household.store.test.ts passed with 8 tests.",
+      "Post-change stale-term scan for defaultVisibility/default_visibility returned no matches across worker/web household files and 0001_init.sql.",
+      "Post-change gitnexus_detect_changes(scope: all) returned MEDIUM risk with 6 changed indexed symbols across 16 files and 3 affected household-related processes."
     ]
   },
-  "notes": "Execution has started. Phase 0 and Phase 1 are complete. Phase 2 migration reset is intentionally deferred until the backend contract refactor starts in the same execution block."
+  "notes": "Execution has started. Phase 0 and Phase 1 are complete. One Phase 3 milestone is complete for household settings. The broader expense, budget, analytics, and group contract reset remains in progress."
 }

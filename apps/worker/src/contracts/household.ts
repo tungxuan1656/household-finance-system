@@ -43,8 +43,6 @@ const isValidIanaTimezone = (value: string): boolean => {
   }
 }
 
-export type DefaultVisibility = 'private' | 'household'
-
 export const updateHouseholdRequestSchema = (
   locale: SupportedLocale = defaultLocale,
 ) =>
@@ -64,19 +62,13 @@ export const updateHouseholdRequestSchema = (
           message: translate(locale, 'households.timezoneInvalid'),
         })
         .optional(),
-      defaultVisibility: z
-        .enum(['private', 'household'], {
-          message: translate(locale, 'households.defaultVisibilityInvalid'),
-        })
-        .optional(),
     })
     .strict()
     .refine(
       (value) =>
         value.name !== undefined ||
         value.defaultCurrencyCode !== undefined ||
-        value.timezone !== undefined ||
-        value.defaultVisibility !== undefined,
+        value.timezone !== undefined,
       {
         message: translate(locale, 'households.atLeastOneFieldRequired'),
       },
@@ -109,7 +101,6 @@ export interface HouseholdDTO {
   slug: string
   defaultCurrencyCode: string
   timezone: string
-  defaultVisibility: DefaultVisibility
   role: HouseholdRoleDTO
   createdAt: number
 }

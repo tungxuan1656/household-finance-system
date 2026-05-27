@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Removed household defaultVisibility from current schema and app contracts
+
+- Who: Orchestrator + User
+- Summary: Continued the Product V2 reset by removing `defaultVisibility` as a current product concept from the household slice. Updated worker household contracts, row mappers, repositories, handlers, Vietnamese validation messages, integration/unit tests, and `apps/worker/migrations/0001_init.sql`; updated web household types, settings form schema, store test, role-label helper, and locale strings. This leaves household settings aligned with V2: name, currency, timezone, membership, and lifecycle only.
+- Files changed: Worker household contracts/repositories/handlers/messages/tests, web household types/schema/utils/store test/locale copy, base migration, active ExecPlan, feat-071 evidence, and this progress log.
+- Verification: `./init.sh typecheck` returned `OK`; `pnpm --filter worker exec vitest run test/unit/dto-household.spec.ts test/integration/households-read-update.spec.ts` passed with 16 tests; `pnpm --filter web exec vitest run src/stores/household.store.test.ts` passed with 8 tests; stale-term scan for `defaultVisibility|default_visibility` returned no matches in the touched worker/web slice; `gitnexus_detect_changes(scope: all)` returned `MEDIUM` risk with 6 changed indexed symbols across 16 files and 3 affected household-related processes.
+- Blockers: none.
+- Next steps: Move to the broad expense contract reset: remove visibility/payer/creator semantics from worker and web expense types, handlers, queries, and tests.
+
 ## 2026-05-27 — Completed Product V2 spec rewrite phase
 
 - Who: Orchestrator + User

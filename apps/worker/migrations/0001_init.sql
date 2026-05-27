@@ -42,12 +42,10 @@ CREATE TABLE IF NOT EXISTS households (
   description TEXT,
   default_currency_code TEXT NOT NULL,
   timezone TEXT NOT NULL,
-  default_visibility TEXT NOT NULL DEFAULT 'household',
   created_by_user_id TEXT NOT NULL,
   archived_at INTEGER,
   created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
-  CHECK (default_visibility IN ('private', 'household')),
   FOREIGN KEY(created_by_user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 

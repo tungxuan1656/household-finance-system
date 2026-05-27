@@ -17,7 +17,6 @@ export const createHousehold = async (
     slug: household.slug,
     defaultCurrencyCode: household.defaultCurrencyCode,
     timezone: household.timezone,
-    defaultVisibility: household.defaultVisibility,
     role: household.role,
     createdAt: household.createdAt,
   }

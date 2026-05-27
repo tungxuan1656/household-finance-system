@@ -416,14 +416,6 @@
           "description": "Tiền tệ mặc định áp dụng cho gia đình.",
           "label": "Tiền tệ mặc định"
         },
-        "defaultVisibility": {
-          "description": "Chế độ hiển thị mặc định cho các giao dịch mới trong gia đình.",
-          "label": "Hiển thị mặc định",
-          "options": {
-            "household": "Chia sẻ trong gia đình",
-            "private": "Riêng tư"
-          }
-        },
         "householdName": {
           "description": "Tên hiển thị mới của gia đình.",
           "label": "Tên gia đình",
