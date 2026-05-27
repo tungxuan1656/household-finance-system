@@ -56,13 +56,6 @@ export type AnalyticsComparisonDTO = {
     deltaSpendMinor: number
     deltaPercent: number | null
   }>
-  payerAttribution: Array<{
-    payerDisplayName: string | null
-    payerUserId: string
-    totalSpendMinor: number
-    percentOfTotal: number
-    expenseCount: number
-  }>
 }
 
 export type AnalyticsGroupsDTO = {
@@ -83,13 +76,6 @@ export type AnalyticsGroupsDTO = {
 export type AnalyticsCategoryTotalRow = {
   categoryKey: ReferenceCategoryKey
   totalSpendMinor: number
-}
-
-export type AnalyticsPayerAttributionRow = {
-  payerDisplayName: string | null
-  payerUserId: string
-  totalSpendMinor: number
-  expenseCount: number
 }
 
 export type AnalyticsGroupSpendRow = {

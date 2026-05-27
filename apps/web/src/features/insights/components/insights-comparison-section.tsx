@@ -21,7 +21,7 @@ function InsightsComparisonSection({ data }: InsightsComparisonSectionProps) {
   const TrendIcon = deltaPositive ? TrendingUpIcon : TrendingDownIcon
 
   return (
-    <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]'>
+    <section>
       <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
         <CardHeader>
           <CardTitle>{t('insights.comparison.title')}</CardTitle>
@@ -108,34 +108,6 @@ function InsightsComparisonSection({ data }: InsightsComparisonSectionProps) {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
-      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
-        <CardHeader>
-          <CardTitle>{t('insights.payers.title')}</CardTitle>
-          <CardDescription>{t('insights.payers.description')}</CardDescription>
-        </CardHeader>
-        <CardContent className='flex flex-col gap-3'>
-          {data.payerAttribution.map((payer, index) => (
-            <div
-              key={`${payer.payerUserId}-${index}`}
-              className='flex flex-col gap-1'>
-              <div className='flex items-center justify-between gap-4'>
-                <span className='min-w-0 truncate'>
-                  {payer.payerDisplayName ?? payer.payerUserId}
-                </span>
-                <span className='shrink-0 text-sm text-muted-foreground'>
-                  {payer.percentOfTotal}%
-                </span>
-              </div>
-              <div className='h-2 rounded-full bg-muted'>
-                <div
-                  className='h-2 rounded-full bg-primary'
-                  style={{ width: `${payer.percentOfTotal}%` }}
-                />
-              </div>
-            </div>
-          ))}
         </CardContent>
       </Card>
     </section>

@@ -67,7 +67,6 @@ export const updateExpenseHandler = async (
     ? (body.householdId ?? null)
     : existingExpense.householdId
   let currencyCode = 'VND'
-  let payerUserId = currentUser.id
 
   if (nextHouseholdId) {
     const targetMembership = await findActiveHouseholdMembership(
@@ -103,13 +102,12 @@ export const updateExpenseHandler = async (
   const updateInput: UpdateExpenseInput = {
     expenseId: existingExpense.id,
     householdId: nextHouseholdId,
-    payerUserId,
+    spentByUserId: existingExpense.spentByUserId,
     categoryKey: body.categoryKey ?? existingExpense.categoryKey,
     sourceKey: body.sourceKey ?? existingExpense.sourceKey,
     amountMinor,
     currencyCode,
     occurredAt: body.occurredAt ?? existingExpense.occurredAt,
-    visibility: nextHouseholdId ? 'household' : 'private',
     title: body.title ?? existingExpense.title,
     note: body.note !== undefined ? body.note : existingExpense.note,
   }
@@ -141,13 +139,12 @@ export const updateExpenseHandler = async (
     const rollback = await updateExpense(db, {
       expenseId: existingExpense.id,
       householdId: existingExpense.householdId,
-      payerUserId: existingExpense.payerUserId,
+      spentByUserId: existingExpense.spentByUserId,
       categoryKey: existingExpense.categoryKey,
       sourceKey: existingExpense.sourceKey,
       amountMinor: existingExpense.amountMinor,
       currencyCode: existingExpense.currencyCode,
       occurredAt: existingExpense.occurredAt,
-      visibility: existingExpense.visibility,
       title: existingExpense.title,
       note: existingExpense.note,
     })

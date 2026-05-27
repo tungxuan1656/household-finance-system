@@ -181,8 +181,9 @@
         "description": "Bắt đầu theo dõi chi tiêu để xem phân tích và giữ đúng ngân sách.",
         "title": "Chào mừng đến với Expense Tracker"
       },
-      "lenses": {
-        "personal": "Cá nhân"
+      "views": {
+        "personal": "Cá nhân",
+        "householdContext": "Chi tiêu chung gia đình {{name}}"
       },
       "welcome": "Chào mừng trở lại, {{name}}",
       "budget": {
@@ -682,11 +683,6 @@
     "household": "Gia đình",
     "note": "Ghi chú",
     "none": "Không",
-    "visibilityLabel": "Chia sẻ",
-    "visibility": {
-      "private": "Riêng tư",
-      "household": "Chung gia đình"
-    },
     "selectHousehold": "Chọn gia đình",
     "payer": "Người thanh toán",
     "title": "Tiêu đề",
@@ -745,7 +741,6 @@
         "advancedDescription": "Thu hẹp danh sách theo thời gian, số tiền và nhóm chi tiêu.",
         "allCategories": "Tất cả danh mục",
         "allGroups": "Tất cả nhóm",
-        "allVisibility": "Tất cả chế độ",
         "amountMax": "Số tiền tối đa",
         "amountMin": "Số tiền tối thiểu",
         "dateFrom": "Từ ngày",
@@ -765,9 +760,6 @@
       "source": "Nguồn",
       "date": "Ngày",
       "note": "Ghi chú",
-      "visibility": "Chế độ hiển thị",
-      "visibilityPrivate": "Riêng tư",
-      "visibilityHousehold": "Chung gia đình",
       "payer": "Người thanh toán",
       "creator": "Người tạo",
       "createdAt": "Tạo lúc",
@@ -775,10 +767,6 @@
       "household": "Gia đình",
       "notFound": "Không tìm thấy chi tiêu",
       "forbidden": "Bạn không có quyền xem chi tiêu này"
-    },
-    "visibilityBadge": {
-      "private": "Riêng tư",
-      "household": "Chung"
     },
     "groupPicker": {
       "label": "Nhóm chi tiêu",
@@ -811,10 +799,6 @@
       "description": "Đối chiếu chi tiêu tháng hiện tại với tháng trước",
       "currentPeriod": "Tổng chi tháng này",
       "previousPeriod": "Tổng chi tháng trước"
-    },
-    "payers": {
-      "title": "Đóng góp theo người trả",
-      "description": "Ai đang chi nhiều nhất trong kỳ đã chọn"
     },
     "groups": {
       "title": "Chi tiêu theo nhóm",

@@ -77,18 +77,16 @@ export const insertHouseholdFixture = async (db: D1Database): Promise<void> => {
       `INSERT INTO expenses (
         id,
         household_id,
-        created_by_user_id,
-        payer_user_id,
+        spent_by_user_id,
         category_id,
         amount_minor,
         currency_code,
         occurred_at,
-        visibility,
         title
       )
       VALUES
-      ('exp1', 'h1', 'u1', 'u2', 'cat1', 4250, 'USD', 1713744000000, 'household', 'Groceries run'),
-      ('exp2', 'h2', 'u3', 'u3', 'cat2', 9900, 'USD', 1713830400000, 'household', 'Paint supplies')`,
+      ('exp1', 'h1', 'u1', 'cat1', 4250, 'USD', 1713744000000, 'Groceries run'),
+      ('exp2', 'h2', 'u3', 'cat2', 9900, 'USD', 1713830400000, 'Paint supplies')`,
     )
     .run()
 

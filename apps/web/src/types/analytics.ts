@@ -52,14 +52,6 @@ export type AnalyticsCategoryDeltaDTO = {
   deltaPercent: number | null
 }
 
-export type AnalyticsPayerAttributionDTO = {
-  payerDisplayName: string | null
-  payerUserId: string
-  totalSpendMinor: number
-  percentOfTotal: number
-  expenseCount: number
-}
-
 export type AnalyticsComparisonDTO = {
   householdId: string | null
   currencyCode: string
@@ -68,7 +60,6 @@ export type AnalyticsComparisonDTO = {
   totalDeltaSpendMinor: number
   totalDeltaPercent: number | null
   topCategoryDeltas: AnalyticsCategoryDeltaDTO[]
-  payerAttribution: AnalyticsPayerAttributionDTO[]
 }
 
 export type AnalyticsGroupSpendDTO = {

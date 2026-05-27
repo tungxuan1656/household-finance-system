@@ -19,8 +19,6 @@ type AnalyticsExportExpenseRow = {
   id: string
   occurredAt: number
   categoryKey: ReferenceCategoryKey
-  payerUserId: string
-  visibility: 'private' | 'household'
   title: string
   amountMinor: number
 }
@@ -62,13 +60,6 @@ type AnalyticsComparisonExportInput = {
     deltaSpendMinor: number
     deltaPercent: number | null
   }>
-  payerAttribution: Array<{
-    payerDisplayName: string | null
-    payerUserId: string
-    totalSpendMinor: number
-    percentOfTotal: number
-    expenseCount: number
-  }>
 }
 
 type AnalyticsGroupsExportInput = {
@@ -107,10 +98,8 @@ export const buildAnalyticsExportCsv = (input: {
     'delta_percent',
     'date',
     'category_key',
-    'payer_user_id',
     'group_id',
     'group_name',
-    'visibility',
     'title',
     'amount_minor',
     'occurred_at',
@@ -246,30 +235,6 @@ export const buildAnalyticsExportCsv = (input: {
     ])
   }
 
-  for (const payer of input.comparison.payerAttribution) {
-    pushRow([
-      'comparison_payer',
-      ...baseRow,
-      'payer_attribution',
-      payer.payerDisplayName ?? 'Unknown payer',
-      payer.totalSpendMinor,
-      payer.expenseCount,
-      '',
-      '',
-      '',
-      payer.percentOfTotal,
-      '',
-      '',
-      payer.payerUserId,
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ])
-  }
-
   pushRow([
     'groups_summary',
     ...baseRow,
@@ -330,10 +295,8 @@ export const buildAnalyticsExportCsv = (input: {
       '',
       new Date(row.occurredAt).toISOString().slice(0, 10),
       row.categoryKey,
-      row.payerUserId,
       '',
       '',
-      row.visibility,
       row.title,
       row.amountMinor,
       new Date(row.occurredAt).toISOString(),

@@ -19,7 +19,6 @@ export const getBudgetSpendSummary = async (
       `SELECT COALESCE(SUM(e.amount_minor), 0) AS totalActualMinor
          FROM expenses e
         WHERE e.deleted_at IS NULL
-          AND e.visibility = 'household'
           AND e.household_id = ?
           AND date(e.occurred_at / 1000, 'unixepoch') >= ?
           AND date(e.occurred_at / 1000, 'unixepoch') <= ?`,
@@ -42,7 +41,6 @@ export const getBudgetSpendSummary = async (
       `SELECT e.category_key AS categoryKey, COALESCE(SUM(e.amount_minor), 0) AS totalActualMinor
          FROM expenses e
         WHERE e.deleted_at IS NULL
-          AND e.visibility = 'household'
           AND e.household_id = ?
           AND date(e.occurred_at / 1000, 'unixepoch') >= ?
           AND date(e.occurred_at / 1000, 'unixepoch') <= ?

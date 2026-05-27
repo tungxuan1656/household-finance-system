@@ -68,7 +68,7 @@ export const summarizeExpenses = async (
   }
 
   if (input.spentByUserId !== undefined) {
-    conditions.push('e.created_by_user_id = ?')
+    conditions.push('e.spent_by_user_id = ?')
     params.push(input.spentByUserId)
   }
 

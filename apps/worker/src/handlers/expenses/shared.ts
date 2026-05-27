@@ -41,7 +41,7 @@ export const mapStoredExpenseToDto = (
     : 'cash',
   occurredAt: expense.occurredAt,
   householdId: expense.householdId,
-  spentByUserId: expense.createdByUserId,
+  spentByUserId: expense.spentByUserId,
   note: expense.note,
   groupIds,
   createdAt: expense.createdAt,

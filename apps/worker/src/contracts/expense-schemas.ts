@@ -5,8 +5,6 @@ import {
   REFERENCE_SOURCE_KEYS,
 } from './reference-data'
 
-export const expenseVisibilitySchema = z.enum(['private', 'household'])
-
 const messages = {
   amountMustBePositive: 'Amount must be a positive number',
   categoryKeyInvalid: 'Invalid category key',

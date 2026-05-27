@@ -37,8 +37,6 @@ type AnalyticsExportExpenseRow = {
   id: string
   occurredAt: number
   categoryKey: ReferenceCategoryKey
-  payerUserId: string
-  visibility: 'private' | 'household'
   title: string
   amountMinor: number
 }
@@ -47,15 +45,13 @@ type AnalyticsExportExpenseRow = {
 const EXPENSE_COLUMNS = `
   id,
   household_id,
-  created_by_user_id,
-  payer_user_id,
+  spent_by_user_id,
   category_key,
   source_key,
   category_id,
   amount_minor,
   currency_code,
   occurred_at,
-  visibility,
   title,
   note,
   deleted_at,
@@ -105,7 +101,7 @@ export const listExpenses = async (
 
     params.push(userId)
   } else {
-    conditions.push('e.created_by_user_id = ?')
+    conditions.push('e.spent_by_user_id = ?')
     params.push(userId)
   }
 
@@ -153,7 +149,7 @@ export const listExpenses = async (
   }
 
   if (spentByUserId !== undefined) {
-    conditions.push('e.created_by_user_id = ?')
+    conditions.push('e.spent_by_user_id = ?')
     params.push(spentByUserId)
   }
 
@@ -267,7 +263,7 @@ export const getAnalyticsExport = async (
 
   const expenseRows = await db
     .prepare(
-      `SELECT e.occurred_at AS occurredAt, e.category_key AS categoryKey, e.created_by_user_id AS payerUserId, e.visibility AS visibility, e.title AS title, e.amount_minor AS amountMinor
+      `SELECT e.occurred_at AS occurredAt, e.category_key AS categoryKey, e.title AS title, e.amount_minor AS amountMinor
               , e.id AS id
          FROM expenses e
         WHERE ${whereClause}

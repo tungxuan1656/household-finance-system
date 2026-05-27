@@ -43,8 +43,8 @@ export const getExpenseHandler = async (
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  if (!expense.householdId || expense.createdByUserId === currentUser.id) {
-    if (expense.createdByUserId !== currentUser.id) {
+  if (!expense.householdId || expense.spentByUserId === currentUser.id) {
+    if (expense.spentByUserId !== currentUser.id) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
   } else {
@@ -76,7 +76,7 @@ export const getExpenseHandler = async (
       : 'cash',
     occurredAt: expense.occurredAt,
     householdId: expense.householdId,
-    spentByUserId: expense.createdByUserId,
+    spentByUserId: expense.spentByUserId,
     note: expense.note,
     groupIds,
     createdAt: expense.createdAt,

@@ -55,24 +55,22 @@ export const replaceExpenseGroupsHandler = async (
   }
 
   // Authorization
-  if (expense.visibility === 'private') {
-    if (expense.createdByUserId !== currentUser.id) {
+  if (!expense.householdId) {
+    if (expense.spentByUserId !== currentUser.id) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
   } else {
-    const membership = expense.householdId
-      ? await findActiveHouseholdMembership(
-          db,
-          currentUser.id,
-          expense.householdId,
-        )
-      : null
+    const membership = await findActiveHouseholdMembership(
+      db,
+      currentUser.id,
+      expense.householdId,
+    )
     if (!membership) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
 
     const canEdit =
-      (expense.createdByUserId === currentUser.id &&
+      (expense.spentByUserId === currentUser.id &&
         canEditOwnExpense(membership.role)) ||
       canEditAnyExpense(membership.role)
 

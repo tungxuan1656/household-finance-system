@@ -107,7 +107,7 @@ export const listExpensesHandler = async (
       : 'cash',
     occurredAt: expense.occurredAt,
     householdId: expense.householdId,
-    spentByUserId: expense.createdByUserId,
+    spentByUserId: expense.spentByUserId,
     note: expense.note,
     groupIds: groupIdsMap.get(expense.id) ?? [],
     createdAt: expense.createdAt,

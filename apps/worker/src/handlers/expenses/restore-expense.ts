@@ -47,7 +47,7 @@ export const restoreExpenseHandler = async (
   }
 
   if (!expense.householdId) {
-    if (expense.createdByUserId !== currentUser.id) {
+    if (expense.spentByUserId !== currentUser.id) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
   } else {

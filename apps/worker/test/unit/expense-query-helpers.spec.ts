@@ -15,7 +15,7 @@ describe('expense query helpers', () => {
 
     expect(scope.conditions).toEqual([
       'e.deleted_at IS NULL',
-      'e.created_by_user_id = ?',
+      'e.spent_by_user_id = ?',
     ])
     expect(scope.params).toEqual(['user-1'])
   })

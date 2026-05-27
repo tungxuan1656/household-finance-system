@@ -26,7 +26,7 @@ export const buildVisibleExpenseConditions = (
 
     params.push(userId)
   } else {
-    conditions.push('e.created_by_user_id = ?')
+    conditions.push('e.spent_by_user_id = ?')
     params.push(userId)
   }
 

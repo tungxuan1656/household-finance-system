@@ -34,8 +34,8 @@ export const authorizeExpenseAccess = async (
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  if (!expense.householdId || expense.createdByUserId === currentUserId) {
-    if (expense.createdByUserId !== currentUserId) {
+  if (!expense.householdId || expense.spentByUserId === currentUserId) {
+    if (expense.spentByUserId !== currentUserId) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
 
@@ -79,7 +79,7 @@ export const authorizeExpenseMutation = async (
   }
 
   const canEdit =
-    (expense.createdByUserId === currentUserId &&
+    (expense.spentByUserId === currentUserId &&
       canEditOwnExpense(membership.role)) ||
     canEditAnyExpense(membership.role)
 

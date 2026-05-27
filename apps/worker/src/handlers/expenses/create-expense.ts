@@ -87,9 +87,8 @@ export const createExpenseHandler = async (
     currencyCode = 'VND'
   }
 
-  // Payer is always the creating user (no external attribution)
-  const createdByUserId = currentUser.id
-  const payerUserId = createdByUserId
+  // Spender is always the creating user (no external attribution)
+  const spentByUserId = currentUser.id
 
   // Convert amount to minor units and validate it doesn't round to zero
   const amountMinor = getMinorUnits(body.amount, currencyCode)
@@ -123,15 +122,13 @@ export const createExpenseHandler = async (
   const input: CreateExpenseInput = {
     id: newId(),
     householdId,
-    createdByUserId,
-    payerUserId,
+    spentByUserId,
     categoryKey: body.categoryKey,
     sourceKey: body.sourceKey,
     categoryId: null,
     amountMinor,
     currencyCode,
     occurredAt: body.occurredAt,
-    visibility: householdId ? 'household' : 'private',
     title: body.title,
     note: body.note ?? null,
   }
@@ -159,7 +156,7 @@ export const createExpenseHandler = async (
     sourceKey: created.sourceKey as ExpenseDTO['sourceKey'],
     occurredAt: created.occurredAt,
     householdId: created.householdId,
-    spentByUserId: created.createdByUserId,
+    spentByUserId: created.spentByUserId,
     note: created.note,
     groupIds,
     createdAt: created.createdAt,
