@@ -11,7 +11,8 @@
       "Read docs/PLANS.md, docs/exec-plans/__plan-template__.md, docs/exec-plans/index.md, docs/design-docs/mobile-first-protected-shell-and-tab-surfaces.md, docs/FRONTEND.md, and the key frontend reference docs before drafting the ExecPlan.",
       "Mapped the current protected route pages, shell/layout files, auth redirect touchpoints, route constants, and current PageShell dependency points so the plan names exact files instead of generic frontend areas.",
       "Updated canonical frontend docs so future page work now points to the new protected page-surface wrapper pattern and the four-tab responsive shell model instead of creating new PageShell-based pages.",
-      "Started implementation with the shared wrapper foundation batch: added `apps/web/src/components/shared/page/` and defined `PageContainer`, `PageHeader`, `PageContent`, `PageFooter`, plus the shared barrel export."
+      "Started implementation with the shared wrapper foundation batch: added `apps/web/src/components/shared/page/` and defined `PageContainer`, `PageHeader`, `PageContent`, `PageFooter`, plus the shared barrel export.",
+      "Continued implementation with the first navigation batch: moved the protected default entry to Expense semantics, turned `/home` into a compatibility redirect, reduced shared mobile/desktop navigation to the four approved top-level tabs, and restyled the mobile bottom tab bar closer to the approved Yellow Finance surface."
     ],
     "verification": [
       "Validated harness/feature_index.json and harness/features/feat-073.json with python3 -m json.tool.",
@@ -19,8 +20,11 @@
       "Planning/docs session verification passed earlier with final ./init.sh returning Done! and gitnexus_detect_changes(scope: all) recording the docs-only blast radius.",
       "Pre-edit GitNexus impact checks for `PageShell` and `MobileHeader` both returned LOW risk with 0 direct dependents and 0 affected processes before the first shared-wrapper code batch.",
       "Shared wrapper foundation verification passed: ./init.sh typecheck returned OK and ./init.sh lint returned OK.",
-      "Early gitnexus_detect_changes(scope: all) during the implementation session returned no changed symbols because the new shared wrapper files were still untracked."
+      "Early gitnexus_detect_changes(scope: all) during the implementation session returned no changed symbols because the new shared wrapper files were still untracked.",
+      "Pre-edit GitNexus impact checks for `BottomTab`, `AppSidebar`, and `HomeRoutePage` all returned LOW risk with 0 direct dependents and 0 affected processes before the navigation batch.",
+      "Navigation batch verification passed: ./init.sh typecheck returned OK and ./init.sh lint returned OK.",
+      "Post-batch gitnexus_detect_changes(scope: all) returned LOW risk with 10 changed symbols across 7 files and 0 affected processes."
     ]
   },
-  "notes": "Execution has started. The shared page-wrapper foundation batch is complete, while shell route migration and page-level adoption remain pending."
+  "notes": "Execution has started. The shared page-wrapper foundation batch and the first bottom-tab / four-tab navigation batch are complete, while deeper shell/page adoption and visual browser verification remain pending."
 }

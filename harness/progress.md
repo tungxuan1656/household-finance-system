@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Refactored bottom tabs and four-tab protected navigation
+
+- Who: Orchestrator + User
+- Summary: Continued the Yellow Finance protected-pages execution with the first live shell-navigation batch. Reduced the shared protected nav model to the approved four top-level tabs (`Expense`, `Analysis`, `Household`, `Settings`), switched `PATHS.APP_ROOT` and auth default redirects to Expense semantics, converted `/home` into a compatibility redirect, updated the manifest shortcut, centralized active-state logic in `navigation.ts`, and rebuilt the mobile bottom tab bar into a rounded elevated surface with selected gold-pill states that better matches the approved Stitch direction.
+- Files changed: Protected path/auth/navigation constants, mobile bottom-tab component, desktop sidebar nav mapping, `/home` protected route redirect, manifest shortcut, feat-073 evidence, and this progress log.
+- Verification: `gitnexus_impact` for `BottomTab`, `AppSidebar`, and `HomeRoutePage` returned `LOW` risk with 0 direct dependents and 0 affected processes; `./init.sh typecheck` returned `OK`; `./init.sh lint` returned `OK`; `gitnexus_detect_changes(scope: all)` returned `LOW` risk with 10 changed symbols across 7 files and 0 affected processes.
+- Blockers: No dev server was attached in this thread, so this batch was not visually browser-verified yet.
+- Next steps: Visually verify the new shell if a local web server is available, then move to the first protected page adoption batch on the Expense surface using the shared page wrappers.
+
 ## 2026-05-27 — Built shared protected-page wrapper foundation
 
 - Who: Orchestrator + User

@@ -1,32 +1,26 @@
 import {
   Banknote,
   ChartPie,
-  Home,
   House,
-  Menu,
-  PiggyBank,
+  type LucideIcon,
   Settings,
-  Tags,
 } from 'lucide-react'
+
+import type { TranslationKey } from '@/lib/i18n/i18n-init'
 
 import { PATHS } from './paths'
 
-export const APP_MENU_ITEMS = [
-  { to: PATHS.APP_ROOT, labelKey: 'shell.protected.nav.overview', icon: Home },
+type ProtectedNavigationItem = {
+  to: string
+  labelKey: TranslationKey
+  icon: LucideIcon
+}
+
+const PROTECTED_TAB_ITEMS: ProtectedNavigationItem[] = [
   {
     to: PATHS.EXPENSES,
     labelKey: 'shell.protected.nav.expenses',
     icon: Banknote,
-  },
-  {
-    to: PATHS.GROUPS,
-    labelKey: 'shell.protected.nav.groups',
-    icon: Tags,
-  },
-  {
-    to: PATHS.BUDGETS,
-    labelKey: 'shell.protected.nav.budgets',
-    icon: PiggyBank,
   },
   {
     to: PATHS.INSIGHTS,
@@ -43,29 +37,14 @@ export const APP_MENU_ITEMS = [
     labelKey: 'shell.protected.nav.settings',
     icon: Settings,
   },
-  {
-    to: PATHS.MORE,
-    labelKey: 'shell.protected.nav.more',
-    icon: Menu,
-  },
 ] as const
 
-export const BOTTOM_TAB_ITEMS = [
-  { to: PATHS.APP_ROOT, labelKey: 'shell.protected.nav.overview', icon: Home },
-  {
-    to: PATHS.EXPENSES,
-    labelKey: 'shell.protected.nav.expenses',
-    icon: Banknote,
-  },
-  {
-    to: PATHS.BUDGETS,
-    labelKey: 'shell.protected.nav.budgets',
-    icon: PiggyBank,
-  },
-  {
-    to: PATHS.INSIGHTS,
-    labelKey: 'shell.protected.nav.insights',
-    icon: ChartPie,
-  },
-  { to: PATHS.MORE, labelKey: 'shell.protected.nav.more', icon: Menu },
-] as const
+export const APP_MENU_ITEMS = PROTECTED_TAB_ITEMS
+export const BOTTOM_TAB_ITEMS = PROTECTED_TAB_ITEMS
+
+export const isProtectedNavItemActive = (
+  pathname: string,
+  itemPath: string,
+) => {
+  return pathname === itemPath || pathname.startsWith(`${itemPath}/`)
+}

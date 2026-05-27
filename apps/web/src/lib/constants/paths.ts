@@ -5,7 +5,8 @@ export const PATHS = {
   SIGN_UP: '/sign-up',
 
   // Protected shell base
-  APP_ROOT: '/home',
+  APP_ROOT: '/expenses',
+  HOME: '/home',
 
   // Protected features
   ONBOARDING: '/onboarding',

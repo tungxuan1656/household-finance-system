@@ -38,8 +38,8 @@ export default function manifest(): MetadataRoute.Manifest {
         url: '/expenses?add-expense=1',
       },
       {
-        name: 'Overview',
-        url: '/home',
+        name: 'Expense',
+        url: '/expenses',
       },
     ],
     start_url: '/',
