@@ -67,10 +67,10 @@ This work is frontend-only plus current docs and harness updates. The user-visib
 
 ## Progress
 
-- [ ] 2026-05-27 Create and approve the execution path for the protected-shell/page refactor. Owner: Orchestrator.
+- [x] 2026-05-27 Create and approve the execution path for the protected-shell/page refactor. Owner: Orchestrator.
 - [ ] Run `gitnexus_impact` on the first-edit shell/page symbols (`MainLayout`, `AppSidebar`, `BottomTab`, `MobileHeader`, `PageShell`, `ExpensesPage`, `InsightsPage`, `HouseholdsPage`, `HouseholdDetailPage`, `SettingsPage`, add-expense provider symbols). Owner: implementation session.
 - [ ] Batch 1 — shell foundation and route contract. Owner: implementation session.
-- [ ] Batch 2 — shared page wrappers and `PageShell` migration helpers. Owner: implementation session.
+- [x] 2026-05-27 Batch 2 — shared page wrappers and `PageShell` migration helpers. Owner: Orchestrator.
 - [ ] Batch 3 — Expense surface and 3-step add-expense flow. Owner: implementation session.
 - [ ] Batch 4 — Analysis surface. Owner: implementation session.
 - [ ] Batch 5 — Household list, add-household sheet, and household detail. Owner: implementation session.
@@ -83,6 +83,7 @@ This work is frontend-only plus current docs and harness updates. The user-visib
 - Current desktop and mobile navigation do not already match the approved four-tab Yellow Finance structure; both route constants and active-label copy must change together.
 - Current docs still describe `PageShell` as canonical, so docs must be updated before execution to keep future page work aligned.
 - The approved Stitch screens already define stronger screen composition than the current repo state, so shell/page work must be staged before deeper page polish.
+- GitNexus `detect_changes(scope: all)` does not currently report the new shared page-wrapper files while they remain untracked, so per-symbol impact evidence and direct file verification are more useful than blast-radius output during this early batch.
 
 ## Decision Log
 

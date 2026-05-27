@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Built shared protected-page wrapper foundation
+
+- Who: Orchestrator + User
+- Summary: Started executing the Yellow Finance protected-pages plan with the lowest-risk foundation batch. Added the new shared page wrapper modules under `apps/web/src/components/shared/page/`: `PageContainer`, `PageHeader`, `PageContent`, `PageFooter`, and a barrel export. `PageHeader` now supports the requested back-button contract plus `left` and `right` render slots, while `PageContent` and `PageFooter` encode the default protected-page spacing and bottom-nav-safe layout behavior needed for later route migrations.
+- Files changed: New shared page wrapper components, active ExecPlan progress/discovery notes, feat-073 evidence, and this progress log.
+- Verification: `gitnexus_impact` for `PageShell` and `MobileHeader` returned `LOW` risk with 0 direct dependents and 0 affected processes; `./init.sh typecheck` returned `OK`; `./init.sh lint` returned `OK`; `gitnexus_detect_changes(scope: all)` returned no changed symbols because the new wrapper files are still untracked.
+- Blockers: none.
+- Next steps: Begin Batch 1 shell foundation by changing route constants and navigation, then start adopting the shared wrappers on the first protected page surface.
+
 ## 2026-05-27 — Wrote Yellow Finance protected-pages ExecPlan and canonical page rules
 
 - Who: Orchestrator + User
