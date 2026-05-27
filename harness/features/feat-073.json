@@ -1,0 +1,23 @@
+{
+  "id": "feat-073",
+  "name": "Yellow Finance protected pages refactor plan and canonical page rules",
+  "status": "in_progress",
+  "description": "Plan the frontend-only refactor of the protected `apps/web` experience around the approved Yellow Finance mobile-first shell and screens, and update the canonical frontend docs so future page work follows the new shared page-wrapper rules instead of `PageShell`.",
+  "dependencies": ["feat-067", "feat-072"],
+  "plan": "docs/exec-plans/plans/2026-05-27-yellow-finance-protected-pages-refactor.md",
+  "evidence": {
+    "planned": [
+      "Used using-skills first, classified the work as Level 2, and used writing-plans because the user explicitly asked for an implementation plan before the multi-batch frontend refactor.",
+      "Read docs/PLANS.md, docs/exec-plans/__plan-template__.md, docs/exec-plans/index.md, docs/design-docs/mobile-first-protected-shell-and-tab-surfaces.md, docs/FRONTEND.md, and the key frontend reference docs before drafting the ExecPlan.",
+      "Mapped the current protected route pages, shell/layout files, auth redirect touchpoints, route constants, and current PageShell dependency points so the plan names exact files instead of generic frontend areas.",
+      "Updated canonical frontend docs so future page work now points to the new protected page-surface wrapper pattern and the four-tab responsive shell model instead of creating new PageShell-based pages."
+    ],
+    "verification": [
+      "Validated harness/feature_index.json and harness/features/feat-073.json with python3 -m json.tool.",
+      "Checked the new ExecPlan and updated frontend docs for the expected Yellow Finance protected-shell and page-wrapper terms.",
+      "Final ./init.sh returned Done! after the planning/docs updates.",
+      "Final gitnexus_detect_changes(scope: all) recorded the docs-only blast radius for the planning session."
+    ]
+  },
+  "notes": "Planning/docs session only. The implementation itself has not started yet. The active ExecPlan should be executed in a later session."
+}

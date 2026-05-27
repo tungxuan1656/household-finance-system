@@ -9,6 +9,14 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Wrote Yellow Finance protected-pages ExecPlan and canonical page rules
+
+- Who: Orchestrator + User
+- Summary: Converted the approved Yellow Finance protected-shell design into an implementation-ready ExecPlan for the actual `apps/web` refactor. The plan sequences the work into shell foundation, shared page-wrapper creation, Expense/Analysis/Household/Settings page rebuilds, contextual route cleanup, and final `PageShell` removal. In the same session, updated the canonical frontend docs so future protected pages now point at `PageContainer`/`PageHeader`/`PageContent`/`PageFooter`, the four-tab responsive shell model, and the shared-page-wrapper ownership rules instead of the older `PageShell` contract.
+- Files changed: New ExecPlan, exec-plans index, frontend router doc, new protected-page surface reference doc, responsive shell reference doc, frontend component architecture guide, new feat-073 harness record, feature index, and this progress log.
+- Blockers: none.
+- Next steps: Execute `docs/exec-plans/plans/2026-05-27-yellow-finance-protected-pages-refactor.md` in a later session, starting with the required GitNexus impact checks on shell and top-level page symbols.
+
 ## 2026-05-27 — Refined protected-shell design doc from approved Stitch screens
 
 - Who: Orchestrator + User

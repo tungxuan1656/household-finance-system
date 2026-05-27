@@ -364,6 +364,11 @@
       "id": "feat-072",
       "name": "Mobile-first protected shell and tab-surface design doc",
       "status": "done"
+    },
+    {
+      "id": "feat-073",
+      "name": "Yellow Finance protected pages refactor plan and canonical page rules",
+      "status": "in_progress"
     }
   ]
 }

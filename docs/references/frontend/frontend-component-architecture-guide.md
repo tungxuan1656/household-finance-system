@@ -77,7 +77,7 @@ Reusable across multiple features.
 
 - No domain knowledge.
 - Generic behavior allowed.
-- Examples: `DataState`, form field controller wrappers.
+- Examples: `DataState`, shared page wrappers, form field controller wrappers.
 - If it knows `expense`, `budget`, `household`, `group`, `invitation`, or `analytics`, it is not shared.
 
 ## UI Primitive
