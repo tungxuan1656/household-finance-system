@@ -287,13 +287,11 @@ export interface ListExpensesInput {
   dateFrom?: number
   dateTo?: number
   categoryKey?: string
-  payerId?: string
-  visibility?: 'private' | 'household'
   groupId?: string
   query?: string
   amountMin?: number
   amountMax?: number
-  creatorId?: string
+  spentByUserId?: string
   sort?: 'occurred_at_desc' | 'amount_desc'
 }
 

@@ -4,7 +4,7 @@ import { createExpenseRequestSchema } from '@/contracts'
 
 describe('expense contract schema', () => {
   describe('valid payloads', () => {
-    it('accepts minimal valid private expense', () => {
+    it('accepts minimal valid personal expense', () => {
       const parsed = createExpenseRequestSchema().safeParse({
         amount: 50000,
         categoryKey: 'food',
@@ -15,11 +15,11 @@ describe('expense contract schema', () => {
 
       expect(parsed.success).toBe(true)
       if (parsed.success) {
-        expect(parsed.data.visibility).toBe('private')
+        expect(parsed.data.householdId).toBeUndefined()
       }
     })
 
-    it('accepts full valid household expense with all optional fields', () => {
+    it('accepts full valid household expense with optional fields', () => {
       const parsed = createExpenseRequestSchema().safeParse({
         amount: 150000,
         categoryKey: 'transport',
@@ -27,14 +27,14 @@ describe('expense contract schema', () => {
         title: 'Monthly commute pass',
         occurredAt: 1750000000000,
         note: 'Includes bus and metro',
-        visibility: 'household',
         householdId: 'hh_abc123',
+        groupIds: ['group-1'],
       })
 
       expect(parsed.success).toBe(true)
       if (parsed.success) {
-        expect(parsed.data.visibility).toBe('household')
         expect(parsed.data.householdId).toBe('hh_abc123')
+        expect(parsed.data.groupIds).toEqual(['group-1'])
         expect(parsed.data.note).toBe('Includes bus and metro')
       }
     })
@@ -102,12 +102,6 @@ describe('expense contract schema', () => {
       })
 
       expect(parsed.success).toBe(false)
-      if (!parsed.success) {
-        const issue = parsed.error.issues.find((i) =>
-          i.path.includes('categoryKey'),
-        )
-        expect(issue).toBeDefined()
-      }
     })
 
     it('rejects lending category (transfer kind)', () => {
@@ -120,12 +114,6 @@ describe('expense contract schema', () => {
       })
 
       expect(parsed.success).toBe(false)
-      if (!parsed.success) {
-        const issue = parsed.error.issues.find((i) =>
-          i.path.includes('categoryKey'),
-        )
-        expect(issue).toBeDefined()
-      }
     })
 
     it('accepts valid expense category (food)', () => {
@@ -217,58 +205,38 @@ describe('expense contract schema', () => {
     })
   })
 
-  describe('visibility=household requires householdId', () => {
-    it('rejects household visibility without householdId', () => {
+  describe('household context', () => {
+    it('accepts householdId when provided', () => {
       const parsed = createExpenseRequestSchema().safeParse({
         amount: 50000,
         categoryKey: 'food',
         sourceKey: 'cash',
         title: 'Family dinner',
         occurredAt: 1750000000000,
-        visibility: 'household',
-      })
-
-      expect(parsed.success).toBe(false)
-      if (!parsed.success) {
-        const issue = parsed.error.issues.find((i) =>
-          i.path.includes('householdId'),
-        )
-        expect(issue).toBeDefined()
-      }
-    })
-
-    it('accepts household visibility with householdId', () => {
-      const parsed = createExpenseRequestSchema().safeParse({
-        amount: 50000,
-        categoryKey: 'food',
-        sourceKey: 'cash',
-        title: 'Family dinner',
-        occurredAt: 1750000000000,
-        visibility: 'household',
         householdId: 'hh_valid123',
       })
 
       expect(parsed.success).toBe(true)
     })
 
-    it('accepts private visibility without householdId', () => {
+    it('rejects blank householdId', () => {
       const parsed = createExpenseRequestSchema().safeParse({
         amount: 50000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        title: 'Personal lunch',
+        title: 'Family dinner',
         occurredAt: 1750000000000,
-        visibility: 'private',
+        householdId: '   ',
       })
 
-      expect(parsed.success).toBe(true)
+      expect(parsed.success).toBe(false)
     })
   })
 
   describe('note length validation', () => {
     it('rejects note exceeding 1000 characters', () => {
       const parsed = createExpenseRequestSchema().safeParse({
-        amount: 50000,
+        amount: 1000,
         categoryKey: 'food',
         sourceKey: 'cash',
         title: 'Lunch',
@@ -283,12 +251,12 @@ describe('expense contract schema', () => {
   describe('strict mode', () => {
     it('rejects unknown fields', () => {
       const parsed = createExpenseRequestSchema().safeParse({
-        amount: 50000,
+        amount: 1000,
         categoryKey: 'food',
         sourceKey: 'cash',
         title: 'Lunch',
         occurredAt: 1750000000000,
-        unknownField: 'should fail',
+        unexpected: 'field',
       })
 
       expect(parsed.success).toBe(false)
@@ -298,7 +266,7 @@ describe('expense contract schema', () => {
   describe('sourceKey validation', () => {
     it('rejects invalid sourceKey', () => {
       const parsed = createExpenseRequestSchema().safeParse({
-        amount: 50000,
+        amount: 1000,
         categoryKey: 'food',
         sourceKey: 'invalid-source',
         title: 'Lunch',

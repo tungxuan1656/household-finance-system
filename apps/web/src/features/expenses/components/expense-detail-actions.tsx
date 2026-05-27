@@ -22,7 +22,7 @@ export const ExpenseDetailActions = ({
   onDelete,
   isDeleting,
 }: ExpenseDetailActionsProps) => {
-  const canManageExpense = currentUserId === expense.createdByUserId || isAdmin
+  const canManageExpense = currentUserId === expense.spentByUserId || isAdmin
 
   if (!canManageExpense) {
     return null

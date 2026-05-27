@@ -28,12 +28,10 @@ export interface ExpenseDTO {
   categoryKey: (typeof REFERENCE_CATEGORY_KEYS)[number]
   sourceKey: (typeof REFERENCE_SOURCE_KEYS)[number]
   occurredAt: number
-  visibility: 'private' | 'household'
   householdId: string | null
-  payerUserId: string
+  spentByUserId: string
   note: string | null
   groupIds: string[]
-  createdByUserId: string
   createdAt: number
   updatedAt: number
 }

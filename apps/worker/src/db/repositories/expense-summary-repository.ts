@@ -13,13 +13,11 @@ export const summarizeExpenses = async (
     | 'dateFrom'
     | 'dateTo'
     | 'categoryKey'
-    | 'payerId'
-    | 'visibility'
     | 'groupId'
     | 'query'
     | 'amountMin'
     | 'amountMax'
-    | 'creatorId'
+    | 'spentByUserId'
   >,
 ): Promise<ExpenseSummaryResult> => {
   const { conditions, params } = buildVisibleExpenseConditions(
@@ -47,16 +45,6 @@ export const summarizeExpenses = async (
     params.push(input.categoryKey)
   }
 
-  if (input.payerId !== undefined) {
-    conditions.push('e.payer_user_id = ?')
-    params.push(input.payerId)
-  }
-
-  if (input.visibility !== undefined) {
-    conditions.push('e.visibility = ?')
-    params.push(input.visibility)
-  }
-
   if (input.groupId !== undefined) {
     conditions.push(
       `e.id IN (
@@ -79,9 +67,9 @@ export const summarizeExpenses = async (
     params.push(input.amountMax)
   }
 
-  if (input.creatorId !== undefined) {
+  if (input.spentByUserId !== undefined) {
     conditions.push('e.created_by_user_id = ?')
-    params.push(input.creatorId)
+    params.push(input.spentByUserId)
   }
 
   const row = await db

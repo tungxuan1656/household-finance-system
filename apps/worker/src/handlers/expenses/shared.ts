@@ -40,12 +40,10 @@ export const mapStoredExpenseToDto = (
     ? (expense.sourceKey as ExpenseDTO['sourceKey'])
     : 'cash',
   occurredAt: expense.occurredAt,
-  visibility: expense.visibility,
   householdId: expense.householdId,
-  payerUserId: expense.payerUserId,
+  spentByUserId: expense.createdByUserId,
   note: expense.note,
   groupIds,
-  createdByUserId: expense.createdByUserId,
   createdAt: expense.createdAt,
   updatedAt: expense.updatedAt,
 })
@@ -61,9 +59,7 @@ export const buildExpenseChangeSet = (
     'categoryKey',
     'sourceKey',
     'occurredAt',
-    'visibility',
     'householdId',
-    'payerUserId',
     'note',
   ]
 

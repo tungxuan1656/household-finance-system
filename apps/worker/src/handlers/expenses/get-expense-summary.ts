@@ -50,13 +50,11 @@ export const getExpenseSummaryHandler = async (
     dateFrom: query.date_from,
     dateTo: query.date_to,
     categoryKey: query.category_key,
-    payerId: query.payer_id,
-    visibility: query.visibility,
     groupId: query.group_id,
     query: query.query,
     amountMin: query.amount_min,
     amountMax: query.amount_max,
-    creatorId: query.creator_id,
+    spentByUserId: query.spent_by_user_id,
   })
 
   return result

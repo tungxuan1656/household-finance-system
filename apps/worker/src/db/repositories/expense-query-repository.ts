@@ -74,13 +74,11 @@ export const listExpenses = async (
     dateFrom,
     dateTo,
     categoryKey,
-    payerId,
-    visibility,
     groupId,
     query,
     amountMin,
     amountMax,
-    creatorId,
+    spentByUserId,
     sort,
   } = input
 
@@ -92,31 +90,23 @@ export const listExpenses = async (
   const params: unknown[] = []
 
   if (householdId) {
-    // Household feed: only household-visible expenses in that household.
-    conditions.push('e.visibility = ?')
-    params.push('household')
     conditions.push('e.household_id = ?')
     params.push(householdId)
-  } else {
-    // Personal feed: own private expenses OR household expenses
-    // where user is an active member of that household.
-    conditions.push(`(
-      (
-        e.visibility = 'private'
-        AND e.created_by_user_id = ?
-      )
-      OR (
-        e.visibility = 'household'
-        AND e.household_id IN (
-          SELECT hm.household_id
-            FROM household_memberships hm
-           WHERE hm.user_id = ?
-             AND hm.state = 'active'
-        )
-      )
-    )`)
 
-    params.push(userId, userId)
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+          FROM household_memberships hm
+         WHERE hm.household_id = e.household_id
+           AND hm.user_id = ?
+           AND hm.state = 'active'
+      )`,
+    )
+
+    params.push(userId)
+  } else {
+    conditions.push('e.created_by_user_id = ?')
+    params.push(userId)
   }
 
   // Optional filters
@@ -133,16 +123,6 @@ export const listExpenses = async (
   if (categoryKey !== undefined) {
     conditions.push('e.category_key = ?')
     params.push(categoryKey)
-  }
-
-  if (payerId !== undefined) {
-    conditions.push('e.payer_user_id = ?')
-    params.push(payerId)
-  }
-
-  if (visibility !== undefined) {
-    conditions.push('e.visibility = ?')
-    params.push(visibility)
   }
 
   if (groupId !== undefined) {
@@ -172,9 +152,9 @@ export const listExpenses = async (
     params.push(amountMax)
   }
 
-  if (creatorId !== undefined) {
+  if (spentByUserId !== undefined) {
     conditions.push('e.created_by_user_id = ?')
-    params.push(creatorId)
+    params.push(spentByUserId)
   }
 
   // Cursor pagination: occurred_at DESC, id DESC for tie-breaking.
@@ -287,7 +267,7 @@ export const getAnalyticsExport = async (
 
   const expenseRows = await db
     .prepare(
-      `SELECT e.occurred_at AS occurredAt, e.category_key AS categoryKey, e.payer_user_id AS payerUserId, e.visibility AS visibility, e.title AS title, e.amount_minor AS amountMinor
+      `SELECT e.occurred_at AS occurredAt, e.category_key AS categoryKey, e.created_by_user_id AS payerUserId, e.visibility AS visibility, e.title AS title, e.amount_minor AS amountMinor
               , e.id AS id
          FROM expenses e
         WHERE ${whereClause}
@@ -313,7 +293,6 @@ export const listDeletedExpensesByHousehold = async (
       `SELECT ${EXPENSE_COLUMNS}
          FROM expenses
         WHERE household_id = ?
-          AND visibility = 'household'
           AND deleted_at IS NOT NULL
         ORDER BY deleted_at DESC, id DESC`,
     )

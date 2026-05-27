@@ -63,6 +63,7 @@ Out of scope:
 - [ ] Phase 2: Reset D1 migrations to a single canonical V2 schema.
 - [ ] Phase 3: Refactor worker contracts, repositories, handlers, analytics, budgets, and tests.
 - [x] 2026-05-27 Phase 3 milestone: remove household `defaultVisibility` from worker/web contracts, handlers, store types, i18n, tests, and `0001_init.sql`.
+- [x] 2026-05-27 Phase 3 milestone: move the public expense CRUD/query contract to V2 (`householdId` + `spentByUserId`) across worker contracts, expense handlers, query helpers, web expense types, and expense-entry/detail surfaces.
 - [ ] Phase 4: Refactor web API types, forms, filters, pages, analytics views, copy, and tests.
 - [ ] Phase 5: Clean current docs, exec-plan index, harness feature records, and progress artifacts.
 - [ ] Phase 6: Run final verification and GitNexus change detection.
@@ -78,6 +79,7 @@ Out of scope:
 - Initial stale-term scan found about 160 `payer` hits, 437 `visibility/private` hits, 41 lens hits, and 150 creator-related hits across current apps/docs/harness search scope.
 - After Phase 1 rewrites, `docs/product-specs/` no longer matches the stale-term scan for `payer|creator|visibility|private|public|lens|defaultVisibility`.
 - Household `defaultVisibility` was removed cleanly from worker/web slices with focused tests green, which confirms the household settings surface can move to pure name/currency/timezone semantics before the broader expense contract reset.
+- The public expense contract can move ahead of the full storage reset because worker handlers can still bridge from current DB columns to V2 DTOs while the deeper analytics/budget/group internals are being refactored.
 
 ## Decision Log
 
@@ -109,6 +111,10 @@ Out of scope:
 
 - Decision: Remove household `defaultVisibility` before the broader expense contract reset.
   Rationale: It is a bounded V1 artifact with limited blast radius, and removing it first reduces future noise in contracts, i18n, tests, and settings UI before the much larger expense refactor.
+  Date/Author: 2026-05-27 / Orchestrator
+
+- Decision: Migrate the public expense contract before fully rewriting storage and analytics internals.
+  Rationale: This lets worker/web CRUD surfaces and form/query semantics move to V2 while internal repositories still bridge through legacy columns temporarily, reducing front-to-back contract drift without requiring one giant atomic rewrite.
   Date/Author: 2026-05-27 / Orchestrator
 
 ## Outcomes & Retrospective

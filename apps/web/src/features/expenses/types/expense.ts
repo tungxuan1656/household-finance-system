@@ -1,7 +1,5 @@
 import type { CategoryKey, SourceKey } from '@/types/reference-data'
 
-export type ExpenseVisibility = 'private' | 'household'
-
 export type ExpenseDTO = {
   id: string
   amountMinor: number
@@ -11,11 +9,9 @@ export type ExpenseDTO = {
   title: string
   occurredAt: number
   note: string | null
-  visibility: ExpenseVisibility
   householdId: string | null
-  payerUserId: string | null
+  spentByUserId: string
   groupIds?: string[]
-  createdByUserId: string
   createdAt: number
   updatedAt: number
 }
@@ -27,16 +23,23 @@ export type CreateExpenseRequest = {
   title: string
   occurredAt: number
   note?: string
-  visibility: ExpenseVisibility
   householdId?: string
-  payerUserId?: string
+  groupIds?: string[]
+}
+
+export type UpdateExpenseRequest = {
+  amount?: number
+  categoryKey?: CategoryKey
+  sourceKey?: SourceKey
+  title?: string
+  occurredAt?: number
+  note?: string
+  householdId?: string | null
   groupIds?: string[]
 }
 
 // The API client unwraps the envelope, so the response type is just ExpenseDTO
 export type CreateExpenseResponse = ExpenseDTO
-
-export type UpdateExpenseRequest = CreateExpenseRequest
 
 export type UpdateExpenseResponse = ExpenseDTO
 
@@ -53,13 +56,11 @@ export type ExpenseListParams = {
   date_from?: number
   date_to?: number
   category_key?: string
-  payer_id?: string
-  visibility?: ExpenseVisibility
   group_id?: string
   query?: string
   amount_min?: number
   amount_max?: number
-  creator_id?: string
+  spent_by_user_id?: string
   sort?: 'occurred_at_desc' | 'amount_desc'
 }
 

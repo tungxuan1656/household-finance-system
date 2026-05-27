@@ -55,7 +55,7 @@ export const deleteExpenseHandler = async (
       targetId: expense.id,
       payloadJson: JSON.stringify({
         title: expense.title,
-        visibility: expense.visibility,
+        householdId: expense.householdId,
         amountMinor: expense.amountMinor,
       }),
     })

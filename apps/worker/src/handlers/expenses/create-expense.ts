@@ -60,12 +60,7 @@ export const createExpenseHandler = async (
   // Default currency and household handling
   let currencyCode = 'VND'
   let householdId: string | null = null
-  if (body.visibility === 'household') {
-    if (!body.householdId) {
-      throw invalidInput(locale, 'validation.invalidValue', {
-        path: ['householdId'],
-      })
-    }
+  if (body.householdId) {
     householdId = body.householdId
 
     // Validate membership and permissions
@@ -136,7 +131,7 @@ export const createExpenseHandler = async (
     amountMinor,
     currencyCode,
     occurredAt: body.occurredAt,
-    visibility: body.visibility,
+    visibility: householdId ? 'household' : 'private',
     title: body.title,
     note: body.note ?? null,
   }
@@ -163,12 +158,10 @@ export const createExpenseHandler = async (
     categoryKey: created.categoryKey as ExpenseDTO['categoryKey'],
     sourceKey: created.sourceKey as ExpenseDTO['sourceKey'],
     occurredAt: created.occurredAt,
-    visibility: created.visibility,
     householdId: created.householdId,
-    payerUserId: created.payerUserId,
+    spentByUserId: created.createdByUserId,
     note: created.note,
     groupIds,
-    createdByUserId: created.createdByUserId,
     createdAt: created.createdAt,
     updatedAt: created.updatedAt,
   }

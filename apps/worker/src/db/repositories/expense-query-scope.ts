@@ -11,28 +11,23 @@ export const buildVisibleExpenseConditions = (
   const params: unknown[] = []
 
   if (householdId) {
-    conditions.push('e.visibility = ?')
-    params.push('household')
     conditions.push('e.household_id = ?')
     params.push(householdId)
-  } else {
-    conditions.push(`(
-      (
-        e.visibility = 'private'
-        AND e.created_by_user_id = ?
-      )
-      OR (
-        e.visibility = 'household'
-        AND e.household_id IN (
-          SELECT hm.household_id
-            FROM household_memberships hm
-           WHERE hm.user_id = ?
-             AND hm.state = 'active'
-        )
-      )
-    )`)
 
-    params.push(userId, userId)
+    conditions.push(
+      `EXISTS (
+        SELECT 1
+          FROM household_memberships hm
+         WHERE hm.household_id = e.household_id
+           AND hm.user_id = ?
+           AND hm.state = 'active'
+      )`,
+    )
+
+    params.push(userId)
+  } else {
+    conditions.push('e.created_by_user_id = ?')
+    params.push(userId)
   }
 
   return { conditions, params }

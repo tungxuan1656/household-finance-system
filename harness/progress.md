@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Migrated public expense CRUD/query contract to V2
+
+- Who: Orchestrator + User
+- Summary: Continued the Product V2 reset by moving the public expense contract to V2 across worker and web CRUD/query entry points. Worker expense request/response schemas now pivot around optional `householdId` and `spentByUserId` in DTOs, worker list/detail/summary/update/delete/restore handlers and query helpers now bridge to that contract, personal query defaults moved toward current-user spending semantics, and web expense types, form schema, entry-form payload builders, detail actions, and detail card were updated to stop depending on `visibility`, `payer`, and `creator` as public expense fields. Rewrote the focused worker contract tests and a first set of expense integration tests to match the new API.
+- Files changed: Worker expense contracts/query helpers/handlers/tests, web expense types/forms/components/tests, active ExecPlan, feat-071 evidence, and this progress log.
+- Verification: `./init.sh typecheck` returned `OK`; `pnpm --filter worker exec vitest run test/unit/dto-expense.spec.ts test/unit/dto-expense-list.spec.ts` passed with 41 tests; `pnpm --filter web exec vitest run src/features/expenses/components/use-expense-entry-form.test.ts` passed with 8 tests; `pnpm --filter worker exec vitest run test/integration/expenses.spec.ts test/integration/expenses-detail-success.spec.ts test/integration/expenses-summary.spec.ts` passed with 15 tests; `gitnexus_detect_changes(scope: all)` returned `MEDIUM` risk with 60 changed indexed symbols across 26 files and 4 affected processes.
+- Blockers: Full `./init.sh` still fails because many deeper worker integration suites and analytics/budget/group flows still depend on legacy expense payloads and legacy assertions.
+- Next steps: Continue Phase 3 by migrating remaining worker integration suites plus the downstream analytics, budget, restore/delete, group-assignment, and scenario flows that still assume `visibility`, `payer`, or creator-based query semantics.
+
 ## 2026-05-27 — Removed household defaultVisibility from current schema and app contracts
 
 - Who: Orchestrator + User

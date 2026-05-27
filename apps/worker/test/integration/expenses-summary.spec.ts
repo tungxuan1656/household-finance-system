@@ -51,7 +51,6 @@ describe('GET /api/v1/expenses/summary', () => {
       amount: 12000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       groupIds: [groupId],
       title: 'Lunch with note',
@@ -63,7 +62,6 @@ describe('GET /api/v1/expenses/summary', () => {
       amount: 45000,
       categoryKey: 'transport',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       groupIds: [groupId],
       title: 'Taxi ride',
@@ -75,14 +73,13 @@ describe('GET /api/v1/expenses/summary', () => {
       amount: 30000,
       categoryKey: 'transport',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Private lunch',
       note: 'shared lunch note',
       occurredAt: 1_700_000_200_000,
     })
 
     const response = await SELF.fetch(
-      `https://example.com/api/v1/expenses/summary?household_id=${householdId}&query=lunch&amount_min=10000&amount_max=20000&creator_id=${auth.user.id}&category_key=food&visibility=household&date_from=1699999999000&date_to=1700000000500&payer_id=${auth.user.id}&group_id=${groupId}&sort=amount_desc`,
+      `https://example.com/api/v1/expenses/summary?household_id=${householdId}&query=lunch&amount_min=10000&amount_max=20000&spent_by_user_id=${auth.user.id}&category_key=food&date_from=1699999999000&date_to=1700000000500&group_id=${groupId}&sort=amount_desc`,
       {
         headers: {
           authorization: `Bearer ${auth.accessToken}`,

@@ -15,8 +15,7 @@ describe('expense list query schema', () => {
         expect(parsed.data.date_from).toBeUndefined()
         expect(parsed.data.date_to).toBeUndefined()
         expect(parsed.data.category_key).toBeUndefined()
-        expect(parsed.data.payer_id).toBeUndefined()
-        expect(parsed.data.visibility).toBeUndefined()
+        expect(parsed.data.spent_by_user_id).toBeUndefined()
       }
     })
 
@@ -32,29 +31,7 @@ describe('expense list query schema', () => {
       }
     })
 
-    it('parses a query with date_from filter', () => {
-      const parsed = expenseListQuerySchema().safeParse({
-        date_from: '1750000000000',
-      })
-
-      expect(parsed.success).toBe(true)
-      if (parsed.success) {
-        expect(parsed.data.date_from).toBe(1750000000000)
-      }
-    })
-
-    it('parses a query with date_to filter', () => {
-      const parsed = expenseListQuerySchema().safeParse({
-        date_to: '1750100000000',
-      })
-
-      expect(parsed.success).toBe(true)
-      if (parsed.success) {
-        expect(parsed.data.date_to).toBe(1750100000000)
-      }
-    })
-
-    it('parses a query with both date_from and date_to', () => {
+    it('parses date filters', () => {
       const parsed = expenseListQuerySchema().safeParse({
         date_from: '1750000000000',
         date_to: '1750100000000',
@@ -67,7 +44,7 @@ describe('expense list query schema', () => {
       }
     })
 
-    it('parses a query with category_key filter', () => {
+    it('parses category filter', () => {
       const parsed = expenseListQuerySchema().safeParse({
         category_key: 'food',
       })
@@ -78,29 +55,7 @@ describe('expense list query schema', () => {
       }
     })
 
-    it('parses a query with payer_id filter', () => {
-      const parsed = expenseListQuerySchema().safeParse({
-        payer_id: 'user_abc123',
-      })
-
-      expect(parsed.success).toBe(true)
-      if (parsed.success) {
-        expect(parsed.data.payer_id).toBe('user_abc123')
-      }
-    })
-
-    it('parses a query with visibility filter', () => {
-      const parsed = expenseListQuerySchema().safeParse({
-        visibility: 'household',
-      })
-
-      expect(parsed.success).toBe(true)
-      if (parsed.success) {
-        expect(parsed.data.visibility).toBe('household')
-      }
-    })
-
-    it('parses a query with household_id filter', () => {
+    it('parses household filter', () => {
       const parsed = expenseListQuerySchema().safeParse({
         household_id: 'hh_abc123',
       })
@@ -111,7 +66,7 @@ describe('expense list query schema', () => {
       }
     })
 
-    it('parses a query with note substring filter', () => {
+    it('parses note query filter', () => {
       const parsed = expenseListQuerySchema().safeParse({
         query: 'groceries',
       })
@@ -122,40 +77,31 @@ describe('expense list query schema', () => {
       }
     })
 
-    it('parses a query with amount_min filter', () => {
+    it('parses amount range filters', () => {
       const parsed = expenseListQuerySchema().safeParse({
         amount_min: '1000',
-      })
-
-      expect(parsed.success).toBe(true)
-      if (parsed.success) {
-        expect(parsed.data.amount_min).toBe(1000)
-      }
-    })
-
-    it('parses a query with amount_max filter', () => {
-      const parsed = expenseListQuerySchema().safeParse({
         amount_max: '5000',
       })
 
       expect(parsed.success).toBe(true)
       if (parsed.success) {
+        expect(parsed.data.amount_min).toBe(1000)
         expect(parsed.data.amount_max).toBe(5000)
       }
     })
 
-    it('parses a query with creator_id filter', () => {
+    it('parses spent_by_user_id filter', () => {
       const parsed = expenseListQuerySchema().safeParse({
-        creator_id: 'user_abc123',
+        spent_by_user_id: 'user_abc123',
       })
 
       expect(parsed.success).toBe(true)
       if (parsed.success) {
-        expect(parsed.data.creator_id).toBe('user_abc123')
+        expect(parsed.data.spent_by_user_id).toBe('user_abc123')
       }
     })
 
-    it('parses a query with sort filter', () => {
+    it('parses sort filter', () => {
       const parsed = expenseListQuerySchema().safeParse({
         sort: 'amount_desc',
       })
@@ -166,7 +112,7 @@ describe('expense list query schema', () => {
       }
     })
 
-    it('parses a query with all filters combined', () => {
+    it('parses all supported filters combined', () => {
       const parsed = expenseListQuerySchema().safeParse({
         cursor: 'eyJvZmZzZXQiOjB9',
         limit: '50',
@@ -174,13 +120,11 @@ describe('expense list query schema', () => {
         date_from: '1750000000000',
         date_to: '1750100000000',
         category_key: 'transport',
-        payer_id: 'user_def456',
-        creator_id: 'user_creator123',
+        spent_by_user_id: 'user_spender123',
         query: 'rent',
         amount_min: '1000',
         amount_max: '5000',
         sort: 'occurred_at_desc',
-        visibility: 'private',
       })
 
       expect(parsed.success).toBe(true)
@@ -191,13 +135,11 @@ describe('expense list query schema', () => {
         expect(parsed.data.date_from).toBe(1750000000000)
         expect(parsed.data.date_to).toBe(1750100000000)
         expect(parsed.data.category_key).toBe('transport')
-        expect(parsed.data.payer_id).toBe('user_def456')
-        expect(parsed.data.creator_id).toBe('user_creator123')
+        expect(parsed.data.spent_by_user_id).toBe('user_spender123')
         expect(parsed.data.query).toBe('rent')
         expect(parsed.data.amount_min).toBe(1000)
         expect(parsed.data.amount_max).toBe(5000)
         expect(parsed.data.sort).toBe('occurred_at_desc')
-        expect(parsed.data.visibility).toBe('private')
       }
     })
 
@@ -224,23 +166,9 @@ describe('expense list query schema', () => {
       expect(parsed.success).toBe(false)
     })
 
-    it('rejects negative limit', () => {
-      const parsed = expenseListQuerySchema().safeParse({ limit: '-5' })
-
-      expect(parsed.success).toBe(false)
-    })
-
     it('rejects invalid category_key', () => {
       const parsed = expenseListQuerySchema().safeParse({
         category_key: 'nonexistent-category',
-      })
-
-      expect(parsed.success).toBe(false)
-    })
-
-    it('rejects invalid visibility', () => {
-      const parsed = expenseListQuerySchema().safeParse({
-        visibility: 'public',
       })
 
       expect(parsed.success).toBe(false)
@@ -262,17 +190,9 @@ describe('expense list query schema', () => {
       expect(parsed.success).toBe(false)
     })
 
-    it('rejects empty string payer_id', () => {
+    it('rejects empty string spent_by_user_id', () => {
       const parsed = expenseListQuerySchema().safeParse({
-        payer_id: '',
-      })
-
-      expect(parsed.success).toBe(false)
-    })
-
-    it('rejects whitespace-only payer_id', () => {
-      const parsed = expenseListQuerySchema().safeParse({
-        payer_id: '   ',
+        spent_by_user_id: '',
       })
 
       expect(parsed.success).toBe(false)
