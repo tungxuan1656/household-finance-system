@@ -354,6 +354,11 @@
       "id": "feat-070",
       "name": "Product direction v2 clarification docs",
       "status": "done"
+    },
+    {
+      "id": "feat-071",
+      "name": "Product V2 full project reset",
+      "status": "planned"
     }
   ]
 }

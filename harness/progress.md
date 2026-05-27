@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Wrote Product V2 full-project reset ExecPlan
+
+- Who: Orchestrator + User
+- Summary: Created the active full-project reset plan for Product Direction V2. The plan covers current product specs, D1 migration reset, worker contract/repository/handler/test rewrites, web form/query/dashboard/copy/test rewrites, and current docs/harness cleanup so the project no longer treats payer/creator, private/public visibility, household-first positioning, household-dependent groups, or lens terminology as current product truth. Also moved the stale feat-061 expense-entry plan from Active to Completed in the exec-plan index because the feature record is already done.
+- Files changed: New Product V2 reset ExecPlan, exec-plan index, new harness feature record, feature index, and this progress log.
+- Verification: `python3 -m json.tool` validated harness JSON; placeholder scan found no unfinished placeholder markers in the new plan and touched harness/index files; final `./init.sh` returned `Done!`; `gitnexus_detect_changes(scope: all)` returned LOW risk with 5 changed indexed sections across 3 indexed files and 0 affected processes.
+- Blockers: none.
+- Next steps: Begin Phase 0 of the plan by running GitNexus impact checks, then execute the reset in phases.
+
 ## 2026-05-27 — Clarified product direction v2 in Vietnamese, English, and design docs
 
 - Who: Orchestrator + User

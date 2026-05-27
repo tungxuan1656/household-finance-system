@@ -1,0 +1,23 @@
+{
+  "id": "feat-071",
+  "name": "Product V2 full project reset",
+  "status": "planned",
+  "description": "Reset the current project to match Product Direction V2 across product specs, database schema, worker contracts, web UI, tests, current docs, and harness state. The reset removes the old payer/creator expense split, private/public visibility mode, household-first positioning, household-dependent groups, and lens terminology from current product behavior.",
+  "dependencies": ["feat-070"],
+  "plan": "docs/exec-plans/plans/2026-05-27-product-v2-full-project-reset.md",
+  "evidence": {
+    "planned": [
+      "Used using-skills first and classified the request as Level 3 because it spans product behavior, database schema, API contracts, frontend UX, tests, docs, and harness cleanup.",
+      "Used writing-plans and read docs/PLANS.md, docs/exec-plans/__plan-template__.md, docs/exec-plans/index.md, ARCHITECTURE.md, and relevant backend/frontend/shared reference docs.",
+      "Scanned the project for stale V1 model terms and found broad references across worker, web, product specs, and harness records.",
+      "Created an ExecPlan for the full reset and registered it as the active plan."
+    ],
+    "verification": [
+      "Plan artifact verification: python3 -m json.tool validated harness/feature_index.json and harness/features/feat-071.json.",
+      "Plan placeholder scan found no unfinished placeholder markers in the new plan and touched harness/index files.",
+      "Final ./init.sh returned Done! for the plan-artifact update.",
+      "gitnexus_detect_changes(scope: all) returned LOW risk with 5 changed indexed sections across 3 indexed files and 0 affected processes."
+    ]
+  },
+  "notes": "Plan-only feature record. Implementation should update this record after each phase and replace pending verification with command evidence."
+}
