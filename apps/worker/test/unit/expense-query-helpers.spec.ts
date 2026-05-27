@@ -15,19 +15,19 @@ describe('expense query helpers', () => {
 
     expect(scope.conditions).toEqual([
       'e.deleted_at IS NULL',
-      `(\n      (\n        e.visibility = 'private'\n        AND e.created_by_user_id = ?\n      )\n      OR (\n        e.visibility = 'household'\n        AND e.household_id IN (\n          SELECT hm.household_id\n            FROM household_memberships hm\n           WHERE hm.user_id = ?\n             AND hm.state = 'active'\n        )\n      )\n    )`,
+      'e.created_by_user_id = ?',
     ])
-    expect(scope.params).toEqual(['user-1', 'user-1'])
+    expect(scope.params).toEqual(['user-1'])
   })
 
   it('builds household period scope', () => {
     const scope = buildPeriodWhereClause('user-1', 'household-1', 100, 200)
 
-    expect(scope.whereClause).toContain('e.visibility = ?')
     expect(scope.whereClause).toContain('e.household_id = ?')
+    expect(scope.whereClause).toContain('hm.user_id = ?')
     expect(scope.whereClause).toContain('e.occurred_at >= ?')
     expect(scope.whereClause).toContain('e.occurred_at < ?')
-    expect(scope.params).toEqual(['household', 'household-1', 100, 200])
+    expect(scope.params).toEqual(['household-1', 'user-1', 100, 200])
   })
 
   it('encodes and decodes amount cursor', () => {

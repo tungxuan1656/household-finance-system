@@ -14,7 +14,8 @@
       "Completed Phase 0 by running GitNexus impact checks for the first shared symbols called out in the plan.",
       "Completed Phase 1 by rewriting current product specs and replacing the V1-heavy ownership/visibility specs.",
       "Completed one Phase 3 milestone by removing household defaultVisibility from worker/web contracts, handlers, tests, i18n, and the base migration.",
-      "Completed one Phase 3 milestone by migrating the public expense contract to V2 across worker/web CRUD and query entry points while keeping temporary repository bridges to existing storage fields."
+      "Completed one Phase 3 milestone by migrating the public expense contract to V2 across worker/web CRUD and query entry points while keeping temporary repository bridges to existing storage fields.",
+      "Completed one Phase 3 milestone by migrating the worker expense integration and scenario suites to V2 semantics and recovering a green full worker test suite."
     ],
     "verification": [
       "Plan artifact verification: python3 -m json.tool validated harness/feature_index.json and harness/features/feat-071.json.",
@@ -27,8 +28,11 @@
       "Post-change stale-term scan for defaultVisibility/default_visibility returned no matches across worker/web household files and 0001_init.sql.",
       "Post-change gitnexus_detect_changes(scope: all) returned MEDIUM risk with 6 changed indexed symbols across 16 files and 3 affected household-related processes.",
       "Expense contract milestone verification passed: ./init.sh typecheck returned OK; pnpm --filter worker exec vitest run test/unit/dto-expense.spec.ts test/unit/dto-expense-list.spec.ts passed with 41 tests; pnpm --filter web exec vitest run src/features/expenses/components/use-expense-entry-form.test.ts passed with 8 tests; pnpm --filter worker exec vitest run test/integration/expenses.spec.ts test/integration/expenses-detail-success.spec.ts test/integration/expenses-summary.spec.ts passed with 15 tests.",
-      "Broader final verification is still failing because many deeper worker integration suites and analytics/budget/group tests still send legacy expense payloads or assert legacy expense fields. Full ./init.sh currently remains red until those downstream tests and implementations are migrated."
+      "Worker integration migration verification passed: pnpm --filter worker exec vitest run test/integration/expenses-list-personal-feed.spec.ts test/integration/expenses-list-personal-visibility.spec.ts test/integration/expenses-list-household.spec.ts test/integration/expenses-list-household-member.spec.ts passed with 13 tests; pnpm --filter worker exec vitest run test/integration/expenses-update-authorization.spec.ts test/integration/expenses-update-validation.spec.ts test/integration/expenses-update-audit.spec.ts passed with 6 tests; pnpm --filter worker exec vitest run test/integration/expenses-delete.spec.ts test/integration/expenses-restore.spec.ts test/integration/groups-assignment.spec.ts test/integration/scenario-group-expense.spec.ts test/integration/scenario-household-expense.spec.ts test/integration/groups-read.spec.ts passed with 22 tests; pnpm --filter worker exec vitest run test/unit/expense-query-helpers.spec.ts test/integration/expenses-detail-access.spec.ts passed with 9 tests.",
+      "Full worker verification passed: pnpm --filter worker test completed with 76 files and 366 tests passing.",
+      "Full repo verification passed: ./init.sh returned Done! after the expense contract and worker test migrations.",
+      "Latest gitnexus_detect_changes(scope: all) returned LOW risk with 8 changed indexed symbols across 10 files and 0 affected processes."
     ]
   },
-  "notes": "Execution has started. Phase 0 and Phase 1 are complete. Two Phase 3 milestones are complete: household settings cleanup and public expense contract migration. The broader expense storage reset plus analytics, budget, group, and remaining integration-suite migrations are still in progress."
+  "notes": "Execution has started. Phase 0 and Phase 1 are complete. Three Phase 3 milestones are complete: household settings cleanup, public expense contract migration, and worker expense-suite migration. Temporary storage bridges still exist, and broader schema/internal cleanup is still in progress."
 }

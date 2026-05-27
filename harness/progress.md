@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Restored a green full worker suite after V2 expense migration
+
+- Who: Orchestrator + User
+- Summary: Finished migrating the worker expense integration matrix to V2 semantics after the public expense contract switch. Updated personal feed, household feed, detail-access, update, delete, restore, group-assignment, and scenario tests to stop sending or asserting `visibility`, `payer`, and creator-based public fields. Also aligned detail-access behavior with the V2 personal-spending rule so the spender can still read their own expense detail after leaving a household. The repo now keeps temporary bridges from legacy storage columns to V2 DTOs, but the worker-facing behavior and tests are green again.
+- Files changed: Worker expense handlers, expense query helper unit test, expense integration/scenario suites, groups-assignment helper fixture, active ExecPlan, feat-071 evidence, and this progress log.
+- Verification: `pnpm --filter worker exec vitest run test/integration/expenses-list-personal-feed.spec.ts test/integration/expenses-list-personal-visibility.spec.ts test/integration/expenses-list-household.spec.ts test/integration/expenses-list-household-member.spec.ts` passed with 13 tests; `pnpm --filter worker exec vitest run test/integration/expenses-update-authorization.spec.ts test/integration/expenses-update-validation.spec.ts test/integration/expenses-update-audit.spec.ts` passed with 6 tests; `pnpm --filter worker exec vitest run test/integration/expenses-delete.spec.ts test/integration/expenses-restore.spec.ts test/integration/groups-assignment.spec.ts test/integration/scenario-group-expense.spec.ts test/integration/scenario-household-expense.spec.ts test/integration/groups-read.spec.ts` passed with 22 tests; `pnpm --filter worker exec vitest run test/unit/expense-query-helpers.spec.ts test/integration/expenses-detail-access.spec.ts` passed with 9 tests; `pnpm --filter worker test` passed with 76 files and 366 tests; final `./init.sh` returned `Done!`; final `gitnexus_detect_changes(scope: all)` returned LOW risk with 8 changed indexed symbols across 10 files and 0 affected processes.
+- Blockers: none.
+- Next steps: Continue Phase 3 and Phase 2 by reducing or removing temporary legacy storage bridges, then migrate the remaining web/UI copy and any untouched schema/internal records toward the final V2 model.
+
 ## 2026-05-27 — Migrated public expense CRUD/query contract to V2
 
 - Who: Orchestrator + User

@@ -42,7 +42,6 @@ describe('expense delete routes', () => {
       amount: 84000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Shared groceries',
       occurredAt: Date.now(),
@@ -182,7 +181,6 @@ describe('expense delete routes', () => {
       amount: 33000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Private snack',
       occurredAt: Date.now(),
     })
@@ -223,7 +221,6 @@ describe('expense delete routes', () => {
       amount: 12000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Delete rollback',
       occurredAt: Date.now(),
@@ -266,7 +263,6 @@ describe('expense delete routes', () => {
       amount: 22000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Private audit delete',
       occurredAt: Date.now(),
     })

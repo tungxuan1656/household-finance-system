@@ -42,7 +42,6 @@ describe('expense restore routes', () => {
       amount: 84000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Shared groceries',
       occurredAt: Date.now(),
@@ -76,12 +75,12 @@ describe('expense restore routes', () => {
 
     const restorePayload =
       await parseJson<
-        ApiEnvelope<{ id: string; title: string; visibility: string }>
+        ApiEnvelope<{ id: string; title: string; householdId: string | null }>
       >(restoreResponse)
 
     expect(restorePayload.data.id).toBe(created.data.id)
     expect(restorePayload.data.title).toBe('Shared groceries')
-    expect(restorePayload.data.visibility).toBe('household')
+    expect(restorePayload.data.householdId).toBe(householdId)
 
     const restoredDetailResponse = await SELF.fetch(
       `https://example.com/api/v1/expenses/${created.data.id}`,
@@ -127,7 +126,6 @@ describe('expense restore routes', () => {
       amount: 67000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Restore rollback',
       occurredAt: Date.now(),
@@ -199,7 +197,6 @@ describe('expense restore routes', () => {
       amount: 75000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Non-admin restore test',
       occurredAt: Date.now(),
@@ -244,7 +241,6 @@ describe('expense restore routes', () => {
       amount: 40000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Private restore test',
       occurredAt: Date.now(),
     })
@@ -277,11 +273,11 @@ describe('expense restore routes', () => {
 
     const restorePayload =
       await parseJson<
-        ApiEnvelope<{ id: string; title: string; visibility: string }>
+        ApiEnvelope<{ id: string; title: string; householdId: string | null }>
       >(restoreResponse)
 
     expect(restorePayload.data.id).toBe(created.data.id)
     expect(restorePayload.data.title).toBe('Private restore test')
-    expect(restorePayload.data.visibility).toBe('private')
+    expect(restorePayload.data.householdId).toBeNull()
   })
 })

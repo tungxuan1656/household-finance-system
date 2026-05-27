@@ -64,6 +64,7 @@ Out of scope:
 - [ ] Phase 3: Refactor worker contracts, repositories, handlers, analytics, budgets, and tests.
 - [x] 2026-05-27 Phase 3 milestone: remove household `defaultVisibility` from worker/web contracts, handlers, store types, i18n, tests, and `0001_init.sql`.
 - [x] 2026-05-27 Phase 3 milestone: move the public expense CRUD/query contract to V2 (`householdId` + `spentByUserId`) across worker contracts, expense handlers, query helpers, web expense types, and expense-entry/detail surfaces.
+- [x] 2026-05-27 Phase 3 milestone: migrate the worker expense integration/test matrix to V2 and restore green full worker verification.
 - [ ] Phase 4: Refactor web API types, forms, filters, pages, analytics views, copy, and tests.
 - [ ] Phase 5: Clean current docs, exec-plan index, harness feature records, and progress artifacts.
 - [ ] Phase 6: Run final verification and GitNexus change detection.
@@ -80,6 +81,7 @@ Out of scope:
 - After Phase 1 rewrites, `docs/product-specs/` no longer matches the stale-term scan for `payer|creator|visibility|private|public|lens|defaultVisibility`.
 - Household `defaultVisibility` was removed cleanly from worker/web slices with focused tests green, which confirms the household settings surface can move to pure name/currency/timezone semantics before the broader expense contract reset.
 - The public expense contract can move ahead of the full storage reset because worker handlers can still bridge from current DB columns to V2 DTOs while the deeper analytics/budget/group internals are being refactored.
+- A large portion of the worker failures after the public contract switch came from stale test fixtures and expectations rather than runtime logic; once those were migrated to V2 semantics, worker analytics, budget, group, restore/delete, and scenario suites all converged quickly.
 
 ## Decision Log
 
@@ -115,6 +117,10 @@ Out of scope:
 
 - Decision: Migrate the public expense contract before fully rewriting storage and analytics internals.
   Rationale: This lets worker/web CRUD surfaces and form/query semantics move to V2 while internal repositories still bridge through legacy columns temporarily, reducing front-to-back contract drift without requiring one giant atomic rewrite.
+  Date/Author: 2026-05-27 / Orchestrator
+
+- Decision: Keep temporary repository bridges from legacy storage fields to V2 DTOs while migrating tests and downstream worker flows.
+  Rationale: This keeps the repo verifiable after each chunk instead of forcing a schema-and-runtime big bang.
   Date/Author: 2026-05-27 / Orchestrator
 
 ## Outcomes & Retrospective

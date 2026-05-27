@@ -43,7 +43,7 @@ export const getExpenseHandler = async (
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  if (!expense.householdId) {
+  if (!expense.householdId || expense.createdByUserId === currentUser.id) {
     if (expense.createdByUserId !== currentUser.id) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }

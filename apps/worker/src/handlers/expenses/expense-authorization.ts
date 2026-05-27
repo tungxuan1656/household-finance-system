@@ -34,10 +34,12 @@ export const authorizeExpenseAccess = async (
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  if (!expense.householdId) {
+  if (!expense.householdId || expense.createdByUserId === currentUserId) {
     if (expense.createdByUserId !== currentUserId) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
+
+    return expense
   }
 
   return expense
