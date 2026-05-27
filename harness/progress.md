@@ -9,6 +9,22 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Refined protected-shell design doc from approved Stitch screens
+
+- Who: Orchestrator + User
+- Summary: Updated the new protected-shell design doc so it now reflects the actual approved Yellow Finance screens instead of only the textual product brief. Pulled the Stitch project and the ten provided screens, downloaded their hosted HTML and screenshots with `curl -L`, then folded the real UI details back into the doc: the exact 4-tab labels, Expense summary/filter/timeline/FAB composition, Analysis segmentation and card hierarchy, Household card/activity/detail patterns, Settings profile-management layout, the full 3-step add-expense drawer structure, and the add-household bottom sheet details.
+- Files changed: Protected-shell design doc, feat-072 harness evidence, and this progress log.
+- Blockers: none.
+- Next steps: Convert the refined design doc into one ExecPlan before starting the `apps/web` refactor.
+
+## 2026-05-27 — Wrote mobile-first protected-shell refactor design doc
+
+- Who: Orchestrator + User
+- Summary: Captured the durable design direction for the full protected `apps/web` UI refactor. The new design doc locks one mobile-first app shape with a shared header/content/navigation model, keeps auth pages unchanged, moves the protected post-auth entry toward the Expense surface, reduces top-level navigation to four tabs (Expense, Analysis, Household, Settings), replaces `PageShell`/`PageSection` with `PageContainer`/`PageHeader`/`PageContent`/`PageFooter`, and records the new 3-step bottom-drawer expense flow plus household list/add/detail surfaces.
+- Files changed: Design-docs index, new protected-shell design doc, new harness feature record, feature index, and this progress log.
+- Blockers: none.
+- Next steps: Convert this design doc into one ExecPlan before starting the actual `apps/web` refactor.
+
 ## 2026-05-27 — Completed Product V2 full project reset (Phases 2-4)
 
 - Who: Orchestrator + User

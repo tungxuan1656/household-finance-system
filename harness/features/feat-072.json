@@ -1,0 +1,23 @@
+{
+  "id": "feat-072",
+  "name": "Mobile-first protected shell and tab-surface design doc",
+  "status": "done",
+  "description": "Capture the durable design direction for refactoring the protected `apps/web` experience into one mobile-first app shell with four top-level tabs, new page wrapper components, an Expense-first post-auth entry point, and the new expense/household surface model.",
+  "dependencies": ["feat-035", "feat-067", "feat-071"],
+  "evidence": {
+    "planned": [
+      "Used using-skills first and treated the work as a Level 2 durable UI decision because it changes the long-term protected shell, page wrapper pattern, and top-level navigation model for apps/web.",
+      "Read docs/design-docs/index.md, docs/FRONTEND.md, ARCHITECTURE.md, and the responsive-navigation/component-structure leaf docs before writing the design direction.",
+      "Inspected the current protected layout, navigation constants, sidebar, bottom tab, mobile header, and page-shell implementation so the new doc could explicitly replace the current shell/page pattern without conflicting with repo reality.",
+      "Fetched the approved Stitch project and reviewed the ten provided screens for the four main tabs plus the add-expense and household flows.",
+      "Downloaded the hosted Stitch HTML and screenshot artifacts locally with curl -L so the design doc could be refined against the actual approved compositions instead of only the textual brief."
+    ],
+    "verification": [
+      "Validated harness/feature_index.json and harness/features/feat-072.json with python3 -m json.tool.",
+      "Checked the design doc for the expected page-wrapper, tab-surface, and Stitch-source sections after the refinement.",
+      "Final ./init.sh returned Done! for full repo verification.",
+      "Final gitnexus_detect_changes(scope: all) recorded the docs-only blast radius before handoff."
+    ]
+  },
+  "notes": "Docs-only design direction. No runtime code, API contracts, or database schema changed in this session. Approved Stitch artifacts were downloaded locally during refinement."
+}

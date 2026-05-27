@@ -15,6 +15,8 @@ Durable design decision map. Read only when task changes lasting UI/product/arch
 
 ## Proposed
 
+- `mobile-first-protected-shell-and-tab-surfaces.md`: mobile-first protected app refactor for 4-tab navigation, new page wrappers, and expense/household surface rules.
+
 ## Deprecated
 
 ## Maintenance Rules
