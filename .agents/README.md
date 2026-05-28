@@ -35,6 +35,16 @@ Do not place loose markdown files directly inside `.agents/skills/`.
 - `ceremony-levels`: shared Level 0/1/2/3 workflow depth rules.
 - `skill-maintenance`: rules for creating, editing, auditing, and porting project-owned skills.
 
+## Workflow Extensions
+
+The repo also carries project-native workflow skills for common handoffs between discovery, planning, execution, and pause states:
+- `grill-with-docs`: repo-grounded clarification before `writing-plans`
+- `to-issues`: break an approved plan into thin vertical slices
+- `triage`: classify incoming issues or requests before planning
+- `prototype`: answer uncertain UX or logic questions with throwaway spikes
+- `handoff`: write unfinished-session state into `harness/session-handoff.md`
+- `improve-codebase-architecture`: periodic hotspot audit and seam scouting
+
 ## Workflow Direction
 
 - Level 0 tasks stay tiny and may use only a direct-task note when they are truly one-shot mechanical work.
@@ -54,7 +64,3 @@ Some workflow ideas were adapted from prior skill systems, but this repo owns th
 Sub-agent prompts are reusable runtime personas. They are not skills.
 
 Use them when a task benefits from a fresh, narrow context window, such as independent UI/UX review. Keep prompt files minimal and point to the exact skill or checklist files they require.
-
-## Scope Note
-
-Subagent registry/model refactor is deferred. Prompt files may exist under `.agents/agents/`, but runtime registration remains tool-dependent. `subagent-driven-development` remains available, but this phase only aligns it with ceremony levels and current harness rules.

@@ -14,6 +14,7 @@ Create or update an implementation-ready ExecPlan only when the task needs that 
 
 It may follow:
 - direct initial triage from `using-skills`
+- `grill-with-docs` when terminology, scenarios, or edge cases need one focused clarification pass
 - a formal `brainstorming` pass
 
 Do not require brainstorming before every plan.
@@ -134,12 +135,16 @@ Must combine all required frontend + backend + shared references relevant to tou
 ## Companion Skills To Note In The Plan
 
 When useful, note companion skills that should be used during implementation:
+- `grill-with-docs` before planning when product or repo vocabulary is still loose
+- `prototype` before locking the plan when UX or logic shape is still uncertain
+- `to-issues` after plan approval when execution needs thinner vertical slices
 - `test-driven-development` for behavior changes
 - `systematic-debugging` for bugs or failures
 - `requesting-code-review` for Level 2 or Level 3 review checkpoints
 - `verification-before-completion` before completion claims
 - `subagent-driven-development` only when the work is large enough, parallelizable enough, or explicitly requested
 - `executing-plans` when execution will stay inline in the current session
+- `handoff` if the plan is likely to pause with unfinished work
 
 Add a dedicated research or domain-review step only when the task actually needs it.
 

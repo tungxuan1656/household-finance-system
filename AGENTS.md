@@ -52,6 +52,15 @@ Do not read broad folders by default. Use indexes to choose exact leaf docs.
 - Update harness feature state + `harness/progress.md` before end session.
 - Commit only when user explicitly asks.
 
+## Workflow Routing
+
+- Before `writing-plans`, use `grill-with-docs` when terminology, edge cases, or repo-truth behavior still need pressure.
+- After an approved plan exists, use `to-issues` when the next problem is vertical slice granularity rather than direction.
+- When new work arrives as an issue or report, use `triage` before planning or coding.
+- When UX flow or logic shape is still too uncertain, use `prototype` to answer the question with a disposable spike.
+- When stopping mid-stream, use `handoff` to update `harness/session-handoff.md`.
+- Run `improve-codebase-architecture` periodically on churn-heavy or high-friction hotspots instead of waiting for large refactors.
+
 ## Required Artifacts
 
 - `harness/feature_index.json`: feature list and status.

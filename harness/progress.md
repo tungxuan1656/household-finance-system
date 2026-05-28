@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-28 — Integrated project-native workflow skills into the current harness flow
+
+- Who: Codex
+- Summary: Added a new project-native workflow batch so the repo now has explicit skills for pre-plan clarification, vertical slicing, issue intake, throwaway prototyping, unfinished-session handoff, and periodic architecture audits. Wired those skills into the `using-skills` entry router, the plan-writing flow, the top-level `.agents` overview, and the root `AGENTS.md` contract so future sessions can route naturally from issue intake through planning, execution, pause, and weekly refactor scouting.
+- Files changed: New workflow skill folders for grilling, slicing, triage, prototyping, handoff, and architecture audits; the shared skill router and plan-writer guidance; the top-level agent and repo workflow docs; one completed ExecPlan; the new feat-074 harness record; the feature index; and this progress log.
+- Verification: `python3 -m json.tool` validated `harness/feature_index.json` and `harness/features/feat-074.json`; workflow wiring search confirmed the new skill names across `.agents/README.md`, `AGENTS.md`, `using-skills`, `writing-plans`, and `harness/session-handoff.md`; final `./init.sh` returned `Done!` after rerunning with `PATH=/Users/tungdoan/.nvm/versions/node/v24.15.0/bin:$PATH`; final `npx gitnexus detect-changes --scope all --repo household-finance-system` returned LOW risk with 8 changed files, 9 changed symbols, and 0 affected processes.
+- Blockers: none.
+- Next steps: Optional only: if the team later wants GitHub issue publication, add one repo-owned issue-tracker contract so `triage` and `to-issues` can publish instead of staying draft-first.
+
 ## 2026-05-28 — Migrated the Analysis page to the new wrapper and mobile hierarchy
 
 - Who: Orchestrator + User

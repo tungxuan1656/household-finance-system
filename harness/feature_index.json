@@ -369,6 +369,11 @@
       "id": "feat-073",
       "name": "Yellow Finance protected pages refactor plan and canonical page rules",
       "status": "in_progress"
+    },
+    {
+      "id": "feat-074",
+      "name": "Project-native workflow skill integration",
+      "status": "done"
     }
   ]
 }

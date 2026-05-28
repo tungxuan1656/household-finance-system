@@ -60,6 +60,7 @@ It decides whether formal brainstorming is needed.
 Read more only when scope requires it:
 - `ceremony-levels` for Level 0/1/2/3 classification
 - `skill-maintenance` when changing `.agents/skills/**`
+- `grill-with-docs` when a real task needs one clarification pass before planning
 - `docs/PLANS.md`, `docs/exec-plans/__plan-template__.md`, `docs/exec-plans/index.md` when a plan is required
 - exact `docs/references/frontend/*` or `docs/references/backend/*` leaf docs for the touched area
 - exact product or design doc only when behavior or UX decisions depend on it
@@ -103,9 +104,15 @@ Do invoke them when the initial triage shows they are needed.
 
 Use these workflow skills when they match:
 - `brainstorming`: ambiguity, tradeoffs, or design choice
+- `grill-with-docs`: stress-test a feature, fix, or plan against repo docs/code before writing the plan
 - `writing-plans`: Level 2/3 work or unclear sequencing
+- `to-issues`: approved plan needs thinner vertical slices or issue-ready breakdown
 - `executing-plans`: executing an existing plan inline
+- `triage`: new issue or incoming request needs classification before planning or coding
 - `subagent-driven-development`: large or high-risk planned work when subagents are appropriate
+- `prototype`: UX or logic is too uncertain to lock directly into production code
+- `handoff`: meaningful unfinished work must be recorded into `harness/session-handoff.md`
+- `improve-codebase-architecture`: periodic hotspot audit or refactor scouting
 - `systematic-debugging`: bug, failure, or unexpected behavior
 - `test-driven-development`: feature or bugfix where a failing test should lead
 - `requesting-code-review`: review checkpoint for Level 2/3 or risky Level 1 work
@@ -117,6 +124,7 @@ Use domain skills only when the domain actually matters.
 ## When to Escalate
 
 Escalate from direct execution to `brainstorming`, `writing-plans`, or domain review when any of these are true:
+- the work arrives as a new issue that is not yet classified
 - the user request is ambiguous
 - the acceptance criteria are unclear
 - the task changes user-visible behavior
@@ -126,6 +134,8 @@ Escalate from direct execution to `brainstorming`, `writing-plans`, or domain re
 - the task affects security, reliability, correctness, or permissions
 - there are multiple reasonable implementation approaches
 - the implementation path is not obvious
+- the scope is probably real but still needs one repo-grounded grilling pass
+- the task needs a throwaway prototype to answer a UX or logic question
 - the change may require docs, specs, or harness state updates
 
 ## Decision Output
