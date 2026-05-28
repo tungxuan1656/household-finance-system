@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-28 — Migrated Household pages to shared page wrappers
+
+- Who: Codex
+- Summary: Migrated HouseholdsPage and HouseholdDetailPage from PageShell to PageContainer + PageHeader + PageContent. HouseholdsPage keeps DataState for async states inside PageContent. HouseholdDetailPage adds showBack with onBack to router.back() for normal case and router.replace to /households for invalid-id fallback. Both pages follow the same wrapper pattern as Expense and Analysis pages.
+- Files changed: HouseholdsPage, HouseholdDetailPage, feat-073 evidence, progress log.
+- Verification: `./init.sh typecheck` OK; `./init.sh lint` OK; `./init.sh test` OK.
+- Blockers: none.
+- Next steps: Migrate Settings page to shared wrappers, then run browser visual verification pass.
+
 ## 2026-05-28 — Integrated project-native workflow skills into the current harness flow
 
 - Who: Codex

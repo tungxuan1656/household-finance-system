@@ -6,7 +6,11 @@ import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
 import { DataState } from '@/components/shared/data-state'
-import { PageShell } from '@/components/ui/page-shell'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
 import type { UpdateHouseholdSettingsFormValues } from '@/features/households/lib/forms/household.schema'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
@@ -64,54 +68,67 @@ function HouseholdDetailPage() {
   }
   if (!id)
     return (
-      <PageShell title={t('app.householdDetail.title')}>
-        <p className='text-sm text-muted-foreground'>
-          {t('app.householdDetail.invalidId')}
-        </p>
-      </PageShell>
+      <PageContainer>
+        <PageHeader
+          showBack
+          title={t('app.householdDetail.title')}
+          onBack={() => router.replace(PATHS.HOUSEHOLDS)}
+        />
+        <PageContent>
+          <p className='text-sm text-muted-foreground'>
+            {t('app.householdDetail.invalidId')}
+          </p>
+        </PageContent>
+      </PageContainer>
     )
 
   const isAdmin = currentHousehold?.role === 'admin'
 
   return (
-    <PageShell title={t('app.householdDetail.title')}>
-      <DataState
-        errorDescription={error ?? undefined}
-        isError={Boolean(!isLoading && error && !currentHousehold)}
-        isLoading={isLoading && !currentHousehold}
-        retryAction={() => void householdActions.fetchHouseholdById(id)}
-        title={t('app.householdDetail.title')}>
-        {currentHousehold ? (
-          <div className='grid gap-4'>
-            <HouseholdSettingsCard
-              household={currentHousehold}
-              isAdmin={isAdmin}
-              isSubmitting={isLoading}
-              memberCount={members.length}
-              onSubmit={handleSaveSettings}
-            />
-            <HouseholdMembersCard
-              householdId={currentHousehold.id}
-              isAdmin={isAdmin}
-            />
-            {isAdmin ? (
-              <>
-                <InviteMembersActionCard
-                  onAction={() => setIsInviteDialogOpen(true)}
-                />
-                <HouseholdInviteDialog
-                  householdId={currentHousehold.id}
-                  isOpen={isInviteDialogOpen}
-                  trigger={null}
-                  onOpenChange={setIsInviteDialogOpen}
-                />
-              </>
-            ) : null}
-            {isAdmin && <HouseholdDangerZoneCard onArchive={handleArchive} />}
-          </div>
-        ) : null}
-      </DataState>
-    </PageShell>
+    <PageContainer>
+      <PageHeader
+        showBack
+        title={t('app.householdDetail.title')}
+        onBack={() => router.back()}
+      />
+      <PageContent>
+        <DataState
+          errorDescription={error ?? undefined}
+          isError={Boolean(!isLoading && error && !currentHousehold)}
+          isLoading={isLoading && !currentHousehold}
+          retryAction={() => void householdActions.fetchHouseholdById(id)}>
+          {currentHousehold ? (
+            <div className='grid gap-4'>
+              <HouseholdSettingsCard
+                household={currentHousehold}
+                isAdmin={isAdmin}
+                isSubmitting={isLoading}
+                memberCount={members.length}
+                onSubmit={handleSaveSettings}
+              />
+              <HouseholdMembersCard
+                householdId={currentHousehold.id}
+                isAdmin={isAdmin}
+              />
+              {isAdmin ? (
+                <>
+                  <InviteMembersActionCard
+                    onAction={() => setIsInviteDialogOpen(true)}
+                  />
+                  <HouseholdInviteDialog
+                    householdId={currentHousehold.id}
+                    isOpen={isInviteDialogOpen}
+                    trigger={null}
+                    onOpenChange={setIsInviteDialogOpen}
+                  />
+                </>
+              ) : null}
+              {isAdmin && <HouseholdDangerZoneCard onArchive={handleArchive} />}
+            </div>
+          ) : null}
+        </DataState>
+      </PageContent>
+    </PageContainer>
   )
 }
 
