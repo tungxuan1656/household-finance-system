@@ -23,7 +23,7 @@ function InsightsHeader({
 }: InsightsHeaderProps) {
   return (
     <div className='flex flex-col gap-3'>
-      <div className='-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1'>
+      <div className='-mx-1 flex flex-wrap items-center gap-2 overflow-x-auto px-1 pb-1'>
         {periodOptions.map((option) => {
           const isActive = option.value === period
 

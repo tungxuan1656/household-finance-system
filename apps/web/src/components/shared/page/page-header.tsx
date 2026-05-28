@@ -51,7 +51,7 @@ export const PageHeader = ({
           <div className='flex min-w-0 flex-1 flex-col'>
             <h1 className='truncate text-lg font-semibold'>{title}</h1>
             {description ? (
-              <p className='truncate text-sm text-muted-foreground'>
+              <p className='text-sm leading-5 text-muted-foreground'>
                 {description}
               </p>
             ) : null}
