@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-28 — Migrated the Analysis page to the new wrapper and mobile hierarchy
+
+- Who: Orchestrator + User
+- Summary: Continued the protected-pages refactor by migrating the Analysis surface off `PageShell` onto `PageContainer`, `PageHeader`, and `PageContent`. Replaced the old period `<select>` with chip-style buttons and kept export available as a trailing action row. Reordered the content so the donut/category allocation card leads on mobile, followed by the comparison panel and the grouped spend breakdown, which better matches the approved Yellow Finance reading order while preserving the existing analytics queries and cards.
+- Files changed: Analysis page orchestrator, insights header, insights chart section, feat-073 evidence, and this progress log.
+- Verification: Focused TypeScript check `apps/web/node_modules/.bin/tsc --noEmit --project apps/web/tsconfig.json` completed successfully with no output; `/Users/tungdoan/.nvm/versions/node/v24.15.0/bin/pnpm --filter web lint` completed successfully; repo-standard `./init.sh typecheck` could not run inside the current sandbox because `pnpm` was unavailable in PATH there.
+- Blockers: No local dev server was attached in this thread, so the Analysis page still needs a browser-based visual pass; repo-standard typecheck via `./init.sh` was blocked by sandbox PATH limitations and was replaced with focused `tsc` verification.
+- Next steps: Move to the Household surface or run a visual verification pass on the migrated Expense + Analysis screens if a local web server is available.
+
 ## 2026-05-27 — Rebuilt add-expense as a 3-step bottom drawer
 
 - Who: Orchestrator + User

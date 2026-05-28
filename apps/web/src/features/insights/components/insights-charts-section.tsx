@@ -35,68 +35,8 @@ function InsightsChartsSection({
   data,
   categoryMap,
 }: InsightsChartsSectionProps) {
-  const dailySpendSummary = data.dailySpend.length
-    ? t('insights.dailySpend.description') +
-      ': ' +
-      data.dailySpend
-        .map(
-          (entry) =>
-            `${entry.date} ${formatCurrency(entry.totalSpendMinor, data.currencyCode)}`,
-        )
-        .join(', ')
-    : t('insights.empty.description')
-
   return (
-    <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]'>
-      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
-        <CardHeader>
-          <CardTitle>{t('insights.dailySpend.title')}</CardTitle>
-          <CardDescription>
-            {t('insights.dailySpend.description')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className='sr-only'>{dailySpendSummary}</p>
-          <div
-            aria-label={t('insights.dailySpend.title')}
-            className='h-72 w-full'
-            role='img'>
-            <ResponsiveContainer height='100%' width='100%'>
-              <BarChart
-                accessibilityLayer
-                data={data.dailySpend}
-                margin={{ bottom: 0, left: 0, right: 0, top: 0 }}>
-                <CartesianGrid strokeDasharray='3 3' vertical={false} />
-                <XAxis
-                  angle={-45}
-                  axisLine={false}
-                  dataKey='date'
-                  height={60}
-                  tickLine={false}
-                />
-                <YAxis axisLine={false} tickLine={false} width={80} />
-                <Tooltip
-                  formatter={(value) => {
-                    const amount =
-                      typeof value === 'number' ? value : Number(value) || 0
-
-                    return [
-                      formatCurrency(amount, data.currencyCode),
-                      t('insights.summary.totalSpend'),
-                    ]
-                  }}
-                />
-                <Bar
-                  dataKey='totalSpendMinor'
-                  fill='var(--color-chart-1, #0f766e)'
-                  name={t('insights.summary.totalSpend')}
-                  radius={8}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+    <section className='grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]'>
       <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
         <CardHeader>
           <CardTitle>{t('insights.topCategories.title')}</CardTitle>
@@ -187,6 +127,66 @@ function InsightsChartsSection({
                 </div>
               )
             })}
+          </div>
+        </CardContent>
+      </Card>
+      <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
+        <CardHeader>
+          <CardTitle>{t('insights.dailySpend.title')}</CardTitle>
+          <CardDescription>
+            {t('insights.dailySpend.description')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className='sr-only'>
+            {data.dailySpend.length
+              ? t('insights.dailySpend.description') +
+                ': ' +
+                data.dailySpend
+                  .map(
+                    (entry) =>
+                      `${entry.date} ${formatCurrency(entry.totalSpendMinor, data.currencyCode)}`,
+                  )
+                  .join(', ')
+              : t('insights.empty.description')}
+          </p>
+          <div
+            aria-label={t('insights.dailySpend.title')}
+            className='h-72 w-full'
+            role='img'>
+            <ResponsiveContainer height='100%' width='100%'>
+              <BarChart
+                accessibilityLayer
+                data={data.dailySpend}
+                margin={{ bottom: 0, left: 0, right: 0, top: 0 }}>
+                <CartesianGrid strokeDasharray='3 3' vertical={false} />
+                <XAxis
+                  angle={-45}
+                  axisLine={false}
+                  dataKey='date'
+                  height={60}
+                  tickLine={false}
+                />
+                <YAxis axisLine={false} tickLine={false} width={80} />
+                <Tooltip
+                  formatter={(value) => {
+                    const amount =
+                      typeof value === 'number' ? value : Number(value) || 0
+
+                    return [
+                      formatCurrency(amount, data.currencyCode),
+                      t('insights.summary.totalSpend'),
+                    ]
+                  }}
+                />
+                <Bar
+                  dataKey='totalSpendMinor'
+                  fill='var(--color-chart-1, #0f766e)'
+                  name={t('insights.summary.totalSpend')}
+                  radius={8}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>

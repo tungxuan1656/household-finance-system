@@ -14,7 +14,8 @@
       "Started implementation with the shared wrapper foundation batch: added `apps/web/src/components/shared/page/` and defined `PageContainer`, `PageHeader`, `PageContent`, `PageFooter`, plus the shared barrel export.",
       "Continued implementation with the first navigation batch: moved the protected default entry to Expense semantics, turned `/home` into a compatibility redirect, reduced shared mobile/desktop navigation to the four approved top-level tabs, and restyled the mobile bottom tab bar closer to the approved Yellow Finance surface.",
       "Started the Expense surface migration: moved `ExpensesPage` onto the new shared page wrappers, grouped the feed into timeline sections, and added context badges for household/group-linked expenses while preserving the current hook-based data flow and global add-expense entry point.",
-      "Rebuilt the add-expense entry into a shared three-step bottom drawer flow on top of the existing create hook and submit logic: category/date selection, amount/source/note entry with quick presets, and final household/group assignment."
+      "Rebuilt the add-expense entry into a shared three-step bottom drawer flow on top of the existing create hook and submit logic: category/date selection, amount/source/note entry with quick presets, and final household/group assignment.",
+      "Migrated the Analysis page to the new shared page wrappers, replaced the period select with chip-style period buttons, and reordered the data sections so the donut/category allocation card leads on mobile before the comparison and grouped-breakdown panels."
     ],
     "verification": [
       "Validated harness/feature_index.json and harness/features/feat-073.json with python3 -m json.tool.",
@@ -30,8 +31,10 @@
       "Expense batch verification passed: `pnpm --filter web exec vitest run src/features/expenses/pages/expense-feed-page-helpers.test.ts` passed with 5 tests; `./init.sh typecheck` returned OK; `./init.sh lint` returned OK.",
       "Post-Expense gitnexus_detect_changes(scope: all) returned LOW risk with 5 changed symbols across 5 files and 0 affected processes.",
       "Add-expense flow helper verification passed: `pnpm --filter web exec vitest run src/features/expenses/components/add-expense-flow-helpers.test.ts src/features/expenses/components/use-expense-entry-form.test.ts` passed with 13 tests; `./init.sh typecheck` returned OK; `./init.sh lint` returned OK.",
-      "Post-add-expense gitnexus_detect_changes(scope: all) returned LOW risk with 5 changed symbols across 2 indexed files and 0 affected processes."
+      "Post-add-expense gitnexus_detect_changes(scope: all) returned LOW risk with 5 changed symbols across 2 indexed files and 0 affected processes.",
+      "Analysis batch verification passed with sandbox-safe alternatives: `apps/web/node_modules/.bin/tsc --noEmit --project apps/web/tsconfig.json` returned no output/success, and `/Users/tungdoan/.nvm/versions/node/v24.15.0/bin/pnpm --filter web lint` completed without lint errors after the layout/header/chart reorder.",
+      "Repo-standard `./init.sh typecheck` could not be used in the current sandbox because `pnpm` was unavailable in PATH there, so the focused TypeScript check above was used as evidence instead."
     ]
   },
-  "notes": "Execution has started. The shared page-wrapper foundation batch, the first bottom-tab / four-tab navigation batch, and the first Expense slice are complete, including a functional three-step add-expense drawer. Browser-based visual verification and the remaining Analysis/Household/Settings page migrations are still pending."
+  "notes": "Execution has started. The shared page-wrapper foundation batch, the first bottom-tab / four-tab navigation batch, the first Expense slice, and the first Analysis slice are complete. Browser-based visual verification and the remaining Household/Settings page migrations are still pending."
 }
