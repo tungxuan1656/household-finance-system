@@ -1,5 +1,5 @@
-import { SettingsPage } from '@/features/settings/pages/settings-page'
+import { AccountSettingsPage } from '@/features/settings/pages/account-settings-page'
 
 export default function SettingsRoutePage() {
-  return <SettingsPage />
+  return <AccountSettingsPage />
 }

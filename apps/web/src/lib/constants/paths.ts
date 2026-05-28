@@ -19,6 +19,7 @@ export const PATHS = {
   INSIGHTS: '/insights',
   HOUSEHOLDS: '/households',
   SETTINGS: '/settings',
+  ACCOUNT: '/account',
   MORE: '/more',
 } as const
 

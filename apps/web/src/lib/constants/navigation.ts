@@ -3,7 +3,7 @@ import {
   ChartPie,
   House,
   type LucideIcon,
-  Settings,
+  UserCircle,
 } from 'lucide-react'
 
 import type { TranslationKey } from '@/lib/i18n/i18n-init'
@@ -33,9 +33,9 @@ const PROTECTED_TAB_ITEMS: ProtectedNavigationItem[] = [
     icon: House,
   },
   {
-    to: PATHS.SETTINGS,
-    labelKey: 'shell.protected.nav.settings',
-    icon: Settings,
+    to: PATHS.ACCOUNT,
+    labelKey: 'shell.protected.nav.account',
+    icon: UserCircle,
   },
 ] as const
 

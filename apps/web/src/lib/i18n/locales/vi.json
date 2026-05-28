@@ -92,6 +92,30 @@
     }
   },
   "app": {
+    "account": {
+      "title": "Tài khoản",
+      "proBadge": "Thành viên Pro",
+      "version": "Phiên bản {{version}}",
+      "copyright": "Yellow Finance © 2024",
+      "section": {
+        "accountManagement": "Tài khoản & Quản lý",
+        "personal": "Cá nhân"
+      },
+      "nav": {
+        "groups": "Quản lý Nhóm",
+        "groupsDescription": "Chia sẻ chi tiêu chung",
+        "households": "Quản lý Gia đình",
+        "householdsDescription": "Liên kết tài khoản người thân",
+        "budgets": "Thiết lập Ngân sách",
+        "budgetsDescription": "Kế hoạch chi tiêu tháng",
+        "accountInfo": "Thông tin tài khoản",
+        "accountInfoDescription": "Tên hiển thị, email và đổi mật khẩu."
+      },
+      "fields": {
+        "displayName": "Tên hiển thị",
+        "email": "Email"
+      }
+    },
     "onboarding": {
       "actions": {
         "acceptInvite": "Tham gia bằng lời mời",
@@ -551,14 +575,6 @@
           }
         }
       },
-      "account": {
-        "title": "Tài khoản",
-        "description": "Xem nhanh thông tin tài khoản hiện có của bạn.",
-        "fields": {
-          "displayName": "Tên hiển thị",
-          "email": "Email"
-        }
-      },
       "memberships": {
         "title": "Gia đình đang tham gia",
         "description": "Tổng hợp các gia đình hiện tại và vai trò của bạn.",
@@ -660,6 +676,7 @@
         "insights": "Phân tích",
         "onboarding": "Thiết lập",
         "overview": "Tổng quan",
+        "account": "Tài khoản",
         "settings": "Cài đặt",
         "more": "Thêm"
       },
