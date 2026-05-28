@@ -57,7 +57,7 @@ export function ExpenseFeedList({ filters, search }: ExpenseFeedListProps) {
               {group.label}
             </p>
             <Card className='rounded-[1.75rem] border-border/80 bg-card/95'>
-              <CardContent className='flex flex-col gap-1 p-2'>
+              <CardContent className='flex flex-col gap-0 p-2 py-0'>
                 {group.items.map((expense, index) => (
                   <div key={expense.id}>
                     <ExpenseFeedItem
@@ -65,7 +65,7 @@ export function ExpenseFeedList({ filters, search }: ExpenseFeedListProps) {
                       onClick={handleExpenseClick}
                     />
                     {index < group.items.length - 1 ? (
-                      <Separator className='mx-2' />
+                      <Separator className='mx-2 my-4 w-auto!' />
                     ) : null}
                   </div>
                 ))}

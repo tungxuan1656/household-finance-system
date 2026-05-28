@@ -791,6 +791,7 @@
       "title": "Chi tiêu gần đây",
       "description": "Theo dõi và lọc danh sách chi tiêu của gia đình.",
       "empty": "Chưa có chi tiêu nào",
+      "expenses": "khoản chi",
       "loadMore": "Tải thêm",
       "loading": "Đang tải...",
       "error": "Không thể tải chi tiêu",

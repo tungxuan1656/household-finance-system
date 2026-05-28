@@ -1,5 +1,7 @@
 'use client'
 
+import { ArrowUpRight } from 'lucide-react'
+
 import { Card, CardContent } from '@/components/ui/card'
 import { t } from '@/lib/i18n/t'
 import { formatCurrency } from '@/utils/currency/format'
@@ -24,20 +26,25 @@ export function ExpenseFeedSummary({
   const currencyCode = data?.currencyCode ?? 'VND'
 
   return (
-    <Card size='sm'>
-      <CardContent className='flex flex-row items-center justify-between gap-2'>
-        <div className='font-medium text-foreground'>
-          {t('groups.summary.totalSpend')}
-        </div>
-        <div>
-          <span className='font-mono text-xl font-medium'>
+    <Card className='overflow-hidden' size='sm'>
+      <CardContent className='flex flex-row items-center justify-between gap-3 p-4'>
+        <div className='flex flex-col gap-1'>
+          <div className='flex items-center gap-2'>
+            <span className='text-xs font-medium tracking-wider text-muted-foreground uppercase'>
+              {t('groups.summary.totalSpend')}
+            </span>
+            <ArrowUpRight aria-hidden='true' className='size-4 text-primary' />
+          </div>
+          <div className='font-mono text-3xl font-semibold tabular-nums'>
             {isLoading
               ? '—'
               : formatCurrency(data?.totalSpendMinor ?? 0, currencyCode)}
-          </span>
-          <span className='mx-2'>{' / '}</span>
-          <span className='font-medium'>
-            {isLoading ? '—' : (data?.expenseCount ?? 0).toString()}
+          </div>
+        </div>
+        <div className='flex flex-col items-end gap-1'>
+          <span className='text-xs font-medium tracking-wider text-muted-foreground uppercase'>
+            {isLoading ? '—' : (data?.expenseCount ?? 0)}{' '}
+            {t('expense.feed.expenses')}
           </span>
         </div>
       </CardContent>
