@@ -71,7 +71,7 @@ This work is frontend-only plus current docs and harness updates. The user-visib
 - [ ] Run `gitnexus_impact` on the first-edit shell/page symbols (`MainLayout`, `AppSidebar`, `BottomTab`, `MobileHeader`, `PageShell`, `ExpensesPage`, `InsightsPage`, `HouseholdsPage`, `HouseholdDetailPage`, `SettingsPage`, add-expense provider symbols). Owner: implementation session.
 - [ ] Batch 1 — shell foundation and route contract. Owner: implementation session.
 - [x] 2026-05-27 Batch 2 — shared page wrappers and `PageShell` migration helpers. Owner: Orchestrator.
-- [x] 2026-05-27 Batch 3 — Expense surface and 3-step add-expense flow (partial first pass). Owner: Orchestrator.
+- [x] 2026-05-27 Batch 3 — Expense surface and 3-step add-expense flow (first functional pass). Owner: Orchestrator.
 - [ ] Batch 4 — Analysis surface. Owner: implementation session.
 - [ ] Batch 5 — Household list, add-household sheet, and household detail. Owner: implementation session.
 - [ ] Batch 6 — Settings surface plus contextual budgets/groups entry points. Owner: implementation session.

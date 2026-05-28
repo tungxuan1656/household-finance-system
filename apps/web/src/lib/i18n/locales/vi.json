@@ -1,14 +1,18 @@
 {
   "common": {
     "actions": {
+      "back": "Quay lại",
       "backToOverview": "Quay lại tổng quan",
       "backToShell": "Quay lại khung ứng dụng",
       "backToSignIn": "Quay lại đăng nhập",
       "cancel": "Huỷ",
+      "close": "Đóng",
       "confirm": "Xác nhận",
+      "continue": "Tiếp tục",
       "createAccount": "Tạo tài khoản",
       "delete": "Xoá",
       "edit": "Chỉnh sửa",
+      "finish": "Hoàn thành",
       "openOnboarding": "Mở hướng dẫn thiết lập",
       "processing": "Đang xử lý...",
       "save": "Lưu thay đổi",
@@ -691,6 +695,46 @@
       "headerOpen": "Thêm nhanh",
       "title": "Thêm nhanh chi tiêu",
       "description": "Ghi lại một khoản chi với các trường tối thiểu và mặc định hợp lý.",
+      "step1": {
+        "title": "Chọn danh mục",
+        "searchPlaceholder": "Tìm kiếm danh mục..."
+      },
+      "step2": {
+        "title": "Nhập thông tin",
+        "notePlaceholder": "Thêm chi tiết về khoản chi này..."
+      },
+      "step3": {
+        "title": "Thiết lập thêm",
+        "noHousehold": "Không thuộc gia đình",
+        "noGroup": "Không thuộc nhóm"
+      },
+      "suggestions": {
+        "family": {
+          "groceries": "Tạp hoá",
+          "snacks": "Đồ ăn vặt",
+          "supplies": "Đồ dùng gia đình"
+        },
+        "food": {
+          "rice": "Cơm",
+          "noodleSoup": "Bún bò",
+          "coffee": "Cà phê"
+        },
+        "livingCosts": {
+          "electricity": "Tiền điện",
+          "water": "Tiền nước",
+          "rent": "Tiền nhà"
+        },
+        "shopping": {
+          "essentials": "Đồ thiết yếu",
+          "household": "Đồ gia dụng",
+          "personal": "Đồ cá nhân"
+        },
+        "transport": {
+          "gas": "Đổ xăng",
+          "parking": "Gửi xe",
+          "rideHailing": "Xe công nghệ"
+        }
+      },
       "submit": "Lưu nhanh",
       "success": "Đã thêm nhanh khoản chi.",
       "networkError": "Không thể gửi khoản chi do kết nối mạng bị gián đoạn.",

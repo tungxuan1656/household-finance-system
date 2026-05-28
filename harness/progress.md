@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-27 — Rebuilt add-expense as a 3-step bottom drawer
+
+- Who: Orchestrator + User
+- Summary: Finished the first functional pass of the Yellow Finance add-expense flow. Replaced the old mobile-vs-desktop dialog/form split with one bottom-drawer-based 3-step flow driven by the existing create hook and submit mutation path. Step 1 now focuses on date and category search/grid selection; Step 2 focuses on amount, quick amount presets, preferred source shortcuts, and note/title suggestions; Step 3 handles optional household and group assignment with a compact summary card. The existing create submission, undo toast, and profile source persistence were preserved underneath the new UI orchestration.
+- Files changed: Add-expense dialog orchestration, new drawer-flow and flow-helper modules plus tests, Vietnamese locale copy for the new flow, feat-073 evidence, active ExecPlan progress wording, and this progress log.
+- Verification: `gitnexus_impact` for `AddExpenseDialog`, `ExpenseEntryForm`, and `useExpenseEntryForm` returned `LOW` risk with 0 direct dependents and 0 affected processes; `pnpm --filter web exec vitest run src/features/expenses/components/add-expense-flow-helpers.test.ts src/features/expenses/components/use-expense-entry-form.test.ts` passed with 13 tests; `./init.sh typecheck` returned `OK`; `./init.sh lint` returned `OK`; `gitnexus_detect_changes(scope: all)` returned `LOW` risk with 5 changed symbols across 2 indexed files and 0 affected processes.
+- Blockers: No dev server was attached in this thread, so the new drawer has not been visually browser-verified yet and may still need spacing/polish adjustments after first visual pass.
+- Next steps: Run a browser verification pass on the Expense screen and add-expense drawer if a local server is available, then move to the Analysis page migration.
+
 ## 2026-05-27 — Migrated the Expense page to shared wrappers and timeline sections
 
 - Who: Orchestrator + User
