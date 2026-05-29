@@ -1,5 +1,9 @@
 # Home Screen UI Specification
 
+> **Deprecated**: This wireframe describes the old `/home` dashboard which has been replaced by the Expense surface as the default protected entry point after sign-in. The Lens→View migration is complete. The 5-tab nav (Home, Expenses, Budgets, Insights, Profile) is replaced by 4 tabs (Expense, Analysis, Household, Settings). Keep for historical reference only — do not use as the basis for new work.
+
+
+
 > Screen: Home / Dashboard
 > Platform: Responsive Web App
 > Design System: shadcn/ui + Maia Mist preset

@@ -23,7 +23,7 @@ Read least docs that fully cover task.
 | Task | Read |
 |------|------|
 | Any session | `AGENTS.md` |
-| Architecture/layer change | `ARCHITECTURE.md` |
+| Architecture/layer change | `docs/references/backend/architecture-and-boundaries.md` |
 | Frontend work | `docs/FRONTEND.md` → exact `docs/references/frontend/*` needed |
 | Backend work | `docs/BACKEND.md` → exact `docs/references/backend/*` needed |
 | Shared type/API naming | `docs/references/shared/type-naming-pattern.md` |
