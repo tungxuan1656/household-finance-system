@@ -14,6 +14,14 @@ import { cn } from '@/utils/cn'
 export function BottomTab() {
   const pathname = usePathname()
 
+  const isTabRoute = BOTTOM_TAB_ITEMS.some((item) =>
+    isProtectedNavItemActive(pathname, item.to),
+  )
+
+  if (!isTabRoute) {
+    return null
+  }
+
   return createPortal(
     <div className='fixed inset-x-0 bottom-0 z-50 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:hidden'>
       <nav

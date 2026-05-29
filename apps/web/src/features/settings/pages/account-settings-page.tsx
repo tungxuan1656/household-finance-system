@@ -30,7 +30,7 @@ export const AccountSettingsPage = () => {
 
   return (
     <PageContainer>
-      <PageHeader title={t('shell.protected.nav.settings')} />
+      <PageHeader showBack title={t('shell.protected.nav.settings')} />
       <PageContent>
         <DataState
           customAction={

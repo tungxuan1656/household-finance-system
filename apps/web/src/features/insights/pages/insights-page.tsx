@@ -104,10 +104,7 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
 
   return (
     <PageContainer>
-      <PageHeader
-        description={t('insights.description')}
-        title={t('shell.protected.nav.insights')}
-      />
+      <PageHeader title={t('shell.protected.nav.insights')} />
       <PageContent>
         <div className='flex flex-col gap-4 md:gap-6'>
           <InsightsHeader

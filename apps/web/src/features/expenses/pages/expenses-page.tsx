@@ -137,10 +137,7 @@ export const ExpensesPage = () => {
 
   return (
     <PageContainer>
-      <PageHeader
-        description={t('expense.feed.description')}
-        title={t('shell.protected.nav.expenses')}
-      />
+      <PageHeader title={t('shell.protected.nav.expenses')} />
       <PageContent>
         <div className='flex flex-col gap-4 md:gap-6'>
           <ExpenseFeedSummary filters={filters} search={debouncedSearch} />

@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import type { ReactNode } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -29,6 +30,9 @@ export const PageHeader = ({
   sticky = true,
   className,
 }: PageHeaderProps) => {
+  const router = useRouter()
+  const handleBack = onBack ?? (() => router.back())
+
   return (
     <>
       <header
@@ -43,7 +47,7 @@ export const PageHeader = ({
               aria-label={backLabel}
               size='icon'
               variant='ghost'
-              onClick={onBack}>
+              onClick={handleBack}>
               <ArrowLeft className='size-5' />
             </Button>
           ) : null}
@@ -68,7 +72,7 @@ export const PageHeader = ({
                 aria-label={backLabel}
                 size='icon'
                 variant='ghost'
-                onClick={onBack}>
+                onClick={handleBack}>
                 <ArrowLeft className='size-5' />
               </Button>
             ) : null}

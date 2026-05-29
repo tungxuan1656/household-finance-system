@@ -83,7 +83,7 @@ function GroupsPage() {
 
   return (
     <PageContainer>
-      <PageHeader title={t('groups.title')} />
+      <PageHeader showBack title={t('groups.title')} />
       <PageContent>
         <div className='flex flex-col gap-6'>
           <div className='flex flex-wrap items-start justify-between gap-3'>
