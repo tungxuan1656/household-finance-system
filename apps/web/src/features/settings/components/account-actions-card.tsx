@@ -42,7 +42,7 @@ const ActionRow = ({
   <Button
     className='h-auto w-full justify-between gap-3 rounded-2xl bg-muted/50 p-4 text-left hover:bg-muted sm:h-auto sm:px-6'
     type='button'
-    variant='ghost'
+    variant={variant === 'destructive' ? 'destructive' : 'ghost'}
     onClick={onClick}>
     <span className='flex min-w-0 items-center gap-4'>
       <Icon

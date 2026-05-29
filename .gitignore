@@ -26,3 +26,4 @@ __pycache__/
 .sisyphus
 .playwright-cli
 .playwright
+data/state_store.db

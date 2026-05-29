@@ -17,10 +17,9 @@ This version is refined against the approved Stitch screens from project `182810
 - After sign-in or sign-up, the protected app enters the Expense surface first.
 - Approved source screens currently cover the four main tabs plus the key household and add-expense flows.
 - Protected pages use one mobile-first shell:
-  - header
+  - horizontal top navigation on desktop
   - content
   - bottom-tab navigator on mobile
-  - left navigation rail on desktop
 - Top-level tabs become:
   - Expense
   - Analysis
@@ -93,11 +92,8 @@ Desktop does not invent a second app structure.
 
 Desktop keeps:
 
-- the same header behavior
 - the same page content shape
 - the same route model
-
-Desktop only moves the primary navigation to the far-left rail, similar to Instagram.
 
 ## Protected layout model
 
@@ -115,9 +111,9 @@ Desktop only moves the primary navigation to the far-left rail, similar to Insta
 
 ### Desktop
 
-- Far-left rail replaces the mobile bottom-tab navigator.
+- Horizontal top navigation replaces the mobile bottom-tab navigator.
 - Main page column stays centered.
-- Header and content remain in the center column.
+- Content remains in the center column.
 - Page width stays constrained so screens still feel app-like, not dashboard-sprawl.
 - Floating actions and bottom drawers still anchor to the center content column, not the full desktop viewport.
 

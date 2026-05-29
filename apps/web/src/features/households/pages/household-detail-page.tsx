@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
@@ -11,10 +11,18 @@ import {
   PageContent,
   PageHeader,
 } from '@/components/shared/page'
+import { RecentExpensesCard } from '@/features/expenses/components/recent-expenses-card'
+import {
+  useArchiveHouseholdMutation,
+  useUpdateHouseholdMutation,
+} from '@/features/households/hooks/use-household-mutations'
+import { useHouseholdDetailQuery } from '@/features/households/hooks/use-households'
+import { useHouseholdMembersQuery } from '@/features/households/hooks/use-households'
 import type { UpdateHouseholdSettingsFormValues } from '@/features/households/lib/forms/household.schema'
+import { InsightsSection } from '@/features/insights/components/insights-section'
+import { getDefaultPeriod } from '@/features/insights/utils/insights-period'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
-import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 import { InviteMembersActionCard } from '../components/household-action-card'
 import { HouseholdDangerZoneCard } from '../components/household-danger-zone-card'
@@ -30,23 +38,35 @@ function HouseholdDetailPage() {
   const params = useParams<{ id: string }>()
   const id = params?.id
   const router = useRouter()
-  const currentHousehold = useHouseholdStore.use.currentHousehold()
-  const members = useHouseholdStore.use.members()
-  const isLoading = useHouseholdStore.use.isLoading()
-  const error = useHouseholdStore.use.error()
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
 
-  useEffect(() => {
-    if (!id) return
-    void householdActions.fetchHouseholdById(id)
-  }, [id])
+  const {
+    data: household,
+    isLoading: isHouseholdLoading,
+    error: householdError,
+    refetch: refetchHousehold,
+  } = useHouseholdDetailQuery(id)
+
+  const { data: membersData, isLoading: isMembersLoading } =
+    useHouseholdMembersQuery(id)
+
+  const updateHouseholdMutation = useUpdateHouseholdMutation()
+  const archiveHouseholdMutation = useArchiveHouseholdMutation()
+
+  const isLoading = isHouseholdLoading || isMembersLoading
+  const error = householdError
+  const members = membersData?.items ?? []
 
   const handleSaveSettings = async (
     values: UpdateHouseholdSettingsFormValues,
   ) => {
     if (!id) return
     try {
-      await householdActions.updateHousehold(id, values)
+      await updateHouseholdMutation.mutateAsync({
+        householdId: id,
+        payload: values,
+      })
+
       toast.success(t('app.householdDetail.feedback.updateSuccess'))
     } catch {
       toast.error(t('app.householdDetail.feedback.updateFailed'))
@@ -55,7 +75,7 @@ function HouseholdDetailPage() {
   const handleArchive = async () => {
     if (!id) return
     try {
-      await householdActions.archiveHousehold(id)
+      await archiveHouseholdMutation.mutateAsync(id)
       toast.success(t('app.householdDetail.feedback.archiveSuccess'))
       router.replace(PATHS.HOUSEHOLDS)
     } catch (archiveError) {
@@ -82,7 +102,7 @@ function HouseholdDetailPage() {
       </PageContainer>
     )
 
-  const isAdmin = currentHousehold?.role === 'admin'
+  const isAdmin = household?.role === 'admin'
 
   return (
     <PageContainer>
@@ -93,21 +113,26 @@ function HouseholdDetailPage() {
       />
       <PageContent>
         <DataState
-          errorDescription={error ?? undefined}
-          isError={Boolean(!isLoading && error && !currentHousehold)}
-          isLoading={isLoading && !currentHousehold}
-          retryAction={() => void householdActions.fetchHouseholdById(id)}>
-          {currentHousehold ? (
+          errorDescription={error?.message ?? undefined}
+          isError={Boolean(!isLoading && error && !household)}
+          isLoading={isLoading && !household}
+          retryAction={() => void refetchHousehold()}>
+          {household ? (
             <div className='grid gap-4'>
               <HouseholdSettingsCard
-                household={currentHousehold}
+                household={household}
                 isAdmin={isAdmin}
-                isSubmitting={isLoading}
+                isSubmitting={updateHouseholdMutation.isPending}
                 memberCount={members.length}
                 onSubmit={handleSaveSettings}
               />
+              <InsightsSection
+                householdId={household.id}
+                period={getDefaultPeriod()}
+              />
+              <RecentExpensesCard householdId={household.id} limit={3} />
               <HouseholdMembersCard
-                householdId={currentHousehold.id}
+                householdId={household.id}
                 isAdmin={isAdmin}
               />
               {isAdmin ? (
@@ -116,7 +141,7 @@ function HouseholdDetailPage() {
                     onAction={() => setIsInviteDialogOpen(true)}
                   />
                   <HouseholdInviteDialog
-                    householdId={currentHousehold.id}
+                    householdId={household.id}
                     isOpen={isInviteDialogOpen}
                     trigger={null}
                     onOpenChange={setIsInviteDialogOpen}

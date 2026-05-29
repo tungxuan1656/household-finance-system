@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-05-29-pre-ship-browser-testing-plan.md](plans/2026-05-29-pre-ship-browser-testing-plan.md) - feat-075 planned pre-ship browser testing runbook: uses Playwright CLI with secure runtime credentials, screenshot-based mobile layout review, main expense/household flow checks, API data consistency assertions, optional group/budget smoke, cleanup guidance, and subagent-style execution lanes.
 - [2026-05-27-yellow-finance-protected-pages-refactor.md](plans/2026-05-27-yellow-finance-protected-pages-refactor.md) - feat-073 frontend-only protected app refactor completed: replaced PageShell with shared page wrappers, moved protected default entry to Expense, aligned shell/navigation to the four-tab Yellow Finance model, rebuilt key tab pages, migrated all protected pages to PageContainer/PageHeader/PageContent, removed PageShell from codebase.
 
 ## Completed

@@ -53,7 +53,7 @@ function BudgetCard({
               {onEdit && (
                 <Button
                   className='gap-2'
-                  size='xl'
+                  size='default'
                   type='button'
                   variant='outline'
                   onClick={onEdit}>
@@ -73,7 +73,7 @@ function BudgetCard({
                     <Button
                       className='gap-2'
                       disabled={isDeleting}
-                      size='xl'
+                      size='default'
                       type='button'
                       variant='destructive'>
                       <Trash2 className='size-4' data-icon='inline-start' />

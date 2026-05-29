@@ -529,6 +529,10 @@
           "owner": "Chủ gia đình (placeholder)"
         }
       },
+      "recentExpenses": {
+        "title": "Chi tiêu gần đây",
+        "empty": "Chưa có khoản chi nào trong gia đình."
+      },
       "meta": {
         "defaultCurrency": "Tiền tệ mặc định"
       },
@@ -891,6 +895,10 @@
       "failed": "Không thể xuất dữ liệu phân tích.",
       "loading": "Đang xuất...",
       "success": "Đã tải CSV phân tích."
+    },
+    "filter": {
+      "scope": "Phạm vi",
+      "personal": "Cá nhân"
     }
   },
   "groups": {
