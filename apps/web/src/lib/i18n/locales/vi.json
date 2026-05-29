@@ -114,7 +114,8 @@
       "fields": {
         "displayName": "Tên hiển thị",
         "email": "Email"
-      }
+      },
+      "theme": "Giao diện"
     },
     "onboarding": {
       "actions": {
