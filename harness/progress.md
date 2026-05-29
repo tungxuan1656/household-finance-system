@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-29 — Wrote pre-ship browser testing plan
+
+- Who: Orchestrator
+- Summary: Created a pre-ship browser testing ExecPlan for Playwright CLI. The plan covers secure runtime test credentials, mobile and desktop screenshots, layout review criteria from frontend/design/UI-review docs, protected navigation expectations, add-expense and household data flows, API consistency assertions, optional group/budget smoke, cleanup, and subagent-style execution lanes. The plan records the current expected-vs-actual risk that accepted docs call the fourth tab Settings while current route/navigation code exposes Account.
+- Files changed: New pre-ship testing ExecPlan, exec-plan index, new feat-075 harness record, feature index, and this progress log.
+- Verification: Node JSON.parse OK for feature index and feat-075 record; `./scripts/check_harness_size.sh` OK; `git diff --check` OK; credential leak scan found no persisted test password/email in changed plan/harness files; `gitnexus_detect_changes(scope: all)` returned LOW risk with 0 affected processes.
+- Blockers: none.
+- Next steps: Future tester executes the plan with Playwright CLI using runtime `E2E_EMAIL` and `E2E_PASSWORD`, captures screenshots/evidence, then reports the ship verdict.
+
 ## 2026-05-29 — Audit design-docs, exec-plans, cleanup stale docs
 
 - Who: Orchestrator

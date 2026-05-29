@@ -1,0 +1,27 @@
+{
+  "id": "feat-075",
+  "name": "Pre-ship browser testing plan",
+  "status": "planned",
+  "description": "Create an execution-ready browser testing plan for the final pre-ship pass across mobile layout, protected navigation, core expense and household flows, data consistency, screenshots, and runtime evidence.",
+  "dependencies": ["feat-071", "feat-072", "feat-073", "feat-074"],
+  "evidence": {
+    "planned": [
+      "Used `using-skills` first and classified the request as Level 2 because the user asked for a durable pre-ship testing plan with multiple flows, layout judgment, screenshots, expected outcomes, and execution lanes.",
+      "Used `playwright-cli`, `subagent-driven-development`, `writing-plans`, `grill-with-docs`, `ui-ux-review`, and `verification-before-completion` guidance without running the actual browser tests.",
+      "Read `docs/PLANS.md`, `docs/FRONTEND.md`, exact frontend shell/page refs, exact MVP product specs for auth/expenses/analytics/households/groups/budgets/profile, `docs/SECURITY.md`, the accepted mobile-first design doc, and current route/component evidence before drafting the plan."
+    ],
+    "artifacts": [
+      "Added `docs/exec-plans/plans/2026-05-29-pre-ship-browser-testing-plan.md` with exact Playwright CLI command syntax, screenshot requirements, mobile/desktop layout criteria, main flow/data assertions, cleanup steps, and subagent execution lanes.",
+      "Updated `docs/exec-plans/index.md` to list the new testing plan under Active.",
+      "Updated `harness/feature_index.json`, added this feature record, and logged progress in `harness/progress.md`."
+    ],
+    "verification": [
+      "JSON validation passed for `harness/feature_index.json` and `harness/features/feat-075.json` via Node JSON.parse.",
+      "`./scripts/check_harness_size.sh` passed with `Harness size checks passed`.",
+      "`git diff --check` passed with no whitespace errors.",
+      "Credential leak scan found no persisted match for the provided password, provided email, or hardcoded E2E password assignment in the changed plan/harness files.",
+      "`gitnexus_detect_changes(scope: all, repo: household-finance-system)` returned LOW risk with 4 changed symbols, 3 indexed changed files, 0 affected symbols, and 0 affected processes."
+    ]
+  },
+  "notes": "This feature creates the plan only. It intentionally does not execute Playwright tests and does not store the provided test password in tracked files."
+}
