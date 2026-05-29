@@ -1,11 +1,10 @@
 'use client'
 
 import { Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
-import { DataState } from '@/components/shared/data-state'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,9 +23,13 @@ import {
   ItemTitle,
 } from '@/components/ui/item'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
+import {
+  useRemoveHouseholdMemberMutation,
+  useUpdateHouseholdMemberRoleMutation,
+} from '@/features/households/hooks/use-household-mutations'
+import { useHouseholdMembersQuery } from '@/features/households/hooks/use-households'
 import type { HouseholdRoleDTO } from '@/features/households/types/household'
 import { t } from '@/lib/i18n/t'
-import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 type HouseholdMembersCardProps = { householdId: string; isAdmin: boolean }
 
@@ -34,30 +37,19 @@ export const HouseholdMembersCard = ({
   householdId,
   isAdmin,
 }: HouseholdMembersCardProps) => {
-  const members = useHouseholdStore.use.members()
-  const isLoading = useHouseholdStore.use.isLoading()
-  const error = useHouseholdStore.use.error()
+  const { data, isLoading, error, refetch } =
+    useHouseholdMembersQuery(householdId)
+  const removeMemberMutation = useRemoveHouseholdMemberMutation()
+  const updateRoleMutation = useUpdateHouseholdMemberRoleMutation()
   const [memberErrorMessage, setMemberErrorMessage] = useState<string | null>(
     null,
   )
 
-  useEffect(() => {
-    void householdActions.fetchHouseholdMembers(householdId)
-  }, [householdId])
-
-  useEffect(() => {
-    if (isLoading) return
-    if (!error) {
-      setMemberErrorMessage(null)
-
-      return
-    }
-    if (members.length === 0) setMemberErrorMessage(error)
-  }, [error, isLoading, members.length])
+  const members = data?.items ?? []
 
   const handleRemoveMember = async (userId: string) => {
     try {
-      await householdActions.removeHouseholdMember(householdId, userId)
+      await removeMemberMutation.mutateAsync({ householdId, userId })
       setMemberErrorMessage(null)
       toast.success(t('app.householdDetail.feedback.removeMemberSuccess'))
     } catch {
@@ -73,11 +65,7 @@ export const HouseholdMembersCard = ({
     role: HouseholdRoleDTO,
   ) => {
     try {
-      await householdActions.updateHouseholdMemberRole(
-        householdId,
-        userId,
-        role,
-      )
+      await updateRoleMutation.mutateAsync({ householdId, userId, role })
 
       setMemberErrorMessage(null)
     } catch {
@@ -99,16 +87,26 @@ export const HouseholdMembersCard = ({
         </div>
       </CardHeader>
       <CardContent className='flex flex-col gap-3'>
-        <DataState
-          emptyDescription={t('app.householdDetail.members.empty')}
-          errorDescription={memberErrorMessage ?? undefined}
-          isEmpty={!isLoading && !error && !members.length}
-          isError={Boolean(memberErrorMessage && !members.length)}
-          isLoading={isLoading && !members.length}
-          retryAction={() =>
-            householdActions.fetchHouseholdMembers(householdId)
-          }
-          title={t('app.householdDetail.members.title')}>
+        {isLoading && members.length === 0 ? (
+          <div className='flex flex-col gap-3'>
+            {[1, 2].map((i) => (
+              <div key={i} className='h-16 animate-pulse rounded-lg bg-muted' />
+            ))}
+          </div>
+        ) : error && members.length === 0 ? (
+          <div className='flex flex-col items-center gap-2 py-4'>
+            <p className='text-sm text-muted-foreground'>
+              {t('app.households.feedback.loadFailed')}
+            </p>
+            <Button size='sm' onClick={() => void refetch()}>
+              {t('app.households.actions.retry')}
+            </Button>
+          </div>
+        ) : members.length === 0 ? (
+          <p className='text-sm text-muted-foreground'>
+            {t('app.householdDetail.members.empty')}
+          </p>
+        ) : (
           <div className='flex flex-col gap-3'>
             {memberErrorMessage ? (
               <div className='flex flex-wrap items-center justify-between gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3'>
@@ -118,9 +116,7 @@ export const HouseholdMembersCard = ({
                 <Button
                   type='button'
                   variant='outline'
-                  onClick={() =>
-                    void householdActions.fetchHouseholdMembers(householdId)
-                  }>
+                  onClick={() => void refetch()}>
                   {t('app.households.actions.retry')}
                 </Button>
               </div>
@@ -186,7 +182,7 @@ export const HouseholdMembersCard = ({
               </Item>
             ))}
           </div>
-        </DataState>
+        )}
       </CardContent>
     </Card>
   )

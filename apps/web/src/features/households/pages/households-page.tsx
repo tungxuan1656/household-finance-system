@@ -9,52 +9,32 @@ import {
   PageContent,
   PageHeader,
 } from '@/components/shared/page'
+import { useCreateHouseholdMutation } from '@/features/households/hooks/use-household-mutations'
+import { useHouseholdsQuery } from '@/features/households/hooks/use-households'
 import type { CreateHouseholdFormValues } from '@/features/households/lib/forms/household.schema'
 import { t } from '@/lib/i18n/t'
-import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
 import { HouseholdsListSection } from './households-list-section'
 
 function HouseholdsPage() {
-  const households = useHouseholdStore.use.households()
-  const isLoading = useHouseholdStore.use.isLoading()
+  const { data, isLoading, error, refetch } = useHouseholdsQuery()
+  const createHouseholdMutation = useCreateHouseholdMutation()
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
-  const [listLoadError, setListLoadError] = useState<string | null>(null)
-  const shouldShowLoadingState =
-    isInitialLoading && isLoading && households.length === 0
-  const shouldShowBlockingError =
-    !shouldShowLoadingState && listLoadError && households.length === 0
-  const loadHouseholds = async () => {
-    try {
-      setListLoadError(null)
-      await householdActions.fetchHouseholds()
-    } catch (loadError) {
-      setListLoadError(
-        loadError instanceof Error
-          ? loadError.message
-          : t('app.households.feedback.loadFailed'),
-      )
-    }
-  }
+
+  const households = data?.items ?? []
 
   useEffect(() => {
-    let isMounted = true
-
-    void loadHouseholds().finally(() => {
-      if (isMounted) setIsInitialLoading(false)
-    })
-
-    return () => {
-      isMounted = false
+    if (!isLoading && !error) {
+      setIsInitialLoading(false)
     }
-  }, [])
+  }, [isLoading, error])
 
   const onSubmit = async (values: CreateHouseholdFormValues) => {
     setIsCreating(true)
     try {
-      await householdActions.createHousehold(values)
+      await createHouseholdMutation.mutateAsync(values)
       setIsCreateDialogOpen(false)
       toast.success(t('app.households.feedback.createSuccess'))
 
@@ -73,18 +53,10 @@ function HouseholdsPage() {
       <PageHeader title={t('app.households.title')} />
       <PageContent>
         <DataState
-          errorDescription={listLoadError ?? undefined}
-          isError={Boolean(shouldShowBlockingError)}
-          isLoading={shouldShowLoadingState}
-          retryAction={async () => {
-            setIsInitialLoading(true)
-
-            try {
-              await loadHouseholds()
-            } finally {
-              setIsInitialLoading(false)
-            }
-          }}>
+          errorDescription={error?.message ?? undefined}
+          isError={Boolean(error) && households.length === 0}
+          isLoading={isInitialLoading}
+          retryAction={() => void refetch()}>
           <HouseholdsListSection
             households={households}
             isCreateDialogOpen={isCreateDialogOpen}

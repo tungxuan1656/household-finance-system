@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
@@ -11,6 +11,10 @@ import {
   PageContent,
   PageHeader,
 } from '@/components/shared/page'
+import {
+  useArchiveHouseholdMutation,
+  useUpdateHouseholdMutation,
+} from '@/features/households/hooks/use-household-mutations'
 import type { UpdateHouseholdSettingsFormValues } from '@/features/households/lib/forms/household.schema'
 import { PATHS } from '@/lib/constants/paths'
 import { t } from '@/lib/i18n/t'
@@ -36,17 +40,20 @@ function HouseholdDetailPage() {
   const error = useHouseholdStore.use.error()
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
 
-  useEffect(() => {
-    if (!id) return
-    void householdActions.fetchHouseholdById(id)
-  }, [id])
+  const updateHouseholdMutation = useUpdateHouseholdMutation()
+  const archiveHouseholdMutation = useArchiveHouseholdMutation()
 
   const handleSaveSettings = async (
     values: UpdateHouseholdSettingsFormValues,
   ) => {
     if (!id) return
     try {
-      await householdActions.updateHousehold(id, values)
+      await updateHouseholdMutation.mutateAsync({
+        householdId: id,
+        payload: values,
+      })
+
+      await householdActions.fetchHouseholdById(id)
       toast.success(t('app.householdDetail.feedback.updateSuccess'))
     } catch {
       toast.error(t('app.householdDetail.feedback.updateFailed'))
@@ -55,7 +62,7 @@ function HouseholdDetailPage() {
   const handleArchive = async () => {
     if (!id) return
     try {
-      await householdActions.archiveHousehold(id)
+      await archiveHouseholdMutation.mutateAsync(id)
       toast.success(t('app.householdDetail.feedback.archiveSuccess'))
       router.replace(PATHS.HOUSEHOLDS)
     } catch (archiveError) {
@@ -102,7 +109,7 @@ function HouseholdDetailPage() {
               <HouseholdSettingsCard
                 household={currentHousehold}
                 isAdmin={isAdmin}
-                isSubmitting={isLoading}
+                isSubmitting={updateHouseholdMutation.isPending}
                 memberCount={members.length}
                 onSubmit={handleSaveSettings}
               />
