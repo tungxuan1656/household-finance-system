@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query'
 
 import type { ReplaceExpenseGroupsRequest } from '@/features/groups/types/group'
+import { ANALYTICS_KEYS } from '@/features/insights/api/use-analytics'
 
 import {
   createExpense,
@@ -51,6 +52,7 @@ export const useCreateExpenseMutation = () => {
     mutationFn: createExpense,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }
@@ -63,6 +65,7 @@ export const useUpdateExpenseMutation = () => {
     onSuccess: (expense) => {
       queryClient.setQueryData(EXPENSE_KEYS.detail(expense.id), expense)
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }
@@ -74,6 +77,7 @@ export const useDeleteExpenseMutation = () => {
     mutationFn: deleteExpenseApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }
@@ -86,6 +90,7 @@ export const useRestoreExpenseMutation = () => {
     onSuccess: (expense) => {
       queryClient.setQueryData(EXPENSE_KEYS.detail(expense.id), expense)
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }

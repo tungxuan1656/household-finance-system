@@ -16,6 +16,7 @@ import type {
   ListBudgetsResponse,
   UpdateBudgetMutationInput,
 } from '@/features/budgets/types/budget'
+import { ANALYTICS_KEYS } from '@/features/insights/api/use-analytics'
 
 export const BUDGET_KEYS = {
   all: ['budgets'] as const,
@@ -35,6 +36,7 @@ export const useCreateBudgetMutation = () => {
     mutationFn: createBudget,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: BUDGET_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }
@@ -46,6 +48,7 @@ export const useUpdateBudgetMutation = () => {
     mutationFn: updateBudget,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: BUDGET_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }
@@ -57,6 +60,7 @@ export const useDeleteBudgetMutation = () => {
     mutationFn: deleteBudget,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: BUDGET_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }

@@ -28,6 +28,7 @@ import type {
   ReplaceExpenseGroupsRequest,
   UpdateExpenseGroupMutationInput,
 } from '@/features/groups/types/group'
+import { ANALYTICS_KEYS } from '@/features/insights/api/use-analytics'
 
 export const GROUP_KEYS = {
   all: ['groups'] as const,
@@ -43,8 +44,10 @@ export const useCreateExpenseGroupMutation = () => {
 
   return useMutation<ExpenseGroupDTO, Error, CreateExpenseGroupRequest>({
     mutationFn: createExpenseGroup,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: GROUP_KEYS.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: GROUP_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
+    },
   })
 }
 
@@ -53,8 +56,10 @@ export const useUpdateExpenseGroupMutation = () => {
 
   return useMutation<ExpenseGroupDTO, Error, UpdateExpenseGroupMutationInput>({
     mutationFn: updateExpenseGroup,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: GROUP_KEYS.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: GROUP_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
+    },
   })
 }
 
@@ -63,8 +68,10 @@ export const useArchiveExpenseGroupMutation = () => {
 
   return useMutation<ArchiveExpenseGroupResponse, Error, string>({
     mutationFn: archiveExpenseGroup,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: GROUP_KEYS.all }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: GROUP_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
+    },
   })
 }
 
@@ -105,6 +112,7 @@ export const useReplaceExpenseGroupsMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: GROUP_KEYS.all })
       queryClient.invalidateQueries({ queryKey: ['expenses'] })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }
