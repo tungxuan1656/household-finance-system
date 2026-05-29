@@ -11,8 +11,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { InsightsSummaryCards } from '@/features/insights/components/insights-summary-cards'
 import { t } from '@/lib/i18n/t'
 import type { AnalyticsOverviewDTO } from '@/types/analytics'
+import type { ReferenceCategoryDTO } from '@/types/reference-data'
 
 type InsightsOverviewPanelProps = {
+  categoryMap: Map<string, ReferenceCategoryDTO>
   data: AnalyticsOverviewDTO | null | undefined
   error: Error | null
   isLoading: boolean
@@ -20,6 +22,7 @@ type InsightsOverviewPanelProps = {
 }
 
 function InsightsOverviewPanel({
+  categoryMap,
   data,
   error,
   isLoading,
@@ -57,7 +60,7 @@ function InsightsOverviewPanel({
       </Empty>
     )
 
-  return <InsightsSummaryCards data={data} />
+  return <InsightsSummaryCards categoryMap={categoryMap} data={data} />
 }
 
 export { InsightsOverviewPanel }

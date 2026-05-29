@@ -119,6 +119,7 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
           />
 
           <InsightsOverviewPanel
+            categoryMap={categoryMap}
             data={data}
             error={error}
             isLoading={isLoading}
