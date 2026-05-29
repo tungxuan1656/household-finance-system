@@ -26,8 +26,7 @@ This version is refined against the approved Stitch screens from project `182810
   - Analysis
   - Household
   - Settings
-- `PageShell` and `PageSection` are removed after migration.
-- New page wrappers become:
+- Page wrappers:
   - `PageContainer`
   - `PageHeader`
   - `PageContent`
@@ -124,8 +123,6 @@ Desktop only moves the primary navigation to the far-left rail, similar to Insta
 
 ## Page wrapper contract
 
-These wrappers replace `PageShell` and `PageSection`.
-
 ### `PageContainer`
 
 Purpose:
@@ -181,20 +178,18 @@ Rules:
 - separate from the bottom-tab navigator
 - may be sticky inside the page surface if the flow needs persistent actions
 
-## Keep layout components, remove page-shell opinions
+## Layout vs page wrapper separation
 
-Keep a layout layer for:
+Layout components handle app chrome:
 
 - sidebar vs bottom-tab switching
 - protected session gating
 - global drawer/sheet mounting
 
-Do not keep old page-shell/page-section abstractions.
+Page wrappers handle page structure:
 
-The new rule is:
-
-- layout components handle app chrome
-- page wrapper components handle page structure
+- layout components do not own page content
+- page wrappers do not own navigation
 - feature components handle page-specific UI
 - shadcn primitives handle base UI building blocks
 
@@ -406,17 +401,3 @@ This stays aligned with product direction v2:
 - no backend or domain contract change in this decision
 - no custom replacement of current shadcn primitives
 - no wireframe-specific visual skin yet
-
-## Migration rules
-
-When implementation starts:
-
-1. Create the new shell-safe page wrappers first.
-2. Move navigation to the 4-tab route model.
-3. Switch protected default entry to Expense.
-4. Rebuild the four tab surfaces to match the approved Stitch composition before polishing secondary routes.
-5. Delete `page-shell.tsx` and `PageSection` only after all protected pages stop depending on them.
-
-## Follow-up artifact
-
-This design doc should be converted into one ExecPlan before code refactor starts.

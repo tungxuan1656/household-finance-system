@@ -9,6 +9,16 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-29 — Audit design-docs, exec-plans, cleanup stale docs
+
+- Who: Orchestrator
+- Summary: Audited design-docs and exec-plans for stale state. Moved `mobile-first-protected-shell-and-tab-surfaces.md` from Proposed to Accepted (feat-072/073 fully implemented). Confirmed no wireframe-docs remain. Confirmed no orphaned onboarding routes in apps/web/src. Cleaned stale PageShell/Lens/overview-first/5-tab references from exec-plan index entries that pointed to superseded features (feat-059, feat-067). Deleted one truly stale plan file (2026-05-21-protected-page-pageshell-datastate-refactor.md) and confirmed its index entry was already removed.
+- Files changed: docs/design-docs/index.md, docs/exec-plans/index.md, harness/progress.md
+- Verification: `./init.sh lint` OK.
+- Blockers: none.
+- Next steps: Verify exec-plan index entries with PageShell/Lens/overview-first language in their descriptions are accurate historical records (they are — they describe what was done at that point in time). No further action needed unless user wants to suppress historical detail from exec-plan descriptions.
+
+<!-- Start writing log before here, latest log on top -->
 ## 2026-05-21 — Added budget delete lifecycle across worker and web
 
 - Who: Orchestrator + code-reviewer

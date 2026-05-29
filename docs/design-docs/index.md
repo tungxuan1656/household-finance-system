@@ -12,10 +12,9 @@ Durable design decision map. Read only when task changes lasting UI/product/arch
 
 - `core-beliefs.md`: agent-first operating beliefs.
 - `product-direction-v2.md`: v1 -> v2 product-direction shift for personal, household, and group semantics.
+- `mobile-first-protected-shell-and-tab-surfaces.md`: mobile-first protected app refactor for 4-tab navigation, new page wrappers, and expense/household surface rules.
 
 ## Proposed
-
-- `mobile-first-protected-shell-and-tab-surfaces.md`: mobile-first protected app refactor for 4-tab navigation, new page wrappers, and expense/household surface rules.
 
 ## Deprecated
 

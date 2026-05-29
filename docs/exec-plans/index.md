@@ -5,7 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
-- [2026-05-27-yellow-finance-protected-pages-refactor.md](plans/2026-05-27-yellow-finance-protected-pages-refactor.md) - feat-073 frontend-only protected app refactor planned: replace `PageShell` with shared page wrappers, move protected default entry to Expense, align shell/navigation to the approved four-tab Yellow Finance model, rebuild the key tab pages and add-expense/household flows, and remove stale overview-first/page-shell guidance.
+- [2026-05-27-yellow-finance-protected-pages-refactor.md](plans/2026-05-27-yellow-finance-protected-pages-refactor.md) - feat-073 frontend-only protected app refactor completed: replaced PageShell with shared page wrappers, moved protected default entry to Expense, aligned shell/navigation to the four-tab Yellow Finance model, rebuilt key tab pages, migrated all protected pages to PageContainer/PageHeader/PageContent, removed PageShell from codebase.
 
 ## Completed
 
