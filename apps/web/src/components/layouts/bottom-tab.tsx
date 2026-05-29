@@ -9,6 +9,7 @@ import {
   isProtectedNavItemActive,
 } from '@/lib/constants/navigation'
 import { t } from '@/lib/i18n/t'
+import { cn } from '@/utils/cn'
 
 export function BottomTab() {
   const pathname = usePathname()
@@ -24,14 +25,14 @@ export function BottomTab() {
           return (
             <Link
               key={item.to}
-              className={[
+              className={cn(
                 'flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-3xl px-2 py-1 text-[10px] font-medium transition-colors',
                 isActive
                   ? 'bg-primary text-primary-foreground shadow-lg'
                   : 'text-muted-foreground hover:text-foreground',
-              ].join(' ')}
+              )}
               href={item.to}>
-              <item.icon className='h-5 w-5' />
+              <item.icon className='size-5' />
               <span className='truncate'>{t(item.labelKey)}</span>
             </Link>
           )

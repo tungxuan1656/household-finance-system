@@ -3,6 +3,7 @@
 import { CalendarIcon, SearchIcon, XIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   DrawerClose,
   DrawerContent,
@@ -227,14 +228,18 @@ export const AddExpenseDrawerFlow = ({
         {step === 2 ? (
           <div className='flex flex-col gap-4'>
             {selectedCategory ? (
-              <div className='inline-flex w-fit items-center gap-2 rounded-full bg-card px-3 py-2 text-sm font-medium'>
-                <img
-                  alt={getCategoryLabel(selectedCategory.key)}
-                  className='size-5'
-                  src={selectedCategory.iconUrl}
-                />
-                <span>{getCategoryLabel(selectedCategory.key)}</span>
-              </div>
+              <Card>
+                <CardContent className='inline-flex w-fit items-center gap-2 px-3 py-2'>
+                  <img
+                    alt={getCategoryLabel(selectedCategory.key)}
+                    className='size-5'
+                    src={selectedCategory.iconUrl}
+                  />
+                  <span className='text-sm font-medium'>
+                    {getCategoryLabel(selectedCategory.key)}
+                  </span>
+                </CardContent>
+              </Card>
             ) : null}
 
             <div className='space-y-2'>
@@ -318,71 +323,77 @@ export const AddExpenseDrawerFlow = ({
 
         {step === 3 ? (
           <div className='flex flex-col gap-4'>
-            <div className='flex items-center justify-between rounded-[1.75rem] bg-card px-4 py-3'>
-              <div className='flex items-center gap-3'>
-                {selectedCategory ? (
-                  <img
-                    alt={getCategoryLabel(selectedCategory.key)}
-                    className='size-6'
-                    src={selectedCategory.iconUrl}
-                  />
-                ) : null}
-                <div className='min-w-0'>
-                  <p className='text-sm font-medium'>
-                    {selectedCategory
-                      ? getCategoryLabel(selectedCategory.key)
-                      : t('expense.category')}
-                  </p>
-                  <p className='truncate text-xs text-muted-foreground'>
-                    {formState.title ||
-                      t('expense.quickAdd.step2.notePlaceholder')}
-                  </p>
+            <Card>
+              <CardContent className='flex items-center justify-between px-4 py-3'>
+                <div className='flex items-center gap-3'>
+                  {selectedCategory ? (
+                    <img
+                      alt={getCategoryLabel(selectedCategory.key)}
+                      className='size-6'
+                      src={selectedCategory.iconUrl}
+                    />
+                  ) : null}
+                  <div className='min-w-0'>
+                    <p className='text-sm font-medium'>
+                      {selectedCategory
+                        ? getCategoryLabel(selectedCategory.key)
+                        : t('expense.category')}
+                    </p>
+                    <p className='truncate text-xs text-muted-foreground'>
+                      {formState.title ||
+                        t('expense.quickAdd.step2.notePlaceholder')}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <span className='font-mono text-base font-medium text-destructive tabular-nums'>
-                - {amountDisplay || '0'}.000 đ
-              </span>
-            </div>
+                <span className='font-mono text-base font-medium text-destructive tabular-nums'>
+                  - {amountDisplay || '0'}.000 đ
+                </span>
+              </CardContent>
+            </Card>
 
-            <div className='space-y-2 rounded-[1.75rem] bg-card px-4 py-3'>
-              <p className='text-sm font-medium'>{t('expense.household')}</p>
-              <NativeSelect
-                className='w-full'
-                disabled={isSubmitting}
-                value={formState.householdId}
-                onChange={(event) =>
-                  onFieldChange('householdId', event.target.value)
-                }>
-                <NativeSelectOption value=''>
-                  {t('expense.quickAdd.step3.noHousehold')}
-                </NativeSelectOption>
-                {households.map((household) => (
-                  <NativeSelectOption key={household.id} value={household.id}>
-                    {household.name}
+            <Card>
+              <CardContent className='space-y-2 px-4 py-3'>
+                <p className='text-sm font-medium'>{t('expense.household')}</p>
+                <NativeSelect
+                  className='w-full'
+                  disabled={isSubmitting}
+                  value={formState.householdId}
+                  onChange={(event) =>
+                    onFieldChange('householdId', event.target.value)
+                  }>
+                  <NativeSelectOption value=''>
+                    {t('expense.quickAdd.step3.noHousehold')}
                   </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </div>
+                  {households.map((household) => (
+                    <NativeSelectOption key={household.id} value={household.id}>
+                      {household.name}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
+              </CardContent>
+            </Card>
 
-            <div className='space-y-2 rounded-[1.75rem] bg-card px-4 py-3'>
-              <p className='text-sm font-medium'>{t('expense.group')}</p>
-              <NativeSelect
-                className='w-full'
-                disabled={isSubmitting}
-                value={formState.groupId}
-                onChange={(event) =>
-                  onFieldChange('groupId', event.target.value)
-                }>
-                <NativeSelectOption value=''>
-                  {t('expense.quickAdd.step3.noGroup')}
-                </NativeSelectOption>
-                {groups.map((group) => (
-                  <NativeSelectOption key={group.id} value={group.id}>
-                    {group.name}
+            <Card>
+              <CardContent className='space-y-2 px-4 py-3'>
+                <p className='text-sm font-medium'>{t('expense.group')}</p>
+                <NativeSelect
+                  className='w-full'
+                  disabled={isSubmitting}
+                  value={formState.groupId}
+                  onChange={(event) =>
+                    onFieldChange('groupId', event.target.value)
+                  }>
+                  <NativeSelectOption value=''>
+                    {t('expense.quickAdd.step3.noGroup')}
                   </NativeSelectOption>
-                ))}
-              </NativeSelect>
-            </div>
+                  {groups.map((group) => (
+                    <NativeSelectOption key={group.id} value={group.id}>
+                      {group.name}
+                    </NativeSelectOption>
+                  ))}
+                </NativeSelect>
+              </CardContent>
+            </Card>
           </div>
         ) : null}
       </div>
