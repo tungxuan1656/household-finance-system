@@ -23,8 +23,6 @@ export const DEFAULT_EXPENSE_FEED_FILTER_VALUES: ExpenseFeedFilterValues = {
   householdId: '',
 }
 
-// localDateToTimestamp returns the start of day (local midnight).
-// Add one full day minus 1ms to cover the full selected end date.
 const END_OF_DAY_OFFSET_MS = 24 * 60 * 60 * 1000 - 1
 
 const getDateFilterFrom = (value: string): number | undefined => {

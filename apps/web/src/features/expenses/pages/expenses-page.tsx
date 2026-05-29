@@ -45,7 +45,6 @@ export const ExpensesPage = () => {
     DEFAULT_EXPENSE_FEED_FILTER_VALUES,
   )
 
-  // Debounce free-text and amount inputs to avoid rapid re-fetching while typing.
   const debouncedSearch = useDebounce(filterValues.search, INPUT_DEBOUNCE_MS)
   const debouncedAmountMin = useDebounce(
     filterValues.amountMin,
@@ -65,7 +64,6 @@ export const ExpensesPage = () => {
     if (households.length === 0) void householdActions.fetchHouseholds()
   }, [households.length])
 
-  // Handle deep-link: ?add-expense=1 auto-opens the add expense dialog.
   useEffect(() => {
     if (searchParams.get('add-expense') !== '1') return
     openDialog()
