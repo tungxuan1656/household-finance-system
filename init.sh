@@ -227,8 +227,12 @@ run_full() {
     "worker typecheck" \
     "web test" \
     "worker test"
+  local status=$?
   run_sync
-  echo "Done!"
+  if [ $status -eq 0 ]; then
+    echo "Done!"
+  fi
+  return $status
 }
 
 command="full"
