@@ -28,7 +28,7 @@ const CategoryTile = ({
 }) => (
   <button
     className={cn(
-      'flex min-h-24 flex-col items-center justify-center gap-2 rounded-3xl border border-border/70 bg-card px-2 py-3 text-center transition-colors',
+      'flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-2xl border border-border/70 bg-card px-2 py-3 text-center transition-colors',
       isSelected
         ? 'border-primary bg-primary text-primary-foreground'
         : 'hover:border-primary/50 hover:bg-accent/40',
@@ -37,7 +37,7 @@ const CategoryTile = ({
     onClick={onSelect}>
     <span
       className={cn(
-        'flex size-11 items-center justify-center rounded-2xl',
+        'flex size-10 items-center justify-center rounded-xl',
         isSelected ? 'bg-primary-foreground/15' : 'bg-background/20',
       )}
       style={
@@ -45,7 +45,7 @@ const CategoryTile = ({
       }>
       <img
         alt={getCategoryLabel(category.key)}
-        className='size-6'
+        className='size-5'
         src={category.iconUrl}
       />
     </span>
@@ -65,6 +65,7 @@ type Step1Props = {
     key: K,
     value: ExpenseEntryFormState[K],
   ) => void
+  onStepChange: (step: 1 | 2 | 3) => void
 }
 
 export function AddExpenseStep1({
@@ -74,9 +75,19 @@ export function AddExpenseStep1({
   isSubmitting,
   onCategorySearchChange,
   onFieldChange,
+  onStepChange,
 }: Step1Props) {
+  const handleCategorySelect = (categoryKey: string) => {
+    onFieldChange(
+      'categoryKey',
+      categoryKey as ExpenseEntryCategoryOption['key'],
+    )
+
+    onStepChange(2)
+  }
+
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex h-full flex-col gap-4'>
       <InputGroup>
         <InputGroupAddon>
           <CalendarIcon />
@@ -103,13 +114,13 @@ export function AddExpenseStep1({
         />
       </InputGroup>
 
-      <div className='grid grid-cols-3 gap-3'>
+      <div className='grid flex-1 grid-cols-4 gap-2'>
         {filteredCategories.map((category) => (
           <CategoryTile
             key={category.key}
             category={category}
             isSelected={formState.categoryKey === category.key}
-            onSelect={() => onFieldChange('categoryKey', category.key)}
+            onSelect={() => handleCategorySelect(category.key)}
           />
         ))}
       </div>

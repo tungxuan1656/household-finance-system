@@ -1,7 +1,8 @@
 'use client'
 
+import { ArrowLeft } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { FieldError } from '@/components/ui/field'
 import {
   InputGroup,
@@ -34,7 +35,7 @@ const QuickChoiceRow = ({
     {items.map((item) => (
       <Button
         key={item}
-        className='rounded-full px-4'
+        className='rounded-full px-3'
         size='sm'
         type='button'
         variant='outline'
@@ -54,6 +55,7 @@ type Step2Props = {
     key: K,
     value: ExpenseEntryFormState[K],
   ) => void
+  onStepChange: (step: 1 | 2 | 3) => void
   selectedCategory?: ReferenceCategoryDTO
 }
 
@@ -63,6 +65,7 @@ export function AddExpenseStep2({
   formState,
   isSubmitting,
   onFieldChange,
+  onStepChange,
   selectedCategory,
 }: Step2Props) {
   const quickAmounts = getAddExpenseQuickAmounts()
@@ -70,28 +73,25 @@ export function AddExpenseStep2({
   const titleSuggestions = getAddExpenseTitleSuggestions(formState.categoryKey)
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex h-full flex-col gap-4'>
       {selectedCategory ? (
-        <Card>
-          <CardContent className='inline-flex w-fit items-center gap-2 px-3 py-2'>
-            <img
-              alt={getCategoryLabel(selectedCategory.key)}
-              className='size-5'
-              src={selectedCategory.iconUrl}
-            />
-            <span className='text-sm font-medium'>
-              {getCategoryLabel(selectedCategory.key)}
-            </span>
-          </CardContent>
-        </Card>
+        <button
+          className='flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground'
+          type='button'
+          onClick={() => onStepChange(1)}>
+          <ArrowLeft className='size-4' />
+          <span>{getCategoryLabel(selectedCategory.key)}</span>
+        </button>
       ) : null}
 
-      <div className='space-y-2'>
-        <p className='text-sm font-medium'>Amount</p>
-        <InputGroup className='h-auto rounded-[1.75rem] px-4 py-3'>
+      <div className='space-y-1.5'>
+        <div className='flex items-center gap-2'>
+          <span className='text-sm text-muted-foreground'>Amount</span>
+        </div>
+        <InputGroup className='h-auto rounded-2xl px-4 py-2.5'>
           <InputGroupInput
             aria-invalid={!!errors.amountInput}
-            className='px-0 text-right font-mono text-3xl tabular-nums'
+            className='px-0 text-right font-mono text-2xl tabular-nums'
             disabled={isSubmitting}
             inputMode='numeric'
             placeholder='0'
@@ -102,7 +102,7 @@ export function AddExpenseStep2({
             }
           />
           <InputGroupAddon align='inline-end'>
-            <InputGroupText className='font-mono text-2xl tabular-nums'>
+            <InputGroupText className='font-mono text-xl tabular-nums'>
               .000 đ
             </InputGroupText>
           </InputGroupAddon>
@@ -117,13 +117,13 @@ export function AddExpenseStep2({
         }
       />
 
-      <div className='space-y-2'>
-        <p className='text-sm font-medium'>Source</p>
+      <div className='space-y-1.5'>
+        <p className='text-sm text-muted-foreground'>Source</p>
         <div className='flex flex-wrap gap-2'>
           {quickSources.map((source) => (
             <Button
               key={source.key}
-              className='rounded-full px-4'
+              className='rounded-full px-3'
               size='sm'
               type='button'
               variant={
@@ -139,12 +139,11 @@ export function AddExpenseStep2({
         <FieldError>{errors.sourceKey}</FieldError>
       </div>
 
-      <div className='space-y-2'>
-        <p className='text-sm font-medium'>Note</p>
-        <InputGroup className='h-auto rounded-[1.75rem]'>
+      <div className='space-y-1.5'>
+        <InputGroup className='h-auto rounded-2xl'>
           <InputGroupTextarea
             aria-invalid={!!errors.title}
-            className='min-h-28'
+            className='min-h-20 text-sm'
             disabled={isSubmitting}
             placeholder='Add a note...'
             value={formState.title}

@@ -1,5 +1,7 @@
 'use client'
 
+import { ArrowLeft } from 'lucide-react'
+
 import { Card, CardContent } from '@/components/ui/card'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import type { ExpenseGroupDTO } from '@/features/groups/types/group'
@@ -24,6 +26,7 @@ type Step3Props = {
     key: K,
     value: ExpenseEntryFormState[K],
   ) => void
+  onStepChange: (step: 1 | 2 | 3) => void
   selectedCategory?: ReferenceCategoryDTO
 }
 
@@ -35,78 +38,88 @@ export function AddExpenseStep3({
   households,
   isSubmitting,
   onFieldChange,
+  onStepChange,
   selectedCategory,
 }: Step3Props) {
   return (
-    <div className='flex flex-col gap-4'>
-      <Card>
-        <CardContent className='flex items-center justify-between px-4 py-3'>
-          <div className='flex items-center gap-3'>
-            {selectedCategory ? (
-              <img
-                alt={getCategoryLabel(selectedCategory.key)}
-                className='size-6'
-                src={selectedCategory.iconUrl}
-              />
-            ) : null}
-            <div className='min-w-0'>
-              <p className='text-sm font-medium'>
-                {selectedCategory
-                  ? getCategoryLabel(selectedCategory.key)
-                  : t('expense.category')}
-              </p>
-              <p className='truncate text-xs text-muted-foreground'>
-                {formState.title || t('expense.quickAdd.step2.notePlaceholder')}
-              </p>
-            </div>
-          </div>
-          <span className='font-mono text-base font-medium text-destructive tabular-nums'>
-            - {amountDisplay || '0'}.000 đ
+    <div className='flex h-full flex-col gap-3'>
+      {selectedCategory ? (
+        <button
+          className='flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground'
+          type='button'
+          onClick={() => onStepChange(2)}>
+          <ArrowLeft className='size-4' />
+          <span>{getCategoryLabel(selectedCategory.key)}</span>
+        </button>
+      ) : null}
+
+      <div className='flex items-center justify-between rounded-2xl bg-muted/50 px-4 py-2'>
+        <div className='flex items-center gap-2'>
+          <img
+            alt={selectedCategory ? getCategoryLabel(selectedCategory.key) : ''}
+            className='size-5'
+            src={selectedCategory?.iconUrl}
+          />
+          <span className='text-sm font-medium'>
+            {selectedCategory
+              ? getCategoryLabel(selectedCategory.key)
+              : t('expense.category')}
           </span>
-        </CardContent>
-      </Card>
+        </div>
+        <span className='font-mono text-base font-medium text-destructive tabular-nums'>
+          - {amountDisplay || '0'}.000 đ
+        </span>
+      </div>
 
-      <Card>
-        <CardContent className='space-y-2 px-4 py-3'>
-          <p className='text-sm font-medium'>{t('expense.household')}</p>
-          <NativeSelect
-            className='w-full'
-            disabled={isSubmitting}
-            value={formState.householdId}
-            onChange={(event) =>
-              onFieldChange('householdId', event.target.value)
-            }>
-            <NativeSelectOption value=''>
-              {t('expense.quickAdd.step3.noHousehold')}
-            </NativeSelectOption>
-            {households.map((household) => (
-              <NativeSelectOption key={household.id} value={household.id}>
-                {household.name}
+      <div className='grid grid-cols-2 gap-2'>
+        <Card className='p-3'>
+          <CardContent className='flex flex-col gap-2 p-0'>
+            <p className='text-xs text-muted-foreground'>
+              {t('expense.household')}
+            </p>
+            <NativeSelect
+              className='h-8 text-xs'
+              disabled={isSubmitting}
+              value={formState.householdId}
+              onChange={(event) =>
+                onFieldChange('householdId', event.target.value)
+              }>
+              <NativeSelectOption value=''>
+                {t('expense.quickAdd.step3.noHousehold')}
               </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </CardContent>
-      </Card>
+              {households.map((household) => (
+                <NativeSelectOption key={household.id} value={household.id}>
+                  {household.name}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardContent className='space-y-2 px-4 py-3'>
-          <p className='text-sm font-medium'>{t('expense.group')}</p>
-          <NativeSelect
-            className='w-full'
-            disabled={isSubmitting}
-            value={formState.groupId}
-            onChange={(event) => onFieldChange('groupId', event.target.value)}>
-            <NativeSelectOption value=''>
-              {t('expense.quickAdd.step3.noGroup')}
-            </NativeSelectOption>
-            {groups.map((group) => (
-              <NativeSelectOption key={group.id} value={group.id}>
-                {group.name}
+        <Card className='p-3'>
+          <CardContent className='flex flex-col gap-2 p-0'>
+            <p className='text-xs text-muted-foreground'>
+              {t('expense.group')}
+            </p>
+            <NativeSelect
+              className='h-8 text-xs'
+              disabled={isSubmitting}
+              value={formState.groupId}
+              onChange={(event) =>
+                onFieldChange('groupId', event.target.value)
+              }>
+              <NativeSelectOption value=''>
+                {t('expense.quickAdd.step3.noGroup')}
               </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </CardContent>
-      </Card>
+              {groups.map((group) => (
+                <NativeSelectOption key={group.id} value={group.id}>
+                  {group.name}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
