@@ -34,10 +34,12 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
   const households = useHouseholdStore.use.households()
   const [period, setPeriod] = useState(initialPeriod ?? getDefaultPeriod())
   const [hasRequestedHouseholds, setHasRequestedHouseholds] = useState(false)
-  const selectedHouseholdId = currentHousehold?.id ?? households[0]?.id
+  const selectedHouseholdId = currentHousehold?.id
   const shouldLoadHouseholds = households.length === 0 && !currentHousehold
   const shouldFetchAnalytics =
-    Boolean(selectedHouseholdId) || hasRequestedHouseholds
+    shouldLoadHouseholds ||
+    hasRequestedHouseholds ||
+    Boolean(selectedHouseholdId)
 
   useEffect(() => {
     if (shouldLoadHouseholds) {
