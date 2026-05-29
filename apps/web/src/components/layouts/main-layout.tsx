@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import type { ReactNode } from 'react'
 
-import { AppSidebar } from '@/components/layouts/app-sidebar'
+import { AppTopNav } from '@/components/layouts/app-top-nav'
 import { BottomTab } from '@/components/layouts/bottom-tab'
 import { AddExpenseDialogProvider } from '@/features/expenses/components/add-expense/provider'
 import { useIsMobile } from '@/hooks/shared/use-mobile'
@@ -21,21 +21,14 @@ function MainLayout({ children }: { children: ReactNode }) {
 
   return (
     <AddExpenseDialogProvider>
-      <div className='min-h-svh bg-background'>
-        {/* Desktop Wrapper */}
-        <div className='mx-auto grid min-h-svh w-full md:grid-cols-[240px_minmax(0,1fr)] lg:max-w-5xl lg:gap-8 lg:p-8'>
-          {/* Desktop Sidebar (hidden on mobile) */}
-          {!isMobile && (
-            <div className='hidden md:block'>
-              <div className='sticky top-8 h-[calc(100svh-4rem)]'>
-                <AppSidebar onSignOut={handleSignOut} />
-              </div>
-            </div>
-          )}
+      <div className='flex min-h-svh flex-col bg-background'>
+        {/* Desktop Top Nav (hidden on mobile) */}
+        {!isMobile && <AppTopNav onSignOut={handleSignOut} />}
 
-          {/* Main Content Area */}
-          <main className='flex w-full flex-col'>{children}</main>
-        </div>
+        {/* Main Content Area */}
+        <main className='flex flex-1 flex-col px-4 py-6'>
+          <div className='mx-auto w-full max-w-5xl'>{children}</div>
+        </main>
 
         {/* Mobile Bottom Tab (hidden on desktop) */}
         {isMobile && <BottomTab />}
