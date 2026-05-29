@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { PageShell } from '@/components/ui/page-shell'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
 import { useBudgetListQuery } from '@/features/budgets/hooks/use-budgets'
 import { useExpenseSummaryQuery } from '@/features/expenses/hooks/use-expense'
 import {
@@ -90,7 +94,30 @@ function OverviewPage() {
 
   if (isEntirelyEmpty) {
     return (
-      <PageShell title='Home'>
+      <PageContainer>
+        <PageHeader title='Home' />
+        <PageContent>
+          <OverviewTabs
+            value={
+              activeView.type === 'personal'
+                ? 'personal'
+                : activeView.householdId
+            }
+            views={views}
+            onValueChange={handleViewChange}
+          />
+          <div className='mt-6 md:mt-8'>
+            <EmptyState addExpenseHref={PATHS.EXPENSES} />
+          </div>
+        </PageContent>
+      </PageContainer>
+    )
+  }
+
+  return (
+    <PageContainer>
+      <PageHeader title='Home' />
+      <PageContent>
         <OverviewTabs
           value={
             activeView.type === 'personal' ? 'personal' : activeView.householdId
@@ -98,45 +125,30 @@ function OverviewPage() {
           views={views}
           onValueChange={handleViewChange}
         />
-        <div className='mt-6 md:mt-8'>
-          <EmptyState addExpenseHref={PATHS.EXPENSES} />
+        <div className='mt-4 flex flex-col gap-6 md:gap-8'>
+          <HeroStatsCard
+            budgetLimitMinor={budgetListQuery.data?.items?.[0]?.totalLimitMinor}
+            currencyCode={overviewData?.currencyCode ?? 'VND'}
+            daysRemaining={getDaysRemaining()}
+            error={overviewQuery.error}
+            isLoading={overviewQuery.isLoading}
+            period={period}
+            previousTotalSpendMinor={
+              comparisonData?.previousPeriod?.totalSpendMinor
+            }
+            totalSpendMinor={overviewData?.totalSpendMinor ?? 0}
+            onRetry={() => overviewQuery.refetch()}
+          />
+
+          <OverviewRecentExpensesSection householdId={householdId} />
+
+          <OverviewCategoryStatisticsSection
+            householdId={householdId}
+            period={period}
+          />
         </div>
-      </PageShell>
-    )
-  }
-
-  return (
-    <PageShell title='Home'>
-      <OverviewTabs
-        value={
-          activeView.type === 'personal' ? 'personal' : activeView.householdId
-        }
-        views={views}
-        onValueChange={handleViewChange}
-      />
-      <div className='mt-4 flex flex-col gap-6 md:gap-8'>
-        <HeroStatsCard
-          budgetLimitMinor={budgetListQuery.data?.items?.[0]?.totalLimitMinor}
-          currencyCode={overviewData?.currencyCode ?? 'VND'}
-          daysRemaining={getDaysRemaining()}
-          error={overviewQuery.error}
-          isLoading={overviewQuery.isLoading}
-          period={period}
-          previousTotalSpendMinor={
-            comparisonData?.previousPeriod?.totalSpendMinor
-          }
-          totalSpendMinor={overviewData?.totalSpendMinor ?? 0}
-          onRetry={() => overviewQuery.refetch()}
-        />
-
-        <OverviewRecentExpensesSection householdId={householdId} />
-
-        <OverviewCategoryStatisticsSection
-          householdId={householdId}
-          period={period}
-        />
-      </div>
-    </PageShell>
+      </PageContent>
+    </PageContainer>
   )
 }
 

@@ -4,9 +4,7 @@ One protected shell. One page-surface contract.
 
 ## Contract
 
-New protected app pages use shared page wrappers, not `PageShell`.
-
-Use:
+New protected app pages use shared page wrappers:
 
 - `PageContainer`
 - `PageHeader`
@@ -18,12 +16,6 @@ Canonical home for these wrappers:
 ```text
 apps/web/src/components/shared/page/
 ```
-
-Migration note:
-
-- Existing pages may still use `PageShell` until they are refactored.
-- Do not create new `PageShell` usage.
-- New pages and refactored protected pages must use the shared page wrappers.
 
 ## Ownership
 
@@ -103,7 +95,6 @@ Rules:
 
 ## Do Not
 
-- Do not add new route-level `PageShell`.
 - Do not duplicate outer `px-*` page padding around `PageContent`.
 - Do not let page-specific action bars fight with shell navigation.
 - Do not put auth or nav logic inside page wrappers.
@@ -115,4 +106,3 @@ Rules:
 - [ ] Title lives in `PageHeader`.
 - [ ] Blocking route states stay inside one `PageContainer`.
 - [ ] Footer actions are page-specific, not shell-specific.
-- [ ] No new `PageShell` usage added.

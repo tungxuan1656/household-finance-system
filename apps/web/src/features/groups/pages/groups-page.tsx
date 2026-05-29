@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { DataState } from '@/components/shared/data-state'
-import { PageShell } from '@/components/ui/page-shell'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
 import {
   ArchiveGroupDialog,
   CreateGroupDialog,
@@ -78,57 +82,60 @@ function GroupsPage() {
   }
 
   return (
-    <PageShell title={t('groups.title')}>
-      <div className='flex flex-col gap-6'>
-        <div className='flex flex-wrap items-start justify-between gap-3'>
-          <p className='text-sm text-muted-foreground'>
-            {t('groups.description')}
-          </p>
-          <div>
-            {selectedHouseholdId && (
-              <CreateGroupDialog
-                householdId={selectedHouseholdId}
-                isSubmitting={createMutation.isPending}
-                open={isCreateDialogOpen}
-                onOpenChange={setIsCreateDialogOpen}
-                onSubmit={handleCreate}
-              />
-            )}
+    <PageContainer>
+      <PageHeader title={t('groups.title')} />
+      <PageContent>
+        <div className='flex flex-col gap-6'>
+          <div className='flex flex-wrap items-start justify-between gap-3'>
+            <p className='text-sm text-muted-foreground'>
+              {t('groups.description')}
+            </p>
+            <div>
+              {selectedHouseholdId && (
+                <CreateGroupDialog
+                  householdId={selectedHouseholdId}
+                  isSubmitting={createMutation.isPending}
+                  open={isCreateDialogOpen}
+                  onOpenChange={setIsCreateDialogOpen}
+                  onSubmit={handleCreate}
+                />
+              )}
+            </div>
           </div>
+
+          <DataState
+            emptyDescription={t('groups.empty.description')}
+            emptyTitle={t('groups.empty.title')}
+            isEmpty={!selectedHouseholdId}>
+            {selectedHouseholdId ? (
+              <GroupList
+                householdId={selectedHouseholdId}
+                onArchive={setArchivingGroup}
+                onEdit={setEditingGroup}
+              />
+            ) : null}
+          </DataState>
+
+          <EditGroupDialog
+            group={editingGroup}
+            isSubmitting={updateMutation.isPending}
+            onOpenChange={(open) => {
+              if (!open) setEditingGroup(null)
+            }}
+            onSubmit={handleUpdate}
+          />
+
+          <ArchiveGroupDialog
+            group={archivingGroup}
+            isSubmitting={archiveMutation.isPending}
+            onConfirm={() => void handleArchive()}
+            onOpenChange={(open) => {
+              if (!open) setArchivingGroup(null)
+            }}
+          />
         </div>
-
-        <DataState
-          emptyDescription={t('groups.empty.description')}
-          emptyTitle={t('groups.empty.title')}
-          isEmpty={!selectedHouseholdId}>
-          {selectedHouseholdId ? (
-            <GroupList
-              householdId={selectedHouseholdId}
-              onArchive={setArchivingGroup}
-              onEdit={setEditingGroup}
-            />
-          ) : null}
-        </DataState>
-
-        <EditGroupDialog
-          group={editingGroup}
-          isSubmitting={updateMutation.isPending}
-          onOpenChange={(open) => {
-            if (!open) setEditingGroup(null)
-          }}
-          onSubmit={handleUpdate}
-        />
-
-        <ArchiveGroupDialog
-          group={archivingGroup}
-          isSubmitting={archiveMutation.isPending}
-          onConfirm={() => void handleArchive()}
-          onOpenChange={(open) => {
-            if (!open) setArchivingGroup(null)
-          }}
-        />
-      </div>
-    </PageShell>
+      </PageContent>
+    </PageContainer>
   )
 }
 

@@ -40,8 +40,6 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
   - `PageHeader`
   - `PageContent`
   - `PageFooter`
-- Do not create new `PageShell` or `PageSection` usage.
-- Existing `PageShell` pages may stay only until their migration lands.
 - `PageHeader` owns the route title/header contract.
 - Do not duplicate page `<header>`/`<h1>` or shell-level outer padding around protected pages.
 - Route-level loading, empty, error, and success states should all render inside the same `PageContainer` when they belong to one route surface.
