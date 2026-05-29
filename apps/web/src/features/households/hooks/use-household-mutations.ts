@@ -46,6 +46,7 @@ export const useUpdateHouseholdMutation = () => {
       updateHousehold(householdId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HOUSEHOLD_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }
@@ -74,6 +75,7 @@ export const useRemoveHouseholdMemberMutation = () => {
       removeHouseholdMember(householdId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HOUSEHOLD_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }
@@ -102,6 +104,7 @@ export const useUpdateHouseholdMemberRoleMutation = () => {
       updateHouseholdMemberRole(householdId, userId, { role }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HOUSEHOLD_KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ANALYTICS_KEYS.all })
     },
   })
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { DataState } from '@/components/shared/data-state'
@@ -22,11 +22,13 @@ function HouseholdsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const hasLoadedRef = useRef(false)
 
   const households = data?.items ?? []
 
   useEffect(() => {
-    if (!isLoading && !error) {
+    if (!hasLoadedRef.current && !isLoading && !error) {
+      hasLoadedRef.current = true
       setIsInitialLoading(false)
     }
   }, [isLoading, error])

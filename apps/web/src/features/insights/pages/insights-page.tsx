@@ -47,24 +47,33 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
     [period, selectedHouseholdId],
   )
 
+  const shouldFetchAnalytics =
+    Boolean(selectedHouseholdId) || households.length > 0
+
   const {
     data,
     isLoading,
     error,
     refetch: refetchOverview,
-  } = useAnalyticsOverviewQuery(analyticsParams)
+  } = useAnalyticsOverviewQuery(analyticsParams, {
+    enabled: shouldFetchAnalytics,
+  })
   const {
     data: comparisonData,
     isLoading: isComparisonLoading,
     error: comparisonError,
     refetch: refetchComparison,
-  } = useAnalyticsComparisonQuery(analyticsParams)
+  } = useAnalyticsComparisonQuery(analyticsParams, {
+    enabled: shouldFetchAnalytics,
+  })
   const {
     data: groupsData,
     isLoading: isGroupsLoading,
     error: groupsError,
     refetch: refetchGroups,
-  } = useAnalyticsGroupsQuery(analyticsParams)
+  } = useAnalyticsGroupsQuery(analyticsParams, {
+    enabled: shouldFetchAnalytics,
+  })
   const { data: categoriesData } = useReferenceCategoriesQuery()
 
   const categoryMap = useMemo(

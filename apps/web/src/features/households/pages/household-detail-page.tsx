@@ -67,7 +67,6 @@ function HouseholdDetailPage() {
         payload: values,
       })
 
-      await refetchHousehold()
       toast.success(t('app.householdDetail.feedback.updateSuccess'))
     } catch {
       toast.error(t('app.householdDetail.feedback.updateFailed'))

@@ -40,13 +40,17 @@ export function InsightsSection({ householdId, period }: InsightsSectionProps) {
     isLoading: isComparisonLoading,
     error: comparisonError,
     refetch: refetchComparison,
-  } = useAnalyticsComparisonQuery(analyticsParams)
+  } = useAnalyticsComparisonQuery(analyticsParams, {
+    enabled: Boolean(data && data.expenseCount > 0),
+  })
   const {
     data: groupsData,
     isLoading: isGroupsLoading,
     error: groupsError,
     refetch: refetchGroups,
-  } = useAnalyticsGroupsQuery(analyticsParams)
+  } = useAnalyticsGroupsQuery(analyticsParams, {
+    enabled: Boolean(data && data.expenseCount > 0),
+  })
   const { data: categoriesData } = useReferenceCategoriesQuery()
 
   const categoryMap = useMemo(
