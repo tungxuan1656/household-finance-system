@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
   PageContainer,
@@ -23,30 +23,21 @@ import {
 } from '@/features/insights/utils/insights-period'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 import { t } from '@/lib/i18n/t'
-import { householdActions, useHouseholdStore } from '@/stores/household.store'
+
+import { useHouseholdsQuery } from '../../households/hooks/use-households'
 
 type InsightsPageProps = {
   initialPeriod?: string
 }
 
 function InsightsPage({ initialPeriod }: InsightsPageProps) {
-  const currentHousehold = useHouseholdStore.use.currentHousehold()
-  const households = useHouseholdStore.use.households()
+  const { data: householdsData } = useHouseholdsQuery()
   const [period, setPeriod] = useState(initialPeriod ?? getDefaultPeriod())
-  const [hasRequestedHouseholds, setHasRequestedHouseholds] = useState(false)
-  const selectedHouseholdId = currentHousehold?.id
-  const shouldLoadHouseholds = households.length === 0 && !currentHousehold
-  const shouldFetchAnalytics =
-    shouldLoadHouseholds ||
-    hasRequestedHouseholds ||
-    Boolean(selectedHouseholdId)
+  const [selectedHouseholdId, setSelectedHouseholdId] = useState<string | null>(
+    null,
+  )
 
-  useEffect(() => {
-    if (shouldLoadHouseholds) {
-      setHasRequestedHouseholds(true)
-      void householdActions.fetchHouseholds()
-    }
-  }, [shouldLoadHouseholds])
+  const households = householdsData?.items ?? []
 
   const analyticsParams = useMemo(
     () => ({
@@ -61,25 +52,19 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
     isLoading,
     error,
     refetch: refetchOverview,
-  } = useAnalyticsOverviewQuery(analyticsParams, {
-    enabled: shouldFetchAnalytics,
-  })
+  } = useAnalyticsOverviewQuery(analyticsParams)
   const {
     data: comparisonData,
     isLoading: isComparisonLoading,
     error: comparisonError,
     refetch: refetchComparison,
-  } = useAnalyticsComparisonQuery(analyticsParams, {
-    enabled: shouldFetchAnalytics,
-  })
+  } = useAnalyticsComparisonQuery(analyticsParams)
   const {
     data: groupsData,
     isLoading: isGroupsLoading,
     error: groupsError,
     refetch: refetchGroups,
-  } = useAnalyticsGroupsQuery(analyticsParams, {
-    enabled: shouldFetchAnalytics,
-  })
+  } = useAnalyticsGroupsQuery(analyticsParams)
   const { data: categoriesData } = useReferenceCategoriesQuery()
 
   const categoryMap = useMemo(
@@ -110,10 +95,12 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
       <PageContent>
         <div className='flex flex-col gap-4 md:gap-6'>
           <InsightsHeader
+            households={households}
             isExportDisabled={isExportDisabled}
-            params={analyticsParams}
             period={period}
             periodOptions={periodOptions}
+            selectedHouseholdId={selectedHouseholdId}
+            onHouseholdChange={setSelectedHouseholdId}
             onPeriodChange={setPeriod}
           />
 
