@@ -9,6 +9,14 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-30 — Mark all active plans and features complete
+
+- Who: Orchestrator
+- Summary: Closed out remaining active items after user confirmed pre-ship browser testing is done. Marked feat-075 as done in feature_index.json and moved both active exec-plan index entries (feat-075, feat-073) from Active to Completed sections.
+- Files changed: harness/feature_index.json, docs/exec-plans/index.md, harness/progress.md
+- Blockers: none.
+- Next steps: none — all features and plans are now complete.
+
 ## 2026-05-29 — Wrote pre-ship browser testing plan
 
 - Who: Orchestrator
