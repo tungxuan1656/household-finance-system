@@ -16,7 +16,7 @@ import {
 import { t } from '@/lib/i18n/t'
 
 export type ConfirmDialogHandle = {
-  open: () => void
+  open: (data?: unknown) => void
   close: () => void
 }
 
@@ -28,7 +28,7 @@ export type ConfirmDialogProps = {
   variant?: 'default' | 'destructive'
   confirmDisabled?: boolean
   confirmLoading?: boolean
-  onConfirm: () => Promise<void> | void
+  onConfirm: (data?: unknown) => Promise<void> | void
   onCancel?: () => Promise<void> | void
   children?: React.ReactNode
   trigger?: React.ReactNode
@@ -57,18 +57,22 @@ export const ConfirmDialog = React.forwardRef<
       trigger,
       children,
       ...dialogContentProps
-    },
+    }: ConfirmDialogProps,
     ref,
   ) => {
     const [isOpen, setIsOpen] = React.useState(false)
     const [isSubmitting, setIsSubmitting] = React.useState(false)
+    const [dialogData, setDialogData] = React.useState<unknown>(undefined)
     const isConfirmBusy = isSubmitting || confirmLoading
     const isConfirmDisabled = confirmDisabled || isConfirmBusy
 
     React.useImperativeHandle(
       ref,
       () => ({
-        open: () => setIsOpen(true),
+        open: (openData?: unknown) => {
+          setDialogData(openData)
+          setIsOpen(true)
+        },
         close: () => setIsOpen(false),
       }),
       [],
@@ -95,7 +99,7 @@ export const ConfirmDialog = React.forwardRef<
 
       try {
         setIsSubmitting(true)
-        await onConfirm()
+        await onConfirm(dialogData)
         setIsOpen(false)
       } catch {
         // Keep the alert open so callers can surface retryable errors nearby.

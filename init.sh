@@ -228,7 +228,7 @@ run_full() {
     "web test" \
     "worker test"
   local status=$?
-  run_sync
+  run_sync || true
   if [ $status -eq 0 ]; then
     echo "Done!"
   fi

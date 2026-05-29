@@ -1,8 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import {
+  ConfirmDialog,
+  type ConfirmDialogHandle,
+} from '@/components/shared/confirm-dialog'
 import { DataState } from '@/components/shared/data-state'
 import {
   PageContainer,
@@ -10,7 +14,6 @@ import {
   PageHeader,
 } from '@/components/shared/page'
 import {
-  ArchiveGroupDialog,
   CreateGroupDialog,
   EditGroupDialog,
 } from '@/features/groups/components/group-dialogs'
@@ -35,9 +38,8 @@ function GroupsPage() {
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [editingGroup, setEditingGroup] = useState<ExpenseGroupDTO | null>(null)
-  const [archivingGroup, setArchivingGroup] = useState<ExpenseGroupDTO | null>(
-    null,
-  )
+  const archiveDialogRef = useRef<ConfirmDialogHandle>(null)
+  const archivingGroupRef = useRef<ExpenseGroupDTO | null>(null)
 
   const createMutation = useCreateExpenseGroupMutation()
   const updateMutation = useUpdateExpenseGroupMutation()
@@ -70,12 +72,11 @@ function GroupsPage() {
     }
   }
 
-  const handleArchive = async () => {
-    if (!archivingGroup) return
+  const handleArchive = async (group?: ExpenseGroupDTO) => {
+    if (!group) return
     try {
-      await archiveMutation.mutateAsync(archivingGroup.id)
+      await archiveMutation.mutateAsync(group.id)
       toast.success(t('groups.feedback.archiveSuccess'))
-      setArchivingGroup(null)
     } catch {
       toast.error(t('groups.feedback.archiveFailed'))
     }
@@ -110,7 +111,10 @@ function GroupsPage() {
             {selectedHouseholdId ? (
               <GroupList
                 householdId={selectedHouseholdId}
-                onArchive={setArchivingGroup}
+                onArchive={(group) => {
+                  archivingGroupRef.current = group
+                  archiveDialogRef.current?.open(group)
+                }}
                 onEdit={setEditingGroup}
               />
             ) : null}
@@ -125,13 +129,18 @@ function GroupsPage() {
             onSubmit={handleUpdate}
           />
 
-          <ArchiveGroupDialog
-            group={archivingGroup}
-            isSubmitting={archiveMutation.isPending}
-            onConfirm={() => void handleArchive()}
-            onOpenChange={(open) => {
-              if (!open) setArchivingGroup(null)
-            }}
+          <ConfirmDialog
+            ref={archiveDialogRef}
+            confirmLabel={
+              archiveMutation.isPending
+                ? t('groups.actions.archiving')
+                : t('groups.actions.archive')
+            }
+            confirmLoading={archiveMutation.isPending}
+            description={t('groups.archive.description')}
+            title={t('groups.archive.title')}
+            variant='destructive'
+            onConfirm={(data) => void handleArchive(data as ExpenseGroupDTO)}
           />
         </div>
       </PageContent>
