@@ -51,7 +51,7 @@ Create an execution-ready plan for final browser testing before shipping the web
 - Mutating test flows must create unique records and clean them up when possible.
 - Mobile layout review must use at least `390x844` and one narrow viewport such as `360x740`.
 - Desktop layout review must use at least `1440x900`.
-- Expected product navigation comes from the accepted Yellow Finance direction: `Chi tiêu`, `Phân tích`, `Gia đình`, `Cài đặt`. If the current UI shows `Tài khoản` instead of `Cài đặt`, record it as a product/layout mismatch rather than silently accepting it.
+- Expected product navigation: `Chi tiêu`, `Phân tích`, `Gia đình`, `Tài khoản`. These are the correct tab labels — no mismatch to record.
 - The final test report must include a `Ship`, `Ship with minor fixes`, `Needs revision`, or `Redesign required` verdict for layout.
 
 ## Progress
@@ -68,7 +68,6 @@ Create an execution-ready plan for final browser testing before shipping the web
 
 ## Surprises & Discoveries
 
-- `apps/web/src/lib/constants/navigation.ts` currently exposes the fourth top-level tab as `Tài khoản` via `/account`, while the accepted design doc and frontend shell reference say the fourth top-level tab should be `Settings` / `Cài đặt`.
 - `apps/web/.env` currently points `NEXT_PUBLIC_API_BASE_URL` at `http://100.116.7.43:8787/api/v1`; the tester must confirm whether that is the target pre-ship API or override it intentionally.
 - The add-expense flow uses a three-step drawer and VND thousand-shortcut semantics. Typing `35` should create `amountMinor: 35000`.
 - `.claude/skills/playwright-cli/SKILL.md` and `.claude/skills/subagent-driven-development/SKILL.md` are present and match the project-owned skill content.
@@ -325,7 +324,7 @@ playwright-cli run-code "async page => {
   const nav = page.getByRole('navigation', { name: 'Các mục ứng dụng' })
   await nav.waitFor({ state: 'visible', timeout: 10000 })
   const labels = (await nav.getByRole('link').allInnerTexts()).map((s) => s.trim()).filter(Boolean)
-  const expected = ['Chi tiêu', 'Phân tích', 'Gia đình', 'Cài đặt']
+  const expected = ['Chi tiêu', 'Phân tích', 'Gia đình', 'Tài khoản']
   const missing = expected.filter((label) => !labels.includes(label))
   const bottomNavBox = await nav.boundingBox()
   const viewport = page.viewportSize()
@@ -355,8 +354,7 @@ playwright-cli run-code "async page => {
 Expected:
 
 ```text
-Passes with labels: Chi tiêu, Phân tích, Gia đình, Cài đặt.
-If actual label is Tài khoản, record a product/design mismatch against the accepted shell direction.
+Passes with labels: Chi tiêu, Phân tích, Gia đình, Tài khoản.
 No horizontal overflow.
 No overlapped interactive controls.
 ```
@@ -765,7 +763,7 @@ Any cleanup failure is recorded with status and response body.
 | Session | Reload protected page | Still authenticated; no forced re-login |
 | Mobile nav | `390x844` protected pages | Fixed bottom nav, one nav model, no overlap |
 | Desktop nav | `1440x900` protected pages | Top nav visible, bottom nav hidden |
-| Navigation vocabulary | Top-level tabs | `Chi tiêu`, `Phân tích`, `Gia đình`, `Cài đặt`; mismatch must be reported |
+| Navigation vocabulary | Top-level tabs | `Chi tiêu`, `Phân tích`, `Gia đình`, `Tài khoản` |
 | Add expense | Personal expense amount `35` | API response `amountMinor: 35000` |
 | Add expense defaults | No household/group selected | `householdId: null`, no group IDs |
 | Expense feed | Search unique note | Created expense appears |
@@ -846,7 +844,7 @@ Cleanup done:
 - Cleanup is best effort. If cleanup fails, record the IDs from `localStorage` and API response status.
 - If login fails, stop and verify Firebase credentials and API auth exchange before running downstream tests.
 - If the API health check fails, do not classify UI data failures until the target environment is confirmed healthy.
-- If layout assertions fail because nav label is `Tài khoản`, record the mismatch against the accepted Settings tab contract.
+- If layout assertions fail because nav label is unexpected, record the actual labels and treat as product issue.
 
 ## Artifacts and Notes
 
