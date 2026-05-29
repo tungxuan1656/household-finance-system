@@ -2,7 +2,6 @@
 
 import {
   ArrowRight,
-  BadgeCheck,
   Camera,
   Group,
   Home,
@@ -204,16 +203,9 @@ function AccountPage() {
                   <span className='text-xl font-semibold'>
                     {profileQuery.data?.displayName ?? '-'}
                   </span>
-                  <BadgeCheck
-                    aria-label='Verified'
-                    className='size-6 shrink-0 fill-primary text-primary'
-                  />
                 </div>
                 <span className='text-sm text-muted-foreground'>
                   {profileQuery.data?.email ?? '-'}
-                </span>
-                <span className='mt-1 rounded-full bg-primary/10 px-4 py-1 text-xs font-medium tracking-wide text-primary uppercase'>
-                  {t('app.account.proBadge')}
                 </span>
               </div>
             </CardContent>
