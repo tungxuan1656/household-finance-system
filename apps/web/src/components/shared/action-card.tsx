@@ -47,7 +47,7 @@ export const ActionCard = ({
             <p className='text-sm font-medium'>{actionTitle}</p>
             <p className='text-xs text-muted-foreground'>{actionDescription}</p>
           </div>
-          <Button size='sm' type='button' variant='default' onClick={onAction}>
+          <Button type='button' onClick={onAction}>
             {actionLabel}
           </Button>
         </div>

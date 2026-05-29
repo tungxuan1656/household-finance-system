@@ -33,7 +33,7 @@ function BudgetList({
       customAction={
         isError ? (
           <Button
-            size='xl'
+            size='default'
             type='button'
             variant='outline'
             onClick={() => void refetch()}>

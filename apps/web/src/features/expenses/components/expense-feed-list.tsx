@@ -77,7 +77,7 @@ export function ExpenseFeedList({ filters, search }: ExpenseFeedListProps) {
           <Button
             className='w-full sm:w-auto'
             disabled={isFetchingNextPage}
-            size='xl'
+            size='default'
             variant='outline'
             onClick={() => fetchNextPage()}>
             {isFetchingNextPage
