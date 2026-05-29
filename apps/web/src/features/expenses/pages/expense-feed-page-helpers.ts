@@ -1,10 +1,14 @@
 import type { ExpenseFeedFilterValues } from '@/features/expenses/components/expense-feed-filters'
-import type { ExpenseListParams } from '@/features/expenses/types/expense'
+import type {
+  ExpenseDTO,
+  ExpenseListParams,
+} from '@/features/expenses/types/expense'
 import type { ExpenseGroupDTO } from '@/features/groups/types/group'
 import { t } from '@/lib/i18n/t'
 import { getCategoryLabel } from '@/lib/reference-data/labels'
 import type { ReferenceCategoryDTO } from '@/types/reference-data'
 import { parseAmountInput } from '@/utils/currency/format'
+import { formatDate, formatRelativeDate } from '@/utils/datetime/format'
 import { localDateToTimestamp } from '@/utils/datetime/helpers'
 
 export const DEFAULT_EXPENSE_FEED_FILTER_VALUES: ExpenseFeedFilterValues = {
@@ -19,8 +23,6 @@ export const DEFAULT_EXPENSE_FEED_FILTER_VALUES: ExpenseFeedFilterValues = {
   householdId: '',
 }
 
-// localDateToTimestamp returns the start of day (local midnight).
-// Add one full day minus 1ms to cover the full selected end date.
 const END_OF_DAY_OFFSET_MS = 24 * 60 * 60 * 1000 - 1
 
 const getDateFilterFrom = (value: string): number | undefined => {
@@ -106,3 +108,35 @@ export const buildExpenseFeedActiveFilterLabels = ({
       : null,
     groups.find((group) => group.id === values.groupId)?.name ?? null,
   ].filter((value): value is string => Boolean(value))
+
+export type ExpenseTimelineGroup = {
+  label: string
+  items: ExpenseDTO[]
+}
+
+export const buildExpenseTimelineGroups = (
+  expenses: ExpenseDTO[],
+): ExpenseTimelineGroup[] => {
+  const groupedExpenses = new Map<string, ExpenseTimelineGroup>()
+
+  for (const expense of expenses) {
+    const dayKey = formatDate(expense.occurredAt, 'yyyy-MM-dd') ?? 'unknown'
+    const dateLabel = formatRelativeDate(expense.occurredAt)
+    const fullDate = formatDate(expense.occurredAt, 'dd/MM')
+    const label = `${dateLabel} · ${fullDate}`
+
+    const currentGroup = groupedExpenses.get(dayKey)
+
+    if (currentGroup) {
+      currentGroup.items.push(expense)
+      continue
+    }
+
+    groupedExpenses.set(dayKey, {
+      label,
+      items: [expense],
+    })
+  }
+
+  return [...groupedExpenses.values()]
+}

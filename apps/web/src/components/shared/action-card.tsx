@@ -14,7 +14,7 @@ import {
 type ActionCardProps = {
   title?: string
   description?: string
-  actionIcon: ReactNode
+  actionIcon?: ReactNode
   actionTitle: string
   actionDescription: string
   actionLabel: string
@@ -42,7 +42,7 @@ export const ActionCard = ({
       ) : null}
       <CardContent>
         <div className='flex flex-col items-center gap-4 rounded-xl border border-dashed p-6 text-center'>
-          <div aria-hidden='true'>{actionIcon}</div>
+          {actionIcon && <div aria-hidden='true'>{actionIcon}</div>}
           <div className='flex flex-col gap-1'>
             <p className='text-sm font-medium'>{actionTitle}</p>
             <p className='text-xs text-muted-foreground'>{actionDescription}</p>

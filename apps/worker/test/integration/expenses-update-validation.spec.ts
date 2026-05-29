@@ -26,7 +26,6 @@ describe('PATCH /api/v1/expenses validation', () => {
           amount: 10000,
           categoryKey: 'food',
           sourceKey: 'cash',
-          visibility: 'private',
           title: 'Non-existent',
           occurredAt: Date.now(),
         }),
@@ -46,7 +45,6 @@ describe('PATCH /api/v1/expenses validation', () => {
       amount: 30000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Valid expense',
       occurredAt: Date.now(),
     })
@@ -65,7 +63,6 @@ describe('PATCH /api/v1/expenses validation', () => {
           amount: 30000,
           categoryKey: 'invalid-category',
           sourceKey: 'cash',
-          visibility: 'private',
           title: 'Updated',
           occurredAt: Date.now(),
         }),

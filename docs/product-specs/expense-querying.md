@@ -2,48 +2,48 @@
 
 ## Goal
 
-Define querying and filtering semantics for expenses to support UI lists, search, and analytics with performant, predictable APIs.
+Define filtering and querying semantics for personal, household, and group views.
 
 ## Entry Conditions
 
-- User requests expense lists, search results, or filtered views in a household or personal context.
+- User requests expense lists, search results, or filtered views.
 
 ## Query Parameters / Filters
 
-- `date_from`, `date_to` (range)
-- `period` (month, week, custom)
-- `category_key` (single or multiple)
-- `group_id` (single or multiple)
-- `payer_id`, `creator_id`
-- `visibility` (private, household) — server-enforced
-- `query` (full-text search against notes)
+- `date_from`, `date_to`
+- `category_key`
+- `group_id`
+- `household_id`
+- `spent_by_user_id` when the product needs explicit spender filtering
+- `query`
 - `amount_min`, `amount_max`
-- pagination: `limit`, `cursor` (cursor-based preferred)
-- sort: `date`, `amount`, `created_at`
+- pagination: `limit`, `cursor`
+- sort: `occurred_at_desc`, `amount_desc`
 
 ## User Flow
 
-1. User selects filters in UI; frontend composes query to `/api/expenses` with filters and pagination.
-2. Server validates caller authorization and filters by `visibility` + `household membership`.
-3. Server returns a cursor-based page of expenses plus aggregated totals for the requested period.
-4. Frontend uses results to render lists and feeds; infinite-scroll or paged navigation supported.
+1. User selects filters in UI.
+2. Frontend composes query to `/api/v1/expenses` and optional summary endpoints.
+3. Server validates caller authorization and applies scope:
+   - personal scope = current user's own expenses
+   - household scope = expenses attached to selected household
+4. Server returns cursor-based results and companion totals where needed.
 
 ## Acceptance Criteria
 
-- API supports the above filters and returns consistent, paginated results.
-- Server enforces visibility and membership rules for each request.
-- Aggregated totals (sum/COUNT) for the filtered set are returned efficiently (or via a companion endpoint).
-- Text search is available for notes and supports simple partial-match queries in MVP.
+- API supports the above filters and returns consistent paginated results.
+- Server enforces membership for household-scoped requests.
+- Aggregated totals for filtered sets are available efficiently.
+- Text search supports simple partial note matching in MVP.
 
 ## Failure States
 
 - Invalid filter values: return 400 with helpful message.
 - Authorization failure: return 403.
-- Large queries: enforce sensible limits and return truncated results with guidance.
+- Large queries: enforce limits and stable pagination.
 
 ---
 
 Notes:
-- Category filters reference the global static catalog by stable key. Expense querying only accepts categories whose catalog `kind` is `expense`.
-- Use DB indexes on (`household_id`, `date`, `category_key`) and full-text index on `note`.
-- Prefer cursor pagination for stable feeds. Provide an `/api/expenses/summary` for heavy aggregated queries if needed.
+- Expense querying uses scope, spender, category, group, amount, date, and text filters only.
+- Group filtering narrows the current visible scope; it does not replace that scope.

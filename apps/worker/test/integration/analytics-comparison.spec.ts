@@ -34,13 +34,6 @@ type AnalyticsComparisonDTO = {
     deltaSpendMinor: number
     deltaPercent: number | null
   }>
-  payerAttribution: Array<{
-    payerDisplayName: string | null
-    payerUserId: string
-    totalSpendMinor: number
-    percentOfTotal: number
-    expenseCount: number
-  }>
 }
 
 describe('GET /api/v1/analytics/comparison', () => {
@@ -100,7 +93,6 @@ describe('GET /api/v1/analytics/comparison', () => {
       amount: 10000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'April breakfast',
       occurredAt: Date.UTC(2026, 3, 3, 8),
@@ -110,7 +102,6 @@ describe('GET /api/v1/analytics/comparison', () => {
       amount: 30000,
       categoryKey: 'transport',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'April commute',
       occurredAt: Date.UTC(2026, 3, 5, 8),
@@ -120,7 +111,6 @@ describe('GET /api/v1/analytics/comparison', () => {
       amount: 20000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'May groceries',
       occurredAt: Date.UTC(2026, 4, 4, 8),
@@ -130,7 +120,6 @@ describe('GET /api/v1/analytics/comparison', () => {
       amount: 50000,
       categoryKey: 'travel',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'May hotel',
       occurredAt: Date.UTC(2026, 4, 9, 8),
@@ -140,7 +129,6 @@ describe('GET /api/v1/analytics/comparison', () => {
       amount: 7000,
       categoryKey: 'shopping',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Private item',
       occurredAt: Date.UTC(2026, 4, 10, 8),
     })
@@ -195,22 +183,6 @@ describe('GET /api/v1/analytics/comparison', () => {
           previousTotalSpendMinor: 10000,
           deltaSpendMinor: 10000,
           deltaPercent: 100,
-        },
-      ],
-      payerAttribution: [
-        {
-          payerDisplayName: 'analytics-comparison-member@example.com',
-          payerUserId: member.user.id,
-          totalSpendMinor: 50000,
-          percentOfTotal: 71,
-          expenseCount: 1,
-        },
-        {
-          payerDisplayName: 'analytics-comparison-owner@example.com',
-          payerUserId: owner.user.id,
-          totalSpendMinor: 20000,
-          percentOfTotal: 29,
-          expenseCount: 1,
         },
       ],
     })

@@ -41,7 +41,7 @@ export const ProfileDetailsCard = ({
       <CardContent className='flex flex-col gap-6'>
         <Field>
           <FieldLabel htmlFor='profile-email'>
-            {t('app.settings.account.fields.email')}
+            {t('app.account.fields.email')}
           </FieldLabel>
           <FieldContent>
             <Input

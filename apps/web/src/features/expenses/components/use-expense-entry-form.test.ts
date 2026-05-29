@@ -55,11 +55,9 @@ describe('use-expense-entry-form helpers', () => {
           title: 'Lunch',
           occurredAt: 1746662400000,
           note: null,
-          visibility: 'private',
           householdId: null,
-          payerUserId: null,
+          spentByUserId: 'user-1',
           groupIds: ['group-1'],
-          createdByUserId: 'user-1',
           createdAt: 1746662400000,
           updatedAt: 1746662400000,
         },
@@ -94,7 +92,7 @@ describe('use-expense-entry-form helpers', () => {
         sourceKey: 'cash',
         title: 'Lunch',
         occurredAt: expect.any(Number),
-        visibility: 'private',
+        householdId: null,
         groupIds: ['group-1'],
       },
     })
@@ -137,7 +135,6 @@ describe('use-expense-entry-form helpers', () => {
       sourceKey: 'cash',
       title: 'Lunch',
       occurredAt: expect.any(Number),
-      visibility: 'private',
     })
   })
 
@@ -158,7 +155,6 @@ describe('use-expense-entry-form helpers', () => {
       sourceKey: 'bank-transfer',
       title: 'Electricity',
       occurredAt: expect.any(Number),
-      visibility: 'household',
       householdId: 'house-1',
       groupIds: ['group-1'],
     })

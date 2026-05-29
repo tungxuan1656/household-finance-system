@@ -32,13 +32,18 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 - `components/ui`: shadcn primitives only.
 - `views/`: removed. Do not add new code there.
 
-## Page Shell Pattern
+## Protected Page Surface Pattern
 
-- `route-level app pages` use `PageShell` from `@/components/ui/page-shell`.
-- `PageShell` owns page title/header and standard content padding.
-- Do not duplicate page `<header>`/`<h1>` or outer `px-*` padding inside app pages.
-- Put page body content directly inside `PageShell`; add an inner `flex flex-col gap-*` wrapper only for vertical rhythm.
-- Loading, empty, error, and success states should all render inside the same `PageShell` when they belong to the same route.
+- New protected app pages use shared page wrappers from `@/components/shared/page/*`.
+- Canonical wrappers are:
+  - `PageContainer`
+  - `PageHeader`
+  - `PageContent`
+  - `PageFooter`
+- `PageHeader` owns the route title/header contract.
+- Do not duplicate page `<header>`/`<h1>` or shell-level outer padding around protected pages.
+- Route-level loading, empty, error, and success states should all render inside the same `PageContainer` when they belong to one route surface.
+- For page wrapper details, read `docs/references/frontend/protected-page-surface-pattern.md`.
 - For shell/nav details, read `docs/references/frontend/responsive-navigation-shell-pattern.md`.
 
 ## shadcn Rules
@@ -62,6 +67,7 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 | Form | `docs/references/frontend/form-pattern.md` |
 | Dialog + form layout | `docs/references/frontend/dialog-and-form-pattern.md` |
 | i18n labels/copy | `docs/references/frontend/i18n-label-pattern.md` |
+| Protected page wrapper rules | `docs/references/frontend/protected-page-surface-pattern.md` |
 | Responsive shell/nav | `docs/references/frontend/responsive-navigation-shell-pattern.md` |
 | Test placement | `docs/testing/test-placement-and-sharding-convention.md` |
 | Durable UI decision | `docs/design-docs/index.md` |

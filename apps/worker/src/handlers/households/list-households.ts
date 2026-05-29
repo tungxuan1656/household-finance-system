@@ -8,7 +8,6 @@ const toHouseholdDto = (input: {
   slug: string
   defaultCurrencyCode: string
   timezone: string
-  defaultVisibility: 'private' | 'household'
   role: 'admin' | 'member'
   createdAt: number
 }): HouseholdDTO => ({
@@ -17,7 +16,6 @@ const toHouseholdDto = (input: {
   slug: input.slug,
   defaultCurrencyCode: input.defaultCurrencyCode,
   timezone: input.timezone,
-  defaultVisibility: input.defaultVisibility,
   role: input.role,
   createdAt: input.createdAt,
 })

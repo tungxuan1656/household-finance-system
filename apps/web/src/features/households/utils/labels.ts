@@ -1,7 +1,4 @@
-import type {
-  DefaultVisibility,
-  HouseholdRoleDTO,
-} from '@/features/households/types/household'
+import type { HouseholdRoleDTO } from '@/features/households/types/household'
 import type { TranslationKey } from '@/lib/i18n/i18n-init'
 import { t } from '@/lib/i18n/t'
 
@@ -10,14 +7,5 @@ const ROLE_LABEL_KEYS: Record<HouseholdRoleDTO, TranslationKey> = {
   member: 'app.householdDetail.members.invite.fields.role.options.member',
 }
 
-const VISIBILITY_LABEL_KEYS: Record<DefaultVisibility, TranslationKey> = {
-  private: 'app.householdDetail.fields.defaultVisibility.options.private',
-  household: 'app.householdDetail.fields.defaultVisibility.options.household',
-}
-
 export const getHouseholdRoleLabel = (role: HouseholdRoleDTO): string =>
   t(ROLE_LABEL_KEYS[role])
-
-export const getHouseholdVisibilityLabel = (
-  visibility: DefaultVisibility,
-): string => t(VISIBILITY_LABEL_KEYS[visibility])

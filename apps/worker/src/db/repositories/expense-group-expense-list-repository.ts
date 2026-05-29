@@ -13,8 +13,7 @@ export interface ListExpensesByGroupResult {
     categoryKey: string
     sourceKey: string
     occurredAt: number
-    visibility: 'private' | 'household'
-    payerUserId: string
+    spentByUserId: string
     note: string | null
     createdAt: number
     updatedAt: number
@@ -48,8 +47,7 @@ export const listExpensesByGroup = async (
               e.category_key,
               e.source_key,
               e.occurred_at,
-              e.visibility,
-              e.payer_user_id,
+              e.spent_by_user_id,
               e.note,
               e.created_at,
               e.updated_at
@@ -73,8 +71,7 @@ export const listExpensesByGroup = async (
       category_key: string
       source_key: string
       occurred_at: number
-      visibility: 'private' | 'household'
-      payer_user_id: string
+      spent_by_user_id: string
       note: string | null
       created_at: number
       updated_at: number
@@ -88,8 +85,7 @@ export const listExpensesByGroup = async (
     categoryKey: row.category_key,
     sourceKey: row.source_key,
     occurredAt: row.occurred_at,
-    visibility: row.visibility,
-    payerUserId: row.payer_user_id,
+    spentByUserId: row.spent_by_user_id,
     note: row.note,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

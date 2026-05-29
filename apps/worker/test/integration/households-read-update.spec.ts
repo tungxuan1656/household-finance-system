@@ -201,7 +201,7 @@ describe('Worker integration: households read and update', () => {
     expect(payload.error.code).toBe('FORBIDDEN')
   })
 
-  it('updates a household with timezone and defaultVisibility', async () => {
+  it('updates a household with timezone', async () => {
     const owner = await exchangeAccessToken(
       'test:firebase-user-household-settings-update:settings-update@example.com',
     )
@@ -230,20 +230,18 @@ describe('Worker integration: households read and update', () => {
         },
         body: JSON.stringify({
           timezone: 'Asia/Ho_Chi_Minh',
-          defaultVisibility: 'household',
         }),
       },
     )
     const updatePayload =
-      await parseJson<
-        ApiEnvelope<{ id: string; timezone: string; defaultVisibility: string }>
-      >(updateResponse)
+      await parseJson<ApiEnvelope<{ id: string; timezone: string }>>(
+        updateResponse,
+      )
 
     expect(updateResponse.status).toBe(200)
     expect(updatePayload.data).toMatchObject({
       id: createdPayload.data.id,
       timezone: 'Asia/Ho_Chi_Minh',
-      defaultVisibility: 'household',
     })
   })
 
@@ -275,42 +273,6 @@ describe('Worker integration: households read and update', () => {
           'content-type': 'application/json',
         },
         body: JSON.stringify({ timezone: 'Not/A_Real_Timezone' }),
-      },
-    )
-    const updatePayload = await parseJson<ApiErrorEnvelope>(updateResponse)
-
-    expect(updateResponse.status).toBe(400)
-    expect(updatePayload.error.code).toBe('INVALID_INPUT')
-  })
-
-  it('rejects household update with invalid defaultVisibility', async () => {
-    const owner = await exchangeAccessToken(
-      'test:firebase-user-household-vis-invalid:vis-invalid@example.com',
-    )
-
-    const createResponse = await SELF.fetch(
-      'https://example.com/api/v1/households',
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${owner.accessToken}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({ name: 'Family Visibility' }),
-      },
-    )
-    const createdPayload =
-      await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
-
-    const updateResponse = await SELF.fetch(
-      `https://example.com/api/v1/households/${createdPayload.data.id}`,
-      {
-        method: 'PATCH',
-        headers: {
-          authorization: `Bearer ${owner.accessToken}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({ defaultVisibility: 'public' }),
       },
     )
     const updatePayload = await parseJson<ApiErrorEnvelope>(updateResponse)

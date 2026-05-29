@@ -49,7 +49,6 @@ describe('group expense scenario', () => {
       amount: 275000,
       categoryKey: 'travel',
       sourceKey: 'card',
-      visibility: 'household',
       householdId,
       title: 'Scenario hotel',
       note: 'before assignment',

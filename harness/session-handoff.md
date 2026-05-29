@@ -29,3 +29,7 @@ Use this file only when a session stops with meaningful unfinished work.
 ## Evidence
 
 - Capture the latest relevant commands, test results, or logs.
+
+## Suggested Skills
+
+- List the exact workflow or domain skills the next session should invoke first, if any.

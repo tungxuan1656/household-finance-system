@@ -6,8 +6,12 @@ import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
 import { DataState } from '@/components/shared/data-state'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
 import { Button } from '@/components/ui/button'
-import { PageShell } from '@/components/ui/page-shell'
 import { ExpenseDetailActions } from '@/features/expenses/components/expense-detail-actions'
 import { ExpenseDetailCard } from '@/features/expenses/components/expense-detail-card'
 import {
@@ -29,8 +33,8 @@ const isExpenseStatusError = (error: unknown, status: number): boolean =>
   error instanceof ApiClientError && error.status === status
 
 export const ExpenseDetailPage = () => {
-  const params = useParams<{ id: string }>()
   const router = useRouter()
+  const params = useParams<{ id: string }>()
   const id = params?.id
   const { data: currentUser } = useCurrentUserProfileQuery()
   const { data: households } = useHouseholdsQuery()
@@ -88,37 +92,41 @@ export const ExpenseDetailPage = () => {
   const stateErrorDescription = isForbidden ? '' : t('expense.loadError')
 
   return (
-    <PageShell
-      showBack
-      title={t('expense.detail.title')}
-      onBack={() => router.back()}>
-      <DataState
-        customAction={stateCustomAction}
-        emptyDescription=''
-        emptyTitle={t('expense.detail.notFound')}
-        errorDescription={stateErrorDescription}
-        errorTitle={stateErrorTitle}
-        isEmpty={isNotFound}
-        isError={isForbidden || isGenericError}
-        isLoading={isLoading}
-        retryAction={stateRetryAction}
-        title={t('expense.detail.title')}>
-        {shouldShowContent && expense ? (
-          <div className='flex flex-col gap-6'>
-            <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-              <Button
-                className='hidden sm:inline-flex'
-                type='button'
-                variant='outline'
-                onClick={() => router.back()}>
-                {t('app.householdDetail.actions.back')}
-              </Button>
-              {detailActions}
+    <PageContainer>
+      <PageHeader
+        showBack
+        title={t('expense.detail.title')}
+        onBack={() => router.back()}
+      />
+      <PageContent>
+        <DataState
+          customAction={stateCustomAction}
+          emptyDescription=''
+          emptyTitle={t('expense.detail.notFound')}
+          errorDescription={stateErrorDescription}
+          errorTitle={stateErrorTitle}
+          isEmpty={isNotFound}
+          isError={isForbidden || isGenericError}
+          isLoading={isLoading}
+          retryAction={stateRetryAction}
+          title={t('expense.detail.title')}>
+          {shouldShowContent && expense ? (
+            <div className='flex flex-col gap-6'>
+              <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                <Button
+                  className='hidden sm:inline-flex'
+                  type='button'
+                  variant='outline'
+                  onClick={() => router.back()}>
+                  {t('app.householdDetail.actions.back')}
+                </Button>
+                {detailActions}
+              </div>
+              <ExpenseDetailCard expense={expense} />
             </div>
-            <ExpenseDetailCard expense={expense} />
-          </div>
-        ) : null}
-      </DataState>
-    </PageShell>
+          ) : null}
+        </DataState>
+      </PageContent>
+    </PageContainer>
   )
 }

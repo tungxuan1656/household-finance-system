@@ -67,10 +67,10 @@ export const replaceExpenseGroupAssignments = async (
       db
         .prepare(
           `INSERT INTO expense_group_items (
-            id, household_id, expense_id, group_id, assigned_by_user_id, created_at
-          ) VALUES (?, ?, ?, ?, ?, ?)`,
+            id, expense_id, group_id, assigned_by_user_id, created_at
+          ) VALUES (?, ?, ?, ?, ?)`,
         )
-        .bind(newId(), null, expenseId, groupId, assignedByUserId, now),
+        .bind(newId(), expenseId, groupId, assignedByUserId, now),
     )
   }
 

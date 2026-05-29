@@ -22,7 +22,6 @@ describe('POST /api/v1/expenses - integration tests', () => {
       amount: 100000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Test expense',
       occurredAt: Date.now(),
     }
@@ -44,18 +43,14 @@ describe('POST /api/v1/expenses - integration tests', () => {
         title: string
         categoryKey: string
         sourceKey: string
-        visibility: string
         householdId: string | null
-        payerUserId: string
-        createdByUserId: string
+        spentByUserId: string
       }>
     >(response)
 
     expect(payload.success).toBe(true)
-    expect(payload.data.visibility).toBe('private')
     expect(payload.data.householdId).toBeNull()
-    expect(payload.data.createdByUserId).toBe(auth.user.id)
-    expect(payload.data.payerUserId).toBe(auth.user.id)
+    expect(payload.data.spentByUserId).toBe(auth.user.id)
     expect(payload.data.categoryKey).toBe('food')
     expect(payload.data.sourceKey).toBe('cash')
   })
@@ -75,7 +70,6 @@ describe('POST /api/v1/expenses - integration tests', () => {
         amount: 100000,
         categoryKey: 'food',
         sourceKey: 'momo',
-        visibility: 'private',
         title: 'Momo expense',
         occurredAt: Date.now(),
       }),
@@ -103,7 +97,6 @@ describe('POST /api/v1/expenses - integration tests', () => {
         amount: 100000,
         categoryKey: 'food',
         sourceKey: 'e-wallet',
-        visibility: 'private',
         title: 'Old source expense',
         occurredAt: Date.now(),
       }),
@@ -141,7 +134,6 @@ describe('POST /api/v1/expenses - integration tests', () => {
       amount: 50000,
       categoryKey: 'food',
       sourceKey: 'bank-transfer',
-      visibility: 'household',
       householdId,
       title: 'Test household expense',
       occurredAt: Date.now(),
@@ -159,16 +151,13 @@ describe('POST /api/v1/expenses - integration tests', () => {
     expect(response.status).toBe(201)
 
     const payload =
-      await parseJson<ApiEnvelope<{ visibility: string; householdId: string }>>(
-        response,
-      )
+      await parseJson<ApiEnvelope<{ householdId: string }>>(response)
 
     expect(payload.success).toBe(true)
-    expect(payload.data.visibility).toBe('household')
     expect(payload.data.householdId).toBe(householdId)
   })
 
-  it('Error: household expense without householdId -> 400 INVALID_INPUT', async () => {
+  it('Error: blank householdId -> 400 INVALID_INPUT', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-expense-no-household:user-no-household@example.com',
     )
@@ -177,7 +166,7 @@ describe('POST /api/v1/expenses - integration tests', () => {
       amount: 1000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
+      householdId: '   ',
       title: 'Test expense',
       occurredAt: Date.now(),
     }
@@ -230,7 +219,6 @@ describe('POST /api/v1/expenses - integration tests', () => {
       amount: 800,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Test expense',
       occurredAt: Date.now(),
@@ -262,7 +250,6 @@ describe('POST /api/v1/expenses - integration tests', () => {
       amount: 100,
       categoryKey: 'money-in',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Test expense',
       occurredAt: Date.now(),
     }
@@ -294,7 +281,6 @@ describe('POST /api/v1/expenses - integration tests', () => {
         amount: 100,
         categoryKey: 'food',
         sourceKey: 'not-a-key',
-        visibility: 'private',
         title: 'Test expense',
         occurredAt: Date.now(),
       }),
@@ -313,7 +299,6 @@ describe('POST /api/v1/expenses - integration tests', () => {
         amount: 100,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Test expense',
         occurredAt: Date.now(),
       }),
@@ -337,7 +322,6 @@ describe('POST /api/v1/expenses - integration tests', () => {
         amount: -50,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Test expense',
         occurredAt: Date.now(),
       }),

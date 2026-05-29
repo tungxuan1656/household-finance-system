@@ -81,13 +81,11 @@ export const listExpensesHandler = async (
     dateFrom: query.date_from,
     dateTo: query.date_to,
     categoryKey: query.category_key,
-    payerId: query.payer_id,
-    visibility: query.visibility,
     groupId: query.group_id,
     query: query.query,
     amountMin: query.amount_min,
     amountMax: query.amount_max,
-    creatorId: query.creator_id,
+    spentByUserId: query.spent_by_user_id,
     sort: query.sort,
   })
 
@@ -108,12 +106,10 @@ export const listExpensesHandler = async (
       ? (expense.sourceKey as ExpenseDTO['sourceKey'])
       : 'cash',
     occurredAt: expense.occurredAt,
-    visibility: expense.visibility,
     householdId: expense.householdId,
-    payerUserId: expense.payerUserId,
+    spentByUserId: expense.spentByUserId,
     note: expense.note,
     groupIds: groupIdsMap.get(expense.id) ?? [],
-    createdByUserId: expense.createdByUserId,
     createdAt: expense.createdAt,
     updatedAt: expense.updatedAt,
   }))

@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { PageShell } from '@/components/ui/page-shell'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
 import { useBudgetListQuery } from '@/features/budgets/hooks/use-budgets'
 import { useExpenseSummaryQuery } from '@/features/expenses/hooks/use-expense'
 import {
@@ -13,26 +17,24 @@ import { EmptyState } from '@/features/overview/components/empty-state'
 import { HeroStatsCard } from '@/features/overview/components/hero-stats-card'
 import { OverviewCategoryStatisticsSection } from '@/features/overview/components/overview-category-statistics-section'
 import { OverviewRecentExpensesSection } from '@/features/overview/components/overview-recent-expenses-section'
-import type { Lens } from '@/features/overview/components/overview-tabs'
+import type { View } from '@/features/overview/components/overview-tabs'
 import { OverviewTabs } from '@/features/overview/components/overview-tabs'
 import { getCurrentPeriod } from '@/features/overview/utils/overview-formatters'
 import { PATHS } from '@/lib/constants/paths'
-import { householdActions } from '@/stores/household.store'
 import { useHouseholdStore } from '@/stores/household.store'
 import { getDaysRemaining } from '@/utils/datetime/format'
 
 function OverviewPage() {
   const households = useHouseholdStore.use.households()
-  const householdsLoading = useHouseholdStore.use.isLoading()
   const period = getCurrentPeriod()
 
-  const [activeLens, setActiveLens] = useState<Lens>({ type: 'personal' })
+  const [activeView, setActiveView] = useState<View>({ type: 'personal' })
 
   const householdId =
-    activeLens.type === 'household' ? activeLens.householdId : undefined
+    activeView.type === 'household' ? activeView.householdId : undefined
 
-  const lenses = useMemo<Lens[]>(() => {
-    const list: Lens[] = [{ type: 'personal' }]
+  const views = useMemo<View[]>(() => {
+    const list: View[] = [{ type: 'personal' }]
     for (const h of households) {
       list.push({ type: 'household', householdId: h.id, householdName: h.name })
     }
@@ -40,37 +42,31 @@ function OverviewPage() {
     return list
   }, [households])
 
-  const handleLensChange = useCallback(
+  const handleViewChange = useCallback(
     (value: string) => {
       if (value === 'personal') {
-        setActiveLens({ type: 'personal' })
+        setActiveView({ type: 'personal' })
 
         return
       }
 
-      const lens = lenses.find(
-        (item): item is Extract<Lens, { type: 'household' }> =>
+      const view = views.find(
+        (item): item is Extract<View, { type: 'household' }> =>
           item.type === 'household' && item.householdId === value,
       )
-      if (lens) setActiveLens(lens)
+      if (view) setActiveView(view)
     },
-    [lenses],
+    [views],
   )
 
   useEffect(() => {
-    if (households.length === 0 && !householdsLoading) {
-      void householdActions.fetchHouseholds()
-    }
-  }, [householdActions, households.length, householdsLoading])
-
-  useEffect(() => {
-    if (activeLens.type === 'household') {
+    if (activeView.type === 'household') {
       const stillExists = households.some(
-        (h) => h.id === activeLens.householdId,
+        (h) => h.id === activeView.householdId,
       )
-      if (!stillExists) setActiveLens({ type: 'personal' })
+      if (!stillExists) setActiveView({ type: 'personal' })
     }
-  }, [activeLens, households])
+  }, [activeView, households])
 
   const overviewQuery = useAnalyticsOverviewQuery({
     period,
@@ -98,53 +94,61 @@ function OverviewPage() {
 
   if (isEntirelyEmpty) {
     return (
-      <PageShell title='Home'>
-        <OverviewTabs
-          lenses={lenses}
-          value={
-            activeLens.type === 'personal' ? 'personal' : activeLens.householdId
-          }
-          onValueChange={handleLensChange}
-        />
-        <div className='mt-6 md:mt-8'>
-          <EmptyState addExpenseHref={PATHS.EXPENSES} />
-        </div>
-      </PageShell>
+      <PageContainer>
+        <PageHeader title='Home' />
+        <PageContent>
+          <OverviewTabs
+            value={
+              activeView.type === 'personal'
+                ? 'personal'
+                : activeView.householdId
+            }
+            views={views}
+            onValueChange={handleViewChange}
+          />
+          <div className='mt-6 md:mt-8'>
+            <EmptyState addExpenseHref={PATHS.EXPENSES} />
+          </div>
+        </PageContent>
+      </PageContainer>
     )
   }
 
   return (
-    <PageShell title='Home'>
-      <OverviewTabs
-        lenses={lenses}
-        value={
-          activeLens.type === 'personal' ? 'personal' : activeLens.householdId
-        }
-        onValueChange={handleLensChange}
-      />
-      <div className='mt-4 flex flex-col gap-6 md:gap-8'>
-        <HeroStatsCard
-          budgetLimitMinor={budgetListQuery.data?.items?.[0]?.totalLimitMinor}
-          currencyCode={overviewData?.currencyCode ?? 'VND'}
-          daysRemaining={getDaysRemaining()}
-          error={overviewQuery.error}
-          isLoading={overviewQuery.isLoading}
-          period={period}
-          previousTotalSpendMinor={
-            comparisonData?.previousPeriod?.totalSpendMinor
+    <PageContainer>
+      <PageHeader title='Home' />
+      <PageContent>
+        <OverviewTabs
+          value={
+            activeView.type === 'personal' ? 'personal' : activeView.householdId
           }
-          totalSpendMinor={overviewData?.totalSpendMinor ?? 0}
-          onRetry={() => overviewQuery.refetch()}
+          views={views}
+          onValueChange={handleViewChange}
         />
+        <div className='mt-4 flex flex-col gap-6 md:gap-8'>
+          <HeroStatsCard
+            budgetLimitMinor={budgetListQuery.data?.items?.[0]?.totalLimitMinor}
+            currencyCode={overviewData?.currencyCode ?? 'VND'}
+            daysRemaining={getDaysRemaining()}
+            error={overviewQuery.error}
+            isLoading={overviewQuery.isLoading}
+            period={period}
+            previousTotalSpendMinor={
+              comparisonData?.previousPeriod?.totalSpendMinor
+            }
+            totalSpendMinor={overviewData?.totalSpendMinor ?? 0}
+            onRetry={() => overviewQuery.refetch()}
+          />
 
-        <OverviewRecentExpensesSection householdId={householdId} />
+          <OverviewRecentExpensesSection householdId={householdId} />
 
-        <OverviewCategoryStatisticsSection
-          householdId={householdId}
-          period={period}
-        />
-      </div>
-    </PageShell>
+          <OverviewCategoryStatisticsSection
+            householdId={householdId}
+            period={period}
+          />
+        </div>
+      </PageContent>
+    </PageContainer>
   )
 }
 

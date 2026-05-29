@@ -2,7 +2,7 @@
 
 ## Goal
 
-Allow users to group expenses into events/projects (e.g., "Vacation", "Tet shopping") to track event-level budgets and insights.
+Allow users to group expenses into events or projects to track event-level budgets and insights.
 
 ## Entry Conditions
 
@@ -11,16 +11,16 @@ Allow users to group expenses into events/projects (e.g., "Vacation", "Tet shopp
 ## User Flow
 
 1. User creates a group with a name, optional dates, and optional event budget.
-2. When adding/editing an expense, user can assign it to a group tag.
+2. When adding or editing an expense, user can assign it to a group tag.
 3. User views group summary with aggregated spend, list of contained expenses, and remaining event budget.
-4. Allow bulk assignment of expenses to a group during reconciliation.
+4. User may bulk-assign existing expenses to a group during reconciliation.
 
 ## Acceptance Criteria
 
 - Groups can be created, edited, and archived.
-- Groups are independent from household scope and may be used on private or household expenses.
-- Create dialog currently allows zero or one group selection per expense; later bulk/edit flows may still support broader assignment operations.
-- Group aggregates compute correctly and update when member expenses change.
+- Groups are independent from household context and may be used on personal or household expenses.
+- Create dialog allows zero or one group selection per expense in MVP.
+- Group aggregates update correctly when linked expenses change.
 
 ## Failure States
 
@@ -30,5 +30,4 @@ Allow users to group expenses into events/projects (e.g., "Vacation", "Tet shopp
 ---
 
 Notes:
-- Start with simple tagging model; integrate deeply into the primary expense creation flow.
-- Groups are a core feature for event-based tracking (Vacation, Tet, etc.) in MVP.
+- Groups are a core MVP feature for event-based tracking.

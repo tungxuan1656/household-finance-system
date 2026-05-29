@@ -36,25 +36,18 @@ export const getExpenseHandler = async (
 
   const { id } = parsed.data
 
-  // Fetch expense without visibility check (handler enforces visibility)
+  // Fetch expense and enforce V2 access based on household attachment.
   const expense = await findExpenseByIdRaw(db, id)
 
   if (!expense) {
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  // Visibility enforcement:
-  // - Private: only the creator can see it
-  // - Household: only members of that household can see it
-  if (expense.visibility === 'private') {
-    if (expense.createdByUserId !== currentUser.id) {
+  if (!expense.householdId || expense.spentByUserId === currentUser.id) {
+    if (expense.spentByUserId !== currentUser.id) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
-  } else if (expense.visibility === 'household') {
-    if (!expense.householdId) {
-      throw forbidden(locale, 'expenses.expenseForbidden')
-    }
-
+  } else {
     const membership = await findActiveHouseholdMembership(
       db,
       currentUser.id,
@@ -82,12 +75,10 @@ export const getExpenseHandler = async (
       ? (expense.sourceKey as ExpenseDTO['sourceKey'])
       : 'cash',
     occurredAt: expense.occurredAt,
-    visibility: expense.visibility,
     householdId: expense.householdId,
-    payerUserId: expense.payerUserId,
+    spentByUserId: expense.spentByUserId,
     note: expense.note,
     groupIds,
-    createdByUserId: expense.createdByUserId,
     createdAt: expense.createdAt,
     updatedAt: expense.updatedAt,
   }

@@ -14,15 +14,13 @@ export {
 export interface CreateExpenseInput {
   id: string
   householdId: string | null
-  createdByUserId: string
-  payerUserId: string
+  spentByUserId: string
   categoryKey: string
   sourceKey: string
   categoryId?: string | null
   amountMinor: number
   currencyCode: string
   occurredAt: number
-  visibility: 'private' | 'household'
   title: string
   note?: string | null
 }
@@ -39,33 +37,29 @@ export const createExpense = async (
       `INSERT INTO expenses (
         id,
         household_id,
-        created_by_user_id,
-        payer_user_id,
+        spent_by_user_id,
         category_key,
         source_key,
         category_id,
         amount_minor,
         currency_code,
         occurred_at,
-        visibility,
         title,
         note,
         created_at,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       input.id,
       input.householdId,
-      input.createdByUserId,
-      input.payerUserId,
+      input.spentByUserId,
       input.categoryKey,
       input.sourceKey,
       input.categoryId ?? null,
       input.amountMinor,
       input.currencyCode,
       input.occurredAt,
-      input.visibility,
       input.title,
       input.note ?? null,
       now,
@@ -78,15 +72,13 @@ export const createExpense = async (
     .prepare(
       `SELECT id,
               household_id,
-              created_by_user_id,
-              payer_user_id,
+              spent_by_user_id,
               category_key,
               source_key,
               category_id,
               amount_minor,
               currency_code,
               occurred_at,
-              visibility,
               title,
               note,
               deleted_at,
@@ -106,7 +98,7 @@ export const createExpense = async (
   return mapRow(row)
 }
 
-// Fetch expense by ID without visibility check.
+// Fetch expense by ID without access check.
 // The handler is responsible for checking access rights.
 export const findExpenseByIdRaw = async (
   db: D1Database,
@@ -116,15 +108,13 @@ export const findExpenseByIdRaw = async (
     .prepare(
       `SELECT id,
               household_id,
-              created_by_user_id,
-              payer_user_id,
+              spent_by_user_id,
               category_key,
               source_key,
               category_id,
               amount_minor,
               currency_code,
               occurred_at,
-              visibility,
               title,
               note,
               deleted_at,
@@ -151,15 +141,13 @@ export const findExpenseByIdIncludingDeleted = async (
     .prepare(
       `SELECT id,
               household_id,
-              created_by_user_id,
-              payer_user_id,
+              spent_by_user_id,
               category_key,
               source_key,
               category_id,
               amount_minor,
               currency_code,
               occurred_at,
-              visibility,
               title,
               note,
               deleted_at,
@@ -180,13 +168,12 @@ export const findExpenseByIdIncludingDeleted = async (
 export interface UpdateExpenseInput {
   expenseId: string
   householdId: string | null
-  payerUserId: string
+  spentByUserId: string
   categoryKey: string
   sourceKey: string
   amountMinor: number
   currencyCode: string
   occurredAt: number
-  visibility: 'private' | 'household'
   title: string
   note: string | null
 }
@@ -199,30 +186,28 @@ export const updateExpense = async (
   const result = await db
     .prepare(
       `UPDATE expenses
-          SET household_id = ?,
-              payer_user_id = ?,
-              category_key = ?,
-              source_key = ?,
-              category_id = NULL,
-              amount_minor = ?,
-              currency_code = ?,
-              occurred_at = ?,
-              visibility = ?,
-              title = ?,
-              note = ?,
-              updated_at = ?
-        WHERE id = ?
-          AND deleted_at IS NULL`,
+           SET household_id = ?,
+               spent_by_user_id = ?,
+               category_key = ?,
+               source_key = ?,
+               category_id = NULL,
+               amount_minor = ?,
+               currency_code = ?,
+               occurred_at = ?,
+               title = ?,
+               note = ?,
+               updated_at = ?
+         WHERE id = ?
+           AND deleted_at IS NULL`,
     )
     .bind(
       input.householdId,
-      input.payerUserId,
+      input.spentByUserId,
       input.categoryKey,
       input.sourceKey,
       input.amountMinor,
       input.currencyCode,
       input.occurredAt,
-      input.visibility,
       input.title,
       input.note,
       now,
@@ -287,13 +272,11 @@ export interface ListExpensesInput {
   dateFrom?: number
   dateTo?: number
   categoryKey?: string
-  payerId?: string
-  visibility?: 'private' | 'household'
   groupId?: string
   query?: string
   amountMin?: number
   amountMax?: number
-  creatorId?: string
+  spentByUserId?: string
   sort?: 'occurred_at_desc' | 'amount_desc'
 }
 

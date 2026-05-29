@@ -4,11 +4,9 @@ import { User2Icon } from 'lucide-react'
 import Link from 'next/link'
 
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -41,47 +39,46 @@ export const HouseholdSummaryCard = ({
   const memberQuery = useHouseholdMembersQuery(household.id)
 
   return (
-    <Card className='transition-all duration-200 hover:border-primary/20 hover:shadow-md'>
-      <CardHeader>
-        <CardTitle className='uppercase'>{household.name}</CardTitle>
-        <CardDescription className='flex flex-wrap items-center gap-2 text-sm'>
-          <Badge variant='secondary'>
-            {getHouseholdRoleLabel(household.role)}
-          </Badge>
-        </CardDescription>
-      </CardHeader>
-      <CardContent className='flex flex-col gap-3'>
-        {analyticsQuery.data ? (
-          <p className='space-x-2'>
-            <span className='font-mono text-2xl text-foreground'>
-              {formatCurrency(
-                analyticsQuery.data.totalSpendMinor,
-                analyticsQuery.data.currencyCode,
-              )}
-            </span>
-            <span className='font-medium text-muted-foreground'>
-              {' / '}
-              {analyticsQuery.data.expenseCount} {t('groups.summary.expenses')}
-            </span>
-          </p>
-        ) : null}
-      </CardContent>
-      <CardFooter className='items-center justify-between'>
-        {memberQuery.data ? (
-          <span className='flex items-center gap-2 font-mono'>
-            <User2Icon className='size-4' />
-            {t('app.householdDetail.memberCount', {
-              count: memberQuery.data.items.length,
-            })}
-          </span>
-        ) : null}
-        <Button asChild size='sm' variant='outline'>
-          <Link href={`/households/${household.id}`}>
-            {t('app.households.actions.viewDetail')}
-          </Link>
-        </Button>
-      </CardFooter>
-    </Card>
+    <Link
+      className='block rounded-2xl transition-all hover:shadow-md active:scale-[0.99]'
+      href={`/households/${household.id}`}>
+      <Card className='h-full cursor-pointer'>
+        <CardHeader>
+          <div className='flex min-w-0 flex-col gap-1'>
+            <CardTitle className='truncate text-lg font-semibold'>
+              {household.name}
+            </CardTitle>
+            <div className='flex items-center gap-2'>
+              {memberQuery.data ? (
+                <span className='flex items-center gap-1 text-xs text-muted-foreground'>
+                  <User2Icon className='size-3' />
+                  {memberQuery.data.items.length}
+                </span>
+              ) : null}
+              <Badge variant='secondary'>
+                {getHouseholdRoleLabel(household.role)}
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className='flex flex-col gap-1'>
+          {analyticsQuery.data ? (
+            <>
+              <span className='font-mono text-3xl font-bold tracking-tight text-foreground'>
+                {formatCurrency(
+                  analyticsQuery.data.totalSpendMinor,
+                  analyticsQuery.data.currencyCode,
+                )}
+              </span>
+              <span className='text-sm font-medium text-muted-foreground'>
+                {analyticsQuery.data.expenseCount}{' '}
+                {t('groups.summary.expenses')}
+              </span>
+            </>
+          ) : null}
+        </CardContent>
+      </Card>
+    </Link>
   )
 }
 
@@ -102,8 +99,8 @@ export const HouseholdsLoadingState = () => (
           <Skeleton className='h-4 w-36' />
           <Skeleton className='h-4 w-28' />
         </CardContent>
-        <CardFooter className='justify-end'>
-          <Skeleton className='h-9 w-28' />
+        <CardFooter className='pt-0'>
+          <Skeleton className='h-4 w-24' />
         </CardFooter>
       </Card>
     ))}

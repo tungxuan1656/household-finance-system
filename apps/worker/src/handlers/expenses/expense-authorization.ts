@@ -14,8 +14,8 @@ import {
 /**
  * Fetches an expense by ID and verifies the caller has basic read access.
  *
- * For private expenses, only the creator is allowed.
- * For household expenses, the caller must be a member (checked downstream).
+ * For personal expenses, only the spender/owner is allowed.
+ * For household-attached expenses, the caller must be a member.
  *
  * Throws AppError (notFound / forbidden) if the expense cannot be returned.
  */
@@ -34,12 +34,12 @@ export const authorizeExpenseAccess = async (
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  if (expense.visibility === 'private') {
-    if (expense.createdByUserId !== currentUserId) {
+  if (!expense.householdId || expense.spentByUserId === currentUserId) {
+    if (expense.spentByUserId !== currentUserId) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
-  } else if (!expense.householdId) {
-    throw forbidden(locale, 'expenses.expenseForbidden')
+
+    return expense
   }
 
   return expense
@@ -48,7 +48,7 @@ export const authorizeExpenseAccess = async (
 /**
  * Verifies the caller can edit or delete a household expense.
  *
- * For private expenses this is a no-op (already enforced by
+ * For personal expenses this is a no-op (already enforced by
  * authorizeExpenseAccess). For household expenses, the caller must
  * be an active member with either:
  *   - own-expense edit permission (if they are the creator), or
@@ -62,8 +62,8 @@ export const authorizeExpenseMutation = async (
   currentUserId: string,
   locale: SupportedLocale,
 ): Promise<void> => {
-  if (expense.visibility === 'private') {
-    // Private expenses are already gated by authorizeExpenseAccess.
+  if (!expense.householdId) {
+    // Personal expenses are already gated by authorizeExpenseAccess.
     return
   }
 
@@ -79,7 +79,7 @@ export const authorizeExpenseMutation = async (
   }
 
   const canEdit =
-    (expense.createdByUserId === currentUserId &&
+    (expense.spentByUserId === currentUserId &&
       canEditOwnExpense(membership.role)) ||
     canEditAnyExpense(membership.role)
 

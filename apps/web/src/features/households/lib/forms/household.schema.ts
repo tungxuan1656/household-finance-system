@@ -24,7 +24,6 @@ export const updateHouseholdSettingsSchema = z.object({
     .regex(/^[a-zA-Z]{3}$/)
     .optional(),
   timezone: z.string().trim().min(1).optional(),
-  defaultVisibility: z.enum(['private', 'household']).optional(),
 })
 
 export type UpdateHouseholdSettingsFormValues = z.infer<

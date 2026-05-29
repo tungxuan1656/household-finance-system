@@ -10,7 +10,7 @@ import {
 } from './expenses-detail.test-setup'
 
 describe('GET /api/v1/expenses/:id - expense detail access', () => {
-  it('returns 403 when the expense creator is no longer an active household member', async () => {
+  it('returns 200 when the spender is no longer an active household member', async () => {
     const owner = await exchangeAccessToken(
       'test:firebase-user-detail-former-owner:detail-former-owner@example.com',
     )
@@ -63,7 +63,6 @@ describe('GET /api/v1/expenses/:id - expense detail access', () => {
         amount: 98000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'household',
         householdId,
         title: 'Former creator expense',
         occurredAt: Date.now(),
@@ -91,11 +90,19 @@ describe('GET /api/v1/expenses/:id - expense detail access', () => {
       },
     )
 
-    expect(response.status).toBe(403)
+    expect(response.status).toBe(200)
 
-    const payload = await parseJson<ApiErrorEnvelope>(response)
-    expect(payload.success).toBe(false)
-    expect(payload.error.code).toBe('FORBIDDEN')
+    const payload =
+      await parseJson<
+        ApiEnvelope<{
+          id: string
+          householdId: string | null
+          spentByUserId: string
+        }>
+      >(response)
+    expect(payload.data.id).toBe(created.data.id)
+    expect(payload.data.householdId).toBe(householdId)
+    expect(payload.data.spentByUserId).toBe(owner.user.id)
   })
 
   it('returns 403 when accessing a private expense of another user', async () => {
@@ -116,7 +123,6 @@ describe('GET /api/v1/expenses/:id - expense detail access', () => {
         amount: 30000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: "User A's private expense",
         occurredAt: Date.now(),
       }),
@@ -175,7 +181,6 @@ describe('GET /api/v1/expenses/:id - expense detail access', () => {
         amount: 80000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'household',
         householdId,
         title: 'Members-only expense',
         occurredAt: Date.now(),
@@ -239,7 +244,6 @@ describe('GET /api/v1/expenses/:id - expense detail access', () => {
         amount: 42000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Soft deleted expense',
         occurredAt: Date.now(),
       }),
@@ -287,7 +291,6 @@ describe('GET /api/v1/expenses/:id - expense detail access', () => {
         amount: 10000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Unauth test expense',
         occurredAt: Date.now(),
       }),

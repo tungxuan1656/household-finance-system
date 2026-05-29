@@ -11,7 +11,6 @@ import type {
   AnalyticsGroupsDTO,
   AnalyticsGroupSpendRow,
   AnalyticsOverviewDTO,
-  AnalyticsPayerAttributionRow,
   AnalyticsQueryInput,
   AnalyticsTopCategoryRow,
 } from './expense-analytics-types'
@@ -116,7 +115,6 @@ export const getAnalyticsComparison = async (
     .prepare(
       `SELECT e.category_key AS categoryKey, COALESCE(SUM(e.amount_minor), 0) AS totalSpendMinor
          FROM expenses e
-         LEFT JOIN users u ON u.id = e.payer_user_id
         WHERE ${currentScope.whereClause}
         GROUP BY e.category_key`,
     )
@@ -132,21 +130,6 @@ export const getAnalyticsComparison = async (
     )
     .bind(...previousScope.params)
     .all<AnalyticsCategoryTotalRow>()
-
-  const payerAttributionResult = await db
-    .prepare(
-      `SELECT e.payer_user_id AS payerUserId,
-              COALESCE(u.display_name, u.primary_email, e.payer_user_id) AS payerDisplayName,
-              COALESCE(SUM(e.amount_minor), 0) AS totalSpendMinor,
-              COUNT(*) AS expenseCount
-         FROM expenses e
-         LEFT JOIN users u ON u.id = e.payer_user_id
-        WHERE ${currentScope.whereClause}
-        GROUP BY e.payer_user_id
-        ORDER BY totalSpendMinor DESC, expenseCount DESC, payerUserId ASC`,
-    )
-    .bind(...currentScope.params)
-    .all<AnalyticsPayerAttributionRow>()
 
   const currentCategoryMap = new Map(
     currentCategoryTotals.results.map((row) => [
@@ -212,19 +195,6 @@ export const getAnalyticsComparison = async (
       previousSummary.totalSpendMinor,
     ),
     topCategoryDeltas,
-    payerAttribution: payerAttributionResult.results.map((row) => ({
-      payerDisplayName: row.payerDisplayName,
-      payerUserId: row.payerUserId,
-      totalSpendMinor: Number(row.totalSpendMinor),
-      percentOfTotal:
-        currentSummary.totalSpendMinor > 0
-          ? Math.round(
-              (Number(row.totalSpendMinor) / currentSummary.totalSpendMinor) *
-                100,
-            )
-          : 0,
-      expenseCount: Number(row.expenseCount),
-    })),
   }
 }
 

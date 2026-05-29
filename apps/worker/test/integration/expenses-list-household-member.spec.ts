@@ -12,7 +12,7 @@ import {
 registerWorkerIntegrationSetup()
 
 describe('GET /api/v1/expenses - household and access rules', () => {
-  it('does not return household expenses in personal feed after creator leaves household', async () => {
+  it('keeps the creators own household expense in personal feed after creator leaves household', async () => {
     const owner = await exchangeAccessToken(
       'test:firebase-user-list-former-owner:list-former-owner@example.com',
     )
@@ -65,7 +65,6 @@ describe('GET /api/v1/expenses - household and access rules', () => {
         amount: 98000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'household',
         householdId,
         title: 'Former member shared expense',
         occurredAt: Date.now(),
@@ -91,21 +90,22 @@ describe('GET /api/v1/expenses - household and access rules', () => {
 
     expect(response.status).toBe(200)
 
-    const payload =
-      await parseJson<
-        ApiEnvelope<{
-          items: Array<{
-            id: string
-            title: string
-            visibility: string
-            currencyCode: string
-          }>
-          nextCursor: string | null
+    const payload = await parseJson<
+      ApiEnvelope<{
+        items: Array<{
+          id: string
+          title: string
+          householdId: string | null
+          currencyCode: string
         }>
-      >(response)
+        nextCursor: string | null
+      }>
+    >(response)
 
     expect(payload.success).toBe(true)
-    expect(payload.data.items).toHaveLength(0)
+    expect(payload.data.items).toHaveLength(1)
+    expect(payload.data.items[0].title).toBe('Former member shared expense')
+    expect(payload.data.items[0].householdId).toBe(householdId)
     expect(payload.data.nextCursor).toBeNull()
   })
 

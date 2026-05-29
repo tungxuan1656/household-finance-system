@@ -48,15 +48,15 @@ export const getGroupSummary = async (
 
   const memberRows = await db
     .prepare(
-      `SELECT e.payer_user_id AS user_id,
-              COALESCE(u.display_name, e.payer_user_id) AS display_name,
+      `SELECT e.spent_by_user_id AS user_id,
+              COALESCE(u.display_name, e.spent_by_user_id) AS display_name,
               COALESCE(SUM(e.amount_minor), 0) AS total_spend,
               COUNT(DISTINCT e.id) AS expense_count
          FROM expense_group_items egi
          JOIN expenses e ON e.id = egi.expense_id AND e.deleted_at IS NULL
-         LEFT JOIN users u ON u.id = e.payer_user_id
+         LEFT JOIN users u ON u.id = e.spent_by_user_id
         WHERE egi.group_id = ?
-        GROUP BY e.payer_user_id`,
+        GROUP BY e.spent_by_user_id`,
     )
     .bind(groupId)
     .all<{

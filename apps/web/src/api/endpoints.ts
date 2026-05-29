@@ -42,7 +42,6 @@ export const API_ENDPOINTS = {
   },
   expenses: {
     create: '/expenses',
-    deleted: '/expenses/deleted',
     list: '/expenses',
     summary: '/expenses/summary',
     detail: (id: string) => `/expenses/${id}`,

@@ -3,45 +3,50 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { t } from '@/lib/i18n/t'
 
-type Lens =
+type View =
   | { type: 'personal' }
   | { type: 'household'; householdId: string; householdName: string }
+
 type OverviewTabsProps = {
-  lenses: Lens[]
+  views: View[]
   value: string
   onValueChange: (value: string) => void
 }
 
-function OverviewTabs({ lenses, value, onValueChange }: OverviewTabsProps) {
+function OverviewTabs({ views, value, onValueChange }: OverviewTabsProps) {
   return (
     <Tabs value={value} onValueChange={onValueChange}>
       <TabsList>
-        {lenses.map((lens) => (
+        {views.map((view) => (
           <TabsTrigger
-            key={lens.type === 'personal' ? 'personal' : lens.householdId}
-            value={lens.type === 'personal' ? 'personal' : lens.householdId}>
-            {lens.type === 'personal'
-              ? t('app.overview.lenses.personal')
-              : lens.householdName}
+            key={view.type === 'personal' ? 'personal' : view.householdId}
+            value={view.type === 'personal' ? 'personal' : view.householdId}>
+            {view.type === 'personal'
+              ? t('app.overview.views.personal')
+              : view.householdName}
           </TabsTrigger>
         ))}
       </TabsList>
-      <TabsContent className='mt-0' value='personal' />
-      {lenses
+      {views
         .filter(
-          (lens): lens is Extract<Lens, { type: 'household' }> =>
-            lens.type === 'household',
+          (view): view is Extract<View, { type: 'household' }> =>
+            view.type === 'household',
         )
-        .map((lens) => (
+        .map((view) => (
           <TabsContent
-            key={lens.householdId}
-            className='mt-0'
-            value={lens.householdId}
-          />
+            key={view.householdId}
+            className='mt-4'
+            value={view.householdId}>
+            <p className='text-sm text-muted-foreground'>
+              {t('app.overview.views.householdContext', {
+                name: view.householdName,
+              })}
+            </p>
+          </TabsContent>
         ))}
     </Tabs>
   )
 }
 
-export type { Lens, OverviewTabsProps }
 export { OverviewTabs }
+export type { OverviewTabsProps, View }

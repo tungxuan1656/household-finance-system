@@ -9,7 +9,7 @@ const readSource = (path: string) =>
   readFileSync(join(sourceRoot, path), 'utf8')
 
 describe('overview card composition source contracts', () => {
-  it('uses extracted OverviewTabs for lens switching instead of LensSelector', () => {
+  it('uses extracted OverviewTabs for view switching instead of LensSelector', () => {
     const pageSource = readSource('features/overview/pages/overview-page.tsx')
     const tabsSource = readSource(
       'features/overview/components/overview-tabs.tsx',

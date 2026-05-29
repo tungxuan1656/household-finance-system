@@ -13,7 +13,6 @@ import { householdActions, useHouseholdStore } from '@/stores/household.store'
 const baseHousehold = {
   createdAt: Date.now(),
   defaultCurrencyCode: 'USD',
-  defaultVisibility: 'private' as const,
   id: 'h-1',
   name: 'Family One',
   role: 'admin' as const,
@@ -31,7 +30,6 @@ vi.mock('@/features/households/api/household', () => ({
   updateHousehold: vi.fn(async () => ({
     ...baseHousehold,
     defaultCurrencyCode: 'EUR',
-    defaultVisibility: 'household' as const,
     name: 'Family One Updated',
     timezone: 'Asia/Ho_Chi_Minh',
   })),
@@ -77,29 +75,19 @@ describe('household store', () => {
     expect(useHouseholdStore.getState().currentHousehold?.id).toBe('h-1')
   })
 
-  it('fetched household includes defaultVisibility field', async () => {
-    await householdActions.fetchHouseholdById('h-1')
-
-    expect(
-      useHouseholdStore.getState().currentHousehold?.defaultVisibility,
-    ).toBe('private')
-  })
-
-  it('updates household with timezone and defaultVisibility', async () => {
+  it('updates household with timezone', async () => {
     await householdActions.createHousehold({
       name: 'Family One',
     })
 
     await householdActions.updateHousehold('h-1', {
       defaultCurrencyCode: 'EUR',
-      defaultVisibility: 'household',
       name: 'Family One Updated',
       timezone: 'Asia/Ho_Chi_Minh',
     })
 
     expect(updateHousehold).toHaveBeenCalledWith('h-1', {
       defaultCurrencyCode: 'EUR',
-      defaultVisibility: 'household',
       name: 'Family One Updated',
       timezone: 'Asia/Ho_Chi_Minh',
     })
@@ -107,7 +95,6 @@ describe('household store', () => {
     const current = useHouseholdStore.getState().currentHousehold
     expect(current?.name).toBe('Family One Updated')
     expect(current?.timezone).toBe('Asia/Ho_Chi_Minh')
-    expect(current?.defaultVisibility).toBe('household')
   })
 
   it('updates household in list and current household', async () => {

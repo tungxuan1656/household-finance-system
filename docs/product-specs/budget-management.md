@@ -2,39 +2,42 @@
 
 ## Goal
 
-Allow households to define and track budgets (monthly and per-category) and compare planned vs actual spend to help users stay within limits. Per-category budgets reference the global static category catalog rather than household-owned category records.
+Allow users to define and track budgets for personal, household, and group contexts.
 
 ## Entry Conditions
 
-- User is an Admin or Member with budgeting rights and is in a household context.
+- User is authenticated.
+- User is creating or reviewing a budget in one supported scope.
+
+## Budget Scopes
+
+- Personal
+- Household
+- Group
 
 ## User Flow
 
-1. Admin navigates to Budget settings and creates a monthly budget for the household (total) and/or per-category budgets keyed by the global category catalog.
-2. User views current period budget dashboard with Planned vs Actual, spend timeline, and warnings for overspend.
-3. Users can set budget start day, currency, and optionally recurring monthly rules.
-4. When expenses are added/edited, budget aggregates update in near real-time; warnings appear when thresholds are crossed.
-5. Admins can adjust budget mid-period; change history is recorded.
-6. Admins can delete an obsolete budget; deleted budgets no longer appear in active budget lists or dashboard summaries.
+1. User creates a monthly budget for one scope.
+2. User optionally adds per-category limits keyed by the global category catalog.
+3. Budget views show Planned vs Actual, remaining amount, and threshold warnings.
+4. When expenses change, budget aggregates update for the relevant scope.
+5. Allowed roles can edit or delete obsolete budgets.
 
 ## Acceptance Criteria
 
-- Households can create at least a monthly total budget and per-category budgets keyed by categories whose catalog `kind` is `expense`.
-- Dashboard shows Planned vs Actual and remaining budget for the period.
-- Threshold notifications (e.g., 80%, 100%) are tracked and can be surfaced via UI/notification system.
-- Budget changes are auditable and reflected in subsequent calculations.
-- Deleted budgets disappear from active views without exposing them to members who can no longer access them.
+- Personal budgets aggregate the current user's own expenses.
+- Household budgets aggregate expenses attached to that household.
+- Group budgets aggregate visible expenses tagged to that group.
+- Per-category budgets use categories whose catalog `kind` is `expense`.
+- Deleted budgets disappear from active views.
 
 ## Failure States
 
-- Budget creation failure: show validation errors and allow retry.
-- Calculation mismatch after edits: provide reconciliation tools and audit logs.
+- Budget creation failure: show validation and allow retry.
 - Insufficient permissions: block and explain required role.
+- Aggregate mismatch after expense changes: provide truthful refreshed state and audit trail.
 
 ---
 
 Notes:
-- Start with simple monthly budgets; advanced budgeting (rolling budgets, envelopes) in Phase 2.
-- Category labels/icon/color used by budget UI resolve from the global static catalog by key.
-- Index budget aggregates to support efficient dashboard queries.
-- Notification delivery (email/push) is roadmap; surface in-app warnings in MVP.
+- Notification delivery is roadmap. MVP needs in-app warnings only.

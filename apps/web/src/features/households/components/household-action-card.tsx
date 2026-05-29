@@ -1,7 +1,5 @@
 'use client'
 
-import { Plus } from 'lucide-react'
-
 import { ActionCard } from '@/components/shared/action-card'
 import { Avatar, AvatarFallback, AvatarGroup } from '@/components/ui/avatar'
 import { t } from '@/lib/i18n/t'
@@ -16,11 +14,6 @@ export const CreateHouseholdActionCard = ({
   return (
     <ActionCard
       actionDescription={t('app.households.empty.description')}
-      actionIcon={
-        <div className='flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary'>
-          <Plus aria-hidden='true' />
-        </div>
-      }
       actionLabel={t('app.households.actions.create')}
       actionTitle={t('app.households.create.title')}
       onAction={onAction}

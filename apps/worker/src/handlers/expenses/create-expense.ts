@@ -60,12 +60,7 @@ export const createExpenseHandler = async (
   // Default currency and household handling
   let currencyCode = 'VND'
   let householdId: string | null = null
-  if (body.visibility === 'household') {
-    if (!body.householdId) {
-      throw invalidInput(locale, 'validation.invalidValue', {
-        path: ['householdId'],
-      })
-    }
+  if (body.householdId) {
     householdId = body.householdId
 
     // Validate membership and permissions
@@ -92,9 +87,8 @@ export const createExpenseHandler = async (
     currencyCode = 'VND'
   }
 
-  // Payer is always the creating user (no external attribution)
-  const createdByUserId = currentUser.id
-  const payerUserId = createdByUserId
+  // Spender is always the creating user (no external attribution)
+  const spentByUserId = currentUser.id
 
   // Convert amount to minor units and validate it doesn't round to zero
   const amountMinor = getMinorUnits(body.amount, currencyCode)
@@ -128,15 +122,13 @@ export const createExpenseHandler = async (
   const input: CreateExpenseInput = {
     id: newId(),
     householdId,
-    createdByUserId,
-    payerUserId,
+    spentByUserId,
     categoryKey: body.categoryKey,
     sourceKey: body.sourceKey,
     categoryId: null,
     amountMinor,
     currencyCode,
     occurredAt: body.occurredAt,
-    visibility: body.visibility,
     title: body.title,
     note: body.note ?? null,
   }
@@ -163,12 +155,10 @@ export const createExpenseHandler = async (
     categoryKey: created.categoryKey as ExpenseDTO['categoryKey'],
     sourceKey: created.sourceKey as ExpenseDTO['sourceKey'],
     occurredAt: created.occurredAt,
-    visibility: created.visibility,
     householdId: created.householdId,
-    payerUserId: created.payerUserId,
+    spentByUserId: created.spentByUserId,
     note: created.note,
     groupIds,
-    createdByUserId: created.createdByUserId,
     createdAt: created.createdAt,
     updatedAt: created.updatedAt,
   }

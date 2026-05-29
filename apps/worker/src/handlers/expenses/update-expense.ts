@@ -59,19 +59,16 @@ export const updateExpenseHandler = async (
 
   await authorizeExpenseMutation(db, existingExpense, currentUser.id, locale)
 
-  let nextHouseholdId: string | null = null
+  const hasHouseholdField = Object.prototype.hasOwnProperty.call(
+    body,
+    'householdId',
+  )
+  let nextHouseholdId = hasHouseholdField
+    ? (body.householdId ?? null)
+    : existingExpense.householdId
   let currencyCode = 'VND'
-  let payerUserId = body.payerUserId ?? existingExpense.payerUserId
 
-  if (body.visibility === 'household') {
-    if (!body.householdId) {
-      throw invalidInput(locale, 'validation.invalidValue', {
-        path: ['householdId'],
-      })
-    }
-
-    nextHouseholdId = body.householdId
-
+  if (nextHouseholdId) {
     const targetMembership = await findActiveHouseholdMembership(
       db,
       currentUser.id,
@@ -87,30 +84,9 @@ export const updateExpenseHandler = async (
       throw notFound(locale, 'errors.resourceNotFound')
     }
 
-    if (payerUserId !== currentUser.id) {
-      const payerMembership = await findActiveHouseholdMembership(
-        db,
-        payerUserId,
-        nextHouseholdId,
-      )
-
-      if (!payerMembership) {
-        throw invalidInput(locale, 'validation.invalidValue', {
-          path: ['payerUserId'],
-        })
-      }
-    }
-
     currencyCode = household.defaultCurrencyCode
   } else {
-    nextHouseholdId = null
     currencyCode = 'VND'
-    if (body.payerUserId && body.payerUserId !== currentUser.id) {
-      throw invalidInput(locale, 'validation.invalidValue', {
-        path: ['payerUserId'],
-      })
-    }
-    payerUserId = currentUser.id
   }
 
   const amountMinor =
@@ -126,13 +102,12 @@ export const updateExpenseHandler = async (
   const updateInput: UpdateExpenseInput = {
     expenseId: existingExpense.id,
     householdId: nextHouseholdId,
-    payerUserId,
+    spentByUserId: existingExpense.spentByUserId,
     categoryKey: body.categoryKey ?? existingExpense.categoryKey,
     sourceKey: body.sourceKey ?? existingExpense.sourceKey,
     amountMinor,
     currencyCode,
     occurredAt: body.occurredAt ?? existingExpense.occurredAt,
-    visibility: body.visibility ?? existingExpense.visibility,
     title: body.title ?? existingExpense.title,
     note: body.note !== undefined ? body.note : existingExpense.note,
   }
@@ -156,21 +131,20 @@ export const updateExpenseHandler = async (
       targetId: updatedExpense.id,
       payloadJson: JSON.stringify({
         changes,
-        visibilityBefore: existingExpense.visibility,
-        visibilityAfter: updatedExpense.visibility,
+        householdIdBefore: existingExpense.householdId,
+        householdIdAfter: updatedExpense.householdId,
       }),
     })
   } catch (error) {
     const rollback = await updateExpense(db, {
       expenseId: existingExpense.id,
       householdId: existingExpense.householdId,
-      payerUserId: existingExpense.payerUserId,
+      spentByUserId: existingExpense.spentByUserId,
       categoryKey: existingExpense.categoryKey,
       sourceKey: existingExpense.sourceKey,
       amountMinor: existingExpense.amountMinor,
       currencyCode: existingExpense.currencyCode,
       occurredAt: existingExpense.occurredAt,
-      visibility: existingExpense.visibility,
       title: existingExpense.title,
       note: existingExpense.note,
     })

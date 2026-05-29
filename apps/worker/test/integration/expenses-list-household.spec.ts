@@ -43,7 +43,6 @@ describe('GET /api/v1/expenses - household feed', () => {
         amount: 100000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'household',
         householdId,
         title: 'Shared dinner',
         occurredAt: Date.now(),
@@ -61,7 +60,6 @@ describe('GET /api/v1/expenses - household feed', () => {
         amount: 20000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Personal snack',
         occurredAt: Date.now(),
       }),
@@ -84,7 +82,6 @@ describe('GET /api/v1/expenses - household feed', () => {
           id: string
           title: string
           householdId: string | null
-          visibility: string
           currencyCode: string
         }>
         nextCursor: string | null
@@ -95,7 +92,6 @@ describe('GET /api/v1/expenses - household feed', () => {
     expect(payload.data.items).toHaveLength(1)
     expect(payload.data.items[0].title).toBe('Shared dinner')
     expect(payload.data.items[0].householdId).toBe(householdId)
-    expect(payload.data.items[0].visibility).toBe('household')
     expect(payload.data.items[0].currencyCode).toBe('VND')
   })
 
@@ -159,7 +155,6 @@ describe('GET /api/v1/expenses - household feed', () => {
           amount: 50000 + index,
           categoryKey: 'food',
           sourceKey: 'cash',
-          visibility: 'private',
           title,
           occurredAt: timestamps[index],
         }),
@@ -178,13 +173,12 @@ describe('GET /api/v1/expenses - household feed', () => {
 
     expect(firstPageResponse.status).toBe(200)
 
-    const firstPage =
-      await parseJson<
-        ApiEnvelope<{
-          items: Array<{ id: string; title: string; occurredAt: number }>
-          nextCursor: string | null
-        }>
-      >(firstPageResponse)
+    const firstPage = await parseJson<
+      ApiEnvelope<{
+        items: Array<{ id: string; title: string; occurredAt: number }>
+        nextCursor: string | null
+      }>
+    >(firstPageResponse)
 
     expect(firstPage.success).toBe(true)
     expect(firstPage.data.items).toHaveLength(2)
@@ -204,13 +198,12 @@ describe('GET /api/v1/expenses - household feed', () => {
 
     expect(secondPageResponse.status).toBe(200)
 
-    const secondPage =
-      await parseJson<
-        ApiEnvelope<{
-          items: Array<{ id: string; title: string; occurredAt: number }>
-          nextCursor: string | null
-        }>
-      >(secondPageResponse)
+    const secondPage = await parseJson<
+      ApiEnvelope<{
+        items: Array<{ id: string; title: string; occurredAt: number }>
+        nextCursor: string | null
+      }>
+    >(secondPageResponse)
 
     expect(secondPage.success).toBe(true)
     expect(secondPage.data.items).toHaveLength(1)
@@ -239,7 +232,6 @@ describe('GET /api/v1/expenses - household feed', () => {
           amount: amounts[index],
           categoryKey: 'food',
           sourceKey: 'cash',
-          visibility: 'private',
           title: titles[index],
           occurredAt: timestamps[index],
         }),
@@ -258,13 +250,12 @@ describe('GET /api/v1/expenses - household feed', () => {
 
     expect(firstPageResponse.status).toBe(200)
 
-    const firstPage =
-      await parseJson<
-        ApiEnvelope<{
-          items: Array<{ id: string; title: string; amountMinor: number }>
-          nextCursor: string | null
-        }>
-      >(firstPageResponse)
+    const firstPage = await parseJson<
+      ApiEnvelope<{
+        items: Array<{ id: string; title: string; amountMinor: number }>
+        nextCursor: string | null
+      }>
+    >(firstPageResponse)
 
     expect(firstPage.success).toBe(true)
     expect(firstPage.data.items.map((item) => item.amountMinor)).toEqual([
@@ -283,13 +274,12 @@ describe('GET /api/v1/expenses - household feed', () => {
 
     expect(secondPageResponse.status).toBe(200)
 
-    const secondPage =
-      await parseJson<
-        ApiEnvelope<{
-          items: Array<{ id: string; title: string; amountMinor: number }>
-          nextCursor: string | null
-        }>
-      >(secondPageResponse)
+    const secondPage = await parseJson<
+      ApiEnvelope<{
+        items: Array<{ id: string; title: string; amountMinor: number }>
+        nextCursor: string | null
+      }>
+    >(secondPageResponse)
 
     expect(secondPage.success).toBe(true)
     expect(secondPage.data.items).toHaveLength(1)

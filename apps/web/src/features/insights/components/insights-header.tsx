@@ -1,8 +1,7 @@
 'use client'
 
-import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
+import { Button } from '@/components/ui/button'
 import { AnalyticsExportAction } from '@/features/insights/components/analytics-export-action'
-import { t } from '@/lib/i18n/t'
 
 type InsightsHeaderProps = {
   isExportDisabled: boolean
@@ -23,24 +22,27 @@ function InsightsHeader({
   periodOptions,
 }: InsightsHeaderProps) {
   return (
-    <div className='flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between'>
-      <div className='flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-end'>
-        <label className='flex w-full flex-col gap-1.5 text-sm text-muted-foreground sm:min-w-56 sm:flex-1'>
-          <span>{t('insights.periodLabel')}</span>
-          <NativeSelect
-            aria-label={t('insights.periodLabel')}
-            className='w-full'
-            value={period}
-            onChange={(event) => onPeriodChange(event.target.value)}>
-            {periodOptions.map((option) => (
-              <NativeSelectOption key={option.value} value={option.value}>
-                {option.label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </label>
+    <div className='flex flex-col gap-3'>
+      <div className='-mx-1 flex flex-wrap items-center gap-2 overflow-x-auto px-1 pb-1'>
+        {periodOptions.map((option) => {
+          const isActive = option.value === period
+
+          return (
+            <Button
+              key={option.value}
+              className='shrink-0 rounded-full px-4'
+              size='sm'
+              type='button'
+              variant={isActive ? 'default' : 'outline'}
+              onClick={() => onPeriodChange(option.value)}>
+              {option.label}
+            </Button>
+          )
+        })}
+      </div>
+      <div className='flex justify-end'>
         <AnalyticsExportAction
-          className='h-11 min-w-11'
+          className='h-10 rounded-full px-4'
           disabled={isExportDisabled}
           params={params}
           variant='outline'

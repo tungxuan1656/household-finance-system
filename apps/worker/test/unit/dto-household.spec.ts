@@ -81,49 +81,17 @@ describe('household contract schema', () => {
     expect(parsed.success).toBe(false)
   })
 
-  it('accepts update payload with valid defaultVisibility "private"', () => {
-    const parsed = updateHouseholdRequestSchema().safeParse({
-      defaultVisibility: 'private',
-    })
-
-    expect(parsed.success).toBe(true)
-    if (parsed.success) {
-      expect(parsed.data.defaultVisibility).toBe('private')
-    }
-  })
-
-  it('accepts update payload with valid defaultVisibility "household"', () => {
-    const parsed = updateHouseholdRequestSchema().safeParse({
-      defaultVisibility: 'household',
-    })
-
-    expect(parsed.success).toBe(true)
-    if (parsed.success) {
-      expect(parsed.data.defaultVisibility).toBe('household')
-    }
-  })
-
-  it('rejects update payload with invalid defaultVisibility value', () => {
-    const parsed = updateHouseholdRequestSchema().safeParse({
-      defaultVisibility: 'public',
-    })
-
-    expect(parsed.success).toBe(false)
-  })
-
-  it('accepts update payload with all four settings fields at once', () => {
+  it('accepts update payload with all supported settings fields at once', () => {
     const parsed = updateHouseholdRequestSchema().safeParse({
       name: 'Family Hub v2',
       defaultCurrencyCode: 'usd',
       timezone: 'UTC',
-      defaultVisibility: 'household',
     })
 
     expect(parsed.success).toBe(true)
     if (parsed.success) {
       expect(parsed.data.defaultCurrencyCode).toBe('USD')
       expect(parsed.data.timezone).toBe('UTC')
-      expect(parsed.data.defaultVisibility).toBe('household')
     }
   })
 })

@@ -21,7 +21,6 @@ describe('PATCH /api/v1/expenses authorization', () => {
       amount: 50000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Private expense',
       occurredAt: Date.now(),
     })
@@ -40,7 +39,6 @@ describe('PATCH /api/v1/expenses authorization', () => {
           amount: 60000,
           categoryKey: 'food',
           sourceKey: 'cash',
-          visibility: 'private',
           title: 'Updated private expense',
           occurredAt: Date.now(),
         }),

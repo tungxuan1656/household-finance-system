@@ -46,8 +46,8 @@ export const restoreExpenseHandler = async (
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  if (expense.visibility === 'private') {
-    if (expense.createdByUserId !== currentUser.id) {
+  if (!expense.householdId) {
+    if (expense.spentByUserId !== currentUser.id) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
   } else {
@@ -68,7 +68,7 @@ export const restoreExpenseHandler = async (
       targetId: expense.id,
       payloadJson: JSON.stringify({
         restoredDeletedAt: expense.deletedAt,
-        visibility: expense.visibility,
+        householdId: expense.householdId,
       }),
     })
   } catch (error) {

@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   display_name TEXT,
   primary_email TEXT,
   avatar_url TEXT,
+  quick_add_last_source_key TEXT,
   created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000))
 );
@@ -42,12 +43,10 @@ CREATE TABLE IF NOT EXISTS households (
   description TEXT,
   default_currency_code TEXT NOT NULL,
   timezone TEXT NOT NULL,
-  default_visibility TEXT NOT NULL DEFAULT 'household',
   created_by_user_id TEXT NOT NULL,
   archived_at INTEGER,
   created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
-  CHECK (default_visibility IN ('private', 'household')),
   FOREIGN KEY(created_by_user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
@@ -71,6 +70,24 @@ CREATE TABLE IF NOT EXISTS household_memberships (
   FOREIGN KEY(invited_by_user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS household_invitations (
+  id TEXT PRIMARY KEY,
+  household_id TEXT NOT NULL,
+  token_hash TEXT NOT NULL UNIQUE,
+  invited_role TEXT NOT NULL,
+  expires_at INTEGER NOT NULL,
+  used_at INTEGER,
+  used_by_user_id TEXT,
+  created_by_user_id TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
+  updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
+  CHECK (invited_role IN ('admin', 'member')),
+  UNIQUE(household_id, id),
+  FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
+  FOREIGN KEY(created_by_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  FOREIGN KEY(used_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
 CREATE TABLE IF NOT EXISTS expense_categories (
   id TEXT PRIMARY KEY,
   household_id TEXT NOT NULL,
@@ -92,7 +109,7 @@ CREATE TABLE IF NOT EXISTS expense_categories (
 
 CREATE TABLE IF NOT EXISTS expense_groups (
   id TEXT PRIMARY KEY,
-  household_id TEXT NOT NULL,
+  household_id TEXT,
   name TEXT NOT NULL,
   description TEXT,
   status TEXT NOT NULL DEFAULT 'active',
@@ -105,7 +122,6 @@ CREATE TABLE IF NOT EXISTS expense_groups (
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   CHECK (status IN ('active', 'archived')),
   CHECK (event_budget_minor IS NULL OR event_budget_minor > 0),
-  UNIQUE(household_id, id),
   FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
   FOREIGN KEY(created_by_user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
@@ -113,44 +129,40 @@ CREATE TABLE IF NOT EXISTS expense_groups (
 CREATE TABLE IF NOT EXISTS expenses (
   id TEXT PRIMARY KEY,
   household_id TEXT,
-  created_by_user_id TEXT NOT NULL,
-  payer_user_id TEXT NOT NULL,
+  spent_by_user_id TEXT NOT NULL,
   category_id TEXT,
+  category_key TEXT,
   amount_minor INTEGER NOT NULL,
   currency_code TEXT NOT NULL,
   occurred_at INTEGER NOT NULL,
-  visibility TEXT NOT NULL,
   title TEXT NOT NULL,
   note TEXT,
+  source_key TEXT NOT NULL DEFAULT 'other',
   deleted_at INTEGER,
   created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   CHECK (amount_minor > 0),
-  CHECK (visibility IN ('private', 'household')),
-  CHECK (visibility != 'household' OR household_id IS NOT NULL),
   CHECK (
     (household_id IS NULL AND category_id IS NULL)
     OR household_id IS NOT NULL
   ),
   UNIQUE(household_id, id),
   FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
-  FOREIGN KEY(created_by_user_id) REFERENCES users(id) ON DELETE RESTRICT,
-  FOREIGN KEY(payer_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  FOREIGN KEY(spent_by_user_id) REFERENCES users(id) ON DELETE RESTRICT,
   FOREIGN KEY(household_id, category_id) REFERENCES expense_categories(household_id, id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS expense_group_items (
   id TEXT PRIMARY KEY,
-  household_id TEXT NOT NULL,
+  household_id TEXT,
   expense_id TEXT NOT NULL,
   group_id TEXT NOT NULL,
   assigned_by_user_id TEXT NOT NULL,
   created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   UNIQUE(household_id, id),
   UNIQUE(household_id, expense_id, group_id),
-  FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
-  FOREIGN KEY(household_id, expense_id) REFERENCES expenses(household_id, id) ON DELETE CASCADE,
-  FOREIGN KEY(household_id, group_id) REFERENCES expense_groups(household_id, id) ON DELETE CASCADE,
+  FOREIGN KEY(expense_id) REFERENCES expenses(id) ON DELETE CASCADE,
+  FOREIGN KEY(group_id) REFERENCES expense_groups(id) ON DELETE CASCADE,
   FOREIGN KEY(assigned_by_user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
@@ -170,10 +182,6 @@ CREATE TABLE IF NOT EXISTS budgets (
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   CHECK (scope IN ('household', 'category')),
   CHECK (total_limit_minor > 0),
-  CHECK (
-    (scope = 'household' AND category_id IS NULL)
-    OR (scope = 'category' AND category_id IS NOT NULL)
-  ),
   UNIQUE(household_id, id),
   FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
   FOREIGN KEY(household_id, category_id) REFERENCES expense_categories(household_id, id) ON DELETE CASCADE,
@@ -185,11 +193,11 @@ CREATE TABLE IF NOT EXISTS budget_limits (
   budget_id TEXT NOT NULL,
   household_id TEXT NOT NULL,
   category_id TEXT,
+  category_key TEXT,
   limit_minor INTEGER NOT NULL,
   created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   CHECK (limit_minor > 0),
-  UNIQUE(budget_id, category_id),
   UNIQUE(household_id, id),
   FOREIGN KEY(budget_id) REFERENCES budgets(id) ON DELETE CASCADE,
   FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
@@ -205,7 +213,8 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   target_id TEXT NOT NULL,
   payload_json TEXT NOT NULL,
   created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
-  FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE SET NULL,
+  UNIQUE(household_id, id),
+  FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
   FOREIGN KEY(actor_user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
@@ -227,6 +236,12 @@ CREATE INDEX IF NOT EXISTS idx_household_memberships_user_id
 CREATE INDEX IF NOT EXISTS idx_household_memberships_household_role_state
   ON household_memberships(household_id, role, state);
 
+CREATE INDEX IF NOT EXISTS idx_household_invitations_token_hash
+  ON household_invitations(token_hash);
+
+CREATE INDEX IF NOT EXISTS idx_household_invitations_household_id_expires_at
+  ON household_invitations(household_id, expires_at);
+
 CREATE UNIQUE INDEX IF NOT EXISTS idx_expense_categories_household_name_active
   ON expense_categories(household_id, name)
   WHERE archived_at IS NULL;
@@ -243,34 +258,43 @@ CREATE INDEX IF NOT EXISTS idx_expense_groups_household_status_created
 CREATE INDEX IF NOT EXISTS idx_expense_groups_created_by_user_id
   ON expense_groups(created_by_user_id);
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_expense_groups_household_name_active
+  ON expense_groups(household_id, name)
+  WHERE household_id IS NOT NULL AND archived_at IS NULL;
+
 CREATE INDEX IF NOT EXISTS idx_expenses_household_occurred_at
   ON expenses(household_id, occurred_at DESC);
-
-CREATE INDEX IF NOT EXISTS idx_expenses_household_visibility_occurred_at
-  ON expenses(household_id, visibility, occurred_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_expenses_household_category
   ON expenses(household_id, category_id);
 
-CREATE INDEX IF NOT EXISTS idx_expenses_created_by_user_id
-  ON expenses(created_by_user_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_expenses_spent_by_user_id
+  ON expenses(spent_by_user_id, occurred_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_expenses_payer_user_id
-  ON expenses(payer_user_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_expenses_deleted_at
+  ON expenses(deleted_at);
 
-CREATE INDEX IF NOT EXISTS idx_expense_group_items_group
-  ON expense_group_items(household_id, group_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_expenses_category_key
+  ON expenses(category_key);
 
-CREATE INDEX IF NOT EXISTS idx_expense_group_items_expense
-  ON expense_group_items(household_id, expense_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_expenses_source_key
+  ON expenses(source_key);
+
+CREATE INDEX IF NOT EXISTS idx_expense_group_items_group_id
+  ON expense_group_items(group_id);
+
+CREATE INDEX IF NOT EXISTS idx_expense_group_items_expense_id
+  ON expense_group_items(expense_id);
+
+CREATE INDEX IF NOT EXISTS idx_expense_group_items_household_id
+  ON expense_group_items(household_id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_expense_group_items_household_expense_group
+  ON expense_group_items(household_id, expense_id, group_id);
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_budgets_household_scope_month
   ON budgets(household_id, budget_month)
   WHERE scope = 'household' AND archived_at IS NULL;
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_budgets_category_scope_month
-  ON budgets(household_id, budget_month, category_id)
-  WHERE scope = 'category' AND archived_at IS NULL;
 
 CREATE INDEX IF NOT EXISTS idx_budgets_created_by_user_id
   ON budgets(created_by_user_id);
@@ -283,6 +307,13 @@ CREATE INDEX IF NOT EXISTS idx_budget_limits_budget_id
 
 CREATE INDEX IF NOT EXISTS idx_budget_limits_household_category
   ON budget_limits(household_id, category_id);
+
+CREATE INDEX IF NOT EXISTS idx_budget_limits_category_key
+  ON budget_limits(category_key);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_budget_limits_budget_category_key
+  ON budget_limits(budget_id, category_key)
+  WHERE category_key IS NOT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_audit_logs_household_created_at
   ON audit_logs(household_id, created_at DESC);

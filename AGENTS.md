@@ -23,7 +23,7 @@ Read least docs that fully cover task.
 | Task | Read |
 |------|------|
 | Any session | `AGENTS.md` |
-| Architecture/layer change | `ARCHITECTURE.md` |
+| Architecture/layer change | `docs/references/backend/architecture-and-boundaries.md` |
 | Frontend work | `docs/FRONTEND.md` → exact `docs/references/frontend/*` needed |
 | Backend work | `docs/BACKEND.md` → exact `docs/references/backend/*` needed |
 | Shared type/API naming | `docs/references/shared/type-naming-pattern.md` |
@@ -51,6 +51,15 @@ Do not read broad folders by default. Use indexes to choose exact leaf docs.
 - Before any done/ready claim, explicitly apply `verification-before-completion` discipline and report command/result/evidence, or say what was not verified and what risk remains.
 - Update harness feature state + `harness/progress.md` before end session.
 - Commit only when user explicitly asks.
+
+## Workflow Routing
+
+- Before `writing-plans`, use `grill-with-docs` when terminology, edge cases, or repo-truth behavior still need pressure.
+- After an approved plan exists, use `to-issues` when the next problem is vertical slice granularity rather than direction.
+- When new work arrives as an issue or report, use `triage` before planning or coding.
+- When UX flow or logic shape is still too uncertain, use `prototype` to answer the question with a disposable spike.
+- When stopping mid-stream, use `handoff` to update `harness/session-handoff.md`.
+- Run `improve-codebase-architecture` periodically on churn-heavy or high-friction hotspots instead of waiting for large refactors.
 
 ## Required Artifacts
 

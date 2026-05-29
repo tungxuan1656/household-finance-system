@@ -34,7 +34,6 @@ describe('household expense scenario', () => {
       amount: 123000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Scenario lunch',
       note: 'initial note',
@@ -50,12 +49,10 @@ describe('household expense scenario', () => {
         note: string | null
         categoryKey: string
         sourceKey: string
-        visibility: string
         householdId: string | null
       }>
     >(createResponse)
 
-    expect(created.data.visibility).toBe('household')
     expect(created.data.householdId).toBe(householdId)
     expect(created.data.title).toBe('Scenario lunch')
 
@@ -82,7 +79,6 @@ describe('household expense scenario', () => {
         amount: 156000,
         categoryKey: 'travel',
         sourceKey: 'bank-transfer',
-        visibility: 'household',
         householdId,
         title: 'Scenario lunch updated',
         note: 'updated note',

@@ -29,7 +29,6 @@ describe('PATCH /api/v1/expenses audit updates', () => {
       amount: 125000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Original lunch',
       occurredAt: Date.now() - 1_000,
@@ -45,7 +44,6 @@ describe('PATCH /api/v1/expenses audit updates', () => {
         amount: 155000,
         categoryKey: 'travel',
         sourceKey: 'bank-transfer',
-        visibility: 'household',
         householdId,
         title: 'Updated lunch',
         occurredAt: Date.now(),
@@ -54,25 +52,24 @@ describe('PATCH /api/v1/expenses audit updates', () => {
     })
     expect(updateResponse.status).toBe(200)
 
-    const updatePayload =
-      await parseJson<
-        ApiEnvelope<{
-          id: string
-          title: string
-          categoryKey: string
-          sourceKey: string
-          visibility: string
-          note: string | null
-          amountMinor: number
-          updatedAt: number
-          createdAt: number
-        }>
-      >(updateResponse)
+    const updatePayload = await parseJson<
+      ApiEnvelope<{
+        id: string
+        title: string
+        categoryKey: string
+        sourceKey: string
+        householdId: string | null
+        note: string | null
+        amountMinor: number
+        updatedAt: number
+        createdAt: number
+      }>
+    >(updateResponse)
     expect(updatePayload.data.id).toBe(created.data.id)
     expect(updatePayload.data.title).toBe('Updated lunch')
     expect(updatePayload.data.categoryKey).toBe('travel')
     expect(updatePayload.data.sourceKey).toBe('bank-transfer')
-    expect(updatePayload.data.visibility).toBe('household')
+    expect(updatePayload.data.householdId).toBe(householdId)
     expect(updatePayload.data.note).toBe('after update')
     expect(updatePayload.data.amountMinor).toBe(155000)
     expect(updatePayload.data.updatedAt).toBeGreaterThanOrEqual(
@@ -118,7 +115,7 @@ describe('PATCH /api/v1/expenses audit updates', () => {
     )
   })
 
-  it('audits a household expense visibility change to private', async () => {
+  it('audits a household expense change to personal context', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-expense-private-transition:private-transition@example.com',
     )
@@ -135,7 +132,6 @@ describe('PATCH /api/v1/expenses audit updates', () => {
       amount: 99000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Shared dinner',
       occurredAt: Date.now(),
@@ -150,7 +146,7 @@ describe('PATCH /api/v1/expenses audit updates', () => {
         amount: 99000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
+        householdId: null,
         title: 'Private dinner',
         occurredAt: Date.now(),
       },
@@ -169,11 +165,11 @@ describe('PATCH /api/v1/expenses audit updates', () => {
 
     expect(auditRow?.household_id).toBe(householdId)
     const auditPayload = JSON.parse(auditRow?.payload_json ?? '{}') as {
-      visibilityBefore?: string
-      visibilityAfter?: string
+      householdIdBefore?: string | null
+      householdIdAfter?: string | null
     }
-    expect(auditPayload.visibilityBefore).toBe('household')
-    expect(auditPayload.visibilityAfter).toBe('private')
+    expect(auditPayload.householdIdBefore).toBe(householdId)
+    expect(auditPayload.householdIdAfter).toBeNull()
   })
 
   it('audits a private expense update', async () => {
@@ -184,7 +180,6 @@ describe('PATCH /api/v1/expenses audit updates', () => {
       amount: 45000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Private audit update',
       occurredAt: Date.now(),
     })
@@ -201,7 +196,6 @@ describe('PATCH /api/v1/expenses audit updates', () => {
         amount: 55000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'Updated private audit',
         occurredAt: Date.now(),
         note: 'updated note',

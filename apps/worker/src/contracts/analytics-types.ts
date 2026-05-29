@@ -55,14 +55,6 @@ export interface AnalyticsCategoryDeltaDTO {
   deltaPercent: number | null
 }
 
-export interface AnalyticsPayerAttributionDTO {
-  payerDisplayName: string | null
-  payerUserId: string
-  totalSpendMinor: number
-  percentOfTotal: number
-  expenseCount: number
-}
-
 export interface AnalyticsComparisonDTO {
   householdId: string | null
   currencyCode: string
@@ -71,7 +63,6 @@ export interface AnalyticsComparisonDTO {
   totalDeltaSpendMinor: number
   totalDeltaPercent: number | null
   topCategoryDeltas: AnalyticsCategoryDeltaDTO[]
-  payerAttribution: AnalyticsPayerAttributionDTO[]
 }
 
 export interface AnalyticsGroupSpendDTO {

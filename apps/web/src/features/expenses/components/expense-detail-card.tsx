@@ -34,12 +34,6 @@ function DetailRow({
 
 export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
   const { data: referenceCategories } = useReferenceCategoriesQuery()
-  const visibilityBadgeVariant =
-    expense.visibility === 'private' ? 'outline' : 'secondary'
-  const visibilityBadgeLabel =
-    expense.visibility === 'private'
-      ? t('expense.visibilityBadge.private')
-      : t('expense.visibilityBadge.household')
   const category = getCategoryPresentation(
     expense.categoryKey,
     referenceCategories?.items,
@@ -48,10 +42,7 @@ export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
   return (
     <Card>
       <CardHeader>
-        <div className='flex items-start justify-between gap-3'>
-          <CardTitle>{expense.title}</CardTitle>
-          <Badge variant={visibilityBadgeVariant}>{visibilityBadgeLabel}</Badge>
-        </div>
+        <CardTitle>{expense.title}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className='flex flex-col gap-3'>

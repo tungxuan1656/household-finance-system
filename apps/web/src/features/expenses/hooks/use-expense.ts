@@ -12,7 +12,6 @@ import {
   deleteExpense as deleteExpenseApi,
   getExpenseDetail,
   getExpenseSummary,
-  listDeletedExpenses,
   listExpenses,
   replaceExpenseGroups,
   restoreExpense,
@@ -33,9 +32,6 @@ import type {
 
 export const EXPENSE_KEYS = {
   all: ['expenses'] as const,
-  deletedLists: () => [...EXPENSE_KEYS.all, 'deleted-list'] as const,
-  deletedList: (householdId: string) =>
-    [...EXPENSE_KEYS.deletedLists(), householdId] as const,
   lists: () => [...EXPENSE_KEYS.all, 'list'] as const,
   list: (filters?: ExpenseListParams) =>
     [...EXPENSE_KEYS.lists(), filters].filter(
@@ -116,14 +112,6 @@ export const useExpenseDetailQuery = (id: string | undefined) => {
     queryKey: EXPENSE_KEYS.detail(id!),
     queryFn: () => getExpenseDetail(id!),
     enabled: !!id,
-  })
-}
-
-export const useDeletedExpenseListQuery = (householdId: string | undefined) => {
-  return useQuery<ExpenseListResponse, Error>({
-    queryKey: EXPENSE_KEYS.deletedList(householdId ?? 'unknown'),
-    queryFn: () => listDeletedExpenses(householdId!),
-    enabled: !!householdId,
   })
 }
 

@@ -15,8 +15,10 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
-import { APP_MENU_ITEMS } from '@/lib/constants/navigation'
-import { PATHS } from '@/lib/constants/paths'
+import {
+  APP_MENU_ITEMS,
+  isProtectedNavItemActive,
+} from '@/lib/constants/navigation'
 import { t } from '@/lib/i18n/t'
 
 interface AppSidebarProps {
@@ -40,16 +42,13 @@ export function AppSidebar({ onSignOut }: AppSidebarProps) {
             aria-label={t('shell.protected.nav.ariaLabel')}
             className='flex flex-1 flex-col gap-2'>
             {APP_MENU_ITEMS.map((item) => {
-              const isActive =
-                item.to === PATHS.APP_ROOT
-                  ? pathname === item.to
-                  : pathname === item.to || pathname.startsWith(`${item.to}/`)
+              const isActive = isProtectedNavItemActive(pathname, item.to)
 
               return (
                 <Button
                   key={item.to}
                   asChild
-                  className='w-full justify-start gap-3'
+                  className='w-full justify-start gap-3 rounded-3xl'
                   variant={isActive ? 'default' : 'ghost'}>
                   <Link className='gap-2!' href={item.to}>
                     <item.icon data-icon='inline-start' />

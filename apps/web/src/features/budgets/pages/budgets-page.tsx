@@ -5,7 +5,11 @@ import { toast } from 'sonner'
 
 import { ApiClientError } from '@/api/client'
 import { DataState } from '@/components/shared/data-state'
-import { PageShell } from '@/components/ui/page-shell'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
 import {
   BudgetList,
   BudgetStatusPanel,
@@ -113,62 +117,65 @@ function BudgetsPage() {
   }
 
   return (
-    <PageShell title={t('budgets.title')}>
-      <div className='flex flex-col gap-4 md:gap-6'>
-        <div className='flex flex-wrap items-start justify-between gap-3'>
-          <p className='text-sm text-muted-foreground'>
-            {t('budgets.description')}
-          </p>
-          <div>
-            {selectedHouseholdId && (
-              <CreateBudgetDialog
-                householdId={selectedHouseholdId}
-                isSubmitting={createMutation.isPending}
-                open={isCreateDialogOpen}
-                onOpenChange={setIsCreateDialogOpen}
-                onSubmit={handleCreate}
-              />
-            )}
+    <PageContainer>
+      <PageHeader showBack title={t('budgets.title')} />
+      <PageContent>
+        <div className='flex flex-col gap-4 md:gap-6'>
+          <div className='flex flex-wrap items-start justify-between gap-3'>
+            <p className='text-sm text-muted-foreground'>
+              {t('budgets.description')}
+            </p>
+            <div>
+              {selectedHouseholdId && (
+                <CreateBudgetDialog
+                  householdId={selectedHouseholdId}
+                  isSubmitting={createMutation.isPending}
+                  open={isCreateDialogOpen}
+                  onOpenChange={setIsCreateDialogOpen}
+                  onSubmit={handleCreate}
+                />
+              )}
+            </div>
           </div>
+
+          <DataState
+            emptyDescription={t('budgets.empty.description')}
+            emptyTitle={t('budgets.empty.title')}
+            isEmpty={!selectedHouseholdId}>
+            {selectedHouseholdId ? (
+              <>
+                {latestBudget && <BudgetSummaryCard budget={latestBudget} />}
+
+                <BudgetStatusPanel
+                  errorMessage={
+                    statusError ? 'budgets.status.error.loadFailed' : null
+                  }
+                  isLoading={isStatusLoading}
+                  status={budgetStatus ?? null}
+                  onRetry={() => void refetchBudgetStatus()}
+                />
+
+                <BudgetList
+                  deletingBudgetId={deletingBudgetId}
+                  householdId={selectedHouseholdId}
+                  onDelete={handleDelete}
+                  onEdit={setEditingBudget}
+                />
+              </>
+            ) : null}
+          </DataState>
+
+          <EditBudgetDialog
+            budget={editingBudget}
+            isSubmitting={updateMutation.isPending}
+            onOpenChange={(open) => {
+              if (!open) setEditingBudget(null)
+            }}
+            onSubmit={handleUpdate}
+          />
         </div>
-
-        <DataState
-          emptyDescription={t('budgets.empty.description')}
-          emptyTitle={t('budgets.empty.title')}
-          isEmpty={!selectedHouseholdId}>
-          {selectedHouseholdId ? (
-            <>
-              {latestBudget && <BudgetSummaryCard budget={latestBudget} />}
-
-              <BudgetStatusPanel
-                errorMessage={
-                  statusError ? 'budgets.status.error.loadFailed' : null
-                }
-                isLoading={isStatusLoading}
-                status={budgetStatus ?? null}
-                onRetry={() => void refetchBudgetStatus()}
-              />
-
-              <BudgetList
-                deletingBudgetId={deletingBudgetId}
-                householdId={selectedHouseholdId}
-                onDelete={handleDelete}
-                onEdit={setEditingBudget}
-              />
-            </>
-          ) : null}
-        </DataState>
-
-        <EditBudgetDialog
-          budget={editingBudget}
-          isSubmitting={updateMutation.isPending}
-          onOpenChange={(open) => {
-            if (!open) setEditingBudget(null)
-          }}
-          onSubmit={handleUpdate}
-        />
-      </div>
-    </PageShell>
+      </PageContent>
+    </PageContainer>
   )
 }
 

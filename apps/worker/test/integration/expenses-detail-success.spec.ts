@@ -24,7 +24,6 @@ describe('GET /api/v1/expenses/:id - expense detail success', () => {
         amount: 75000,
         categoryKey: 'food',
         sourceKey: 'cash',
-        visibility: 'private',
         title: 'My private lunch',
         occurredAt: Date.now(),
       }),
@@ -54,11 +53,9 @@ describe('GET /api/v1/expenses/:id - expense detail success', () => {
         categoryKey: string
         sourceKey: string
         occurredAt: number
-        visibility: string
         householdId: string | null
-        payerUserId: string
+        spentByUserId: string
         note: string | null
-        createdByUserId: string
         createdAt: number
         updatedAt: number
       }>
@@ -71,11 +68,9 @@ describe('GET /api/v1/expenses/:id - expense detail success', () => {
     expect(payload.data.currencyCode).toBe('VND')
     expect(payload.data.categoryKey).toBe('food')
     expect(payload.data.sourceKey).toBe('cash')
-    expect(payload.data.visibility).toBe('private')
     expect(payload.data.householdId).toBeNull()
-    expect(payload.data.payerUserId).toBe(auth.user.id)
+    expect(payload.data.spentByUserId).toBe(auth.user.id)
     expect(payload.data.note).toBeNull()
-    expect(payload.data.createdByUserId).toBe(auth.user.id)
     expect(typeof payload.data.occurredAt).toBe('number')
     expect(typeof payload.data.createdAt).toBe('number')
     expect(typeof payload.data.updatedAt).toBe('number')
@@ -137,7 +132,6 @@ describe('GET /api/v1/expenses/:id - expense detail success', () => {
         amount: 1.234,
         categoryKey: 'food',
         sourceKey: 'bank-transfer',
-        visibility: 'household',
         householdId,
         title: 'Household grocery run',
         occurredAt: Date.now(),
@@ -164,7 +158,6 @@ describe('GET /api/v1/expenses/:id - expense detail success', () => {
         title: string
         amountMinor: number
         currencyCode: string
-        visibility: string
         householdId: string
       }>
     >(response)
@@ -174,7 +167,6 @@ describe('GET /api/v1/expenses/:id - expense detail success', () => {
     expect(payload.data.title).toBe('Household grocery run')
     expect(payload.data.amountMinor).toBe(1234)
     expect(payload.data.currencyCode).toBe('BHD')
-    expect(payload.data.visibility).toBe('household')
     expect(payload.data.householdId).toBe(householdId)
   })
 })

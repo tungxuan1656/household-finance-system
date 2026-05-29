@@ -115,10 +115,23 @@ export const createExpense = async (
   accessToken: string,
   body: Record<string, unknown>,
 ) => {
+  const payload = { ...body }
+
+  if (payload.visibility === 'private') {
+    delete payload.visibility
+  }
+
+  if (
+    payload.visibility === 'household' &&
+    typeof payload.householdId === 'string'
+  ) {
+    delete payload.visibility
+  }
+
   const response = await authorizedJsonRequest(accessToken, {
     method: 'POST',
     path: '/api/v1/expenses',
-    body,
+    body: payload,
   })
 
   return response

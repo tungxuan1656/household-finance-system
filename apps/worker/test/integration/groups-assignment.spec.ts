@@ -50,13 +50,26 @@ const createExpense = async (
   accessToken: string,
   body: Record<string, unknown>,
 ) => {
+  const payload = { ...body }
+
+  if (payload.visibility === 'private') {
+    delete payload.visibility
+  }
+
+  if (
+    payload.visibility === 'household' &&
+    typeof payload.householdId === 'string'
+  ) {
+    delete payload.visibility
+  }
+
   const response = await SELF.fetch('https://example.com/api/v1/expenses', {
     method: 'POST',
     headers: {
       authorization: `Bearer ${accessToken}`,
       'content-type': 'application/json',
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload),
   })
 
   expect(response.status).toBe(201)
@@ -88,7 +101,6 @@ describe('Worker integration: expense-to-group assignment', () => {
       categoryKey: 'food',
       sourceKey: 'cash',
       occurredAt: Date.now(),
-      visibility: 'household',
     })
     const expenseId = expenseResponse.data.id
 
@@ -152,7 +164,6 @@ describe('Worker integration: expense-to-group assignment', () => {
       categoryKey: 'food',
       sourceKey: 'cash',
       occurredAt: Date.now(),
-      visibility: 'household',
     })
     const expenseId = expenseResponse.data.id
 
@@ -189,7 +200,6 @@ describe('Worker integration: expense-to-group assignment', () => {
       categoryKey: 'food',
       sourceKey: 'cash',
       occurredAt: Date.now(),
-      visibility: 'private',
       groupIds: [groupId],
     })
 
@@ -218,7 +228,6 @@ describe('Worker integration: expense-to-group assignment', () => {
       categoryKey: 'food',
       sourceKey: 'cash',
       occurredAt: Date.now(),
-      visibility: 'household',
     })
     const expenseResponse = await createExpense(auth1.accessToken, {
       householdId: household1,
@@ -227,7 +236,6 @@ describe('Worker integration: expense-to-group assignment', () => {
       categoryKey: 'food',
       sourceKey: 'cash',
       occurredAt: Date.now(),
-      visibility: 'household',
     })
     const expenseId = expenseResponse.data.id
 
@@ -261,7 +269,6 @@ describe('Worker integration: expense-to-group assignment', () => {
       categoryKey: 'food',
       sourceKey: 'cash',
       occurredAt: Date.now(),
-      visibility: 'private',
       groupIds: [groupResponse.data.id],
     })
 
@@ -292,7 +299,6 @@ describe('Worker integration: expense-to-group assignment', () => {
       categoryKey: 'travel',
       sourceKey: 'card',
       occurredAt: Date.now(),
-      visibility: 'household',
       groupIds: [groupId],
     })
 

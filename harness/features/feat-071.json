@@ -1,0 +1,47 @@
+{
+  "id": "feat-071",
+  "name": "Product V2 full project reset",
+  "status": "in_progress",
+  "description": "Reset the current project to match Product Direction V2 across product specs, database schema, worker contracts, web UI, tests, current docs, and harness state. The reset removes the old payer/creator expense split, private/public visibility mode, household-first positioning, household-dependent groups, and lens terminology from current product behavior.",
+  "dependencies": ["feat-070"],
+  "plan": "docs/exec-plans/plans/2026-05-27-product-v2-full-project-reset.md",
+  "evidence": {
+    "planned": [
+      "Used using-skills first and classified the request as Level 3 because it spans product behavior, database schema, API contracts, frontend UX, tests, docs, and harness cleanup.",
+      "Used writing-plans and read docs/PLANS.md, docs/exec-plans/__plan-template__.md, docs/exec-plans/index.md, ARCHITECTURE.md, and relevant backend/frontend/shared reference docs.",
+      "Scanned the project for stale V1 model terms and found broad references across worker, web, product specs, and harness records.",
+      "Created an ExecPlan for the full reset and registered it as the active plan.",
+      "Completed Phase 0 by running GitNexus impact checks for the first shared symbols called out in the plan.",
+      "Completed Phase 1 by rewriting current product specs and replacing the V1-heavy ownership/visibility specs.",
+      "Completed one Phase 3 milestone by removing household defaultVisibility from worker/web contracts, handlers, tests, i18n, and the base migration.",
+      "Completed one Phase 3 milestone by migrating the public expense contract to V2 across worker/web CRUD and query entry points while keeping temporary repository bridges to existing storage fields.",
+      "Completed one Phase 3 milestone by migrating the worker expense integration and scenario suites to V2 semantics and recovering a green full worker test suite.",
+      "Completed Phase 2 by rewriting 0001_init.sql to canonical V2 schema (removed visibility, payer_user_id, created_by_user_id from expenses; renamed to spent_by_user_id; added category_key/source_key on users; made household_id nullable on expense_groups and expense_group_items; added household_invitations table) and deleting migrations 0002-0008.",
+      "Completed remaining Phase 3 by removing temporary repository bridges across all worker repositories and handlers: expense-row-mapper, expense-repository, expense-query-repository, expense-query-scope, expense-summary-repository, expense-analytics-repository, expense-analytics-export, expense-group-expense-list-repository, expense-group-summary-repository, expense-group-assignment-repository, budget-spend-summary-repository, create-expense, update-expense, shared, expense-authorization, get-expense, restore-expense, list-expenses, replace-expense-groups. Also cleaned analytics-types contract and removed unused expenseVisibilitySchema export.",
+      "Completed Phase 4 by refactoring web code: renamed Lens→View in overview-tabs/overview-page/overview-card-composition.test.ts, removed AnalyticsPayerAttributionDTO and payerAttribution from web analytics types and insights-comparison-section.tsx, and removed all visibility/payer/lens V1 i18n keys from vi.json.",
+      "Completed Phase 5/6 by updating harness records (feat-071 marked done, feature_index updated, progress.md logged) and running full verification."
+    ],
+    "verification": [
+      "Plan artifact verification: python3 -m json.tool validated harness/feature_index.json and harness/features/feat-071.json.",
+      "Plan placeholder scan found no unfinished placeholder markers in the new plan and touched harness/index files.",
+      "Pre-edit impact checks: createExpenseHandler LOW, buildVisibleExpenseConditions LOW, ExpenseDTO MEDIUM with broad contract/import reach, buildExpenseEntryPayload LOW, OverviewPage LOW.",
+      "Phase 1 stale-term scan for docs/product-specs returned no matches for payer|creator|visibility|private|public|lens|defaultVisibility after rewrites.",
+      "Final ./init.sh returned Done! after the Phase 1 docs and harness updates.",
+      "Final gitnexus_detect_changes(scope: all) returned LOW risk with 100 changed indexed sections across 19 indexed files and 0 affected processes.",
+      "Focused household slice verification passed: ./init.sh typecheck returned OK; pnpm --filter worker exec vitest run test/unit/dto-household.spec.ts test/integration/households-read-update.spec.ts passed with 16 tests; pnpm --filter web exec vitest run src/stores/household.store.test.ts passed with 8 tests.",
+      "Post-change stale-term scan for defaultVisibility/default_visibility returned no matches across worker/web household files and 0001_init.sql.",
+      "Post-change gitnexus_detect_changes(scope: all) returned MEDIUM risk with 6 changed indexed symbols across 16 files and 3 affected household-related processes.",
+      "Expense contract milestone verification passed: ./init.sh typecheck returned OK; pnpm --filter worker exec vitest run test/unit/dto-expense.spec.ts test/unit/dto-expense-list.spec.ts passed with 41 tests; pnpm --filter web exec vitest run src/features/expenses/components/use-expense-entry-form.test.ts passed with 8 tests; pnpm --filter worker exec vitest run test/integration/expenses.spec.ts test/integration/expenses-detail-success.spec.ts test/integration/expenses-summary.spec.ts passed with 15 tests.",
+      "Worker integration migration verification passed: pnpm --filter worker exec vitest run test/integration/expenses-list-personal-feed.spec.ts test/integration/expenses-list-personal-visibility.spec.ts test/integration/expenses-list-household.spec.ts test/integration/expenses-list-household-member.spec.ts passed with 13 tests; pnpm --filter worker exec vitest run test/integration/expenses-update-authorization.spec.ts test/integration/expenses-update-validation.spec.ts test/integration/expenses-update-audit.spec.ts passed with 6 tests; pnpm --filter worker exec vitest run test/integration/expenses-delete.spec.ts test/integration/expenses-restore.spec.ts test/integration/groups-assignment.spec.ts test/integration/scenario-group-expense.spec.ts test/integration/scenario-household-expense.spec.ts test/integration/groups-read.spec.ts passed with 22 tests; pnpm --filter worker exec vitest run test/unit/expense-query-helpers.spec.ts test/integration/expenses-detail-access.spec.ts passed with 9 tests.",
+      "Full worker verification passed: pnpm --filter worker test completed with 76 files and 366 tests passing.",
+      "Full repo verification passed: ./init.sh returned Done! after the expense contract and worker test migrations.",
+      "Latest gitnexus_detect_changes(scope: all) returned LOW risk with 8 changed indexed symbols across 10 files and 0 affected processes.",
+      "Schema reset verification: 0001_init.sql rewritten to canonical V2 (removed visibility, payer_user_id, created_by_user_id from expenses; added spent_by_user_id, category_key/source_key on users; household_id nullable on expense_groups/expense_group_items; household_invitations table added); migrations 0002-0008 deleted.",
+      "Worker bridge removal verification: stale-term scan for payer_user_id|payerUserId|payerAttribution|visibility returned no matches across apps/worker/src.",
+      "Web cleanup verification: stale-term scan for payerAttribution|payerUserId|AnalyticsPayerAttributionDTO|visibility|lens|Lens returned no matches across apps/web/src.",
+      "Test suite verification: pnpm --filter worker test passed with 76 files and 366 tests; pnpm --filter web test passed with 26 files and 85 tests.",
+      "Final full repo verification: ./init.sh returned Done!; gitnexus_detect_changes(scope: all) returned HIGH risk with 86 changed symbols across 36 files and 10 affected processes (expected for broad schema reset)."
+    ]
+  },
+  "notes": "All phases complete. The project has been fully reset to Product Direction V2: Phase 0 (impact checks), Phase 1 (spec rewrite), Phase 2 (migration reset), Phase 3 (worker contract/repository/handler/test cleanup), Phase 4 (web UI/type/copy/test cleanup), Phase 5 (docs/harness cleanup), and Phase 6 (final verification) are all done."
+}

@@ -1,12 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import { DataState } from '@/components/shared/data-state'
-import { PageShell } from '@/components/ui/page-shell'
 import {
-  ArchiveGroupDialog,
+  ConfirmDialog,
+  type ConfirmDialogHandle,
+} from '@/components/shared/confirm-dialog'
+import { DataState } from '@/components/shared/data-state'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
+import {
   CreateGroupDialog,
   EditGroupDialog,
 } from '@/features/groups/components/group-dialogs'
@@ -31,9 +38,8 @@ function GroupsPage() {
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [editingGroup, setEditingGroup] = useState<ExpenseGroupDTO | null>(null)
-  const [archivingGroup, setArchivingGroup] = useState<ExpenseGroupDTO | null>(
-    null,
-  )
+  const archiveDialogRef = useRef<ConfirmDialogHandle>(null)
+  const archivingGroupRef = useRef<ExpenseGroupDTO | null>(null)
 
   const createMutation = useCreateExpenseGroupMutation()
   const updateMutation = useUpdateExpenseGroupMutation()
@@ -66,69 +72,79 @@ function GroupsPage() {
     }
   }
 
-  const handleArchive = async () => {
-    if (!archivingGroup) return
+  const handleArchive = async (group?: ExpenseGroupDTO) => {
+    if (!group) return
     try {
-      await archiveMutation.mutateAsync(archivingGroup.id)
+      await archiveMutation.mutateAsync(group.id)
       toast.success(t('groups.feedback.archiveSuccess'))
-      setArchivingGroup(null)
     } catch {
       toast.error(t('groups.feedback.archiveFailed'))
     }
   }
 
   return (
-    <PageShell title={t('groups.title')}>
-      <div className='flex flex-col gap-6'>
-        <div className='flex flex-wrap items-start justify-between gap-3'>
-          <p className='text-sm text-muted-foreground'>
-            {t('groups.description')}
-          </p>
-          <div>
-            {selectedHouseholdId && (
-              <CreateGroupDialog
-                householdId={selectedHouseholdId}
-                isSubmitting={createMutation.isPending}
-                open={isCreateDialogOpen}
-                onOpenChange={setIsCreateDialogOpen}
-                onSubmit={handleCreate}
-              />
-            )}
+    <PageContainer>
+      <PageHeader showBack title={t('groups.title')} />
+      <PageContent>
+        <div className='flex flex-col gap-6'>
+          <div className='flex flex-wrap items-start justify-between gap-3'>
+            <p className='text-sm text-muted-foreground'>
+              {t('groups.description')}
+            </p>
+            <div>
+              {selectedHouseholdId && (
+                <CreateGroupDialog
+                  householdId={selectedHouseholdId}
+                  isSubmitting={createMutation.isPending}
+                  open={isCreateDialogOpen}
+                  onOpenChange={setIsCreateDialogOpen}
+                  onSubmit={handleCreate}
+                />
+              )}
+            </div>
           </div>
+
+          <DataState
+            emptyDescription={t('groups.empty.description')}
+            emptyTitle={t('groups.empty.title')}
+            isEmpty={!selectedHouseholdId}>
+            {selectedHouseholdId ? (
+              <GroupList
+                householdId={selectedHouseholdId}
+                onArchive={(group) => {
+                  archivingGroupRef.current = group
+                  archiveDialogRef.current?.open(group)
+                }}
+                onEdit={setEditingGroup}
+              />
+            ) : null}
+          </DataState>
+
+          <EditGroupDialog
+            group={editingGroup}
+            isSubmitting={updateMutation.isPending}
+            onOpenChange={(open) => {
+              if (!open) setEditingGroup(null)
+            }}
+            onSubmit={handleUpdate}
+          />
+
+          <ConfirmDialog
+            ref={archiveDialogRef}
+            confirmLabel={
+              archiveMutation.isPending
+                ? t('groups.actions.archiving')
+                : t('groups.actions.archive')
+            }
+            confirmLoading={archiveMutation.isPending}
+            description={t('groups.archive.description')}
+            title={t('groups.archive.title')}
+            variant='destructive'
+            onConfirm={(data) => void handleArchive(data as ExpenseGroupDTO)}
+          />
         </div>
-
-        <DataState
-          emptyDescription={t('groups.empty.description')}
-          emptyTitle={t('groups.empty.title')}
-          isEmpty={!selectedHouseholdId}>
-          {selectedHouseholdId ? (
-            <GroupList
-              householdId={selectedHouseholdId}
-              onArchive={setArchivingGroup}
-              onEdit={setEditingGroup}
-            />
-          ) : null}
-        </DataState>
-
-        <EditGroupDialog
-          group={editingGroup}
-          isSubmitting={updateMutation.isPending}
-          onOpenChange={(open) => {
-            if (!open) setEditingGroup(null)
-          }}
-          onSubmit={handleUpdate}
-        />
-
-        <ArchiveGroupDialog
-          group={archivingGroup}
-          isSubmitting={archiveMutation.isPending}
-          onConfirm={() => void handleArchive()}
-          onOpenChange={(open) => {
-            if (!open) setArchivingGroup(null)
-          }}
-        />
-      </div>
-    </PageShell>
+      </PageContent>
+    </PageContainer>
   )
 }
 

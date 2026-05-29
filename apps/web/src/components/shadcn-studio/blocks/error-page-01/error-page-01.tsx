@@ -23,7 +23,9 @@ const ErrorPage01 = () => {
         <Image
           alt='404 illustration'
           className='absolute top-1/2 left-1/2 h-[clamp(260px,25vw,406px)] -translate-x-1/2 -translate-y-1/2'
+          height={406}
           src='https://cdn.shadcnstudio.com/ss-assets/blocks/marketing/error/image-1.png'
+          width={406}
         />
       </div>
     </div>

@@ -132,7 +132,6 @@ export const buildExpenseEntryPayload = (
     sourceKey: formState.sourceKey,
     title: formState.title.trim(),
     occurredAt,
-    visibility: formState.householdId ? 'household' : 'private',
     ...(formState.householdId ? { householdId: formState.householdId } : {}),
     ...(formState.groupId ? { groupIds: [formState.groupId] } : {}),
   }
@@ -144,7 +143,17 @@ export const buildExpenseEntryUpdatePayload = (
 ): UpdateExpenseMutationInput | null => {
   const payload = buildExpenseEntryPayload(formState)
 
-  return payload ? { id: expenseId, payload } : null
+  if (!payload) {
+    return null
+  }
+
+  return {
+    id: expenseId,
+    payload: {
+      ...payload,
+      householdId: formState.householdId || null,
+    },
+  }
 }
 
 export const getExpenseEntryTitlePlaceholder = (

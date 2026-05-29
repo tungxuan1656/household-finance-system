@@ -87,7 +87,6 @@ describe('GET /api/v1/analytics/export', () => {
       amount: 12000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: 'Breakfast',
       occurredAt: Date.UTC(2026, 4, 2, 8),
@@ -97,7 +96,6 @@ describe('GET /api/v1/analytics/export', () => {
       amount: 7000,
       categoryKey: 'shopping',
       sourceKey: 'cash',
-      visibility: 'private',
       title: 'Private purchase',
       occurredAt: Date.UTC(2026, 4, 10, 11),
     })
@@ -121,7 +119,7 @@ describe('GET /api/v1/analytics/export', () => {
     const lines = csv.split('\n')
 
     expect(lines[0]).toBe(
-      'section,period,household_id,currency_code,metric_key,label,total_spend_minor,expense_count,previous_period,previous_total_spend_minor,delta_spend_minor,delta_percent,date,category_key,payer_user_id,group_id,group_name,visibility,title,amount_minor,occurred_at',
+      'section,period,household_id,currency_code,metric_key,label,total_spend_minor,expense_count,previous_period,previous_total_spend_minor,delta_spend_minor,delta_percent,date,category_key,group_id,group_name,title,amount_minor,occurred_at',
     )
     expect(
       lines.some((line) =>
@@ -165,7 +163,7 @@ describe('GET /api/v1/analytics/export', () => {
     const csv = await response.text()
     const lines = csv.split('\n')
     expect(lines[0]).toBe(
-      'section,period,household_id,currency_code,metric_key,label,total_spend_minor,expense_count,previous_period,previous_total_spend_minor,delta_spend_minor,delta_percent,date,category_key,payer_user_id,group_id,group_name,visibility,title,amount_minor,occurred_at',
+      'section,period,household_id,currency_code,metric_key,label,total_spend_minor,expense_count,previous_period,previous_total_spend_minor,delta_spend_minor,delta_percent,date,category_key,group_id,group_name,title,amount_minor,occurred_at',
     )
     expect(
       lines.some((line) =>
@@ -193,7 +191,6 @@ describe('GET /api/v1/analytics/export', () => {
       amount: 15000,
       categoryKey: 'food',
       sourceKey: 'cash',
-      visibility: 'household',
       householdId,
       title: '=HYPERLINK("https://attacker.test","click")',
       occurredAt: Date.UTC(2026, 4, 7, 9),

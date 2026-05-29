@@ -1,5 +1,7 @@
-import { OverviewPage } from '@/features/overview/pages/overview-page'
+import { redirect } from 'next/navigation'
+
+import { PATHS } from '@/lib/constants/paths'
 
 export default function HomeRoutePage() {
-  return <OverviewPage />
+  redirect(PATHS.APP_ROOT)
 }

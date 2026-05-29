@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { DataState } from '@/components/shared/data-state'
-import { PageShell } from '@/components/ui/page-shell'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
 import type { CreateHouseholdFormValues } from '@/features/households/lib/forms/household.schema'
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
@@ -65,30 +69,32 @@ function HouseholdsPage() {
   }
 
   return (
-    <PageShell title={t('app.households.title')}>
-      <DataState
-        errorDescription={listLoadError ?? undefined}
-        isError={Boolean(shouldShowBlockingError)}
-        isLoading={shouldShowLoadingState}
-        retryAction={async () => {
-          setIsInitialLoading(true)
+    <PageContainer>
+      <PageHeader title={t('app.households.title')} />
+      <PageContent>
+        <DataState
+          errorDescription={listLoadError ?? undefined}
+          isError={Boolean(shouldShowBlockingError)}
+          isLoading={shouldShowLoadingState}
+          retryAction={async () => {
+            setIsInitialLoading(true)
 
-          try {
-            await loadHouseholds()
-          } finally {
-            setIsInitialLoading(false)
-          }
-        }}
-        title={t('app.households.title')}>
-        <HouseholdsListSection
-          households={households}
-          isCreateDialogOpen={isCreateDialogOpen}
-          isCreating={isCreating}
-          onCreateDialogOpenChange={setIsCreateDialogOpen}
-          onCreateSubmit={onSubmit}
-        />
-      </DataState>
-    </PageShell>
+            try {
+              await loadHouseholds()
+            } finally {
+              setIsInitialLoading(false)
+            }
+          }}>
+          <HouseholdsListSection
+            households={households}
+            isCreateDialogOpen={isCreateDialogOpen}
+            isCreating={isCreating}
+            onCreateDialogOpenChange={setIsCreateDialogOpen}
+            onCreateSubmit={onSubmit}
+          />
+        </DataState>
+      </PageContent>
+    </PageContainer>
   )
 }
 

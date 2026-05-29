@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
-import { PageShell } from '@/components/ui/page-shell'
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from '@/components/shared/page'
 import {
   useAnalyticsComparisonQuery,
   useAnalyticsGroupsQuery,
@@ -99,48 +103,48 @@ function InsightsPage({ initialPeriod }: InsightsPageProps) {
     data.expenseCount === 0
 
   return (
-    <PageShell title={t('insights.title')}>
-      <div className='flex flex-col gap-4 md:gap-6'>
-        <p className='text-sm text-muted-foreground'>
-          {t('insights.description')}
-        </p>
+    <PageContainer>
+      <PageHeader title={t('shell.protected.nav.insights')} />
+      <PageContent>
+        <div className='flex flex-col gap-4 md:gap-6'>
+          <InsightsHeader
+            isExportDisabled={isExportDisabled}
+            params={analyticsParams}
+            period={period}
+            periodOptions={periodOptions}
+            onPeriodChange={setPeriod}
+          />
 
-        <InsightsHeader
-          isExportDisabled={isExportDisabled}
-          params={analyticsParams}
-          period={period}
-          periodOptions={periodOptions}
-          onPeriodChange={setPeriod}
-        />
+          <InsightsOverviewPanel
+            categoryMap={categoryMap}
+            data={data}
+            error={error}
+            isLoading={isLoading}
+            onRetry={() => void refetchOverview()}
+          />
 
-        <InsightsOverviewPanel
-          data={data}
-          error={error}
-          isLoading={isLoading}
-          onRetry={() => void refetchOverview()}
-        />
+          {!isLoading && !error && data && data.expenseCount > 0 ? (
+            <>
+              <InsightsChartsSection categoryMap={categoryMap} data={data} />
 
-        {!isLoading && !error && data && data.expenseCount > 0 ? (
-          <>
-            <InsightsComparisonPanel
-              data={comparisonData}
-              error={comparisonError}
-              isLoading={isComparisonLoading}
-              onRetry={() => void refetchComparison()}
-            />
+              <InsightsComparisonPanel
+                data={comparisonData}
+                error={comparisonError}
+                isLoading={isComparisonLoading}
+                onRetry={() => void refetchComparison()}
+              />
 
-            <InsightsChartsSection categoryMap={categoryMap} data={data} />
-
-            <InsightsGroupsPanel
-              data={groupsData}
-              error={groupsError}
-              isLoading={isGroupsLoading}
-              onRetry={() => void refetchGroups()}
-            />
-          </>
-        ) : null}
-      </div>
-    </PageShell>
+              <InsightsGroupsPanel
+                data={groupsData}
+                error={groupsError}
+                isLoading={isGroupsLoading}
+                onRetry={() => void refetchGroups()}
+              />
+            </>
+          ) : null}
+        </div>
+      </PageContent>
+    </PageContainer>
   )
 }
 

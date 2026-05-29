@@ -27,7 +27,6 @@ export interface UpdateHouseholdInput {
   name?: string
   defaultCurrencyCode?: string
   timezone?: string
-  defaultVisibility?: 'private' | 'household'
 }
 
 const isSlugConflictError = (error: unknown): boolean => {
@@ -49,7 +48,6 @@ export const listUserHouseholds = async (
               h.slug,
               h.default_currency_code,
               h.timezone,
-              h.default_visibility,
               hm.role,
               h.created_at
          FROM households h
@@ -66,7 +64,6 @@ export const listUserHouseholds = async (
       slug: string
       default_currency_code: string
       timezone: string
-      default_visibility: 'private' | 'household'
       role: 'admin' | 'member'
       created_at: number
     }>()
@@ -86,7 +83,6 @@ export const findUserHouseholdById = async (
               h.slug,
               h.default_currency_code,
               h.timezone,
-              h.default_visibility,
               hm.role,
               h.created_at
          FROM households h
@@ -104,7 +100,6 @@ export const findUserHouseholdById = async (
       slug: string
       default_currency_code: string
       timezone: string
-      default_visibility: 'private' | 'household'
       role: 'admin' | 'member'
       created_at: number
     }>()
@@ -140,12 +135,11 @@ export const createHouseholdForUser = async (
               slug,
               default_currency_code,
               timezone,
-              default_visibility,
               created_by_user_id,
               created_at,
               updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             householdId,
@@ -153,7 +147,6 @@ export const createHouseholdForUser = async (
             slug,
             input.defaultCurrencyCode ?? 'VND',
             'Asia/Ho_Chi_Minh',
-            'household',
             userId,
             nowEpoch,
             nowEpoch,
@@ -218,7 +211,6 @@ export const findHouseholdById = async (
               h.slug,
               h.default_currency_code,
               h.timezone,
-              h.default_visibility,
               h.created_at
          FROM households h
         WHERE h.id = ?
@@ -232,7 +224,6 @@ export const findHouseholdById = async (
       slug: string
       default_currency_code: string
       timezone: string
-      default_visibility: 'private' | 'household'
       created_at: number
     }>()
 
@@ -264,12 +255,8 @@ export const updateHouseholdById = async (
              WHEN ?5 THEN ?6
              ELSE timezone
            END,
-           default_visibility = CASE
-             WHEN ?7 THEN ?8
-             ELSE default_visibility
-           END,
-           updated_at = ?9
-       WHERE id = ?10
+           updated_at = ?7
+       WHERE id = ?8
          AND archived_at IS NULL`,
     )
     .bind(
@@ -279,8 +266,6 @@ export const updateHouseholdById = async (
       input.defaultCurrencyCode ?? null,
       input.timezone !== undefined ? 1 : 0,
       input.timezone ?? null,
-      input.defaultVisibility !== undefined ? 1 : 0,
-      input.defaultVisibility ?? null,
       nowEpoch,
       householdId,
     )
