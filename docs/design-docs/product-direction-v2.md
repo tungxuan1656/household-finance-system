@@ -136,8 +136,8 @@ Specs, copy, and UI should now assume:
 
 Likely docs/specs to review after this direction change:
 
-- `docs/product-specs/expense-ownership.md`
-- `docs/product-specs/data-visibility.md`
+- `docs/product-specs/expense-spender-model.md` (thay thế `expense-ownership.md` — spender là canonical owner, không phải payer/creator)
+- `docs/product-specs/expense-household-context.md` (thay thế `data-visibility.md` — không có privacy mode, chỉ có personal vs household-attached)
 - `docs/product-specs/expense-grouping.md`
 - `docs/product-specs/expense-tracking.md`
 - any UI copy or backend contract that still exposes `payer`, `creator`, or `private/public` as product-truth concepts
