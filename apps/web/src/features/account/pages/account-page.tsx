@@ -138,7 +138,7 @@ function ThemeSection() {
 
   return (
     <Card>
-      <CardContent className='flex flex-col gap-4 p-4'>
+      <CardContent className='flex flex-col gap-4'>
         <h2 className='px-1 text-xs font-medium tracking-wider text-muted-foreground uppercase'>
           {t('app.account.theme')}
         </h2>
