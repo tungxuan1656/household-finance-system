@@ -77,19 +77,6 @@ export const restoreExpense = async (id: string) => {
   return response.data
 }
 
-export const listDeletedExpenses = async (householdId: string) => {
-  const response = await client.get<ExpenseListResponse>(
-    API_ENDPOINTS.expenses.deleted,
-    {
-      params: {
-        household_id: householdId,
-      },
-    },
-  )
-
-  return response.data
-}
-
 export const replaceExpenseGroups = async (
   expenseId: string,
   payload: ReplaceExpenseGroupsRequest,

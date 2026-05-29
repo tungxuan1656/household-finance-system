@@ -38,7 +38,7 @@ export const SignUpPage = () => {
       await signUpWithEmailPassword(values)
 
       form.clearErrors('root')
-      router.replace(PATHS.ONBOARDING)
+      router.replace(PATHS.ACCOUNT)
     } catch {
       form.setError('root', {
         message: t('auth.session.errors.signUpFailed'),
