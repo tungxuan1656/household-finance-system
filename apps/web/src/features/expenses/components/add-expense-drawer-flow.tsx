@@ -156,7 +156,7 @@ export const AddExpenseDrawerFlow = ({
               {t('common.actions.back')}
             </Button>
           ) : null}
-          {step < 3 ? (
+          {step < 3 && step > 1 ? (
             <Button
               className='flex-1'
               disabled={
@@ -168,7 +168,8 @@ export const AddExpenseDrawerFlow = ({
               onClick={() => onStepChange((step + 1) as AddExpenseStep)}>
               {t('common.actions.continue')}
             </Button>
-          ) : (
+          ) : null}
+          {step === 3 ? (
             <>
               <Button
                 className='flex-1'
@@ -187,7 +188,7 @@ export const AddExpenseDrawerFlow = ({
                   : t('common.actions.finish')}
               </Button>
             </>
-          )}
+          ) : null}
         </div>
       </DrawerFooter>
     </DrawerContent>
