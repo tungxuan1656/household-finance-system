@@ -83,11 +83,13 @@ export const AddExpenseDrawerFlow = ({
   step,
 }: AddExpenseDrawerFlowProps) => {
   return (
-    <DrawerContent className='mx-auto flex h-[85vh] w-full max-w-md flex-col before:inset-0 before:rounded-t-[2rem] before:border-border/70 before:bg-popover'>
-      <div className='mt-1 flex items-center justify-between gap-3 px-4 pb-2'>
-        <div className='flex items-center gap-3'>
-          <div>
-            <h2 className='text-xl font-semibold'>{getStepTitle(step)}</h2>
+    <DrawerContent className='mx-auto h-[min(85dvh,44rem)] w-full max-w-md'>
+      <div className='flex items-center justify-between gap-3 px-4 pt-1 pb-2'>
+        <div className='flex min-w-0 items-center gap-3'>
+          <div className='min-w-0'>
+            <h2 className='truncate text-lg font-semibold'>
+              {getStepTitle(step)}
+            </h2>
           </div>
           <StepBadge step={step} />
         </div>
@@ -103,7 +105,7 @@ export const AddExpenseDrawerFlow = ({
         </DrawerClose>
       </div>
 
-      <div className='flex-1 overflow-y-auto px-4 pb-4'>
+      <div className='min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4'>
         {step === 1 && (
           <AddExpenseStep1
             errors={errors}
@@ -143,7 +145,7 @@ export const AddExpenseDrawerFlow = ({
         )}
       </div>
 
-      <DrawerFooter className='border-t border-border/70 px-4 pt-3 pb-safe'>
+      <DrawerFooter>
         <div className='flex items-center gap-3'>
           {step > 1 && step < 3 ? (
             <Button

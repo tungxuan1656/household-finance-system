@@ -66,6 +66,8 @@ Frontend router. Read this for `apps/web` work, then read only exact reference d
 | Zustand store | `docs/references/frontend/zustand-store-pattern.md` |
 | Form | `docs/references/frontend/form-pattern.md` |
 | Dialog + form layout | `docs/references/frontend/dialog-and-form-pattern.md` |
+| Mobile PWA shell/safe-area/drawer rules | `docs/references/frontend/mobile-pwa-ui-rules.md` |
+| Mobile UI audit/refactor notes | `docs/references/frontend/mobile-pwa-ui-audit.md` |
 | i18n labels/copy | `docs/references/frontend/i18n-label-pattern.md` |
 | Protected page wrapper rules | `docs/references/frontend/protected-page-surface-pattern.md` |
 | Responsive shell/nav | `docs/references/frontend/responsive-navigation-shell-pattern.md` |

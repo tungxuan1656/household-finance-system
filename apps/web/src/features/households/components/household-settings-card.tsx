@@ -49,12 +49,14 @@ export const HouseholdSettingsCard = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='flex justify-between font-semibold uppercase'>
-          {household.name}
-          <Badge className='uppercase' variant='secondary'>
+        <div className='flex flex-wrap items-start justify-between gap-2'>
+          <CardTitle className='min-w-0 flex-1 truncate font-semibold uppercase'>
+            {household.name}
+          </CardTitle>
+          <Badge className='shrink-0 uppercase' variant='secondary'>
             {household.role}
           </Badge>
-        </CardTitle>
+        </div>
         <CardDescription className='font-mono'>
           {t('app.householdDetail.memberCount', { count: memberCount })}
         </CardDescription>

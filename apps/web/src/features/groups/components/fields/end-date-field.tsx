@@ -32,6 +32,7 @@ function EndDateField({ control, isSubmitting }: BaseFieldProps) {
           <FieldContent>
             <Input
               aria-invalid={fieldState.invalid}
+              className='max-w-full appearance-none'
               disabled={isSubmitting}
               id='group-end-date'
               type='date'

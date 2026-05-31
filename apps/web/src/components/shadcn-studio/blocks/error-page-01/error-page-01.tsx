@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 
 const ErrorPage01 = () => {
   return (
-    <div className='grid min-h-screen grid-cols-1 lg:grid-cols-2'>
+    <div className='grid min-h-dvh grid-cols-1 lg:grid-cols-2'>
       <div className='flex flex-col items-center justify-center px-4 py-8 text-center'>
         <h2 className='mb-6 text-5xl font-semibold'>Whoops!</h2>
         <h3 className='mb-1.5 text-3xl font-semibold'>Something went wrong</h3>
@@ -18,7 +18,7 @@ const ErrorPage01 = () => {
         </Button>
       </div>
 
-      <div className='relative max-h-screen w-full p-2 max-lg:hidden'>
+      <div className='relative max-h-dvh w-full p-2 max-lg:hidden'>
         <div className='h-full w-full rounded-2xl bg-black' />
         <Image
           alt='404 illustration'

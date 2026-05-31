@@ -9,6 +9,8 @@ type PageContainerProps = {
 
 export const PageContainer = ({ children, className }: PageContainerProps) => {
   return (
-    <div className={cn('flex min-h-0 flex-col', className)}>{children}</div>
+    <div className={cn('flex min-h-0 flex-1 flex-col', className)}>
+      {children}
+    </div>
   )
 }

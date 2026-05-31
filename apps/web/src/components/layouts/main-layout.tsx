@@ -21,13 +21,15 @@ function MainLayout({ children }: { children: ReactNode }) {
 
   return (
     <AddExpenseDialogProvider>
-      <div className='flex min-h-svh flex-col bg-background'>
+      <div className='flex h-dvh min-h-dvh flex-col overflow-hidden bg-background'>
         {/* Desktop Top Nav (hidden on mobile) */}
         {!isMobile && <AppTopNav onSignOut={handleSignOut} />}
 
         {/* Main Content Area */}
-        <main className='flex flex-1 flex-col px-4 py-6'>
-          <div className='mx-auto w-full max-w-5xl'>{children}</div>
+        <main className='flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-0 py-0 md:px-4 md:py-6'>
+          <div className='mx-auto flex w-full max-w-5xl flex-1 flex-col'>
+            {children}
+          </div>
         </main>
 
         {/* Mobile Bottom Tab (hidden on desktop) */}

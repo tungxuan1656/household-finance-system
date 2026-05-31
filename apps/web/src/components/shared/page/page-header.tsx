@@ -37,7 +37,7 @@ export const PageHeader = ({
     <>
       <header
         className={cn(
-          'z-40 flex min-h-14 items-center justify-between gap-3 border-b border-border/50 bg-background/80 px-4 pt-safe backdrop-blur-md md:hidden',
+          'z-40 flex min-h-16 items-center justify-between gap-3 border-b border-border/50 bg-background/80 px-4 pt-safe backdrop-blur-md md:hidden',
           sticky ? 'sticky top-0' : 'relative',
           className,
         )}>
@@ -53,7 +53,7 @@ export const PageHeader = ({
           ) : null}
           {left}
           <div className='flex min-w-0 flex-1 flex-col'>
-            <h1 className='truncate text-lg font-semibold'>{title}</h1>
+            <h1 className='truncate text-xl font-semibold'>{title}</h1>
             {description ? (
               <p className='text-sm leading-5 text-muted-foreground'>
                 {description}

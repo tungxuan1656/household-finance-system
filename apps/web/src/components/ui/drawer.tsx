@@ -6,9 +6,22 @@ import { Drawer as DrawerPrimitive } from 'vaul'
 import { cn } from '@/utils/cn'
 
 function Drawer({
+  closeThreshold,
+  direction,
+  handleOnly,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot='drawer' {...props} />
+  const resolvedDirection = direction ?? 'bottom'
+
+  return (
+    <DrawerPrimitive.Root
+      closeThreshold={closeThreshold ?? 0.6}
+      data-slot='drawer'
+      direction={resolvedDirection}
+      handleOnly={handleOnly ?? resolvedDirection === 'bottom'}
+      {...props}
+    />
+  )
 }
 
 function DrawerTrigger({
@@ -55,12 +68,15 @@ function DrawerContent({
       <DrawerOverlay />
       <DrawerPrimitive.Content
         className={cn(
-          'group/drawer-content fixed z-50 flex h-auto flex-col bg-transparent p-5 text-sm before:absolute before:inset-2 before:-z-10 before:rounded-4xl before:border before:border-border before:bg-popover before:shadow-xl data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=left]:sm:max-w-sm data-[vaul-drawer-direction=right]:sm:max-w-sm',
+          'group/drawer-content fixed z-50 flex h-auto flex-col bg-popover text-sm text-popover-foreground shadow-md ring-1 ring-foreground/5 duration-200 outline-none data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:max-h-[90dvh] data-[vaul-drawer-direction=bottom]:rounded-t-3xl data-[vaul-drawer-direction=bottom]:border-t data-[vaul-drawer-direction=bottom]:slide-in-from-bottom data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:max-h-[90dvh] data-[vaul-drawer-direction=top]:rounded-b-3xl data-[vaul-drawer-direction=top]:slide-in-from-top data-[vaul-drawer-direction=left]:sm:max-w-sm data-[vaul-drawer-direction=right]:sm:max-w-sm dark:ring-foreground/10 data-open:animate-in data-closed:animate-out',
           className,
         )}
         data-slot='drawer-content'
         {...props}>
-        <div className='mx-auto mt-4 hidden h-1.5 w-25 shrink-0 rounded-full bg-muted group-data-[vaul-drawer-direction=bottom]/drawer-content:block' />
+        <DrawerPrimitive.Handle
+          className='mx-auto mt-4 hidden h-1.5 w-25 shrink-0 rounded-full bg-muted group-data-[vaul-drawer-direction=bottom]/drawer-content:block'
+          data-slot='drawer-handle'
+        />
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
@@ -71,7 +87,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex flex-col gap-0.5 p-5 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:gap-1.5 md:text-left',
+        'flex flex-col gap-0.5 px-5 pt-4 pb-3 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:gap-1.5 md:text-left',
         className,
       )}
       data-slot='drawer-header'
@@ -83,7 +99,10 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
 function DrawerFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn('mt-auto flex flex-col gap-2 p-5', className)}
+      className={cn(
+        'sticky bottom-0 mt-auto flex flex-col gap-2 border-t border-border/60 bg-popover/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur',
+        className,
+      )}
       data-slot='drawer-footer'
       {...props}
     />

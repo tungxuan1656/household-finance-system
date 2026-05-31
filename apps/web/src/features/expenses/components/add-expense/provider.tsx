@@ -76,7 +76,7 @@ export function AddExpenseDialogProvider({
       {showFloatingTrigger ? (
         <Button
           aria-label={t('expense.quickAdd.open')}
-          className='fixed right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-40 rounded-full shadow-lg md:right-8 md:bottom-8'
+          className='fixed right-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-40 rounded-full shadow-lg md:right-8 md:bottom-8'
           size='icon-lg'
           type='button'
           onClick={() => setOpen(true)}>

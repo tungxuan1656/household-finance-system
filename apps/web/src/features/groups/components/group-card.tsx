@@ -1,7 +1,8 @@
 'use client'
 
-import { Archive, Edit, Eye } from 'lucide-react'
+import { Archive, Edit, MoreHorizontal } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useRef } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import type { ExpenseGroupDTO } from '@/features/groups/types/group'
 import { t } from '@/lib/i18n/t'
 import { formatCurrency } from '@/utils/currency/format'
@@ -27,6 +34,7 @@ type GroupCardProps = {
 
 function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
   const router = useRouter()
+  const shouldIgnoreNextCardClickRef = useRef(false)
   const hasBudget = group.eventBudgetMinor != null && group.eventBudgetMinor > 0
   const spendRatio = hasBudget
     ? Math.min((group.totalSpendMinor / group.eventBudgetMinor!) * 100, 100)
@@ -36,13 +44,27 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
   const startDateStr = formatDate(group.startDate, DATE_TIME_FORMATS.date)
   const endDateStr = formatDate(group.endDate, DATE_TIME_FORMATS.date)
 
+  const blockCardNavigation = () => {
+    shouldIgnoreNextCardClickRef.current = true
+
+    window.setTimeout(() => {
+      shouldIgnoreNextCardClickRef.current = false
+    }, 0)
+  }
+
   return (
     <Card
       className='cursor-pointer'
-      onClick={() => router.push(`/groups/${group.id}`)}>
+      onClick={() => {
+        if (shouldIgnoreNextCardClickRef.current) {
+          return
+        }
+
+        router.push(`/groups/${group.id}`)
+      }}>
       <CardHeader>
         <div className='flex items-start justify-between gap-2'>
-          <div className='flex flex-col gap-1'>
+          <div className='flex min-w-0 flex-col gap-1'>
             <CardTitle>{group.name}</CardTitle>
             {group.description && (
               <CardDescription className='line-clamp-2'>
@@ -50,7 +72,9 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
               </CardDescription>
             )}
           </div>
-          <Badge variant={group.status === 'active' ? 'default' : 'secondary'}>
+          <Badge
+            className='shrink-0'
+            variant={group.status === 'active' ? 'default' : 'secondary'}>
             {statusLabel(group.status)}
           </Badge>
         </div>
@@ -62,12 +86,12 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
           </p>
         )}
         {hasBudget ? (
-          <div className='flex items-center justify-between'>
-            <span className='text-sm text-muted-foreground'>
+          <div className='flex min-w-0 items-center justify-between gap-3'>
+            <span className='min-w-0 truncate text-sm text-muted-foreground'>
               {t('groups.card.spentLabel')}:{' '}
               {formatCurrency(group.totalSpendMinor, 'VND')}
             </span>
-            <span className='text-sm text-muted-foreground'>
+            <span className='shrink-0 text-sm text-muted-foreground'>
               {t('groups.card.budgetLabel')}:{' '}
               {formatCurrency(group.eventBudgetMinor!, 'VND')}
             </span>
@@ -85,45 +109,61 @@ function GroupCard({ group, onEdit, onArchive }: GroupCardProps) {
             />
           </div>
         )}
-        <div className='flex items-center gap-2'>
-          <Button
-            size='sm'
-            type='button'
-            variant='outline'
-            onClick={(e) => {
-              e.stopPropagation()
-              router.push(`/groups/${group.id}`)
-            }}>
-            <Eye data-icon='inline-start' />
-            {t('groups.actions.viewDetail')}
-          </Button>
-          {onEdit && (
-            <Button
-              size='sm'
-              type='button'
-              variant='outline'
-              onClick={(e) => {
-                e.stopPropagation()
-                onEdit()
-              }}>
-              <Edit data-icon='inline-start' />
-              {t('common.actions.edit')}
-            </Button>
-          )}
-          {onArchive && group.status === 'active' && (
-            <Button
-              size='sm'
-              type='button'
-              variant='outline'
-              onClick={(e) => {
-                e.stopPropagation()
-                onArchive()
-              }}>
-              <Archive data-icon='inline-start' />
-              {t('groups.actions.archive')}
-            </Button>
-          )}
-        </div>
+        {onEdit || (onArchive && group.status === 'active') ? (
+          <div className='flex justify-end'>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  aria-label={t('shell.protected.nav.more')}
+                  size='icon-sm'
+                  type='button'
+                  variant='outline'
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    blockCardNavigation()
+                  }}
+                  onPointerDown={(event) => {
+                    event.stopPropagation()
+                    blockCardNavigation()
+                  }}>
+                  <MoreHorizontal className='size-4' />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align='end'
+                className='w-44'
+                onClick={(event) => {
+                  event.stopPropagation()
+                  blockCardNavigation()
+                }}
+                onCloseAutoFocus={(event) => {
+                  event.preventDefault()
+                  blockCardNavigation()
+                }}>
+                {onEdit ? (
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      blockCardNavigation()
+                      onEdit()
+                    }}>
+                    <Edit className='size-4' />
+                    {t('common.actions.edit')}
+                  </DropdownMenuItem>
+                ) : null}
+                {onArchive && group.status === 'active' ? (
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      blockCardNavigation()
+                      onArchive()
+                    }}>
+                    <Archive className='size-4' />
+                    {t('groups.actions.archive')}
+                  </DropdownMenuItem>
+                ) : null}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   )

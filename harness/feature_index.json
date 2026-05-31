@@ -379,6 +379,11 @@
       "id": "feat-075",
       "name": "Pre-ship browser testing plan",
       "status": "done"
+    },
+    {
+      "id": "feat-076",
+      "name": "Mobile PWA UI foundation refactor",
+      "status": "done"
     }
   ]
 }

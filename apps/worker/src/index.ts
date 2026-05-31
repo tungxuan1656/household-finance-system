@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 
+import { resolveCorsOrigin } from '@/lib/cors'
 import { notFound } from '@/lib/errors'
 import { fromUnknownError } from '@/lib/response'
 import { requestContextMiddleware } from '@/middlewares/request-context'
@@ -22,19 +23,10 @@ const app = new Hono<AppBindings>()
 
 app.use('*', requestContextMiddleware)
 
-// Middleware
-const allowedOrigins = ['http://localhost:3000', 'http://100.116.7.43:3000']
-
 app.use(
   '/*',
   cors({
-    origin: (origin) => {
-      if (!origin) {
-        return ''
-      }
-
-      return allowedOrigins.includes(origin) ? origin : ''
-    },
+    origin: resolveCorsOrigin,
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'X-Client-Type'],
     credentials: true,
