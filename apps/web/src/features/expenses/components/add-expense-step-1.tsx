@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarIcon, SearchIcon } from 'lucide-react'
+import { CalendarIcon } from 'lucide-react'
 
 import { FieldError } from '@/components/ui/field'
 import {
@@ -60,7 +60,6 @@ type Step1Props = {
   filteredCategories: ExpenseEntryCategoryOption[]
   formState: ExpenseEntryFormState
   isSubmitting: boolean
-  onCategorySearchChange: (value: string) => void
   onFieldChange: <K extends keyof ExpenseEntryFormState>(
     key: K,
     value: ExpenseEntryFormState[K],
@@ -73,7 +72,6 @@ export function AddExpenseStep1({
   filteredCategories,
   formState,
   isSubmitting,
-  onCategorySearchChange,
   onFieldChange,
   onStepChange,
 }: Step1Props) {
@@ -101,18 +99,6 @@ export function AddExpenseStep1({
         />
       </InputGroup>
       <FieldError>{errors.occurredOn}</FieldError>
-
-      <InputGroup>
-        <InputGroupAddon>
-          <SearchIcon />
-        </InputGroupAddon>
-        <InputGroupInput
-          placeholder='Search categories'
-          type='search'
-          value={formState.categoryKey as string}
-          onChange={(event) => onCategorySearchChange(event.target.value)}
-        />
-      </InputGroup>
 
       <div className='flex flex-row flex-wrap gap-2'>
         {filteredCategories.map((category) => (

@@ -9,6 +9,15 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-31 — Removed category search input from AddExpenseStep1
+
+- Who: Antigravity
+- Summary: Removed the category search input from AddExpenseStep1 and cleaned up all category search logic and properties from parent components (AddExpenseDrawerFlow and AddExpenseDialog).
+- Files changed: The expense quick-add step 1 component, the expense quick-add drawer flow, the add expense dialog wrapper, the harness feature index, the feat-077 feature JSON file, and this progress log.
+- Verification: GitNexus upstream impact check for `AddExpenseStep1` returned HIGH risk due to drawer and dialog dependency, so changes were kept precise and clean. GitNexus change detection returned medium risk with 3 files changed. Run of `./init.sh lint` passed with `OK`; `./init.sh typecheck` passed with `OK`; `./init.sh test` passed with `OK`; `./init.sh build` passed with `OK`.
+- Blockers: none.
+- Next steps: none.
+
 ## 2026-05-30 — Fixed expense-detail household label and loopback auth CORS
 
 - Who: Orchestrator

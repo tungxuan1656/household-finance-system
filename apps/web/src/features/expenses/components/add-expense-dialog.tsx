@@ -9,10 +9,7 @@ import { useCurrentUserProfileQuery } from '@/hooks/api/use-profile'
 import { useReferenceCategoriesQuery } from '@/hooks/api/use-reference-data'
 
 import { AddExpenseDrawerFlow } from './add-expense-drawer-flow'
-import {
-  type AddExpenseStep,
-  filterAddExpenseCategories,
-} from './add-expense-flow-helpers'
+import { type AddExpenseStep } from './add-expense-flow-helpers'
 import {
   type ExpenseEntryCategoryOption,
   filterExpenseEntryCategories,
@@ -34,7 +31,6 @@ export const AddExpenseDialog = ({
   const { data: profile } = useCurrentUserProfileQuery()
   const { data: personalGroupsResponse } = useExpenseGroupListQuery(undefined)
   const [step, setStep] = useState<AddExpenseStep>(1)
-  const [categorySearch, setCategorySearch] = useState('')
   const {
     amountDisplay,
     errors,
@@ -57,10 +53,7 @@ export const AddExpenseDialog = ({
     () => filterExpenseEntryCategories(categoriesResponse?.items ?? []),
     [categoriesResponse?.items],
   )
-  const filteredCategories = useMemo(
-    () => filterAddExpenseCategories(categories, categorySearch),
-    [categories, categorySearch],
-  )
+  const filteredCategories = categories
   const households = householdsResponse?.items ?? []
   const groups = useMemo(
     () =>
@@ -83,7 +76,6 @@ export const AddExpenseDialog = ({
   useEffect(() => {
     if (!open) {
       setStep(1)
-      setCategorySearch('')
     }
   }, [open])
 
@@ -91,7 +83,6 @@ export const AddExpenseDialog = ({
     <Drawer direction='bottom' open={open} onOpenChange={onOpenChange}>
       <AddExpenseDrawerFlow
         amountDisplay={amountDisplay}
-        categorySearch={categorySearch}
         errors={errors}
         filteredCategories={filteredCategories}
         formState={formState}
@@ -100,7 +91,6 @@ export const AddExpenseDialog = ({
         isSubmitting={isSubmitting}
         selectedCategory={selectedCategory}
         step={step}
-        onCategorySearchChange={setCategorySearch}
         onClose={() => onOpenChange(false)}
         onFieldChange={setField}
         onStepChange={setStep}

@@ -34,14 +34,12 @@ export type { ExpenseEntryCategoryOption, ExpenseEntryHouseholdOption }
 
 type AddExpenseDrawerFlowProps = {
   amountDisplay: string
-  categorySearch: string
   errors: ExpenseEntryFormErrors
   filteredCategories: ExpenseEntryCategoryOption[]
   formState: ExpenseEntryFormState
   groups: ExpenseGroupDTO[]
   households: ExpenseEntryHouseholdOption[]
   isSubmitting: boolean
-  onCategorySearchChange: (value: string) => void
   onClose: () => void
   onFieldChange: <K extends keyof ExpenseEntryFormState>(
     key: K,
@@ -74,7 +72,6 @@ export const AddExpenseDrawerFlow = ({
   groups,
   households,
   isSubmitting,
-  onCategorySearchChange,
   onClose,
   onFieldChange,
   onSubmit,
@@ -112,7 +109,6 @@ export const AddExpenseDrawerFlow = ({
             filteredCategories={filteredCategories}
             formState={formState}
             isSubmitting={isSubmitting}
-            onCategorySearchChange={onCategorySearchChange}
             onFieldChange={onFieldChange}
             onStepChange={onStepChange}
           />
