@@ -23,11 +23,11 @@ const detect = (capability: Capability): boolean => {
   switch (capability) {
     case 'secureStorage':
     case 'deviceStorage':
-      return Boolean(tg.initData.length > 0)
+      return false
     case 'hapticFeedback':
       return Boolean(tg.HapticFeedback)
     case 'themeParams':
-      return Boolean(tg.themeParams)
+      return Object.keys(tg.themeParams).length > 0
     case 'backButton':
       return Boolean(tg.BackButton)
     case 'mainButton':

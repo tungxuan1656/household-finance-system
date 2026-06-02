@@ -19,9 +19,4 @@ export default defineConfig({
     target: 'es2022',
     outDir: 'dist',
   },
-  test: {
-    environment: 'jsdom',
-    globals: false,
-    exclude: ['node_modules/**', 'dist/**'],
-  },
 })

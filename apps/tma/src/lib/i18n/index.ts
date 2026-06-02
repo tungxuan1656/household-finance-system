@@ -7,31 +7,36 @@ import en from '@/lib/i18n/locales/en.json'
 import vi from '@/lib/i18n/locales/vi.json'
 
 const SUPPORTED_LOCALES = ['vi', 'en'] as const
-type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
 
-const DEFAULT_LOCALE: SupportedLocale = 'vi'
+export const DEFAULT_LOCALE: SupportedLocale = 'vi'
 
 const isSupportedLocale = (value: unknown): value is SupportedLocale =>
   typeof value === 'string' &&
   (SUPPORTED_LOCALES as readonly string[]).includes(value)
 
-const extractLanguageCode = (): SupportedLocale | null => {
+export const detectTelegramLocale = (): SupportedLocale | null => {
   const raw = window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code
 
   return isSupportedLocale(raw) ? raw : null
 }
 
-void i18n.use(initReactI18next).init({
-  resources: {
-    vi: { translation: vi },
-    en: { translation: en },
-  },
-  lng: extractLanguageCode() ?? DEFAULT_LOCALE,
-  fallbackLng: DEFAULT_LOCALE,
-  interpolation: {
-    escapeValue: false,
-  },
-  returnNull: false,
-})
+i18n
+  .use(initReactI18next)
+  .init({
+    resources: {
+      vi: { translation: vi },
+      en: { translation: en },
+    },
+    lng: DEFAULT_LOCALE,
+    fallbackLng: DEFAULT_LOCALE,
+    interpolation: {
+      escapeValue: false,
+    },
+    returnNull: false,
+  })
+  .catch((error: unknown) => {
+    console.error('i18n init failed', error)
+  })
 
 export { i18n }

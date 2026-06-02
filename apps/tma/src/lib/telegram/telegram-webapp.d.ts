@@ -82,6 +82,8 @@ declare global {
     ready: () => void
     close: () => void
     expand: () => void
+    onEvent: (event: string, handler: () => void) => void
+    offEvent: (event: string, handler: () => void) => void
   }
 
   interface Window {

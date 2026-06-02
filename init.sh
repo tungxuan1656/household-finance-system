@@ -129,7 +129,7 @@ run_parallel_checks() {
     case "$label" in
       "web lint") start_background_job "$label" "$log_file" "$status_file" run_web_lint ;;
       "worker lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker lint --fix ;;
-      "tma lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma lint ;;
+      "tma lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma lint --fix ;;
       "web typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web typecheck ;;
       "worker typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker typecheck ;;
       "tma typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma typecheck ;;

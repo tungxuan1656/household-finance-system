@@ -1,9 +1,10 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createHashRouter, RouterProvider } from 'react-router-dom'
 
 import { FatalLaunchPage } from '@/routes/fatal-launch'
 import { HomePage } from '@/routes/home'
+import { NotFoundPage } from '@/routes/not-found'
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: <HomePage />,
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
   {
     path: '/fatal',
     element: <FatalLaunchPage />,
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ])
 
