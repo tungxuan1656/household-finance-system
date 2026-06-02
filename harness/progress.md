@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-02 — Fixed TMA auth client base URL wiring
+
+- Who: Codex
+- Summary: Fixed a local-runtime bug where the TMA auth bootstrap still targeted the Vite app origin for worker auth requests. The root cause was that `apps/tma/src/app/app.tsx` created the auth client without passing `VITE_WORKER_URL`, so `createTmaAuthClient()` fell back to `'/api/v1'` and requests resolved to `http://<tma-host>:5174/api/v1/...` instead of the worker origin. The fix passes `import.meta.env.VITE_WORKER_URL` through app initialization and adds a focused regression test proving an absolute worker base URL yields `http://localhost:8787/api/v1/auth/provider/exchange`.
+- Files changed: TMA app auth-client wiring, focused TMA auth API test coverage, feat-080 evidence, and this progress log.
+- Verification: `pnpm --filter tma exec vitest run src/test/auth-api.test.ts src/test/auth-bootstrap.test.ts src/test/auth-provider.test.ts` passed (3 files, 11 tests); `pnpm --filter tma typecheck` passed; `pnpm --filter tma lint` completed with the existing two `no-console` warnings in `apps/tma/src/lib/i18n/index.ts` and `apps/tma/src/lib/storage/adapter.ts`, with no new lint errors from this fix.
+- Blockers: none.
+- Next steps: restart `pnpm --filter tma dev` if it was already running so the new env-based worker URL wiring is picked up, then retry the Telegram launch flow against the worker URL.
+
 ## 2026-06-02 — Added TMA local testing runbook
 
 - Who: Codex

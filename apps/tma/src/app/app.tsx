@@ -15,6 +15,8 @@ import {
 import { readRawInitData } from '@/lib/telegram/launch-params'
 import { FatalLaunchPage } from '@/routes/fatal-launch'
 
+const workerBaseUrl = import.meta.env.VITE_WORKER_URL ?? '/api/v1'
+
 export const App = () => {
   const [initError, setInitError] = useState<unknown>(null)
 
@@ -45,8 +47,7 @@ export const App = () => {
   const authClient = useMemo(
     () =>
       createTmaAuthClient({
-        userAgent:
-          typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+        baseUrl: workerBaseUrl,
       }),
     [],
   )

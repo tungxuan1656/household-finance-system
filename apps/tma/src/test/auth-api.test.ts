@@ -11,6 +11,44 @@ const jsonResponse = (data: unknown) =>
   })
 
 describe('TMA auth API client', () => {
+  it('uses the configured worker base URL instead of the current Vite origin', async () => {
+    const fetchImpl = vi.fn(async () =>
+      jsonResponse({
+        tokenType: 'Bearer' as const,
+        accessToken: 'access-1',
+        accessTokenExpiresIn: 3600,
+        refreshToken: 'refresh-1',
+        refreshTokenExpiresIn: 86_400,
+        user: {
+          id: 'user-1',
+          email: null,
+          displayName: 'Tung',
+          avatarUrl: null,
+          provider: 'telegram' as const,
+        },
+      }),
+    )
+    const client = createTmaAuthClient({
+      baseUrl: 'http://localhost:8787/api/v1',
+      fetchImpl,
+    })
+
+    await client.api.exchangeProviderToken({
+      provider: 'telegram',
+      initData: 'signed-init-data',
+    })
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      'http://localhost:8787/api/v1/auth/provider/exchange',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.not.objectContaining({
+          'user-agent': expect.anything(),
+        }),
+      }),
+    )
+  })
+
   it('uses the worker auth base path exactly once for provider exchange', async () => {
     const fetchImpl = vi.fn(async () =>
       jsonResponse({

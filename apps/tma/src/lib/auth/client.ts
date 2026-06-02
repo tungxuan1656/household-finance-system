@@ -14,7 +14,6 @@ const DEFAULT_BASE_URL = '/api/v1'
 export interface CreateTmaAuthClientOptions {
   baseUrl?: string
   fetchImpl?: typeof fetch
-  userAgent?: string
   storageOverride?: AuthStorage
   apiOverride?: AuthApiClient
   secureStorageOverride?: SecureStorageLike | null
@@ -46,7 +45,6 @@ export const createTmaAuthClient = (
     createAuthApiClient({
       baseUrl: options.baseUrl ?? DEFAULT_BASE_URL,
       fetchImpl: options.fetchImpl,
-      userAgent: options.userAgent,
       accessTokenProvider: () => null,
     })
 

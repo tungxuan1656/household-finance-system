@@ -62,7 +62,6 @@ export interface CreateAuthApiClientOptions {
   baseUrl: string
   fetchImpl?: typeof fetch
   accessTokenProvider?: () => string | null
-  userAgent?: string
 }
 
 const joinUrl = (baseUrl: string, path: string): string =>
@@ -80,16 +79,9 @@ const parseErrorPayload = async (
   }
 }
 
-const buildHeaders = (
-  accessToken: string | null,
-  userAgent: string | undefined,
-): HeadersInit => {
+const buildHeaders = (accessToken: string | null): HeadersInit => {
   const headers: Record<string, string> = {
     'content-type': 'application/json',
-  }
-
-  if (userAgent) {
-    headers['user-agent'] = userAgent
   }
 
   if (accessToken) {
@@ -103,7 +95,6 @@ export const createAuthApiClient = (
   options: CreateAuthApiClientOptions,
 ): AuthApiClient => {
   const fetchImpl = options.fetchImpl ?? fetch
-  const userAgent = options.userAgent
 
   const request = async <TResponse>(
     path: string,
@@ -116,7 +107,7 @@ export const createAuthApiClient = (
 
     const response = await fetchImpl(joinUrl(options.baseUrl, path), {
       method: init.method,
-      headers: buildHeaders(accessToken, userAgent),
+      headers: buildHeaders(accessToken),
       body: init.body ? JSON.stringify(init.body) : undefined,
     })
 
