@@ -9,7 +9,44 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
-## 2026-05-31 — Removed category search input from AddExpenseStep1
+
+## 2026-06-02 — Added project-owned TMA development skill
+
+- Who: Codex
+- Summary: Added a new repo-owned skill at `.agents/skills/tma-development` so future Telegram Mini App work automatically pulls the right repo-specific defaults instead of relying on generic memory. The skill is intentionally narrow: it triggers on `apps/tma`, launch-context auth, `@tma.js/sdk-react`, native Telegram chrome, deep links, safe-area/keyboard hardening, and bot companion work; then routes the agent into `docs/TMA.md`, the exact `docs/references/tma/*` leaves, and the active `feat-079` scaffold plan. Two short reference files preserve the locked defaults and per-slice reading map without duplicating the full docs set.
+- Files changed: The new project-owned TMA skill folder with `SKILL.md`, `agents/openai.yaml`, and two reference files; a new harness feature record; the feature index; and this progress log.
+- Verification: `python3 /Users/tungdoan/.codex/skills/.system/skill-creator/scripts/init_skill.py tma-development --path .agents/skills --resources references ...` scaffolded the skill successfully. `python3 /Users/tungdoan/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/tma-development` passed with `Skill is valid!` after installing the missing validator dependency via `python3 -m pip install --user pyyaml`. No template placeholders remain in `.agents/skills/tma-development` (`rg -n "TODO|\[TODO" .agents/skills/tma-development -S` returned no matches). `node -e "for (const file of ['harness/feature_index.json','harness/features/feat-086.json']) { JSON.parse(require('fs').readFileSync(file,'utf8')); console.log('OK ' + file) }"` passed for the new harness JSON; `./scripts/check_harness_size.sh` passed with `Harness size checks passed`; `git diff --check` passed with no whitespace issues; final `gitnexus_detect_changes(scope: all, repo: household-finance-system)` returned `LOW` risk with 3 changed symbols, 2 changed files, and 0 affected processes.
+- Blockers: `quick_validate.py` initially failed because `PyYAML` was missing from the local Python environment.
+- Next steps: none.
+
+## 2026-06-02 — Standardized TMA terminology across docs and harness
+
+- Who: Codex
+- Summary: Completed the terminology cleanup that became obvious once the docs matured past rough research notes. The repo now uses `TMA` consistently for Telegram Mini App work, the router doc and reference folder were renamed to the `TMA`/`tma` convention, the planned runtime app path is now `apps/tma`, and older direct alternate-package references were removed so the docs present one clear package choice: `@tma.js/sdk-react` as the primary React-facing dependency.
+- Files changed: Root agent and architecture routers, TMA router/reference/design/product docs, active and completed Telegram Mini App ExecPlans, TMA-related harness feature records, and this progress log.
+- Verification: Docs-only verification used direct artifact checks. `node -e "for (const file of ['harness/feature_index.json','harness/features/feat-078.json','harness/features/feat-079.json','harness/features/feat-080.json','harness/features/feat-081.json','harness/features/feat-082.json','harness/features/feat-083.json','harness/features/feat-084.json','harness/features/feat-085.json']) { JSON.parse(require('fs').readFileSync(file,'utf8')); console.log('OK ' + file) }"` passed for all touched Telegram Mini App harness JSON files; `./scripts/check_harness_size.sh` passed with `Harness size checks passed`; `git diff --check` passed with no whitespace issues; trailing-whitespace scan across the touched docs/harness files returned no matches; global legacy-term scan returned no matches; final `gitnexus_detect_changes(scope: all, repo: household-finance-system)` returned `LOW` risk with 32 changed symbols, 23 changed files, and 0 affected processes.
+- Blockers: none.
+- Next steps: Future implementation should scaffold `apps/tma` and use the renamed TMA docs as the canonical entry path.
+
+## 2026-06-02 — Tightened TMA docs into implementation-ready runtime guidance
+
+- Who: Codex
+- Summary: Moved the TMA docs from broad platform guidance toward runtime readiness. Locked the default package line to `@tma.js/*`, documented a stricter TMA session fallback policy that avoids persisting auth tokens outside `SecureStorage`, defaulted the future bot companion to a worker-first adapter boundary, added a new TMA slice-readiness map, and created the first active ExecPlan for `feat-079` so the repo now has an implementation-ready scaffold plan instead of only high-level TMA direction.
+- Files changed: The durable TMA client architecture doc, multiple TMA reference leaves, the TMA router and shared references index, a new active TMA runtime scaffold ExecPlan, the plans index, TMA harness feature records, the feature index, and this progress log.
+- Verification: Docs-only verification used direct artifact checks. `node -e "for (const file of ['harness/feature_index.json','harness/features/feat-079.json','harness/features/feat-080.json','harness/features/feat-085.json']) { JSON.parse(require('fs').readFileSync(file,'utf8')); console.log('OK ' + file) }"` passed for all four harness JSON files; `./scripts/check_harness_size.sh` passed with `Harness size checks passed`; `git diff --check` passed with no whitespace issues; trailing-whitespace scan across the touched docs/harness files returned no matches; final `gitnexus_detect_changes(scope: all, repo: household-finance-system)` returned `LOW` risk with 7 changed symbols, 12 changed files, and 0 affected processes. Follow-up clarification on the same day corrected the package framing so React work now treats `@tma.js/sdk-react` as the primary dependency rather than implying raw `@tma.js/sdk` is the main app package.
+- Blockers: none.
+- Next steps: Use the new active `feat-079` ExecPlan as the entry point for the first runtime coding session.
+
+## 2026-06-02 — Expanded TMA reference docs into practical implementation guides
+
+- Who: Codex
+- Summary: Expanded the planned Telegram Mini App docs from two thin leaves into a fuller implementation set. The TMA router and references index now route five focused leaf docs covering app structure, native navigation/UI, state/storage, auth/bot boundary, and development/hardening. The refreshed guidance also corrects a few stale assumptions from the initial brief: newer package guidance now points future runtime work toward the `@tma.js/*` line, `BottomButton` is treated as the current name for the old Main Button surface, local development can use Telegram's test environment without forcing HTTPS in every case, and newer storage/keyboard capabilities are documented as version-gated rather than assumed universal.
+- Files changed: TMA reference leaf docs, the TMA docs router, the shared references index, the related TMA harness feature evidence, and this progress log.
+- Verification: Docs-only verification used direct artifact checks. `node -e "JSON.parse(require('fs').readFileSync('harness/features/feat-078.json','utf8')); console.log('OK feat-078.json')"` passed with `OK feat-078.json`; `./scripts/check_harness_size.sh` passed with `Harness size checks passed`; `git diff --check` passed with no whitespace issues; final `gitnexus_detect_changes(scope: all, repo: household-finance-system)` returned `LOW` risk with 5 changed symbols, 6 changed files, and 0 affected processes.
+- Blockers: none.
+- Next steps: none.
+
+## 2026-06-02 — Fixed TMA docs patch mergeability issues
 
 - Who: Antigravity
 - Summary: Removed the category search input from AddExpenseStep1 and cleaned up all category search logic and properties from parent components (AddExpenseDrawerFlow and AddExpenseDialog).

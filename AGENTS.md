@@ -5,6 +5,7 @@ Personal & Family Expense Management System. Open-source household finance app f
 ## Stack
 
 - Web: `apps/web` — React 19, TypeScript, Next.js App Router, Tailwind CSS, shadcn/ui, sonner, date-fns.
+- TMA: `apps/tma` — React, TypeScript, Vite SPA, React Router, TanStack Query, Zustand, Framer Motion. Uses Telegram bridge for native WebView features.
 - Worker: `apps/worker` — Cloudflare Workers, Hono, D1, Wrangler, `zod`, `jose`, `ulid`.
 - Tooling: `pnpm` monorepo, ESLint, Prettier, Vitest, TypeScript.
 
@@ -25,6 +26,7 @@ Read least docs that fully cover task.
 | Any session | `AGENTS.md` |
 | Architecture/layer change | `docs/references/backend/architecture-and-boundaries.md` |
 | Frontend work | `docs/FRONTEND.md` → exact `docs/references/frontend/*` needed |
+| TMA work | `docs/TMA.md` → exact `docs/references/tma/*` needed |
 | Backend work | `docs/BACKEND.md` → exact `docs/references/backend/*` needed |
 | Shared type/API naming | `docs/references/shared/type-naming-pattern.md` |
 | Product behavior | `docs/product-specs/index.md` → exact feature spec |
@@ -107,4 +109,3 @@ Useful resources:
 - `gitnexus://repo/household-finance-system/clusters`
 - `gitnexus://repo/household-finance-system/processes`
 - `gitnexus://repo/household-finance-system/process/{name}`
-

@@ -389,6 +389,51 @@
       "id": "feat-077",
       "name": "Remove category search input from AddExpenseStep1",
       "status": "done"
+    },
+    {
+      "id": "feat-078",
+      "name": "Telegram Mini App docs and harness foundation",
+      "status": "done"
+    },
+    {
+      "id": "feat-079",
+      "name": "Telegram Mini App workspace scaffold and bootstrap",
+      "status": "in_progress"
+    },
+    {
+      "id": "feat-080",
+      "name": "Telegram Mini App auth provider exchange and session bootstrap",
+      "status": "planned"
+    },
+    {
+      "id": "feat-081",
+      "name": "Telegram Mini App expense capture flow",
+      "status": "planned"
+    },
+    {
+      "id": "feat-082",
+      "name": "Telegram Mini App household and invite flows",
+      "status": "planned"
+    },
+    {
+      "id": "feat-083",
+      "name": "Telegram Mini App read surfaces for budgets, groups, and insights",
+      "status": "planned"
+    },
+    {
+      "id": "feat-084",
+      "name": "Telegram Mini App device hardening and performance QA",
+      "status": "planned"
+    },
+    {
+      "id": "feat-085",
+      "name": "Telegram bot companion launch and notification flows",
+      "status": "planned"
+    },
+    {
+      "id": "feat-086",
+      "name": "Project-owned TMA development skill",
+      "status": "done"
     }
   ]
 }

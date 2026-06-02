@@ -1,0 +1,25 @@
+{
+  "id": "feat-086",
+  "name": "Project-owned TMA development skill",
+  "status": "done",
+  "description": "Create a repo-owned skill that keeps Telegram Mini App tasks aligned with this project's TMA terminology, package defaults, doc routing, and workflow expectations.",
+  "dependencies": ["feat-074", "feat-078", "feat-079"],
+  "evidence": {
+    "planned": [
+      "Used `using-skills` first, then applied `skill-creator` and `skill-maintenance` because the work adds a new project-owned skill under `.agents/skills/`.",
+      "Created the skill in `.agents/skills/tma-development` as a repo-owned capability instead of a global skill because the goal is to improve agent behavior specifically for this repository's TMA tasks.",
+      "Kept the skill concise and repo-specific: one trigger-oriented `SKILL.md`, one `agents/openai.yaml`, and two short reference files rather than a long generic Telegram tutorial."
+    ],
+    "artifacts": [
+      "Added `.agents/skills/tma-development/SKILL.md` with repo-specific triggers for `apps/tma`, launch-context auth, `@tma.js/sdk-react`, native Telegram chrome, deep links, and hardening work.",
+      "Added `.agents/skills/tma-development/references/locked-defaults.md` and `references/task-map.md` to preserve the project's TMA defaults and per-slice reading map without duplicating the full docs tree.",
+      "Added `.agents/skills/tma-development/agents/openai.yaml` with `display_name`, `short_description`, and a correct `$tma-development` default prompt."
+    ],
+    "verification": [
+      "Ran `python3 /Users/tungdoan/.codex/skills/.system/skill-creator/scripts/init_skill.py tma-development --path .agents/skills --resources references ...` successfully to scaffold the skill.",
+      "Installed the missing validator dependency with `python3 -m pip install --user pyyaml`, then ran `python3 /Users/tungdoan/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/tma-development`, which returned `Skill is valid!`.",
+      "Final session verification also re-validated harness JSON, harness size, whitespace checks, and GitNexus change detection before completion reporting."
+    ]
+  },
+  "notes": "This feature adds only agent-skill and harness artifacts. It does not change application runtime behavior."
+}

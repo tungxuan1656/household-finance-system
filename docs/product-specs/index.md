@@ -50,6 +50,7 @@ Read exact spec for task domain only.
 - `multi-device-support.md`
 - `audit-log.md`
 - `notification-system.md`
+- `telegram-mini-app.md`
 
 ## Rules
 

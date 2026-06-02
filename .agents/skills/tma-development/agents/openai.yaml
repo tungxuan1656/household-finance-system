@@ -1,0 +1,4 @@
+interface:
+  display_name: "TMA Development"
+  short_description: "Build and maintain the repo TMA"
+  default_prompt: "Use $tma-development to build or update the Telegram Mini App in this repo."

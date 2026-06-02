@@ -5,10 +5,11 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
-(No active plans)
+- [2026-06-02-telegram-mini-app-runtime-scaffold.md](plans/2026-06-02-telegram-mini-app-runtime-scaffold.md) - feat-079 TMA scaffold plan active: lock the `@tma.js/*` runtime line, create the first `apps/tma` workspace shell, add Telegram bootstrap wrappers and SPA router seams, and wire TMA into repo tooling before auth or domain slices begin.
 
 ## Completed
 
+- [2026-06-01-telegram-mini-app-docs-and-harness-foundation.md](plans/2026-06-01-telegram-mini-app-docs-and-harness-foundation.md) - feat-078 docs-only TMA foundation completed: added the planned TMA design doc, product spec, dedicated `docs/TMA.md` router with TMA rule leaves, current-spec cross-links, architecture/router updates, and phased harness rollout features for scaffold, auth, expense, household, read surfaces, hardening, and bot companion work.
 - [2026-05-29-pre-ship-browser-testing-plan.md](plans/2026-05-29-pre-ship-browser-testing-plan.md) - feat-075 pre-ship browser testing completed: Playwright CLI run with runtime credentials, mobile/desktop screenshot capture, layout review against frontend/design/UI-review docs, protected navigation verification, add-expense and household data flow smoke, API consistency assertions, optional group/budget smoke, cleanup, and ship verdict reported.
 - [2026-05-27-yellow-finance-protected-pages-refactor.md](plans/2026-05-27-yellow-finance-protected-pages-refactor.md) - feat-073 frontend-only protected app refactor completed: replaced PageShell with shared page wrappers, moved protected default entry to Expense, aligned shell/navigation to the four-tab Yellow Finance model, rebuilt key tab pages, migrated all protected pages to PageContainer/PageHeader/PageContent, removed PageShell from codebase.
 - [2026-05-28-project-native-workflow-skill-integration.md](plans/2026-05-28-project-native-workflow-skill-integration.md) - feat-074 docs-only workflow upgrade completed: added project-native `grill-with-docs`, `to-issues`, `triage`, `prototype`, `handoff`, and `improve-codebase-architecture` skills, wired them into the skill entry router and plan writer, and documented the new workflow-routing rules in `.agents` and `AGENTS.md`.
