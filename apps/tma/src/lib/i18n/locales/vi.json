@@ -1,0 +1,18 @@
+{
+  "app": {
+    "title": "Quản lý chi tiêu gia đình"
+  },
+  "home": {
+    "greeting": "TMA Scaffold",
+    "subtitle": "Tính năng auth và nghiệp vụ sẽ được thêm từ feat-080 trở đi"
+  },
+  "fatal": {
+    "title": "Không thể mở Mini App",
+    "body": "Vui lòng mở lại Mini App từ Telegram.",
+    "close": "Đóng"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "body": "Trang bạn mở không tồn tại."
+  }
+}

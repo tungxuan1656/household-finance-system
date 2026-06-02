@@ -398,37 +398,37 @@
     {
       "id": "feat-079",
       "name": "Telegram Mini App workspace scaffold and bootstrap",
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": "feat-080",
       "name": "Telegram Mini App auth provider exchange and session bootstrap",
-      "status": "planned"
+      "status": "in_progress"
     },
     {
       "id": "feat-081",
       "name": "Telegram Mini App expense capture flow",
-      "status": "planned"
+      "status": "todo"
     },
     {
       "id": "feat-082",
       "name": "Telegram Mini App household and invite flows",
-      "status": "planned"
+      "status": "todo"
     },
     {
       "id": "feat-083",
       "name": "Telegram Mini App read surfaces for budgets, groups, and insights",
-      "status": "planned"
+      "status": "todo"
     },
     {
       "id": "feat-084",
       "name": "Telegram Mini App device hardening and performance QA",
-      "status": "planned"
+      "status": "todo"
     },
     {
       "id": "feat-085",
       "name": "Telegram bot companion launch and notification flows",
-      "status": "planned"
+      "status": "todo"
     },
     {
       "id": "feat-086",
