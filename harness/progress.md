@@ -9,25 +9,8 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+
 ## 2026-06-02 — Fixed TWA docs patch mergeability issues
-
-- Who: Codex
-- Summary: Resolved the leftover harness merge conflict artifacts and made the previously omitted Telegram Mini App leaf docs, design doc, product spec, exec plan, and phased harness feature records part of the branch again so the router updates no longer point at missing files.
-- Files changed: Harness merge resolution plus tracked TWA router/design/spec/reference/plan and phased feature-record artifacts.
-- Verification: `node` JSON.parse validation passed for `harness/feature_index.json` and `harness/features/feat-078..085.json`; `./scripts/check_harness_size.sh` passed; `git diff --cached --check` passed with no whitespace/conflict issues; `./init.sh` passed with `Done!`.
-- Blockers: none.
-- Next steps: Run final change detection, then review and commit the branch if desired.
-
-## 2026-06-01 — Added Telegram Mini App docs and harness foundation
-
-- Who: Codex
-- Summary: Added the docs and harness foundation for a future Telegram Mini App client. The repo now has a proposed TWA design doc, a roadmap product spec for TWA launch/auth/invite/create behavior, a dedicated `docs/TWA.md` router with platform-specific TWA rule leaves, cross-links from current auth/invite/quick-add docs, a completed ExecPlan for this docs-only slice, and a phased harness rollout from scaffold through bot companion flows.
-- Files changed: New TWA design/product/reference docs and router, current frontend/backend/router indexes, auth/invite/quick-add cross-spec notes, architecture summary, completed exec-plan index entry, new TWA harness feature records, feature index, and this progress log.
-- Verification: Telegram assumptions were pressure-tested against current official docs before writing repo truth. Node JSON.parse validation passed for `harness/feature_index.json` and all new `harness/features/feat-078..085.json` files. `./scripts/check_harness_size.sh` passed. `git diff --check` passed. Final `./init.sh` and final `gitnexus_detect_changes(scope: all)` were run before completion reporting.
-- Blockers: none.
-- Next steps: Start `feat-079` with an ExecPlan that locks the `apps/twa` scaffold, chosen SDK package line, and local HTTPS/dev-tunnel workflow.
-
-## 2026-05-31 — Removed category search input from AddExpenseStep1
 
 - Who: Antigravity
 - Summary: Removed the category search input from AddExpenseStep1 and cleaned up all category search logic and properties from parent components (AddExpenseDrawerFlow and AddExpenseDialog).

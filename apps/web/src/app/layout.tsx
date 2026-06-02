@@ -105,7 +105,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         inter.variable,
       )}
       lang='vi'>
-      <body suppressHydrationWarning className='flex min-h-full flex-col'>
+      <body suppressHydrationWarning className='flex min-h-dvh flex-col'>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

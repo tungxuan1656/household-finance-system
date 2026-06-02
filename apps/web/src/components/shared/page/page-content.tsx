@@ -17,7 +17,9 @@ export const PageContent = ({
     <div
       className={cn(
         'flex-1 px-4 py-5 md:px-6 md:py-0 md:pb-8 lg:px-8',
-        withBottomNavSpacing ? 'pb-24' : 'pb-5 md:pb-8',
+        withBottomNavSpacing
+          ? 'pb-[calc(6rem+env(safe-area-inset-bottom))]'
+          : 'pb-5 md:pb-8',
         className,
       )}>
       {children}

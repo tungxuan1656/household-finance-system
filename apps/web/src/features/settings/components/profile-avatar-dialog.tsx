@@ -38,9 +38,12 @@ export const ProfileAvatarDialog = ({
       </DialogHeader>
       {previewUrl ? (
         <Image
+          unoptimized
           alt={t('app.settings.profile.crop.previewAlt')}
           className='aspect-square w-full rounded-lg object-cover'
+          height={512}
           src={previewUrl}
+          width={512}
         />
       ) : null}
       <DialogFooter>

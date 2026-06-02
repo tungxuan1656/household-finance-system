@@ -16,9 +16,9 @@ export const PageFooter = ({
   return (
     <div
       className={cn(
-        'px-4 pt-4 pb-24 md:px-6 md:pb-8 lg:px-8',
+        'px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))] md:px-6 md:pb-8 lg:px-8',
         sticky
-          ? 'sticky bottom-16 z-30 border-t border-border/50 bg-background/95 backdrop-blur-md md:bottom-0'
+          ? 'sticky bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-30 border-t border-border/50 bg-background/95 backdrop-blur-md md:bottom-0'
           : undefined,
         className,
       )}>

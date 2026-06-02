@@ -1,0 +1,25 @@
+{
+  "id": "feat-077",
+  "name": "Remove category search input from AddExpenseStep1",
+  "status": "done",
+  "description": "Remove the category search input from AddExpenseStep1 component and clean up related props, states, and logic in parent drawer and dialog layers.",
+  "dependencies": ["feat-024", "feat-060"],
+  "evidence": {
+    "impact_checks": [
+      "GitNexus upstream impact check for AddExpenseStep1: HIGH risk, with AddExpenseDrawerFlow and AddExpenseDialog as direct dependent layers."
+    ],
+    "artifacts": [
+      "Removed SearchIcon import and Search InputGroup from apps/web/src/features/expenses/components/add-expense-step-1.tsx",
+      "Removed categorySearch and onCategorySearchChange props from AddExpenseDrawerFlowProps and AddExpenseStep1",
+      "Removed categorySearch state and filterAddExpenseCategories invocation from apps/web/src/features/expenses/components/add-expense-dialog.tsx"
+    ],
+    "verification": [
+      "./init.sh lint passed with OK.",
+      "./init.sh typecheck passed with OK.",
+      "./init.sh test passed with OK.",
+      "./init.sh build passed with OK.",
+      "gitnexus detect-changes returned medium risk."
+    ]
+  },
+  "notes": "Verified that all tests pass and compilation/linter run clean."
+}

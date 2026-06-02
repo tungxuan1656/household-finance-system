@@ -140,8 +140,9 @@ export const HouseholdMembersCard = ({
                   </ItemDescription>
                 </ItemContent>
                 {isAdmin ? (
-                  <ItemFooter className='justify-end'>
+                  <ItemFooter className='w-full flex-wrap justify-start gap-2 sm:w-auto sm:justify-end'>
                     <NativeSelect
+                      className='w-full sm:w-auto'
                       labelClassName='text-sm'
                       size='sm'
                       value={member.role}
@@ -169,7 +170,11 @@ export const HouseholdMembersCard = ({
                         'app.householdDetail.members.removeDialog.title',
                       )}
                       trigger={
-                        <Button size={'sm'} type='button' variant='destructive'>
+                        <Button
+                          className='w-full sm:w-auto'
+                          size={'sm'}
+                          type='button'
+                          variant='destructive'>
                           <Trash2 className='size-3.5' />
                           {t('app.householdDetail.actions.delete')}
                         </Button>

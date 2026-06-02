@@ -15,6 +15,7 @@ import type { ExpenseDTO } from '../types/expense'
 
 type ExpenseDetailCardProps = {
   expense: ExpenseDTO
+  householdName?: string | null
 }
 
 function DetailRow({
@@ -32,7 +33,10 @@ function DetailRow({
   )
 }
 
-export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
+export const ExpenseDetailCard = ({
+  expense,
+  householdName,
+}: ExpenseDetailCardProps) => {
   const { data: referenceCategories } = useReferenceCategoriesQuery()
   const category = getCategoryPresentation(
     expense.categoryKey,
@@ -96,7 +100,7 @@ export const ExpenseDetailCard = ({ expense }: ExpenseDetailCardProps) => {
           {expense.householdId && (
             <>
               <DetailRow label={t('expense.detail.household')}>
-                {expense.householdId}
+                {householdName ?? expense.householdId}
               </DetailRow>
               <Separator />
             </>

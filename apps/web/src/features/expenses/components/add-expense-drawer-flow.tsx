@@ -34,14 +34,12 @@ export type { ExpenseEntryCategoryOption, ExpenseEntryHouseholdOption }
 
 type AddExpenseDrawerFlowProps = {
   amountDisplay: string
-  categorySearch: string
   errors: ExpenseEntryFormErrors
   filteredCategories: ExpenseEntryCategoryOption[]
   formState: ExpenseEntryFormState
   groups: ExpenseGroupDTO[]
   households: ExpenseEntryHouseholdOption[]
   isSubmitting: boolean
-  onCategorySearchChange: (value: string) => void
   onClose: () => void
   onFieldChange: <K extends keyof ExpenseEntryFormState>(
     key: K,
@@ -74,7 +72,6 @@ export const AddExpenseDrawerFlow = ({
   groups,
   households,
   isSubmitting,
-  onCategorySearchChange,
   onClose,
   onFieldChange,
   onSubmit,
@@ -83,11 +80,13 @@ export const AddExpenseDrawerFlow = ({
   step,
 }: AddExpenseDrawerFlowProps) => {
   return (
-    <DrawerContent className='mx-auto flex h-[85vh] w-full max-w-md flex-col before:inset-0 before:rounded-t-[2rem] before:border-border/70 before:bg-popover'>
-      <div className='mt-1 flex items-center justify-between gap-3 px-4 pb-2'>
-        <div className='flex items-center gap-3'>
-          <div>
-            <h2 className='text-xl font-semibold'>{getStepTitle(step)}</h2>
+    <DrawerContent className='mx-auto h-[min(85dvh,44rem)] w-full max-w-md'>
+      <div className='flex items-center justify-between gap-3 px-4 pt-1 pb-2'>
+        <div className='flex min-w-0 items-center gap-3'>
+          <div className='min-w-0'>
+            <h2 className='truncate text-lg font-semibold'>
+              {getStepTitle(step)}
+            </h2>
           </div>
           <StepBadge step={step} />
         </div>
@@ -103,14 +102,13 @@ export const AddExpenseDrawerFlow = ({
         </DrawerClose>
       </div>
 
-      <div className='flex-1 overflow-y-auto px-4 pb-4'>
+      <div className='min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4'>
         {step === 1 && (
           <AddExpenseStep1
             errors={errors}
             filteredCategories={filteredCategories}
             formState={formState}
             isSubmitting={isSubmitting}
-            onCategorySearchChange={onCategorySearchChange}
             onFieldChange={onFieldChange}
             onStepChange={onStepChange}
           />
@@ -143,7 +141,7 @@ export const AddExpenseDrawerFlow = ({
         )}
       </div>
 
-      <DrawerFooter className='border-t border-border/70 px-4 pt-3 pb-safe'>
+      <DrawerFooter>
         <div className='flex items-center gap-3'>
           {step > 1 && step < 3 ? (
             <Button
@@ -154,7 +152,7 @@ export const AddExpenseDrawerFlow = ({
               {t('common.actions.back')}
             </Button>
           ) : null}
-          {step < 3 ? (
+          {step < 3 && step > 1 ? (
             <Button
               className='flex-1'
               disabled={
@@ -166,7 +164,8 @@ export const AddExpenseDrawerFlow = ({
               onClick={() => onStepChange((step + 1) as AddExpenseStep)}>
               {t('common.actions.continue')}
             </Button>
-          ) : (
+          ) : null}
+          {step === 3 ? (
             <>
               <Button
                 className='flex-1'
@@ -185,7 +184,7 @@ export const AddExpenseDrawerFlow = ({
                   : t('common.actions.finish')}
               </Button>
             </>
-          )}
+          ) : null}
         </div>
       </DrawerFooter>
     </DrawerContent>

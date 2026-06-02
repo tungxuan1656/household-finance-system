@@ -32,6 +32,7 @@ function StartDateField({ control, isSubmitting }: BaseFieldProps) {
           <FieldContent>
             <Input
               aria-invalid={fieldState.invalid}
+              className='max-w-full appearance-none'
               disabled={isSubmitting}
               id='group-start-date'
               type='date'

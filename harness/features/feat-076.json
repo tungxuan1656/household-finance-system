@@ -1,0 +1,43 @@
+{
+  "id": "feat-076",
+  "name": "Mobile PWA UI foundation refactor",
+  "status": "done",
+  "description": "Create canonical mobile PWA UI rules and apply the critical UI foundation refactor for iOS-first shell, safe-area, dvh, fixed bottom tabs, drawer-first overlays, compact landing, and group card mobile action density.",
+  "dependencies": ["feat-035", "feat-072", "feat-073"],
+  "evidence": {
+    "impact_checks": [
+      "GitNexus upstream impact for MainLayout: LOW risk, ProtectedGroupLayout direct consumer.",
+      "GitNexus upstream impact for BottomTab: LOW risk, MainLayout direct consumer.",
+      "GitNexus upstream impact for DrawerContent: HIGH risk because AddExpenseDrawerFlow and AddExpenseDialogProvider depend on it; changes were kept to primitive layout/height/footer contract and verified by typecheck/build.",
+      "GitNexus upstream impact for CreateGroupDialog, EditGroupDialog, GroupForm, ExpenseFeedFilters, GroupCard, PageContent, PageFooter, RootLayout, Navigation, HeroSection, LandingPage, and ErrorPage01: LOW risk.",
+      "GitNexus upstream impact for DataState: CRITICAL risk; intentionally not edited in this pass."
+    ],
+    "artifacts": [
+      "Added mobile PWA UI rules and UI audit reference docs under docs/references/frontend.",
+      "Updated docs/FRONTEND.md to route mobile PWA shell/safe-area/drawer work to the new docs.",
+      "Reworked root/body, protected shell, page wrappers, bottom tabs, drawer primitive, add-expense drawer/FAB, expense advanced filter, group create/edit form overlay, group card actions, landing header/hero, and the shadcn error block to use dvh/safe-area/mobile drawer rules.",
+      "Follow-up Chrome DevTools MCP pass fixed the protected shell scroll root, removed mobile double padding from MainLayout, hardened date inputs, and stacked the Insights summary donut chart on narrow mobile widths.",
+      "Changed mobile bottom tabs from floating pill navigation to a traditional full-width app tab bar and updated the mobile PWA rules doc to match.",
+      "Applied a follow-up mobile polish pass for households, groups, settings, page header, and drawer interactions: household creation now uses a mobile bottom drawer, household detail card internals no longer overflow narrow viewports, group cards rely on card tap for detail while keeping a stable overflow menu, group create/edit drawers use header close actions instead of footer cancel, and avatar preview uses a sized Next Image blob preview.",
+      "Applied a final QA follow-up fix set: expense detail now resolves household names from the existing household query instead of rendering raw household IDs, and the worker CORS allowlist now accepts loopback localhost origins on arbitrary dev ports while keeping the explicit shared-network origin path."
+    ],
+    "verification": [
+      "./init.sh lint passed with OK.",
+      "./init.sh typecheck passed with OK.",
+      "./init.sh test passed with OK.",
+      "./init.sh build passed with OK.",
+      "Full ./init.sh passed with Done!.",
+      "Final gitnexus_detect_changes(scope: all) returned CRITICAL risk with 36 changed symbols, 25 affected processes, and 21 changed files; affected flow set is expected for a shell/drawer/layout refactor.",
+      "Source scan found no remaining 100vh, min-h-screen, h-screen, min-h-svh, 80vh, or 85vh matches under apps/web/src.",
+      "Chrome DevTools MCP verified 320px mobile layout on /account, /insights, and /households: document/body width matched viewport, windowScrollY stayed 0, main was the scroll container, headers stayed sticky at top 0 after scroll, and no overflow offenders remained.",
+      "Chrome DevTools MCP verified /expenses advanced filter and /groups create drawer date inputs at 320px: date inputs stayed inside viewport, maxWidth computed to 100%, and appearance computed to none.",
+      "Chrome DevTools MCP verified the traditional bottom tab bar at 320px on /expenses and /account: nav container spans viewport left 0 to right 320, stays fixed at viewport bottom, has no overflow offenders, and account header stays sticky while main scrolls.",
+      "Follow-up Chrome DevTools MCP verification at 390px used a seeded auth-store plus mocked XHR responses because local sign-up was failing in the dev backend: /households opened household creation in a bottom drawer with a header close button; /households/household-1 reported scrollWidth == clientWidth with no horizontal overflow; /groups showed no redundant view-detail button and selecting Edit from the overflow menu kept the route on /groups while opening the edit drawer; /account/settings opened the avatar preview dialog from a blob URL with no console errors after file selection.",
+      "./init.sh build passed with OK after the mobile follow-up fixes.",
+      "Full ./init.sh passed with Done! after the mobile follow-up fixes.",
+      "Chrome DevTools MCP real-auth QA on Saturday, May 30, 2026 used the provided production-like account on localhost:3000 after restarting a stale dev server. Mobile 390x844 verified /sign-in, /sign-up, /expenses, /insights, /households, /households/[id], /groups, /groups/[id], /budgets, /account, and /account/settings: tested routes kept document scrollWidth equal to clientWidth, top-level tab routes kept main as the mobile scroll root with sticky headers and fixed bottom tabs, and contextual routes rendered without horizontal overflow. Desktop 1440x900 spot checks on /expenses, /households/[id], and /account/settings showed the desktop banner/top-nav shell rendering correctly with no bottom-tab bleed. Operational note only: localhost:3001 could not be used for authenticated QA because backend CORS only allowed http://localhost:3000, and the pre-existing localhost:3000 dev server had to be restarted once because it served a stale .next runtime ENOENT for app-build-manifest.json.",
+      "Follow-up fix verification on Saturday, May 30, 2026: expense detail on /expenses/01KST0HSQQX4SD8H4E1ZRM3CBC now shows 'GĐ Giàu có' instead of the raw household id during Chrome DevTools MCP real-auth verification; worker focused test `pnpm --filter worker exec vitest run test/unit/cors.spec.ts` passed with 4/4 tests; localhost:3001 real-auth verification now succeeds after the worker CORS update and lands on /expenses instead of hanging on /auth/provider/exchange; ./init.sh typecheck passed with OK; ./init.sh build passed with OK; full ./init.sh passed with Done!."
+    ]
+  },
+  "notes": "Follow-up browser evidence was captured with Chrome DevTools MCP at 320px mobile viewport. Full init and final GitNexus change detection are recorded in harness/progress.md."
+}

@@ -21,13 +21,13 @@ function InsightsSummaryCards({
 
   return (
     <Card className='overflow-hidden'>
-      <CardContent className='flex flex-row items-center gap-6 p-6'>
+      <CardContent className='flex min-w-0 flex-col items-start gap-4 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-6'>
         {/* Left: Total amount */}
-        <div className='flex flex-1 flex-col gap-2'>
+        <div className='flex min-w-0 flex-1 flex-col gap-2'>
           <CardDescription className='text-xs font-medium tracking-wider uppercase'>
             {data.period}
           </CardDescription>
-          <div className='font-heading text-4xl font-bold tracking-tight text-foreground'>
+          <div className='font-heading text-3xl font-bold tracking-tight wrap-break-word text-foreground sm:text-4xl'>
             {formatCurrency(data.totalSpendMinor, data.currencyCode)}
           </div>
           <div className='flex flex-wrap gap-2 pt-2'>
@@ -41,7 +41,7 @@ function InsightsSummaryCards({
         {chartData.length > 0 ? (
           <div
             aria-label={t('insights.topCategories.title')}
-            className='relative h-36 w-36 shrink-0'
+            className='relative mx-auto h-32 w-32 shrink-0 sm:h-36 sm:w-36'
             role='img'>
             <ResponsiveContainer height='100%' width='100%'>
               <PieChart>

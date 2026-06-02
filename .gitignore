@@ -27,3 +27,4 @@ __pycache__/
 .playwright-cli
 .playwright
 data/state_store.db
+.antigravitycli

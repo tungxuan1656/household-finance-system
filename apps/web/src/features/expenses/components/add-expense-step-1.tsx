@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarIcon, SearchIcon } from 'lucide-react'
+import { CalendarIcon } from 'lucide-react'
 
 import { FieldError } from '@/components/ui/field'
 import {
@@ -28,9 +28,9 @@ const CategoryTile = ({
 }) => (
   <button
     className={cn(
-      'flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-2xl border border-border/70 bg-card px-2 py-3 text-center transition-colors',
+      'flex flex-col items-center justify-center gap-1.5 rounded-2xl px-2 py-2 text-center transition-colors',
       isSelected
-        ? 'border-primary bg-primary text-primary-foreground'
+        ? 'border-primary bg-primary/10 text-primary-foreground'
         : 'hover:border-primary/50 hover:bg-accent/40',
     )}
     type='button'
@@ -60,7 +60,6 @@ type Step1Props = {
   filteredCategories: ExpenseEntryCategoryOption[]
   formState: ExpenseEntryFormState
   isSubmitting: boolean
-  onCategorySearchChange: (value: string) => void
   onFieldChange: <K extends keyof ExpenseEntryFormState>(
     key: K,
     value: ExpenseEntryFormState[K],
@@ -73,7 +72,6 @@ export function AddExpenseStep1({
   filteredCategories,
   formState,
   isSubmitting,
-  onCategorySearchChange,
   onFieldChange,
   onStepChange,
 }: Step1Props) {
@@ -102,19 +100,7 @@ export function AddExpenseStep1({
       </InputGroup>
       <FieldError>{errors.occurredOn}</FieldError>
 
-      <InputGroup>
-        <InputGroupAddon>
-          <SearchIcon />
-        </InputGroupAddon>
-        <InputGroupInput
-          placeholder='Search categories'
-          type='search'
-          value={formState.categoryKey as string}
-          onChange={(event) => onCategorySearchChange(event.target.value)}
-        />
-      </InputGroup>
-
-      <div className='grid flex-1 grid-cols-4 gap-2'>
+      <div className='flex flex-row flex-wrap gap-2'>
         {filteredCategories.map((category) => (
           <CategoryTile
             key={category.key}

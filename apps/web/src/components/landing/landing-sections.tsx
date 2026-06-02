@@ -16,23 +16,23 @@ import { t } from '@/lib/i18n/t'
 
 export function Navigation() {
   return (
-    <header className='fixed top-0 right-0 left-0 z-50 flex h-16 items-center justify-between border-b border-border/40 bg-background/70 px-6 backdrop-blur-md md:px-12'>
-      <div className='flex items-center gap-2'>
-        <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20'>
-          <Wallet className='h-6 w-6 text-primary-foreground' />
+    <header className='fixed top-0 right-0 left-0 z-50 flex min-h-14 items-center justify-between border-b border-border/40 bg-background/70 px-4 pt-safe backdrop-blur-md md:min-h-16 md:px-12'>
+      <div className='flex min-w-0 items-center gap-2'>
+        <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary shadow-md shadow-primary/20 md:h-10 md:w-10'>
+          <Wallet className='h-5 w-5 text-primary-foreground md:h-6 md:w-6' />
         </div>
-        <span className='bg-linear-to-r from-primary to-sky-400 bg-clip-text text-xl font-bold tracking-tight text-transparent'>
+        <span className='truncate bg-linear-to-r from-primary to-sky-400 bg-clip-text text-base font-bold tracking-tight text-transparent md:text-xl'>
           Household Finance
         </span>
       </div>
-      <div className='flex items-center gap-4'>
+      <div className='flex shrink-0 items-center gap-2 md:gap-4'>
         <Button asChild className='hidden sm:flex' variant='ghost'>
           <Link href={PATHS.SIGN_IN}>{t('common.actions.signIn')}</Link>
         </Button>
         <Button
           asChild
-          className='rounded-full shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95'
-          size='lg'>
+          className='rounded-full shadow-md shadow-primary/20 transition-all hover:scale-105 active:scale-95'
+          size='sm'>
           <Link href={PATHS.APP_ROOT}>{t('landing.hero.cta')}</Link>
         </Button>
       </div>
@@ -42,23 +42,25 @@ export function Navigation() {
 
 export function HeroSection() {
   return (
-    <section className='relative overflow-hidden px-6 pt-32 pb-20 md:pt-48 md:pb-32'>
+    <section className='relative overflow-hidden px-4 pt-[calc(env(safe-area-inset-top)+6rem)] pb-14 md:px-6 md:pt-48 md:pb-32'>
       <div className='absolute top-1/4 -left-20 -z-10 h-72 w-72 animate-pulse rounded-full bg-primary/20 blur-[100px]' />
       <div className='absolute top-1/3 -right-20 -z-10 h-80 w-80 animate-pulse rounded-full bg-sky-400/20 blur-[120px] delay-700' />
       <div className='container mx-auto max-w-4xl text-center'>
-        <Badge className='mb-6 rounded-full px-4 py-1' variant='secondary'>
+        <Badge
+          className='mb-4 rounded-full px-4 py-1 md:mb-6'
+          variant='secondary'>
           New: {t('landing.hero.title')}
         </Badge>
-        <h1 className='mb-6 text-4xl leading-tight font-extrabold tracking-tight md:text-6xl lg:text-7xl'>
+        <h1 className='mb-4 text-3xl leading-tight font-extrabold tracking-tight md:mb-6 md:text-6xl lg:text-7xl'>
           {t('landing.hero.title')}
         </h1>
-        <p className='mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl'>
+        <p className='mx-auto mb-7 max-w-2xl text-base leading-relaxed text-muted-foreground md:mb-10 md:text-xl'>
           {t('landing.hero.subtitle')}
         </p>
-        <div className='flex flex-col items-center justify-center gap-4 sm:flex-row'>
+        <div className='flex flex-col items-center justify-center gap-3 sm:flex-row md:gap-4'>
           <Button
             asChild
-            className='h-14 w-full rounded-full px-8 text-lg shadow-xl shadow-primary/25 transition-all hover:scale-105 active:scale-95 sm:w-auto'
+            className='h-12 w-full rounded-full px-6 text-base shadow-xl shadow-primary/25 transition-all hover:scale-105 active:scale-95 sm:w-auto md:h-14 md:px-8 md:text-lg'
             size='lg'>
             <Link className='flex items-center gap-2' href={PATHS.APP_ROOT}>
               {t('landing.hero.cta')}
@@ -66,7 +68,7 @@ export function HeroSection() {
             </Link>
           </Button>
           <Button
-            className='h-14 w-full rounded-full backdrop-blur-sm transition-all hover:bg-secondary/50 sm:w-auto'
+            className='h-12 w-full rounded-full backdrop-blur-sm transition-all hover:bg-secondary/50 sm:w-auto md:h-14'
             size='lg'
             variant='outline'>
             {t('landing.hero.secondaryCta')}
