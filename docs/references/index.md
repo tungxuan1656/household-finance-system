@@ -34,8 +34,11 @@ Canonical leaf standards map. Use this index to choose exact rule doc. Do not re
 
 | Need | Doc |
 |------|-----|
-| TWA app placement, routing, native bridge, storage, performance | `twa/app-structure-and-client-rules.md` |
+| TWA app placement, package boundary, router shell, UI defaults | `twa/app-structure-and-client-rules.md` |
+| TWA native navigation, motion, safe area, keyboard, theme | `twa/native-ui-and-navigation-pattern.md` |
+| TWA query/store/cache/storage ownership | `twa/state-and-storage-pattern.md` |
 | TWA auth, deep-link, and bot boundary | `twa/auth-and-bot-pattern.md` |
+| TWA local dev, test env, debugging, hardening QA | `twa/development-and-hardening-pattern.md` |
 
 ## Backend
 

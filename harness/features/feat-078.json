@@ -15,7 +15,8 @@
       "Added `docs/design-docs/telegram-mini-app-client-architecture.md` as the durable home for TWA client architecture and native-bridge policy.",
       "Added `docs/product-specs/telegram-mini-app.md` and updated current auth/invite/quick-add specs so TWA maps cleanly onto existing product behavior.",
       "Added `docs/TWA.md`, `docs/references/twa/app-structure-and-client-rules.md`, and `docs/references/twa/auth-and-bot-pattern.md`, then routed them from `AGENTS.md`, `docs/FRONTEND.md`, `docs/BACKEND.md`, and `docs/references/index.md`.",
-      "Added the completed ExecPlan, updated `docs/exec-plans/index.md`, updated `ARCHITECTURE.md`, seeded `feat-079` through `feat-085`, updated `harness/feature_index.json`, and logged progress in `harness/progress.md`."
+      "Added the completed ExecPlan, updated `docs/exec-plans/index.md`, updated `ARCHITECTURE.md`, seeded `feat-079` through `feat-085`, updated `harness/feature_index.json`, and logged progress in `harness/progress.md`.",
+      "2026-06-02 follow-up expanded the TWA leaf-doc set with native UI/navigation, state/storage, and development/hardening guides, and refreshed the existing TWA rules to reflect newer Telegram package, storage, and launch-surface guidance."
     ],
     "verification": [
       "Node JSON.parse validation passed for `harness/feature_index.json` and all new `harness/features/feat-078..085.json` files.",
@@ -23,6 +24,7 @@
       "`git diff --check` passed with no whitespace errors.",
       "Final `./init.sh` verification passed with `Done!`.",
       "2026-06-02 review follow-up resolved leftover harness merge markers and added the TWA leaf docs, exec plan, and feature records to Git so the branch diff includes the files routed by the updated docs.",
+      "2026-06-02 docs-guideline follow-up re-checked current Telegram Mini Apps docs for package migration, `startapp`/`startattach`, launch-context auth, test environment, and Bot API 9.0/9.1 capability notes before updating the TWA leaf docs.",
       "Final `gitnexus_detect_changes(scope: all, repo: household-finance-system)` was run before completion reporting."
     ]
   },

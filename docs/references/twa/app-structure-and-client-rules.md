@@ -1,12 +1,34 @@
 # TWA app structure and client rules
 
-Canonical rules for the planned `apps/twa` client.
+Canonical client structure rules for planned `apps/twa`.
 
 ## Scope
 
-This doc is for the Telegram Mini App client only.
+Use this doc for:
 
-It does not replace the `apps/web` rules.
+- workspace/package placement
+- folder ownership
+- router/bootstrap boundaries
+- SDK package-line choice
+- TWA UI-system defaults
+
+## Stack defaults
+
+- Use React + Vite SPA.
+- Use React Router for in-app history.
+- Use TanStack Query for server state.
+- Use Zustand for small client-local workflow state.
+- Use Framer Motion for screen, sheet, and high-touch interaction motion.
+
+## SDK package-line rule
+
+Telegram Mini Apps packages changed namespace over time.
+
+Rules:
+
+- Prefer the current `@tma.js/*` line when the first runtime plan freezes dependencies.
+- Do not mix `@tma.js/*` and `@telegram-apps/*` in one client.
+- If a slice intentionally stays on older `@telegram-apps/*`, record why in the plan and keep the migration boundary explicit.
 
 ## Package boundary
 
@@ -15,8 +37,9 @@ Place the client in a separate workspace package:
 ```text
 apps/twa/
   src/
-    app/                 # bootstrap, providers, router shell
-    routes/              # route table and route-level guards only
+    app/
+      bootstrap/          # init, providers, app shell
+      router/             # router creation, route shells, lazy routes
     features/
       <domain>/
         api/
@@ -29,87 +52,84 @@ apps/twa/
     components/
       shared/
       ui/
-    api/                 # shared HTTP client and endpoint modules
     lib/
-      telegram/          # bridge adapters, capability checks, storage wrappers
+      telegram/           # SDK wrappers only
       auth/
+      query/
+      storage/
       i18n/
-    stores/
+    routes/               # route table and route-level guards only
     utils/
 ```
 
 Rules:
 
-- Do not add TWA code under `apps/web`.
+- Do not add TWA runtime code under `apps/web`.
 - Do not import feature or UI code from `apps/web/src`.
-- Reuse only shared DTOs, extracted helpers, and API contracts.
+- Reuse only shared DTOs, extracted pure helpers, and worker API contracts.
+- Do not fork domain rules between web and TWA.
 
-## Stack rules
+## Import direction
 
-- Use React + Vite SPA.
-- Use React Router for navigation.
-- Use TanStack Query for server state.
-- Use Zustand for small multi-step workflow state.
-- Use Framer Motion for screen and sheet transitions.
+Allowed:
 
-## SDK package rule
+```text
+src/main.tsx -> app/bootstrap/*
+app/router/* -> routes/* -> features/*/pages/*
+features/* -> feature-local components/hooks/api/stores/types/utils
+features/* -> components/shared or components/ui when reuse is real
+lib/telegram/* -> raw Telegram SDK packages
+```
 
-The TMA ecosystem has package-name churn.
+Forbidden:
 
-Rules:
+```text
+feature/page/component -> window.Telegram.WebApp direct calls
+components/ui -> feature code
+shared component -> domain-specific feature component
+apps/twa -> apps/web/src imports
+```
 
-- Choose one current SDK package line before coding.
-- Pin it explicitly in the feature plan and package.json.
-- Do not mix `@tma.js/*` and `@telegram-apps/*` packages in one client.
+## Shell ownership
 
-## Telegram bridge rules
+Keep shell responsibilities explicit:
 
-- Mount and wrap Telegram bridge APIs in `src/lib/telegram/*`.
-- Page and feature code should call app-owned adapters, not raw globals.
-- Capability checks belong in wrappers, not duplicated across screens.
+- Root app shell owns bootstrap gates, providers, viewport/theme binding, and fatal launch/auth failure UI.
+- Route shells own route composition, route-level lazy loading, and route-level guards.
+- Flow shells own `BackButton`, `BottomButton`, closing-confirmation, and multi-step flow state wiring.
+- Leaf components render feature UI. They do not own Telegram global chrome.
 
-Examples of wrapped concerns:
+## Router rules
 
-- launch params
-- theme and viewport binding
-- `BackButton`
-- `BottomButton`
-- haptics
-- `SecureStorage`
-- `DeviceStorage`
-
-## Routing rules
-
-- All navigation must stay inside SPA history.
+- All in-app navigation stays inside SPA history.
 - Use `navigate()` or `Link` only.
-- Do not navigate with `window.location` for in-app flows.
-- Multi-step expense URLs are allowed only when state stays inside the SPA.
+- Full-page route changes with `window.location` are a bug for TWA flows.
+- Route-level code splitting is allowed and preferred for heavier read surfaces.
+- If BrowserRouter is used, deployment must include SPA fallback rewrites. Do not rely on 404 recovery.
 
-## UI rules
+## UI-system rules
 
-- Do not port the web protected shell or shadcn page wrappers as the default TWA shell.
-- Telegram-adaptive mobile primitives are allowed for list and form scaffolding.
-- Project-owned components should handle amount entry, bottom sheets, and other high-touch finance UI.
+- TWA does not inherit `shadcn/ui` as its default UI language.
+- Telegram-adaptive list/form primitives are allowed for low-level mobile scaffolding.
+- Project-owned components should own amount entry, bottom sheets, segmented tabs, and finance-specific interaction states.
 - Theme from Telegram CSS vars first. Hardcoded web-theme assumptions are not allowed.
+- There is no native Telegram tab bar, title header, or bottom sheet. Build those as web UI.
 
-## State and storage rules
+## State placement rules
 
-- Session bootstrap must follow the worker auth model, not a client-only token model.
-- Prefer `SecureStorage` for session persistence when supported.
-- Keep the unsupported-storage fallback behind one adapter and document the security tradeoff.
-- `DeviceStorage` is cache only. Do not treat it as source of truth.
+- TanStack Query owns worker-backed data.
+- Zustand owns short-lived multi-step flow state only.
+- Local component state owns presentational UI state.
+- Do not mirror server DTOs into long-lived client stores without a real offline/resume need.
 
-## Interaction and performance rules
+## Performance defaults
 
-- Animate `transform` and `opacity` only.
-- Lazy-load heavy read surfaces such as large insights screens.
-- Keep safe-area and keyboard behavior in the base layout.
-- Use touch-first handlers only where a real tap-delay or gesture problem exists.
-- Do not replace all semantic click handlers with touch handlers by default.
+- Lazy-load heavier read surfaces such as insights or chart-heavy screens.
+- Keep startup light: auth bootstrap, current user, and route intent first; bulk reference data later.
+- Keep animation, safe-area, and keyboard behavior inside the shared shell layer, not re-solved per page.
 
 ## Verification rules
 
-- Prefer unit tests for helpers, adapters, stores, and pure flow logic.
-- Verify UI behavior with browser/manual evidence in Telegram-like mobile viewports.
-- Record which flows were checked in harness evidence.
-- Final repo verification still uses `./init.sh` from repo root.
+- Prefer unit tests for wrappers, helpers, stores, and flow reducers.
+- Verify route, keyboard, safe-area, and native-button behavior in Telegram-like mobile WebView conditions.
+- Record which launch modes and device classes were checked in harness evidence.

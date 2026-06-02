@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-02 — Expanded TWA reference docs into practical implementation guides
+
+- Who: Codex
+- Summary: Expanded the planned Telegram Mini App docs from two thin leaves into a fuller implementation set. The TWA router and references index now route five focused leaf docs covering app structure, native navigation/UI, state/storage, auth/bot boundary, and development/hardening. The refreshed guidance also corrects a few stale assumptions from the initial brief: newer package guidance now points future runtime work toward the `@tma.js/*` line, `BottomButton` is treated as the current name for the old Main Button surface, local development can use Telegram's test environment without forcing HTTPS in every case, and newer storage/keyboard capabilities are documented as version-gated rather than assumed universal.
+- Files changed: TWA reference leaf docs, the TWA docs router, the shared references index, the related TWA harness feature evidence, and this progress log.
+- Verification: Docs-only verification used direct artifact checks. `node -e "JSON.parse(require('fs').readFileSync('harness/features/feat-078.json','utf8')); console.log('OK feat-078.json')"` passed with `OK feat-078.json`; `./scripts/check_harness_size.sh` passed with `Harness size checks passed`; `git diff --check` passed with no whitespace issues; final `gitnexus_detect_changes(scope: all, repo: household-finance-system)` returned `LOW` risk with 5 changed symbols, 6 changed files, and 0 affected processes.
+- Blockers: none.
+- Next steps: none.
+
 ## 2026-06-02 — Fixed TWA docs patch mergeability issues
 
 - Who: Antigravity
