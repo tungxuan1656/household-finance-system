@@ -19,6 +19,7 @@ Telegram Mini App router. Read this for `apps/tma` work, then read only exact TM
 | Query/store ownership, bootstrap state, SecureStorage/DeviceStorage fallback | `docs/references/tma/state-and-storage-pattern.md` |
 | Worker auth, startapp, invite payloads, bot boundary | `docs/references/tma/auth-and-bot-pattern.md` |
 | Local dev, Telegram test env, debugging, hardening QA | `docs/references/tma/development-and-hardening-pattern.md` |
+| Exact local worker/TMA/Telegram smoke workflow | `docs/references/tma/local-testing-runbook.md` |
 | Which docs to read per TMA phase, locked defaults, remaining slice prerequisites | `docs/references/tma/runtime-readiness-and-slice-map.md` |
 | Shared naming | `docs/references/shared/type-naming-pattern.md` |
 | Product behavior | `docs/product-specs/telegram-mini-app.md` |

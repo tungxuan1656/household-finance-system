@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-02 — Added TMA local testing runbook
+
+- Who: Codex
+- Summary: Added a canonical TMA local testing runbook so worker-local, browser-only TMA, and real Telegram smoke workflows are no longer implicit across README notes and active plans. The new leaf doc explains current repo truth, required local env, worker migrate/seed/dev commands, TMA dev commands, when a fatal launch screen is expected in a normal browser, how to choose between Telegram test environment and tunnel HTTPS for a real launch, and the common failure map for invalid signature, stale launch data, CORS, and memory-only session fallback. `docs/TMA.md` now routes directly to the runbook, and the broader development/hardening doc now points readers there for exact commands.
+- Files changed: New TMA leaf runbook, TMA router doc, TMA development/hardening reference, feat-080 harness evidence, and this progress log.
+- Verification: Docs-only verification pending in this session until artifact checks run; expected checks are `node -e` JSON parse for touched harness JSON, `./scripts/check_harness_size.sh`, `git diff --check`, and final `gitnexus_detect_changes(scope: 'all')`.
+- Blockers: The repo still does not standardize BotFather or Telegram test-environment operator setup, so the runbook documents that gap explicitly instead of inventing repo-local steps.
+- Next steps: Run docs verification checks, then use the new runbook as the canonical answer for local worker/TMA/Telegram auth smoke guidance.
+
 ## 2026-06-02 — Fixed feat-080 auth review blockers
 
 - Who: Codex
