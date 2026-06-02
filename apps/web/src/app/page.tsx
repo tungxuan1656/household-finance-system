@@ -16,7 +16,7 @@ import { t } from '@/lib/i18n/t'
 
 export default function LandingPage() {
   return (
-    <div className='flex min-h-screen flex-col overflow-hidden bg-background text-foreground'>
+    <div className='flex min-h-dvh flex-col overflow-x-hidden bg-background text-foreground'>
       <Navigation />
       <main className='flex-1'>
         <HeroSection />

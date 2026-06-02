@@ -379,6 +379,16 @@
       "id": "feat-075",
       "name": "Pre-ship browser testing plan",
       "status": "done"
+    },
+    {
+      "id": "feat-076",
+      "name": "Mobile PWA UI foundation refactor",
+      "status": "done"
+    },
+    {
+      "id": "feat-077",
+      "name": "Remove category search input from AddExpenseStep1",
+      "status": "done"
     }
   ]
 }

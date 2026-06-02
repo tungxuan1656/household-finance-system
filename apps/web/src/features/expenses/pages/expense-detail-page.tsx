@@ -41,6 +41,11 @@ export const ExpenseDetailPage = () => {
   const deleteExpense = useDeleteExpenseMutation()
   const expenseQuery = useExpenseDetailQuery(id)
   const { data: expense, isLoading, error, refetch } = expenseQuery
+  const householdName = expense?.householdId
+    ? (households?.items.find(
+        (household) => household.id === expense.householdId,
+      )?.name ?? null)
+    : null
   const isAdmin =
     expense?.householdId != null &&
     (households?.items.some(
@@ -122,7 +127,10 @@ export const ExpenseDetailPage = () => {
                 </Button>
                 {detailActions}
               </div>
-              <ExpenseDetailCard expense={expense} />
+              <ExpenseDetailCard
+                expense={expense}
+                householdName={householdName}
+              />
             </div>
           ) : null}
         </DataState>

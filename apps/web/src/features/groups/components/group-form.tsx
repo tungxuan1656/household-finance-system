@@ -11,6 +11,7 @@ import type {
   UpdateExpenseGroupRequest,
 } from '@/features/groups/types/group'
 import { t } from '@/lib/i18n/t'
+import { cn } from '@/utils/cn'
 
 import {
   BudgetField,
@@ -31,6 +32,9 @@ type GroupFormProps = {
   ) => void
   onCancel: () => void
   isSubmitting: boolean
+  className?: string
+  footerClassName?: string
+  showCancelButton?: boolean
 }
 
 function GroupForm({
@@ -40,6 +44,9 @@ function GroupForm({
   onSubmit,
   onCancel,
   isSubmitting,
+  className,
+  footerClassName,
+  showCancelButton = true,
 }: GroupFormProps) {
   const form = useForm<GroupFormValues>({
     defaultValues: {
@@ -74,23 +81,25 @@ function GroupForm({
 
   return (
     <form
-      className='flex flex-col gap-5'
+      className={cn('flex min-h-0 flex-col gap-4', className)}
       onSubmit={form.handleSubmit(handleSubmit)}>
-      <FieldGroup>
+      <FieldGroup className='gap-4'>
         <NameField control={form.control} isSubmitting={isSubmitting} />
         <DescriptionField control={form.control} isSubmitting={isSubmitting} />
         <StartDateField control={form.control} isSubmitting={isSubmitting} />
         <EndDateField control={form.control} isSubmitting={isSubmitting} />
         <BudgetField control={form.control} isSubmitting={isSubmitting} />
       </FieldGroup>
-      <DialogFooter>
-        <Button
-          disabled={isSubmitting}
-          type='button'
-          variant='ghost'
-          onClick={onCancel}>
-          {t('common.actions.cancel')}
-        </Button>
+      <DialogFooter className={footerClassName}>
+        {showCancelButton ? (
+          <Button
+            disabled={isSubmitting}
+            type='button'
+            variant='ghost'
+            onClick={onCancel}>
+            {t('common.actions.cancel')}
+          </Button>
+        ) : null}
         <Button disabled={isSubmitting} type='submit'>
           {isSubmitting
             ? mode === 'create'

@@ -9,6 +9,60 @@
 - Next steps: <next actions>
 
 <!-- Start writing log before here, latest log on top -->
+## 2026-05-31 — Removed category search input from AddExpenseStep1
+
+- Who: Antigravity
+- Summary: Removed the category search input from AddExpenseStep1 and cleaned up all category search logic and properties from parent components (AddExpenseDrawerFlow and AddExpenseDialog).
+- Files changed: The expense quick-add step 1 component, the expense quick-add drawer flow, the add expense dialog wrapper, the harness feature index, the feat-077 feature JSON file, and this progress log.
+- Verification: GitNexus upstream impact check for `AddExpenseStep1` returned HIGH risk due to drawer and dialog dependency, so changes were kept precise and clean. GitNexus change detection returned medium risk with 3 files changed. Run of `./init.sh lint` passed with `OK`; `./init.sh typecheck` passed with `OK`; `./init.sh test` passed with `OK`; `./init.sh build` passed with `OK`.
+- Blockers: none.
+- Next steps: none.
+
+## 2026-05-30 — Fixed expense-detail household label and loopback auth CORS
+
+- Who: Orchestrator
+- Summary: Fixed the remaining concrete issues found during the real-account QA pass. Expense detail now resolves the household name from the existing household query instead of rendering the raw household id. On the worker side, the API CORS origin check is now a dedicated helper that still preserves the explicit shared-network origin but also accepts localhost and loopback origins on arbitrary dev ports, which unblocked authenticated browser testing on `localhost:3001`.
+- Files changed: Expense detail page/card wiring, new worker CORS helper, worker entrypoint CORS wiring, focused worker unit test, feat-076 evidence, and this progress log.
+- Verification: GitNexus upstream impact for `ExpenseDetailCard` returned LOW risk with `ExpenseDetailPage` as the direct consumer; GitNexus could not resolve a named root-worker symbol for `apps/worker/src/index.ts`, so the CORS change was kept intentionally narrow and covered with a focused unit test. Chrome DevTools MCP real-auth verification on `localhost:3000` confirmed `/expenses/01KST0HSQQX4SD8H4E1ZRM3CBC` now shows `GĐ Giàu có` in the household row. Chrome DevTools MCP verification on `localhost:3001` confirmed the previously failing sign-in flow now reaches `/expenses` with the provided account after the worker restart. `pnpm --filter worker exec vitest run test/unit/cors.spec.ts` passed with 4/4 tests; `./init.sh typecheck` passed with `OK`; `./init.sh build` passed with `OK`; full `./init.sh` passed with `Done!`.
+- Blockers: none.
+- Next steps: If you want, the next cleanup is to move the worker CORS origin list behind explicit environment configuration instead of keeping the shared-network origin inline.
+
+## 2026-05-30 — Completed real-account PWA layout QA sweep
+
+- Who: Orchestrator
+- Summary: Logged into the web app with the provided account on a clean localhost:3000 dev server and ran a Chrome DevTools MCP layout sweep across the public auth surface and the main protected route set. Mobile 390x844 checks covered `/sign-in`, `/sign-up`, `/expenses`, `/insights`, `/households`, `/households/[id]`, `/groups`, `/groups/[id]`, `/budgets`, `/account`, and `/account/settings`; desktop 1440x900 spot checks covered `/expenses`, `/households/[id]`, and `/account/settings`. No new PWA layout blockers were found: tested routes kept document width equal to viewport width, top-level tab routes kept `main` as the scroll root with sticky headers and fixed bottom tabs, and desktop top nav rendered correctly on the checked pages.
+- Files changed: feat-076 evidence and this progress log only.
+- Verification: Chrome DevTools MCP real-auth QA passed on localhost:3000 after restarting a stale dev server that was serving a `.next` runtime ENOENT for `app-build-manifest.json`. Operational constraint only: localhost:3001 could not be used for authenticated QA because backend CORS allowed `http://localhost:3000` but blocked `http://127.0.0.1:3001`. A focused JSON parse check for `harness/features/feat-076.json` and `harness/feature_index.json` returned `OK` after recording the evidence.
+- Blockers: none on the tested layouts; only local dev-environment friction from the stale server instance and the backend CORS origin allowlist.
+- Next steps: No code change needed from this QA pass. If you want broader confidence, the remaining follow-up is a wider desktop sweep of contextual routes such as budget dialogs and group edit flows under production-like data volume.
+
+## 2026-05-30 — Finished mobile households/groups/settings follow-up fixes
+
+- Who: Orchestrator
+- Summary: Completed the requested mobile follow-up pass across households, groups, settings, shell navigation, and drawer behavior. Household creation now uses a bottom drawer on mobile, household detail no longer overflows narrow widths, group cards rely on card tap for navigation while overflow-menu actions stay on the list route, mobile group drawers use a header close button instead of a footer cancel action, bottom tabs now use color-only active state with reduced height, page headers are slightly taller with a larger title, and avatar preview no longer throws the blob-image width error.
+- Files changed: Mobile shell primitives, page header, household create/detail card internals, group dialog/card/form components, profile avatar preview dialog, feat-076 evidence, and this progress log.
+- Verification: GitNexus upstream impact before edits returned LOW risk for `BottomTab`, `CreateGroupDialog`, `GroupCard`, `HouseholdDetailPage`, `HouseholdCreateDialog`, `GroupForm`, `HouseholdSettingsCard`, and `HouseholdMembersCard`; `ProfileAvatarDialog` was HIGH risk and `Drawer` was CRITICAL risk, so both were changed narrowly and verified afterward. `./init.sh typecheck` passed with `OK`; `./init.sh build` passed with `OK`; full `./init.sh` passed with `Done!`. Chrome DevTools MCP at 390px, using seeded auth-store + mocked XHR because local sign-up was failing in the dev backend, verified `/households` opens creation in a bottom drawer with a header close button, `/households/household-1` has `scrollWidth == clientWidth`, `/groups` no longer shows a redundant view-detail button and selecting Edit from the overflow menu keeps the route on `/groups`, and `/account/settings` opens the blob avatar preview dialog with no console errors after file upload. Computed-style checks also confirmed the active bottom-tab link has transparent background and the mobile page header now renders at `64px` high with a `20px` title.
+- Blockers: Local sign-up/create-account flow is failing against the current dev backend, so protected-route browser verification used a mocked authenticated session instead of real auth.
+- Next steps: Review the diff in browser with a live backend session if you want to validate the same flows against real network data, then commit if desired.
+
+## 2026-05-30 — Changed bottom tabs to traditional app bar
+
+- Who: Orchestrator
+- Summary: Replaced the floating pill mobile bottom tabs with a traditional full-width app tab bar fixed to the viewport bottom. Updated the mobile PWA UI rules doc so future work does not reintroduce floating tabs.
+- Files changed: Mobile bottom tab layout component, mobile PWA UI rules reference, feature evidence, and this progress log.
+- Verification: GitNexus upstream impact for `BottomTab` returned LOW risk with `MainLayout` as the direct consumer. Chrome DevTools MCP at 320px verified `/expenses` and `/account`: nav spans viewport left 0 to right 320, remains fixed at viewport bottom, no overflow offenders, and account sticky header remains pinned while `main` scrolls. `./init.sh lint` and `./init.sh typecheck` passed with `OK`; full `./init.sh` passed with `Done!`. Final `gitnexus_detect_changes(scope: all)` stayed CRITICAL because the worktree includes the broader mobile shell/drawer refactor plus this tab-style change.
+- Blockers: none.
+- Next steps: Review final diff and commit if desired.
+
+## 2026-05-30 — Mobile PWA UI foundation refactor
+
+- Who: Orchestrator
+- Summary: Added canonical mobile PWA UI rules/audit docs and applied the critical iOS-first UI foundation refactor: dvh/root overflow hardening, fixed safe-area bottom tabs, safer protected page bottom spacing, native bottom drawer primitive, sticky drawer footer, add-expense drawer/FAB spacing, mobile advanced filter drawer, mobile group create/edit drawer, group card overflow actions, compact safe-area landing header/hero, and remaining source `min-h-screen` cleanup.
+- Files changed: Frontend reference docs, frontend docs router, web root/layout CSS, protected shell/page wrappers, drawer primitive, expense quick-add/filter components, group form/dialog/card components, landing page components, shadcn error block, and harness records.
+- Verification: GitNexus impact checks completed before edits; `DrawerContent` was HIGH risk and `DataState` was CRITICAL risk, so `DataState` was intentionally not edited. Follow-up Chrome DevTools MCP testing at 320px found and fixed the sticky-header root cause (`window` was scrolling instead of `main`), date-input hardening gaps, double mobile shell padding, and an Insights summary chart visual overflow. Chrome DevTools MCP then verified `/account`, `/insights`, and `/households` with `docW/bodyW == viewport`, `windowScrollY == 0`, `main` as the scroll container, sticky headers pinned at `top=0` after scroll, and no overflow offenders; it also verified `/expenses` filter date inputs and `/groups` drawer date inputs stay inside viewport with `maxWidth=100%` and `appearance=none`. `./init.sh lint`, `./init.sh typecheck`, `./init.sh test`, and `./init.sh build` passed with `OK`; full `./init.sh` passed with `Done!`. Source scan found no remaining banned viewport-height matches under `apps/web/src`. Final `gitnexus_detect_changes(scope: all)` returned CRITICAL risk with 39 changed symbols, 27 affected processes, and 24 changed files, expected for a shell/drawer/layout refactor.
+- Blockers: none.
+- Next steps: Review browser visuals manually or with the browser test plan if desired.
+
 ## 2026-05-30 — Mark all active plans and features complete
 
 - Who: Orchestrator
