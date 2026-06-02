@@ -12,6 +12,11 @@ FIREBASE_PROJECT_ID="household-finance-local"
 FIREBASE_JWKS_URL="https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"
 AUTH_ALLOW_INSECURE_TEST_TOKENS="false"
 
+# Telegram identity provider settings
+TELEGRAM_BOT_TOKEN="replace-with-telegram-bot-token"
+# Optional freshness window for Telegram initData (default 3600 seconds)
+# TELEGRAM_FRESHNESS_WINDOW_SECONDS="3600"
+
 # Secrets
 AUTH_JWT_SECRET="replace-with-local-secret"
 AUTH_REFRESH_TOKEN_PEPPER="replace-with-local-pepper"

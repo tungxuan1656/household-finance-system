@@ -3,7 +3,7 @@ import type { SupportedLocale } from '@/lib/i18n'
 export interface AuthUser {
   id: string
   email: string | null
-  provider: 'firebase'
+  provider: 'firebase' | 'telegram'
 }
 
 export type HouseholdRole = 'admin' | 'member'
@@ -40,6 +40,8 @@ export interface AppConfig {
   firebaseProjectId: string
   firebaseJwksUrl: string
   allowInsecureTestTokens: boolean
+  telegramBotToken: string
+  telegramFreshnessWindowSeconds: number
 }
 
 export interface CloudinaryConfig {

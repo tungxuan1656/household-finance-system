@@ -18,6 +18,7 @@ const createEnv = (overrides: Partial<Record<string, unknown>> = {}): Env =>
     REFRESH_TOKEN_TTL_SECONDS: '2592000',
     AUTH_JWT_SECRET: 'jwt-secret',
     AUTH_REFRESH_TOKEN_PEPPER: 'refresh-pepper',
+    TELEGRAM_BOT_TOKEN: 'test-telegram-bot-token',
     FIREBASE_PROJECT_ID: 'household-finance-prod',
     APP_ENV: 'test',
     CLOUDINARY_CLOUD_NAME: 'demo-cloud',
@@ -36,6 +37,8 @@ describe('env config', () => {
     expect(config.refreshTokenTtlSeconds).toBe(2592000)
     expect(config.firebaseProjectId).toBe('household-finance-prod')
     expect(config.allowInsecureTestTokens).toBe(false)
+    expect(config.telegramBotToken).toBe('test-telegram-bot-token')
+    expect(config.telegramFreshnessWindowSeconds).toBe(3600)
     expect(config.firebaseJwksUrl).toContain(
       'securetoken@system.gserviceaccount.com',
     )

@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-02 — Fixed feat-080 auth review blockers
+
+- Who: Codex
+- Summary: Fixed the five blocking review findings on the in-progress Telegram Mini App auth slice. TMA auth API requests now join the worker base path only once, so the default client targets `/api/v1/auth/...` instead of `/api/v1/api/v1/auth/...`. Bootstrap now persists the fresh refresh token on both provider-exchange success and refresh success, and `runAuthBootstrap()` returns an explicit fatal/authenticated result so the root gate keeps `FatalLaunchScreen` mounted on fatal launch/bootstrap outcomes instead of falling through to the app shell. The auth context now treats a cold-start refresh as authenticated when a valid access token is restored, even before any later user rehydration step populates `user`. Worker Telegram verification now uses the raw bytes of `HMAC-SHA256("WebAppData", botToken)` as the second-HMAC key, and the Telegram fixtures/tests/docs were updated to match the official algorithm. Added focused TMA regression tests for auth URL composition, bootstrap persistence/result handling, and authenticated-state derivation.
+- Files changed: TMA auth API/bootstrap/store/provider code and focused Vitest coverage; worker Telegram auth helper plus Telegram fixture/spec coverage; feat-080 auth reference/plan docs; feat-080 harness evidence and this progress log.
+- Verification: `pnpm --filter tma exec vitest run src/test/auth-api.test.ts src/test/auth-bootstrap.test.ts src/test/auth-provider.test.ts` passed (3 files, 10 tests); `pnpm --filter worker exec vitest run test/unit/lib/auth/telegram.spec.ts test/integration/auth-telegram.spec.ts` passed (2 files, 19 tests); `./init.sh lint` -> `OK`; `./init.sh typecheck` -> `OK`; `./init.sh build` -> `OK`; final `./init.sh` -> `Done!`.
+- Blockers: none.
+- Next steps: Run final harness checks and GitNexus change detection, then review the remaining feat-080 diff and commit when desired.
+
 ## 2026-06-02 — Implemented TMA runtime scaffold (feat-079)
 
 - Who: Codex

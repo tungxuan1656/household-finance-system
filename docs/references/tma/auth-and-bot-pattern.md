@@ -19,18 +19,23 @@ Use this doc when work adds or changes:
 - If request naming is still Firebase-shaped, neutralize it before landing Telegram support.
 - Keep shared access-token, refresh-token, and user response shapes stable.
 
-## Current repo truth
+## Provider exchange request shape
 
-Current runtime evidence:
+`POST /api/v1/auth/provider/exchange` accepts a discriminated union keyed on `provider`. Existing Firebase clients keep working because the union preserves the Firebase branch byte-for-byte.
 
-- route path is `/api/v1/auth/provider/exchange`
-- request schema still expects `provider: 'firebase'` and `idToken`
-- worker auth input types are still Firebase-specific
+```json
+// Firebase (web)
+{ "provider": "firebase", "idToken": "<firebase-id-token>" }
 
-Implication:
+// Telegram (TMA)
+{ "provider": "telegram", "initData": "<raw Telegram WebApp initData query string>" }
+```
 
-- feat-080 should normalize request naming and provider typing before or while adding Telegram exchange support
-- do not document Telegram launch data as if it were already compatible with the current `idToken` contract
+Validation rules:
+
+- `z.discriminatedUnion('provider', [...])` rejects unknown providers and unknown fields.
+- Telegram `initData` must contain `hash`, `auth_date`, and `user` keys. Missing or unparseable fields return `400` with `errors.invalidTelegramLaunchData`.
+- The Telegram branch is server-verified. The TMA client only forwards the raw `initData` string from `@tma.js/sdk-react`; parsed `initDataUnsafe.user` fields are never trusted as identity.
 
 ## Verification rules
 
@@ -38,6 +43,12 @@ Implication:
 - Never trust client-parsed Telegram user fields as authenticated truth.
 - Enforce `auth_date` freshness and replay-window checks.
 - Reject invalid signature/hash, missing required fields, and unsupported launch context explicitly.
+- Telegram signature path:
+  1. Build the `data-check-string` by removing `hash` and joining `key=value` pairs (sorted by key) with `\n`.
+  2. Compute `secret_key = HMAC-SHA256("WebAppData", bot_token)` and keep the raw bytes.
+  3. Compute `hash = HMAC-SHA256(secret_key, data-check-string)` and hex-encode only this final digest.
+  4. Constant-time compare against the provided `hash` field.
+- Worker config: `TELEGRAM_BOT_TOKEN` is required at startup. `TELEGRAM_FRESHNESS_WINDOW_SECONDS` defaults to `3600`.
 
 ## Launch-surface rules
 
@@ -74,6 +85,7 @@ Bad payload shape ideas:
 - One Telegram account maps to one local app user identity.
 - Reuse existing refresh-session and logout flows.
 - Do not create a Telegram-only session table, JWT shape, or permission model.
+- `auth_identities` is the source of truth. `provider` + `provider_subject` uniqueness means a Telegram identity and a Firebase identity never collide even if they share an email. Cross-provider merge is intentionally not implemented.
 
 ## Bot boundary rules
 
@@ -108,8 +120,11 @@ Cover at least:
 
 - valid Telegram exchange
 - expired `auth_date`
-- invalid signature/hash
-- missing or unsupported launch data
-- provider-neutral contract regression
+- invalid signature/hash (including equal-length mismatch to validate constant-time compare)
+- missing `hash`, missing `user`, missing `auth_date`
+- unsupported provider literal
+- provider-neutral contract regression (Firebase path still passes)
+- repeated exchange maps to the same local user
+- separate identity per provider for the same email
 - invalid or expired invite payload
 - bot secret not exposed in logs or error payloads

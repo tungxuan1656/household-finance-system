@@ -14,5 +14,14 @@
   "notFound": {
     "title": "Page not found",
     "body": "The page you opened does not exist."
+  },
+  "tma": {
+    "auth": {
+      "launchInvalid": "Cannot verify this Telegram launch.",
+      "networkError": "Network error. Please reopen the Mini App and try again.",
+      "reopenGuidance": "Please reopen the Mini App from Telegram to continue.",
+      "signOutFailed": "Sign out failed. Please reopen the Mini App to clear the session.",
+      "sessionExpired": "Your session expired. Please reopen the Mini App to sign in again."
+    }
   }
 }

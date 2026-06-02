@@ -1,18 +1,40 @@
-import type { ExchangeProviderResponse } from '@/contracts'
-import { createRefreshSession } from '@/db/repositories/session-repository'
-import { upsertUserByFirebaseIdentity } from '@/db/repositories/user-repository'
+import {
+  upsertUserByFirebaseIdentity,
+  upsertUserByTelegramIdentity,
+} from '@/db/repositories/user-repository'
+import { issueAppSession } from '@/handlers/auth/issue-app-session'
 import { verifyFirebaseIdToken } from '@/lib/auth/firebase'
-import { issueAccessToken, issueRefreshToken } from '@/lib/auth/jwt'
-import { hashRefreshToken } from '@/lib/auth/security'
+import { verifyTelegramLaunchData } from '@/lib/auth/telegram'
 import { readConfig } from '@/lib/env'
-import type { AppBindings, ExchangeProviderTokenInput } from '@/types'
-import { newId } from '@/utils/id'
+import type { ExchangeProviderTokenInput } from '@/types'
 
 export const exchangeProviderToken = async (
   env: AppBindings['Bindings'],
   input: ExchangeProviderTokenInput,
-): Promise<ExchangeProviderResponse> => {
+): Promise<Awaited<ReturnType<typeof issueAppSession>>> => {
   const config = readConfig(env)
+
+  if (input.provider === 'telegram') {
+    const identity = await verifyTelegramLaunchData(input.initData, {
+      botToken: config.telegramBotToken,
+      freshnessWindowSeconds: config.telegramFreshnessWindowSeconds,
+      locale: input.locale,
+    })
+
+    const user = await upsertUserByTelegramIdentity(
+      env.DB,
+      identity,
+      input.locale,
+    )
+
+    return issueAppSession(env, {
+      user,
+      userAgent: input.userAgent,
+      ipAddress: input.ipAddress,
+      provider: 'telegram',
+    })
+  }
+
   const firebaseIdentity = await verifyFirebaseIdToken(
     input.idToken,
     config,
@@ -30,35 +52,12 @@ export const exchangeProviderToken = async (
     input.locale,
   )
 
-  const sessionId = newId()
-  const accessToken = await issueAccessToken(config, user.id, sessionId)
-  const refreshToken = await issueRefreshToken(config, user.id, sessionId)
-  const tokenHash = await hashRefreshToken(
-    refreshToken,
-    config.refreshTokenPepper,
-  )
-
-  await createRefreshSession(env.DB, {
-    sessionId,
-    userId: user.id,
-    tokenHash,
-    expiresAt: Date.now() + config.refreshTokenTtlSeconds * 1000,
+  return issueAppSession(env, {
+    user,
     userAgent: input.userAgent,
     ipAddress: input.ipAddress,
+    provider: 'firebase',
   })
-
-  return {
-    tokenType: 'Bearer',
-    accessToken,
-    accessTokenExpiresIn: config.accessTokenTtlSeconds,
-    refreshToken,
-    refreshTokenExpiresIn: config.refreshTokenTtlSeconds,
-    user: {
-      id: user.id,
-      email: user.primaryEmail,
-      displayName: user.displayName,
-      avatarUrl: user.avatarUrl,
-      provider: 'firebase',
-    },
-  }
 }
+
+type AppBindings = { Bindings: Env }
