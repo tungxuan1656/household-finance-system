@@ -1,6 +1,6 @@
-# TWA state and storage pattern
+# TMA state and storage pattern
 
-Canonical state-placement and device-storage rules for planned `apps/twa`.
+Canonical state-placement and device-storage rules for planned `apps/tma`.
 
 ## Scope
 
@@ -38,9 +38,19 @@ Rules:
 - Blocking launch/auth failure UI belongs in the root app shell.
 - Route intent decode happens before feature routing, but product actions wait for auth success.
 
+## Default auth-session persistence
+
+Use this default unless a later security review explicitly changes it:
+
+- On each supported cold open, read launch params and perform a fresh provider exchange.
+- Keep the access token in memory.
+- Persist the refresh token in `SecureStorage` only when supported.
+- If `SecureStorage` is unavailable, keep the session memory-only and re-exchange on the next supported launch.
+- Do not persist app auth tokens in `DeviceStorage` or `localStorage`.
+
 ## Query rules
 
-- Reuse existing worker contracts. Do not invent TWA-only API shapes first.
+- Reuse existing worker contracts. Do not invent TMA-only API shapes first.
 - Query keys should stay domain-based, not screen-based.
 - Prefetch only the likely next step or the first visible read surface.
 - Lazy-load chart-heavy or analytics-heavy routes together with their queries.
@@ -70,7 +80,7 @@ Use storage by sensitivity and lifetime.
 
 - `SecureStorage`: sensitive session material when supported and explicitly approved by the auth feature.
 - `DeviceStorage`: per-device cache, resume hints, recent context, and lightweight preferences.
-- `localStorage` fallback: allowed only behind one adapter with a security note and explicit TTL/cleanup policy.
+- `localStorage` fallback: allowed only for non-sensitive cache behind one adapter with a security note and explicit TTL/cleanup policy.
 - Backend/D1: source of truth for cross-device product data.
 
 ## Storage rules
@@ -91,6 +101,7 @@ Suggested key families:
 - Capability checks live in the storage adapter.
 - Fallback from `SecureStorage` or `DeviceStorage` must be explicit in feature evidence.
 - If fallback weakens security, document the exact tradeoff in the auth feature and user-facing risk notes.
+- For auth tokens, the default fallback is weaker persistence avoidance, not weaker storage.
 
 ## Resume rules
 

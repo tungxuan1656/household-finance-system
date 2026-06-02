@@ -2,7 +2,7 @@
   "id": "feat-085",
   "name": "Telegram bot companion launch and notification flows",
   "status": "planned",
-  "description": "Add the companion bot flows that make TWA distribution useful: launch entry points, shareable invite links, and finance notifications that route back into the Mini App when needed.",
+  "description": "Add the companion bot flows that make TMA distribution useful: launch entry points, shareable invite links, and finance notifications that route back into the Mini App when needed.",
   "dependencies": [
     "feat-013",
     "feat-027",
@@ -16,9 +16,10 @@
   "evidence": {
     "planned": [
       "Keep the bot as a launch/share/notification surface instead of a CRUD replacement UI.",
+      "Start with a worker-hosted bot adapter boundary and extract later only if webhook, retry, or notification-scale evidence demands it.",
       "Support invite-link and budget-alert flows that return the user into the Mini App with the right intent.",
       "Document operational boundaries for bot token handling, rate limits, and outbound failure handling."
     ]
   },
-  "notes": "This feature should start only after the core TWA client can authenticate and route deep links safely."
+  "notes": "This feature should start only after the core TMA client can authenticate and route deep links safely."
 }

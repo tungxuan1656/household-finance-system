@@ -6,14 +6,14 @@ System map. Keep short. Route deeper behavior to exact docs.
 
 - Product: household finance web app.
 - Core flow: quick expense capture → household aggregation → budgets + insights.
-- Surfaces: `apps/web` (Next.js browser client), `apps/twa` (Telegram Mini App client), `apps/worker` (Cloudflare Worker API), D1 database.
+- Surfaces: `apps/web` (Next.js browser client), `apps/tma` (Telegram Mini App client), `apps/worker` (Cloudflare Worker API), D1 database.
 - Product behavior source: `docs/product-specs/index.md` → exact feature spec.
 
 ## Domain Map
 
 | Domain | Purpose | Entry | Spec |
 |--------|---------|-------|------|
-| `auth` | Verify identity, map provider user to local user | web auth or TWA launch context → worker auth | `docs/product-specs/authentication.md` |
+| `auth` | Verify identity, map provider user to local user | web auth or TMA launch context → worker auth | `docs/product-specs/authentication.md` |
 | `households` | Membership, roles, visibility | worker routes + web views | `docs/product-specs/household-management.md` |
 | `expenses` | Capture, validate, query expenses | web forms → worker routes | `docs/product-specs/expense-tracking.md` |
 | `budgets` | Budget setup and tracking | worker aggregates + web budget views | `docs/product-specs/budget-management.md` |
@@ -37,7 +37,7 @@ Rules:
 | Concern | Boundary |
 |---------|----------|
 | Frontend | `docs/FRONTEND.md` |
-| TWA | `docs/TWA.md` |
+| TMA | `docs/TMA.md` |
 | Backend | `docs/BACKEND.md` |
 | API contracts | `docs/references/backend/api-contract-and-validation.md` |
 | Auth/security | `docs/references/backend/security-and-auth-pattern.md`, `docs/SECURITY.md` |

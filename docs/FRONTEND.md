@@ -2,7 +2,7 @@
 
 Frontend router. Read this for `apps/web` work, then read only exact reference docs needed.
 
-Telegram Mini App work is separate platform work. Read `docs/TWA.md` for `apps/twa`.
+Telegram Mini App work is separate platform work. Read `docs/TMA.md` for `apps/tma`.
 
 ## Defaults
 

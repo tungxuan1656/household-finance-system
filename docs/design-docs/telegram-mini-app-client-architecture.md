@@ -1,16 +1,16 @@
 # Telegram Mini App client architecture
 
 Owner: product + frontend + backend
-Update trigger: when TWA package boundary, auth/session model, or native bridge policy changes
+Update trigger: when TMA package boundary, auth/session model, or native bridge policy changes
 
 ## Why this doc exists
 
 The repo has two web clients:
 
 - `apps/web` — Next.js browser client
-- `apps/twa` — Telegram Mini App client (planned)
+- `apps/tma` — Telegram Mini App client (planned)
 
-TWA adds different constraints:
+TMA adds different constraints:
 
 - Telegram WebView instead of a normal browser tab
 - native bridge APIs for back button, bottom buttons, theme, haptics, and storage
@@ -21,11 +21,11 @@ This doc locks the durable client direction before runtime code starts.
 
 ## Short summary
 
-- TWA is a new client under `apps/twa`. It does not replace `apps/web`.
+- TMA is a new client under `apps/tma`. It does not replace `apps/web`.
 - Product truth, worker APIs, and D1 truth stay shared.
-- Use React + Vite SPA. Do not embed TWA inside Next.js App Router.
+- Use React + Vite SPA. Do not embed TMA inside Next.js App Router.
 - Use SPA routing only. Full-page reload navigation is a bug.
-- TWA does not inherit `shadcn/ui` as its primary UI system.
+- TMA does not inherit `shadcn/ui` as its primary UI system.
 - Telegram bridge features are first-class when supported: back button, bottom buttons, theme vars, haptics, closing confirmation, and deep links.
 - Bot chat is companion UX only: launch, invite, alerts, and summaries.
 
@@ -34,22 +34,22 @@ This doc locks the durable client direction before runtime code starts.
 ### One product, two clients
 
 - `apps/web` remains the normal browser client.
-- `apps/twa` becomes the Telegram client.
+- `apps/tma` becomes the Telegram client.
 - `apps/worker` stays the only backend API surface.
 
 Rules:
 
-- Do not import UI or feature code directly from `apps/web` into `apps/twa`.
+- Do not import UI or feature code directly from `apps/web` into `apps/tma`.
 - Reuse product truth through worker contracts, shared DTOs, and extracted helpers only.
 - Do not fork business rules between clients.
 
 ### Worker session model stays shared
 
-TWA auth is a new provider input, not a new session system.
+TMA auth is a new provider input, not a new session system.
 
 Rules:
 
-- TWA launches with Telegram context.
+- TMA launches with Telegram context.
 - Worker verifies Telegram context.
 - Worker still issues the same app access token and refresh token model.
 - Refresh and logout stay in the existing worker auth lifecycle.
@@ -67,13 +67,15 @@ Rules:
 
 ### Package policy
 
-The Mini Apps JS ecosystem has package-name churn between `@tma.js/*` and `@telegram-apps/*`.
+The Mini Apps JS ecosystem has package churn across multiple package families.
 
 Rules:
 
-- Lock one package line at implementation time.
-- Do not mix both namespace families in one app.
-- Record the chosen package line in the first TWA runtime ExecPlan.
+- Use the `@tma.js/*` line for new runtime work.
+- For a React client, make `@tma.js/sdk-react` the primary app-facing package.
+- Add lower-level `@tma.js/*` packages only when the React package does not already cover the needed API cleanly.
+- Do not mix multiple Telegram Mini Apps package families in one app.
+- Keep alternate package families out unless a concrete runtime blocker is proven and recorded.
 
 ## UI system direction
 
@@ -91,7 +93,7 @@ Rules:
 - shadcn-first page composition
 - desktop-first dialog assumptions
 
-### TWA UI policy
+### TMA UI policy
 
 - Telegram-adaptive list, section, cell, and switch primitives are allowed for low-level mobile shell UI.
 - Project-owned components should own high-touch finance flows such as amount entry, bottom sheets, and success/error microstates.
@@ -110,11 +112,11 @@ Allowed:
 Not allowed:
 
 - `window.location` route changes
-- full-page refresh navigation between TWA screens
+- full-page refresh navigation between TMA screens
 
 ### Step URLs are good when they stay inside the SPA
 
-TWA expense capture may use separate routes such as:
+TMA expense capture may use separate routes such as:
 
 - `/add/amount`
 - `/add/category`
@@ -132,9 +134,11 @@ That is correct only when the bundle stays loaded and state stays in memory/stor
 
 ### Session policy
 
-- Prefer Telegram `SecureStorage` when supported.
-- If `SecureStorage` is unavailable, the fallback must be chosen explicitly in feat-080 with a security note.
-- Do not silently drop to unsafe long-lived token storage without documenting the tradeoff.
+- On cold open, always prefer a fresh launch-context exchange instead of assuming a persisted app session.
+- Keep the access token memory-only by default.
+- Persist the refresh token in Telegram `SecureStorage` only when supported.
+- If `SecureStorage` is unavailable, fall back to a memory-only session and re-exchange on the next supported launch.
+- Do not persist app auth tokens to `DeviceStorage` or `localStorage` in TMA.
 
 ### Cache policy
 
@@ -163,7 +167,7 @@ Preferred:
 - direct Mini App link with `startapp`
 - other supported Mini App launch surfaces with valid `initData`
 
-Do not make keyboard-button or inline-mode launches a hard dependency for authenticated TWA flows.
+Do not make keyboard-button or inline-mode launches a hard dependency for authenticated TMA flows.
 
 ### Bot companion role
 
@@ -175,6 +179,12 @@ Bot chat should handle:
 - summary digests
 
 Bot chat should not become the primary CRUD UI for expenses, budgets, or household management.
+
+### Bot runtime default
+
+- Start with a worker-hosted bot adapter boundary inside `apps/worker`.
+- Keep webhook handling, outbound send helpers, and notification orchestration behind explicit bot modules.
+- Extract to a sibling runtime only if operational evidence shows the worker-hosted shape is insufficient.
 
 ## Rollout map
 
@@ -188,8 +198,15 @@ The harness rollout is intentionally phased:
 - feat-084: device hardening and performance QA
 - feat-085: bot companion launch and notifications
 
-## Open edges kept for the first runtime plan
+## Runtime defaults now locked
 
-- Exact SDK package line after package-namespace verification
-- Exact session fallback if `SecureStorage` is unsupported
-- Whether bot runtime lives inside the worker repo, as a sibling app, or as a dedicated external service
+- SDK package line: `@tma.js/*`
+- Cold-open auth model: exchange launch context on each supported open
+- Token persistence: access token in memory, refresh token in `SecureStorage` only, otherwise memory-only fallback
+- Bot runtime default: worker-first adapter boundary inside `apps/worker`
+
+## Remaining implementation-time details
+
+- Exact module names and file seams for the first `apps/tma` scaffold
+- Exact wrapper API for Telegram capabilities under `apps/tma/src/lib/telegram/*`
+- Whether future notification scale requires queue or service extraction after feat-085 evidence exists

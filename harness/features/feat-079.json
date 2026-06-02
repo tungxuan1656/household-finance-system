@@ -1,14 +1,19 @@
 {
   "id": "feat-079",
   "name": "Telegram Mini App workspace scaffold and bootstrap",
-  "status": "planned",
-  "description": "Create the `apps/twa` workspace package, Vite/React SPA bootstrap, Telegram bridge initialization layer, env/docs wiring, and repo-tooling integration needed for a real TWA runtime.",
+  "status": "in_progress",
+  "description": "Create the `apps/tma` workspace package, Vite/React SPA bootstrap, Telegram bridge initialization layer, env/docs wiring, and repo-tooling integration needed for a real TMA runtime.",
   "dependencies": ["feat-004", "feat-038", "feat-054", "feat-078"],
+  "plan": "docs/exec-plans/plans/2026-06-02-telegram-mini-app-runtime-scaffold.md",
   "evidence": {
     "planned": [
-      "Add `apps/twa` as a separate workspace app instead of extending `apps/web`.",
-      "Lock one current Telegram Mini App SDK package line and document the choice in the execution plan.",
-      "Wire local HTTPS/tunnel and deploy expectations into repo scripts/docs without changing worker product semantics."
+      "Add `apps/tma` as a separate workspace app instead of extending `apps/web`.",
+      "Use the `@tma.js/*` package line for the first scaffold, with `@tma.js/sdk-react` as the primary React-facing dependency unless a concrete runtime blocker is proven.",
+      "Add Telegram bootstrap and capability-wrapper seams without landing auth or product CRUD in the scaffold slice.",
+      "Wire local HTTPS/tunnel and Telegram test-environment expectations into repo scripts/docs without changing worker product semantics."
+    ],
+    "verification": [
+      "2026-06-02 planning/docs follow-up created the active feat-079 ExecPlan and aligned the TMA reference docs with locked defaults for package line, session fallback, and worker-first bot runtime."
     ]
   },
   "notes": "This is the runtime starting point for the new client. No domain feature work should start before this scaffold exists."

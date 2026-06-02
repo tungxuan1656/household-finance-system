@@ -2,7 +2,7 @@
 
 Backend router. Read this for `apps/worker` work, then read only exact reference docs needed.
 
-If backend work exists only to support Telegram Mini App flows, also read `docs/TWA.md`.
+If backend work exists only to support Telegram Mini App flows, also read `docs/TMA.md`.
 
 ## Defaults
 
@@ -35,7 +35,7 @@ Rules:
 | D1/query/data mapping | `docs/references/backend/database-pattern.md` |
 | Error envelope/status/logging | `docs/references/backend/error-handling-pattern.md` |
 | Auth/security/ownership | `docs/references/backend/security-and-auth-pattern.md` |
-| Telegram Mini App auth/bot boundary | `docs/references/twa/auth-and-bot-pattern.md` |
+| Telegram Mini App auth/bot boundary | `docs/references/tma/auth-and-bot-pattern.md` |
 | Backend tests | `docs/references/backend/testing-pattern.md` |
 | Workers/D1/Wrangler specifics | `docs/references/backend/cloudflare-workers.md` |
 | Shared type names | `docs/references/shared/type-naming-pattern.md` |

@@ -1,4 +1,4 @@
-# TWA auth and bot pattern
+# TMA auth and bot pattern
 
 Canonical worker, launch, and bot-boundary rules for Telegram Mini App work.
 
@@ -7,17 +7,30 @@ Canonical worker, launch, and bot-boundary rules for Telegram Mini App work.
 Use this doc when work adds or changes:
 
 - Telegram launch-context verification
-- provider exchange for TWA auth
+- provider exchange for TMA auth
 - `startapp` or `startattach` payload handling
-- TWA invite/deep-link routing
+- TMA invite/deep-link routing
 - bot launch/share/notification behavior
 
 ## Auth contract rules
 
-- TWA joins the existing worker session lifecycle.
-- Prefer extending `POST /api/v1/auth/provider/exchange` over inventing a parallel TWA session route family.
+- TMA joins the existing worker session lifecycle.
+- Prefer extending `POST /api/v1/auth/provider/exchange` over inventing a parallel TMA session route family.
 - If request naming is still Firebase-shaped, neutralize it before landing Telegram support.
 - Keep shared access-token, refresh-token, and user response shapes stable.
+
+## Current repo truth
+
+Current runtime evidence:
+
+- route path is `/api/v1/auth/provider/exchange`
+- request schema still expects `provider: 'firebase'` and `idToken`
+- worker auth input types are still Firebase-specific
+
+Implication:
+
+- feat-080 should normalize request naming and provider typing before or while adding Telegram exchange support
+- do not document Telegram launch data as if it were already compatible with the current `idToken` contract
 
 ## Verification rules
 
@@ -29,7 +42,7 @@ Use this doc when work adds or changes:
 ## Launch-surface rules
 
 - Prefer launch surfaces that reliably provide Mini App auth context.
-- Do not make keyboard-button or inline-mode launches a hard dependency for authenticated TWA product flows.
+- Do not make keyboard-button or inline-mode launches a hard dependency for authenticated TMA product flows.
 - Treat missing or unusable launch context as a blocking re-open path, not a guest-session shortcut.
 
 ## Intent payload rules
@@ -67,6 +80,7 @@ Bad payload shape ideas:
 - Bot logic lives behind a dedicated adapter or service boundary.
 - Expense, household, budget, and analytics handlers must not call Telegram bot APIs directly.
 - Bot-triggered side effects stay explicit, auditable, and retry-aware.
+- Default deployment shape is worker-first: keep the bot boundary inside `apps/worker` until real operational pressure justifies extraction.
 
 Bot is good for:
 

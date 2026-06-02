@@ -13,7 +13,7 @@ Offer a zero-install Telegram client for the same household-finance product, opt
 ## User Flow
 
 1. User opens the Mini App from Telegram.
-2. App reads the Telegram launch context and exchanges it for the normal app session. There is no email/password form inside TWA.
+2. App reads the Telegram launch context and exchanges it for the normal app session. There is no email/password form inside TMA.
 3. If a supported `startapp` payload exists, the app routes to the matching intent after session bootstrap:
    - invite preview and accept
    - other future targeted actions that the product explicitly supports
@@ -23,9 +23,9 @@ Offer a zero-install Telegram client for the same household-finance product, opt
 
 ## Acceptance Criteria
 
-- TWA opens without a separate install flow beyond Telegram.
+- TMA opens without a separate install flow beyond Telegram.
 - Valid Telegram launch context can establish the same worker-backed app session model used by the web client.
-- Invite deep links can land a user inside TWA and preserve the invite-accept path.
+- Invite deep links can land a user inside TMA and preserve the invite-accept path.
 - Expense create semantics stay identical to shared product rules even though the interaction model differs from web.
 - No offline write queue, guest mode, or product fork is implied.
 
@@ -38,6 +38,6 @@ Offer a zero-install Telegram client for the same household-finance product, opt
 
 ## Notes
 
-- TWA is an additional client surface. It does not redefine expense, household, budget, group, or analytics domain rules.
+- TMA is an additional client surface. It does not redefine expense, household, budget, group, or analytics domain rules.
 - Bot chat is a companion surface, not the primary CRUD UI.
 - Read this spec with `authentication.md`, `household-invitation.md`, and `quick-add-experience.md`.

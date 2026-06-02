@@ -1,4 +1,4 @@
-# TWA development and hardening pattern
+# TMA development and hardening pattern
 
 Canonical dev-loop and QA rules for Telegram Mini App runtime work.
 
@@ -58,7 +58,7 @@ Check at least:
 
 ## Release checklist
 
-- No full-page reloads between TWA routes.
+- No full-page reloads between TMA routes.
 - `BackButton` and `BottomButton` behave correctly across key flows.
 - Theme and safe-area handling work across iOS and Android.
 - Auth failure, invite failure, and storage-fallback states are actionable.

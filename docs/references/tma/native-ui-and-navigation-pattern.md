@@ -1,4 +1,4 @@
-# TWA native UI and navigation pattern
+# TMA native UI and navigation pattern
 
 Canonical rules for Telegram-native-feeling UX inside one SPA WebView.
 
@@ -68,7 +68,7 @@ Prefer these inputs for layout decisions:
 
 - Bind Telegram theme vars at bootstrap.
 - App background, text, separators, and section surfaces should derive from Telegram theme tokens first.
-- Avoid a separate light/dark theme system for TWA unless product branding truly requires it.
+- Avoid a separate light/dark theme system for TMA unless product branding truly requires it.
 - Prevent first-paint flash by using Telegram-compatible base colors before the app hydrates.
 
 ## Haptics rules

@@ -13,7 +13,7 @@ Provide secure, fast, and low-friction authentication for supported clients, whi
 
 1. User authenticates through a supported identity entry:
    - web: Firebase email/password
-   - planned TWA: Telegram launch context
+   - planned TMA: Telegram launch context
 2. Client sends the provider credential to the backend provider-exchange endpoint.
 3. Backend verifies the provider credential and maps/creates a local user record.
 4. Backend issues an application `access token` (short-lived) and a `refresh token` (longer-lived) for the client.
@@ -25,7 +25,7 @@ Provide secure, fast, and low-friction authentication for supported clients, whi
 
 - Supported clients can exchange verified provider identity for valid app access + refresh tokens.
 - Web users can sign up / sign in with email + password via Firebase.
-- Planned TWA users can exchange valid Telegram launch context without a separate email/password form inside Telegram.
+- Planned TMA users can exchange valid Telegram launch context without a separate email/password form inside Telegram.
 - Token refresh flow works without forcing full re-login while refresh token is valid.
 - Sign-out invalidates the client session and refresh token.
 - Backend validates provider credentials on each sign-in or launch exchange.
@@ -40,7 +40,7 @@ Provide secure, fast, and low-friction authentication for supported clients, whi
 ---
 
 Notes:
-- Current implemented provider is Firebase. TWA is a planned additional provider.
+- Current implemented provider is Firebase. TMA is a planned additional provider.
 - Treat tokens as opaque to the client; follow secure storage best practices.
 - Keep the provider-exchange contract provider-neutral even when providers differ.
 - Consider rate-limiting and monitoring for auth endpoints.

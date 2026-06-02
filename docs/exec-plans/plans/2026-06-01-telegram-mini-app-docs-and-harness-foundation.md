@@ -2,7 +2,7 @@
 
 ## Purpose / Big Picture
 
-Add the durable docs and harness structure needed before implementation starts on a Telegram Mini App client. This work does not add runtime code yet. It makes the future TWA work legible: where product behavior lives, where durable client decisions live, which frontend/backend leaf rules to read, and which harness features should be executed in order.
+Add the durable docs and harness structure needed before implementation starts on a Telegram Mini App client. This work does not add runtime code yet. It makes the future TMA work legible: where product behavior lives, where durable client decisions live, which frontend/backend leaf rules to read, and which harness features should be executed in order.
 
 ## Scope
 
@@ -14,12 +14,12 @@ Add the durable docs and harness structure needed before implementation starts o
   - `docs/product-specs/household-invitation.md`
   - `docs/product-specs/quick-add-experience.md`
   - `docs/product-specs/telegram-mini-app.md`
-  - `docs/TWA.md`
+  - `docs/TMA.md`
   - `docs/FRONTEND.md`
   - `docs/BACKEND.md`
   - `docs/references/index.md`
-  - `docs/references/twa/app-structure-and-client-rules.md`
-  - `docs/references/twa/auth-and-bot-pattern.md`
+  - `docs/references/tma/app-structure-and-client-rules.md`
+  - `docs/references/tma/auth-and-bot-pattern.md`
   - `ARCHITECTURE.md`
   - `docs/exec-plans/index.md`
   - `harness/feature_index.json`
@@ -33,14 +33,14 @@ Add the durable docs and harness structure needed before implementation starts o
   - `harness/features/feat-085.json`
   - `harness/progress.md`
 - Out of scope:
-  - creating `apps/twa`
+  - creating `apps/tma`
   - adding worker routes or auth code
   - choosing final Telegram SDK package versions in code
   - BotFather setup or deployment
 
 ## Non-negotiable Requirements
 
-- Keep one product. TWA is a new client surface, not a product fork.
+- Keep one product. TMA is a new client surface, not a product fork.
 - Keep one session model. Telegram auth must join the existing worker token lifecycle.
 - Keep docs split by responsibility: product behavior, durable design, frontend leaf rules, backend leaf rules, and harness rollout.
 - Do not hardcode secrets or copy Telegram tokens into tracked files.
@@ -48,39 +48,39 @@ Add the durable docs and harness structure needed before implementation starts o
 ## Progress
 
 - [x] Read workflow, plan, frontend, backend, security, shared-type, product, design, and harness docs.
-- [x] Pressure-test the user-provided TWA notes against current repo truth and official Telegram docs.
-- [x] Create the TWA design doc, product spec, frontend rule doc, and backend rule doc.
-- [x] Update routers and cross-linked specs so TWA guidance has a canonical home.
-- [x] Seed ordered harness features for phased TWA delivery.
+- [x] Pressure-test the user-provided TMA notes against current repo truth and official Telegram docs.
+- [x] Create the TMA design doc, product spec, frontend rule doc, and backend rule doc.
+- [x] Update routers and cross-linked specs so TMA guidance has a canonical home.
+- [x] Seed ordered harness features for phased TMA delivery.
 - [x] Run docs/harness verification and record evidence.
 
 ## Surprises & Discoveries
 
-- Telegram package naming is in churn between `@tma.js/*` and `@telegram-apps/*`. The docs foundation should lock the policy to “pick one package line at implementation time and do not mix namespaces”.
-- Telegram launch context is not guaranteed in every surface. Keyboard-button and inline launches can miss `initData`, so TWA auth cannot assume every launch path is valid.
-- The current worker auth contract is still Firebase-shaped (`provider` + `idToken`). TWA auth should not bolt on a second session flow; it should first neutralize provider-specific naming.
+- Telegram package selection should stay on one package family, with `@tma.js/*` as the default line for new work.
+- Telegram launch context is not guaranteed in every surface. Keyboard-button and inline launches can miss `initData`, so TMA auth cannot assume every launch path is valid.
+- The current worker auth contract is still Firebase-shaped (`provider` + `idToken`). TMA auth should not bolt on a second session flow; it should first neutralize provider-specific naming.
 
 ## Decision Log
 
-- Decision: TWA will be a separate frontend package at `apps/twa`.
-  Rationale: `apps/web` is Next.js App Router and shadcn-first. TWA needs SPA routing, Telegram bridge lifecycle, and different UI primitives.
+- Decision: TMA will be a separate frontend package at `apps/tma`.
+  Rationale: `apps/web` is Next.js App Router and shadcn-first. TMA needs SPA routing, Telegram bridge lifecycle, and different UI primitives.
   Date/Author: 2026-06-01 / Codex
 
-- Decision: TWA gets its own router doc and reference folder instead of living under frontend or backend only.
-  Rationale: The platform crosses client UI, worker auth, launch modes, storage, and bot boundaries. A dedicated `docs/TWA.md` scales better and leaves room for future platform routers such as React Native.
+- Decision: TMA gets its own router doc and reference folder instead of living under frontend or backend only.
+  Rationale: The platform crosses client UI, worker auth, launch modes, storage, and bot boundaries. A dedicated `docs/TMA.md` scales better and leaves room for future platform routers such as React Native.
   Date/Author: 2026-06-01 / Codex
 
-- Decision: The long TWA architecture brief belongs in a design doc, not inside a product spec.
+- Decision: The long TMA architecture brief belongs in a design doc, not inside a product spec.
   Rationale: Most of the input is durable client architecture, native bridge policy, and UI/UX implementation direction.
   Date/Author: 2026-06-01 / Codex
 
-- Decision: TWA auth should extend the current provider exchange flow instead of inventing a second worker session system.
+- Decision: TMA auth should extend the current provider exchange flow instead of inventing a second worker session system.
   Rationale: The worker already owns access token, refresh token, and local user/session mapping. New provider, same session lifecycle.
   Date/Author: 2026-06-01 / Codex
 
 ## Outcomes & Retrospective
 
-The repo now has a clean landing zone for TWA work. Future agents can read one design doc for durable client direction, one product spec for TWA-visible behavior, one frontend leaf for `apps/twa` implementation rules, one backend leaf for worker-side Telegram auth/bot boundaries, and a harness roadmap split into small enough delivery features.
+The repo now has a clean landing zone for TMA work. Future agents can read one design doc for durable client direction, one product spec for TMA-visible behavior, one frontend leaf for `apps/tma` implementation rules, one backend leaf for worker-side Telegram auth/bot boundaries, and a harness roadmap split into small enough delivery features.
 
 ## Context and Orientation
 
@@ -92,7 +92,7 @@ The repo now has a clean landing zone for TWA work. Future agents can read one d
 
 ## Plan of Work (Narrative)
 
-First, inspect the existing docs routers, product specs, design-doc index, and harness format to avoid inventing a parallel docs tree. Second, create a TWA design doc for stable client architecture and UI direction, then add a TWA product spec for launch/auth/navigation/invite behavior. Third, create a dedicated `docs/TWA.md` router with exact TWA leaf rules so future `apps/twa` and worker work have one platform home outside `frontend` and `backend`. Fourth, patch existing auth, invite, quick-add, architecture, and router docs so they point at TWA without claiming the feature is already implemented. Fifth, seed the harness with one docs-foundation feature and a phased rollout sequence for scaffold, auth, expense flow, household flow, read surfaces, hardening, and bot companion work.
+First, inspect the existing docs routers, product specs, design-doc index, and harness format to avoid inventing a parallel docs tree. Second, create a TMA design doc for stable client architecture and UI direction, then add a TMA product spec for launch/auth/navigation/invite behavior. Third, create a dedicated `docs/TMA.md` router with exact TMA leaf rules so future `apps/tma` and worker work have one platform home outside `frontend` and `backend`. Fourth, patch existing auth, invite, quick-add, architecture, and router docs so they point at TMA without claiming the feature is already implemented. Fifth, seed the harness with one docs-foundation feature and a phased rollout sequence for scaffold, auth, expense flow, household flow, read surfaces, hardening, and bot companion work.
 
 ## Concrete Steps (Commands)
 
@@ -126,11 +126,11 @@ Expected short outputs:
 
 Acceptance is met when:
 
-- `docs/design-docs/index.md` routes the new TWA design doc.
-- `docs/product-specs/index.md` routes the new TWA product spec.
-- `docs/TWA.md`, `docs/FRONTEND.md`, `docs/BACKEND.md`, and `docs/references/index.md` route the new TWA leaf docs.
+- `docs/design-docs/index.md` routes the new TMA design doc.
+- `docs/product-specs/index.md` routes the new TMA product spec.
+- `docs/TMA.md`, `docs/FRONTEND.md`, `docs/BACKEND.md`, and `docs/references/index.md` route the new TMA leaf docs.
 - Existing auth/invite/quick-add specs no longer imply that web-only behavior is the only future client path.
-- Harness includes one completed docs-foundation feature plus the ordered planned TWA rollout features.
+- Harness includes one completed docs-foundation feature plus the ordered planned TMA rollout features.
 - JSON validation, harness-size check, whitespace check, and final repo verification pass.
 
 ## Idempotence & Recovery
@@ -144,9 +144,9 @@ Acceptance is met when:
 - Main design artifact: `docs/design-docs/telegram-mini-app-client-architecture.md`
 - Main product artifact: `docs/product-specs/telegram-mini-app.md`
 - Main implementation rule artifacts:
-  - `docs/TWA.md`
-  - `docs/references/twa/app-structure-and-client-rules.md`
-  - `docs/references/twa/auth-and-bot-pattern.md`
+  - `docs/TMA.md`
+  - `docs/references/tma/app-structure-and-client-rules.md`
+  - `docs/references/tma/auth-and-bot-pattern.md`
 - Harness rollout artifacts:
   - `harness/features/feat-078.json`
   - `harness/features/feat-079.json`
@@ -162,7 +162,7 @@ Acceptance is met when:
 - Telegram runtime concepts checked against the official Mini Apps docs and package pages on 2026-06-01:
   - launch modes and `initData`
   - `BackButton`, `BottomButton`, `DeviceStorage`, `SecureStorage`
-  - package namespace churn between `@tma.js/*` and `@telegram-apps/*`
+  - package-line churn across Telegram Mini Apps package families
 - Internal repo dependencies:
   - current worker auth/session flow in `apps/worker/src/routes/auth.ts`
   - current product/auth specs under `docs/product-specs/*`

@@ -30,15 +30,16 @@ Canonical leaf standards map. Use this index to choose exact rule doc. Do not re
 | Responsive shell/navigation | `frontend/responsive-navigation-shell-pattern.md` |
 | Test placement/scope | `../testing/test-placement-and-sharding-convention.md` |
 
-## TWA
+## TMA
 
 | Need | Doc |
 |------|-----|
-| TWA app placement, package boundary, router shell, UI defaults | `twa/app-structure-and-client-rules.md` |
-| TWA native navigation, motion, safe area, keyboard, theme | `twa/native-ui-and-navigation-pattern.md` |
-| TWA query/store/cache/storage ownership | `twa/state-and-storage-pattern.md` |
-| TWA auth, deep-link, and bot boundary | `twa/auth-and-bot-pattern.md` |
-| TWA local dev, test env, debugging, hardening QA | `twa/development-and-hardening-pattern.md` |
+| TMA app placement, package boundary, router shell, UI defaults | `tma/app-structure-and-client-rules.md` |
+| TMA native navigation, motion, safe area, keyboard, theme | `tma/native-ui-and-navigation-pattern.md` |
+| TMA query/store/cache/storage ownership | `tma/state-and-storage-pattern.md` |
+| TMA auth, deep-link, and bot boundary | `tma/auth-and-bot-pattern.md` |
+| TMA local dev, test env, debugging, hardening QA | `tma/development-and-hardening-pattern.md` |
+| TMA phase-by-phase reading map and locked defaults | `tma/runtime-readiness-and-slice-map.md` |
 
 ## Backend
 

@@ -1,6 +1,6 @@
-# TWA app structure and client rules
+# TMA app structure and client rules
 
-Canonical client structure rules for planned `apps/twa`.
+Canonical client structure rules for planned `apps/tma`.
 
 ## Scope
 
@@ -10,7 +10,7 @@ Use this doc for:
 - folder ownership
 - router/bootstrap boundaries
 - SDK package-line choice
-- TWA UI-system defaults
+- TMA UI-system defaults
 
 ## Stack defaults
 
@@ -22,20 +22,22 @@ Use this doc for:
 
 ## SDK package-line rule
 
-Telegram Mini Apps packages changed namespace over time.
+Telegram Mini Apps packages changed across package families over time.
 
 Rules:
 
-- Prefer the current `@tma.js/*` line when the first runtime plan freezes dependencies.
-- Do not mix `@tma.js/*` and `@telegram-apps/*` in one client.
-- If a slice intentionally stays on older `@telegram-apps/*`, record why in the plan and keep the migration boundary explicit.
+- Use the `@tma.js/*` line for new runtime work.
+- In React code, prefer `@tma.js/sdk-react` as the default app-facing dependency.
+- Pull in lower-level `@tma.js/*` packages only when the React package does not already expose the needed surface cleanly.
+- Do not mix multiple Telegram Mini Apps package families in one client.
+- If a slice intentionally deviates from the `@tma.js/*` line, record the concrete blocker in the plan and keep the migration boundary explicit.
 
 ## Package boundary
 
 Place the client in a separate workspace package:
 
 ```text
-apps/twa/
+apps/tma/
   src/
     app/
       bootstrap/          # init, providers, app shell
@@ -64,10 +66,10 @@ apps/twa/
 
 Rules:
 
-- Do not add TWA runtime code under `apps/web`.
+- Do not add TMA runtime code under `apps/web`.
 - Do not import feature or UI code from `apps/web/src`.
 - Reuse only shared DTOs, extracted pure helpers, and worker API contracts.
-- Do not fork domain rules between web and TWA.
+- Do not fork domain rules between web and TMA.
 
 ## Import direction
 
@@ -87,7 +89,7 @@ Forbidden:
 feature/page/component -> window.Telegram.WebApp direct calls
 components/ui -> feature code
 shared component -> domain-specific feature component
-apps/twa -> apps/web/src imports
+apps/tma -> apps/web/src imports
 ```
 
 ## Shell ownership
@@ -103,13 +105,13 @@ Keep shell responsibilities explicit:
 
 - All in-app navigation stays inside SPA history.
 - Use `navigate()` or `Link` only.
-- Full-page route changes with `window.location` are a bug for TWA flows.
+- Full-page route changes with `window.location` are a bug for TMA flows.
 - Route-level code splitting is allowed and preferred for heavier read surfaces.
 - If BrowserRouter is used, deployment must include SPA fallback rewrites. Do not rely on 404 recovery.
 
 ## UI-system rules
 
-- TWA does not inherit `shadcn/ui` as its default UI language.
+- TMA does not inherit `shadcn/ui` as its default UI language.
 - Telegram-adaptive list/form primitives are allowed for low-level mobile scaffolding.
 - Project-owned components should own amount entry, bottom sheets, segmented tabs, and finance-specific interaction states.
 - Theme from Telegram CSS vars first. Hardcoded web-theme assumptions are not allowed.
