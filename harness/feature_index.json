@@ -429,6 +429,11 @@
       "id": "feat-085",
       "name": "Telegram bot companion launch and notification flows",
       "status": "planned"
+    },
+    {
+      "id": "feat-086",
+      "name": "Project-owned TMA development skill",
+      "status": "done"
     }
   ]
 }
