@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-02 — Wrote TMA auth provider exchange and session bootstrap ExecPlan
+
+- Who: Codex
+- Summary: Promoted `feat-080` from abstract `planned` items to an active ExecPlan with a concrete `todo` checklist. The new plan lives at `docs/exec-plans/plans/2026-06-02-telegram-mini-app-auth-session-bootstrap.md` and locks the worker side (discriminated-union `ExchangeProviderRequest`, `verifyTelegramLaunchData` with `crypto.subtle` HMAC-SHA256 + `auth_date` freshness, parameterized `auth_identities` helpers, shared `issueAppSession` extraction, no D1 migration) and the TMA client side (storage adapter with `SecureStorage` → memory-only fallback, launch-params wrapper, auth api client, Zustand session store, bootstrap shell, `AuthProvider` context, single-flight refresh interceptor, fatal launch screen + i18n). The TMA client half is gated on the `feat-079` scaffold landing first; the worker half is unblocked.
+- Files changed: New `2026-06-02-telegram-mini-app-auth-session-bootstrap.md` ExecPlan; `harness/features/feat-080.json` (status `planned` → `in_progress`, added `plan` field, replaced `evidence.planned` with `evidence.todo`); `harness/feature_index.json` (status change); `docs/exec-plans/index.md` (added new plan under Active); and this progress log.
+- Verification: `node -e "for (const file of ['harness/feature_index.json','harness/features/feat-080.json']) { JSON.parse(require('fs').readFileSync(file,'utf8')); console.log('OK ' + file) }"` passed for the touched harness JSON; `./scripts/check_harness_size.sh` passed with `Harness size checks passed`; `git diff --check` passed with no whitespace issues; final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` returned `LOW` risk with 3 changed files, 2 changed symbols, and 0 affected processes.
+- Blockers: TMA client half of the plan is blocked on the `feat-079` scaffold landing first (no `apps/tma/` directory exists yet on disk).
+- Next steps: Run `feat-079` scaffold to completion, then start the worker half of this plan in parallel with the TMA client wiring (or after, if you want a clean sequential rollout).
+
 ## 2026-06-02 — Added project-owned TMA development skill
 
 - Who: Codex

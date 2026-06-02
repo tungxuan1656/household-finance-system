@@ -6,6 +6,7 @@ Do not move files between folders; update sections below to reflect status.
 ## Active
 
 - [2026-06-02-telegram-mini-app-runtime-scaffold.md](plans/2026-06-02-telegram-mini-app-runtime-scaffold.md) - feat-079 TMA scaffold plan active: lock the `@tma.js/*` runtime line, create the first `apps/tma` workspace shell, add Telegram bootstrap wrappers and SPA router seams, and wire TMA into repo tooling before auth or domain slices begin.
+- [2026-06-02-telegram-mini-app-auth-session-bootstrap.md](plans/2026-06-02-telegram-mini-app-auth-session-bootstrap.md) - feat-080 TMA auth plan active: normalize the worker `ExchangeProviderRequest` to a discriminated union, verify raw Telegram launch context via `crypto.subtle` HMAC-SHA256 + `auth_date` freshness, reuse the existing access/refresh token lifecycle on `auth_identities` (no D1 migration), and ship the TMA storage adapter, auth store, bootstrap shell, refresh interceptor, and fatal launch screen gated on the feat-079 scaffold.
 
 ## Completed
 
