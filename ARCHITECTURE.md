@@ -6,7 +6,7 @@ System map. Keep short. Route deeper behavior to exact docs.
 
 - Product: household finance web app.
 - Core flow: quick expense capture → household aggregation → budgets + insights.
-- Surfaces: web frontend, planned Telegram Mini App frontend, Cloudflare Worker backend, D1 database.
+- Surfaces: `apps/web` (Next.js browser client), `apps/twa` (Telegram Mini App client), `apps/worker` (Cloudflare Worker API), D1 database.
 - Product behavior source: `docs/product-specs/index.md` → exact feature spec.
 
 ## Domain Map

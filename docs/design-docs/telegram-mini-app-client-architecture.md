@@ -5,9 +5,12 @@ Update trigger: when TWA package boundary, auth/session model, or native bridge 
 
 ## Why this doc exists
 
-The repo already has one web client in `apps/web`.
+The repo has two web clients:
 
-Telegram Mini App work adds a second client surface with different constraints:
+- `apps/web` — Next.js browser client
+- `apps/twa` — Telegram Mini App client (planned)
+
+TWA adds different constraints:
 
 - Telegram WebView instead of a normal browser tab
 - native bridge APIs for back button, bottom buttons, theme, haptics, and storage
@@ -18,7 +21,7 @@ This doc locks the durable client direction before runtime code starts.
 
 ## Short summary
 
-- TWA is a new client at `apps/twa`. It does not replace `apps/web`.
+- TWA is a new client under `apps/twa`. It does not replace `apps/web`.
 - Product truth, worker APIs, and D1 truth stay shared.
 - Use React + Vite SPA. Do not embed TWA inside Next.js App Router.
 - Use SPA routing only. Full-page reload navigation is a bug.

@@ -5,6 +5,7 @@ Personal & Family Expense Management System. Open-source household finance app f
 ## Stack
 
 - Web: `apps/web` — React 19, TypeScript, Next.js App Router, Tailwind CSS, shadcn/ui, sonner, date-fns.
+- TWA: `apps/twa` — React, TypeScript, Vite SPA, React Router, TanStack Query, Zustand, Framer Motion. Uses Telegram bridge for native WebView features.
 - Worker: `apps/worker` — Cloudflare Workers, Hono, D1, Wrangler, `zod`, `jose`, `ulid`.
 - Tooling: `pnpm` monorepo, ESLint, Prettier, Vitest, TypeScript.
 
