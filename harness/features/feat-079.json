@@ -12,8 +12,45 @@
       "Add Telegram bootstrap and capability-wrapper seams without landing auth or product CRUD in the scaffold slice.",
       "Wire local HTTPS/tunnel and Telegram test-environment expectations into repo scripts/docs without changing worker product semantics."
     ],
+    "todo": [
+      "Create apps/tma/package.json with @tma.js/sdk-react, react, react-dom, react-router-dom, @tanstack/react-query, zustand, i18next, react-i18next, zod, framer-motion plus dev deps",
+      "Create apps/tma/tsconfig.json with jsx: 'react-jsx' (NOT preserve — Vite compiles, not Next), no Next plugin, path alias @/* -> ./src/*",
+      "Create apps/tma/vite.config.ts with @vitejs/plugin-react, path alias, port 5174 (avoid web 3000 / worker 8787 conflict), server.host: 127.0.0.1",
+      "Create apps/tma/eslint.config.mjs adapted from web: remove @next/eslint-plugin-next and nextPlugin, keep react/typescript-eslint/simple-import-sort/unicorn/unused-imports/prettier",
+      "Create apps/tma/vitest.config.ts with jsdom env, path alias, globals: false",
+      "Create apps/tma/index.html with viewport-fit=cover, user-scalable=no, theme-color meta",
+      "Create apps/tma/src/main.tsx mounting App into #root",
+      "Create apps/tma/src/app/bootstrap/app-providers.tsx with <SDKProvider> (outermost) + <QueryClientProvider> + <AppThemeProvider> tree",
+      "Create apps/tma/src/app/bootstrap/telegram-init.ts binding Telegram CSS vars, calling WebApp.ready(), reading initData.language_code for i18n",
+      "Create apps/tma/src/lib/telegram/capabilities.ts with isSupported('secureStorage'|'deviceStorage'|'hapticFeedback') via bridge.isSupported",
+      "Create apps/tma/src/lib/telegram/theme.ts with bindTheme() setting CSS vars, getBaseBackgroundColor() for flash prevention",
+      "Create apps/tma/src/lib/telegram/launch-params.ts returning raw initData string (no client-side user field trust)",
+      "Create apps/tma/src/lib/telegram/back-button.ts with show()/hide()/onClick(handler) and cleanup on unmount (no listener leak)",
+      "Create apps/tma/src/lib/telegram/bottom-button.ts with setText()/setEnabled()/showProgress()/onClick() (BottomButton = MainButton in SDK object)",
+      "Create apps/tma/src/lib/telegram/haptics.ts with impact(style)/notification(type)/selection() helpers",
+      "Create apps/tma/src/lib/telegram/safe-area.ts with getSafeAreaInsets()/getContentSafeAreaInsets()",
+      "Create apps/tma/src/lib/query/query-client.ts with QueryClient singleton (staleTime 5min, retry 1)",
+      "Create apps/tma/src/lib/i18n/index.ts with i18next + react-i18next, locale from Telegram initData.user.language_code (NOT browser-languagedetector), fallback vi",
+      "Create apps/tma/src/lib/i18n/locales/vi.json and en.json placeholder files",
+      "Create apps/tma/src/app/router/app-router.tsx with React Router: / -> home, /fatal -> fatal screen",
+      "Create apps/tma/src/routes/home.tsx placeholder with AppShell wrapper and Telegram theme",
+      "Create apps/tma/src/routes/fatal-launch.tsx with safe-area insets, localized copy, Telegram.WebApp.close() CTA, no retry",
+      "Create apps/tma/src/components/shared/app-shell.tsx with safe-area padding, 100dvh min-height, Telegram background fallback",
+      "Create apps/tma/src/components/shared/loading-fallback.tsx with minimal spinner",
+      "Create apps/tma/src/index.css with Telegram CSS vars as base, safe-area reset, no raw 100vh usage",
+      "Create apps/tma/.env.example with VITE_WORKER_URL=http://localhost:8787",
+      "Update package.json with dev:tma and build:tma scripts",
+      "Update init.sh: add tma lint/typecheck/test/build to run_parallel_checks case statement (lines ~140-155) and to run_lint/run_typecheck/run_test/run_build/run_full",
+      "Check apps/worker/src/ for CORS allowlist: verify localhost:5174 is included before auth smoke tests",
+      "Run rg 'from apps/web' apps/tma/src/ to confirm zero cross-imports",
+      "Run ./init.sh install && ./init.sh lint && ./init.sh typecheck && ./init.sh test && ./init.sh build",
+      "Run pnpm --filter tma dev and confirm Vite starts on localhost:5174",
+      "Update harness records with status done and evidence",
+      "Log progress in harness/progress.md"
+    ],
     "verification": [
-      "2026-06-02 planning/docs follow-up created the active feat-079 ExecPlan and aligned the TMA reference docs with locked defaults for package line, session fallback, and worker-first bot runtime."
+      "2026-06-02 planning/docs follow-up created the active feat-079 ExecPlan and aligned the TMA reference docs with locked defaults for package line, session fallback, and worker-first bot runtime.",
+      "2026-06-02 deep content audit applied 8 critical fixes (init.sh case statement, jsx react-jsx, ESLint Next removal, SDKProvider root, i18n initData locale, CORS port 5174, Vite port 5174, BottomButton/MainButton naming) and 10 important additions (theme/CSS var specifics, BackButton cleanup, Vite env vars, cross-import check, layer impact, companion skills, test coverage, hosting/deployment). Plan expanded from 186 to ~320 lines with 34 detailed todo items."
     ]
   },
   "notes": "This is the runtime starting point for the new client. No domain feature work should start before this scaffold exists."

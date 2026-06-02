@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-02 — Deep content audit and full update of feat-079 ExecPlan
+
+- Who: Codex
+- Summary: Audited the existing feat-079 scaffold ExecPlan against all TMA reference docs, design doc, init.sh, and web package patterns. Found 8 critical content gaps (init.sh hardcoded case statement, tsconfig `jsx` mismatch, ESLint Next plugin removal, SDKProvider root placement, i18n locale source, CORS allowlist, Vite port conflict, BottomButton vs MainButton naming) and 10 important additions (theme/CSS var specifics, BackButton cleanup, i18n pattern, Vite env vars, CORS check, layer impact mapping, companion skills callout, cross-import verification command, test coverage for scaffold, hosting/deployment). Applied all A+B+C fixes across all 16 sections: added 3 new decisions (jsx: react-jsx, port 5174, VITE prefix, Telegram initData locale), expanded Surprises from 3 to 7 items, added Known Risks section, tightened Progress checklist from 5 items to 34 detailed tasks, added explicit code snippets for SDKProvider tree, init.sh case statement edits, and Telegram capability wrapper signatures. Added missing reference doc links: `state-and-storage-pattern.md`, `auth-and-bot-pattern.md`, `component-structure-pattern.md`, `zustand-store-pattern.md`, `i18n-label-pattern.md`. Added cross-import check command and CORS port verification to Concrete Steps.
+- Files changed: `docs/exec-plans/plans/2026-06-02-telegram-mini-app-runtime-scaffold.md` (186→~320 lines, full content rewrite across all sections); `harness/progress.md` (new log entry).
+- Verification: `node -e "for (const f of ['harness/feature_index.json','harness/features/feat-079.json']) { JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('OK '+f) }"` passed for harness JSON; `./scripts/check_harness_size.sh` passed with `Harness size checks passed`; `git diff --check` passed with no whitespace issues; final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` returned `LOW` risk with 15 changed symbols, 1 changed file, and 0 affected processes.
+- Blockers: none — plan is now implementation-ready.
+- Next steps: Execute feat-079 scaffold following the updated plan.
+
 ## 2026-06-02 — Wrote TMA auth provider exchange and session bootstrap ExecPlan
 
 - Who: Codex
