@@ -12,10 +12,10 @@ No argument runs the full flow:
 
 Command behavior:
   install    pnpm install
-  lint       run web lint --fix + twlint --fix and worker lint --fix in parallel
-  typecheck  run web and worker typecheck in parallel
-  test       run web and worker tests in parallel
-  build      run web build and worker dry-run deploy build in parallel
+  lint       run web lint --fix + twlint --fix and worker lint --fix and tma lint in parallel
+  typecheck  run web, worker, and tma typecheck in parallel
+  test       run web, worker, and tma tests in parallel
+  build      run web, worker dry-run deploy, and tma build in parallel
   sync       sync GitNexus index
 EOF
 }
@@ -129,12 +129,16 @@ run_parallel_checks() {
     case "$label" in
       "web lint") start_background_job "$label" "$log_file" "$status_file" run_web_lint ;;
       "worker lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker lint --fix ;;
+      "tma lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma lint ;;
       "web typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web typecheck ;;
       "worker typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker typecheck ;;
+      "tma typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma typecheck ;;
       "web test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web exec vitest run ;;
       "worker test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker exec vitest run ;;
+      "tma test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma exec vitest run --passWithNoTests ;;
       "web build") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web build ;;
       "worker build") start_background_job "$label" "$log_file" "$status_file" run_worker_build ;;
+      "tma build") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma build ;;
       *)
         echo "Unknown parallel job: ${label}" >&2
         cleanup_parallel_files "${log_files[@]}" "${status_files[@]}"
@@ -201,19 +205,19 @@ run_parallel_checks() {
 }
 
 run_lint() {
-  run_parallel_checks "lint" "web lint" "worker lint"
+  run_parallel_checks "lint" "web lint" "worker lint" "tma lint"
 }
 
 run_typecheck() {
-  run_parallel_checks "typecheck" "web typecheck" "worker typecheck"
+  run_parallel_checks "typecheck" "web typecheck" "worker typecheck" "tma typecheck"
 }
 
 run_test() {
-  run_parallel_checks "test" "web test" "worker test"
+  run_parallel_checks "test" "web test" "worker test" "tma test"
 }
 
 run_build() {
-  run_parallel_checks "build" "web build" "worker build"
+  run_parallel_checks "build" "web build" "worker build" "tma build"
 }
 
 run_full() {
@@ -223,10 +227,13 @@ run_full() {
     "verification" \
     "web lint" \
     "worker lint" \
+    "tma lint" \
     "web typecheck" \
     "worker typecheck" \
+    "tma typecheck" \
     "web test" \
-    "worker test"
+    "worker test" \
+    "tma test"
   local status=$?
   run_sync || true
   if [ $status -eq 0 ]; then

@@ -1,0 +1,14 @@
+{
+  "app": {
+    "title": "Household Finance"
+  },
+  "home": {
+    "greeting": "TMA Scaffold",
+    "subtitle": "Auth and domain features land from feat-080 onward"
+  },
+  "fatal": {
+    "title": "Cannot open Mini App",
+    "body": "Please reopen the Mini App from Telegram.",
+    "close": "Close"
+  }
+}
