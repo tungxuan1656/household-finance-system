@@ -1,0 +1,22 @@
+{
+  "id": "feat-084",
+  "name": "Telegram Mini App device hardening and performance QA",
+  "status": "planned",
+  "description": "Harden the TWA client for Telegram WebView behavior across iOS and Android: safe areas, keyboard overlap, theme sync, storage fallbacks, low-end performance, and verification evidence.",
+  "dependencies": [
+    "feat-078",
+    "feat-079",
+    "feat-080",
+    "feat-081",
+    "feat-082",
+    "feat-083"
+  ],
+  "evidence": {
+    "planned": [
+      "Verify keyboard, safe-area, and scroll behavior on real Telegram WebView surfaces, not only normal mobile browsers.",
+      "Gate or degrade advanced effects when capability or performance is weak.",
+      "Record explicit QA evidence for iOS, Android, theme changes, and unsupported-feature fallbacks."
+    ]
+  },
+  "notes": "This feature is where the TWA client moves from functionally working to operationally trustworthy."
+}

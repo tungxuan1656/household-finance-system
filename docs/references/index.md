@@ -30,6 +30,13 @@ Canonical leaf standards map. Use this index to choose exact rule doc. Do not re
 | Responsive shell/navigation | `frontend/responsive-navigation-shell-pattern.md` |
 | Test placement/scope | `../testing/test-placement-and-sharding-convention.md` |
 
+## TWA
+
+| Need | Doc |
+|------|-----|
+| TWA app placement, routing, native bridge, storage, performance | `twa/app-structure-and-client-rules.md` |
+| TWA auth, deep-link, and bot boundary | `twa/auth-and-bot-pattern.md` |
+
 ## Backend
 
 | Need | Doc |

@@ -1,0 +1,15 @@
+{
+  "id": "feat-079",
+  "name": "Telegram Mini App workspace scaffold and bootstrap",
+  "status": "planned",
+  "description": "Create the `apps/twa` workspace package, Vite/React SPA bootstrap, Telegram bridge initialization layer, env/docs wiring, and repo-tooling integration needed for a real TWA runtime.",
+  "dependencies": ["feat-004", "feat-038", "feat-054", "feat-078"],
+  "evidence": {
+    "planned": [
+      "Add `apps/twa` as a separate workspace app instead of extending `apps/web`.",
+      "Lock one current Telegram Mini App SDK package line and document the choice in the execution plan.",
+      "Wire local HTTPS/tunnel and deploy expectations into repo scripts/docs without changing worker product semantics."
+    ]
+  },
+  "notes": "This is the runtime starting point for the new client. No domain feature work should start before this scaffold exists."
+}

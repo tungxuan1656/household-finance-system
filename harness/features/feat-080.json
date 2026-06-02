@@ -1,0 +1,15 @@
+{
+  "id": "feat-080",
+  "name": "Telegram Mini App auth provider exchange and session bootstrap",
+  "status": "planned",
+  "description": "Extend the worker auth model for Telegram launch-context exchange, add TWA session bootstrap and refresh/logout integration, and document the chosen secure-storage fallback policy.",
+  "dependencies": ["feat-008", "feat-033", "feat-039", "feat-078", "feat-079"],
+  "evidence": {
+    "planned": [
+      "Refactor provider-exchange request naming if needed so Telegram credentials do not live behind Firebase-specific field names.",
+      "Verify raw Telegram launch data on the worker with Cloudflare-compatible crypto and freshness checks.",
+      "Reuse the existing app access-token and refresh-token lifecycle instead of creating a Telegram-only session model."
+    ]
+  },
+  "notes": "This feature is the security boundary for the TWA rollout. It must land before any real TWA CRUD or invite flow."
+}

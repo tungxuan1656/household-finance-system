@@ -1,0 +1,27 @@
+{
+  "id": "feat-083",
+  "name": "Telegram Mini App read surfaces for budgets, groups, and insights",
+  "status": "planned",
+  "description": "Add TWA read-first pages for budgets, groups, and lightweight insights using existing worker data contracts, optimized for mobile WebView instead of desktop-style dashboards.",
+  "dependencies": [
+    "feat-021",
+    "feat-022",
+    "feat-023",
+    "feat-026",
+    "feat-027",
+    "feat-028",
+    "feat-029",
+    "feat-045",
+    "feat-078",
+    "feat-079",
+    "feat-080"
+  ],
+  "evidence": {
+    "planned": [
+      "Reuse existing worker analytics, budget, group, and expense query contracts instead of inventing TWA-only APIs first.",
+      "Design read surfaces for fast scan and drill-down, not for desktop-card parity.",
+      "Lazy-load heavier analytics views and keep the default TWA path focused on fast open and quick context."
+    ]
+  },
+  "notes": "This feature aims for useful mobile read flows, not one-to-one visual parity with `apps/web`."
+}

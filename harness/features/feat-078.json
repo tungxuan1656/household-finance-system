@@ -1,0 +1,30 @@
+{
+  "id": "feat-078",
+  "name": "Telegram Mini App docs and harness foundation",
+  "status": "done",
+  "description": "Create the durable docs, routing updates, execution plan, and phased harness rollout records needed before implementing a Telegram Mini App client on top of the existing worker and product model.",
+  "dependencies": ["feat-054", "feat-071", "feat-074"],
+  "plan": "docs/exec-plans/plans/2026-06-01-telegram-mini-app-docs-and-harness-foundation.md",
+  "evidence": {
+    "planned": [
+      "Used `using-skills` first and classified the work as Level 2 because it changes durable docs structure, product-spec routing, frontend/backend reference routing, plan artifacts, and harness rollout state.",
+      "Used `grill-with-docs` before writing the plan because the TWA brief had repo-truth conflicts around package names, auth boundary wording, and client-surface scope.",
+      "Checked current Telegram Mini App docs and package pages on 2026-06-01 to pressure-test launch-mode, storage, and package-namespace assumptions before writing repo truth."
+    ],
+    "artifacts": [
+      "Added `docs/design-docs/telegram-mini-app-client-architecture.md` as the durable home for TWA client architecture and native-bridge policy.",
+      "Added `docs/product-specs/telegram-mini-app.md` and updated current auth/invite/quick-add specs so TWA maps cleanly onto existing product behavior.",
+      "Added `docs/TWA.md`, `docs/references/twa/app-structure-and-client-rules.md`, and `docs/references/twa/auth-and-bot-pattern.md`, then routed them from `AGENTS.md`, `docs/FRONTEND.md`, `docs/BACKEND.md`, and `docs/references/index.md`.",
+      "Added the completed ExecPlan, updated `docs/exec-plans/index.md`, updated `ARCHITECTURE.md`, seeded `feat-079` through `feat-085`, updated `harness/feature_index.json`, and logged progress in `harness/progress.md`."
+    ],
+    "verification": [
+      "Node JSON.parse validation passed for `harness/feature_index.json` and all new `harness/features/feat-078..085.json` files.",
+      "`./scripts/check_harness_size.sh` passed.",
+      "`git diff --check` passed with no whitespace errors.",
+      "Final `./init.sh` verification passed with `Done!`.",
+      "2026-06-02 review follow-up resolved leftover harness merge markers and added the TWA leaf docs, exec plan, and feature records to Git so the branch diff includes the files routed by the updated docs.",
+      "Final `gitnexus_detect_changes(scope: all, repo: household-finance-system)` was run before completion reporting."
+    ]
+  },
+  "notes": "This feature creates the docs and rollout structure only. It does not add `apps/twa` runtime code yet."
+}

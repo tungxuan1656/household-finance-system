@@ -16,6 +16,8 @@ Durable design decision map. Read only when task changes lasting UI/product/arch
 
 ## Proposed
 
+- `telegram-mini-app-client-architecture.md`: planned TWA client boundary, native bridge policy, UI direction, and phased rollout.
+
 ## Deprecated
 
 ## Maintenance Rules

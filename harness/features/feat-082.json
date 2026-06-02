@@ -1,0 +1,25 @@
+{
+  "id": "feat-082",
+  "name": "Telegram Mini App household and invite flows",
+  "status": "planned",
+  "description": "Bring household list/detail, invite preview/accept, and `startapp`-driven household deep-link behavior to TWA without changing membership, role, or invitation rules.",
+  "dependencies": [
+    "feat-011",
+    "feat-013",
+    "feat-014",
+    "feat-015a",
+    "feat-015b",
+    "feat-030",
+    "feat-078",
+    "feat-079",
+    "feat-080"
+  ],
+  "evidence": {
+    "planned": [
+      "Map Telegram deep-link payload handling onto the current invite-token preview and accept model.",
+      "Preserve household role and membership rules already enforced by the worker.",
+      "Keep invite UX resilient for auth-first redirect and expired-token cases inside Telegram."
+    ]
+  },
+  "notes": "This feature is the main TWA onboarding and sharing slice."
+}

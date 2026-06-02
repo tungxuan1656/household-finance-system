@@ -25,6 +25,7 @@ Read least docs that fully cover task.
 | Any session | `AGENTS.md` |
 | Architecture/layer change | `docs/references/backend/architecture-and-boundaries.md` |
 | Frontend work | `docs/FRONTEND.md` → exact `docs/references/frontend/*` needed |
+| TWA work | `docs/TWA.md` → exact `docs/references/twa/*` needed |
 | Backend work | `docs/BACKEND.md` → exact `docs/references/backend/*` needed |
 | Shared type/API naming | `docs/references/shared/type-naming-pattern.md` |
 | Product behavior | `docs/product-specs/index.md` → exact feature spec |

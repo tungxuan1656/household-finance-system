@@ -11,8 +11,8 @@ Support reliable invite flows (links/codes/email) for onboarding members into a 
 ## User Flow
 
 1. Admin generates an invite link or code with optional role (Member by default) and expiry.
-2. Admin can copy link, send via email, or share an in-app invite.
-3. Recipient opens link or enters code in app; if unauthenticated, they authenticate first, then accept invite.
+2. Admin can copy link, send via email, share in-app, or share through a Telegram bot companion flow.
+3. Recipient opens a web link, enters a code, or opens a TWA `startapp` deep link; if unauthenticated, their client completes auth first, then continues invite accept.
 4. Accepting invite validates token, adds user to household with designated role, and surfaces a welcome + suggested next actions.
 5. Admins can revoke invites, view active invites, and set expirations.
 6. Leaving / removing: members can leave voluntarily; admins can remove (kick) members with confirmation and audit.
@@ -22,6 +22,7 @@ Support reliable invite flows (links/codes/email) for onboarding members into a 
 - Invite tokens are single-use or time-bound as configured.
 - Invite acceptance validates that the user is not already a member and enforces role assignment.
 - Revoked or expired invites cannot be used; UI shows clear error.
+- One invite token can be carried through web or TWA entry points without changing household membership rules.
 - Leaving a household is reversible within retention window via admin restore, unless permanently deleted.
 
 ## Failure States
@@ -35,3 +36,4 @@ Support reliable invite flows (links/codes/email) for onboarding members into a 
 Notes:
 - Consider rate limits and abuse prevention for invite generation.
 - Log invite events for audit and analytics (invites sent, accepted, revoked).
+- Telegram `startapp` carries one compact payload. Do not design invite flows that require multiple Telegram query params.
