@@ -26,7 +26,6 @@ export const AuthBootstrap = ({
   const status = useAuthStore((state) => state.status)
   const error = useAuthStore((state) => state.error)
   const startedRef = useRef(false)
-  const [hydrated, setHydrated] = useState(false)
   const [phase, setPhase] = useState<AuthBootstrapPhase | 'timeout'>('start')
 
   useEffect(() => {
@@ -55,11 +54,8 @@ export const AuthBootstrap = ({
         }
       },
     })
-      .then((result) => {
+      .then(() => {
         clearTimeout(timeoutId)
-        if (!cancelled && result === 'authenticated') {
-          setHydrated(true)
-        }
       })
       .catch(() => {
         clearTimeout(timeoutId)
@@ -74,7 +70,7 @@ export const AuthBootstrap = ({
     }
   }, [deps])
 
-  if (!hydrated) {
+  if (status !== 'authenticated') {
     if (status === 'error') {
       return <FatalLaunchScreen error={error} />
     }

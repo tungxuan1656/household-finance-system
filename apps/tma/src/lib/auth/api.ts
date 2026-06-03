@@ -65,45 +65,6 @@ export interface CreateAuthApiClientOptions {
   timeoutMs?: number
 }
 
-type AuthDebugStage =
-  | 'idle'
-  | 'fetch-start'
-  | 'fetch-response'
-  | 'json-start'
-  | 'json-success'
-  | 'error'
-
-const setAuthDebugStage = (
-  path: string,
-  stage: AuthDebugStage,
-  extra: Record<string, string> = {},
-): void => {
-  if (typeof document === 'undefined') {
-    return
-  }
-
-  const root = document.documentElement
-  const isExchange = path === '/auth/provider/exchange'
-
-  if (!isExchange) {
-    return
-  }
-
-  root.dataset.authExchangeStage = stage
-  const loader = document.querySelector<HTMLElement>(
-    '[data-loading="auth-bootstrap"]',
-  )
-  loader?.setAttribute('data-exchange-stage', stage)
-
-  for (const [key, value] of Object.entries(extra)) {
-    const dataKey = `authExchange${key.slice(0, 1).toUpperCase()}${key.slice(1)}`
-    root.dataset[dataKey] = value
-    loader?.setAttribute(
-      `data-exchange-${key.replaceAll(/([A-Z])/g, '-$1').toLowerCase()}`,
-      value,
-    )
-  }
-}
 
 const DEFAULT_AUTH_API_TIMEOUT_MS = 10_000
 
@@ -178,7 +139,6 @@ export const createAuthApiClient = (
         : null
 
     const controller = new AbortController()
-    setAuthDebugStage(path, 'fetch-start')
 
     const response = await withTimeout(
       fetchImpl(joinUrl(options.baseUrl, path), {
@@ -193,17 +153,8 @@ export const createAuthApiClient = (
       },
     )
 
-    setAuthDebugStage(path, 'fetch-response', {
-      status: String(response.status),
-      ok: String(response.ok),
-    })
-
     if (!response.ok) {
       const errorPayload = await parseErrorPayload(response, timeoutMs)
-      setAuthDebugStage(path, 'error', {
-        status: String(response.status),
-        code: errorPayload.code,
-      })
       throw new AuthApiError(
         response.status,
         errorPayload.code,
@@ -211,15 +162,10 @@ export const createAuthApiClient = (
       )
     }
 
-    setAuthDebugStage(path, 'json-start')
     const data = (await withTimeout(
       response.json() as Promise<{ data: TResponse }>,
       timeoutMs,
     )) as { data: TResponse }
-
-    setAuthDebugStage(path, 'json-success', {
-      success: String(Boolean(data.data)),
-    })
 
     return data.data
   }

@@ -32,16 +32,6 @@ export type AuthBootstrapPhase =
   | 'fatal-network'
   | 'fatal-session'
 
-const emitBootstrapPhase = (phase: AuthBootstrapPhase): void => {
-  if (typeof document === 'undefined') {
-    return
-  }
-
-  document.documentElement.dataset.authBootstrapPhase = phase
-  document
-    .querySelector<HTMLElement>('[data-loading="auth-bootstrap"]')
-    ?.setAttribute('data-bootstrap-phase', phase)
-}
 
 export const createAuthApiBootstrapDeps = (options: {
   api: AuthApiClient
@@ -77,7 +67,6 @@ export const runAuthBootstrap = async (
   deps: AuthBootstrapDeps,
 ): Promise<'authenticated' | 'fatal'> => {
   const notePhase = (phase: AuthBootstrapPhase) => {
-    emitBootstrapPhase(phase)
     deps.onPhase?.(phase)
   }
 

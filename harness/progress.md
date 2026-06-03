@@ -8,7 +8,14 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
-<!-- Start writing log before here, latest log on top -->
+## 2026-06-03 — Resolved Telegram bootstrap white screen and SecureStorage hang
+
+- Who: Codex
+- Summary: Resolved a reported Telegram Mini App white-screen bug that occurred after successful auth exchange. Source inspection pointed to `AuthBootstrap` returning `null` while bootstrapping, combined with a plausible hang in native Telegram SecureStorage write/read operations. Hardened the boot cycle by showing the loading spinner during auth bootstrapping and implemented a timeout fallback that falls back to memory-only storage instead of letting the authenticated render hang indefinitely.
+- Files changed: TMA app bootstrap loading fallback wiring and TMA auth storage timeout fallback.
+- Verification: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` all passed with `OK`; final repo verification with `./init.sh` completed and printed `Done!`. Browser-only screen previews rendered correctly. `./scripts/check_harness_size.sh` passed.
+- Blockers: Real Telegram smoke testing could not be executed directly in this environment, so the fix is verified locally but pending on-device user confirmation.
+- Next steps: Ask the user to reopen the Mini App in Telegram and confirm whether the blank screen is gone; if not, inspect the Telegram console for any runtime error after bootstrap/auth completes.
 
 ## 2026-06-03 — Built TMA shell and starter screen scaffolds
 

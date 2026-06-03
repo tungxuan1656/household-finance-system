@@ -1,4 +1,4 @@
-import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
 import { AddExpenseCategoryPage } from '@/routes/add-expense-category'
 import { AddExpenseContextPage } from '@/routes/add-expense-context'
@@ -10,7 +10,7 @@ import { NotFoundPage } from '@/routes/not-found'
 import { SettingsPage } from '@/routes/settings'
 import { StatisticsPage } from '@/routes/statistics'
 
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     path: '/',
     element: <HomePage />,

@@ -129,7 +129,7 @@ export const HomePage = () => {
               key={item.title}
               aria-disabled={!item.enabled}
               className={`tma-shortcut-card${item.enabled ? '' : 'is-disabled'}`}
-              href={item.enabled ? `#${item.href}` : undefined}>
+              href={item.enabled ? item.href : undefined}>
               <TmaMonogramBadge accent={item.accent} label={item.symbol} />
               <div>
                 <h3>{item.title}</h3>
