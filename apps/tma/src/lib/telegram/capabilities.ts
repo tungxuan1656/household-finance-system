@@ -1,6 +1,9 @@
-import '@/lib/telegram/telegram-webapp.d.ts'
-
-import { isTMA } from '@tma.js/sdk'
+import {
+  backButton,
+  hapticFeedback,
+  mainButton,
+  themeParams,
+} from '@tma.js/sdk'
 
 type Capability =
   | 'secureStorage'
@@ -11,27 +14,18 @@ type Capability =
   | 'mainButton'
 
 const detect = (capability: Capability): boolean => {
-  if (!isTMA()) {
-    return false
-  }
-
-  const tg = window.Telegram?.WebApp
-  if (!tg) {
-    return false
-  }
-
   switch (capability) {
     case 'secureStorage':
     case 'deviceStorage':
       return false
     case 'hapticFeedback':
-      return Boolean(tg.HapticFeedback)
+      return hapticFeedback.isSupported()
     case 'themeParams':
-      return Object.keys(tg.themeParams).length > 0
+      return themeParams.isMounted()
     case 'backButton':
-      return Boolean(tg.BackButton)
+      return backButton.isSupported()
     case 'mainButton':
-      return Boolean(tg.MainButton)
+      return mainButton.isMounted()
   }
 }
 

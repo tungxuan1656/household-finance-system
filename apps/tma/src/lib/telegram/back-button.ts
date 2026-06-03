@@ -1,27 +1,21 @@
-import '@/lib/telegram/telegram-webapp.d.ts'
+import { backButton } from '@tma.js/sdk'
 
 type Cleanup = () => void
 
-const getBackButton = () => window.Telegram?.WebApp?.BackButton
-
 export const showBackButton = (onClick: () => void): Cleanup => {
-  const btn = getBackButton()
-  if (!btn) {
-    return () => undefined
+  if (!backButton.isMounted()) {
+    backButton.mount()
   }
 
-  const handler = () => {
-    onClick()
-  }
-
-  btn.onClick(handler)
-  btn.show()
+  const offClick = backButton.onClick(onClick)
+  backButton.show.ifAvailable()
 
   return () => {
-    btn.offClick(handler)
+    offClick()
+    backButton.hide.ifAvailable()
   }
 }
 
 export const hideBackButton = (): void => {
-  getBackButton()?.hide()
+  backButton.hide.ifAvailable()
 }

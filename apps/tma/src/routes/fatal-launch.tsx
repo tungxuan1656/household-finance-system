@@ -1,9 +1,10 @@
+import { miniApp } from '@tma.js/sdk'
 import { useTranslation } from 'react-i18next'
 
 import { AppShell } from '@/components/shared/app-shell'
 
 const closeMiniApp = () => {
-  window.Telegram?.WebApp?.close?.()
+  miniApp.close.ifAvailable()
 }
 
 export const FatalLaunchPage = () => {

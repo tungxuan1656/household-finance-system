@@ -1,10 +1,6 @@
-import '@/lib/telegram/telegram-webapp.d.ts'
+import { miniApp, themeParams, viewport } from '@tma.js/sdk'
 
 import type { SafeAreaInsets } from '@/lib/telegram/safe-area'
-import {
-  getContentSafeAreaInsets,
-  getSafeAreaInsets,
-} from '@/lib/telegram/safe-area'
 
 const ROOT = document.documentElement
 
@@ -13,8 +9,20 @@ const setSafeAreaVar = (name: string, value: number) => {
 }
 
 const applySafeAreaInsets = () => {
-  const safe = getSafeAreaInsets()
-  const content = getContentSafeAreaInsets()
+  if (!viewport.isMounted()) return
+
+  const safe = viewport.safeAreaInsets() ?? {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  }
+  const content = viewport.contentSafeAreaInsets() ?? {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  }
   const insets: Record<string, SafeAreaInsets> = {
     '--tma-safe': safe,
     '--tma-content-safe': content,
@@ -26,26 +34,6 @@ const applySafeAreaInsets = () => {
     setSafeAreaVar(`${prefix}-bottom`, inset.bottom)
     setSafeAreaVar(`${prefix}-left`, inset.left)
   }
-}
-
-const applyThemeParams = () => {
-  const params = window.Telegram?.WebApp?.themeParams
-  if (!params) {
-    return
-  }
-
-  for (const [key, value] of Object.entries(params)) {
-    if (typeof value === 'string' && value.length > 0) {
-      ROOT.style.setProperty(`--tg-theme-${key.replace(/_/g, '-')}`, value)
-    }
-  }
-
-  const bg = window.Telegram?.WebApp?.backgroundColor
-  if (typeof bg === 'string' && bg.length > 0) {
-    ROOT.style.setProperty('--tma-base-bg', bg)
-  }
-
-  applySafeAreaInsets()
 }
 
 const THEME_VARS = ['--tma-base-bg']
@@ -71,29 +59,30 @@ const clearThemeVars = () => {
   }
 }
 
-const handleThemeEvent = () => {
-  applyThemeParams()
+// Apply themeParams CSS variables via SDK
+const applyThemeParams = () => {
+  if (!themeParams.isMounted()) return
+
+  // The SDK handles --tg-theme-* variables via bindCssVars()
+  themeParams.bindCssVars()
+
+  // Apply background color as --tma-base-bg
+  const bg = themeParams.bgColor()
+  if (typeof bg === 'string' && bg.length > 0) {
+    ROOT.style.setProperty('--tma-base-bg', bg)
+  }
+
+  applySafeAreaInsets()
 }
 
+// Use SDK miniApp.bindCssVars() for --tg-bg-color / --tg-header-color
 let unsubscribeTheme: (() => void) | null = null
 
 export const bindTheme = (): void => {
+  // themeParams and miniApp should already be mounted by initTelegram
+  miniApp.bindCssVars.ifAvailable()
   applyThemeParams()
-
-  const tg = window.Telegram?.WebApp
-  if (!tg?.onEvent) {
-    return
-  }
-
-  tg.onEvent('themeChanged', handleThemeEvent)
-  tg.onEvent('safeAreaChanged', applySafeAreaInsets)
-  tg.onEvent('contentSafeAreaChanged', applySafeAreaInsets)
-
-  unsubscribeTheme = () => {
-    tg.offEvent?.('themeChanged', handleThemeEvent)
-    tg.offEvent?.('safeAreaChanged', applySafeAreaInsets)
-    tg.offEvent?.('contentSafeAreaChanged', applySafeAreaInsets)
-  }
+  applySafeAreaInsets()
 }
 
 export const resetTheme = (): void => {

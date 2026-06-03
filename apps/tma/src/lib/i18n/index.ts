@@ -1,4 +1,4 @@
-import '@/lib/telegram/telegram-webapp.d.ts'
+import { initData } from '@tma.js/sdk'
 
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
@@ -16,9 +16,9 @@ const isSupportedLocale = (value: unknown): value is SupportedLocale =>
   (SUPPORTED_LOCALES as readonly string[]).includes(value)
 
 export const detectTelegramLocale = (): SupportedLocale | null => {
-  const raw = window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code
+  const languageCode = initData.user()?.language_code
 
-  return isSupportedLocale(raw) ? raw : null
+  return isSupportedLocale(languageCode) ? languageCode : null
 }
 
 i18n

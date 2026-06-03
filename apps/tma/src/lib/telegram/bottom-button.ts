@@ -1,4 +1,4 @@
-import '@/lib/telegram/telegram-webapp.d.ts'
+import { mainButton, themeParams } from '@tma.js/sdk'
 
 export interface BottomButtonOptions {
   text: string
@@ -9,38 +9,32 @@ export interface BottomButtonOptions {
 
 type Cleanup = () => void
 
-const getMainButton = () => window.Telegram?.WebApp?.MainButton
-
 export const setBottomButton = (options: BottomButtonOptions): Cleanup => {
-  const btn = getMainButton()
-  if (!btn) {
-    return () => undefined
+  // themeParams and mainButton may already be mounted by initTelegram
+  if (!themeParams.isMounted()) {
+    themeParams.mount()
+  }
+  if (!mainButton.isMounted()) {
+    mainButton.mount()
   }
 
-  const handler = () => {
-    options.onClick()
-  }
+  mainButton.setParams({
+    text: options.text,
+    isEnabled: options.enabled,
+    isLoaderVisible: options.showProgress,
+    isVisible: true,
+  })
 
-  btn.setText(options.text)
-  if (options.enabled) {
-    btn.enable()
-  } else {
-    btn.disable()
-  }
-  if (options.showProgress) {
-    btn.showProgress(true)
-  } else {
-    btn.hideProgress()
-  }
-  btn.onClick(handler)
-  btn.show()
+  const offClick = mainButton.onClick(options.onClick)
 
   return () => {
-    btn.offClick(handler)
-    btn.hide()
+    offClick()
+    mainButton.setParams({ isVisible: false })
   }
 }
 
 export const hideBottomButton = (): void => {
-  getMainButton()?.hide()
+  if (mainButton.isMounted()) {
+    mainButton.setParams({ isVisible: false })
+  }
 }

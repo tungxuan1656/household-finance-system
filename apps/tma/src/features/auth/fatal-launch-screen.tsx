@@ -1,4 +1,4 @@
-import '@/lib/telegram/telegram-webapp.d.ts'
+import { miniApp } from '@tma.js/sdk'
 
 import { useTranslation } from 'react-i18next'
 
@@ -15,7 +15,7 @@ export interface FatalLaunchScreenProps {
 }
 
 const closeMiniApp = () => {
-  window.Telegram?.WebApp?.close?.()
+  miniApp.close.ifAvailable()
 }
 
 export const FatalLaunchScreen = ({ error }: FatalLaunchScreenProps) => {
