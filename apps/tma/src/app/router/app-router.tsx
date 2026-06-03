@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import { AddExpenseCategoryPage } from '@/routes/add-expense-category'
 import { AddExpenseContextPage } from '@/routes/add-expense-context'
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/home',
-    element: <Navigate replace to='/' />,
+    element: <HomePage />,
   },
   {
     path: '/statistics',

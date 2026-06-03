@@ -22,11 +22,13 @@ export const AddExpenseCategoryPage = () => {
       showBackButton
       header={
         <TmaPageHeader
-          subtitle='Bước 1/3 • Chọn ngày và danh mục để vào thật nhanh.'
-          title='Thêm chi tiêu'
+          eyebrow='Bước 1/3'
+          subtitle='Chọn ngày và danh mục để vào thật nhanh.'
+          title='Bắt đầu từ phần dễ nhất'
         />
       }
-      showBottomTabs={false}>
+      showBottomTabs={false}
+      title='Thêm chi tiêu'>
       <section className='tma-step-card'>
         <label className='tma-date-pill'>
           <CalendarIcon height='18' width='18' />

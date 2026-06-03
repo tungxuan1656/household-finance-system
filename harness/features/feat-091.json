@@ -1,0 +1,27 @@
+{
+  "id": "feat-091",
+  "name": "TMA navigation-state and header polish",
+  "status": "done",
+  "description": "Polish the current `apps/tma` shell so route transitions feel more native: remove avoidable reload/redirect history churn, move page context out of the header into content, redesign the home overview hierarchy, and preserve page scroll/UI memory across back navigation for the active TMA routes.",
+  "dependencies": ["feat-079", "feat-080", "feat-090"],
+  "evidence": {
+    "planned": [
+      "Used `using-skills` first, then applied `triage`, `systematic-debugging`, `tma-development`, and `frontend-design` because the request mixed a runtime navigation bug with shared TMA chrome and home-screen redesign work.",
+      "Read only the exact TMA leaves needed for this follow-up: `docs/TMA.md`, `docs/references/frontend/tma/app-structure-and-client-rules.md`, `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`, `docs/references/frontend/tma/development-and-hardening-pattern.md`, and `apps/tma/DESIGN.md`.",
+      "Ran GitNexus impact before edits: `initTelegram` was LOW risk, while `TmaPageShell` was CRITICAL risk, so the shared-shell refactor stayed narrow and avoided unrelated tab/button changes."
+    ],
+    "artifacts": [
+      "Removed the `/home -> /` redirect and the remaining home shortcut full-page navigation so the TMA history stack stays SPA-native during route changes.",
+      "Refactored the shared TMA shell into a safe-area-aware centered title bar, moved page context blocks below the title bar, and added in-memory scroll restoration plus route-level page-state memory for `Statistics` and `Expenses`.",
+      "Redesigned the home screen hierarchy around a stronger monthly summary card, tighter shortcut cards, and cleaner intro spacing without changing the current mock-data contract."
+    ],
+    "verification": [
+      "Added `apps/tma/src/test/page-memory.test.ts` first, watched it fail because the new `page-memory` module did not exist yet, then implemented `apps/tma/src/lib/navigation/page-memory.ts` and reran the focused test until it passed.",
+      "Ran `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build`; all returned `OK`. Final repo verification with `./init.sh` completed and printed `Done!`.",
+      "Validated `harness/feature_index.json` and `harness/features/feat-091.json` with `python3 -m json.tool`; both parsed successfully. `./scripts/check_harness_size.sh` returned `Harness size checks passed`, and `git diff --check` returned clean.",
+      "Ran final `gitnexus_detect_changes(scope: 'all')`, which reported `critical` risk with 40 changed symbols across 12 files and 27 affected processes, concentrated in the expected shared TMA shell and active route surfaces.",
+      "A plain desktop browser smoke run still cannot render the authenticated TMA routes directly because the real app bootstrap requires Telegram launch params; opening `http://127.0.0.1:4274/` outside Telegram still throws the expected `LaunchParamsRetrieveError`, so real Telegram fullscreen behavior remains pending on-device confirmation."
+    ]
+  },
+  "notes": "This slice keeps the current TMA routes and mock-data scope intact. It improves navigation feel, chrome hierarchy, and state restoration without yet introducing a full route keep-alive stack or worker-backed read models."
+}

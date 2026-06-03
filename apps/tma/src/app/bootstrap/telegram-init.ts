@@ -40,8 +40,16 @@ export const initTelegram = (): (() => void) => {
   // 6. Mount and expand viewport
   viewport.mount().then(() => {
     viewport.expand()
-    // Request fullscreen (Bot API 8.0+)
-    viewport.requestFullscreen.ifAvailable()
+
+    // Request fullscreen on the next frame so the first paint can land
+    // with the correct background instead of flashing during the transition.
+    if (!viewport.isFullscreen()) {
+      window.requestAnimationFrame(() => {
+        window.setTimeout(() => {
+          viewport.requestFullscreen.ifAvailable()
+        }, 32)
+      })
+    }
   })
 
   // 7. Disable vertical swipes to prevent accidental close while scrolling

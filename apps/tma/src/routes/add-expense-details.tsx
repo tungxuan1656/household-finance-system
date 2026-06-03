@@ -75,11 +75,13 @@ export const AddExpenseDetailsPage = () => {
         backTo='/expenses/new/category'
         header={
           <TmaPageHeader
-            subtitle='Bước 2/3 • Cần chọn danh mục trước.'
-            title='Thêm chi tiêu'
+            eyebrow='Bước 2/3'
+            subtitle='Cần chọn danh mục trước khi nhập số tiền.'
+            title='Thiếu dữ liệu bước trước'
           />
         }
-        showBottomTabs={false}>
+        showBottomTabs={false}
+        title='Thêm chi tiêu'>
         <section className='tma-empty-card'>
           <h2>Chưa có danh mục</h2>
           <p>
@@ -100,11 +102,13 @@ export const AddExpenseDetailsPage = () => {
       backTo='/expenses/new/category'
       header={
         <TmaPageHeader
-          subtitle='Bước 2/3 • Nhập số tiền, nguồn tiền và mô tả.'
-          title='Thêm chi tiêu'
+          eyebrow='Bước 2/3'
+          subtitle='Nhập số tiền, nguồn tiền và mô tả.'
+          title='Số tiền là trọng tâm ở bước này'
         />
       }
-      showBottomTabs={false}>
+      showBottomTabs={false}
+      title='Thêm chi tiêu'>
       <section className='tma-step-summary'>
         <TmaMonogramBadge accent={category.accent} label={category.symbol} />
         <div>

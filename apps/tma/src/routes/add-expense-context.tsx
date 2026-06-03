@@ -84,11 +84,13 @@ export const AddExpenseContextPage = () => {
         backTo='/expenses/new/details'
         header={
           <TmaPageHeader
-            subtitle='Bước 3/3 • Thiếu dữ liệu từ bước trước.'
-            title='Thêm chi tiêu'
+            eyebrow='Bước 3/3'
+            subtitle='Thiếu dữ liệu từ bước trước nên chưa thể preview.'
+            title='Quay lại để hoàn tất bước 2'
           />
         }
-        showBottomTabs={false}>
+        showBottomTabs={false}
+        title='Thêm chi tiêu'>
         <section className='tma-empty-card'>
           <h2>Chưa có dữ liệu preview</h2>
           <p>
@@ -110,11 +112,13 @@ export const AddExpenseContextPage = () => {
       backTo='/expenses/new/details'
       header={
         <TmaPageHeader
-          subtitle='Bước 3/3 • Chọn gia đình, nhóm và xem lại toàn bộ thông tin.'
-          title='Thêm chi tiêu'
+          eyebrow='Bước 3/3'
+          subtitle='Chọn gia đình, nhóm và xem lại toàn bộ thông tin.'
+          title='Gắn đúng bối cảnh trước khi lưu'
         />
       }
-      showBottomTabs={false}>
+      showBottomTabs={false}
+      title='Thêm chi tiêu'>
       <section className='tma-step-summary'>
         <TmaMonogramBadge accent={category.accent} label={category.symbol} />
         <div>

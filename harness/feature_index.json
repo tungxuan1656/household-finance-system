@@ -454,6 +454,11 @@
       "id": "feat-090",
       "name": "Telegram Mini App shell and starter screen scaffolds",
       "status": "done"
+    },
+    {
+      "id": "feat-091",
+      "name": "TMA navigation-state and header polish",
+      "status": "done"
     }
   ]
 }

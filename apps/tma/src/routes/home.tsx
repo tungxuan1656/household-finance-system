@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import {
   TmaInlineAction,
   TmaMonogramBadge,
@@ -77,6 +79,14 @@ export const HomePage = () => {
     user?.displayName ?? null,
     user?.email ?? null,
   )
+  const featuredHousehold = householdOptions[0]
+  const latestExpense = recentExpenses[0]
+  const latestCategory = findCategory(latestExpense.categoryId)
+  const totalSpent = 12650000
+  const remainingBudget = 2340000
+  const budgetProgress = Math.round(
+    (totalSpent / (totalSpent + remainingBudget)) * 100,
+  )
 
   return (
     <TmaPageShell
@@ -95,7 +105,7 @@ export const HomePage = () => {
               <span>{resolveInitials(userName)}</span>
             )
           }
-          subtitle='Tóm tắt nhẹ, đủ để chạm và đi tiếp thật nhanh.'
+          subtitle={`${featuredHousehold.name} đang dùng ${formatVnd(featuredHousehold.monthSpend)} trong ${formatMonthLabel(new Date()).toLowerCase()}.`}
           title={userName}
           trailing={
             <span className='tma-chip tma-chip--strong'>
@@ -103,17 +113,46 @@ export const HomePage = () => {
             </span>
           }
         />
-      }>
-      <section className='tma-summary-card'>
-        <div>
-          <p className='tma-section-label'>Tổng chi tháng này</p>
-          <strong>{formatVnd(12650000)}</strong>
-          <p className='tma-summary-card__meta'>+6% so với tháng trước</p>
+      }
+      title='Trang chủ'>
+      <section className='tma-summary-card tma-summary-card--home'>
+        <div className='tma-summary-card__topline'>
+          <div>
+            <p className='tma-section-label'>Tổng chi tháng này</p>
+            <strong>{formatVnd(totalSpent)}</strong>
+          </div>
+
+          <span className='tma-status-pill'>+6% so với tháng trước</span>
         </div>
 
-        <div className='tma-summary-card__aside'>
-          <span className='tma-soft-pill'>Còn lại {formatVnd(2340000)}</span>
-          <p>Ngân sách ổn định, nhóm mua sắm tăng mạnh nhất.</p>
+        <div className='tma-summary-card__meter'>
+          <div className='tma-summary-card__meter-track'>
+            <span
+              className='tma-summary-card__meter-fill'
+              style={{ width: `${budgetProgress}%` }}
+            />
+          </div>
+
+          <div className='tma-summary-card__meter-meta'>
+            <span>Đã dùng {budgetProgress}% ngân sách</span>
+            <span>Còn {formatVnd(remainingBudget)}</span>
+          </div>
+        </div>
+
+        <div className='tma-summary-card__insights'>
+          <article className='tma-summary-card__insight'>
+            <span>Mạnh nhất</span>
+            <strong>Mua sắm</strong>
+            <p>Biến động lớn nhất trong nhịp chi tiêu tháng này.</p>
+          </article>
+
+          <article className='tma-summary-card__insight'>
+            <span>Chi gần nhất</span>
+            <strong>{latestExpense.title}</strong>
+            <p>
+              {formatVnd(latestExpense.amount)} • {latestCategory.label}
+            </p>
+          </article>
         </div>
       </section>
 
@@ -126,25 +165,46 @@ export const HomePage = () => {
         </div>
 
         <div className='tma-shortcuts-grid'>
-          {shortcutItems.map((item) => (
-            <a
-              key={item.title}
-              aria-disabled={!item.enabled}
-              className={`tma-shortcut-card${item.enabled ? '' : 'is-disabled'}`}
-              href={item.enabled ? item.href : undefined}
-              onClick={() => {
-                if (item.enabled) impact('light')
-              }}>
-              <TmaMonogramBadge accent={item.accent} label={item.symbol} />
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.hint}</p>
-              </div>
-              {!item.enabled ? (
-                <span className='tma-status-pill'>Sớm có</span>
-              ) : null}
-            </a>
-          ))}
+          {shortcutItems.map((item) => {
+            const content = (
+              <>
+                <div className='tma-shortcut-card__head'>
+                  <TmaMonogramBadge accent={item.accent} label={item.symbol} />
+                  {!item.enabled ? (
+                    <span className='tma-status-pill'>Sớm có</span>
+                  ) : null}
+                </div>
+
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.hint}</p>
+                </div>
+              </>
+            )
+
+            if (!item.enabled) {
+              return (
+                <div
+                  key={item.title}
+                  aria-disabled='true'
+                  className='tma-shortcut-card is-disabled'>
+                  {content}
+                </div>
+              )
+            }
+
+            return (
+              <Link
+                key={item.title}
+                className='tma-shortcut-card'
+                to={item.href}
+                onClick={() => {
+                  impact('light')
+                }}>
+                {content}
+              </Link>
+            )
+          })}
         </div>
       </section>
 

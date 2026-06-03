@@ -1,14 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { DotsIcon, FilterIcon } from '@/components/shared/tma-icons'
 import {
   TmaMonogramBadge,
-  TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import { findCategory, recentExpenses } from '@/features/finance/mock-data'
 import { formatDateLabel, formatTimeLabel, formatVnd } from '@/lib/formatters'
+import { usePageMemoryState } from '@/lib/navigation/page-memory'
 import { impact, selection } from '@/lib/telegram/haptics'
 
 interface ExpenseRouteState {
@@ -20,8 +20,11 @@ interface ExpenseRouteState {
 
 export const ExpensesPage = () => {
   const location = useLocation()
-  const [showFilters, setShowFilters] = useState(false)
+  const [pageState, setPageState] = usePageMemoryState('expenses-view', {
+    showFilters: false,
+  })
   const routeState = (location.state as ExpenseRouteState | null) ?? null
+  const showFilters = pageState.showFilters
 
   const sections = useMemo(() => {
     const grouped = new Map<string, typeof recentExpenses>()
@@ -40,23 +43,28 @@ export const ExpensesPage = () => {
     <TmaPageShell
       showBackButton
       header={
-        <TmaPageHeader
-          subtitle='Lịch sử đầy đủ với nhịp hiển thị thoáng, đủ để quét mắt thật nhanh.'
-          title='Chi tiêu'
-          trailing={
-            <button
-              className='tma-chip-button'
-              type='button'
-              onClick={() => {
-                selection()
-                setShowFilters((current) => !current)
-              }}>
-              <FilterIcon height='16' width='16' />
-              <span>Lọc</span>
-            </button>
-          }
-        />
-      }>
+        <div className='tma-page-toolbar'>
+          <p className='tma-page-toolbar__copy'>
+            Lịch sử đầy đủ, nhẹ để quét mắt và quay lại thật nhanh.
+          </p>
+
+          <button
+            className='tma-chip-button'
+            type='button'
+            onClick={() => {
+              selection()
+
+              setPageState((current) => ({
+                ...current,
+                showFilters: !current.showFilters,
+              }))
+            }}>
+            <FilterIcon height='16' width='16' />
+            <span>Lọc</span>
+          </button>
+        </div>
+      }
+      title='Chi tiêu'>
       {routeState?.savedExpense ? (
         <section className='tma-inline-banner'>
           <p className='tma-section-label'>Preview đã lưu cục bộ</p>

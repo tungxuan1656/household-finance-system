@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-03 — Polished TMA header, navigation feel, and home hierarchy
+
+- Who: Codex
+- Summary: Fixed the main TMA navigation/UX regressions reported from device use. The remaining home shortcut full-page navigation was replaced with SPA routing and the `/home -> /` redirect was removed so the WebView history no longer churns on normal page changes. The shared TMA shell now renders a safe-area-aware centered title bar and moves page context blocks below it, which brings the app closer to the desired fullscreen/header model. Added lightweight in-memory page memory for scroll position plus local UI state restoration so going back to `Statistics` or `Expenses` feels more native instead of resetting immediately. The home screen was also tightened around a clearer summary card, stronger shortcut cards, and less dead space.
+- Files changed: TMA bootstrap timing, TMA router, shared TMA shell/CSS, TMA page-memory store and test, active TMA route screens, new feat-091 harness record, feature index, and this progress log.
+- Verification: Added `apps/tma/src/test/page-memory.test.ts` first, watched it fail because the new page-memory module did not exist, then implemented the store and reran the focused test until it passed. `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` all passed with `OK`; final repo verification with `./init.sh` completed and printed `Done!`. `python3 -m json.tool harness/feature_index.json` and `python3 -m json.tool harness/features/feat-091.json` both passed, `./scripts/check_harness_size.sh` returned `Harness size checks passed`, and `git diff --check` returned clean. Final `gitnexus_detect_changes(scope: 'all')` reported `critical` risk with 40 changed symbols across 12 files and 27 affected processes, concentrated in the expected shared TMA shell and route surfaces.
+- Blockers: Real Telegram fullscreen smoke is still pending because a plain desktop browser cannot satisfy the TMA launch-context requirement; opening the local app outside Telegram still throws the expected `LaunchParamsRetrieveError`.
+- Next steps: Reopen the Mini App inside Telegram fullscreen and confirm three things on-device: home no longer flashes black on first open, internal route changes no longer reload or flash, and back-to-previous-page now restores the prior scroll/filter/range state closely enough to feel native.
+
 ## 2026-06-03 — Resolved Telegram bootstrap white screen and SecureStorage hang
 
 - Who: Codex

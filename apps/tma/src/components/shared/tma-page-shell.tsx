@@ -1,17 +1,16 @@
 import type { ReactNode } from 'react'
-import { useEffect, useEffectEvent } from 'react'
+import { useEffect, useEffectEvent, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { AppShell } from '@/components/shared/app-shell'
 import {
   ChevronRightIcon,
-  CloseIcon,
   HomeIcon,
   PlusIcon,
   StatisticsIcon,
 } from '@/components/shared/tma-icons'
+import { pageMemoryStore } from '@/lib/navigation/page-memory'
 import {
-  closeMiniApp,
   hideBackButton,
   showBackButton as bindBackButton,
 } from '@/lib/telegram/back-button'
@@ -22,9 +21,11 @@ const joinClassNames = (
   ...values: Array<string | false | null | undefined>
 ): string => values.filter(Boolean).join(' ')
 
+const HOME_FALLBACK_ROUTE = '/'
+
 const tabItems = [
   {
-    href: '/',
+    href: HOME_FALLBACK_ROUTE,
     label: 'Trang chủ',
     icon: HomeIcon,
     match: (path: string) => path === '/' || path === '/home',
@@ -134,14 +135,14 @@ export const TmaPageHeader = ({
   leading,
   trailing,
 }: TmaPageHeaderProps) => (
-  <header className='tma-page-header'>
+  <section className='tma-page-header'>
     <div className='tma-page-header__lead'>
       {leading ? (
         <div className='tma-page-header__avatar'>{leading}</div>
       ) : null}
       <div>
         {eyebrow ? <p className='tma-page-header__eyebrow'>{eyebrow}</p> : null}
-        <h1 className='tma-page-header__title'>{title}</h1>
+        <h2 className='tma-page-header__title'>{title}</h2>
         {subtitle ? (
           <p className='tma-page-header__subtitle'>{subtitle}</p>
         ) : null}
@@ -151,59 +152,13 @@ export const TmaPageHeader = ({
     {trailing ? (
       <div className='tma-page-header__actions'>{trailing}</div>
     ) : null}
-  </header>
+  </section>
 )
-
-export interface TmaTopBarProps {
-  /** Show a Close pill on the left that calls miniApp.close(). */
-  closeAction?: boolean
-  /** Right-side trailing element (e.g. month chip on home). */
-  trailing?: ReactNode
-}
-
-/**
- * In-page top bar that mimics Telegram's native header buttons.
- * Used so we can show a labelled "Close" on root screens and a "Back"
- * pill on detail screens without depending on Telegram's fixed BackButton.
- */
-export const TmaTopBar = ({
-  closeAction = false,
-  trailing,
-}: TmaTopBarProps) => {
-  if (!closeAction && !trailing) {
-    return null
-  }
-
-  return (
-    <div className='tma-topbar'>
-      {closeAction ? (
-        <button
-          aria-label='Đóng ứng dụng'
-          className='tma-nav-pill'
-          type='button'
-          onClick={() => {
-            impact('light')
-            closeMiniApp()
-          }}>
-          <span className='tma-nav-pill__icon'>
-            <CloseIcon />
-          </span>
-          <span>Đóng</span>
-        </button>
-      ) : (
-        <span />
-      )}
-
-      {trailing ? (
-        <div className='tma-page-header__actions'>{trailing}</div>
-      ) : null}
-    </div>
-  )
-}
 
 export interface TmaPageShellProps {
   children: ReactNode
-  header: ReactNode
+  title: string
+  header?: ReactNode
   showBottomTabs?: boolean
   showBackButton?: boolean
   /**
@@ -220,6 +175,7 @@ export interface TmaPageShellProps {
 
 export const TmaPageShell = ({
   children,
+  title,
   header,
   showBottomTabs = true,
   showBackButton = false,
@@ -229,7 +185,12 @@ export const TmaPageShell = ({
   bubbleHref,
   contentClassName,
 }: TmaPageShellProps) => {
+  const contentRef = useRef<HTMLElement | null>(null)
+  const location = useLocation()
   const navigate = useNavigate()
+  const normalizedPathname =
+    location.pathname === '/home' ? HOME_FALLBACK_ROUTE : location.pathname
+  const pageMemoryKey = `${normalizedPathname}${location.search}`
 
   const handleBack = useEffectEvent(() => {
     if (backTo) {
@@ -244,7 +205,7 @@ export const TmaPageShell = ({
       return
     }
 
-    navigate('/')
+    navigate(HOME_FALLBACK_ROUTE)
   })
 
   useEffect(() => {
@@ -274,6 +235,34 @@ export const TmaPageShell = ({
     }
   }, [handleBack, showBackButton, closeAction])
 
+  useEffect(() => {
+    const content = contentRef.current
+
+    if (!content) {
+      return
+    }
+
+    const restoreFrame = window.requestAnimationFrame(() => {
+      content.scrollTop = pageMemoryStore
+        .getState()
+        .getScrollOffset(pageMemoryKey)
+    })
+
+    const handleScroll = () => {
+      pageMemoryStore
+        .getState()
+        .setScrollOffset(pageMemoryKey, content.scrollTop)
+    }
+
+    content.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.cancelAnimationFrame(restoreFrame)
+      handleScroll()
+      content.removeEventListener('scroll', handleScroll)
+    }
+  }, [pageMemoryKey])
+
   return (
     <AppShell>
       <div
@@ -286,10 +275,16 @@ export const TmaPageShell = ({
         <div className='tma-page-shell__glow tma-page-shell__glow--accent' />
 
         <div className='tma-page-shell__viewport'>
-          {closeAction ? <TmaTopBar closeAction /> : null}
-          {header}
+          <header className='tma-page-titlebar'>
+            <h1 className='tma-page-titlebar__title'>{title}</h1>
+          </header>
+
+          {header ? (
+            <div className='tma-page-shell__header'>{header}</div>
+          ) : null}
 
           <main
+            ref={contentRef}
             className={joinClassNames(
               'tma-page-shell__content',
               contentClassName,
