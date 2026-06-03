@@ -5,6 +5,7 @@ import {
   TmaMonogramBadge,
   TmaPageHeader,
   TmaPageShell,
+  TmaPageTitleBar,
 } from '@/components/shared/tma-page-shell'
 import { useAuth } from '@/features/auth/auth-provider'
 import {
@@ -89,32 +90,29 @@ export const HomePage = () => {
   )
 
   return (
-    <TmaPageShell
-      closeAction
-      header={
-        <TmaPageHeader
-          eyebrow='Xin chào'
-          leading={
-            user?.avatarUrl ? (
-              <img
-                alt={userName}
-                className='tma-avatar-image'
-                src={user.avatarUrl}
-              />
-            ) : (
-              <span>{resolveInitials(userName)}</span>
-            )
-          }
-          subtitle={`${featuredHousehold.name} đang dùng ${formatVnd(featuredHousehold.monthSpend)} trong ${formatMonthLabel(new Date()).toLowerCase()}.`}
-          title={userName}
-          trailing={
-            <span className='tma-chip tma-chip--strong'>
-              {formatMonthLabel(new Date())}
-            </span>
-          }
-        />
-      }
-      title='Trang chủ'>
+    <TmaPageShell closeAction>
+      <TmaPageTitleBar title='Trang chủ' />
+      <TmaPageHeader
+        eyebrow='Xin chào'
+        leading={
+          user?.avatarUrl ? (
+            <img
+              alt={userName}
+              className='tma-avatar-image'
+              src={user.avatarUrl}
+            />
+          ) : (
+            <span>{resolveInitials(userName)}</span>
+          )
+        }
+        subtitle={`${featuredHousehold.name} đang dùng ${formatVnd(featuredHousehold.monthSpend)} trong ${formatMonthLabel(new Date()).toLowerCase()}.`}
+        title={userName}
+        trailing={
+          <span className='tma-chip tma-chip--strong'>
+            {formatMonthLabel(new Date())}
+          </span>
+        }
+      />
       <section className='tma-summary-card tma-summary-card--home'>
         <div className='tma-summary-card__topline'>
           <div>

@@ -155,16 +155,19 @@ export const TmaPageHeader = ({
   </section>
 )
 
+export const TmaPageTitleBar = ({ title }: { title: string }) => (
+  <header className='tma-page-titlebar'>
+    <h1 className='tma-page-titlebar__title'>{title}</h1>
+  </header>
+)
+
 export interface TmaPageShellProps {
   children: ReactNode
-  title: string
-  header?: ReactNode
   showBottomTabs?: boolean
   showBackButton?: boolean
   /**
-   * Show a "Close" pill in the top bar. Use on root screens where the
-   * back button would have nothing to go back to. Implies hiding the
-   * Telegram native BackButton.
+   * Root screen semantics. When true, the shell hides Telegram BackButton so
+   * fullscreen/native chrome can own the close affordance instead.
    */
   closeAction?: boolean
   backTo?: string
@@ -175,8 +178,6 @@ export interface TmaPageShellProps {
 
 export const TmaPageShell = ({
   children,
-  title,
-  header,
   showBottomTabs = true,
   showBackButton = false,
   closeAction = false,
@@ -275,14 +276,6 @@ export const TmaPageShell = ({
         <div className='tma-page-shell__glow tma-page-shell__glow--accent' />
 
         <div className='tma-page-shell__viewport'>
-          <header className='tma-page-titlebar'>
-            <h1 className='tma-page-titlebar__title'>{title}</h1>
-          </header>
-
-          {header ? (
-            <div className='tma-page-shell__header'>{header}</div>
-          ) : null}
-
           <main
             ref={contentRef}
             className={joinClassNames(

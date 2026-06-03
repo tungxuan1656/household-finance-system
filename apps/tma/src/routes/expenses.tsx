@@ -5,6 +5,7 @@ import { DotsIcon, FilterIcon } from '@/components/shared/tma-icons'
 import {
   TmaMonogramBadge,
   TmaPageShell,
+  TmaPageTitleBar,
 } from '@/components/shared/tma-page-shell'
 import { findCategory, recentExpenses } from '@/features/finance/mock-data'
 import { formatDateLabel, formatTimeLabel, formatVnd } from '@/lib/formatters'
@@ -40,31 +41,29 @@ export const ExpensesPage = () => {
   }, [])
 
   return (
-    <TmaPageShell
-      showBackButton
-      header={
-        <div className='tma-page-toolbar'>
-          <p className='tma-page-toolbar__copy'>
-            Lịch sử đầy đủ, nhẹ để quét mắt và quay lại thật nhanh.
-          </p>
+    <TmaPageShell showBackButton>
+      <TmaPageTitleBar title='Chi tiêu' />
+      <div className='tma-page-toolbar'>
+        <p className='tma-page-toolbar__copy'>
+          Lịch sử đầy đủ, nhẹ để quét mắt và quay lại thật nhanh.
+        </p>
 
-          <button
-            className='tma-chip-button'
-            type='button'
-            onClick={() => {
-              selection()
+        <button
+          className='tma-chip-button'
+          type='button'
+          onClick={() => {
+            selection()
 
-              setPageState((current) => ({
-                ...current,
-                showFilters: !current.showFilters,
-              }))
-            }}>
-            <FilterIcon height='16' width='16' />
-            <span>Lọc</span>
-          </button>
-        </div>
-      }
-      title='Chi tiêu'>
+            setPageState((current) => ({
+              ...current,
+              showFilters: !current.showFilters,
+            }))
+          }}>
+          <FilterIcon height='16' width='16' />
+          <span>Lọc</span>
+        </button>
+      </div>
+
       {routeState?.savedExpense ? (
         <section className='tma-inline-banner'>
           <p className='tma-section-label'>Preview đã lưu cục bộ</p>
