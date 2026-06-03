@@ -16,6 +16,7 @@ import {
   parseAmountInput,
 } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
+import { notification, selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseDetailsPage = () => {
   const navigate = useNavigate()
@@ -40,6 +41,7 @@ export const AddExpenseDetailsPage = () => {
       return
     }
 
+    notification('success')
     setDetails({ amount, sourceId, note })
     navigate('/expenses/new/context')
   })
@@ -149,9 +151,10 @@ export const AddExpenseDetailsPage = () => {
           {expenseSources.map((source) => (
             <button
               key={source.id}
-              className={`tma-select-chip${sourceId === source.id ? 'is-active' : ''}`}
+              className={`tma-select-chip${sourceId === source.id ? ' is-active' : ''}`}
               type='button'
               onClick={() => {
+                selection()
                 setSourceId(source.id)
               }}>
               <span>{source.label}</span>

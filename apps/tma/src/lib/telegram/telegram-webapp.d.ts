@@ -70,6 +70,7 @@ declare global {
     MainButton: TelegramWebAppMainButton
     HapticFeedback: TelegramWebAppHapticFeedback
     isExpanded: boolean
+    isFullscreen: boolean
     viewportHeight: number
     viewportStableHeight: number
     safeAreaInset: { top: number; bottom: number; left: number; right: number }
@@ -82,6 +83,10 @@ declare global {
     ready: () => void
     close: () => void
     expand: () => void
+    requestFullscreen: () => void
+    exitFullscreen: () => void
+    disableVerticalSwipes: () => void
+    enableVerticalSwipes: () => void
     onEvent: (event: string, handler: () => void) => void
     offEvent: (event: string, handler: () => void) => void
   }

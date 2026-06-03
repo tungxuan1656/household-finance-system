@@ -9,6 +9,7 @@ import {
 } from '@/components/shared/tma-page-shell'
 import { findCategory, recentExpenses } from '@/features/finance/mock-data'
 import { formatDateLabel, formatTimeLabel, formatVnd } from '@/lib/formatters'
+import { impact, selection } from '@/lib/telegram/haptics'
 
 interface ExpenseRouteState {
   savedExpense?: {
@@ -47,6 +48,7 @@ export const ExpensesPage = () => {
               className='tma-chip-button'
               type='button'
               onClick={() => {
+                selection()
                 setShowFilters((current) => !current)
               }}>
               <FilterIcon height='16' width='16' />
@@ -85,7 +87,13 @@ export const ExpensesPage = () => {
                 const category = findCategory(expense.categoryId)
 
                 return (
-                  <article key={expense.id} className='tma-expense-card'>
+                  <article
+                    key={expense.id}
+                    className='tma-expense-card'
+                    role='button'
+                    tabIndex={0}
+                    onClick={() => selection()}
+                    onKeyDown={(e) => e.key === 'Enter' && selection()}>
                     <TmaMonogramBadge
                       accent={category.accent}
                       label={category.symbol}
@@ -110,7 +118,11 @@ export const ExpensesPage = () => {
 
                     <button
                       className='tma-icon-button tma-icon-button--ghost'
-                      type='button'>
+                      type='button'
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        impact('light')
+                      }}>
                       <DotsIcon height='18' width='18' />
                     </button>
                   </article>

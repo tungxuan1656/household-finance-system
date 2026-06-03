@@ -14,7 +14,7 @@ import {
 } from '@/features/finance/mock-data'
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
-import { notification } from '@/lib/telegram/haptics'
+import { notification, selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseContextPage = () => {
   const navigate = useNavigate()
@@ -139,9 +139,10 @@ export const AddExpenseContextPage = () => {
           {householdOptions.map((household) => (
             <button
               key={household.id}
-              className={`tma-select-chip${householdId === household.id ? 'is-active' : ''}`}
+              className={`tma-select-chip${householdId === household.id ? ' is-active' : ''}`}
               type='button'
               onClick={() => {
+                selection()
                 setContext({ householdId: household.id, groupId })
               }}>
               <span>{household.name}</span>
@@ -165,9 +166,10 @@ export const AddExpenseContextPage = () => {
           {groupOptions.map((group) => (
             <button
               key={group.id}
-              className={`tma-select-chip${groupId === group.id ? 'is-active' : ''}`}
+              className={`tma-select-chip${groupId === group.id ? ' is-active' : ''}`}
               type='button'
               onClick={() => {
+                selection()
                 setContext({ householdId, groupId: group.id })
               }}>
               <span>{group.label}</span>

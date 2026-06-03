@@ -14,7 +14,7 @@ import {
   showBackButton as bindBackButton,
 } from '@/lib/telegram/back-button'
 import { hideBottomButton } from '@/lib/telegram/bottom-button'
-import { selection } from '@/lib/telegram/haptics'
+import { impact, selection } from '@/lib/telegram/haptics'
 
 const tabItems = [
   { href: '/', label: 'Trang chủ', icon: HomeIcon },
@@ -159,6 +159,7 @@ export const TmaPageShell = ({
     }
 
     const cleanup = bindBackButton(() => {
+      impact('light')
       handleBack()
     })
 

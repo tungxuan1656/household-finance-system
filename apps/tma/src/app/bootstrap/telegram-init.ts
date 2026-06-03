@@ -1,4 +1,6 @@
-import { init, isTMA, mockTelegramEnv } from '@tma.js/sdk'
+import { init, isTMA, mockTelegramEnv, viewport } from '@tma.js/sdk'
+
+viewport.requestFullscreen()
 
 import { bindTheme, resetTheme } from '@/lib/telegram/theme'
 
@@ -17,6 +19,9 @@ export const initTelegram = (): (() => void) => {
 
   if (isTMA()) {
     window.Telegram?.WebApp?.ready?.()
+    window.Telegram?.WebApp?.expand?.()
+    window.Telegram?.WebApp?.requestFullscreen?.()
+    window.Telegram?.WebApp?.disableVerticalSwipes?.()
   }
 
   return cleanup

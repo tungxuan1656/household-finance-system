@@ -11,6 +11,7 @@ import {
   recentExpenses,
 } from '@/features/finance/mock-data'
 import { formatMonthLabel, formatTimeLabel, formatVnd } from '@/lib/formatters'
+import { impact, selection } from '@/lib/telegram/haptics'
 
 const shortcutItems = [
   {
@@ -128,8 +129,11 @@ export const HomePage = () => {
             <a
               key={item.title}
               aria-disabled={!item.enabled}
-              className={`tma-shortcut-card${item.enabled ? '' : 'is-disabled'}`}
-              href={item.enabled ? item.href : undefined}>
+              className={`tma-shortcut-card${item.enabled ? '' : ' is-disabled'}`}
+              href={item.enabled ? item.href : undefined}
+              onClick={() => {
+                if (item.enabled) impact('light')
+              }}>
               <TmaMonogramBadge accent={item.accent} label={item.symbol} />
               <div>
                 <h3>{item.title}</h3>
@@ -153,7 +157,13 @@ export const HomePage = () => {
 
         <div className='tma-household-carousel'>
           {householdOptions.map((household) => (
-            <article key={household.id} className='tma-household-card'>
+            <article
+              key={household.id}
+              className='tma-household-card'
+              role='button'
+              tabIndex={0}
+              onClick={() => impact('light')}
+              onKeyDown={(e) => e.key === 'Enter' && impact('light')}>
               <div className='tma-household-card__top'>
                 <TmaMonogramBadge accent={household.accent} label='GD' />
                 <span className='tma-soft-pill'>
@@ -187,7 +197,13 @@ export const HomePage = () => {
             const category = findCategory(expense.categoryId)
 
             return (
-              <article key={expense.id} className='tma-expense-row'>
+              <article
+                key={expense.id}
+                className='tma-expense-row'
+                role='button'
+                tabIndex={0}
+                onClick={() => selection()}
+                onKeyDown={(e) => e.key === 'Enter' && selection()}>
                 <TmaMonogramBadge
                   accent={category.accent}
                   label={category.symbol}

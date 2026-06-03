@@ -38,6 +38,8 @@ export const AddExpenseCategoryPage = () => {
             type='date'
             value={date.slice(0, 10)}
             onChange={(event) => {
+              selection()
+
               const nextDate = new Date(
                 `${event.target.value}T12:00:00+07:00`,
               ).toISOString()

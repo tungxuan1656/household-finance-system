@@ -9,6 +9,7 @@ import {
 import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
 import { useAuth } from '@/features/auth/auth-provider'
 import { formatMonthLabel } from '@/lib/formatters'
+import { impact, selection } from '@/lib/telegram/haptics'
 
 const preferenceRows = [
   {
@@ -50,7 +51,10 @@ export const SettingsPage = () => {
         </div>
 
         <div className='tma-appearance-grid'>
-          <button className='tma-appearance-option is-active' type='button'>
+          <button
+            className='tma-appearance-option is-active'
+            type='button'
+            onClick={() => selection()}>
             <SparkIcon height='18' width='18' />
             <span>Theo Telegram</span>
           </button>
@@ -81,7 +85,13 @@ export const SettingsPage = () => {
 
         <div className='tma-list-card'>
           {preferenceRows.map(({ title, value, icon: Icon }) => (
-            <article key={title} className='tma-settings-row'>
+            <article
+              key={title}
+              className='tma-settings-row'
+              role='button'
+              tabIndex={0}
+              onClick={() => selection()}
+              onKeyDown={(e) => e.key === 'Enter' && selection()}>
               <span className='tma-settings-row__icon'>
                 <Icon height='18' width='18' />
               </span>
@@ -104,7 +114,10 @@ export const SettingsPage = () => {
           </p>
         </div>
 
-        <button className='tma-support-card__cta' type='button'>
+        <button
+          className='tma-support-card__cta'
+          type='button'
+          onClick={() => impact('medium')}>
           <HeartIcon height='18' width='18' />
           <span>Tặng Stars</span>
         </button>

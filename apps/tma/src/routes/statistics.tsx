@@ -7,6 +7,7 @@ import {
 import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
 import { statisticMonths, statisticSlices } from '@/features/finance/mock-data'
 import { formatMonthLabel, formatVnd } from '@/lib/formatters'
+import { impact, selection } from '@/lib/telegram/haptics'
 
 const rangeOptions = [
   { id: 'day', label: 'Ngày' },
@@ -52,6 +53,7 @@ export const StatisticsPage = () => {
           className='tma-icon-button'
           type='button'
           onClick={() => {
+            impact('light')
             setMonthIndex((current) =>
               current === 0 ? statisticMonths.length - 1 : current - 1,
             )
@@ -68,6 +70,7 @@ export const StatisticsPage = () => {
           className='tma-icon-button'
           type='button'
           onClick={() => {
+            impact('light')
             setMonthIndex((current) => (current + 1) % statisticMonths.length)
           }}>
           <ChevronRightIcon height='18' width='18' />
@@ -78,9 +81,10 @@ export const StatisticsPage = () => {
         {rangeOptions.map((option) => (
           <button
             key={option.id}
-            className={`tma-segmented__item${range === option.id ? 'is-active' : ''}`}
+            className={`tma-segmented__item${range === option.id ? ' is-active' : ''}`}
             type='button'
             onClick={() => {
+              selection()
               setRange(option.id)
             }}>
             {option.label}
