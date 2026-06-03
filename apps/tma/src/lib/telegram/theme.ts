@@ -1,6 +1,9 @@
 import { miniApp, themeParams, viewport } from '@tma.js/sdk'
 
-import type { SafeAreaInsets } from '@/lib/telegram/safe-area'
+import {
+  mergeSafeAreaInsets,
+  type SafeAreaInsets,
+} from '@/lib/telegram/safe-area'
 
 const ROOT = document.documentElement
 
@@ -23,8 +26,9 @@ const applySafeAreaInsets = () => {
     left: 0,
     right: 0,
   }
+  const layoutSafe = mergeSafeAreaInsets(safe, content)
   const insets: Record<string, SafeAreaInsets> = {
-    '--tma-safe': safe,
+    '--tma-safe': layoutSafe,
     '--tma-content-safe': content,
   }
 
@@ -34,6 +38,10 @@ const applySafeAreaInsets = () => {
     setSafeAreaVar(`${prefix}-bottom`, inset.bottom)
     setSafeAreaVar(`${prefix}-left`, inset.left)
   }
+}
+
+export const syncViewportInsets = (): void => {
+  applySafeAreaInsets()
 }
 
 const THEME_VARS = ['--tma-base-bg']

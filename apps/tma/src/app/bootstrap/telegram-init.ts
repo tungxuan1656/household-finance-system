@@ -7,7 +7,7 @@ import {
   viewport,
 } from '@tma.js/sdk'
 
-import { bindTheme, resetTheme } from '@/lib/telegram/theme'
+import { bindTheme, resetTheme, syncViewportInsets } from '@/lib/telegram/theme'
 
 // Matches --tma-base-bg in index.css. Set on the Telegram WebView so
 // transitions between pages do not flash a default background color.
@@ -39,14 +39,23 @@ export const initTelegram = (): (() => void) => {
 
   // 6. Mount and expand viewport
   viewport.mount().then(() => {
+    syncViewportInsets()
     viewport.expand()
+    syncViewportInsets()
 
     // Request fullscreen on the next frame so the first paint can land
     // with the correct background instead of flashing during the transition.
     if (!viewport.isFullscreen()) {
       window.requestAnimationFrame(() => {
+        syncViewportInsets()
+
         window.setTimeout(() => {
           viewport.requestFullscreen.ifAvailable()
+          syncViewportInsets()
+
+          window.setTimeout(() => {
+            syncViewportInsets()
+          }, 120)
         }, 32)
       })
     }

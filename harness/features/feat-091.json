@@ -13,10 +13,12 @@
     "artifacts": [
       "Removed the `/home -> /` redirect and the remaining home shortcut full-page navigation so the TMA history stack stays SPA-native during route changes.",
       "Refactored the shared TMA shell into a safe-area-aware centered title bar, moved page context blocks below the title bar, and added in-memory scroll restoration plus route-level page-state memory for `Statistics` and `Expenses`.",
-      "Redesigned the home screen hierarchy around a stronger monthly summary card, tighter shortcut cards, and cleaner intro spacing without changing the current mock-data contract."
+      "Redesigned the home screen hierarchy around a stronger monthly summary card, tighter shortcut cards, and cleaner intro spacing without changing the current mock-data contract.",
+      "Follow-up fix: safe-area root vars now resync after `viewport.mount()` and fullscreen transition, and the shell uses the max of `safeAreaInsets` / `contentSafeAreaInsets` so the centered title no longer sits under the Dynamic Island on iPhone fullscreen runs."
     ],
     "verification": [
       "Added `apps/tma/src/test/page-memory.test.ts` first, watched it fail because the new `page-memory` module did not exist yet, then implemented `apps/tma/src/lib/navigation/page-memory.ts` and reran the focused test until it passed.",
+      "Added `apps/tma/src/test/safe-area.test.ts` first, watched it fail because `mergeSafeAreaInsets()` did not exist yet, then implemented the helper and reran the focused test until it passed.",
       "Ran `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build`; all returned `OK`. Final repo verification with `./init.sh` completed and printed `Done!`.",
       "Validated `harness/feature_index.json` and `harness/features/feat-091.json` with `python3 -m json.tool`; both parsed successfully. `./scripts/check_harness_size.sh` returned `Harness size checks passed`, and `git diff --check` returned clean.",
       "Ran final `gitnexus_detect_changes(scope: 'all')`, which reported `critical` risk with 40 changed symbols across 12 files and 27 affected processes, concentrated in the expected shared TMA shell and active route surfaces.",
