@@ -44,4 +44,5 @@ export interface SessionTokenPayload extends JWTPayload {
   sub: string
   sid: string
   typ: SessionTokenKind
+  provider: AuthProvider
 }

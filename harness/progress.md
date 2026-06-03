@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-03 — Fixed remaining feat-080 auth review regressions
+
+- Who: Codex
+- Summary: Closed the remaining correctness gaps in the TMA auth/session rollout. `runAuthBootstrap()` now treats `400/401` Telegram provider-exchange failures as fatal invalid-launch errors instead of silently reviving an old session from a stored refresh token, and it now preserves stored refresh tokens when both bootstrap exchange and refresh fallback fail due to transport or `5xx` conditions by surfacing `networkError` rather than forcing logout. On the client side, `createTmaAuthClient()` now accepts an access-token provider and the TMA app wires the live auth-store token into authenticated logout requests. On the worker side, session JWTs now carry `provider`, refresh rotation preserves that field, and `authMiddleware` reads it back so protected routes no longer relabel Telegram sessions as Firebase on the next request.
+- Files changed: TMA auth bootstrap/session wiring, TMA auth regression tests, worker JWT/auth middleware/session issuance flow, worker Telegram auth regression tests, feat-080 evidence, and this progress log.
+- Verification: Focused `pnpm --filter tma exec vitest run src/test/auth-bootstrap.test.ts src/test/auth-api.test.ts` passed (2 files, 12 tests); focused `pnpm --filter worker exec vitest run test/unit/jwt.spec.ts test/integration/auth-telegram.spec.ts` passed (2 files, 15 tests); final `./init.sh` passed and printed `Done!`; final `gitnexus_detect_changes(scope: 'all')` returned risk `critical` with 14 changed files, 45 changed symbols, and 19 affected processes, all within the expected auth bootstrap/JWT/session surface.
+- Blockers: none.
+- Next steps: Review or commit the feat-080 review-fix slice when desired.
+
 ## 2026-06-03 — Synced worker CORS test with shared-network dev-host behavior
 
 - Who: Codex

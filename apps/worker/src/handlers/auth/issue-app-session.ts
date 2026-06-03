@@ -20,8 +20,18 @@ export const issueAppSession = async (
 ): Promise<ExchangeProviderResponse> => {
   const config = readConfig(env)
   const sessionId = newId()
-  const accessToken = await issueAccessToken(config, input.user.id, sessionId)
-  const refreshToken = await issueRefreshToken(config, input.user.id, sessionId)
+  const accessToken = await issueAccessToken(
+    config,
+    input.user.id,
+    sessionId,
+    input.provider,
+  )
+  const refreshToken = await issueRefreshToken(
+    config,
+    input.user.id,
+    sessionId,
+    input.provider,
+  )
   const tokenHash = await hashRefreshToken(
     refreshToken,
     config.refreshTokenPepper,

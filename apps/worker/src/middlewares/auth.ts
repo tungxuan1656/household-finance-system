@@ -59,7 +59,7 @@ export const authMiddleware: MiddlewareHandler<AppBindings> = async (
   ctx.set('currentUser', {
     id: user.id,
     email: user.primaryEmail,
-    provider: 'firebase',
+    provider: payload.provider,
   })
 
   await next()

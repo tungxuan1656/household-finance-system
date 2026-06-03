@@ -119,4 +119,26 @@ describe('TMA auth API client', () => {
       expect.objectContaining({ method: 'POST' }),
     )
   })
+
+  it('includes the current access token on authenticated logout requests', async () => {
+    const fetchImpl = vi.fn(async () =>
+      jsonResponse({ revoked: true as const }),
+    )
+    const client = createTmaAuthClient({
+      fetchImpl,
+      accessTokenProvider: () => 'access-for-logout',
+    })
+
+    await client.api.logoutSession('refresh-logout')
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      '/api/v1/auth/logout',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          authorization: 'Bearer access-for-logout',
+        }),
+      }),
+    )
+  })
 })

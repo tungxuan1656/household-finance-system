@@ -16,6 +16,7 @@ export interface CreateTmaAuthClientOptions {
   fetchImpl?: typeof fetch
   storageOverride?: AuthStorage
   apiOverride?: AuthApiClient
+  accessTokenProvider?: () => string | null
   secureStorageOverride?: SecureStorageLike | null
 }
 
@@ -45,7 +46,7 @@ export const createTmaAuthClient = (
     createAuthApiClient({
       baseUrl: options.baseUrl ?? DEFAULT_BASE_URL,
       fetchImpl: options.fetchImpl,
-      accessTokenProvider: () => null,
+      accessTokenProvider: options.accessTokenProvider,
     })
 
   return { api, storage }

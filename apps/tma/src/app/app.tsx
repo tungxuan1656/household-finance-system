@@ -5,6 +5,7 @@ import { initTelegram, teardownTelegram } from '@/app/bootstrap/telegram-init'
 import { AppRouter } from '@/app/router/app-router'
 import { AuthBootstrap } from '@/features/auth/bootstrap'
 import { createAuthApiBootstrapDeps } from '@/features/auth/bootstrap-deps'
+import { useAuthStore } from '@/features/auth/store'
 import { createTmaAuthClient } from '@/lib/auth/client'
 import {
   DEFAULT_LOCALE,
@@ -48,6 +49,7 @@ export const App = () => {
     () =>
       createTmaAuthClient({
         baseUrl: workerBaseUrl,
+        accessTokenProvider: () => useAuthStore.getState().accessToken,
       }),
     [],
   )

@@ -3,6 +3,7 @@ import type {
   ExchangeProviderResponse,
   RefreshSessionResponse,
 } from '@/lib/auth/api'
+import { AuthApiError } from '@/lib/auth/api'
 
 import { useAuthStore } from './store'
 
@@ -36,6 +37,15 @@ export const createAuthApiBootstrapDeps = (options: {
   onFatal: options.onFatal,
 })
 
+const isAuthApiError = (error: unknown): error is AuthApiError =>
+  error instanceof AuthApiError
+
+const isLaunchRejected = (error: unknown): boolean =>
+  isAuthApiError(error) && (error.status === 400 || error.status === 401)
+
+const isTransientBootstrapFailure = (error: unknown): boolean =>
+  !isAuthApiError(error) || error.status >= 500
+
 export const runAuthBootstrap = async (
   deps: AuthBootstrapDeps,
 ): Promise<'authenticated' | 'fatal'> => {
@@ -62,11 +72,18 @@ export const runAuthBootstrap = async (
     })
 
     return 'authenticated'
-  } catch {
+  } catch (error) {
+    if (isLaunchRejected(error)) {
+      useAuthStore.getState().setError({ code: 'launchInvalid' })
+      deps.onFatal?.()
+
+      return 'fatal'
+    }
+
     const refreshToken = await deps.loadRefreshToken()
 
     if (!refreshToken) {
-      useAuthStore.getState().setError({ code: 'launchInvalid' })
+      useAuthStore.getState().setError({ code: 'networkError' })
       deps.onFatal?.()
 
       return 'fatal'
@@ -83,7 +100,14 @@ export const runAuthBootstrap = async (
       })
 
       return 'authenticated'
-    } catch {
+    } catch (refreshError) {
+      if (isTransientBootstrapFailure(refreshError)) {
+        useAuthStore.getState().setError({ code: 'networkError' })
+        deps.onFatal?.()
+
+        return 'fatal'
+      }
+
       await deps.clearRefreshToken()
       useAuthStore.getState().setError({ code: 'sessionExpired' })
       deps.onFatal?.()

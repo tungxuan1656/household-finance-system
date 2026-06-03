@@ -129,7 +129,7 @@ describe('auth bootstrap order', () => {
     expect(onFatal).toHaveBeenCalledTimes(1)
   })
 
-  it('falls back to refresh when provider exchange fails and a refresh token is available', async () => {
+  it('fails fast when launch exchange rejects invalid Telegram launch data', async () => {
     const exchange = vi.fn(async () => {
       throw new AuthApiError(401, 'UNAUTHENTICATED')
     })
@@ -148,17 +148,15 @@ describe('auth bootstrap order', () => {
     )
 
     const state = useAuthStore.getState()
-    expect(result).toBe('authenticated')
-    expect(state.status).toBe('authenticated')
-    expect(state.user).toBeNull()
-    expect(state.accessToken).toBe('access-2')
-    expect(state.refreshToken).toBe('refresh-2')
-    expect(refresh).toHaveBeenCalledWith('stored-refresh')
-    expect(setRefreshToken).toHaveBeenCalledWith('refresh-2')
-    expect(onFatal).not.toHaveBeenCalled()
+    expect(result).toBe('fatal')
+    expect(state.status).toBe('error')
+    expect(state.error?.code).toBe('launchInvalid')
+    expect(refresh).not.toHaveBeenCalled()
+    expect(setRefreshToken).not.toHaveBeenCalled()
+    expect(onFatal).toHaveBeenCalledTimes(1)
   })
 
-  it('reports launchInvalid when exchange fails and no refresh token is stored', async () => {
+  it('reports launchInvalid when exchange rejects the launch and no refresh token is stored', async () => {
     const exchange = vi.fn(async () => {
       throw new AuthApiError(401, 'UNAUTHENTICATED')
     })
@@ -179,9 +177,58 @@ describe('auth bootstrap order', () => {
     expect(onFatal).toHaveBeenCalledTimes(1)
   })
 
-  it('reports sessionExpired and clears storage when refresh also fails', async () => {
+  it('reports networkError when bootstrap transport fails and no refresh token is stored', async () => {
     const exchange = vi.fn(async () => {
-      throw new AuthApiError(401, 'UNAUTHENTICATED')
+      throw new AuthApiError(503, 'SERVICE_UNAVAILABLE')
+    })
+    const onFatal = vi.fn()
+
+    const result = await runAuthBootstrap(
+      buildDeps({
+        exchangeLaunchData: exchange as never,
+        loadRefreshToken: async () => null,
+        onFatal,
+      }),
+    )
+
+    const state = useAuthStore.getState()
+    expect(result).toBe('fatal')
+    expect(state.status).toBe('error')
+    expect(state.error?.code).toBe('networkError')
+    expect(onFatal).toHaveBeenCalledTimes(1)
+  })
+
+  it('reports networkError and preserves stored refresh token when transport errors continue during refresh fallback', async () => {
+    const exchange = vi.fn(async () => {
+      throw new AuthApiError(503, 'SERVICE_UNAVAILABLE')
+    })
+    const refresh = vi.fn(async () => {
+      throw new AuthApiError(503, 'SERVICE_UNAVAILABLE')
+    })
+    const clearRefreshToken = vi.fn(async () => undefined)
+    const onFatal = vi.fn()
+
+    const result = await runAuthBootstrap(
+      buildDeps({
+        exchangeLaunchData: exchange as never,
+        loadRefreshToken: async () => 'stored-refresh',
+        refreshSession: refresh as never,
+        clearRefreshToken: clearRefreshToken as never,
+        onFatal,
+      }),
+    )
+
+    const state = useAuthStore.getState()
+    expect(result).toBe('fatal')
+    expect(state.status).toBe('error')
+    expect(state.error?.code).toBe('networkError')
+    expect(clearRefreshToken).not.toHaveBeenCalled()
+    expect(onFatal).toHaveBeenCalledTimes(1)
+  })
+
+  it('reports sessionExpired and clears storage when refresh fallback rejects the stored refresh token', async () => {
+    const exchange = vi.fn(async () => {
+      throw new AuthApiError(503, 'SERVICE_UNAVAILABLE')
     })
     const refresh = vi.fn(async () => {
       throw new AuthApiError(401, 'UNAUTHENTICATED')

@@ -49,11 +49,13 @@ export const refreshSession = async (
     config,
     existingSession.userId,
     rotatedSessionId,
+    refreshPayload.provider,
   )
   const refreshToken = await issueRefreshToken(
     config,
     existingSession.userId,
     rotatedSessionId,
+    refreshPayload.provider,
   )
   const rotatedHash = await hashRefreshToken(
     refreshToken,

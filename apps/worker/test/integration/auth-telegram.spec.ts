@@ -51,11 +51,71 @@ describe('Worker integration: Telegram provider exchange', () => {
       },
     )
 
-    const protectedPayload =
-      await parseJson<ApiEnvelope<{ ok: boolean }>>(protectedResponse)
+    const protectedPayload = await parseJson<
+      ApiEnvelope<{
+        ok: boolean
+        user: { provider: string }
+      }>
+    >(protectedResponse)
 
     expect(protectedResponse.status).toBe(200)
     expect(protectedPayload.data.ok).toBe(true)
+    expect(protectedPayload.data.user.provider).toBe('telegram')
+  })
+
+  it('keeps the Telegram provider on protected requests after refresh rotation', async () => {
+    const initData = await buildTelegramInitData({
+      user: {
+        id: 7_777_777,
+        first_name: 'Rotated',
+        last_name: 'Provider',
+      },
+    })
+
+    const exchangeResponse = await exchangeWithTelegram(initData)
+    const exchangePayload = await parseJson<
+      ApiEnvelope<{
+        refreshToken: string
+      }>
+    >(exchangeResponse)
+
+    const refreshResponse = await SELF.fetch(
+      'https://example.com/api/v1/auth/refresh',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          refreshToken: exchangePayload.data.refreshToken,
+        }),
+      },
+    )
+
+    const refreshPayload = await parseJson<
+      ApiEnvelope<{
+        accessToken: string
+      }>
+    >(refreshResponse)
+
+    const protectedResponse = await SELF.fetch(
+      'https://example.com/api/v1/protected/ping',
+      {
+        headers: {
+          authorization: `Bearer ${refreshPayload.data.accessToken}`,
+        },
+      },
+    )
+
+    const protectedPayload = await parseJson<
+      ApiEnvelope<{
+        user: { provider: string }
+      }>
+    >(protectedResponse)
+
+    expect(refreshResponse.status).toBe(200)
+    expect(protectedResponse.status).toBe(200)
+    expect(protectedPayload.data.user.provider).toBe('telegram')
   })
 
   it('maps the same Telegram user to the same app identity on repeated exchanges', async () => {
