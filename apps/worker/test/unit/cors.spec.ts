@@ -13,11 +13,13 @@ describe('cors helper', () => {
 
   it('allows the existing shared-network development origin', () => {
     expect(isAllowedCorsOrigin('http://100.116.7.43:3000')).toBe(true)
+    expect(isAllowedCorsOrigin('http://100.116.7.43:3001')).toBe(true)
+    expect(isAllowedCorsOrigin('http://100.116.7.43:5174')).toBe(true)
   })
 
   it('rejects unknown, invalid, or unsupported origins', () => {
-    expect(isAllowedCorsOrigin('http://100.116.7.43:3001')).toBe(false)
     expect(isAllowedCorsOrigin('https://localhost:3000')).toBe(false)
+    expect(isAllowedCorsOrigin('https://100.116.7.43:3001')).toBe(false)
     expect(isAllowedCorsOrigin('https://evil.example')).toBe(false)
     expect(isAllowedCorsOrigin('not-a-url')).toBe(false)
   })
@@ -26,7 +28,9 @@ describe('cors helper', () => {
     expect(resolveCorsOrigin('http://localhost:3001')).toBe(
       'http://localhost:3001',
     )
-    expect(resolveCorsOrigin('http://100.116.7.43:3001')).toBe('')
+    expect(resolveCorsOrigin('http://100.116.7.43:3001')).toBe(
+      'http://100.116.7.43:3001',
+    )
     expect(resolveCorsOrigin()).toBe('')
     expect(resolveCorsOrigin(null)).toBe('')
   })

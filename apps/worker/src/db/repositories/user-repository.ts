@@ -1,3 +1,4 @@
+import type { AuthProvider } from '@/contracts'
 import type { ReferenceSourceKey } from '@/contracts/reference-data'
 import { notFound } from '@/lib/errors'
 import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
@@ -12,11 +13,15 @@ export interface StoredUser {
   quickAddLastSourceKey: ReferenceSourceKey | null
 }
 
-interface FirebaseIdentityInput {
+interface IdentityInput {
   subject: string
   email: string | null
   name: string | null
   picture: string | null
+}
+
+export interface UpsertUserByIdentityInput extends IdentityInput {
+  provider: AuthProvider
 }
 
 const toStoredUser = (row: {
@@ -35,8 +40,9 @@ const toStoredUser = (row: {
   quickAddLastSourceKey: row.quick_add_last_source_key,
 })
 
-const findIdentityUserId = async (
+export const findIdentityUserId = async (
   db: D1Database,
+  provider: AuthProvider,
   subject: string,
 ): Promise<string | null> => {
   const existingIdentity = await db
@@ -46,7 +52,7 @@ const findIdentityUserId = async (
        WHERE provider = ? AND provider_subject = ?
        LIMIT 1`,
     )
-    .bind('firebase', subject)
+    .bind(provider, subject)
     .first<{ user_id: string }>()
 
   return existingIdentity?.user_id ?? null
@@ -143,13 +149,21 @@ export const updateUserProfile = async (
   return loadUserById(db, userId, locale)
 }
 
+interface UpdateIdentityUserOptions {
+  identity: IdentityInput
+  nowEpoch: number
+  locale?: SupportedLocale
+}
+
 const updateIdentityUser = async (
   db: D1Database,
   userId: string,
-  identity: FirebaseIdentityInput,
-  nowEpoch: number,
-  locale: SupportedLocale = defaultLocale,
+  provider: AuthProvider,
+  options: UpdateIdentityUserOptions,
 ): Promise<StoredUser> => {
+  const { identity, nowEpoch } = options
+  const resolvedLocale = options.locale ?? defaultLocale
+
   await db.batch([
     db
       .prepare(
@@ -169,10 +183,10 @@ const updateIdentityUser = async (
            updated_at = ?
        WHERE provider = ? AND provider_subject = ?`,
       )
-      .bind(identity.email, nowEpoch, nowEpoch, 'firebase', identity.subject),
+      .bind(identity.email, nowEpoch, nowEpoch, provider, identity.subject),
   ])
 
-  return loadUserById(db, userId, locale)
+  return loadUserById(db, userId, resolvedLocale)
 }
 
 const isProviderSubjectConflictError = (error: unknown): boolean => {
@@ -185,22 +199,24 @@ const isProviderSubjectConflictError = (error: unknown): boolean => {
   )
 }
 
-export const upsertUserByFirebaseIdentity = async (
+export const upsertUserByIdentity = async (
   db: D1Database,
-  identity: FirebaseIdentityInput,
+  input: UpsertUserByIdentityInput,
   locale: SupportedLocale = defaultLocale,
 ): Promise<StoredUser> => {
-  const existingIdentityUserId = await findIdentityUserId(db, identity.subject)
+  const existingIdentityUserId = await findIdentityUserId(
+    db,
+    input.provider,
+    input.subject,
+  )
   const nowEpoch = Date.now()
 
   if (existingIdentityUserId) {
-    return updateIdentityUser(
-      db,
-      existingIdentityUserId,
-      identity,
+    return updateIdentityUser(db, existingIdentityUserId, input.provider, {
+      identity: input,
       nowEpoch,
       locale,
-    )
+    })
   }
 
   const userId = newId()
@@ -213,27 +229,82 @@ export const upsertUserByFirebaseIdentity = async (
           `INSERT INTO users (id, display_name, primary_email, avatar_url)
          VALUES (?, ?, ?, ?)`,
         )
-        .bind(userId, identity.name, identity.email, identity.picture),
+        .bind(userId, input.name, input.email, input.picture),
       db
         .prepare(
           `INSERT INTO auth_identities (id, user_id, provider, provider_subject, provider_email)
          VALUES (?, ?, ?, ?, ?)`,
         )
-        .bind(identityId, userId, 'firebase', identity.subject, identity.email),
+        .bind(identityId, userId, input.provider, input.subject, input.email),
     ])
   } catch (error) {
     if (!isProviderSubjectConflictError(error)) {
       throw error
     }
 
-    const racedUserId = await findIdentityUserId(db, identity.subject)
+    const racedUserId = await findIdentityUserId(
+      db,
+      input.provider,
+      input.subject,
+    )
 
     if (!racedUserId) {
       throw error
     }
 
-    return updateIdentityUser(db, racedUserId, identity, nowEpoch, locale)
+    return updateIdentityUser(db, racedUserId, input.provider, {
+      identity: input,
+      nowEpoch,
+      locale,
+    })
   }
 
   return loadUserById(db, userId, locale)
+}
+
+export interface FirebaseIdentityInput {
+  subject: string
+  email: string | null
+  name: string | null
+  picture: string | null
+}
+
+export const upsertUserByFirebaseIdentity = (
+  db: D1Database,
+  identity: FirebaseIdentityInput,
+  locale: SupportedLocale = defaultLocale,
+): Promise<StoredUser> =>
+  upsertUserByIdentity(db, { provider: 'firebase', ...identity }, locale)
+
+export interface TelegramIdentityInput {
+  subject: string
+  username: string | null
+  firstName: string | null
+  lastName: string | null
+  photoUrl: string | null
+}
+
+export const upsertUserByTelegramIdentity = (
+  db: D1Database,
+  identity: TelegramIdentityInput,
+  locale: SupportedLocale = defaultLocale,
+): Promise<StoredUser> => {
+  const displayName = [identity.firstName, identity.lastName]
+    .filter(
+      (part): part is string => typeof part === 'string' && part.length > 0,
+    )
+    .join(' ')
+    .trim()
+
+  return upsertUserByIdentity(
+    db,
+    {
+      provider: 'telegram',
+      subject: identity.subject,
+      email: null,
+      name: displayName.length > 0 ? displayName : identity.username,
+      picture: identity.photoUrl,
+    },
+    locale,
+  )
 }

@@ -21,12 +21,27 @@ authRoutes.post('/auth/provider/exchange', async (ctx) => {
     exchangeProviderRequestSchema,
     locale,
   )
+  const userAgent = ctx.req.header('user-agent') ?? null
+  const ipAddress = ctx.req.header('cf-connecting-ip') ?? null
+
+  if (body.provider === 'telegram') {
+    const result = await exchangeProviderToken(ctx.env, {
+      provider: 'telegram',
+      initData: body.initData,
+      locale,
+      userAgent,
+      ipAddress,
+    })
+
+    return success(ctx, result)
+  }
+
   const result = await exchangeProviderToken(ctx.env, {
-    provider: body.provider,
+    provider: 'firebase',
     idToken: body.idToken,
     locale,
-    userAgent: ctx.req.header('user-agent') ?? null,
-    ipAddress: ctx.req.header('cf-connecting-ip') ?? null,
+    userAgent,
+    ipAddress,
   })
 
   return success(ctx, result)

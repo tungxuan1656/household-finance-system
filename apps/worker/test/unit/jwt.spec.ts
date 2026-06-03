@@ -26,16 +26,27 @@ const config = {
 
 describe('jwt utilities', () => {
   it('issues and verifies an access token', async () => {
-    const token = await issueAccessToken(config, 'user-1', 'session-1')
+    const token = await issueAccessToken(
+      config,
+      'user-1',
+      'session-1',
+      'telegram',
+    )
     const payload = await verifyAccessToken(token, config)
 
     expect(payload.sub).toBe('user-1')
     expect(payload.sid).toBe('session-1')
     expect(payload.typ).toBe('access')
+    expect(payload.provider).toBe('telegram')
   })
 
   it('rejects refresh token in access verification path', async () => {
-    const refreshToken = await issueRefreshToken(config, 'user-2', 'session-2')
+    const refreshToken = await issueRefreshToken(
+      config,
+      'user-2',
+      'session-2',
+      'firebase',
+    )
 
     await expect(verifyAccessToken(refreshToken, config)).rejects.toMatchObject(
       {
@@ -67,11 +78,33 @@ describe('jwt utilities', () => {
   })
 
   it('verifies refresh token on refresh path', async () => {
-    const token = await issueRefreshToken(config, 'user-4', 'session-4')
+    const token = await issueRefreshToken(
+      config,
+      'user-4',
+      'session-4',
+      'firebase',
+    )
     const payload = await verifyRefreshToken(token, config)
 
     expect(payload.sub).toBe('user-4')
     expect(payload.sid).toBe('session-4')
     expect(payload.typ).toBe('refresh')
+    expect(payload.provider).toBe('firebase')
+  })
+
+  it('rejects token payload without provider', async () => {
+    const nowSeconds = Math.floor(Date.now() / 1000)
+    const invalidToken = await new SignJWT({ sid: 'session-5', typ: 'access' })
+      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+      .setIssuedAt(nowSeconds)
+      .setIssuer(config.authIssuer)
+      .setAudience(config.authAudience)
+      .setSubject('user-5')
+      .setExpirationTime(nowSeconds + 60)
+      .sign(encoder.encode(config.authJwtSecret))
+
+    await expect(
+      verifyAccessToken(invalidToken, config),
+    ).rejects.toBeInstanceOf(AppError)
   })
 })

@@ -10,6 +10,51 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-03 — Fixed remaining feat-080 auth review regressions
+
+- Who: Codex
+- Summary: Closed the remaining correctness gaps in the TMA auth/session rollout. `runAuthBootstrap()` now treats `400/401` Telegram provider-exchange failures as fatal invalid-launch errors instead of silently reviving an old session from a stored refresh token, and it now preserves stored refresh tokens when both bootstrap exchange and refresh fallback fail due to transport or `5xx` conditions by surfacing `networkError` rather than forcing logout. On the client side, `createTmaAuthClient()` now accepts an access-token provider and the TMA app wires the live auth-store token into authenticated logout requests. On the worker side, session JWTs now carry `provider`, refresh rotation preserves that field, and `authMiddleware` reads it back so protected routes no longer relabel Telegram sessions as Firebase on the next request.
+- Files changed: TMA auth bootstrap/session wiring, TMA auth regression tests, worker JWT/auth middleware/session issuance flow, worker Telegram auth regression tests, feat-080 evidence, and this progress log.
+- Verification: Focused `pnpm --filter tma exec vitest run src/test/auth-bootstrap.test.ts src/test/auth-api.test.ts` passed (2 files, 12 tests); focused `pnpm --filter worker exec vitest run test/unit/jwt.spec.ts test/integration/auth-telegram.spec.ts` passed (2 files, 15 tests); final `./init.sh` passed and printed `Done!`; final `gitnexus_detect_changes(scope: 'all')` returned risk `critical` with 14 changed files, 45 changed symbols, and 19 affected processes, all within the expected auth bootstrap/JWT/session surface.
+- Blockers: none.
+- Next steps: Review or commit the feat-080 review-fix slice when desired.
+
+## 2026-06-03 — Synced worker CORS test with shared-network dev-host behavior
+
+- Who: Codex
+- Summary: Fixed the push-blocking worker unit test mismatch in `apps/worker/test/unit/cors.spec.ts`. The current `apps/worker/src/lib/cors.ts` implementation intentionally treats `100.116.7.43` as a local shared-network development host on any HTTP port so the TMA app and worker can be exercised from the same LAN device during local Telegram runs. The old test still expected `http://100.116.7.43:3001` to be rejected, which no longer matched runtime behavior and caused the pre-push hook to fail. Updated the spec to accept the host on alternate HTTP ports, keep HTTPS rejected, and keep the `resolveCorsOrigin()` assertions aligned with the implementation.
+- Files changed: Worker CORS unit test, feat-080 evidence, and this progress log.
+- Verification: `pnpm --filter worker exec vitest run test/unit/cors.spec.ts` passed (1 file, 4 tests); `pnpm --filter worker test` passed (79 files, 389 tests).
+- Blockers: none.
+- Next steps: Commit this test sync and push `feat/080` so PR `#76` picks up the latest local-dev and TMA auth fixes.
+
+## 2026-06-02 — Fixed TMA auth client base URL wiring
+
+- Who: Codex
+- Summary: Fixed a local-runtime bug where the TMA auth bootstrap still targeted the Vite app origin for worker auth requests. The root cause was that `apps/tma/src/app/app.tsx` created the auth client without passing `VITE_WORKER_URL`, so `createTmaAuthClient()` fell back to `'/api/v1'` and requests resolved to `http://<tma-host>:5174/api/v1/...` instead of the worker origin. The fix passes `import.meta.env.VITE_WORKER_URL` through app initialization and adds a focused regression test proving an absolute worker base URL yields `http://localhost:8787/api/v1/auth/provider/exchange`.
+- Files changed: TMA app auth-client wiring, focused TMA auth API test coverage, feat-080 evidence, and this progress log.
+- Verification: `pnpm --filter tma exec vitest run src/test/auth-api.test.ts src/test/auth-bootstrap.test.ts src/test/auth-provider.test.ts` passed (3 files, 11 tests); `pnpm --filter tma typecheck` passed; `pnpm --filter tma lint` completed with the existing two `no-console` warnings in `apps/tma/src/lib/i18n/index.ts` and `apps/tma/src/lib/storage/adapter.ts`, with no new lint errors from this fix.
+- Blockers: none.
+- Next steps: restart `pnpm --filter tma dev` if it was already running so the new env-based worker URL wiring is picked up, then retry the Telegram launch flow against the worker URL.
+
+## 2026-06-02 — Added TMA local testing runbook
+
+- Who: Codex
+- Summary: Added a canonical TMA local testing runbook so worker-local, browser-only TMA, and real Telegram smoke workflows are no longer implicit across README notes and active plans. The new leaf doc explains current repo truth, required local env, worker migrate/seed/dev commands, TMA dev commands, when a fatal launch screen is expected in a normal browser, how to choose between Telegram test environment and tunnel HTTPS for a real launch, and the common failure map for invalid signature, stale launch data, CORS, and memory-only session fallback. `docs/TMA.md` now routes directly to the runbook, and the broader development/hardening doc now points readers there for exact commands.
+- Files changed: New TMA leaf runbook, TMA router doc, TMA development/hardening reference, feat-080 harness evidence, and this progress log.
+- Verification: Docs-only verification pending in this session until artifact checks run; expected checks are `node -e` JSON parse for touched harness JSON, `./scripts/check_harness_size.sh`, `git diff --check`, and final `gitnexus_detect_changes(scope: 'all')`.
+- Blockers: The repo still does not standardize BotFather or Telegram test-environment operator setup, so the runbook documents that gap explicitly instead of inventing repo-local steps.
+- Next steps: Run docs verification checks, then use the new runbook as the canonical answer for local worker/TMA/Telegram auth smoke guidance.
+
+## 2026-06-02 — Fixed feat-080 auth review blockers
+
+- Who: Codex
+- Summary: Fixed the five blocking review findings on the in-progress Telegram Mini App auth slice. TMA auth API requests now join the worker base path only once, so the default client targets `/api/v1/auth/...` instead of `/api/v1/api/v1/auth/...`. Bootstrap now persists the fresh refresh token on both provider-exchange success and refresh success, and `runAuthBootstrap()` returns an explicit fatal/authenticated result so the root gate keeps `FatalLaunchScreen` mounted on fatal launch/bootstrap outcomes instead of falling through to the app shell. The auth context now treats a cold-start refresh as authenticated when a valid access token is restored, even before any later user rehydration step populates `user`. Worker Telegram verification now uses the raw bytes of `HMAC-SHA256("WebAppData", botToken)` as the second-HMAC key, and the Telegram fixtures/tests/docs were updated to match the official algorithm. Added focused TMA regression tests for auth URL composition, bootstrap persistence/result handling, and authenticated-state derivation.
+- Files changed: TMA auth API/bootstrap/store/provider code and focused Vitest coverage; worker Telegram auth helper plus Telegram fixture/spec coverage; feat-080 auth reference/plan docs; feat-080 harness evidence and this progress log.
+- Verification: `pnpm --filter tma exec vitest run src/test/auth-api.test.ts src/test/auth-bootstrap.test.ts src/test/auth-provider.test.ts` passed (3 files, 10 tests); `pnpm --filter worker exec vitest run test/unit/lib/auth/telegram.spec.ts test/integration/auth-telegram.spec.ts` passed (2 files, 19 tests); `./init.sh lint` -> `OK`; `./init.sh typecheck` -> `OK`; `./init.sh build` -> `OK`; final `./init.sh` -> `Done!`.
+- Blockers: none.
+- Next steps: Run final harness checks and GitNexus change detection, then review the remaining feat-080 diff and commit when desired.
+
 ## 2026-06-02 — Implemented TMA runtime scaffold (feat-079)
 
 - Who: Codex

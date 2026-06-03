@@ -1,14 +1,29 @@
 import type { JWTPayload } from 'jose'
 
+import type { AuthProvider } from '@/contracts'
 import type { SupportedLocale } from '@/lib/i18n'
 
-export interface ExchangeProviderTokenInput {
+export type FirebaseExchangeProviderTokenInput = {
   provider: 'firebase'
   idToken: string
   locale: SupportedLocale
   userAgent: string | null
   ipAddress: string | null
 }
+
+export type TelegramExchangeProviderTokenInput = {
+  provider: 'telegram'
+  initData: string
+  locale: SupportedLocale
+  userAgent: string | null
+  ipAddress: string | null
+}
+
+export type ExchangeProviderTokenInput =
+  | FirebaseExchangeProviderTokenInput
+  | TelegramExchangeProviderTokenInput
+
+export type ExchangeProvider = AuthProvider
 
 export interface RefreshSessionInput {
   refreshToken: string
@@ -29,4 +44,5 @@ export interface SessionTokenPayload extends JWTPayload {
   sub: string
   sid: string
   typ: SessionTokenKind
+  provider: AuthProvider
 }

@@ -1,5 +1,6 @@
 import { jwtVerify, SignJWT } from 'jose'
 
+import type { AuthProvider } from '@/contracts'
 import { unauthenticated } from '@/lib/errors'
 import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import type { AppConfig, SessionTokenKind, SessionTokenPayload } from '@/types'
@@ -27,10 +28,11 @@ export const issueAccessToken = (
   config: AppConfig,
   userId: string,
   sessionId: string,
+  provider: AuthProvider,
 ): Promise<string> =>
   issueToken(
     config,
-    { sub: userId, sid: sessionId, typ: 'access' },
+    { sub: userId, sid: sessionId, typ: 'access', provider },
     config.accessTokenTtlSeconds,
   )
 
@@ -38,10 +40,11 @@ export const issueRefreshToken = (
   config: AppConfig,
   userId: string,
   sessionId: string,
+  provider: AuthProvider,
 ): Promise<string> =>
   issueToken(
     config,
-    { sub: userId, sid: sessionId, typ: 'refresh' },
+    { sub: userId, sid: sessionId, typ: 'refresh', provider },
     config.refreshTokenTtlSeconds,
   )
 
@@ -68,6 +71,7 @@ const verifyToken = async (
   if (
     typeof payload.sub !== 'string' ||
     typeof payload.sid !== 'string' ||
+    (payload.provider !== 'firebase' && payload.provider !== 'telegram') ||
     (payload.typ !== 'access' && payload.typ !== 'refresh') ||
     payload.typ !== expectedType
   ) {
@@ -78,6 +82,7 @@ const verifyToken = async (
     sub: payload.sub,
     sid: payload.sid,
     typ: payload.typ,
+    provider: payload.provider,
   }
 }
 

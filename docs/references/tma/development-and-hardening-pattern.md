@@ -11,6 +11,8 @@ Use this doc for:
 - debugging on device
 - performance and compatibility hardening
 
+For exact local commands and the current smoke-test order, read `docs/references/tma/local-testing-runbook.md`.
+
 ## Local development rules
 
 - Production Mini App entry points should use HTTPS.

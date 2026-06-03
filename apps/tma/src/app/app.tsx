@@ -1,15 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { AppProviders } from '@/app/bootstrap/app-providers'
 import { initTelegram, teardownTelegram } from '@/app/bootstrap/telegram-init'
 import { AppRouter } from '@/app/router/app-router'
+import { AuthBootstrap } from '@/features/auth/bootstrap'
+import { createAuthApiBootstrapDeps } from '@/features/auth/bootstrap-deps'
+import { useAuthStore } from '@/features/auth/store'
+import { createTmaAuthClient } from '@/lib/auth/client'
 import {
   DEFAULT_LOCALE,
   detectTelegramLocale,
   i18n,
   type SupportedLocale,
 } from '@/lib/i18n'
+import { readRawInitData } from '@/lib/telegram/launch-params'
 import { FatalLaunchPage } from '@/routes/fatal-launch'
+
+const workerBaseUrl = import.meta.env.VITE_WORKER_URL ?? '/api/v1'
 
 export const App = () => {
   const [initError, setInitError] = useState<unknown>(null)
@@ -38,13 +45,37 @@ export const App = () => {
     }
   }, [])
 
+  const authClient = useMemo(
+    () =>
+      createTmaAuthClient({
+        baseUrl: workerBaseUrl,
+        accessTokenProvider: () => useAuthStore.getState().accessToken,
+      }),
+    [],
+  )
+  const bootstrapDeps = useMemo(
+    () =>
+      createAuthApiBootstrapDeps({
+        api: authClient.api,
+        storage: {
+          getRefreshToken: () => authClient.storage.getRefreshToken(),
+          setRefreshToken: (token) => authClient.storage.setRefreshToken(token),
+          clearRefreshToken: () => authClient.storage.clearRefreshToken(),
+        },
+        readRawInitData,
+      }),
+    [authClient],
+  )
+
   if (initError) {
     return <FatalLaunchPage />
   }
 
   return (
     <AppProviders>
-      <AppRouter />
+      <AuthBootstrap deps={bootstrapDeps}>
+        <AppRouter />
+      </AuthBootstrap>
     </AppProviders>
   )
 }

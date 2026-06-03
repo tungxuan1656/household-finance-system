@@ -22,6 +22,8 @@ export default defineWorkersConfig({
             AUTH_ALLOW_INSECURE_TEST_TOKENS: 'true',
             AUTH_JWT_SECRET: 'test-auth-jwt-secret',
             AUTH_REFRESH_TOKEN_PEPPER: 'test-auth-refresh-pepper',
+            TELEGRAM_BOT_TOKEN: 'test-telegram-bot-token',
+            TELEGRAM_FRESHNESS_WINDOW_SECONDS: '3600',
             APP_ENV: 'test',
             CLOUDINARY_CLOUD_NAME: 'demo-cloud',
             CLOUDINARY_API_KEY: 'demo-key',

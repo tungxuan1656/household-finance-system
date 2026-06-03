@@ -14,5 +14,14 @@
   "notFound": {
     "title": "Không tìm thấy trang",
     "body": "Trang bạn mở không tồn tại."
+  },
+  "tma": {
+    "auth": {
+      "launchInvalid": "Không xác minh được lần mở Mini App từ Telegram.",
+      "networkError": "Lỗi mạng. Vui lòng mở lại Mini App và thử lại.",
+      "reopenGuidance": "Vui lòng mở lại Mini App từ Telegram để tiếp tục.",
+      "signOutFailed": "Đăng xuất thất bại. Vui lòng mở lại Mini App để xoá phiên.",
+      "sessionExpired": "Phiên đã hết hạn. Vui lòng mở lại Mini App để đăng nhập lại."
+    }
   }
 }

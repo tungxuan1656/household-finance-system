@@ -10,6 +10,12 @@ export const viMessages = {
   'errors.firebaseTokenMissingSubject': 'Token Firebase thiếu subject.',
   'errors.invalidFirebaseIdentityToken':
     'Token định danh Firebase không hợp lệ.',
+  'errors.invalidTelegramLaunchData': 'Dữ liệu launch Telegram không hợp lệ.',
+  'errors.telegramLaunchDataExpired':
+    'Dữ liệu launch Telegram đã hết hạn, vui lòng mở lại Mini App.',
+  'errors.telegramLaunchDataInvalidSignature':
+    'Chữ ký dữ liệu launch Telegram không hợp lệ.',
+  'errors.telegramUserMissingSubject': 'Telegram user thiếu id.',
   'errors.invalidOrExpiredSessionToken':
     'Token phiên không hợp lệ hoặc đã hết hạn.',
   'errors.invalidSessionTokenPayload': 'Payload token phiên không hợp lệ.',

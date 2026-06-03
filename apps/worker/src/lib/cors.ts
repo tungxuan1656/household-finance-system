@@ -1,5 +1,10 @@
-const EXACT_ALLOWED_CORS_ORIGINS = new Set(['http://100.116.7.43:3000'])
-const LOOPBACK_HOSTNAMES = new Set(['127.0.0.1', '::1', 'localhost'])
+const EXACT_ALLOWED_CORS_ORIGINS: Set<string> = new Set([])
+const LOOPBACK_HOSTNAMES: Set<string> = new Set([
+  '127.0.0.1',
+  '::1',
+  'localhost',
+  '100.116.7.43',
+])
 
 // normalizeHostname strips IPv6 bracket notation so '::1' matches the loopback hostname '::1'.
 const normalizeHostname = (hostname: string) =>

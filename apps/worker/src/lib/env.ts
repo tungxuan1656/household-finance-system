@@ -4,6 +4,7 @@ import type { AppConfig, CloudinaryConfig } from '@/types'
 
 const DEFAULT_FIREBASE_JWKS_URL =
   'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
+const DEFAULT_TELEGRAM_FRESHNESS_WINDOW_SECONDS = 3600
 const DEFAULT_APP_ENVIRONMENT = 'local'
 const DEFAULT_CLOUDINARY_MAX_IMAGE_BYTES = 10 * 1024 * 1024
 const DEFAULT_CLOUDINARY_MAX_VIDEO_BYTES = 100 * 1024 * 1024
@@ -114,6 +115,12 @@ export const readConfig = (env: Env): AppConfig => {
       readOptional(env, 'FIREBASE_JWKS_URL') ?? DEFAULT_FIREBASE_JWKS_URL,
     allowInsecureTestTokens: toBoolean(
       readOptional(env, 'AUTH_ALLOW_INSECURE_TEST_TOKENS'),
+    ),
+    telegramBotToken: readRequired(env, 'TELEGRAM_BOT_TOKEN'),
+    telegramFreshnessWindowSeconds: readOptionalPositiveInteger(
+      env,
+      'TELEGRAM_FRESHNESS_WINDOW_SECONDS',
+      DEFAULT_TELEGRAM_FRESHNESS_WINDOW_SECONDS,
     ),
   }
 }
