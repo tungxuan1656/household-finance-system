@@ -37,10 +37,10 @@ This work is frontend-only plus current docs and harness updates. The user-visib
     - `apps/web/src/features/expenses/components/add-expense/**`
   - Current canonical docs and harness:
     - `docs/FRONTEND.md`
-    - `docs/references/frontend/protected-page-surface-pattern.md`
-    - `docs/references/frontend/responsive-navigation-shell-pattern.md`
-    - `docs/references/frontend/frontend-component-architecture-guide.md`
-    - `docs/design-docs/mobile-first-protected-shell-and-tab-surfaces.md`
+    - `docs/references/frontend/web/protected-page-surface-pattern.md`
+    - `docs/references/frontend/web/responsive-navigation-shell-pattern.md`
+    - `docs/references/frontend/web/frontend-component-architecture-guide.md`
+    - `docs/design-docs/frontend/web/protected-shell-and-tab-surfaces.md`
     - `docs/exec-plans/index.md`
     - `harness/feature_index.json`
     - `harness/features/feat-073.json`
@@ -54,7 +54,7 @@ This work is frontend-only plus current docs and harness updates. The user-visib
 
 ## Non-negotiable Requirements
 
-- Implementation must follow the approved Stitch-backed design direction in `docs/design-docs/mobile-first-protected-shell-and-tab-surfaces.md`.
+- Implementation must follow the approved Stitch-backed design direction in `docs/design-docs/frontend/web/protected-shell-and-tab-surfaces.md`.
 - New protected page work must use shared page wrappers under `apps/web/src/components/shared/page/`.
 - No new `PageShell` or `PageSection` usage may be added.
 - Route files under `apps/web/src/app/**` must stay thin and defer UI orchestration to `features/<domain>/pages/**`.
@@ -142,34 +142,34 @@ This work is frontend-only plus current docs and harness updates. The user-visib
   - protected pages use shared page wrappers
   - route files stay thin
   - no new `PageShell` usage
-- `docs/references/frontend/protected-page-surface-pattern.md`
+- `docs/references/frontend/web/protected-page-surface-pattern.md`
   - `PageContainer` / `PageHeader` / `PageContent` / `PageFooter` ownership
   - route-level blocking states stay inside one page container
-- `docs/references/frontend/responsive-navigation-shell-pattern.md`
+- `docs/references/frontend/web/responsive-navigation-shell-pattern.md`
   - one shell, two nav surfaces
   - four top-level tabs
   - shell-level safe-area and bottom-tab spacing
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - wrappers in `components/shared`
   - shell pieces in `components/layouts`
   - route pages stay in `features/<domain>/pages`
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - feature page orchestration remains thin
   - split smart/presentational concerns where pages grow
-- `docs/references/frontend/frontend-component-architecture-guide.md`
+- `docs/references/frontend/web/frontend-component-architecture-guide.md`
   - shared wrappers stay domain-free
   - async-state ownership remains explicit
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - named exports, kebab-case files, `@/` imports
-- `docs/references/frontend/form-pattern.md`
+- `docs/references/frontend/web/form-pattern.md`
   - add-household and expense entry flows keep `react-hook-form` + `zod` structure where forms are touched
-- `docs/references/frontend/dialog-and-form-pattern.md`
+- `docs/references/frontend/web/dialog-and-form-pattern.md`
   - add-expense drawer and add-household sheet maintain accessible form/dialog ownership
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - keep hook-based data access, no direct `api/*` imports in page components
-- `docs/references/frontend/zustand-store-pattern.md`
+- `docs/references/frontend/web/zustand-store-pattern.md`
   - global shell/dialog state only when truly cross-surface
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
   - all new labels/copy go through locale keys
 - Companion skills for execution:
   - `executing-plans`
@@ -333,7 +333,7 @@ Then run the repo’s normal web dev path in a separate execution session and ve
 ## Artifacts and Notes
 
 - Design source of truth:
-  - `docs/design-docs/mobile-first-protected-shell-and-tab-surfaces.md`
+  - `docs/design-docs/frontend/web/protected-shell-and-tab-surfaces.md`
 - Approved Stitch project:
   - `18281018757123318855`
 - Current local Stitch artifact cache from the design-doc session:

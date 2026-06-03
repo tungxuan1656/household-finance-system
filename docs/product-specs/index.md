@@ -2,59 +2,25 @@
 
 User-visible behavior map. Specs describe behavior and acceptance criteria, not implementation architecture.
 
-Read exact spec for task domain only.
+## Branches
 
-## MVP Features
+- `shared/`: product truth valid across all client surfaces.
+- `web/`: behavior valid only for `apps/web`.
+- `tma/`: behavior valid only for `apps/tma`.
+- `mobile-app/`: future native surface. Stub only today.
 
-### User & Auth
+## Quick Routes
 
-- `authentication.md`
-- `new-user-onboarding.md`
-- `profile-management.md`
-
-### Expense Domain
-
-- `expense-tracking.md`
-- `expense-management.md`
-- `expense-spender-model.md`
-- `expense-categorization.md`
-- `expense-grouping.md`
-
-### Household Domain
-
-- `household-management.md`
-- `household-invitation.md`
-- `role-permission.md`
-- `expense-household-context.md`
-
-### Finance Control
-
-- `budget-management.md`
-
-### Query & Insight
-
-- `expense-querying.md`
-- `analytics-overview.md`
-
-### UX / System
-
-- `quick-add-experience.md`
-
-## Phase 2+ / Roadmap
-
-- `recurring-expense.md`
-- `smart-category-suggestion.md`
-- `budget-notification.md`
-- `advanced-insight-analytics.md`
-- `financial-health-score.md`
-- `multi-device-support.md`
-- `audit-log.md`
-- `notification-system.md`
-- `telegram-mini-app.md`
+| Need | Doc |
+|------|-----|
+| Shared product/domain rules | `docs/product-specs/shared/index.md` |
+| Web-only UX and surface behavior | `docs/product-specs/web/index.md` |
+| TMA-only UX and surface behavior | `docs/product-specs/tma/index.md` |
+| Future mobile-app surface | `docs/product-specs/mobile-app/index.md` |
 
 ## Rules
 
 - Product spec owns user-visible behavior.
-- If implementation changes visible behavior, update matching spec same session.
-- Treat ambiguous behavior as spec gap. Ask or write decision; do not guess.
-- Keep this index current. Do not duplicate feature rules here.
+- Shared specs must stay surface-agnostic.
+- Surface branches may define different flows while reusing the same shared domain truth.
+- If implementation changes visible behavior, update the matching shared or surface spec in the same session.

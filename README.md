@@ -6,9 +6,10 @@ This project helps households track spending transparently, control budgets, and
 
 ## What this repository contains
 
-This is a `pnpm` monorepo with two main apps:
+This is a `pnpm` monorepo with three main runtime surfaces:
 
 - `apps/web`: React 19 + TypeScript + Next.js App Router + Tailwind + shadcn UI
+- `apps/tma`: React + TypeScript + Vite SPA for Telegram Mini App
 - `apps/worker`: Cloudflare Workers + Hono + D1 + Zod
 
 Core intent:
@@ -73,6 +74,8 @@ Follow this order for fastest onboarding:
 6. `docs/RELIABILITY.md`
 7. `docs/SECURITY.md`
 8. `docs/FRONTEND.md`
+9. `docs/WEB.md`
+10. `docs/TMA.md`
 
 These files define scope, boundaries, verification, and quality expectations.
 

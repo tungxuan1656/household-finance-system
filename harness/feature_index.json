@@ -444,6 +444,11 @@
       "id": "feat-088",
       "name": "Align TMA docs to the new screen spec",
       "status": "done"
+    },
+    {
+      "id": "feat-089",
+      "name": "Frontend surface docs architecture refactor",
+      "status": "done"
     }
   ]
 }

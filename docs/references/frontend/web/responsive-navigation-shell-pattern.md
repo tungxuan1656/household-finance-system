@@ -25,7 +25,7 @@ public route -> protected guard -> shell layout -> child route outlet
 - Public routes stay outside shell.
 - Protected routes render inside `MainLayout` or route-group layout.
 - Shell composes top nav, bottom tabs, global sheets/dialogs, and page outlet.
-- Protected page content inside the shell should use the shared page-surface wrappers from `docs/references/frontend/protected-page-surface-pattern.md`.
+- Protected page content inside the shell should use the shared page-surface wrappers from `docs/references/frontend/web/protected-page-surface-pattern.md`.
 
 ## Nav Model
 

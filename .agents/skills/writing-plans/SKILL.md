@@ -75,7 +75,7 @@ AGENTS.md is read at session start. For plan writing, also read:
 - `harness/session-handoff.md` — if work spans sessions
 
 Read scope-specific reference docs based on what the plan touches:
-- Frontend: relevant `docs/references/frontend/*` (see Scope-Driven Standards Matrix below)
+- Frontend: relevant `docs/references/frontend/<surface>/*` (see Scope-Driven Standards Matrix below)
 - Backend: relevant `docs/references/backend/*` (see Scope-Driven Standards Matrix below)
 - Shared: `docs/references/shared/type-naming-pattern.md`
 
@@ -100,17 +100,26 @@ If the scope is unclear, ask concise clarifying questions before writing the pla
 
 After identifying scope, require these references in the plan:
 
-### Frontend Scope
+### Web Frontend Scope
 
 Must apply:
-- `docs/references/frontend/project-folder-structure.md`
-- `docs/references/frontend/component-structure-pattern.md`
-- `docs/references/frontend/naming-and-conventions-pattern.md`
-- `docs/references/frontend/form-pattern.md` (if forms are involved)
-- `docs/references/frontend/dialog-and-form-pattern.md` (if dialog/form flows exist)
-- `docs/references/frontend/api-react-query-pattern.md` (if API hooks/queries are touched)
-- `docs/references/frontend/zustand-store-pattern.md` (if state stores are touched)
-- `docs/references/frontend/i18n-label-pattern.md` (if new labels/copy are added)
+- `docs/references/frontend/web/project-folder-structure.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/form-pattern.md` (if forms are involved)
+- `docs/references/frontend/web/dialog-and-form-pattern.md` (if dialog/form flows exist)
+- `docs/references/frontend/web/api-react-query-pattern.md` (if API hooks/queries are touched)
+- `docs/references/frontend/web/zustand-store-pattern.md` (if state stores are touched)
+- `docs/references/frontend/web/i18n-label-pattern.md` (if new labels/copy are added)
+
+### TMA Frontend Scope
+
+Must apply:
+- `docs/TMA.md`
+- `docs/references/frontend/tma/app-structure-and-client-rules.md`
+- `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`
+- `docs/references/frontend/tma/state-and-storage-pattern.md`
+- `docs/references/frontend/tma/auth-and-bot-pattern.md` (if auth, deep links, or bot boundaries are touched)
 
 ### Backend Scope
 

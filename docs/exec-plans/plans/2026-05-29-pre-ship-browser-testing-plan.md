@@ -12,9 +12,9 @@ Create an execution-ready plan for final browser testing before shipping the web
   - Optional equivalent tool: Chrome DevTools MCP only if it can capture the same screenshots, console/network evidence, and DOM assertions.
   - Layout review for mobile and desktop using:
     - `docs/FRONTEND.md`
-    - `docs/references/frontend/protected-page-surface-pattern.md`
-    - `docs/references/frontend/responsive-navigation-shell-pattern.md`
-    - `docs/design-docs/mobile-first-protected-shell-and-tab-surfaces.md`
+    - `docs/references/frontend/web/protected-page-surface-pattern.md`
+    - `docs/references/frontend/web/responsive-navigation-shell-pattern.md`
+    - `docs/design-docs/frontend/web/protected-shell-and-tab-surfaces.md`
     - `.agents/skills/ui-ux-review/*`
   - Main flow and data checks for:
     - sign-in/session
@@ -130,17 +130,17 @@ Create an execution-ready plan for final browser testing before shipping the web
   - Protected pages use shared page wrappers.
   - Loading, empty, success, error, retry states are part of normal frontend verification.
   - No component/page render tests in `apps/web`; use browser/manual evidence for UI behavior.
-- `docs/references/frontend/protected-page-surface-pattern.md`
+- `docs/references/frontend/web/protected-page-surface-pattern.md`
   - `PageContainer`, `PageHeader`, `PageContent`, and `PageFooter` own page structure.
   - Header/content/footer must work with the bottom tab visible.
   - Floating actions and bottom drawers must not be covered by the bottom tab.
-- `docs/references/frontend/responsive-navigation-shell-pattern.md`
+- `docs/references/frontend/web/responsive-navigation-shell-pattern.md`
   - Desktop/tablet `>= 768px`: top navigation.
   - Mobile `< 768px`: fixed bottom tab bar.
   - Both nav surfaces must use the same route source and active-state logic.
   - Bottom tabs must not clip or cover content.
   - Modals/sheets must appear above navigation.
-- `docs/design-docs/mobile-first-protected-shell-and-tab-surfaces.md`
+- `docs/design-docs/frontend/web/protected-shell-and-tab-surfaces.md`
   - Protected entry is the Expense surface.
   - Four top-level tabs are Expense, Analysis, Household, Settings.
   - Mobile app shape is primary; desktop preserves the same mental model.

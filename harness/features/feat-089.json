@@ -1,0 +1,27 @@
+{
+  "id": "feat-089",
+  "name": "Frontend surface docs architecture refactor",
+  "status": "done",
+  "description": "Refactor the docs tree so `FRONTEND` becomes the parent router for multiple client surfaces, while shared product truth and surface-specific web/TMA docs move into separate canonical branches.",
+  "dependencies": ["feat-054", "feat-078", "feat-088"],
+  "plan": "docs/exec-plans/plans/2026-06-03-frontend-surface-doc-architecture-refactor.md",
+  "evidence": {
+    "planned": [
+      "Create the new surface-aware docs tree for product specs, frontend references, and design docs.",
+      "Rewrite router/index docs and current repo guidance so `FRONTEND` means all client surfaces, not only `web`.",
+      "Run docs-only verification and capture the final GitNexus blast radius before completion reporting."
+    ],
+    "artifacts": [
+      "Replaced the old `FRONTEND = web` meaning with a parent-router structure: `docs/FRONTEND.md` now routes to `docs/WEB.md`, `docs/TMA.md`, and `docs/MOBILE_APP.md`.",
+      "Moved shared domain specs into `docs/product-specs/shared/`, web-only specs into `docs/product-specs/web/`, TMA-only specs into `docs/product-specs/tma/`, and added mobile-app stub indexes.",
+      "Moved frontend implementation leaves into `docs/references/frontend/web/` and `docs/references/frontend/tma/`, created child indexes, moved durable design docs into `docs/design-docs/shared/` and `docs/design-docs/frontend/{web,tma}/`, and rewrote current router/index/skill docs to the new paths."
+    ],
+    "verification": [
+      "Validated `harness/feature_index.json`, `harness/features/feat-080.json`, `harness/features/feat-087.json`, `harness/features/feat-088.json`, and `harness/features/feat-089.json` with `python3 -m json.tool`; all parsed successfully.",
+      "Ran `./scripts/check_harness_size.sh`, which returned `Harness size checks passed`, and `git diff --check`, which returned clean with no whitespace errors.",
+      "Ran a stale-path scan across current docs and project-owned skills; it returned `stale-path-scan: clean` for the old flat product-spec and old frontend/tma reference paths.",
+      "Ran final `gitnexus_detect_changes(scope: 'all')`, which returned `LOW` risk with 203 changed symbols, 0 affected processes, and 78 tracked changed files in the docs-focused worktree."
+    ]
+  },
+  "notes": "Docs-only architecture refactor. No runtime behavior changes are expected."
+}

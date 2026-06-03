@@ -117,12 +117,12 @@ This frontend-focused change improves the protected More and Profile Settings sc
 
 - `docs/FRONTEND.md`: mobile-first, use shadcn primitives directly, state coverage for loading/error/retry, no web component/page render tests.
 - `.agents/skills/shadcn/SKILL.md`: compose primitives, use built-in variants, semantic colors, no `space-*`, use `gap-*`, Card uses full anatomy, Dialog always has a title, Avatar always has fallback.
-- `docs/references/frontend/project-folder-structure.md`: view orchestrators stay in `views/`; reusable cross-feature dialog belongs in `components/shared`; shadcn primitives remain in `components/ui`.
-- `docs/references/frontend/component-structure-pattern.md`: split near 200 lines or when 3+ concerns mix; page/view orchestrates and child feature components own bounded concerns.
-- `docs/references/frontend/form-pattern.md`: forms use `zod`, `react-hook-form`, `FieldGroup`, `Field`, validation states, and i18n validation messages.
-- `docs/references/frontend/dialog-and-form-pattern.md`: dialogs own open state and use ref pattern; use `DialogClose asChild` or equivalent safe cancel behavior; no custom dialog spacing unless needed.
-- `docs/references/frontend/naming-and-conventions-pattern.md`: kebab-case files, named exports, import order, English comments only, future API comments use `// TODO: connect to ... once available`.
-- `docs/references/frontend/i18n-label-pattern.md`: no hardcoded user-facing strings; keys must be semantic and synchronized for locale files.
+- `docs/references/frontend/web/project-folder-structure.md`: view orchestrators stay in `views/`; reusable cross-feature dialog belongs in `components/shared`; shadcn primitives remain in `components/ui`.
+- `docs/references/frontend/web/component-structure-pattern.md`: split near 200 lines or when 3+ concerns mix; page/view orchestrates and child feature components own bounded concerns.
+- `docs/references/frontend/web/form-pattern.md`: forms use `zod`, `react-hook-form`, `FieldGroup`, `Field`, validation states, and i18n validation messages.
+- `docs/references/frontend/web/dialog-and-form-pattern.md`: dialogs own open state and use ref pattern; use `DialogClose asChild` or equivalent safe cancel behavior; no custom dialog spacing unless needed.
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`: kebab-case files, named exports, import order, English comments only, future API comments use `// TODO: connect to ... once available`.
+- `docs/references/frontend/web/i18n-label-pattern.md`: no hardcoded user-facing strings; keys must be semantic and synchronized for locale files.
 
 ## Plan of Work (Narrative)
 

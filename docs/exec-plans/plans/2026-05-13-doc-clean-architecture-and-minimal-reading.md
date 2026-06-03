@@ -17,7 +17,7 @@ In scope:
 - Task routers: `docs/FRONTEND.md`, `docs/BACKEND.md`, `docs/PLANS.md`
 - Indexes: `docs/references/index.md`, `docs/product-specs/index.md`, `docs/design-docs/index.md`, `docs/exec-plans/index.md`
 - Cross-cutting docs: `docs/RELIABILITY.md`, `docs/SECURITY.md`, `docs/PRODUCT_SENSE.md`
-- Stale frontend references: `docs/references/frontend/project-folder-structure.md`, `docs/references/frontend/component-structure-pattern.md`
+- Stale frontend references: `docs/references/frontend/web/project-folder-structure.md`, `docs/references/frontend/web/component-structure-pattern.md`
 - Harness: `harness/feature_index.json`, `harness/features/feat-054.json`, `harness/progress.md`
 
 Out of scope:
@@ -47,8 +47,8 @@ Out of scope:
 ## Surprises & Discoveries
 
 - `docs/FRONTEND.md` references missing `docs/design-docs/shadcn-first-ui-web-guide.md`.
-- `docs/references/frontend/project-folder-structure.md` still describes old SPA/Vite-style folders, not current Next.js App Router shape.
-- `docs/references/frontend/responsive-navigation-shell-pattern.md` exists but is missing from `docs/references/index.md`.
+- `docs/references/frontend/web/project-folder-structure.md` still describes old SPA/Vite-style folders, not current Next.js App Router shape.
+- `docs/references/frontend/web/responsive-navigation-shell-pattern.md` exists but is missing from `docs/references/index.md`.
 - Follow-up review found remaining frontend/backend leaf references still verbose; refactored them into caveman-lite rule docs.
 
 ## Decision Log

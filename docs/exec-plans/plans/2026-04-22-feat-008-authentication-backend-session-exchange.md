@@ -8,7 +8,7 @@ This plan finalizes the backend authentication session lifecycle in the worker b
 
 ## Objective
 
-Implement and verify `POST /api/v1/auth/logout` so `feat-008` can move from pending to done with complete backend acceptance evidence aligned to `docs/product-specs/authentication.md`.
+Implement and verify `POST /api/v1/auth/logout` so `feat-008` can move from pending to done with complete backend acceptance evidence aligned to `docs/product-specs/shared/authentication-session.md`.
 
 ## Scope
 
@@ -50,7 +50,7 @@ Out of scope:
 
 ## Context and Orientation
 
-- Product behavior source: `docs/product-specs/authentication.md`
+- Product behavior source: `docs/product-specs/shared/authentication-session.md`
 - Existing auth routes: `apps/worker/src/routes/auth.ts`
 - Existing auth orchestration: `apps/worker/src/handlers/auth/exchange-provider-token.ts`, `apps/worker/src/handlers/auth/refresh-session.ts`
 - Session persistence: `apps/worker/src/db/repositories/session-repository.ts`

@@ -7,9 +7,9 @@ Use this file to pick the minimum docs for the current TMA slice.
 Read:
 
 - `docs/TMA.md`
-- `docs/references/tma/app-structure-and-client-rules.md`
-- `docs/references/tma/native-ui-and-navigation-pattern.md`
-- `docs/references/tma/development-and-hardening-pattern.md`
+- `docs/references/frontend/tma/app-structure-and-client-rules.md`
+- `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`
+- `docs/references/frontend/tma/development-and-hardening-pattern.md`
 - `docs/exec-plans/plans/2026-06-02-telegram-mini-app-runtime-scaffold.md`
 
 Preserve:
@@ -22,26 +22,25 @@ Preserve:
 
 Read:
 
-- `docs/product-specs/authentication.md`
-- `docs/product-specs/telegram-mini-app.md`
-- `docs/references/tma/state-and-storage-pattern.md`
-- `docs/references/tma/auth-and-bot-pattern.md`
+- `docs/product-specs/shared/authentication-session.md`
+- `docs/product-specs/tma/launch-and-auth.md`
+- `docs/references/frontend/tma/state-and-storage-pattern.md`
+- `docs/references/frontend/tma/auth-and-bot-pattern.md`
 
 Preserve:
 
 - worker session lifecycle stays shared with web
-- current worker contract is still Firebase-shaped and may need normalization
 - unsupported `SecureStorage` means memory-only fallback
 
 ## feat-081 — expense capture
 
 Read:
 
-- `docs/product-specs/telegram-mini-app.md`
-- `docs/product-specs/expense-tracking.md`
+- `docs/product-specs/shared/expense-tracking.md`
+- `docs/product-specs/tma/expense-capture.md`
 - `apps/tma/DESIGN.md`
-- `docs/references/tma/native-ui-and-navigation-pattern.md`
-- `docs/references/tma/state-and-storage-pattern.md`
+- `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`
+- `docs/references/frontend/tma/state-and-storage-pattern.md`
 
 Preserve:
 
@@ -52,9 +51,10 @@ Preserve:
 
 Read:
 
-- `docs/product-specs/household-management.md`
-- `docs/product-specs/household-invitation.md`
-- `docs/references/tma/auth-and-bot-pattern.md`
+- `docs/product-specs/shared/household-management.md`
+- `docs/product-specs/shared/household-invitation.md`
+- `docs/product-specs/tma/invite-entrypoints.md`
+- `docs/references/frontend/tma/auth-and-bot-pattern.md`
 
 Preserve:
 
@@ -65,11 +65,11 @@ Preserve:
 
 Read:
 
-- `docs/product-specs/budget-management.md`
-- `docs/product-specs/analytics-overview.md`
+- `docs/product-specs/shared/budget-management.md`
+- `docs/product-specs/shared/analytics-overview.md`
 - `apps/tma/DESIGN.md`
-- `docs/references/tma/app-structure-and-client-rules.md`
-- `docs/references/tma/native-ui-and-navigation-pattern.md`
+- `docs/references/frontend/tma/app-structure-and-client-rules.md`
+- `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`
 
 Preserve:
 
@@ -80,9 +80,9 @@ Preserve:
 
 Read:
 
-- `docs/references/tma/native-ui-and-navigation-pattern.md`
-- `docs/references/tma/state-and-storage-pattern.md`
-- `docs/references/tma/development-and-hardening-pattern.md`
+- `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`
+- `docs/references/frontend/tma/state-and-storage-pattern.md`
+- `docs/references/frontend/tma/development-and-hardening-pattern.md`
 
 Preserve:
 
@@ -93,9 +93,9 @@ Preserve:
 
 Read:
 
-- `docs/references/tma/auth-and-bot-pattern.md`
-- `docs/product-specs/household-invitation.md`
-- `docs/design-docs/telegram-mini-app-client-architecture.md`
+- `docs/references/frontend/tma/auth-and-bot-pattern.md`
+- `docs/product-specs/shared/household-invitation.md`
+- `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md`
 
 Preserve:
 

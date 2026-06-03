@@ -24,9 +24,9 @@ Use this skill for repo-specific Telegram Mini App work. It keeps terminology, p
 
 1. Normalize wording: interpret any old Telegram Mini App terminology as TMA.
 2. Read `docs/TMA.md`.
-3. Read only the exact leaf docs needed under `docs/references/tma/*`.
+3. Read only the exact leaf docs needed under `docs/references/frontend/tma/*`.
 4. If the task is scaffold/bootstrap work, read `docs/exec-plans/plans/2026-06-02-telegram-mini-app-runtime-scaffold.md`.
-5. If the task touches auth or worker boundaries, also read `docs/product-specs/authentication.md` and `docs/references/tma/auth-and-bot-pattern.md`.
+5. If the task touches auth or worker boundaries, also read `docs/product-specs/shared/authentication-session.md`, `docs/product-specs/tma/launch-and-auth.md`, and `docs/references/frontend/tma/auth-and-bot-pattern.md`.
 
 ## Locked defaults
 

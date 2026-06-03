@@ -145,16 +145,16 @@ Enable signed-in users to open `/insights`, pick monthly period, and see core ex
   - If runtime/API behavior or limits matter for implementation, use `documentation-lookup` before relying on memory.
 
 **Frontend**
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep analytics-specific API/hooks/components within analytics feature folders; do not dump single-feature chart code in `lib`.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Keep `/insights` page as orchestrator; split cards/charts/lists into feature-bounded child components with barrel exports.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - New files use kebab-case; hooks use `use-analytics.ts` or equivalent; imports prefer `@/...`; comments stay English.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - Add endpoint in `API_ENDPOINTS`, add `ANALYTICS_KEYS`, and ensure UI reads through hooks only.
   - Avoid parallel query duplication if one overview response can power whole page.
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
   - No hardcoded labels in cards, empty states, chart legends, or errors; all new keys added consistently to locale files.
 
 **Frontend governance from `docs/FRONTEND.md` + shadcn pre-read**

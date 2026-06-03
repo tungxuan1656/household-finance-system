@@ -80,12 +80,12 @@ Refactor the household list and household detail pages to match the newer profil
 
 - `docs/FRONTEND.md`: app route pages use `PageShell`; state coverage required; no component/page render tests.
 - `.agents/skills/shadcn/SKILL.md`: use shadcn primitives directly; full Card anatomy; semantic tokens; `gap-*`; `AvatarFallback`; icons in buttons use `data-icon`.
-- `docs/references/frontend/project-folder-structure.md`: route views in `views/`, shared UI only after real reuse.
-- `docs/references/frontend/component-structure-pattern.md`: split near 200 lines or mixed concerns; named exports.
-- `docs/references/frontend/naming-and-conventions-pattern.md`: kebab-case files, named exports, import order.
-- `docs/references/frontend/form-pattern.md`: preserve existing create form validation/field structure.
-- `docs/references/frontend/dialog-and-form-pattern.md`: dialogs keep title/description and accessible triggers.
-- `docs/references/frontend/i18n-label-pattern.md`: no hardcoded user-facing text.
+- `docs/references/frontend/web/project-folder-structure.md`: route views in `views/`, shared UI only after real reuse.
+- `docs/references/frontend/web/component-structure-pattern.md`: split near 200 lines or mixed concerns; named exports.
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`: kebab-case files, named exports, import order.
+- `docs/references/frontend/web/form-pattern.md`: preserve existing create form validation/field structure.
+- `docs/references/frontend/web/dialog-and-form-pattern.md`: dialogs keep title/description and accessible triggers.
+- `docs/references/frontend/web/i18n-label-pattern.md`: no hardcoded user-facing text.
 
 ## Plan of Work (Narrative)
 

@@ -7,13 +7,13 @@
   "evidence": {
     "planned": [
       "Used `using-skills` first, then applied the repo-owned `tma-development` skill and the `frontend-design` skill because the work defines TMA-specific screen direction inside `apps/tma`.",
-      "Read only the exact TMA/product leaves needed for this design artifact: `docs/TMA.md`, TMA app-structure/native-navigation docs, `docs/product-specs/telegram-mini-app.md`, `docs/product-specs/expense-tracking.md`, `docs/product-specs/quick-add-experience.md`, and the proposed TMA client-architecture doc.",
+      "Read only the exact TMA/product leaves needed for this design artifact: `docs/TMA.md`, TMA app-structure/native-navigation docs, `docs/product-specs/tma/index.md`, `docs/product-specs/shared/expense-tracking.md`, `docs/product-specs/web/quick-add-experience.md`, and the proposed TMA client-architecture doc.",
       "Reviewed the attached reference screens directly and translated them into one implementation-facing screen spec instead of a vague mood board."
     ],
     "artifacts": [
       "Added `apps/tma/DESIGN.md` as the canonical package-local reference for TMA visual tokens, shell rules, page map, page-by-page composition, and performance-first interaction guidance.",
       "Updated `docs/TMA.md` so future TMA work can route directly to the package-local screen spec when the task is visual/page implementation.",
-      "Recorded the current mismatch between the requested add-expense step order and the still-documented amount-first TMA flow so future implementation does not silently diverge from repo truth."
+      "Recorded the requested TMA page map, shell rules, and add-expense flow order in one package-local screen spec before runtime implementation began."
     ],
     "verification": [
       "Validated `harness/feature_index.json` and `harness/features/feat-087.json` with `python3 -m json.tool`; both parsed successfully.",
@@ -21,5 +21,5 @@
       "Ran final `gitnexus_detect_changes(scope: 'all')`, which returned `LOW` risk with 4 changed symbols, 0 affected processes, and 3 tracked changed files."
     ]
   },
-  "notes": "Docs-only TMA UI artifact. It intentionally records a requested expense-flow order that differs from the current TMA amount-first spec, so code implementation must reconcile that doc-level conflict first."
+  "notes": "Docs-only TMA UI artifact. Later TMA doc alignment removed the old amount-first conflict and kept this screen spec as the package-local visual source of truth."
 }

@@ -162,13 +162,13 @@ Out of scope for this plan:
   - `docs/references/index.md`
 - Frontend standards required by scope:
   - `docs/FRONTEND.md`
-  - `docs/references/frontend/project-folder-structure.md`
-  - `docs/references/frontend/component-structure-pattern.md`
-  - `docs/references/frontend/naming-and-conventions-pattern.md`
-  - `docs/references/frontend/api-react-query-pattern.md`
-  - `docs/references/frontend/form-pattern.md` if the implementation formalizes filter controls as a structured form surface
-  - `docs/references/frontend/dialog-and-form-pattern.md` if advanced filters use a dialog, drawer, or sheet flow
-  - `docs/references/frontend/i18n-label-pattern.md`
+  - `docs/references/frontend/web/project-folder-structure.md`
+  - `docs/references/frontend/web/component-structure-pattern.md`
+  - `docs/references/frontend/web/naming-and-conventions-pattern.md`
+  - `docs/references/frontend/web/api-react-query-pattern.md`
+  - `docs/references/frontend/web/form-pattern.md` if the implementation formalizes filter controls as a structured form surface
+  - `docs/references/frontend/web/dialog-and-form-pattern.md` if advanced filters use a dialog, drawer, or sheet flow
+  - `docs/references/frontend/web/i18n-label-pattern.md`
 - Shared standards required by scope:
   - `docs/references/shared/type-naming-pattern.md`
 - Required shadcn governance pre-read for UI work:

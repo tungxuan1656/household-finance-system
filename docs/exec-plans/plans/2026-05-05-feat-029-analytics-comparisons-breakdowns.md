@@ -152,17 +152,17 @@ Enable signed-in users to open `/insights` and move beyond overview-only analyti
   - If implementation touches Worker runtime limits or D1 behavior assumptions for aggregation, use `documentation-lookup` before locking behavior.
 
 **Frontend**
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep analytics feature transport in `src/api/analytics.ts`, hooks in `src/hooks/api/use-analytics.ts`, and new UI under `src/components/analytics/*`; do not push single-feature logic into `src/lib`.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Keep `InsightsPage` as orchestrator only; split comparison card, payer attribution, groups tab/table/chart, and state helpers into feature-bounded child components with barrel exports.
   - Split files early if any analytics component exceeds ~200 lines.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Use kebab-case file names, named exports, `ANALYTICS_KEYS` query keys, `@/...` imports, and English code comments only.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - Extend `API_ENDPOINTS.analytics`, add query-key helpers for comparison and groups, and keep UI consumption hook-only.
   - Check whether comparison/groups data can share existing query params/key structures before creating redundant state.
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
   - No hardcoded labels for tabs, trend badges, empty states, legends, or error copy; add synchronized locale keys.
 
 **Frontend governance from `docs/FRONTEND.md` + shadcn pre-read**

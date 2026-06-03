@@ -138,13 +138,13 @@ Out of scope for this plan:
 
 - Frontend:
   - `docs/FRONTEND.md`
-  - `docs/references/frontend/project-folder-structure.md`
-  - `docs/references/frontend/component-structure-pattern.md`
-  - `docs/references/frontend/naming-and-conventions-pattern.md`
-  - `docs/references/frontend/form-pattern.md`
-  - `docs/references/frontend/dialog-and-form-pattern.md`
-  - `docs/references/frontend/api-react-query-pattern.md`
-  - `docs/references/frontend/i18n-label-pattern.md`
+  - `docs/references/frontend/web/project-folder-structure.md`
+  - `docs/references/frontend/web/component-structure-pattern.md`
+  - `docs/references/frontend/web/naming-and-conventions-pattern.md`
+  - `docs/references/frontend/web/form-pattern.md`
+  - `docs/references/frontend/web/dialog-and-form-pattern.md`
+  - `docs/references/frontend/web/api-react-query-pattern.md`
+  - `docs/references/frontend/web/i18n-label-pattern.md`
   - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
   - `.agents/skills/shadcn/SKILL.md`
   - `.agents/skills/shadcn/rules/styling.md`

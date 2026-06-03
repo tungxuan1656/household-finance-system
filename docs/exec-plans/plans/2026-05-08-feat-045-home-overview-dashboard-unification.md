@@ -171,17 +171,17 @@ This feature is intentionally integrative, not greenfield. First pass should pre
 **Frontend**
 - `docs/FRONTEND.md`
   - Keep App Router pages thin, express loading/error/empty states deliberately, and preserve accessibility.
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep dashboard-specific UI in `apps/web/src/components/overview/*`; do not scatter one-off summary code across unrelated shared folders.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - `overview-page.tsx` should orchestrate data + section order only; extracted components own cards/sections.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Use kebab-case files, named exports, `@/...` imports, and maintain existing style.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - Reuse typed API hooks and add only focused overview helpers/selectors; do not perform direct fetches from UI components.
-- `docs/references/frontend/zustand-store-pattern.md`
+- `docs/references/frontend/web/zustand-store-pattern.md`
   - If household store participates, changes must stay minimal and avoid reintroducing hidden active-household semantics.
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
   - All dashboard headings, helper text, empty states, and action labels must flow through locale keys.
 - `ui-ux-pro-max`
   - Use skill guidance to review hierarchy, accessibility, touch targets, responsive layout, contrast, and mobile-first dashboard ergonomics during both planning updates and implementation review.

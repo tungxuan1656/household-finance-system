@@ -1,28 +1,23 @@
 # Design Docs Index
 
-Durable design decision map. Read only when task changes lasting UI/product/architecture direction.
+Durable design decision map. Read only when task changes lasting UI, product, or architecture direction.
+
+## Branches
+
+- `shared/`: durable product or repo direction that is not surface-specific.
+- `frontend/web/`: durable web UI and shell direction.
+- `frontend/tma/`: durable TMA client direction.
+- `frontend/mobile-app/`: future native mobile-app direction.
 
 ## Current Project Direction
 
 - No custom visual design system.
-- Web UI uses shadcn primitives and project-owned component references.
-- Product UI decisions live here only when they outlast one feature plan.
+- Shared product semantics stay separate from surface UX.
+- Durable frontend decisions should live under the correct surface branch, not at the root.
 
-## Accepted
+## Current Docs
 
-- `core-beliefs.md`: agent-first operating beliefs.
-- `product-direction-v2.md`: v1 -> v2 product-direction shift for personal, household, and group semantics.
-- `mobile-first-protected-shell-and-tab-surfaces.md`: mobile-first protected app refactor for 4-tab navigation, new page wrappers, and expense/household surface rules.
-
-## Proposed
-
-- `telegram-mini-app-client-architecture.md`: planned TMA client boundary, native bridge policy, UI direction, and phased rollout.
-
-## Deprecated
-
-## Maintenance Rules
-
-- Every design doc needs owner/update trigger.
-- Remove stale docs or mark deprecated.
-- Link active plans to exact design docs they depend on.
-- Do not duplicate frontend/backend reference rules here.
+- `docs/design-docs/shared/core-beliefs.md`
+- `docs/design-docs/shared/product-direction-v2.md`
+- `docs/design-docs/frontend/web/protected-shell-and-tab-surfaces.md`
+- `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md`

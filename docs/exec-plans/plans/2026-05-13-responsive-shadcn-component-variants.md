@@ -95,11 +95,11 @@ Out of scope:
 - UI primitives: `apps/web/src/components/ui/*`.
 - Global Tailwind CSS variables: `apps/web/src/index.css`. This plan should not need global CSS changes.
 - Existing frontend guidance that applies:
-  - `docs/references/frontend/project-folder-structure.md`: shared UI primitives stay in `components/ui`; feature-specific components stay in `components/<feature>`.
-  - `docs/references/frontend/component-structure-pattern.md`: keep files small and split if over 200 lines.
-  - `docs/references/frontend/naming-and-conventions-pattern.md`: kebab-case files, named exports, import order third-party then internal.
-  - `docs/references/frontend/form-pattern.md`: forms use `FieldGroup`, `Field`, `FieldLabel`, `aria-invalid`, and `data-invalid`.
-  - `docs/references/frontend/dialog-and-form-pattern.md`: dialog content should not receive ad hoc padding/spacing overrides unless necessary.
+  - `docs/references/frontend/web/project-folder-structure.md`: shared UI primitives stay in `components/ui`; feature-specific components stay in `components/<feature>`.
+  - `docs/references/frontend/web/component-structure-pattern.md`: keep files small and split if over 200 lines.
+  - `docs/references/frontend/web/naming-and-conventions-pattern.md`: kebab-case files, named exports, import order third-party then internal.
+  - `docs/references/frontend/web/form-pattern.md`: forms use `FieldGroup`, `Field`, `FieldLabel`, `aria-invalid`, and `data-invalid`.
+  - `docs/references/frontend/web/dialog-and-form-pattern.md`: dialog content should not receive ad hoc padding/spacing overrides unless necessary.
 - Relevant shadcn docs checked:
   - Button supports `variant` and `size`, icon spacing via `data-icon`, and loading via composed `Spinner`.
   - Input docs emphasize `Field` composition and `aria-invalid`/`data-invalid` validation.
@@ -373,11 +373,11 @@ Evidence to attach during implementation:
 
 ## Standards Enforcement
 
-- `docs/references/frontend/project-folder-structure.md`: shared shadcn primitives remain in `apps/web/src/components/ui`; no feature logic goes into `lib`.
-- `docs/references/frontend/component-structure-pattern.md`: keep each primitive focused; if a new responsive wrapper exceeds 200 lines, split helpers.
-- `docs/references/frontend/naming-and-conventions-pattern.md`: use kebab-case file names, named exports, and import order third-party before internal alias imports.
-- `docs/references/frontend/form-pattern.md`: preserve `Field`/`FieldGroup` and invalid-state patterns; do not replace form semantics while adjusting sizing.
-- `docs/references/frontend/dialog-and-form-pattern.md`: use primitive-owned dialog sizing/padding instead of ad hoc `DialogContent className` visual overrides.
+- `docs/references/frontend/web/project-folder-structure.md`: shared shadcn primitives remain in `apps/web/src/components/ui`; no feature logic goes into `lib`.
+- `docs/references/frontend/web/component-structure-pattern.md`: keep each primitive focused; if a new responsive wrapper exceeds 200 lines, split helpers.
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`: use kebab-case file names, named exports, and import order third-party before internal alias imports.
+- `docs/references/frontend/web/form-pattern.md`: preserve `Field`/`FieldGroup` and invalid-state patterns; do not replace form semantics while adjusting sizing.
+- `docs/references/frontend/web/dialog-and-form-pattern.md`: use primitive-owned dialog sizing/padding instead of ad hoc `DialogContent className` visual overrides.
 - shadcn styling rules: no `space-y-*`; use `gap-*`; use semantic tokens; use `size-*` for square controls; use `cn()` for classes; no manual overlay `z-index` changes beyond existing primitive implementation.
 
 ## Companion Skills for Implementation

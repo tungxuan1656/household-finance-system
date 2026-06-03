@@ -163,10 +163,10 @@ This feature is frontend-only and intentionally narrow. It will use `i18next`, `
 
 ### Required References
 
-- `docs/references/frontend/project-folder-structure.md`
-- `docs/references/frontend/component-structure-pattern.md`
-- `docs/references/frontend/naming-and-conventions-pattern.md`
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/project-folder-structure.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
 - `docs/references/shared/type-naming-pattern.md`
 
 ### Concrete Coding Constraints

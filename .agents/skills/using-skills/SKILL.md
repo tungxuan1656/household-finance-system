@@ -62,7 +62,7 @@ Read more only when scope requires it:
 - `skill-maintenance` when changing `.agents/skills/**`
 - `grill-with-docs` when a real task needs one clarification pass before planning
 - `docs/PLANS.md`, `docs/exec-plans/__plan-template__.md`, `docs/exec-plans/index.md` when a plan is required
-- exact `docs/references/frontend/*` or `docs/references/backend/*` leaf docs for the touched area
+- exact `docs/references/frontend/<surface>/*` or `docs/references/backend/*` leaf docs for the touched area
 - exact product or design doc only when behavior or UX decisions depend on it
 
 Avoid broad-folder reading by default.

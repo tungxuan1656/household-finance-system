@@ -8,7 +8,7 @@ Add the MVP quick-add expense flow with global trigger, compact create UI, and U
 
 Implement a frontend-first quick-add expense flow so authenticated users can capture an expense in roughly 2–3 seconds without navigating to the full add-expense screen. Users will observe this through a globally accessible trigger (floating action button plus keyboard shortcut), a compact modal or bottom-sheet style entry surface with the amount field focused immediately, sensible defaults for the minimum required fields, and a success toast that offers a 5-second Undo action.
 
-This plan keeps the scope tightly aligned to `harness/features/feat-024.json` and `docs/product-specs/quick-add-experience.md`: it reuses the existing expense create API from `feat-017`, reuses delete support from `feat-019` for Undo, and explicitly excludes offline or no-internet capture, durable smart defaults, and ML-like suggestion behavior.
+This plan keeps the scope tightly aligned to `harness/features/feat-024.json` and `docs/product-specs/web/quick-add-experience.md`: it reuses the existing expense create API from `feat-017`, reuses delete support from `feat-019` for Undo, and explicitly excludes offline or no-internet capture, durable smart defaults, and ML-like suggestion behavior.
 
 ## Scope
 
@@ -109,7 +109,7 @@ Out of scope for this plan:
 
 - Feature and product source of truth:
   - `harness/features/feat-024.json` — authoritative quick-add scope, constraints, and original dependency declaration.
-  - `docs/product-specs/quick-add-experience.md` — goal, acceptance criteria, failure states, and MVP boundaries.
+  - `docs/product-specs/web/quick-add-experience.md` — goal, acceptance criteria, failure states, and MVP boundaries.
   - `docs/product-specs/expense-tracking.md` — expense-capture behavior, explicit visibility requirements, and telemetry intent.
   - `docs/product-specs/data-visibility.md` — explicit household-selection and authorization semantics for shared expenses.
 - Dependency features already implemented:
@@ -142,13 +142,13 @@ Out of scope for this plan:
 
 - Frontend mandatory docs:
   - `docs/FRONTEND.md`
-  - `docs/references/frontend/project-folder-structure.md`
-  - `docs/references/frontend/component-structure-pattern.md`
-  - `docs/references/frontend/naming-and-conventions-pattern.md`
-  - `docs/references/frontend/form-pattern.md`
-  - `docs/references/frontend/dialog-and-form-pattern.md`
-  - `docs/references/frontend/api-react-query-pattern.md`
-  - `docs/references/frontend/i18n-label-pattern.md`
+  - `docs/references/frontend/web/project-folder-structure.md`
+  - `docs/references/frontend/web/component-structure-pattern.md`
+  - `docs/references/frontend/web/naming-and-conventions-pattern.md`
+  - `docs/references/frontend/web/form-pattern.md`
+  - `docs/references/frontend/web/dialog-and-form-pattern.md`
+  - `docs/references/frontend/web/api-react-query-pattern.md`
+  - `docs/references/frontend/web/i18n-label-pattern.md`
   - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
   - `.agents/skills/shadcn/SKILL.md`
   - `.agents/skills/shadcn/rules/styling.md`

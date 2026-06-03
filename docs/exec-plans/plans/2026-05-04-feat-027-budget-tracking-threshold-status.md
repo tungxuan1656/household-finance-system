@@ -147,15 +147,15 @@ Enable household members to see whether the current budget is on track by compar
   - If any worker runtime/API uncertainty appears during implementation, use `documentation-lookup` before relying on memory.
 
 **Frontend**
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep budget-specific API/hooks/components within the budget feature folders; do not push single-feature logic into `lib`.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Keep `budgets-page.tsx` as the orchestrator and split tracking UI into feature-bounded child components with barrel exports.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - New files use kebab-case; hooks live in `use-budgets.ts`; prefer absolute `@/...` imports.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - Declare all new endpoints in `API_ENDPOINTS`, add `BUDGET_KEYS` scopes for status queries, and drive UI through hooks only.
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
   - No hardcoded warning/status copy; add synchronized locale keys for all new labels.
 
 **Frontend governance from `docs/FRONTEND.md` + shadcn pre-read**

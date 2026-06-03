@@ -47,9 +47,9 @@ Expected touched paths:
 - `apps/tma/src/i18n/vi.json` and `en.json` (new auth-related keys)
 - `apps/tma/src/test/storage-adapter.test.ts` (new)
 - `apps/tma/src/test/auth-bootstrap.test.ts` (new)
-- `docs/references/tma/auth-and-bot-pattern.md` (request shape update)
-- `docs/references/tma/state-and-storage-pattern.md` (fallback policy recap)
-- `docs/product-specs/authentication.md` (TMA = supported provider)
+- `docs/references/frontend/tma/auth-and-bot-pattern.md` (request shape update)
+- `docs/references/frontend/tma/state-and-storage-pattern.md` (fallback policy recap)
+- `docs/product-specs/shared/authentication-session.md` (TMA = supported provider)
 - `docs/TMA.md` (no change expected; verified)
 - `harness/feature_index.json`
 - `harness/features/feat-080.json`
@@ -86,8 +86,8 @@ Out of scope:
 - [ ] Add worker integration tests for valid, expired `auth_date`, invalid hash, missing `user`, unsupported provider, and backward-compat Firebase cases.
 - [ ] Add worker unit tests for `verifyTelegramLaunchData` covering: valid signature, tampered field, missing `hash`, bad encoding, replay-window expiry.
 - [ ] Add `.dev.vars.example` entries for `TELEGRAM_BOT_TOKEN` and `TELEGRAM_FRESHNESS_WINDOW_SECONDS`.
-- [ ] Update `docs/references/tma/auth-and-bot-pattern.md` with the new request shape and worker contract.
-- [ ] Update `docs/product-specs/authentication.md` to mark Telegram as a supported provider and document the failure-state UI contract.
+- [ ] Update `docs/references/frontend/tma/auth-and-bot-pattern.md` with the new request shape and worker contract.
+- [ ] Update `docs/product-specs/shared/authentication-session.md` to mark Telegram as a supported provider and document the failure-state UI contract.
 - [ ] Add `apps/tma/src/lib/storage/adapter.ts` and `keys.ts` with capability detection and `SecureStorage` / memory fallback.
 - [ ] Add `apps/tma/src/lib/telegram/launch-params.ts` that returns the raw `initData` string from `@tma.js/sdk-react`.
 - [ ] Add `apps/tma/src/lib/auth/api.ts` with `exchangeProviderToken`, `refreshSession`, `logoutSession` against the worker.
@@ -113,7 +113,7 @@ Out of scope:
 ## Decision Log
 
 - Decision: use a `z.discriminatedUnion('provider', [...])` on `ExchangeProviderRequest` instead of a separate `/auth/telegram/exchange` route.
-  Rationale: keeps the worker session lifecycle shared, preserves the same response shape, and avoids a parallel route family. `docs/references/tma/auth-and-bot-pattern.md` and the authentication product spec already prefer this.
+  Rationale: keeps the worker session lifecycle shared, preserves the same response shape, and avoids a parallel route family. `docs/references/frontend/tma/auth-and-bot-pattern.md` and the authentication product spec already prefer this.
   Date/Author: 2026-06-02 / Codex
 
 - Decision: no D1 migration for feat-080. The `auth_identities` table already supports `provider` + `provider_subject` uniqueness.
@@ -121,7 +121,7 @@ Out of scope:
   Date/Author: 2026-06-02 / Codex
 
 - Decision: TMA refresh token storage priority is `SecureStorage` → memory-only fallback; no `DeviceStorage` or `localStorage` for `session:*` keys.
-  Rationale: `docs/references/tma/state-and-storage-pattern.md` default auth-session policy forbids persisting app tokens outside `SecureStorage`. Weaker persistence is the explicit fallback, not weaker storage.
+  Rationale: `docs/references/frontend/tma/state-and-storage-pattern.md` default auth-session policy forbids persisting app tokens outside `SecureStorage`. Weaker persistence is the explicit fallback, not weaker storage.
   Date/Author: 2026-06-02 / Codex
 
 - Decision: Telegram identity mapping uses the same `upsertUserBy*Identity` pattern as Firebase — one identity row per provider, no email-based merge.
@@ -151,10 +151,10 @@ This plan is active. Final outcomes are recorded here when feat-080 is implement
 - Worker env template: `apps/worker/wrangler.toml`, `apps/worker/.dev.vars.example`
 - TMA app (created in feat-079): `apps/tma/src/*`
 - TMA reference rules: `docs/references/tma/*`
-- Authentication product spec: `docs/product-specs/authentication.md`
-- TMA product spec: `docs/product-specs/telegram-mini-app.md`
+- Authentication product spec: `docs/product-specs/shared/authentication-session.md`
+- TMA product spec: `docs/product-specs/tma/index.md`
 - TMA router: `docs/TMA.md`
-- Durable TMA architecture: `docs/design-docs/telegram-mini-app-client-architecture.md`
+- Durable TMA architecture: `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md`
 
 ## Plan of Work (Narrative)
 
@@ -166,7 +166,7 @@ This plan is active. Final outcomes are recorded here when feat-080 is implement
 6. Extract `issueAppSession(env, user, userAgent, ipAddress)` inside the auth handlers package (or co-locate inside `exchange-provider-token.ts` if extraction is too small) so both provider branches share the same access/refresh token issuance and `refresh_sessions` write.
 7. Update `exchangeProviderToken` to switch on `input.provider`. Firebase branch keeps the existing behavior unchanged. Telegram branch calls `verifyTelegramLaunchData`, then `upsertUserByTelegramIdentity`, then `issueAppSession`, and returns `user.provider = 'telegram'`.
 8. Add worker unit tests under `apps/worker/test/unit/lib/auth/telegram.spec.ts` and integration tests under `apps/worker/test/integration/auth-telegram.spec.ts`. Cover valid signature, tampered field, missing `hash`, replay-window expiry, missing `user`, unsupported `provider`, and the existing Firebase path.
-9. Update `docs/references/tma/auth-and-bot-pattern.md` to record the new discriminated-union request shape and the worker contract; update `docs/product-specs/authentication.md` to add Telegram as a supported provider with the failure-state UI contract.
+9. Update `docs/references/frontend/tma/auth-and-bot-pattern.md` to record the new discriminated-union request shape and the worker contract; update `docs/product-specs/shared/authentication-session.md` to add Telegram as a supported provider with the failure-state UI contract.
 10. In `apps/tma/src/lib/storage/adapter.ts`, build a small `authStorage` that exposes `getRefreshToken`, `setRefreshToken`, `clearRefreshToken`. It prefers `@tma.js/sdk` `SecureStorage` when `isSupports` returns true; otherwise it stays memory-only and logs a one-time warning (no `localStorage` fallback for `session:*`).
 11. In `apps/tma/src/lib/telegram/launch-params.ts`, wrap `retrieveLaunchParams` (or the equivalent `@tma.js/sdk-react` hook) and return the raw `initData` string. The wrapper must not parse user fields as truth; the worker is the verifier.
 12. In `apps/tma/src/lib/auth/api.ts`, define `exchangeProviderToken(input)`, `refreshSession(refreshToken)`, and `logoutSession(refreshToken)` typed against the shared worker contracts. Treat 4xx responses with provider-neutral error codes from the existing `apps/worker/src/lib/errors` patterns.

@@ -354,7 +354,7 @@ Max Concurrent: 4 (Wave 1)
   - `apps/web/src/types/reference-data.ts` — CategoryKey, SourceKey, ReferenceCategoryDTO, ReferenceSourceDTO types to import
   - `apps/web/src/types/household.ts` — HouseholdDTO type for household list
   - `apps/web/src/lib/forms/household.schema.ts` — Zod form schema pattern to follow
-  - `docs/references/frontend/form-pattern.md` — Form pattern (RHF + zod + shadcn)
+  - `docs/references/frontend/web/form-pattern.md` — Form pattern (RHF + zod + shadcn)
   - `docs/references/shared/type-naming-pattern.md` — Type naming conventions
 
   **Acceptance Criteria**:
@@ -415,7 +415,7 @@ Max Concurrent: 4 (Wave 1)
 
   **References**:
   - `apps/web/src/lib/i18n/locales/vi.json` — Existing Vietnamese locale file to add keys to
-  - `docs/references/frontend/i18n-label-pattern.md` — i18n key naming conventions
+  - `docs/references/frontend/web/i18n-label-pattern.md` — i18n key naming conventions
   - `apps/web/src/lib/reference-data/labels.ts` — Reference data label mapping pattern
 
   **Acceptance Criteria**:
@@ -614,7 +614,7 @@ Max Concurrent: 4 (Wave 1)
   - `apps/web/src/api/household.ts` — API function pattern (client.post, return response.data)
   - `apps/web/src/hooks/api/use-households.ts` — React Query hook pattern (*_KEYS, useMutation with invalidateQueries)
   - `apps/web/src/hooks/api/use-reference-data.ts` — Reference data query hooks pattern
-  - `docs/references/frontend/api-react-query-pattern.md` — API + React Query pattern rules
+  - `docs/references/frontend/web/api-react-query-pattern.md` — API + React Query pattern rules
 
   **Acceptance Criteria**:
   - [ ] `API_ENDPOINTS.expenses.create` exists in endpoints.ts
@@ -757,8 +757,8 @@ Max Concurrent: 4 (Wave 1)
   - `apps/web/src/hooks/api/use-expense.ts` — useCreateExpenseMutation
   - `apps/web/src/lib/forms/expense.schema.ts` — expenseFormSchema
   - `apps/web/src/lib/i18n/locales/vi.json` — Vietnamese labels
-  - `docs/references/frontend/form-pattern.md` — RHF + zod + shadcn form pattern
-  - `docs/references/frontend/dialog-and-form-pattern.md` — FieldGroup > Field > FieldLabel, data-invalid, aria-invalid, FieldError
+  - `docs/references/frontend/web/form-pattern.md` — RHF + zod + shadcn form pattern
+  - `docs/references/frontend/web/dialog-and-form-pattern.md` — FieldGroup > Field > FieldLabel, data-invalid, aria-invalid, FieldError
   - `.agents/skills/shadcn/SKILL.md` — Mandatory shadcn governance (read before UI work)
   - `.agents/skills/shadcn/rules/forms.md` — Form composition rules
   - `.agents/skills/shadcn/rules/composition.md` — Component composition rules
@@ -853,8 +853,8 @@ Max Concurrent: 4 (Wave 1)
   - `apps/web/src/hooks/api/use-reference-data.ts` — useReferenceCategoriesQuery, useReferenceSourcesQuery
   - `apps/web/src/hooks/api/use-households.ts` — useHouseholds
   - `apps/web/src/hooks/api/use-expense.ts` — useCreateExpenseMutation
-  - `docs/references/frontend/project-folder-structure.md` — Page/view folder structure rules
-  - `docs/references/frontend/component-structure-pattern.md` — Page orchestrator → smart component pattern
+  - `docs/references/frontend/web/project-folder-structure.md` — Page/view folder structure rules
+  - `docs/references/frontend/web/component-structure-pattern.md` — Page orchestrator → smart component pattern
 
   **Acceptance Criteria**:
   - [ ] File `apps/web/src/views/app/add-expense-page.tsx` exists with page orchestrator

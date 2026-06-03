@@ -10,6 +10,24 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-03 — Completed frontend surface docs architecture refactor
+
+- Who: Codex
+- Summary: Finished the docs-only frontend architecture refactor so `FRONTEND` now means the full client layer instead of implicitly meaning only `web`. The new structure introduces `docs/WEB.md`, keeps `docs/TMA.md` as a child router, adds a future `docs/MOBILE_APP.md` stub, moves product specs into `shared/web/tma/mobile-app` branches, moves frontend implementation leaves into `docs/references/frontend/web/` and `docs/references/frontend/tma/`, and moves durable design docs into `docs/design-docs/shared/` plus `docs/design-docs/frontend/{web,tma}`. The TMA auth/expense docs were split out of the old flat files, the stale root `docs/product-specs/telegram-mini-app.md` was removed, and active repo guidance plus the repo-owned TMA skill were rewritten to the new tree.
+- Files changed: Frontend routers, product-spec branches, frontend reference branches, design-doc branches, AGENTS/CLAUDE/README/ARCHITECTURE, repo-owned TMA skill docs, current TMA harness records, feat-089 plan/index/harness artifacts, and this progress log.
+- Verification: `python3 -m json.tool harness/feature_index.json`, `python3 -m json.tool harness/features/feat-080.json`, `python3 -m json.tool harness/features/feat-087.json`, `python3 -m json.tool harness/features/feat-088.json`, and `python3 -m json.tool harness/features/feat-089.json` all passed; `./scripts/check_harness_size.sh` returned `Harness size checks passed`; `git diff --check` returned clean; stale-path scan across current docs and project-owned skills returned `stale-path-scan: clean`; final `gitnexus_detect_changes(scope: 'all')` returned `LOW` risk with 203 changed symbols, 0 affected processes, and 78 tracked changed files.
+- Blockers: Historical completed plans and some older harness records still mention old paths inside narrative text. They were left as historical records unless they affected current routing or active work.
+- Next steps: Future web work starts at `docs/WEB.md`; future TMA work starts at `docs/TMA.md`; if a native mobile app starts later, fill in the `MOBILE_APP` branches instead of widening web or TMA docs.
+
+## 2026-06-03 — Started frontend surface docs architecture refactor
+
+- Who: Codex
+- Summary: Opened a docs-only architecture refactor so the repo no longer treats `FRONTEND` as shorthand for only the web client. The new target shape makes `docs/FRONTEND.md` the parent router for `WEB`, `TMA`, and a future `MOBILE_APP` surface, while product specs, frontend references, and durable design docs split into shared vs surface-specific branches. This session will move current web-only and TMA-only docs into their new homes and rewrite the active router/index docs accordingly.
+- Files changed: New ExecPlan, new feat-089 harness record, feature index, exec-plan index, and this progress log.
+- Verification: Plan/startup artifact verification pending until the refactor runs; expected checks are harness JSON parse, harness size, whitespace diff, and final GitNexus change detection.
+- Blockers: none.
+- Next steps: Move the docs tree, rewrite router/index docs, then run docs-only verification and finalize feat-089.
+
 ## 2026-06-03 — Aligned TMA docs to the new screen spec
 
 - Who: Codex

@@ -152,18 +152,18 @@ Enable signed-in users to export a truthful CSV snapshot from `/insights` for se
   - If implementation depends on Worker response/body limits or stream behavior, verify current Cloudflare docs before locking serializer approach.
 
 **Frontend**
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep analytics export transport in analytics files (`src/api/analytics.ts`, `src/hooks/api/use-analytics.ts`) and feature UI under `src/components/analytics/*`.
   - Do not push one-feature export logic into generic `lib` unless it is clearly reusable beyond analytics.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Keep `InsightsPage` as orchestrator only; export button/banner/state helpers should live in bounded analytics child components if page grows too large.
   - Maintain barrel exports for public analytics components.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Use kebab-case file names, named exports, `@/...` imports, English comments only, and consolidated imports per path.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - Add export endpoint to `API_ENDPOINTS.analytics`; keep API layer HTTP-only.
   - Check whether export should be direct API helper or hook-backed mutation; avoid duplicate data queries if current page state already proves export eligibility.
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
   - No hardcoded labels for export CTA, disabled explanation, error states, or CSV-related helper text; add synchronized locale keys.
 
 **Frontend governance from `docs/FRONTEND.md` + shadcn pre-read**

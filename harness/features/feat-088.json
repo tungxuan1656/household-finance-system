@@ -11,7 +11,7 @@
       "Kept the update bounded to TMA docs, TMA skill references, and planned TMA harness records; the one cross-surface web note was kept neutral and only points readers back to the TMA spec."
     ],
     "artifacts": [
-      "Updated `docs/product-specs/telegram-mini-app.md` and `apps/tma/DESIGN.md` so the TMA expense flow and root navigation model are described consistently, while keeping the existing web quick-add note neutral.",
+      "Updated `docs/product-specs/tma/index.md` and `apps/tma/DESIGN.md` so the TMA expense flow and root navigation model are described consistently, while keeping the existing web quick-add note neutral.",
       "Updated TMA reference/design docs and the repo-owned TMA skill task map so future implementation reads the same step order, route examples, and screen source of truth.",
       "Updated `harness/features/feat-081.json` and added this feat-088 record so planned implementation slices now inherit the new doc truth."
     ],

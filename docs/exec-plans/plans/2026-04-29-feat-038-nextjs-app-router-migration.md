@@ -158,32 +158,32 @@ Scope classification: `frontend + shared + tooling/docs`.
 
 Mandatory references and enforced constraints:
 
-1. `docs/references/frontend/project-folder-structure.md`
+1. `docs/references/frontend/web/project-folder-structure.md`
 - Adopt Next `app/` routing structure while keeping existing domain folders (`api`, `hooks`, `components`, `stores`, `lib`, `types`) for non-route logic.
 - Avoid turning `lib` into feature dumping ground during migration.
 
-2. `docs/references/frontend/component-structure-pattern.md`
+2. `docs/references/frontend/web/component-structure-pattern.md`
 - Keep page components explicit and focused; split oversized migrated route files by concern.
 - Preserve named exports for child components where applicable.
 
-3. `docs/references/frontend/naming-and-conventions-pattern.md`
+3. `docs/references/frontend/web/naming-and-conventions-pattern.md`
 - Kebab-case filenames for added/renamed files.
 - Maintain import order and no-duplicate-import rules.
 - Enforce direct-import rule for runtime-critical modules (no barrel indirection for route/bootstrap/i18n entrypoints).
 
-4. `docs/references/frontend/form-pattern.md`
+4. `docs/references/frontend/web/form-pattern.md`
 - Existing auth/onboarding/settings forms must keep `react-hook-form` + `zod` validation patterns and accessible field contracts.
 
-5. `docs/references/frontend/dialog-and-form-pattern.md`
+5. `docs/references/frontend/web/dialog-and-form-pattern.md`
 - Existing dialog-based flows remain compliant while route shell changes.
 
-6. `docs/references/frontend/api-react-query-pattern.md`
+6. `docs/references/frontend/web/api-react-query-pattern.md`
 - Keep API calls in `api/*` and cache invalidation/query-key conventions intact while moving runtime.
 
-7. `docs/references/frontend/zustand-store-pattern.md`
+7. `docs/references/frontend/web/zustand-store-pattern.md`
 - Preserve store action-based mutations and reset/test patterns.
 
-8. `docs/references/frontend/i18n-label-pattern.md`
+8. `docs/references/frontend/web/i18n-label-pattern.md`
 - New landing page labels must come from i18n keys; no hardcoded user-facing text.
 
 9. `docs/references/shared/type-naming-pattern.md`

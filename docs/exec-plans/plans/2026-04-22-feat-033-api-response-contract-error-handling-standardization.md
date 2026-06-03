@@ -88,7 +88,7 @@ The current worker already has shared helpers in `apps/worker/src/lib/response.t
 ## Decision Log
 
 - Decision: Put the shared frontend transport client in `apps/web/src/api/client.ts` with related endpoint constants in `apps/web/src/api/endpoints.ts`, not under `src/lib/api/`.
-  Rationale: `docs/references/frontend/project-folder-structure.md` defines `src/api/*` as the canonical shared API layer and reserves `lib/` for cross-feature utilities outside the API branch.
+  Rationale: `docs/references/frontend/web/project-folder-structure.md` defines `src/api/*` as the canonical shared API layer and reserves `lib/` for cross-feature utilities outside the API branch.
   Date/Author: 2026-04-22 / Codex
 
 - Decision: Keep the worker response helper as the canonical backend envelope seam in `apps/worker/src/lib/response.ts`.
@@ -206,10 +206,10 @@ The current worker already has shared helpers in `apps/worker/src/lib/response.t
 - `docs/references/backend/security-and-auth-pattern.md`
 - `docs/references/backend/testing-pattern.md`
 - `docs/references/backend/cloudflare-workers.md`
-- `docs/references/frontend/project-folder-structure.md`
-- `docs/references/frontend/component-structure-pattern.md`
-- `docs/references/frontend/naming-and-conventions-pattern.md`
-- `docs/references/frontend/zustand-store-pattern.md`
+- `docs/references/frontend/web/project-folder-structure.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/zustand-store-pattern.md`
 - `docs/references/shared/type-naming-pattern.md`
 
 ### Concrete Coding Constraints

@@ -77,11 +77,11 @@ Finish the frontend feature-first migration by removing the temporary compatibil
 
 - Approved design: `docs/design-docs/2026-05-20-web-shim-cleanup-and-ownership-normalization-design.md`
 - Completed parent refactor: `docs/exec-plans/plans/2026-05-19-web-feature-first-folder-refactor.md`
-- Canonical folder rules: `docs/references/frontend/project-folder-structure.md`
-- Canonical component/page split: `docs/references/frontend/component-structure-pattern.md`
-- Canonical naming/import rules: `docs/references/frontend/naming-and-conventions-pattern.md`
-- API/hook ownership rules: `docs/references/frontend/api-react-query-pattern.md`
-- Store ownership rules: `docs/references/frontend/zustand-store-pattern.md`
+- Canonical folder rules: `docs/references/frontend/web/project-folder-structure.md`
+- Canonical component/page split: `docs/references/frontend/web/component-structure-pattern.md`
+- Canonical naming/import rules: `docs/references/frontend/web/naming-and-conventions-pattern.md`
+- API/hook ownership rules: `docs/references/frontend/web/api-react-query-pattern.md`
+- Store ownership rules: `docs/references/frontend/web/zustand-store-pattern.md`
 - Current feature record: `harness/features/feat-063.json`
 - Progress log: `harness/progress.md`
 
@@ -134,15 +134,15 @@ Hard dependency checks:
 
 Required references for implementation:
 
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Feature-local code belongs under `features/<domain>/**`; root folders keep only shared concerns.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Feature pages/components remain under feature folders; public barrels are optional and should expose only true public surface.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Keep `kebab-case`, named exports, and `@/...` absolute imports; remove duplicate import paths where possible.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - UI consumes hooks, hooks own query keys/cache logic, API modules remain typed and separated from components.
-- `docs/references/frontend/zustand-store-pattern.md`
+- `docs/references/frontend/web/zustand-store-pattern.md`
   - Store import rewires must preserve store action/state architecture and test coverage.
 - `docs/testing/test-placement-and-sharding-convention.md`
   - No new component/page render tests for `apps/web`.
