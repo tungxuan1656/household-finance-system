@@ -19,7 +19,8 @@
   --tma-primary: #3f7cff;
   --tma-positive: #5dd36d;
   --tma-warning: #ffd84d;
-  --tma-shadow: 0 24px 60px rgba(31, 41, 55, 0.08);
+  --tma-shadow: 0 16px 40px rgba(31, 41, 55, 0.06);
+  --tma-shadow-soft: 0 6px 18px rgba(31, 41, 55, 0.05);
 }
 
 * {
@@ -33,10 +34,14 @@ body,
   height: 100dvh;
   margin: 0;
   overflow: hidden;
+  /* Solid fallback so the WebView never flashes a different color
+     while the gradient paints. Telegram bg color is set via SDK. */
+  background-color: var(--tma-base-bg);
 }
 
 body {
-  background:
+  background-color: var(--tma-base-bg);
+  background-image:
     radial-gradient(circle at top left, rgba(99, 158, 255, 0.18), transparent 34%),
     radial-gradient(circle at top right, rgba(255, 216, 77, 0.18), transparent 28%),
     linear-gradient(180deg, #fbfcff 0%, var(--tma-page-bg) 100%);
@@ -129,13 +134,13 @@ button {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: 0 20px calc(108px + var(--tma-content-safe-bottom));
-  scroll-padding-bottom: calc(108px + var(--tma-content-safe-bottom));
+  padding: 4px 16px calc(96px + var(--tma-content-safe-bottom));
+  scroll-padding-bottom: calc(96px + var(--tma-content-safe-bottom));
 }
 
 .tma-page-shell--focus .tma-page-shell__content {
-  padding-bottom: calc(32px + var(--tma-content-safe-bottom));
-  scroll-padding-bottom: calc(32px + var(--tma-content-safe-bottom));
+  padding-bottom: calc(28px + var(--tma-content-safe-bottom));
+  scroll-padding-bottom: calc(28px + var(--tma-content-safe-bottom));
 }
 
 .tma-page-shell--native-bottom .tma-page-shell__content {
@@ -147,27 +152,28 @@ button {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: 18px 20px 20px;
+  gap: 12px;
+  padding: 14px 20px 14px;
 }
 
 .tma-page-header__lead {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
 }
 
 .tma-page-header__avatar {
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
-  border-radius: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
   background: linear-gradient(135deg, rgba(63, 124, 255, 0.18), rgba(93, 211, 109, 0.28));
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   color: var(--tma-text-strong);
   font-weight: 700;
+  font-size: 14px;
 }
 
 .tma-avatar-image {
@@ -181,28 +187,32 @@ button {
 .tma-section-label {
   margin: 0;
   color: var(--tma-text-muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .tma-page-header__title {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   color: var(--tma-text-strong);
-  font-size: 26px;
-  line-height: 1.05;
+  font-size: 21px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 
 .tma-page-header__subtitle {
-  margin: 8px 0 0;
+  margin: 4px 0 0;
   color: var(--tma-text-muted);
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .tma-page-header__actions {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .tma-chip,
@@ -212,9 +222,9 @@ button {
 .tma-inline-action {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -222,7 +232,7 @@ button {
 .tma-soft-pill,
 .tma-status-pill,
 .tma-chip-button {
-  padding: 10px 14px;
+  padding: 7px 12px;
 }
 
 .tma-chip {
@@ -272,7 +282,7 @@ button {
 .tma-list-card {
   background: var(--tma-card-bg);
   border: 1px solid rgba(255, 255, 255, 0.68);
-  border-radius: 28px;
+  border-radius: 24px;
   box-shadow: var(--tma-shadow);
 }
 
@@ -286,7 +296,7 @@ button {
 .tma-month-switcher,
 .tma-step-summary,
 .tma-empty-card {
-  padding: 22px;
+  padding: 18px;
 }
 
 .tma-settings-card,
@@ -295,7 +305,7 @@ button {
 .tma-preview-card,
 .tma-chart-card,
 .tma-list-card {
-  padding: 20px;
+  padding: 16px;
 }
 
 .tma-summary-card,
@@ -303,18 +313,19 @@ button {
 .tma-support-card {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-bottom: 18px;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
 .tma-summary-card strong,
 .tma-hero-card strong,
 .tma-amount-card strong {
   display: block;
-  margin-top: 8px;
-  font-size: clamp(30px, 8vw, 38px);
-  line-height: 1;
-  letter-spacing: -0.04em;
+  margin-top: 4px;
+  font-size: clamp(26px, 7vw, 32px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-weight: 800;
 }
 
 .tma-summary-card__meta,
@@ -334,8 +345,8 @@ button {
 .tma-step-summary p {
   margin: 0;
   color: var(--tma-text-muted);
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .tma-summary-card__aside {
@@ -344,15 +355,15 @@ button {
 }
 
 .tma-section {
-  margin-top: 24px;
+  margin-top: 20px;
 }
 
 .tma-section__header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .tma-section__title,
@@ -360,29 +371,30 @@ button {
 .tma-support-card h2,
 .tma-account-card h2,
 .tma-empty-card h2 {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: var(--tma-text-strong);
-  font-size: 22px;
-  line-height: 1.1;
+  font-size: 17px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .tma-shortcuts-grid,
 .tma-category-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .tma-shortcut-card,
 .tma-category-card {
   display: grid;
   align-content: start;
-  gap: 14px;
-  min-height: 132px;
-  padding: 18px;
-  border-radius: 24px;
+  gap: 10px;
+  min-height: 110px;
+  padding: 14px;
+  border-radius: 20px;
   background: var(--tma-card-plain);
-  box-shadow: var(--tma-shadow);
+  box-shadow: var(--tma-shadow-soft);
 }
 
 .tma-shortcut-card.is-disabled {
@@ -398,24 +410,28 @@ button {
 .tma-expense-card h3 {
   margin: 0;
   color: var(--tma-text-strong);
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .tma-shortcut-card p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: var(--tma-text-muted);
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .tma-household-carousel {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(260px, 82%);
-  gap: 14px;
+  grid-auto-columns: minmax(220px, 78%);
+  gap: 10px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding: 2px 2px 4px;
   scrollbar-width: none;
+  /* leave room for shadow on the right edge */
+  margin-right: -4px;
 }
 
 .tma-household-carousel::-webkit-scrollbar {
@@ -424,11 +440,11 @@ button {
 
 .tma-household-card {
   display: grid;
-  gap: 18px;
-  padding: 20px;
+  gap: 12px;
+  padding: 14px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), #ffffff);
-  border-radius: 28px;
-  box-shadow: var(--tma-shadow);
+  border-radius: 22px;
+  box-shadow: var(--tma-shadow-soft);
 }
 
 .tma-household-card__top {
@@ -449,7 +465,7 @@ button {
 .tma-list-card,
 .tma-list-stack {
   display: grid;
-  gap: 14px;
+  gap: 8px;
 }
 
 .tma-expense-row,
@@ -458,7 +474,7 @@ button {
 .tma-expense-card {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 12px;
 }
 
 .tma-expense-row__body,
@@ -479,15 +495,17 @@ button {
 .tma-expense-card__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 6px;
+  margin-top: 6px;
 }
 
 .tma-expense-row__meta span,
 .tma-expense-card__meta span {
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: 999px;
   background: rgba(17, 24, 39, 0.05);
+  font-size: 12px;
+  color: var(--tma-text-muted);
 }
 
 .tma-hero-card {
@@ -509,23 +527,24 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .tma-month-switcher strong {
   display: block;
-  margin-top: 4px;
-  font-size: 20px;
+  margin-top: 2px;
+  font-size: 17px;
+  letter-spacing: -0.01em;
 }
 
 .tma-icon-button {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  border-radius: 16px;
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.74);
   color: var(--tma-text-strong);
   box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.06);
@@ -533,8 +552,8 @@ button {
 }
 
 .tma-icon-button--ghost {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   margin-left: auto;
   background: rgba(17, 24, 39, 0.04);
 }
@@ -542,19 +561,19 @@ button {
 .tma-segmented {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  padding: 8px;
-  margin-bottom: 18px;
-  border-radius: 20px;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 14px;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.62);
   box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.04);
 }
 
 .tma-segmented__item {
-  padding: 12px 8px;
-  border-radius: 16px;
+  padding: 9px 6px;
+  border-radius: 13px;
   color: var(--tma-text-muted);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -567,7 +586,7 @@ button {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
 }
 
 .tma-chart-card__bars {
@@ -575,22 +594,22 @@ button {
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
   align-items: end;
-  gap: 12px;
-  min-height: 148px;
-  margin-top: 20px;
-  padding-top: 12px;
+  gap: 10px;
+  min-height: 124px;
+  margin-top: 14px;
+  padding-top: 8px;
 }
 
 .tma-chart-bar {
   display: grid;
   justify-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .tma-chart-bar__value {
   width: 100%;
-  min-height: 14px;
-  border-radius: 999px 999px 18px 18px;
+  min-height: 12px;
+  border-radius: 999px 999px 16px 16px;
 }
 
 .tone-primary {
@@ -617,8 +636,8 @@ button {
 
 .tma-legend-grid {
   display: grid;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 8px;
+  margin-top: 14px;
 }
 
 .tma-legend-pill {
@@ -626,8 +645,9 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px;
-  border-radius: 20px;
+  padding: 11px 14px;
+  border-radius: 16px;
+  font-size: 13px;
 }
 
 .tma-legend-pill {
@@ -638,8 +658,8 @@ button {
   display: grid;
   justify-items: start;
   gap: 4px;
-  padding: 16px;
-  border-radius: 20px;
+  padding: 12px 14px;
+  border-radius: 16px;
   background: rgba(17, 24, 39, 0.04);
   box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.04);
 }
@@ -655,13 +675,13 @@ button {
 .tma-amount-card,
 .tma-note-card,
 .tma-step-card {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .tma-appearance-grid,
 .tma-chip-grid {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .tma-appearance-option,
@@ -676,12 +696,13 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 16px;
-  border-radius: 22px;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 18px;
   background: rgba(17, 24, 39, 0.04);
   color: var(--tma-text-muted);
   font-weight: 700;
+  font-size: 13px;
 }
 
 .tma-appearance-option.is-active,
@@ -697,9 +718,9 @@ button {
 .tma-settings-row__icon {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 16px;
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
   background: rgba(17, 24, 39, 0.05);
   color: var(--tma-text-strong);
 }
@@ -710,46 +731,48 @@ button {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 14px 18px;
-  border-radius: 20px;
+  padding: 12px 16px;
+  border-radius: 18px;
   background: var(--tma-text-strong);
   color: #ffffff;
   font-weight: 700;
+  font-size: 13px;
 }
 
 .tma-timeline__section + .tma-timeline__section {
-  margin-top: 24px;
+  margin-top: 20px;
 }
 
 .tma-timeline__label {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  padding: 0 4px;
 }
 
 .tma-timeline__label span {
   color: var(--tma-text-strong);
-  font-size: 24px;
+  font-size: 19px;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 
 .tma-expense-card {
-  padding: 18px;
-  border-radius: 24px;
+  padding: 14px;
+  border-radius: 20px;
   background: var(--tma-card-plain);
-  box-shadow: var(--tma-shadow);
+  box-shadow: var(--tma-shadow-soft);
 }
 
 .tma-expense-card__heading strong {
-  font-size: 18px;
+  font-size: 15px;
 }
 
 .tma-date-pill {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px;
-  border-radius: 22px;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
   background: rgba(17, 24, 39, 0.04);
   overflow: hidden;
 }
@@ -764,7 +787,7 @@ button {
 .tma-amount-input span,
 .tma-select-chip small {
   color: var(--tma-text-muted);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .tma-date-pill input {
@@ -776,30 +799,31 @@ button {
 .tma-step-summary {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .tma-amount-card,
 .tma-note-card {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
 .tma-input-head {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   color: var(--tma-text-muted);
   font-weight: 700;
+  font-size: 12px;
 }
 
 .tma-amount-input {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 10px;
-  padding: 20px;
-  border-radius: 24px;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 20px;
   background: rgba(17, 24, 39, 0.04);
 }
 
@@ -813,16 +837,16 @@ button {
 }
 
 .tma-amount-input input {
-  font-size: clamp(34px, 9vw, 44px);
+  font-size: clamp(28px, 7.5vw, 36px);
   font-weight: 800;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
 }
 
 .tma-note-card textarea {
   resize: none;
-  min-height: 112px;
+  min-height: 100px;
   padding: 0;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.5;
 }
 
@@ -848,28 +872,30 @@ button {
   grid-column: 1 / -1;
 }
 
-/* ─── Liquid-glass bottom tabs ─────────────────────────────────────── */
+/* ─── Liquid-glass bottom tabs (3 positions: Home · + · Statistics) ── */
 .tma-bottom-tabs {
   position: fixed;
   right: 0;
-  bottom: calc(18px + var(--tma-content-safe-bottom));
+  bottom: calc(14px + var(--tma-content-safe-bottom));
   left: 0;
   z-index: 30;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 0 20px;
+  padding: 0 16px;
   pointer-events: none;
 }
 
 .tma-bottom-tabs__rail {
-  display: flex;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-around;
   gap: 4px;
-  padding: 8px 12px;
-  border-radius: 999px;
+  min-width: 280px;
+  max-width: 360px;
+  padding: 6px 8px;
+  border-radius: 28px;
   background: rgba(255, 255, 255, 0.55);
   box-shadow:
     0 8px 32px rgba(17, 24, 39, 0.10),
@@ -882,18 +908,33 @@ button {
   pointer-events: auto;
 }
 
+.tma-bottom-tabs__slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tma-bottom-tabs__slot--start {
+  justify-content: flex-start;
+}
+
+.tma-bottom-tabs__slot--end {
+  justify-content: flex-end;
+}
+
 .tma-bottom-tabs__item {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  width: 64px;
-  height: 48px;
+  gap: 2px;
+  min-width: 64px;
+  height: 46px;
+  padding: 0 10px;
   border-radius: 999px;
   color: var(--tma-text-muted);
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.01em;
   transition:
@@ -909,19 +950,19 @@ button {
 .tma-bottom-tabs__item.is-active::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 28px;
-  height: 3px;
-  border-radius: 0 0 4px 4px;
+  width: 16px;
+  height: 2.5px;
+  border-radius: 0 0 3px 3px;
   background: var(--tma-primary);
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 .tma-bottom-tabs__icon {
-  width: 20px;
-  height: 20px;
+  width: 19px;
+  height: 19px;
   transition: transform 0.22s ease;
 }
 
@@ -929,45 +970,109 @@ button {
   transform: translateY(-1px);
 }
 
-.tma-bottom-tabs__bubble {
+/* Center action — looks like a notch above the rail.
+   Sits inside the rail so the rail padding absorbs the visual jump. */
+.tma-bottom-tabs__action {
   display: grid;
   place-items: center;
-  flex-shrink: 0;
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
+  margin: -16px 4px -2px;
   border-radius: 999px;
-  background: linear-gradient(145deg, #2a3a5c 0%, #111827 100%);
+  background: linear-gradient(150deg, #2a3a5c 0%, #111827 100%);
   color: #ffffff;
   box-shadow:
-    0 8px 24px rgba(17, 24, 39, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 10px 24px rgba(17, 24, 39, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 4px rgba(255, 255, 255, 0.55);
   pointer-events: auto;
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease;
 }
 
-.tma-bottom-tabs__bubble:active {
+.tma-bottom-tabs__action:active {
   transform: scale(0.92);
-  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.28);
+  box-shadow:
+    0 4px 12px rgba(17, 24, 39, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 4px rgba(255, 255, 255, 0.55);
+}
+
+.tma-bottom-tabs__action-icon {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.2;
 }
 
 .tma-monogram {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 18px;
-  font-size: 13px;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.03em;
 }
 
 .tma-monogram.is-sm {
-  width: 42px;
-  height: 42px;
-  border-radius: 15px;
-  font-size: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  font-size: 11px;
+}
+
+/* ─── In-page top-bar (Close / Back pill) ──────────────────────────── */
+.tma-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 16px 4px;
+  min-height: 32px;
+}
+
+.tma-topbar__spacer {
+  flex: 1;
+}
+
+.tma-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 12px 0 8px;
+  border-radius: 999px;
+  background: rgba(63, 124, 255, 0.12);
+  color: var(--tma-primary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.tma-nav-pill:active {
+  transform: scale(0.96);
+  background: rgba(63, 124, 255, 0.18);
+}
+
+.tma-nav-pill__icon {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(63, 124, 255, 0.18);
+  color: var(--tma-primary);
+}
+
+.tma-nav-pill__icon svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.2;
 }
 
 .tma-loading,
@@ -1020,17 +1125,17 @@ button {
 
 @media (min-width: 768px) {
   .tma-page-shell__content {
-    padding-right: 28px;
-    padding-left: 28px;
+    padding-right: 24px;
+    padding-left: 24px;
   }
 
-  .tma-page-header {
-    padding-right: 28px;
-    padding-left: 28px;
+  .tma-page-header,
+  .tma-topbar {
+    padding-right: 24px;
+    padding-left: 24px;
   }
 
-  .tma-bottom-tabs {
-    max-width: 440px;
-    margin: 0 auto;
+  .tma-bottom-tabs__rail {
+    min-width: 360px;
   }
 }

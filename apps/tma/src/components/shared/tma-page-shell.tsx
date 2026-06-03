@@ -1,76 +1,120 @@
-import { type ReactNode, useEffect, useEffectEvent } from 'react'
+import type { ReactNode } from 'react'
+import { useEffect, useEffectEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { AppShell } from '@/components/shared/app-shell'
 import {
   ChevronRightIcon,
+  CloseIcon,
   HomeIcon,
   PlusIcon,
-  SettingsIcon,
   StatisticsIcon,
 } from '@/components/shared/tma-icons'
 import {
+  closeMiniApp,
   hideBackButton,
   showBackButton as bindBackButton,
 } from '@/lib/telegram/back-button'
 import { hideBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, selection } from '@/lib/telegram/haptics'
 
-const tabItems = [
-  { href: '/', label: 'Trang chủ', icon: HomeIcon },
-  { href: '/statistics', label: 'Thống kê', icon: StatisticsIcon },
-  { href: '/settings', label: 'Cài đặt', icon: SettingsIcon },
-] as const
-
 const joinClassNames = (
   ...values: Array<string | false | null | undefined>
 ): string => values.filter(Boolean).join(' ')
 
-interface TmaBottomTabsProps {
-  bubbleHref?: string
-}
+const tabItems = [
+  {
+    href: '/',
+    label: 'Trang chủ',
+    icon: HomeIcon,
+    match: (path: string) => path === '/' || path === '/home',
+  },
+  {
+    href: '/statistics',
+    label: 'Thống kê',
+    icon: StatisticsIcon,
+    match: (path: string) => path.startsWith('/statistics'),
+  },
+] as const
 
 const TmaBottomTabs = ({
   bubbleHref = '/expenses/new/category',
-}: TmaBottomTabsProps) => {
+}: {
+  bubbleHref?: string
+}) => {
   const location = useLocation()
 
   return (
     <div aria-label='Điều hướng chính' className='tma-bottom-tabs'>
       <nav className='tma-bottom-tabs__rail'>
-        {tabItems.map(({ href, label, icon: Icon }) => {
-          const isActive =
-            href === '/'
-              ? location.pathname === '/' || location.pathname === '/home'
-              : location.pathname === href
+        <div className='tma-bottom-tabs__slot tma-bottom-tabs__slot--start'>
+          {tabItems.slice(0, 1).map(({ href, label, icon: Icon, match }) => {
+            const isActive = match(location.pathname)
 
-          return (
-            <Link
-              key={href}
-              className={joinClassNames(
-                'tma-bottom-tabs__item',
-                isActive && 'is-active',
-              )}
-              to={href}
-              onClick={() => {
-                selection()
-              }}>
-              <Icon className='tma-bottom-tabs__icon' height='20' width='20' />
-              <span>{label}</span>
-            </Link>
-          )
-        })}
+            return (
+              <Link
+                key={href}
+                aria-current={isActive ? 'page' : undefined}
+                className={joinClassNames(
+                  'tma-bottom-tabs__item',
+                  isActive && 'is-active',
+                )}
+                to={href}
+                onClick={() => {
+                  selection()
+                }}>
+                <Icon
+                  className='tma-bottom-tabs__icon'
+                  height='19'
+                  width='19'
+                />
+                <span>{label}</span>
+              </Link>
+            )
+          })}
+        </div>
+
+        <Link
+          aria-label='Tạo chi tiêu mới'
+          className='tma-bottom-tabs__action'
+          to={bubbleHref}
+          onClick={() => {
+            impact('medium')
+          }}>
+          <PlusIcon
+            className='tma-bottom-tabs__action-icon'
+            height='24'
+            width='24'
+          />
+        </Link>
+
+        <div className='tma-bottom-tabs__slot tma-bottom-tabs__slot--end'>
+          {tabItems.slice(1).map(({ href, label, icon: Icon, match }) => {
+            const isActive = match(location.pathname)
+
+            return (
+              <Link
+                key={href}
+                aria-current={isActive ? 'page' : undefined}
+                className={joinClassNames(
+                  'tma-bottom-tabs__item',
+                  isActive && 'is-active',
+                )}
+                to={href}
+                onClick={() => {
+                  selection()
+                }}>
+                <Icon
+                  className='tma-bottom-tabs__icon'
+                  height='19'
+                  width='19'
+                />
+                <span>{label}</span>
+              </Link>
+            )
+          })}
+        </div>
       </nav>
-
-      <Link
-        aria-label='Thêm chi tiêu'
-        className='tma-bottom-tabs__bubble'
-        to={bubbleHref}
-        onClick={() => {
-          selection()
-        }}>
-        <PlusIcon height='22' width='22' />
-      </Link>
     </div>
   )
 }
@@ -110,11 +154,64 @@ export const TmaPageHeader = ({
   </header>
 )
 
+export interface TmaTopBarProps {
+  /** Show a Close pill on the left that calls miniApp.close(). */
+  closeAction?: boolean
+  /** Right-side trailing element (e.g. month chip on home). */
+  trailing?: ReactNode
+}
+
+/**
+ * In-page top bar that mimics Telegram's native header buttons.
+ * Used so we can show a labelled "Close" on root screens and a "Back"
+ * pill on detail screens without depending on Telegram's fixed BackButton.
+ */
+export const TmaTopBar = ({
+  closeAction = false,
+  trailing,
+}: TmaTopBarProps) => {
+  if (!closeAction && !trailing) {
+    return null
+  }
+
+  return (
+    <div className='tma-topbar'>
+      {closeAction ? (
+        <button
+          aria-label='Đóng ứng dụng'
+          className='tma-nav-pill'
+          type='button'
+          onClick={() => {
+            impact('light')
+            closeMiniApp()
+          }}>
+          <span className='tma-nav-pill__icon'>
+            <CloseIcon />
+          </span>
+          <span>Đóng</span>
+        </button>
+      ) : (
+        <span />
+      )}
+
+      {trailing ? (
+        <div className='tma-page-header__actions'>{trailing}</div>
+      ) : null}
+    </div>
+  )
+}
+
 export interface TmaPageShellProps {
   children: ReactNode
   header: ReactNode
   showBottomTabs?: boolean
   showBackButton?: boolean
+  /**
+   * Show a "Close" pill in the top bar. Use on root screens where the
+   * back button would have nothing to go back to. Implies hiding the
+   * Telegram native BackButton.
+   */
+  closeAction?: boolean
   backTo?: string
   reserveBottomButton?: boolean
   bubbleHref?: string
@@ -126,6 +223,7 @@ export const TmaPageShell = ({
   header,
   showBottomTabs = true,
   showBackButton = false,
+  closeAction = false,
   backTo,
   reserveBottomButton = false,
   bubbleHref,
@@ -152,6 +250,13 @@ export const TmaPageShell = ({
   useEffect(() => {
     hideBottomButton()
 
+    if (closeAction) {
+      // Root screen: hide Telegram native BackButton, render our Close pill.
+      hideBackButton()
+
+      return
+    }
+
     if (!showBackButton) {
       hideBackButton()
 
@@ -167,7 +272,7 @@ export const TmaPageShell = ({
       cleanup()
       hideBackButton()
     }
-  }, [handleBack, showBackButton])
+  }, [handleBack, showBackButton, closeAction])
 
   return (
     <AppShell>
@@ -181,6 +286,7 @@ export const TmaPageShell = ({
         <div className='tma-page-shell__glow tma-page-shell__glow--accent' />
 
         <div className='tma-page-shell__viewport'>
+          {closeAction ? <TmaTopBar closeAction /> : null}
           {header}
 
           <main
@@ -228,6 +334,6 @@ export const TmaInlineAction = ({
 }) => (
   <Link className='tma-inline-action' to={href} onClick={() => selection()}>
     <span>{children}</span>
-    <ChevronRightIcon height='16' width='16' />
+    <ChevronRightIcon height='14' width='14' />
   </Link>
 )

@@ -7,7 +7,6 @@ import { ExpensesPage } from '@/routes/expenses'
 import { FatalLaunchPage } from '@/routes/fatal-launch'
 import { HomePage } from '@/routes/home'
 import { NotFoundPage } from '@/routes/not-found'
-import { SettingsPage } from '@/routes/settings'
 import { StatisticsPage } from '@/routes/statistics'
 
 const router = createBrowserRouter([
@@ -22,10 +21,6 @@ const router = createBrowserRouter([
   {
     path: '/statistics',
     element: <StatisticsPage />,
-  },
-  {
-    path: '/settings',
-    element: <SettingsPage />,
   },
   {
     path: '/expenses',

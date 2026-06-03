@@ -1,5 +1,4 @@
 import { initData } from '@tma.js/sdk'
-
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 

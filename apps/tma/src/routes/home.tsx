@@ -80,6 +80,7 @@ export const HomePage = () => {
 
   return (
     <TmaPageShell
+      closeAction
       header={
         <TmaPageHeader
           eyebrow='Xin chào'
@@ -94,7 +95,7 @@ export const HomePage = () => {
               <span>{resolveInitials(userName)}</span>
             )
           }
-          subtitle='Một bản tóm tắt nhẹ, đủ để chạm và đi tiếp thật nhanh.'
+          subtitle='Tóm tắt nhẹ, đủ để chạm và đi tiếp thật nhanh.'
           title={userName}
           trailing={
             <span className='tma-chip tma-chip--strong'>
@@ -112,7 +113,7 @@ export const HomePage = () => {
 
         <div className='tma-summary-card__aside'>
           <span className='tma-soft-pill'>Còn lại {formatVnd(2340000)}</span>
-          <p>Ngân sách dùng ổn định, nhóm mua sắm là phần tăng mạnh nhất.</p>
+          <p>Ngân sách ổn định, nhóm mua sắm tăng mạnh nhất.</p>
         </div>
       </section>
 
@@ -129,7 +130,7 @@ export const HomePage = () => {
             <a
               key={item.title}
               aria-disabled={!item.enabled}
-              className={`tma-shortcut-card${item.enabled ? '' : ' is-disabled'}`}
+              className={`tma-shortcut-card${item.enabled ? '' : 'is-disabled'}`}
               href={item.enabled ? item.href : undefined}
               onClick={() => {
                 if (item.enabled) impact('light')

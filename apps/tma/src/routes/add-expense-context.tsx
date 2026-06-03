@@ -139,7 +139,7 @@ export const AddExpenseContextPage = () => {
           {householdOptions.map((household) => (
             <button
               key={household.id}
-              className={`tma-select-chip${householdId === household.id ? ' is-active' : ''}`}
+              className={`tma-select-chip${householdId === household.id ? 'is-active' : ''}`}
               type='button'
               onClick={() => {
                 selection()
@@ -166,7 +166,7 @@ export const AddExpenseContextPage = () => {
           {groupOptions.map((group) => (
             <button
               key={group.id}
-              className={`tma-select-chip${groupId === group.id ? ' is-active' : ''}`}
+              className={`tma-select-chip${groupId === group.id ? 'is-active' : ''}`}
               type='button'
               onClick={() => {
                 selection()

@@ -1,4 +1,4 @@
-import { backButton } from '@tma.js/sdk'
+import { backButton, miniApp } from '@tma.js/sdk'
 
 type Cleanup = () => void
 
@@ -18,4 +18,8 @@ export const showBackButton = (onClick: () => void): Cleanup => {
 
 export const hideBackButton = (): void => {
   backButton.hide.ifAvailable()
+}
+
+export const closeMiniApp = (): void => {
+  miniApp.close.ifAvailable()
 }

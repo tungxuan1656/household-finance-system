@@ -54,6 +54,7 @@ export const StatisticsPage = () => {
           type='button'
           onClick={() => {
             impact('light')
+
             setMonthIndex((current) =>
               current === 0 ? statisticMonths.length - 1 : current - 1,
             )
@@ -81,7 +82,7 @@ export const StatisticsPage = () => {
         {rangeOptions.map((option) => (
           <button
             key={option.id}
-            className={`tma-segmented__item${range === option.id ? ' is-active' : ''}`}
+            className={`tma-segmented__item${range === option.id ? 'is-active' : ''}`}
             type='button'
             onClick={() => {
               selection()

@@ -1,5 +1,4 @@
 import { miniApp } from '@tma.js/sdk'
-
 import { useTranslation } from 'react-i18next'
 
 import { AppShell } from '@/components/shared/app-shell'

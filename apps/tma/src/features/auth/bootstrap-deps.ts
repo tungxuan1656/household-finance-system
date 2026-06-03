@@ -32,7 +32,6 @@ export type AuthBootstrapPhase =
   | 'fatal-network'
   | 'fatal-session'
 
-
 export const createAuthApiBootstrapDeps = (options: {
   api: AuthApiClient
   storage: {

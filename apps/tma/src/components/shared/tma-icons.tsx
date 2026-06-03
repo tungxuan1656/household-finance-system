@@ -138,3 +138,10 @@ export const NoteIcon = (props: IconProps) => (
     <path d='M8.25 15.75h4.5' />
   </IconBase>
 )
+
+export const CloseIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d='m6.5 6.5 11 11' />
+    <path d='m17.5 6.5-11 11' />
+  </IconBase>
+)

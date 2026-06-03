@@ -19,7 +19,9 @@ Build a Telegram Mini App that feels:
 - Every main screen has a top header.
 - Root tab screens do not render an app-owned back button.
 - Detail and flow screens use Telegram `BackButton`, not a fake in-content back chip.
-- Bottom navigation has 3 tabs only: `Home`, `Statistics`, `Settings`.
+- Bottom navigation has 3 positions: `Home`, a centered `+` action, and `Statistics`.
+- The centered `+` is a notch-style action button that opens the add-expense flow. It is visually larger than the tabs and overlaps the rail.
+- `Settings` is intentionally not in the bottom tabs (temporarily removed). The native `Close` action lives on root screens via an in-page close pill.
 - `Expenses` is a secondary page, opened from shortcuts, recent activity, and the floating add/expense entry points.
 - `Household`, `Group`, and `Budget` appear as shortcuts first. Their full TMA surfaces can land later.
 
@@ -88,18 +90,18 @@ The app should feel like a finance tool with iOS-like calmness, not a noisy dash
 
 - One floating liquid-glass rail centered above the safe area.
 - Rail is compact.
+- Three positions: left tab, center action notch, right tab.
 - Active tab changes icon and label color only.
 - Do not place a full filled background behind the active tab.
-- A tiny glow or soft spotlight under the active item is acceptable.
+- A tiny indicator under the active item is acceptable.
 - Keep icon + label stack tight to reduce rail height.
+- Center action button is a notch above the rail, larger than the tabs, with a dark high-contrast fill and a white plus icon.
 
-### Floating bubble action
+### Top in-page buttons
 
-- Separate from the tab rail.
-- Docked on the right side of the rail, like the reference images.
-- Primary meaning: `Add expense`.
-- Shape: dark or high-contrast bubble with white plus icon.
-- Bubble can visually overlap the tab rail but must not increase rail padding.
+- Root screens render a labelled `Close` pill in the top bar (calls `miniApp.close()`).
+- Detail and flow screens use the Telegram `BackButton` (not an in-page back chip).
+- The home page hides the Telegram `BackButton` so the in-page `Close` pill is the only navigation affordance.
 
 ## Route and page map
 
@@ -294,7 +296,7 @@ Rules:
 
 ## Implementation notes
 
-- Build the shell so `home`, `statistics`, and `settings` share the same header and tab-rail contract.
+- Build the shell so `home` and `statistics` share the same header and tab-rail contract.
 - `expenses` and `add-expense-*` should live under a separate flow shell so Telegram `BackButton` and `BottomButton` wiring stays centralized.
 - Keep the floating add bubble available on root tabs only.
 - If a surface is not implemented yet, ship a truthful placeholder inside the final shell instead of breaking the page map.

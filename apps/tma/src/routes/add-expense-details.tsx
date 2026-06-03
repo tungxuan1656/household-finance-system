@@ -151,7 +151,7 @@ export const AddExpenseDetailsPage = () => {
           {expenseSources.map((source) => (
             <button
               key={source.id}
-              className={`tma-select-chip${sourceId === source.id ? ' is-active' : ''}`}
+              className={`tma-select-chip${sourceId === source.id ? 'is-active' : ''}`}
               type='button'
               onClick={() => {
                 selection()

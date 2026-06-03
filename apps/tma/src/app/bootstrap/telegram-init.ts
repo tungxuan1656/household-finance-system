@@ -9,6 +9,10 @@ import {
 
 import { bindTheme, resetTheme } from '@/lib/telegram/theme'
 
+// Matches --tma-base-bg in index.css. Set on the Telegram WebView so
+// transitions between pages do not flash a default background color.
+const APP_BG = '#f5f7fb'
+
 export const initTelegram = (): (() => void) => {
   // 1. Initialize the SDK — must be called before using any component
   const cleanup = init({
@@ -23,6 +27,12 @@ export const initTelegram = (): (() => void) => {
 
   // 4. Bind Telegram theme to CSS variables (must come AFTER mount)
   bindTheme()
+
+  // 4b. Set the native background so route transitions never flash black.
+  // Must run after miniApp.mount() and after themeParams are bound.
+  miniApp.setBgColor.ifAvailable(APP_BG)
+  miniApp.setHeaderColor.ifAvailable(APP_BG)
+  miniApp.setBottomBarColor.ifAvailable(APP_BG)
 
   // 5. Signal to Telegram that the app is ready (hides loading screen)
   miniApp.ready.ifAvailable()
