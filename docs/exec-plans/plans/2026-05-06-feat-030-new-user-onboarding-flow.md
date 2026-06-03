@@ -106,7 +106,7 @@ Out of scope for this plan:
   - `docs/product-specs/new-user-onboarding.md` — onboarding goals, user flow, acceptance, and failure states.
   - `docs/product-specs/household-management.md` — MVP household-creation behavior and no-hidden-active-household constraint.
   - `docs/product-specs/household-invitation.md` — invite-token preview/accept expectations and invalid/expired token handling.
-  - `docs/product-specs/quick-add-experience.md` — completion CTA behavior for “add first expense”.
+  - `docs/product-specs/web/quick-add-experience.md` — completion CTA behavior for “add first expense”.
 - Dependency features already implemented:
   - `harness/features/feat-009.json` — auth session flow and onboarding redirect seam.
   - `harness/features/feat-011.json` — household create/list/detail flow and `POST /api/v1/households`.
@@ -133,14 +133,14 @@ Out of scope for this plan:
 
 - Frontend mandatory docs:
   - `docs/FRONTEND.md`
-  - `docs/references/frontend/project-folder-structure.md`
-  - `docs/references/frontend/component-structure-pattern.md`
-  - `docs/references/frontend/naming-and-conventions-pattern.md`
-  - `docs/references/frontend/form-pattern.md`
-  - `docs/references/frontend/dialog-and-form-pattern.md`
-  - `docs/references/frontend/api-react-query-pattern.md`
-  - `docs/references/frontend/zustand-store-pattern.md`
-  - `docs/references/frontend/i18n-label-pattern.md`
+  - `docs/references/frontend/web/project-folder-structure.md`
+  - `docs/references/frontend/web/component-structure-pattern.md`
+  - `docs/references/frontend/web/naming-and-conventions-pattern.md`
+  - `docs/references/frontend/web/form-pattern.md`
+  - `docs/references/frontend/web/dialog-and-form-pattern.md`
+  - `docs/references/frontend/web/api-react-query-pattern.md`
+  - `docs/references/frontend/web/zustand-store-pattern.md`
+  - `docs/references/frontend/web/i18n-label-pattern.md`
   - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
   - `.agents/skills/shadcn/SKILL.md`
   - `.agents/skills/shadcn/rules/styling.md`

@@ -164,12 +164,12 @@ Out of scope for this plan:
   - `docs/references/index.md`
 - Frontend standards required by scope:
   - `docs/FRONTEND.md`
-  - `docs/references/frontend/project-folder-structure.md`
-  - `docs/references/frontend/component-structure-pattern.md`
-  - `docs/references/frontend/naming-and-conventions-pattern.md`
-  - `docs/references/frontend/api-react-query-pattern.md`
-  - `docs/references/frontend/i18n-label-pattern.md`
-  - `docs/references/frontend/zustand-store-pattern.md` if any store shape/selector changes are made
+  - `docs/references/frontend/web/project-folder-structure.md`
+  - `docs/references/frontend/web/component-structure-pattern.md`
+  - `docs/references/frontend/web/naming-and-conventions-pattern.md`
+  - `docs/references/frontend/web/api-react-query-pattern.md`
+  - `docs/references/frontend/web/i18n-label-pattern.md`
+  - `docs/references/frontend/web/zustand-store-pattern.md` if any store shape/selector changes are made
 - Shared standards required by scope:
   - `docs/references/shared/type-naming-pattern.md`
 - Required shadcn governance pre-read for UI work:

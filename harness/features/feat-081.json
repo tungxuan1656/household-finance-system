@@ -2,7 +2,7 @@
   "id": "feat-081",
   "name": "Telegram Mini App expense capture flow",
   "status": "planned",
-  "description": "Build the TMA-first expense create surface with amount-first routing, category/details steps, Telegram back/bottom button coordination, and the same worker expense rules already used by web.",
+  "description": "Build the TMA-first expense create surface with `date + category -> amount + source + note -> household + group + preview` routing, Telegram back/bottom button coordination, and the same worker expense rules already used by web.",
   "dependencies": [
     "feat-016",
     "feat-017",
@@ -15,7 +15,7 @@
   ],
   "evidence": {
     "planned": [
-      "Use SPA routes for `amount -> category -> details` without full reload navigation.",
+      "Use SPA routes for `date + category -> amount + source + note -> household + group + preview` without full reload navigation.",
       "Keep amount/category/source/household/group semantics aligned with current product specs and worker contracts.",
       "Add TMA-specific UX work only where it changes interaction quality: bottom button, back button, haptics, and device-local cache hints."
     ]

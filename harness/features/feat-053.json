@@ -4,7 +4,7 @@
   "status": "done",
   "design_docs": [
     "docs/FRONTEND.md",
-    "docs/references/frontend/frontend-component-architecture-guide.md",
+    "docs/references/frontend/web/frontend-component-architecture-guide.md",
     "docs/references/index.md"
   ],
   "dependencies": ["feat-005", "feat-035", "feat-052"],
@@ -30,7 +30,7 @@
   "evidence": {
     "planned": [
       "Initial ./init.sh passed before edits: install, harness checks, lint, type-check, tests, GitNexus",
-      "Reviewed docs/FRONTEND.md, docs/references/frontend/project-folder-structure.md, docs/references/frontend/component-structure-pattern.md, and docs/references/frontend/naming-and-conventions-pattern.md"
+      "Reviewed docs/FRONTEND.md, docs/references/frontend/web/project-folder-structure.md, docs/references/frontend/web/component-structure-pattern.md, and docs/references/frontend/web/naming-and-conventions-pattern.md"
     ],
     "verification": [
       "pnpm lint:fix passed for web and worker ESLint auto-fix",

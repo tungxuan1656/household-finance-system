@@ -129,7 +129,7 @@ This feature is frontend-led with shared-contract consumption. It should deliver
 - Backend auth contracts already available to consume:
   - `apps/worker/src/contracts/auth.ts`
 - Product behavior references:
-  - `docs/product-specs/authentication.md`
+  - `docs/product-specs/shared/authentication-session.md`
   - `docs/product-specs/new-user-onboarding.md`
 
 ## Scope Map
@@ -194,12 +194,12 @@ This feature is frontend-led with shared-contract consumption. It should deliver
 
 ### Required References
 
-- `docs/references/frontend/project-folder-structure.md`
-- `docs/references/frontend/component-structure-pattern.md`
-- `docs/references/frontend/naming-and-conventions-pattern.md`
-- `docs/references/frontend/form-pattern.md`
-- `docs/references/frontend/i18n-label-pattern.md`
-- `docs/references/frontend/zustand-store-pattern.md`
+- `docs/references/frontend/web/project-folder-structure.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/form-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
+- `docs/references/frontend/web/zustand-store-pattern.md`
 - `docs/references/shared/type-naming-pattern.md`
 
 ### Concrete Coding Constraints

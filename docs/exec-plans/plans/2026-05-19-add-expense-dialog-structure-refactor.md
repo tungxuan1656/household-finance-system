@@ -47,7 +47,7 @@ This change keeps the canonical add-expense behavior stable while making `apps/w
   Date/Author: 2026-05-19 / Orchestrator
 
 - Decision: Do not convert the form to `react-hook-form` + `zod` in the same change.
-  Rationale: `docs/references/frontend/form-pattern.md` is the preferred pattern for new/reworked forms, but this task is a structure refactor with explicit behavior preservation and light cleanup only. Mixing a form-library migration would enlarge scope and risk.
+  Rationale: `docs/references/frontend/web/form-pattern.md` is the preferred pattern for new/reworked forms, but this task is a structure refactor with explicit behavior preservation and light cleanup only. Mixing a form-library migration would enlarge scope and risk.
   Date/Author: 2026-05-19 / Orchestrator
 
 ## Outcomes & Retrospective
@@ -71,19 +71,19 @@ This change keeps the canonical add-expense behavior stable while making `apps/w
 - `docs/FRONTEND.md`
   - Split near 200 lines or when 3+ concerns mix.
   - Feature smart component owns one bounded concern; dumb components are presentational only.
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep new files under `apps/web/src/components/expense/`.
   - Do not promote feature logic to shared/UI layers.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Use named exports.
   - Keep internal subcomponents private.
-- `docs/references/frontend/frontend-component-architecture-guide.md`
+- `docs/references/frontend/web/frontend-component-architecture-guide.md`
   - Smart component may own hooks/mutations/state; presentational component receives props only.
-- `docs/references/frontend/dialog-and-form-pattern.md`
+- `docs/references/frontend/web/dialog-and-form-pattern.md`
   - Keep shadcn dialog/drawer primitives and `Field`/`FieldGroup` layout.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Use kebab-case files, named exports, and `@/` imports.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - UI continues to call hooks only; no direct API import introduction.
 
 ## Plan of Work (Narrative)

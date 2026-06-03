@@ -80,7 +80,7 @@ Build a production-ready responsive application shell for authenticated web rout
   - `.agents/skills/shadcn/rules/forms.md`
   - `.agents/skills/shadcn/rules/composition.md`
 - Responsive shell reference:
-  - `docs/references/frontend/responsive-navigation-shell-pattern.md`
+  - `docs/references/frontend/web/responsive-navigation-shell-pattern.md`
 
 ## Plan of Work (Narrative)
 

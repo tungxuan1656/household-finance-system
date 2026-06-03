@@ -171,23 +171,23 @@ This plan is active. Final outcomes are recorded here when feat-079 is implement
 - Existing worker API baseline: `apps/worker/src/*`
 - Worker CORS allowlist: `apps/worker/src/lib/cors.ts` or `apps/worker/src/index.ts`
 - TMA platform router: `docs/TMA.md`
-- Durable TMA architecture: `docs/design-docs/telegram-mini-app-client-architecture.md`
+- Durable TMA architecture: `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md`
 - TMA implementation rules: `docs/references/tma/*.md`
 
 ## Required standards/reference docs
 
 - `docs/TMA.md`
-- `docs/design-docs/telegram-mini-app-client-architecture.md`
-- `docs/references/tma/app-structure-and-client-rules.md`
-- `docs/references/tma/native-ui-and-navigation-pattern.md`
-- `docs/references/tma/development-and-hardening-pattern.md`
-- `docs/references/tma/state-and-storage-pattern.md`
-- `docs/references/tma/auth-and-bot-pattern.md`
-- `docs/references/frontend/project-folder-structure.md`
-- `docs/references/frontend/component-structure-pattern.md`
-- `docs/references/frontend/naming-and-conventions-pattern.md`
-- `docs/references/frontend/zustand-store-pattern.md`
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md`
+- `docs/references/frontend/tma/app-structure-and-client-rules.md`
+- `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`
+- `docs/references/frontend/tma/development-and-hardening-pattern.md`
+- `docs/references/frontend/tma/state-and-storage-pattern.md`
+- `docs/references/frontend/tma/auth-and-bot-pattern.md`
+- `docs/references/frontend/web/project-folder-structure.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/zustand-store-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
 
 ## Plan of Work (Narrative)
 

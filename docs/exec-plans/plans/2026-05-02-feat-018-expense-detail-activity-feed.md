@@ -357,7 +357,7 @@ Max Concurrent: 4 (Wave 1)
   - `apps/web/src/types/household.ts` — HouseholdDTO type for reference
   - `apps/web/src/api/endpoints.ts` — Existing endpoint pattern
   - `apps/web/src/api/expense.ts` — Existing createExpense function pattern
-  - `docs/references/frontend/api-react-query-pattern.md` — API + React Query pattern rules
+  - `docs/references/frontend/web/api-react-query-pattern.md` — API + React Query pattern rules
 
   **Acceptance Criteria**:
   - [ ] `ExpenseListParams` type defined with all filter params
@@ -408,7 +408,7 @@ Max Concurrent: 4 (Wave 1)
 
   **References**:
   - `apps/web/src/lib/i18n/locales/vi.json` — Existing Vietnamese locale file to add keys to
-  - `docs/references/frontend/i18n-label-pattern.md` — i18n key naming conventions
+  - `docs/references/frontend/web/i18n-label-pattern.md` — i18n key naming conventions
 
   **Acceptance Criteria**:
   - [ ] All expense feed/detail labels added to `vi.json` with proper nesting under `expense` key
@@ -617,7 +617,7 @@ Max Concurrent: 4 (Wave 1)
   - `apps/web/src/api/expense.ts` — Existing createExpense function pattern
   - `apps/web/src/hooks/api/use-expense.ts` — Existing EXPENSE_KEYS and useCreateExpenseMutation
   - `apps/web/src/hooks/api/use-households.ts` — React Query hook pattern
-  - `docs/references/frontend/api-react-query-pattern.md` — API + React Query pattern rules
+  - `docs/references/frontend/web/api-react-query-pattern.md` — API + React Query pattern rules
 
   **Acceptance Criteria**:
   - [ ] `API_ENDPOINTS.expenses.list` and `API_ENDPOINTS.expenses.detail` exist
@@ -767,7 +767,7 @@ Max Concurrent: 4 (Wave 1)
   - `apps/web/src/hooks/api/use-reference-data.ts` — useReferenceCategoriesQuery for category labels
   - `apps/web/src/lib/i18n/locales/vi.json` — Vietnamese labels
   - `apps/web/src/components/expense/expense-form.tsx` — Existing expense component pattern
-  - `docs/references/frontend/component-structure-pattern.md` — Component decomposition rules
+  - `docs/references/frontend/web/component-structure-pattern.md` — Component decomposition rules
   - `docs/FRONTEND.md` — Mandatory component decomposition and shadcn-first rules
   - `.agents/skills/shadcn/SKILL.md` — Mandatory shadcn governance (read before UI work)
 
@@ -840,7 +840,7 @@ Max Concurrent: 4 (Wave 1)
   - `apps/web/src/hooks/api/use-expense.ts` — useExpenseDetailQuery
   - `apps/web/src/hooks/api/use-reference-data.ts` — useReferenceCategoriesQuery, useReferenceSourcesQuery for labels
   - `apps/web/src/lib/i18n/locales/vi.json` — Vietnamese labels
-  - `docs/references/frontend/component-structure-pattern.md` — Component decomposition rules
+  - `docs/references/frontend/web/component-structure-pattern.md` — Component decomposition rules
   - `docs/FRONTEND.md` — Mandatory component decomposition and shadcn-first rules
 
   **Acceptance Criteria**:
@@ -907,8 +907,8 @@ Max Concurrent: 4 (Wave 1)
   - `apps/web/src/app/(protected)/expenses/page.tsx` — Current placeholder to replace
   - `apps/web/src/hooks/api/use-expense.ts` — useInfiniteExpenseListQuery, useExpenseDetailQuery
   - `apps/web/src/lib/constants/paths.ts` — PATHS constant to update
-  - `docs/references/frontend/project-folder-structure.md` — Page/view folder structure rules
-  - `docs/references/frontend/component-structure-pattern.md` — Page orchestrator → smart component pattern
+  - `docs/references/frontend/web/project-folder-structure.md` — Page/view folder structure rules
+  - `docs/references/frontend/web/component-structure-pattern.md` — Page orchestrator → smart component pattern
 
   **Acceptance Criteria**:
   - [ ] File `apps/web/src/views/app/expenses-page.tsx` exists with page orchestrator

@@ -108,12 +108,12 @@ Implement full household settings behavior on top of existing household CRUD and
     - `docs/references/backend/database-pattern.md`
     - `docs/references/backend/cloudflare-workers.md`
   - Frontend:
-    - `docs/references/frontend/project-folder-structure.md`
-    - `docs/references/frontend/component-structure-pattern.md`
-    - `docs/references/frontend/naming-and-conventions-pattern.md`
-    - `docs/references/frontend/form-pattern.md`
-    - `docs/references/frontend/dialog-and-form-pattern.md`
-    - `docs/references/frontend/i18n-label-pattern.md`
+    - `docs/references/frontend/web/project-folder-structure.md`
+    - `docs/references/frontend/web/component-structure-pattern.md`
+    - `docs/references/frontend/web/naming-and-conventions-pattern.md`
+    - `docs/references/frontend/web/form-pattern.md`
+    - `docs/references/frontend/web/dialog-and-form-pattern.md`
+    - `docs/references/frontend/web/i18n-label-pattern.md`
     - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
   - Shared:
     - `docs/references/shared/type-naming-pattern.md`

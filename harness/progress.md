@@ -10,6 +10,42 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-03 — Completed frontend surface docs architecture refactor
+
+- Who: Codex
+- Summary: Finished the docs-only frontend architecture refactor so `FRONTEND` now means the full client layer instead of implicitly meaning only `web`. The new structure introduces `docs/WEB.md`, keeps `docs/TMA.md` as a child router, adds a future `docs/MOBILE_APP.md` stub, moves product specs into `shared/web/tma/mobile-app` branches, moves frontend implementation leaves into `docs/references/frontend/web/` and `docs/references/frontend/tma/`, and moves durable design docs into `docs/design-docs/shared/` plus `docs/design-docs/frontend/{web,tma}`. The TMA auth/expense docs were split out of the old flat files, the stale root `docs/product-specs/telegram-mini-app.md` was removed, and active repo guidance plus the repo-owned TMA skill were rewritten to the new tree.
+- Files changed: Frontend routers, product-spec branches, frontend reference branches, design-doc branches, AGENTS/CLAUDE/README/ARCHITECTURE, repo-owned TMA skill docs, current TMA harness records, feat-089 plan/index/harness artifacts, and this progress log.
+- Verification: `python3 -m json.tool harness/feature_index.json`, `python3 -m json.tool harness/features/feat-080.json`, `python3 -m json.tool harness/features/feat-087.json`, `python3 -m json.tool harness/features/feat-088.json`, and `python3 -m json.tool harness/features/feat-089.json` all passed; `./scripts/check_harness_size.sh` returned `Harness size checks passed`; `git diff --check` returned clean; stale-path scan across current docs and project-owned skills returned `stale-path-scan: clean`; final `gitnexus_detect_changes(scope: 'all')` returned `LOW` risk with 203 changed symbols, 0 affected processes, and 78 tracked changed files.
+- Blockers: Historical completed plans and some older harness records still mention old paths inside narrative text. They were left as historical records unless they affected current routing or active work.
+- Next steps: Future web work starts at `docs/WEB.md`; future TMA work starts at `docs/TMA.md`; if a native mobile app starts later, fill in the `MOBILE_APP` branches instead of widening web or TMA docs.
+
+## 2026-06-03 — Started frontend surface docs architecture refactor
+
+- Who: Codex
+- Summary: Opened a docs-only architecture refactor so the repo no longer treats `FRONTEND` as shorthand for only the web client. The new target shape makes `docs/FRONTEND.md` the parent router for `WEB`, `TMA`, and a future `MOBILE_APP` surface, while product specs, frontend references, and durable design docs split into shared vs surface-specific branches. This session will move current web-only and TMA-only docs into their new homes and rewrite the active router/index docs accordingly.
+- Files changed: New ExecPlan, new feat-089 harness record, feature index, exec-plan index, and this progress log.
+- Verification: Plan/startup artifact verification pending until the refactor runs; expected checks are harness JSON parse, harness size, whitespace diff, and final GitNexus change detection.
+- Blockers: none.
+- Next steps: Move the docs tree, rewrite router/index docs, then run docs-only verification and finalize feat-089.
+
+## 2026-06-03 — Aligned TMA docs to the new screen spec
+
+- Who: Codex
+- Summary: Replaced the remaining outdated TMA wording so the repo now points to one consistent TMA UI truth before implementation starts. The product-level TMA spec now describes the three root tabs (`Home`, `Statistics`, `Settings`) and the new three-step expense flow (`date + category -> amount + source + note -> household + group + preview`). The package-local `apps/tma/DESIGN.md` no longer carries a mismatch warning and now states the aligned flow directly. The TMA runtime-readiness map, state/storage guidance, native-navigation example, repo-owned TMA skill task map, and the planned feat-081 harness record were all updated so future implementation sessions read the same flow and route model everywhere. The one web-side quick-add note was kept neutral so this session does not redefine the web UI contract.
+- Files changed: TMA product/spec/design/reference docs, repo-owned TMA skill task map, planned TMA harness record, new feat-088 harness record, feature index, and this progress log.
+- Verification: `python3 -m json.tool harness/feature_index.json`, `python3 -m json.tool harness/features/feat-081.json`, and `python3 -m json.tool harness/features/feat-088.json` all passed; `./scripts/check_harness_size.sh` returned `Harness size checks passed`; `git diff --check` returned clean; final `gitnexus_detect_changes(scope: 'all')` returned `LOW` risk with 23 changed symbols, 0 affected processes, and 11 tracked changed files.
+- Blockers: none.
+- Next steps: Start the real TMA shell/route implementation against the now-aligned docs, beginning with the root tab shell and expense/history flow shells.
+
+## 2026-06-03 — Added package-local TMA screen design spec
+
+- Who: Codex
+- Summary: Added a new package-local `apps/tma/DESIGN.md` that turns the approved TMA direction plus the user-provided reference screens into one implementation-facing UI spec. The new doc locks the first TMA visual language (bright neutral background, oversized white cards, blue/green/yellow accents, compact liquid-glass tab rail, detached add bubble), defines the root shell contract (`Home`, `Statistics`, `Settings` tabs with header on every page and Telegram-owned back behavior for non-root flows), maps the requested pages (`home`, `statistics`, `settings`, `expenses`, `add-expense-1/2/3`), and spells out each screen's composition and performance constraints. The doc also explicitly flags the current repo-truth conflict where the requested add-expense order (`date + category -> amount + source + note -> household + group + preview`) differs from the still-documented amount-first TMA flow, so future code work does not silently diverge from the existing product/TMA specs.
+- Files changed: New package-local TMA design spec, TMA docs router entry, new feat-087 harness record, feature index, and this progress log.
+- Verification: `python3 -m json.tool harness/feature_index.json` and `python3 -m json.tool harness/features/feat-087.json` both passed; `./scripts/check_harness_size.sh` returned `Harness size checks passed`; `git diff --check` returned clean; final `gitnexus_detect_changes(scope: 'all')` returned `LOW` risk with 4 changed symbols, 0 affected processes, and 3 tracked changed files.
+- Blockers: none.
+- Next steps: Use `apps/tma/DESIGN.md` as the visual/page reference for the next TMA implementation slice, then reconcile the add-expense step-order mismatch in TMA/product docs before coding that flow.
+
 ## 2026-06-03 — Fixed remaining feat-080 auth review regressions
 
 - Who: Codex

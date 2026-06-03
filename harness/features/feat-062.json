@@ -22,17 +22,17 @@
     },
     {
       "type": "file",
-      "path": "docs/references/frontend/project-folder-structure.md",
+      "path": "docs/references/frontend/web/project-folder-structure.md",
       "description": "Canonical frontend folder-structure reference now defines feature-first ownership and removes views as a valid placement layer."
     },
     {
       "type": "file",
-      "path": "docs/references/frontend/component-structure-pattern.md",
+      "path": "docs/references/frontend/web/component-structure-pattern.md",
       "description": "Component structure reference now points thin route files at feature page orchestrators under features/<domain>/pages."
     },
     {
       "type": "file",
-      "path": "docs/references/frontend/frontend-component-architecture-guide.md",
+      "path": "docs/references/frontend/web/frontend-component-architecture-guide.md",
       "description": "Frontend architecture guide now codifies app route -> feature page -> feature-local component -> shared component import direction."
     },
     {

@@ -92,29 +92,29 @@ Hard dependency checks:
 
 ### Frontend References (required)
 
-- `docs/references/frontend/project-folder-structure.md`:
+- `docs/references/frontend/web/project-folder-structure.md`:
   - Feature code lives in `api/groups.ts`, `hooks/api/use-groups.ts`, `components/group/*`, `views/app/groups-page.tsx`.
   - Stores: no global group store needed; React Query cache is sufficient.
-- `docs/references/frontend/component-structure-pattern.md`:
+- `docs/references/frontend/web/component-structure-pattern.md`:
   - Page component uses `export const GroupsPage = () => {}`.
   - Child components in `components/group/` have `index.ts` barrel exporting public components only.
   - Split any file exceeding ~200 lines by concern (list vs form vs card).
-- `docs/references/frontend/naming-and-conventions-pattern.md`:
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`:
   - File names: `groups.ts`, `use-groups.ts`, `group-card.tsx`, `groups-page.tsx`.
   - Query keys: `GROUP_KEYS` with `all`, `list`, `detail`.
   - Import order: third-party → blank line → `@/` aliases.
-- `docs/references/frontend/form-pattern.md`:
+- `docs/references/frontend/web/form-pattern.md`:
   - Use `zodResolver`, `useForm`, `Controller`, `Field`, `FieldLabel`, `FieldError`.
   - `defaultValues` must be complete.
   - `id` + `htmlFor` mapping required.
-- `docs/references/frontend/dialog-and-form-pattern.md`:
+- `docs/references/frontend/web/dialog-and-form-pattern.md`:
   - Create/Edit forms may be rendered in dialogs or standalone pages; prefer dialog for create/edit to keep list context.
   - Dialog uses `ref` pattern (`useImperativeHandle`) if modal state is managed externally.
-- `docs/references/frontend/api-react-query-pattern.md`:
+- `docs/references/frontend/web/api-react-query-pattern.md`:
   - Endpoints added to `API_ENDPOINTS`.
   - Hooks use `*_KEYS`, `invalidateQueries` on mutations.
   - UI calls hooks only; no direct `api/*` calls from components.
-- `docs/references/frontend/i18n-label-pattern.md`:
+- `docs/references/frontend/web/i18n-label-pattern.md`:
   - Keys added to `vi.json` (and `en.json` if it exists).
   - Semantic nested keys: `groups.list.title`, `groups.form.name.label`, etc.
 

@@ -71,8 +71,8 @@ Move `apps/web/src` from the current mixed layer-first structure into a feature-
 - Current page orchestration layer to remove: `apps/web/src/views/**`
 - Current mixed domain component roots: `apps/web/src/components/home`, `apps/web/src/components/profile`, `apps/web/src/components/analytics`, `apps/web/src/components/expense`, `apps/web/src/components/budget`, `apps/web/src/components/group`, `apps/web/src/components/household`, `apps/web/src/components/auth`, `apps/web/src/components/landing`
 - Canonical frontend router doc: `docs/FRONTEND.md`
-- Canonical folder placement doc: `docs/references/frontend/project-folder-structure.md`
-- Canonical component boundary docs: `docs/references/frontend/component-structure-pattern.md`, `docs/references/frontend/frontend-component-architecture-guide.md`, `docs/references/frontend/naming-and-conventions-pattern.md`
+- Canonical folder placement doc: `docs/references/frontend/web/project-folder-structure.md`
+- Canonical component boundary docs: `docs/references/frontend/web/component-structure-pattern.md`, `docs/references/frontend/web/frontend-component-architecture-guide.md`, `docs/references/frontend/web/naming-and-conventions-pattern.md`
 - Approved design doc for this change: `docs/design-docs/2026-05-19-web-feature-first-folder-architecture-design.md`
 - Harness records to update: `harness/feature_index.json`, `harness/features/feat-062.json`, `harness/progress.md`
 
@@ -87,10 +87,10 @@ Move `apps/web/src` from the current mixed layer-first structure into a feature-
 - selected domain-local roots under `apps/web/src/components/**`
 - selected domain-local roots under `apps/web/src/api/**`, `apps/web/src/hooks/**`, `apps/web/src/types/**`, `apps/web/src/stores/**`, `apps/web/src/utils/**` when ownership is clearly one feature
 - `docs/FRONTEND.md`
-- `docs/references/frontend/project-folder-structure.md`
-- `docs/references/frontend/component-structure-pattern.md`
-- `docs/references/frontend/frontend-component-architecture-guide.md`
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/project-folder-structure.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
+- `docs/references/frontend/web/frontend-component-architecture-guide.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
 - `docs/design-docs/index.md` if the design status changes
 - harness files listed above
 
@@ -113,13 +113,13 @@ This refactor is primarily **UI + runtime-organization** scope. It must not intr
 
 Required references for implementation:
 
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Update canonical structure from `views/` + `components/<feature>` to `features/<domain>` + shared root folders.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Replace `views/` wording with feature page orchestration wording while keeping route files thin.
-- `docs/references/frontend/frontend-component-architecture-guide.md`
+- `docs/references/frontend/web/frontend-component-architecture-guide.md`
   - Update import direction to `app route/page -> features/<domain>/pages -> features/<domain>/components -> components/shared -> components/ui`.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Keep `kebab-case`, named exports, and consistent canonical names in touched files.
 - `docs/testing/test-placement-and-sharding-convention.md`
   - Preserve the no component/page render test rule for `apps/web`.

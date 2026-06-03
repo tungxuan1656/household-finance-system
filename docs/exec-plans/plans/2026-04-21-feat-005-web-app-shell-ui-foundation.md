@@ -65,7 +65,7 @@ Out of scope:
 - `apps/web` already has many useful shadcn-style primitives, including `Field`, `InputGroup`, `Label`, `Empty`, and `NativeSelect`.
 - `apps/web/src/components/ui/sonner.tsx` previously imported `next-themes` and was updated to use the local `ThemeProvider`.
 - `apps/web` was a minimal Vite starter, so most work was orchestration and route structure rather than replacing an existing app router.
-- The repo documents a standard zustand pattern under `docs/references/frontend/zustand-store-pattern.md`, and the auth state follows that pattern.
+- The repo documents a standard zustand pattern under `docs/references/frontend/web/zustand-store-pattern.md`, and the auth state follows that pattern.
 
 ## Decision Log
 
@@ -210,7 +210,7 @@ The web app now has a real React Router shell with `/` redirecting to `/sign-in`
 - Toast wrapper needing alignment: `apps/web/src/components/ui/sonner.tsx`
 - Existing shell primitives: `apps/web/src/components/ui/*`
 - Web package manifest: `apps/web/package.json`
-- Product auth behavior: `docs/product-specs/authentication.md`
+- Product auth behavior: `docs/product-specs/shared/authentication-session.md`
 - Onboarding and household entry points: `docs/product-specs/new-user-onboarding.md`, `docs/product-specs/household-management.md`, `docs/product-specs/profile-management.md`
 
 ## Plan of Work (Narrative)

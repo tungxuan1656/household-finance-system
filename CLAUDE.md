@@ -24,7 +24,9 @@ Read least docs that fully cover task.
 |------|------|
 | Any session | `AGENTS.md` |
 | Architecture/layer change | `ARCHITECTURE.md` |
-| Frontend work | `docs/FRONTEND.md` → exact `docs/references/frontend/*` needed |
+| Frontend work, surface unclear | `docs/FRONTEND.md` |
+| Web work | `docs/WEB.md` → exact `docs/references/frontend/web/*` needed |
+| TMA work | `docs/TMA.md` → exact `docs/references/frontend/tma/*` needed |
 | Backend work | `docs/BACKEND.md` → exact `docs/references/backend/*` needed |
 | Shared type/API naming | `docs/references/shared/type-naming-pattern.md` |
 | Product behavior | `docs/product-specs/index.md` → exact feature spec |
@@ -107,4 +109,3 @@ Useful resources:
 - `gitnexus://repo/household-finance-system/clusters`
 - `gitnexus://repo/household-finance-system/processes`
 - `gitnexus://repo/household-finance-system/process/{name}`
-

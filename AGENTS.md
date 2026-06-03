@@ -25,11 +25,13 @@ Read least docs that fully cover task.
 |------|------|
 | Any session | `AGENTS.md` |
 | Architecture/layer change | `docs/references/backend/architecture-and-boundaries.md` |
-| Frontend work | `docs/FRONTEND.md` → exact `docs/references/frontend/*` needed |
-| TMA work | `docs/TMA.md` → exact `docs/references/tma/*` needed |
+| Frontend work, surface unclear | `docs/FRONTEND.md` |
+| Web work | `docs/WEB.md` → exact `docs/references/frontend/web/*` needed |
+| TMA work | `docs/TMA.md` → exact `docs/references/frontend/tma/*` needed |
+| Future mobile-app work | `docs/MOBILE_APP.md` |
 | Backend work | `docs/BACKEND.md` → exact `docs/references/backend/*` needed |
 | Shared type/API naming | `docs/references/shared/type-naming-pattern.md` |
-| Product behavior | `docs/product-specs/index.md` → exact feature spec |
+| Product behavior | `docs/product-specs/index.md` → exact shared or surface spec |
 | Plan creation/update | `docs/PLANS.md` → plan template/index as needed |
 | UI durable design decision | `docs/design-docs/index.md` → exact design doc |
 | Security-sensitive work | `docs/SECURITY.md` + exact backend/frontend refs |
@@ -109,4 +111,3 @@ Useful resources:
 - `gitnexus://repo/household-finance-system/clusters`
 - `gitnexus://repo/household-finance-system/processes`
 - `gitnexus://repo/household-finance-system/process/{name}`
-

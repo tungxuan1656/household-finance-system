@@ -2,20 +2,20 @@
 
 ## Goal
 
-Enable fast, accurate capture of expenses with minimal friction so users record transactions in 2–3 seconds.
+Enable fast, accurate expense capture with minimal friction so users record transactions consistently.
 
 ## Entry Conditions
 
 - User is authenticated.
-- User opens the canonical add-expense dialog from any supported entry point.
+- User opens a supported expense-create surface.
 
 ## User Flow
 
-1. User opens the canonical add-expense dialog.
-2. User enters amount with VND shortcut semantics, then picks category, source, date, and `Nội dung`.
+1. User starts a new expense.
+2. User provides the required fields: amount, category, source, date, and content.
 3. User may optionally select one household.
 4. User may optionally select one group.
-5. Household and group are independent:
+5. Household and group stay independent:
    - no household = personal expense
    - household selected = household expense
    - group may be empty or selected in either case
@@ -27,7 +27,7 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 - Optional create fields: household selection and group selection.
 - New expense defaults to no household and no group.
 - The current signed-in user is recorded as the spender.
-- New expense appears immediately in UI and is included in downstream summaries.
+- New expense appears immediately in downstream UI and aggregates.
 
 ## Failure States
 
@@ -39,4 +39,4 @@ Enable fast, accurate capture of expenses with minimal friction so users record 
 
 Notes:
 - Categories and sources come from global static reference-data catalogs.
-- The same create surface supports personal-only, household-only, group-only, and household-plus-group records.
+- Shared expense semantics do not dictate whether the client uses a dialog, step flow, drawer, or dedicated page.

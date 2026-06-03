@@ -8,18 +8,18 @@ Add the durable docs and harness structure needed before implementation starts o
 
 - Files and areas changed:
   - `docs/design-docs/index.md`
-  - `docs/design-docs/telegram-mini-app-client-architecture.md`
+  - `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md`
   - `docs/product-specs/index.md`
-  - `docs/product-specs/authentication.md`
+  - `docs/product-specs/shared/authentication-session.md`
   - `docs/product-specs/household-invitation.md`
-  - `docs/product-specs/quick-add-experience.md`
-  - `docs/product-specs/telegram-mini-app.md`
+  - `docs/product-specs/web/quick-add-experience.md`
+  - `docs/product-specs/tma/index.md`
   - `docs/TMA.md`
   - `docs/FRONTEND.md`
   - `docs/BACKEND.md`
   - `docs/references/index.md`
-  - `docs/references/tma/app-structure-and-client-rules.md`
-  - `docs/references/tma/auth-and-bot-pattern.md`
+  - `docs/references/frontend/tma/app-structure-and-client-rules.md`
+  - `docs/references/frontend/tma/auth-and-bot-pattern.md`
   - `ARCHITECTURE.md`
   - `docs/exec-plans/index.md`
   - `harness/feature_index.json`
@@ -141,12 +141,12 @@ Acceptance is met when:
 
 ## Artifacts and Notes
 
-- Main design artifact: `docs/design-docs/telegram-mini-app-client-architecture.md`
-- Main product artifact: `docs/product-specs/telegram-mini-app.md`
+- Main design artifact: `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md`
+- Main product artifact: `docs/product-specs/tma/index.md`
 - Main implementation rule artifacts:
   - `docs/TMA.md`
-  - `docs/references/tma/app-structure-and-client-rules.md`
-  - `docs/references/tma/auth-and-bot-pattern.md`
+  - `docs/references/frontend/tma/app-structure-and-client-rules.md`
+  - `docs/references/frontend/tma/auth-and-bot-pattern.md`
 - Harness rollout artifacts:
   - `harness/features/feat-078.json`
   - `harness/features/feat-079.json`

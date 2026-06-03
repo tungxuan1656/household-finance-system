@@ -40,4 +40,4 @@ Provide one ultra-fast, low-friction dialog for recording expenses.
 Notes:
 - The dialog is the only canonical expense-create surface.
 - The flow keeps context selection minimal: household and group are optional, direct fields.
-- This spec is for `apps/web` only. Planned TMA expense capture uses `telegram-mini-app.md` and a three-step SPA flow (`amount -> category -> details`) while keeping the same expense-domain rules.
+- This spec is for `apps/web` only. Planned TMA expense capture is defined in `../tma/index.md` and keeps the same expense-domain rules.

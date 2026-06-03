@@ -1,85 +1,36 @@
 # FRONTEND.md
 
-Frontend router. Read this for `apps/web` work, then read only exact reference docs needed.
+Frontend parent router. Read this when work touches any client surface, then route into the exact child surface doc.
 
-Telegram Mini App work is separate platform work. Read `docs/TMA.md` for `apps/tma`.
+## Surfaces
+
+- `docs/WEB.md`: `apps/web` browser client.
+- `docs/TMA.md`: `apps/tma` Telegram Mini App client.
+- `docs/MOBILE_APP.md`: future native mobile app surface.
 
 ## Defaults
 
-- Clarity before novelty.
-- Mobile-first layout.
-- `apps/web/src` uses feature-first ownership: route files stay in `app/`, domain-local code lives in `features/<domain>/`, shared UI stays in `components/shared`, and primitives stay in `components/ui`.
-- shadcn/ui primitives from `@/components/ui/*`.
-- No custom primitive wrapper replacements for `Button`, `Input`, `Card`, `Dialog`, etc.
-- State coverage required: loading, empty, success, error, retry when relevant.
-- Tests: no component/page render tests in `apps/web`. Write unit tests for pure logic, API clients, stores, hooks/helpers that do not render UI; verify UI by browser/manual evidence.
-- Accessibility is normal verification, not polish.
-
-## Component Boundaries
-
-- Route file under `app/**` owns route params, URL/state sync, and Next.js boundary glue only.
-- Feature page under `features/<domain>/pages/**` owns top-level orchestration for that route surface.
-- Feature smart component owns one bounded concern: local state, hooks, mutations, composed UI.
-- Shared component exists only after cross-feature reuse is real.
-- Dumb component is presentational only; no feature API calls.
-- Prefer DTO passthrough. Map only for real derived value or shape change.
-- Split near 200 lines or when 3+ concerns mix.
-
-## Folder Direction
-
-- `app/`: Next.js route tree, layouts, metadata, loading/error/not-found, server/client boundary glue.
-- `features/<domain>/`: primary home for domain-local pages, components, hooks, api modules, types, utils, tests, and feature-only helpers.
-- `components/shared`: cross-feature reusable UI/controller components.
-- `components/layouts`: app shell/navigation/layout pieces shared across features.
-- `components/ui`: shadcn primitives only.
-- `views/`: removed. Do not add new code there.
-
-## Protected Page Surface Pattern
-
-- New protected app pages use shared page wrappers from `@/components/shared/page/*`.
-- Canonical wrappers are:
-  - `PageContainer`
-  - `PageHeader`
-  - `PageContent`
-  - `PageFooter`
-- `PageHeader` owns the route title/header contract.
-- Do not duplicate page `<header>`/`<h1>` or shell-level outer padding around protected pages.
-- Route-level loading, empty, error, and success states should all render inside the same `PageContainer` when they belong to one route surface.
-- For page wrapper details, read `docs/references/frontend/protected-page-surface-pattern.md`.
-- For shell/nav details, read `docs/references/frontend/responsive-navigation-shell-pattern.md`.
-
-## shadcn Rules
-
-- Use shadcn primitives directly.
-- Compose with `CardHeader`, `CardContent`, `Field`, `FieldGroup`, `DialogContent`, etc.
-- Use primitive props (`variant`, `size`, `tone`, `surface`) before custom classes.
-- `className` on primitives is for layout, not internal restyle.
-- For UI tasks, read `.agents/skills/shadcn/SKILL.md` and exact shadcn rule file needed.
+- One product, multiple frontend surfaces.
+- Shared product truth lives under `docs/product-specs/shared/*`.
+- Surface UX truth lives under `docs/product-specs/web/*`, `docs/product-specs/tma/*`, or future `mobile-app/*`.
+- Frontend implementation rules live under `docs/references/frontend/<surface>/*`.
+- Durable frontend decisions live under `docs/design-docs/frontend/<surface>/*`.
+- Do not treat `web` docs as implicit truth for TMA or future mobile-app.
 
 ## Read Next By Task
 
 | Task | Read |
 |------|------|
-| Folder/file placement | `docs/references/frontend/project-folder-structure.md` |
-| Route page vs feature page split | `docs/references/frontend/component-structure-pattern.md` |
-| Component architecture | `docs/references/frontend/frontend-component-architecture-guide.md` |
-| Naming/imports/constants | `docs/references/frontend/naming-and-conventions-pattern.md` |
-| API hooks / React Query | `docs/references/frontend/api-react-query-pattern.md` |
-| Zustand store | `docs/references/frontend/zustand-store-pattern.md` |
-| Form | `docs/references/frontend/form-pattern.md` |
-| Dialog + form layout | `docs/references/frontend/dialog-and-form-pattern.md` |
-| Mobile PWA shell/safe-area/drawer rules | `docs/references/frontend/mobile-pwa-ui-rules.md` |
-| Mobile UI audit/refactor notes | `docs/references/frontend/mobile-pwa-ui-audit.md` |
-| i18n labels/copy | `docs/references/frontend/i18n-label-pattern.md` |
-| Protected page wrapper rules | `docs/references/frontend/protected-page-surface-pattern.md` |
-| Responsive shell/nav | `docs/references/frontend/responsive-navigation-shell-pattern.md` |
-| Test placement | `docs/testing/test-placement-and-sharding-convention.md` |
-| Durable UI decision | `docs/design-docs/index.md` |
+| Frontend work, but surface still unclear | `docs/FRONTEND.md` |
+| Web work in `apps/web` | `docs/WEB.md` |
+| TMA work in `apps/tma` | `docs/TMA.md` |
+| Future native mobile-app work | `docs/MOBILE_APP.md` |
+| Shared product/domain behavior | `docs/product-specs/shared/index.md` |
+| Shared type/API naming | `docs/references/shared/type-naming-pattern.md` |
+| Durable frontend design decision | `docs/design-docs/frontend/index.md` |
 
-## Verification
+## Rules
 
-- Run focused web checks for touched area.
-- Use `./init.sh <param>` instead of `pnpm <cmd>` for lint/typecheck/test/build.
-- Manual one-file lint/test OK for focused debug.
-- Run full `./init.sh` only at final verification.
-- For `apps/web`, never add component/page render tests. Prefer util/api/store/helper unit tests plus browser/manual evidence for UI behavior.
+- Parent docs route. Child docs hold rules.
+- Shared rules must stay surface-agnostic.
+- Surface-specific rules must move out of shared docs the same session they are discovered.

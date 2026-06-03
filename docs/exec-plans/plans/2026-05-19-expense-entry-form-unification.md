@@ -91,26 +91,26 @@ This change makes add-expense and edit-expense use one shared form implementatio
 - `docs/FRONTEND.md`
   - Follow feature-local boundaries and keep scope frontend-only.
   - Before code edits, run GitNexus impact for touched symbols.
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep new logic under `apps/web/src/components/expense/` or existing `views/` path.
   - Promote nothing to `components/shared` or `components/ui` unless reuse is proven outside expense entry.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Use named exports.
   - Keep smart shell/query code separate from dumb form rendering.
   - Keep internal subcomponents private.
-- `docs/references/frontend/form-pattern.md`
+- `docs/references/frontend/web/form-pattern.md`
   - Prefer one canonical form schema/engine for the shared form path.
   - Render `FieldError`, align `htmlFor`/`id`, and keep validation centralized.
   - If the refactor keeps custom state instead of `react-hook-form`, the shared helper layer must still centralize validation and field defaults in one place; do not keep two form engines after this refactor.
-- `docs/references/frontend/dialog-and-form-pattern.md`
+- `docs/references/frontend/web/dialog-and-form-pattern.md`
   - Keep `Dialog` / `Drawer` shells and `FieldGroup > Field > FieldLabel + control + FieldError` composition.
   - Do not add new custom dialog state patterns.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - UI continues to call existing query/mutation hooks only.
   - Do not introduce direct API calls into presentational components.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Use kebab-case filenames, named exports, `@/` imports, and English comments only.
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
   - Keep all user-facing strings on `t(...)`; add locale keys only if new copy becomes unavoidable.
 
 ## Companion Skills During Execution

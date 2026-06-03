@@ -57,7 +57,7 @@ Use this default unless a later security review explicitly changes it:
 
 ## Zustand rules
 
-- Use stores for amount-first multi-step flows, not generic app truth.
+- Use stores for route-based multi-step expense and invite flows, not generic app truth.
 - Keep store shape flat and resettable.
 - Persist only fields with a real resume need.
 - Do not persist transient request flags or large DTO blobs.

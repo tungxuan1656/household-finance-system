@@ -153,7 +153,7 @@ This plan is architecture-first, not threshold-first. Success is not merely push
 - Repository rules: `AGENTS.md`, `ARCHITECTURE.md`, `docs/PLANS.md`
 - Plan template/index: `docs/exec-plans/__plan-template__.md`, `docs/exec-plans/index.md`
 - Harness continuity: `harness/feature_index.json`, `harness/progress.md`
-- Frontend architectural rules: `docs/FRONTEND.md`, `docs/references/frontend/project-folder-structure.md`, `docs/references/frontend/component-structure-pattern.md`, `docs/references/frontend/naming-and-conventions-pattern.md`, `docs/references/frontend/api-react-query-pattern.md`, `docs/references/frontend/dialog-and-form-pattern.md`
+- Frontend architectural rules: `docs/FRONTEND.md`, `docs/references/frontend/web/project-folder-structure.md`, `docs/references/frontend/web/component-structure-pattern.md`, `docs/references/frontend/web/naming-and-conventions-pattern.md`, `docs/references/frontend/web/api-react-query-pattern.md`, `docs/references/frontend/web/dialog-and-form-pattern.md`
 - Backend architectural rules: `docs/BACKEND.md`, `docs/references/backend/architecture-and-boundaries.md`, `docs/references/backend/database-pattern.md`, `docs/references/backend/testing-pattern.md`
 - Shared naming rules: `docs/references/shared/type-naming-pattern.md`
 - Recent related feature plans that likely contain patterns worth preserving during splits:
@@ -183,18 +183,18 @@ This plan is architecture-first, not threshold-first. Success is not merely push
 - `docs/FRONTEND.md`
   - Page files own route/query/store wiring and high-level flow only.
   - Record loading, empty, success, error, and retry states in touched regressions.
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep feature-specific extracted pieces in `components/<feature>` or `hooks/<feature>` instead of `lib` dumping.
   - Only move code to `lib` if reused across multiple features.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Files over 200 lines must be split by clear concern.
   - Public child components export through folder `index.ts`; internal-only subcomponents stay private.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Use kebab-case file names, named exports, `@/...` imports, grouped imports, English comments only.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - UI keeps calling hooks, not raw API modules.
   - Before new hook/helper, confirm data cannot already be derived from existing query/store.
-- `docs/references/frontend/dialog-and-form-pattern.md`
+- `docs/references/frontend/web/dialog-and-form-pattern.md`
   - Dialog refactors should prefer bounded internal dialog state and field-group composition.
   - Field sections should be split into reusable feature-local child components when form files grow beyond one responsibility.
 

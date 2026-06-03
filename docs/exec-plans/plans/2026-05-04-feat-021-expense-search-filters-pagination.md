@@ -100,13 +100,13 @@ Using `Types -> Config -> Repo -> Service -> Runtime -> UI`:
 | `docs/references/backend/security-and-auth-pattern.md` | Enforce ownership/membership for private and household-scoped visibility. |
 | `docs/references/backend/testing-pattern.md` | Cover happy path, validation failure, unauthorized, forbidden, not found, and pagination edge cases. |
 | `docs/references/backend/database-pattern.md` | No `SELECT *`, bind parameters, stable ordering, document indexes for heavy queries. |
-| `docs/references/frontend/project-folder-structure.md` | Keep feature code in `components/expense`, `hooks/api`, `api`, `views/app`. |
-| `docs/references/frontend/component-structure-pattern.md` | Page orchestrator pattern; child components export via barrels; split files over 200 lines. |
-| `docs/references/frontend/naming-and-conventions-pattern.md` | `use-*` hooks, `*_KEYS`, absolute imports, kebab-case files, no duplicate imports. |
-| `docs/references/frontend/api-react-query-pattern.md` | UI uses hooks only; query keys drive invalidation; no identity `select`. |
-| `docs/references/frontend/form-pattern.md` | If filter controls use forms, wire them with controlled inputs and accessible error states. |
-| `docs/references/frontend/dialog-and-form-pattern.md` | Apply if a filter dialog is used instead of inline controls. |
-| `docs/references/frontend/i18n-label-pattern.md` | All labels and empty/loading/error copy must be localized. |
+| `docs/references/frontend/web/project-folder-structure.md` | Keep feature code in `components/expense`, `hooks/api`, `api`, `views/app`. |
+| `docs/references/frontend/web/component-structure-pattern.md` | Page orchestrator pattern; child components export via barrels; split files over 200 lines. |
+| `docs/references/frontend/web/naming-and-conventions-pattern.md` | `use-*` hooks, `*_KEYS`, absolute imports, kebab-case files, no duplicate imports. |
+| `docs/references/frontend/web/api-react-query-pattern.md` | UI uses hooks only; query keys drive invalidation; no identity `select`. |
+| `docs/references/frontend/web/form-pattern.md` | If filter controls use forms, wire them with controlled inputs and accessible error states. |
+| `docs/references/frontend/web/dialog-and-form-pattern.md` | Apply if a filter dialog is used instead of inline controls. |
+| `docs/references/frontend/web/i18n-label-pattern.md` | All labels and empty/loading/error copy must be localized. |
 | `docs/references/shared/type-naming-pattern.md` | DTO / Request / Response suffixes must remain consistent. |
 
 ### Implementation Constraints Derived From Standards

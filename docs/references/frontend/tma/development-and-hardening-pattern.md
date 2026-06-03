@@ -11,7 +11,7 @@ Use this doc for:
 - debugging on device
 - performance and compatibility hardening
 
-For exact local commands and the current smoke-test order, read `docs/references/tma/local-testing-runbook.md`.
+For exact local commands and the current smoke-test order, read `docs/references/frontend/tma/local-testing-runbook.md`.
 
 ## Local development rules
 

@@ -13,7 +13,7 @@ This project has not launched publicly, so the implementation may rewrite databa
 In scope:
 
 - Product specs under `docs/product-specs/`.
-- Product direction docs under `docs/PRODUCT.md`, `docs/PRODUCT.vi.md`, and `docs/design-docs/product-direction-v2.md`.
+- Product direction docs under `docs/PRODUCT.md`, `docs/PRODUCT.vi.md`, and `docs/design-docs/shared/product-direction-v2.md`.
 - Database migrations under `apps/worker/migrations/`.
 - Worker contracts, handlers, routes, repositories, permissions, i18n, and integration/unit tests under `apps/worker/src/` and `apps/worker/test/`.
 - Web API types, feature APIs, hooks, forms, pages, components, stores, i18n, and tests under `apps/web/src/`.
@@ -51,7 +51,7 @@ Out of scope:
 - Household dashboard:
   - Shows expenses attached to the selected household, visible to all active household members.
 - Current docs and code must not contain old model terms except where explicitly allowed:
-  - `docs/design-docs/product-direction-v2.md` may mention old terms only to explain the V1 -> V2 change.
+  - `docs/design-docs/shared/product-direction-v2.md` may mention old terms only to explain the V1 -> V2 change.
   - Language runtime words such as TypeScript `private`, package `private`, and `public` route/layout naming are not product-model violations.
 
 ## Progress
@@ -71,7 +71,7 @@ Out of scope:
 
 ## Surprises & Discoveries
 
-- `docs/PRODUCT.md`, `docs/PRODUCT.vi.md`, and `docs/design-docs/product-direction-v2.md` already define the V2 product truth.
+- `docs/PRODUCT.md`, `docs/PRODUCT.vi.md`, and `docs/design-docs/shared/product-direction-v2.md` already define the V2 product truth.
 - `docs/product-specs/expense-tracking.md` partially matches V2 but still says scope defaults to `private` and payer is derived.
 - `docs/product-specs/expense-ownership.md` and `docs/product-specs/data-visibility.md` are V1-centric and should be deleted or replaced.
 - `apps/worker/migrations/0008_independent_groups.sql` already started decoupling groups from households, but the canonical schema still contains household-coupled group fields and expense visibility.
@@ -140,11 +140,11 @@ Current high-level product truth:
 
 - `docs/PRODUCT.vi.md`
 - `docs/PRODUCT.md`
-- `docs/design-docs/product-direction-v2.md`
+- `docs/design-docs/shared/product-direction-v2.md`
 
 Current V1-heavy areas:
 
-- Product specs: `docs/product-specs/expense-ownership.md`, `docs/product-specs/data-visibility.md`, `docs/product-specs/expense-querying.md`, `docs/product-specs/analytics-overview.md`, `docs/product-specs/budget-management.md`, `docs/product-specs/household-management.md`, `docs/product-specs/quick-add-experience.md`.
+- Product specs: `docs/product-specs/expense-ownership.md`, `docs/product-specs/data-visibility.md`, `docs/product-specs/expense-querying.md`, `docs/product-specs/analytics-overview.md`, `docs/product-specs/budget-management.md`, `docs/product-specs/household-management.md`, `docs/product-specs/web/quick-add-experience.md`.
 - Migrations: `apps/worker/migrations/0001_init.sql` through `apps/worker/migrations/0008_independent_groups.sql`.
 - Worker contracts: `apps/worker/src/contracts/expense-schemas.ts`, `apps/worker/src/contracts/expense-types.ts`, `apps/worker/src/contracts/analytics-types.ts`, `apps/worker/src/contracts/household.ts`.
 - Worker repositories: `apps/worker/src/db/repositories/expense-*`, `apps/worker/src/db/repositories/budget-*`, `apps/worker/src/db/repositories/household-*`.
@@ -171,7 +171,7 @@ Apply these docs during implementation:
 - `ARCHITECTURE.md`
 - `docs/PRODUCT.md`
 - `docs/PRODUCT.vi.md`
-- `docs/design-docs/product-direction-v2.md`
+- `docs/design-docs/shared/product-direction-v2.md`
 - `docs/references/backend/architecture-and-boundaries.md`
 - `docs/references/backend/api-contract-and-validation.md`
 - `docs/references/backend/database-pattern.md`
@@ -179,13 +179,13 @@ Apply these docs during implementation:
 - `docs/references/backend/testing-pattern.md`
 - `docs/references/backend/error-handling-pattern.md`
 - `docs/references/backend/cloudflare-workers.md`
-- `docs/references/frontend/project-folder-structure.md`
-- `docs/references/frontend/component-structure-pattern.md`
-- `docs/references/frontend/naming-and-conventions-pattern.md`
-- `docs/references/frontend/form-pattern.md`
-- `docs/references/frontend/dialog-and-form-pattern.md`
-- `docs/references/frontend/api-react-query-pattern.md`
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/project-folder-structure.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/form-pattern.md`
+- `docs/references/frontend/web/dialog-and-form-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
 - `docs/references/shared/type-naming-pattern.md`
 - `docs/SECURITY.md`
 - `docs/RELIABILITY.md`
@@ -414,7 +414,7 @@ Rewrite or remove current specs:
 - Rewrite `docs/product-specs/budget-management.md` around personal, household, and group budget scopes.
 - Rewrite `docs/product-specs/analytics-overview.md` to remove payer attribution and use personal/household/group summaries.
 - Rewrite `docs/product-specs/household-management.md` to remove default visibility.
-- Rewrite `docs/product-specs/quick-add-experience.md` to default to no household and no group.
+- Rewrite `docs/product-specs/web/quick-add-experience.md` to default to no household and no group.
 - Update `docs/product-specs/index.md` to remove deleted specs and link replacement specs.
 
 Acceptance:
@@ -583,7 +583,7 @@ Acceptance:
 
 Docs cleanup:
 
-- Keep `docs/PRODUCT.md`, `docs/PRODUCT.vi.md`, and `docs/design-docs/product-direction-v2.md`.
+- Keep `docs/PRODUCT.md`, `docs/PRODUCT.vi.md`, and `docs/design-docs/shared/product-direction-v2.md`.
 - Keep this ExecPlan.
 - Update `docs/design-docs/index.md`.
 - Update `docs/product-specs/index.md`.
@@ -645,10 +645,10 @@ Done!
 Run final stale-term scans:
 
 ```bash
-rg -n "payer|payerUserId|payer_id|payer_user_id|payerAttribution" apps docs harness --glob '!docs/design-docs/product-direction-v2.md'
-rg -n "visibility|defaultVisibility|default_visibility|private|public" apps docs harness --glob '!docs/design-docs/product-direction-v2.md'
+rg -n "payer|payerUserId|payer_id|payer_user_id|payerAttribution" apps docs harness --glob '!docs/design-docs/shared/product-direction-v2.md'
+rg -n "visibility|defaultVisibility|default_visibility|private|public" apps docs harness --glob '!docs/design-docs/shared/product-direction-v2.md'
 rg -n "\\blens\\b|lenses|activeLens" apps docs harness
-rg -n "creator_id|createdByUserId|created_by_user_id|creator" apps docs harness --glob '!docs/design-docs/product-direction-v2.md'
+rg -n "creator_id|createdByUserId|created_by_user_id|creator" apps docs harness --glob '!docs/design-docs/shared/product-direction-v2.md'
 ```
 
 Expected:
@@ -795,7 +795,7 @@ Done!
 - Product specs match V2.
 - Current docs do not describe V1 as current truth.
 - Harness records either reflect V2 or mark old V1 features as superseded.
-- The only intentional V1 contrast doc is `docs/design-docs/product-direction-v2.md`.
+- The only intentional V1 contrast doc is `docs/design-docs/shared/product-direction-v2.md`.
 
 ## Idempotence & Recovery
 

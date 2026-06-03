@@ -99,14 +99,14 @@ Implement the first production-ready household invitation flow so admins can inv
   - `docs/references/backend/database-pattern.md`
   - `docs/references/backend/cloudflare-workers.md`
 - Required frontend standards:
-  - `docs/references/frontend/project-folder-structure.md`
-  - `docs/references/frontend/component-structure-pattern.md`
-  - `docs/references/frontend/naming-and-conventions-pattern.md`
-  - `docs/references/frontend/form-pattern.md`
-  - `docs/references/frontend/dialog-and-form-pattern.md`
-  - `docs/references/frontend/api-react-query-pattern.md`
-  - `docs/references/frontend/zustand-store-pattern.md`
-  - `docs/references/frontend/i18n-label-pattern.md`
+  - `docs/references/frontend/web/project-folder-structure.md`
+  - `docs/references/frontend/web/component-structure-pattern.md`
+  - `docs/references/frontend/web/naming-and-conventions-pattern.md`
+  - `docs/references/frontend/web/form-pattern.md`
+  - `docs/references/frontend/web/dialog-and-form-pattern.md`
+  - `docs/references/frontend/web/api-react-query-pattern.md`
+  - `docs/references/frontend/web/zustand-store-pattern.md`
+  - `docs/references/frontend/web/i18n-label-pattern.md`
   - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
 - Required shared standards:
   - `docs/references/shared/type-naming-pattern.md`

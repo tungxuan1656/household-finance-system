@@ -223,7 +223,7 @@ Expected short transcript outputs:
 
 - Scope-specific references to enforce during implementation:
   - Frontend governance: `docs/FRONTEND.md`, `docs/design-docs/shadcn-card-composition-architecture-guide.md`.
-  - Frontend: `docs/references/frontend/project-folder-structure.md`, `component-structure-pattern.md`, `naming-and-conventions-pattern.md`, `form-pattern.md`, `api-react-query-pattern.md`, `i18n-label-pattern.md`.
+  - Frontend: `docs/references/frontend/web/project-folder-structure.md`, `component-structure-pattern.md`, `naming-and-conventions-pattern.md`, `form-pattern.md`, `api-react-query-pattern.md`, `i18n-label-pattern.md`.
   - Backend: `docs/references/backend/architecture-and-boundaries.md`, `api-contract-and-validation.md`, `error-handling-pattern.md`, `security-and-auth-pattern.md`, `testing-pattern.md`, `database-pattern.md`.
   - Shared: `docs/references/shared/type-naming-pattern.md`.
   - UI governance: `.agents/skills/shadcn/SKILL.md` and `rules/styling.md`, `rules/forms.md`, `rules/composition.md`.

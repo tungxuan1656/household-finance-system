@@ -6,7 +6,7 @@ Use this file when a TMA task risks reopening already-set repo decisions.
 
 - Canonical term: `TMA`
 - Canonical router doc: `docs/TMA.md`
-- Canonical reference folder: `docs/references/tma/`
+- Canonical reference folder: `docs/references/frontend/tma/`
 - Canonical runtime app path: `apps/tma`
 
 ## Package line
@@ -39,5 +39,5 @@ Use this file when a TMA task risks reopening already-set repo decisions.
 ## Canonical docs
 
 - Router: `docs/TMA.md`
-- Durable client direction: `docs/design-docs/telegram-mini-app-client-architecture.md`
-- Phase map: `docs/references/tma/runtime-readiness-and-slice-map.md`
+- Durable client direction: `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md`
+- Phase map: `docs/references/frontend/tma/runtime-readiness-and-slice-map.md`

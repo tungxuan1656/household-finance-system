@@ -127,13 +127,13 @@ Using `Types -> Config -> Repo -> Service -> Runtime -> UI`:
 | `docs/references/backend/security-and-auth-pattern.md` | Enforce household membership and expense ownership for all write paths. |
 | `docs/references/backend/testing-pattern.md` | Happy path, validation failure, unauthorized, not-found, conflict coverage for new endpoints. |
 | `docs/references/backend/database-pattern.md` | No `SELECT *`; bind all params; snake_case DB columns mapped to camelCase DTOs; document indexes if heavy queries added. |
-| `docs/references/frontend/project-folder-structure.md` | Feature components in `components/group/`, API in `api/group.ts`, hooks in `hooks/api/use-groups.ts`, views in `views/app/`. |
-| `docs/references/frontend/component-structure-pattern.md` | Page exports as `export const`; child components use `export const`; `index.ts` barrel exports public components only; split files over 200 lines. |
-| `docs/references/frontend/naming-and-conventions-pattern.md` | Kebab-case files; `use-*` hooks; `*_KEYS` query keys; absolute `@/` imports; merged imports from same path; English comments only. |
-| `docs/references/frontend/api-react-query-pattern.md` | Endpoints in `API_ENDPOINTS`; `*_KEYS` for cache keys; mutations invalidate correct scopes; UI calls hooks only, never `api/*` directly. |
-| `docs/references/frontend/form-pattern.md` | If group multi-select is added to expense form, use `Controller`, `zodResolver`, `aria-invalid`, `FieldError`, complete `defaultValues`. |
-| `docs/references/frontend/dialog-and-form-pattern.md` | Bulk-assign modal uses ref pattern (`useImperativeHandle`); `DialogClose asChild` for Cancel; `FieldGroup > Field > FieldLabel`. |
-| `docs/references/frontend/i18n-label-pattern.md` | All new labels added to `vi.json` (and `en.json` if present); nested semantic keys; interpolation for dynamic values; no hardcoded strings. |
+| `docs/references/frontend/web/project-folder-structure.md` | Feature components in `components/group/`, API in `api/group.ts`, hooks in `hooks/api/use-groups.ts`, views in `views/app/`. |
+| `docs/references/frontend/web/component-structure-pattern.md` | Page exports as `export const`; child components use `export const`; `index.ts` barrel exports public components only; split files over 200 lines. |
+| `docs/references/frontend/web/naming-and-conventions-pattern.md` | Kebab-case files; `use-*` hooks; `*_KEYS` query keys; absolute `@/` imports; merged imports from same path; English comments only. |
+| `docs/references/frontend/web/api-react-query-pattern.md` | Endpoints in `API_ENDPOINTS`; `*_KEYS` for cache keys; mutations invalidate correct scopes; UI calls hooks only, never `api/*` directly. |
+| `docs/references/frontend/web/form-pattern.md` | If group multi-select is added to expense form, use `Controller`, `zodResolver`, `aria-invalid`, `FieldError`, complete `defaultValues`. |
+| `docs/references/frontend/web/dialog-and-form-pattern.md` | Bulk-assign modal uses ref pattern (`useImperativeHandle`); `DialogClose asChild` for Cancel; `FieldGroup > Field > FieldLabel`. |
+| `docs/references/frontend/web/i18n-label-pattern.md` | All new labels added to `vi.json` (and `en.json` if present); nested semantic keys; interpolation for dynamic values; no hardcoded strings. |
 | `docs/references/shared/type-naming-pattern.md` | DTO suffix for data objects; `Request` suffix for API input; `Response` suffix for API output; common wrapper `ApiResponse<T>`. |
 
 ## Implementation Notes

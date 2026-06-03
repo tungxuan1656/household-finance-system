@@ -59,7 +59,7 @@
     },
     {
       "type": "file",
-      "path": "docs/product-specs/quick-add-experience.md",
+      "path": "docs/product-specs/web/quick-add-experience.md",
       "description": "Product spec now documents the canonical add-expense dialog, VND shortcut amount semantics, independent family/group decisions, and retirement of `/expenses/new`."
     },
     {

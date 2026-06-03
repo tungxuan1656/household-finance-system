@@ -81,19 +81,19 @@ Users already have one canonical add-expense entry point, but the current surfac
 
 Frontend references to apply:
 
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep this follow-up inside the existing expense feature files; do not create a parallel mobile-only feature tree.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - Keep `add-expense-dialog.tsx` as the smart orchestrator and extract only if the presentational row layout becomes unwieldy.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Preserve named exports, alias imports, and concise English comments only when necessary.
-- `docs/references/frontend/form-pattern.md`
+- `docs/references/frontend/web/form-pattern.md`
   - Preserve `Field`, `FieldLabel`, `FieldError`, `data-invalid`, and `aria-invalid` behavior while changing the visual layout.
-- `docs/references/frontend/dialog-and-form-pattern.md`
+- `docs/references/frontend/web/dialog-and-form-pattern.md`
   - Use the existing `Dialog`/`Drawer` primitives correctly, keep title/description/footer semantics, and avoid ad-hoc overlay shells.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - Do not disturb current query/mutation ownership while changing layout shells.
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
   - Any touched labels/buttons must stay i18n-backed.
 
 Companion skills during execution:

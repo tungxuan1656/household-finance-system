@@ -94,11 +94,11 @@ This change upgrades the authenticated home dashboard so it looks intentionally 
 - UI guidance:
   - `docs/design-docs/shadcn-card-composition-architecture-guide.md`
 - Required frontend implementation references:
-  - `docs/references/frontend/project-folder-structure.md`
-  - `docs/references/frontend/component-structure-pattern.md`
-  - `docs/references/frontend/naming-and-conventions-pattern.md`
-  - `docs/references/frontend/api-react-query-pattern.md`
-  - `docs/references/frontend/i18n-label-pattern.md`
+  - `docs/references/frontend/web/project-folder-structure.md`
+  - `docs/references/frontend/web/component-structure-pattern.md`
+  - `docs/references/frontend/web/naming-and-conventions-pattern.md`
+  - `docs/references/frontend/web/api-react-query-pattern.md`
+  - `docs/references/frontend/web/i18n-label-pattern.md`
 
 Layer impact check using `ARCHITECTURE.md` layering (`Types -> Config -> Repo -> Service -> Runtime -> UI`):
 

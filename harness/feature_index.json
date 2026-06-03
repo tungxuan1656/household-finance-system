@@ -434,6 +434,21 @@
       "id": "feat-086",
       "name": "Project-owned TMA development skill",
       "status": "done"
+    },
+    {
+      "id": "feat-087",
+      "name": "Telegram Mini App screen design spec",
+      "status": "done"
+    },
+    {
+      "id": "feat-088",
+      "name": "Align TMA docs to the new screen spec",
+      "status": "done"
+    },
+    {
+      "id": "feat-089",
+      "name": "Frontend surface docs architecture refactor",
+      "status": "done"
     }
   ]
 }

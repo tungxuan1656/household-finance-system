@@ -1,0 +1,25 @@
+{
+  "id": "feat-088",
+  "name": "Align TMA docs to the new screen spec",
+  "status": "done",
+  "description": "Replace the remaining outdated TMA doc language so product specs, TMA references, skill task maps, and planned feature records all match the new package-local TMA screen spec.",
+  "dependencies": ["feat-078", "feat-081", "feat-087"],
+  "evidence": {
+    "planned": [
+      "Used `using-skills` first, then applied the repo-owned `tma-development` skill because the work updates TMA-specific product/reference truth rather than runtime code.",
+      "Searched the repo for outdated amount-first TMA wording and updated every still-active TMA source of truth instead of only editing one product-spec file.",
+      "Kept the update bounded to TMA docs, TMA skill references, and planned TMA harness records; the one cross-surface web note was kept neutral and only points readers back to the TMA spec."
+    ],
+    "artifacts": [
+      "Updated `docs/product-specs/tma/index.md` and `apps/tma/DESIGN.md` so the TMA expense flow and root navigation model are described consistently, while keeping the existing web quick-add note neutral.",
+      "Updated TMA reference/design docs and the repo-owned TMA skill task map so future implementation reads the same step order, route examples, and screen source of truth.",
+      "Updated `harness/features/feat-081.json` and added this feat-088 record so planned implementation slices now inherit the new doc truth."
+    ],
+    "verification": [
+      "Validated `harness/feature_index.json`, `harness/features/feat-081.json`, and `harness/features/feat-088.json` with `python3 -m json.tool`; all parsed successfully.",
+      "Ran `./scripts/check_harness_size.sh`, which returned `Harness size checks passed`, and `git diff --check`, which returned clean with no whitespace errors.",
+      "Ran final `gitnexus_detect_changes(scope: 'all')`, which returned `LOW` risk with 23 changed symbols, 0 affected processes, and 11 tracked changed files in the current docs-focused worktree."
+    ]
+  },
+  "notes": "Docs-only alignment slice. It replaces the old amount-first TMA wording with the new package-local screen spec before implementation begins."
+}

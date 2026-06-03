@@ -17,7 +17,7 @@
 
 ## 3) Type Naming Source
 
-- Type naming rules are canonical in `../shared/type-naming-pattern.md`.
+- Type naming rules are canonical in `../../shared/type-naming-pattern.md`.
 - Do not redefine DTO/Request/Response naming in other docs.
 
 ## 4) React Query Naming

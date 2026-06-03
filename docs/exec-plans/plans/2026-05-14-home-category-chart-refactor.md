@@ -23,7 +23,7 @@ Refactor the Home overview category statistics widget so users see top spending 
 ## Required Standards / Reference Docs
 
 - `docs/FRONTEND.md`: mobile-first layout, shadcn primitives, state coverage, no render tests.
-- `docs/references/frontend/component-structure-pattern.md`: Home view remains thin; smart wrapper owns query; dumb card receives data props.
+- `docs/references/frontend/web/component-structure-pattern.md`: Home view remains thin; smart wrapper owns query; dumb card receives data props.
 - `.agents/skills/shadcn/rules/styling.md`: use semantic tokens, `gap-*`, `size-*`, and avoid raw Tailwind status colors; Recharts fill values may use category metadata colors because they are data-driven chart values.
 
 ## Progress

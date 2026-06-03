@@ -12,9 +12,9 @@
       "Checked current Telegram Mini App docs and package pages on 2026-06-01 to pressure-test launch-mode, storage, and package-namespace assumptions before writing repo truth."
     ],
     "artifacts": [
-      "Added `docs/design-docs/telegram-mini-app-client-architecture.md` as the durable home for TMA client architecture and native-bridge policy.",
-      "Added `docs/product-specs/telegram-mini-app.md` and updated current auth/invite/quick-add specs so TMA maps cleanly onto existing product behavior.",
-      "Added `docs/TMA.md`, `docs/references/tma/app-structure-and-client-rules.md`, and `docs/references/tma/auth-and-bot-pattern.md`, then routed them from `AGENTS.md`, `docs/FRONTEND.md`, `docs/BACKEND.md`, and `docs/references/index.md`.",
+      "Added `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md` as the durable home for TMA client architecture and native-bridge policy.",
+      "Added `docs/product-specs/tma/index.md` and updated current auth/invite/quick-add specs so TMA maps cleanly onto existing product behavior.",
+      "Added `docs/TMA.md`, `docs/references/frontend/tma/app-structure-and-client-rules.md`, and `docs/references/frontend/tma/auth-and-bot-pattern.md`, then routed them from `AGENTS.md`, `docs/FRONTEND.md`, `docs/BACKEND.md`, and `docs/references/index.md`.",
       "Added the completed ExecPlan, updated `docs/exec-plans/index.md`, updated `ARCHITECTURE.md`, seeded `feat-079` through `feat-085`, updated `harness/feature_index.json`, and logged progress in `harness/progress.md`.",
       "2026-06-02 follow-up expanded the TMA leaf-doc set with native UI/navigation, state/storage, and development/hardening guides, and refreshed the existing TMA rules to reflect newer Telegram package, storage, and launch-surface guidance.",
       "2026-06-02 terminology follow-up standardized the router and reference paths to `TMA`/`tma`, renamed the planned runtime app path to `apps/tma`, and removed old direct alternate-package mentions from the repo docs."

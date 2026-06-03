@@ -45,7 +45,7 @@ Users will create expenses from one compact dialog instead of switching between 
   - `apps/worker/src/handlers/profile/*`
   - `apps/worker/src/handlers/groups/*`
   - worker integration/unit tests touching expense create/update, profile source preference, and group behavior
-  - `docs/product-specs/quick-add-experience.md`
+  - `docs/product-specs/web/quick-add-experience.md`
   - `docs/product-specs/expense-tracking.md`
   - `docs/product-specs/expense-grouping.md`
   - `docs/product-specs/expense-ownership.md`
@@ -102,27 +102,27 @@ Users will create expenses from one compact dialog instead of switching between 
 - Shared expense field components live in `apps/web/src/components/expense/form-fields/*`.
 - Group APIs and hooks currently assume household-scoped groups via `apps/web/src/hooks/api/use-groups.ts` and worker group repositories/handlers.
 - Worker expense validation and minor-unit conversion live in `apps/worker/src/contracts/expense-schemas.ts` and `apps/worker/src/handlers/expenses/shared.ts`.
-- Product docs for create/group semantics live in `docs/product-specs/quick-add-experience.md`, `docs/product-specs/expense-tracking.md`, `docs/product-specs/expense-grouping.md`, and `docs/product-specs/expense-ownership.md`.
+- Product docs for create/group semantics live in `docs/product-specs/web/quick-add-experience.md`, `docs/product-specs/expense-tracking.md`, `docs/product-specs/expense-grouping.md`, and `docs/product-specs/expense-ownership.md`.
 
 ## Required Standards / Reference Docs
 
 Frontend references to apply:
 
-- `docs/references/frontend/project-folder-structure.md`
+- `docs/references/frontend/web/project-folder-structure.md`
   - Keep the new dialog as a feature-local component under `components/expense/`; do not add new root folders.
-- `docs/references/frontend/component-structure-pattern.md`
+- `docs/references/frontend/web/component-structure-pattern.md`
   - `add-expense-dialog.tsx` is the smart orchestrator; `components/expense/add-expense/*` stays presentational/helper-local.
-- `docs/references/frontend/frontend-component-architecture-guide.md`
+- `docs/references/frontend/web/frontend-component-architecture-guide.md`
   - Preserve layer order: route/view orchestration → feature smart component → presentational subcomponents → shadcn primitives.
-- `docs/references/frontend/naming-and-conventions-pattern.md`
+- `docs/references/frontend/web/naming-and-conventions-pattern.md`
   - Use kebab-case files, named exports, alias imports, and English comments only.
-- `docs/references/frontend/form-pattern.md`
+- `docs/references/frontend/web/form-pattern.md`
   - Keep one root `react-hook-form` schema, `data-invalid`, `aria-invalid`, and explicit `FieldError` rendering.
-- `docs/references/frontend/dialog-and-form-pattern.md`
+- `docs/references/frontend/web/dialog-and-form-pattern.md`
   - Use `Dialog` + `FieldGroup` composition; dialog/form state remains in the feature component.
-- `docs/references/frontend/api-react-query-pattern.md`
+- `docs/references/frontend/web/api-react-query-pattern.md`
   - UI uses hooks only; updated group/expense/profile APIs invalidate the correct query scopes.
-- `docs/references/frontend/i18n-label-pattern.md`
+- `docs/references/frontend/web/i18n-label-pattern.md`
   - All new labels and validation copy must be i18n-backed in all locale files.
 
 Backend references to apply:
