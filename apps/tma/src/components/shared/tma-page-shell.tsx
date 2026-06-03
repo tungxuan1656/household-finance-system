@@ -163,6 +163,7 @@ export const TmaPageTitleBar = ({ title }: { title: string }) => (
 
 export interface TmaPageShellProps {
   children: ReactNode
+  title: string
   showBottomTabs?: boolean
   showBackButton?: boolean
   /**
@@ -178,6 +179,7 @@ export interface TmaPageShellProps {
 
 export const TmaPageShell = ({
   children,
+  title,
   showBottomTabs = true,
   showBackButton = false,
   closeAction = false,
@@ -276,6 +278,8 @@ export const TmaPageShell = ({
         <div className='tma-page-shell__glow tma-page-shell__glow--accent' />
 
         <div className='tma-page-shell__viewport'>
+          <TmaPageTitleBar title={title} />
+
           <main
             ref={contentRef}
             className={joinClassNames(

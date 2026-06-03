@@ -5,7 +5,6 @@ import {
   TmaMonogramBadge,
   TmaPageHeader,
   TmaPageShell,
-  TmaPageTitleBar,
 } from '@/components/shared/tma-page-shell'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import { categoryOptions } from '@/features/finance/mock-data'
@@ -19,8 +18,7 @@ export const AddExpenseCategoryPage = () => {
   const selectCategory = useAddExpenseFlowStore((state) => state.selectCategory)
 
   return (
-    <TmaPageShell showBackButton showBottomTabs={false}>
-      <TmaPageTitleBar title='Thêm chi tiêu' />
+    <TmaPageShell showBackButton showBottomTabs={false} title='Thêm chi tiêu'>
       <TmaPageHeader eyebrow='Bước 1/3' title='Bắt đầu từ phần dễ nhất' />
       <section className='tma-step-card'>
         <label className='tma-date-pill'>

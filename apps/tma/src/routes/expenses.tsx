@@ -5,7 +5,6 @@ import { DotsIcon, FilterIcon } from '@/components/shared/tma-icons'
 import {
   TmaMonogramBadge,
   TmaPageShell,
-  TmaPageTitleBar,
 } from '@/components/shared/tma-page-shell'
 import { findCategory, recentExpenses } from '@/features/finance/mock-data'
 import { formatDateLabel, formatTimeLabel, formatVnd } from '@/lib/formatters'
@@ -41,8 +40,7 @@ export const ExpensesPage = () => {
   }, [])
 
   return (
-    <TmaPageShell showBackButton>
-      <TmaPageTitleBar title='Chi tiêu' />
+    <TmaPageShell showBackButton title='Chi tiêu'>
       <div className='tma-page-toolbar'>
         <p className='tma-page-toolbar__copy'>
           Lịch sử đầy đủ, nhẹ để quét mắt và quay lại thật nhanh.

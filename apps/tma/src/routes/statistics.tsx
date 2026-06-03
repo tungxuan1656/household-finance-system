@@ -2,10 +2,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@/components/shared/tma-icons'
-import {
-  TmaPageShell,
-  TmaPageTitleBar,
-} from '@/components/shared/tma-page-shell'
+import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { statisticMonths, statisticSlices } from '@/features/finance/mock-data'
 import { formatMonthLabel, formatVnd } from '@/lib/formatters'
 import { usePageMemoryState } from '@/lib/navigation/page-memory'
@@ -36,8 +33,7 @@ export const StatisticsPage = () => {
   const total = Math.round(slice.total * modifier)
 
   return (
-    <TmaPageShell showBackButton>
-      <TmaPageTitleBar title='Thống kê' />
+    <TmaPageShell showBackButton title='Thống kê'>
       <section className='tma-hero-card'>
         <div>
           <p className='tma-section-label'>Tổng chi</p>

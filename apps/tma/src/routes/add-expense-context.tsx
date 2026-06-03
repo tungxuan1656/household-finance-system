@@ -5,7 +5,6 @@ import {
   TmaMonogramBadge,
   TmaPageHeader,
   TmaPageShell,
-  TmaPageTitleBar,
 } from '@/components/shared/tma-page-shell'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import {
@@ -83,8 +82,8 @@ export const AddExpenseContextPage = () => {
       <TmaPageShell
         showBackButton
         backTo='/expenses/new/details'
-        showBottomTabs={false}>
-        <TmaPageTitleBar title='Thêm chi tiêu' />
+        showBottomTabs={false}
+        title='Thêm chi tiêu'>
         <TmaPageHeader eyebrow='Bước 3/3' title='Quay lại để hoàn tất bước 2' />
         <section className='tma-empty-card'>
           <h2>Chưa có dữ liệu preview</h2>
@@ -105,8 +104,8 @@ export const AddExpenseContextPage = () => {
       reserveBottomButton
       showBackButton
       backTo='/expenses/new/details'
-      showBottomTabs={false}>
-      <TmaPageTitleBar title='Thêm chi tiêu' />
+      showBottomTabs={false}
+      title='Thêm chi tiêu'>
       <TmaPageHeader
         eyebrow='Bước 3/3'
         subtitle='Chọn gia đình, nhóm và xem lại toàn bộ thông tin.'

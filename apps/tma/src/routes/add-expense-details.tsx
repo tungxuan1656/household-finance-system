@@ -6,7 +6,6 @@ import {
   TmaMonogramBadge,
   TmaPageHeader,
   TmaPageShell,
-  TmaPageTitleBar,
 } from '@/components/shared/tma-page-shell'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import { expenseSources } from '@/features/finance/mock-data'
@@ -74,8 +73,8 @@ export const AddExpenseDetailsPage = () => {
       <TmaPageShell
         showBackButton
         backTo='/expenses/new/category'
-        showBottomTabs={false}>
-        <TmaPageTitleBar title='Thêm chi tiêu' />
+        showBottomTabs={false}
+        title='Thêm chi tiêu'>
         <TmaPageHeader eyebrow='Bước 2/3' title='Thiếu dữ liệu bước trước' />
         <section className='tma-empty-card'>
           <h2>Chưa có danh mục</h2>
@@ -95,8 +94,8 @@ export const AddExpenseDetailsPage = () => {
       reserveBottomButton
       showBackButton
       backTo='/expenses/new/category'
-      showBottomTabs={false}>
-      <TmaPageTitleBar title='Thêm chi tiêu' />
+      showBottomTabs={false}
+      title='Thêm chi tiêu'>
       <TmaPageHeader
         eyebrow='Bước 2/3'
         subtitle='Nhập số tiền, nguồn tiền và mô tả.'

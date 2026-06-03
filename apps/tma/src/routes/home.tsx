@@ -5,7 +5,6 @@ import {
   TmaMonogramBadge,
   TmaPageHeader,
   TmaPageShell,
-  TmaPageTitleBar,
 } from '@/components/shared/tma-page-shell'
 import { useAuth } from '@/features/auth/auth-provider'
 import {
@@ -90,8 +89,7 @@ export const HomePage = () => {
   )
 
   return (
-    <TmaPageShell closeAction>
-      <TmaPageTitleBar title='Trang chủ' />
+    <TmaPageShell closeAction title='Trang chủ'>
       <TmaPageHeader
         eyebrow='Xin chào'
         leading={
