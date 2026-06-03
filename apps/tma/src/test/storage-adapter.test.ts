@@ -10,6 +10,7 @@ const createFakeSecureStorage = (
   options: {
     supported?: boolean
     failOn?: 'get' | 'set' | 'delete'
+    hangOn?: 'get' | 'set' | 'delete'
   } = {},
 ): SecureStorageLike & {
   store: Map<string, string>
@@ -19,8 +20,14 @@ const createFakeSecureStorage = (
   const store = new Map<string, string>()
   const isSupported = options.supported ?? true
   const failOn = options.failOn
+  const hangOn = options.hangOn
+
+  const hangForever = async () => new Promise<never>(() => undefined)
 
   const set = async (key: string, value: string | null) => {
+    if (hangOn === 'set') {
+      await hangForever()
+    }
     if (failOn === 'set') {
       throw new Error('secure storage unavailable')
     }
@@ -36,6 +43,9 @@ const createFakeSecureStorage = (
     store,
     set,
     getItem: async (key: string) => {
+      if (hangOn === 'get') {
+        await hangForever()
+      }
       if (failOn === 'get') {
         throw new Error('secure storage unavailable')
       }
@@ -47,6 +57,9 @@ const createFakeSecureStorage = (
     },
     setItem: (key, value) => set(key, value),
     deleteItem: async (key: string) => {
+      if (hangOn === 'delete') {
+        await hangForever()
+      }
       if (failOn === 'delete') {
         throw new Error('secure storage unavailable')
       }
@@ -106,6 +119,20 @@ describe('auth storage adapter', () => {
     await storage.setRefreshToken('corrupt-1')
     expect(warn).toHaveBeenCalledTimes(1)
     expect(await storage.getRefreshToken()).toBe('corrupt-1')
+  })
+
+  it('falls back to memory when SecureStorage hangs on write', async () => {
+    const warn = vi.fn()
+    const storage = createAuthStorage({
+      secureStorage: createFakeSecureStorage({ hangOn: 'set' }),
+      timeoutMs: 5,
+      warn,
+    })
+
+    await storage.setRefreshToken('hang-1')
+
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(await storage.getRefreshToken()).toBe('hang-1')
   })
 
   it('does not warn on subsequent memory fallback writes', async () => {

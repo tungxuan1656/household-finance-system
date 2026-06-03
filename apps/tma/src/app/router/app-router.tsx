@@ -1,13 +1,47 @@
-import { createHashRouter, RouterProvider } from 'react-router-dom'
+import { createHashRouter, Navigate, RouterProvider } from 'react-router-dom'
 
+import { AddExpenseCategoryPage } from '@/routes/add-expense-category'
+import { AddExpenseContextPage } from '@/routes/add-expense-context'
+import { AddExpenseDetailsPage } from '@/routes/add-expense-details'
+import { ExpensesPage } from '@/routes/expenses'
 import { FatalLaunchPage } from '@/routes/fatal-launch'
 import { HomePage } from '@/routes/home'
 import { NotFoundPage } from '@/routes/not-found'
+import { SettingsPage } from '@/routes/settings'
+import { StatisticsPage } from '@/routes/statistics'
 
 const router = createHashRouter([
   {
     path: '/',
     element: <HomePage />,
+  },
+  {
+    path: '/home',
+    element: <Navigate replace to='/' />,
+  },
+  {
+    path: '/statistics',
+    element: <StatisticsPage />,
+  },
+  {
+    path: '/settings',
+    element: <SettingsPage />,
+  },
+  {
+    path: '/expenses',
+    element: <ExpensesPage />,
+  },
+  {
+    path: '/expenses/new/category',
+    element: <AddExpenseCategoryPage />,
+  },
+  {
+    path: '/expenses/new/details',
+    element: <AddExpenseDetailsPage />,
+  },
+  {
+    path: '/expenses/new/context',
+    element: <AddExpenseContextPage />,
   },
   {
     path: '/fatal',

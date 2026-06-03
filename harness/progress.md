@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-03 — Built TMA shell and starter screen scaffolds
+
+- Who: Codex
+- Summary: Implemented the first real `apps/tma` UI slice from the package-local design spec. The scaffold now has a shared top header, a compact liquid-glass bottom rail with detached add bubble, real routes for `Home`, `Statistics`, `Settings`, `Expenses`, and the three-step add-expense flow, plus a small Zustand draft store for the add-expense flow order (`date + category -> amount + source + note -> household + group + preview`). The pages currently use local mock finance data so the shell and interaction quality can land before worker-query wiring. After implementation, a real Telegram report showed a white screen after successful auth exchange; source inspection pointed to `AuthBootstrap` returning `null` while bootstrapping plus a plausible hang in SecureStorage writes/reads. Follow-up hardening now shows the existing loading spinner during bootstrap and times SecureStorage operations out to the repo-approved memory-only fallback instead of letting the first authenticated render hang forever.
+- Files changed: TMA router, shared TMA shell components/icons/CSS, TMA finance mock data and format helpers, TMA add-expense flow store and store tests, TMA route screens, TMA app bootstrap loading fallback wiring, TMA auth storage timeout fallback, new feat-090 harness record, feature index, and this progress log.
+- Verification: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` all passed with `OK`; final repo verification with `./init.sh` completed and printed `Done!`. Browser-only screen previews rendered `Home`, `Statistics`, `Settings`, `Expenses`, and `Add expense step 1/2` through a temporary `MemoryRouter` + seeded auth harness because desktop browser boot does not have Telegram launch params; layouts looked correct. `python3 -m json.tool harness/feature_index.json` and `python3 -m json.tool harness/features/feat-090.json` both passed. `./scripts/check_harness_size.sh` returned `Harness size checks passed`. Final `gitnexus_detect_changes(scope: 'all')` reported `HIGH` risk with 42 changed symbols across 10 files and 10 affected processes, concentrated in the expected TMA shell/storage/routes surface. `git diff --check` is not fully clean because the worktree already contains unrelated EOF-blank-line diffs in `AGENTS.md` and `CLAUDE.md`. Real Telegram retest is still pending user confirmation.
+- Blockers: Real Telegram smoke could not be executed from this environment, so the blank-screen fix is implemented and locally verified but not yet confirmed on-device inside Telegram.
+- Next steps: Ask the user to reopen the Mini App in Telegram and confirm whether the blank screen is gone; if not, inspect the Telegram console for any runtime error after bootstrap/auth completes.
+
 ## 2026-06-03 — Completed frontend surface docs architecture refactor
 
 - Who: Codex

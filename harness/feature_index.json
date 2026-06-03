@@ -449,6 +449,11 @@
       "id": "feat-089",
       "name": "Frontend surface docs architecture refactor",
       "status": "done"
+    },
+    {
+      "id": "feat-090",
+      "name": "Telegram Mini App shell and starter screen scaffolds",
+      "status": "done"
     }
   ]
 }

@@ -22,7 +22,32 @@ export interface AuthStorage {
 
 export interface CreateAuthStorageOptions {
   secureStorage?: SecureStorageLike | null
+  timeoutMs?: number
   warn?: (message: string) => void
+}
+
+const DEFAULT_STORAGE_TIMEOUT_MS = 1500
+
+const withTimeout = async <T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+): Promise<T> => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error('secure storage timeout'))
+        }, timeoutMs)
+      }),
+    ])
+  } finally {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId)
+    }
+  }
 }
 
 const checkIsSupported = (
@@ -56,17 +81,18 @@ const checkIsSupported = (
 const readSecure = async (
   storage: SecureStorageLike | null | undefined,
   key: string,
+  timeoutMs: number,
 ): Promise<string | null | undefined> => {
   if (!checkIsSupported(storage)) {
     return undefined
   }
 
   try {
-    const result = await storage!.getItem(key)
+    const result = await withTimeout(storage!.getItem(key), timeoutMs)
 
     return result.value
   } catch {
-    return null
+    return undefined
   }
 }
 
@@ -74,13 +100,14 @@ const writeSecure = async (
   storage: SecureStorageLike | null | undefined,
   key: string,
   value: string | null,
+  timeoutMs: number,
 ): Promise<boolean> => {
   if (!checkIsSupported(storage)) {
     return false
   }
 
   try {
-    await storage!.setItem(key, value)
+    await withTimeout(storage!.setItem(key, value), timeoutMs)
 
     return true
   } catch {
@@ -91,13 +118,14 @@ const writeSecure = async (
 const deleteSecure = async (
   storage: SecureStorageLike | null | undefined,
   key: string,
+  timeoutMs: number,
 ): Promise<boolean> => {
   if (!checkIsSupported(storage)) {
     return false
   }
 
   try {
-    await storage!.deleteItem(key)
+    await withTimeout(storage!.deleteItem(key), timeoutMs)
 
     return true
   } catch {
@@ -109,6 +137,7 @@ export const createAuthStorage = (
   options: CreateAuthStorageOptions = {},
 ): AuthStorage => {
   const memoryStore = new Map<string, string>()
+  const timeoutMs = options.timeoutMs ?? DEFAULT_STORAGE_TIMEOUT_MS
   const warn = options.warn ?? ((message: string) => console.warn(message))
   const initialStorage = options.secureStorage ?? null
   let storageRef: SecureStorageLike | null = initialStorage
@@ -129,9 +158,13 @@ export const createAuthStorage = (
   }
 
   const getRefreshToken = async (): Promise<string | null> => {
-    const secure = await readSecure(storageRef, STORAGE_KEYS.refreshToken)
+    const secure = await readSecure(
+      storageRef,
+      STORAGE_KEYS.refreshToken,
+      timeoutMs,
+    )
 
-    if (secure !== undefined) {
+    if (secure !== undefined && secure !== null) {
       return secure
     }
 
@@ -139,7 +172,12 @@ export const createAuthStorage = (
   }
 
   const setRefreshToken = async (token: string): Promise<void> => {
-    const ok = await writeSecure(storageRef, STORAGE_KEYS.refreshToken, token)
+    const ok = await writeSecure(
+      storageRef,
+      STORAGE_KEYS.refreshToken,
+      token,
+      timeoutMs,
+    )
 
     if (!ok) {
       noteFallback()
@@ -150,7 +188,7 @@ export const createAuthStorage = (
 
   const clearRefreshToken = async (): Promise<void> => {
     memoryStore.delete(STORAGE_KEYS.refreshToken)
-    await deleteSecure(storageRef, STORAGE_KEYS.refreshToken)
+    await deleteSecure(storageRef, STORAGE_KEYS.refreshToken, timeoutMs)
   }
 
   return {

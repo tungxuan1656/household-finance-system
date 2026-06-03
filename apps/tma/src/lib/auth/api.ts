@@ -62,6 +62,73 @@ export interface CreateAuthApiClientOptions {
   baseUrl: string
   fetchImpl?: typeof fetch
   accessTokenProvider?: () => string | null
+  timeoutMs?: number
+}
+
+type AuthDebugStage =
+  | 'idle'
+  | 'fetch-start'
+  | 'fetch-response'
+  | 'json-start'
+  | 'json-success'
+  | 'error'
+
+const setAuthDebugStage = (
+  path: string,
+  stage: AuthDebugStage,
+  extra: Record<string, string> = {},
+): void => {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  const root = document.documentElement
+  const isExchange = path === '/auth/provider/exchange'
+
+  if (!isExchange) {
+    return
+  }
+
+  root.dataset.authExchangeStage = stage
+  const loader = document.querySelector<HTMLElement>(
+    '[data-loading="auth-bootstrap"]',
+  )
+  loader?.setAttribute('data-exchange-stage', stage)
+
+  for (const [key, value] of Object.entries(extra)) {
+    const dataKey = `authExchange${key.slice(0, 1).toUpperCase()}${key.slice(1)}`
+    root.dataset[dataKey] = value
+    loader?.setAttribute(
+      `data-exchange-${key.replaceAll(/([A-Z])/g, '-$1').toLowerCase()}`,
+      value,
+    )
+  }
+}
+
+const DEFAULT_AUTH_API_TIMEOUT_MS = 10_000
+
+const withTimeout = async <T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  onTimeout?: () => void,
+): Promise<T> => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          onTimeout?.()
+          reject(new AuthApiError(504, 'NETWORK_TIMEOUT'))
+        }, timeoutMs)
+      }),
+    ])
+  } finally {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId)
+    }
+  }
 }
 
 const joinUrl = (baseUrl: string, path: string): string =>
@@ -69,9 +136,13 @@ const joinUrl = (baseUrl: string, path: string): string =>
 
 const parseErrorPayload = async (
   response: Response,
+  timeoutMs: number,
 ): Promise<ApiErrorPayload> => {
   try {
-    const data = (await response.json()) as { error?: ApiErrorPayload }
+    const data = (await withTimeout(
+      response.json() as Promise<{ error?: ApiErrorPayload }>,
+      timeoutMs,
+    )) as { error?: ApiErrorPayload }
 
     return data.error ?? { code: 'UNKNOWN_ERROR' }
   } catch {
@@ -95,6 +166,7 @@ export const createAuthApiClient = (
   options: CreateAuthApiClientOptions,
 ): AuthApiClient => {
   const fetchImpl = options.fetchImpl ?? fetch
+  const timeoutMs = options.timeoutMs ?? DEFAULT_AUTH_API_TIMEOUT_MS
 
   const request = async <TResponse>(
     path: string,
@@ -105,14 +177,33 @@ export const createAuthApiClient = (
         ? options.accessTokenProvider()
         : null
 
-    const response = await fetchImpl(joinUrl(options.baseUrl, path), {
-      method: init.method,
-      headers: buildHeaders(accessToken),
-      body: init.body ? JSON.stringify(init.body) : undefined,
+    const controller = new AbortController()
+    setAuthDebugStage(path, 'fetch-start')
+
+    const response = await withTimeout(
+      fetchImpl(joinUrl(options.baseUrl, path), {
+        method: init.method,
+        headers: buildHeaders(accessToken),
+        body: init.body ? JSON.stringify(init.body) : undefined,
+        signal: controller.signal,
+      }),
+      timeoutMs,
+      () => {
+        controller.abort()
+      },
+    )
+
+    setAuthDebugStage(path, 'fetch-response', {
+      status: String(response.status),
+      ok: String(response.ok),
     })
 
     if (!response.ok) {
-      const errorPayload = await parseErrorPayload(response)
+      const errorPayload = await parseErrorPayload(response, timeoutMs)
+      setAuthDebugStage(path, 'error', {
+        status: String(response.status),
+        code: errorPayload.code,
+      })
       throw new AuthApiError(
         response.status,
         errorPayload.code,
@@ -120,7 +211,15 @@ export const createAuthApiClient = (
       )
     }
 
-    const data = (await response.json()) as { data: TResponse }
+    setAuthDebugStage(path, 'json-start')
+    const data = (await withTimeout(
+      response.json() as Promise<{ data: TResponse }>,
+      timeoutMs,
+    )) as { data: TResponse }
+
+    setAuthDebugStage(path, 'json-success', {
+      success: String(Boolean(data.data)),
+    })
 
     return data.data
   }

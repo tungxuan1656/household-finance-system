@@ -15,6 +15,32 @@ export interface AuthBootstrapDeps {
   exchangeLaunchData: (initData: string) => Promise<ExchangeProviderResponse>
   refreshSession: (refreshToken: string) => Promise<RefreshSessionResponse>
   onFatal?: () => void
+  onPhase?: (phase: AuthBootstrapPhase) => void
+}
+
+export type AuthBootstrapPhase =
+  | 'start'
+  | 'launch'
+  | 'exchange'
+  | 'exchange-success'
+  | 'storage'
+  | 'session'
+  | 'refresh-token-load'
+  | 'refresh'
+  | 'refresh-success'
+  | 'fatal-launch'
+  | 'fatal-network'
+  | 'fatal-session'
+
+const emitBootstrapPhase = (phase: AuthBootstrapPhase): void => {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  document.documentElement.dataset.authBootstrapPhase = phase
+  document
+    .querySelector<HTMLElement>('[data-loading="auth-bootstrap"]')
+    ?.setAttribute('data-bootstrap-phase', phase)
 }
 
 export const createAuthApiBootstrapDeps = (options: {
@@ -35,6 +61,7 @@ export const createAuthApiBootstrapDeps = (options: {
     options.api.exchangeProviderToken({ provider: 'telegram', initData }),
   refreshSession: (refreshToken) => options.api.refreshSession(refreshToken),
   onFatal: options.onFatal,
+  onPhase: undefined,
 })
 
 const isAuthApiError = (error: unknown): error is AuthApiError =>
@@ -49,70 +76,111 @@ const isTransientBootstrapFailure = (error: unknown): boolean =>
 export const runAuthBootstrap = async (
   deps: AuthBootstrapDeps,
 ): Promise<'authenticated' | 'fatal'> => {
-  useAuthStore.getState().setBootstrapping()
-
-  const launchData = deps.loadLaunchData()
-
-  if (!launchData) {
-    useAuthStore.getState().setError({ code: 'launchInvalid' })
-    deps.onFatal?.()
-
-    return 'fatal'
+  const notePhase = (phase: AuthBootstrapPhase) => {
+    emitBootstrapPhase(phase)
+    deps.onPhase?.(phase)
   }
 
   try {
-    const session = await deps.exchangeLaunchData(launchData)
-    await deps.setRefreshToken(session.refreshToken)
+    useAuthStore.getState().setBootstrapping()
+    notePhase('start')
 
-    useAuthStore.getState().setSession({
-      user: session.user,
-      accessToken: session.accessToken,
-      accessTokenExpiresIn: session.accessTokenExpiresIn,
-      refreshToken: session.refreshToken,
-    })
+    notePhase('launch')
 
-    return 'authenticated'
-  } catch (error) {
-    if (isLaunchRejected(error)) {
+    const launchData = deps.loadLaunchData()
+
+    if (!launchData) {
+      notePhase('fatal-launch')
       useAuthStore.getState().setError({ code: 'launchInvalid' })
       deps.onFatal?.()
 
       return 'fatal'
     }
 
-    const refreshToken = await deps.loadRefreshToken()
-
-    if (!refreshToken) {
-      useAuthStore.getState().setError({ code: 'networkError' })
-      deps.onFatal?.()
-
-      return 'fatal'
-    }
-
     try {
-      const refreshed = await deps.refreshSession(refreshToken)
-      await deps.setRefreshToken(refreshed.refreshToken)
+      notePhase('exchange')
 
-      useAuthStore.getState().refresh({
-        accessToken: refreshed.accessToken,
-        accessTokenExpiresIn: refreshed.accessTokenExpiresIn,
-        refreshToken: refreshed.refreshToken,
+      const session = await deps.exchangeLaunchData(launchData)
+      notePhase('exchange-success')
+      notePhase('storage')
+      await deps.setRefreshToken(session.refreshToken)
+
+      notePhase('session')
+
+      useAuthStore.getState().setSession({
+        user: session.user,
+        accessToken: session.accessToken,
+        accessTokenExpiresIn: session.accessTokenExpiresIn,
+        refreshToken: session.refreshToken,
       })
 
       return 'authenticated'
-    } catch (refreshError) {
-      if (isTransientBootstrapFailure(refreshError)) {
+    } catch (error) {
+      if (isLaunchRejected(error)) {
+        notePhase('fatal-launch')
+        useAuthStore.getState().setError({ code: 'launchInvalid' })
+        deps.onFatal?.()
+
+        return 'fatal'
+      }
+
+      notePhase('refresh-token-load')
+
+      const refreshToken = await deps.loadRefreshToken()
+
+      if (!refreshToken) {
+        notePhase('fatal-network')
         useAuthStore.getState().setError({ code: 'networkError' })
         deps.onFatal?.()
 
         return 'fatal'
       }
 
-      await deps.clearRefreshToken()
-      useAuthStore.getState().setError({ code: 'sessionExpired' })
-      deps.onFatal?.()
+      try {
+        notePhase('refresh')
 
-      return 'fatal'
+        const refreshed = await deps.refreshSession(refreshToken)
+        notePhase('refresh-success')
+        notePhase('storage')
+        await deps.setRefreshToken(refreshed.refreshToken)
+
+        notePhase('session')
+
+        useAuthStore.getState().refresh({
+          accessToken: refreshed.accessToken,
+          accessTokenExpiresIn: refreshed.accessTokenExpiresIn,
+          refreshToken: refreshed.refreshToken,
+        })
+
+        return 'authenticated'
+      } catch (refreshError) {
+        if (isTransientBootstrapFailure(refreshError)) {
+          notePhase('fatal-network')
+          useAuthStore.getState().setError({ code: 'networkError' })
+          deps.onFatal?.()
+
+          return 'fatal'
+        }
+
+        notePhase('fatal-session')
+        await deps.clearRefreshToken()
+        useAuthStore.getState().setError({ code: 'sessionExpired' })
+        deps.onFatal?.()
+
+        return 'fatal'
+      }
     }
+
+    notePhase('fatal-network')
+    useAuthStore.getState().setError({ code: 'networkError' })
+    deps.onFatal?.()
+
+    return 'fatal'
+  } catch {
+    notePhase('fatal-network')
+    useAuthStore.getState().setError({ code: 'networkError' })
+    deps.onFatal?.()
+
+    return 'fatal'
   }
 }
