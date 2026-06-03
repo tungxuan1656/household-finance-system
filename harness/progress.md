@@ -10,6 +10,15 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-03 — Synced worker CORS test with shared-network dev-host behavior
+
+- Who: Codex
+- Summary: Fixed the push-blocking worker unit test mismatch in `apps/worker/test/unit/cors.spec.ts`. The current `apps/worker/src/lib/cors.ts` implementation intentionally treats `100.116.7.43` as a local shared-network development host on any HTTP port so the TMA app and worker can be exercised from the same LAN device during local Telegram runs. The old test still expected `http://100.116.7.43:3001` to be rejected, which no longer matched runtime behavior and caused the pre-push hook to fail. Updated the spec to accept the host on alternate HTTP ports, keep HTTPS rejected, and keep the `resolveCorsOrigin()` assertions aligned with the implementation.
+- Files changed: Worker CORS unit test, feat-080 evidence, and this progress log.
+- Verification: `pnpm --filter worker exec vitest run test/unit/cors.spec.ts` passed (1 file, 4 tests); `pnpm --filter worker test` passed (79 files, 389 tests).
+- Blockers: none.
+- Next steps: Commit this test sync and push `feat/080` so PR `#76` picks up the latest local-dev and TMA auth fixes.
+
 ## 2026-06-02 — Fixed TMA auth client base URL wiring
 
 - Who: Codex
