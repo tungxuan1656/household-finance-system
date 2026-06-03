@@ -39,12 +39,13 @@ Read:
 
 - `docs/product-specs/telegram-mini-app.md`
 - `docs/product-specs/expense-tracking.md`
+- `apps/tma/DESIGN.md`
 - `docs/references/tma/native-ui-and-navigation-pattern.md`
 - `docs/references/tma/state-and-storage-pattern.md`
 
 Preserve:
 
-- flow is `amount -> category -> details`
+- flow is `date + category -> amount + source + note -> household + group + preview`
 - shared expense semantics stay worker-owned
 
 ## feat-082 — household and invite
@@ -66,6 +67,7 @@ Read:
 
 - `docs/product-specs/budget-management.md`
 - `docs/product-specs/analytics-overview.md`
+- `apps/tma/DESIGN.md`
 - `docs/references/tma/app-structure-and-client-rules.md`
 - `docs/references/tma/native-ui-and-navigation-pattern.md`
 

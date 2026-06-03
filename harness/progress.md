@@ -10,6 +10,24 @@
 
 <!-- Start writing log before here, latest log on top -->
 
+## 2026-06-03 — Aligned TMA docs to the new screen spec
+
+- Who: Codex
+- Summary: Replaced the remaining outdated TMA wording so the repo now points to one consistent TMA UI truth before implementation starts. The product-level TMA spec now describes the three root tabs (`Home`, `Statistics`, `Settings`) and the new three-step expense flow (`date + category -> amount + source + note -> household + group + preview`). The package-local `apps/tma/DESIGN.md` no longer carries a mismatch warning and now states the aligned flow directly. The TMA runtime-readiness map, state/storage guidance, native-navigation example, repo-owned TMA skill task map, and the planned feat-081 harness record were all updated so future implementation sessions read the same flow and route model everywhere. The one web-side quick-add note was kept neutral so this session does not redefine the web UI contract.
+- Files changed: TMA product/spec/design/reference docs, repo-owned TMA skill task map, planned TMA harness record, new feat-088 harness record, feature index, and this progress log.
+- Verification: `python3 -m json.tool harness/feature_index.json`, `python3 -m json.tool harness/features/feat-081.json`, and `python3 -m json.tool harness/features/feat-088.json` all passed; `./scripts/check_harness_size.sh` returned `Harness size checks passed`; `git diff --check` returned clean; final `gitnexus_detect_changes(scope: 'all')` returned `LOW` risk with 23 changed symbols, 0 affected processes, and 11 tracked changed files.
+- Blockers: none.
+- Next steps: Start the real TMA shell/route implementation against the now-aligned docs, beginning with the root tab shell and expense/history flow shells.
+
+## 2026-06-03 — Added package-local TMA screen design spec
+
+- Who: Codex
+- Summary: Added a new package-local `apps/tma/DESIGN.md` that turns the approved TMA direction plus the user-provided reference screens into one implementation-facing UI spec. The new doc locks the first TMA visual language (bright neutral background, oversized white cards, blue/green/yellow accents, compact liquid-glass tab rail, detached add bubble), defines the root shell contract (`Home`, `Statistics`, `Settings` tabs with header on every page and Telegram-owned back behavior for non-root flows), maps the requested pages (`home`, `statistics`, `settings`, `expenses`, `add-expense-1/2/3`), and spells out each screen's composition and performance constraints. The doc also explicitly flags the current repo-truth conflict where the requested add-expense order (`date + category -> amount + source + note -> household + group + preview`) differs from the still-documented amount-first TMA flow, so future code work does not silently diverge from the existing product/TMA specs.
+- Files changed: New package-local TMA design spec, TMA docs router entry, new feat-087 harness record, feature index, and this progress log.
+- Verification: `python3 -m json.tool harness/feature_index.json` and `python3 -m json.tool harness/features/feat-087.json` both passed; `./scripts/check_harness_size.sh` returned `Harness size checks passed`; `git diff --check` returned clean; final `gitnexus_detect_changes(scope: 'all')` returned `LOW` risk with 4 changed symbols, 0 affected processes, and 3 tracked changed files.
+- Blockers: none.
+- Next steps: Use `apps/tma/DESIGN.md` as the visual/page reference for the next TMA implementation slice, then reconcile the add-expense step-order mismatch in TMA/product docs before coding that flow.
+
 ## 2026-06-03 — Fixed remaining feat-080 auth review regressions
 
 - Who: Codex

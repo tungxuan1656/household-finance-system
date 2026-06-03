@@ -21,6 +21,7 @@ Telegram Mini App router. Read this for `apps/tma` work, then read only exact TM
 | Local dev, Telegram test env, debugging, hardening QA | `docs/references/tma/development-and-hardening-pattern.md` |
 | Exact local worker/TMA/Telegram smoke workflow | `docs/references/tma/local-testing-runbook.md` |
 | Which docs to read per TMA phase, locked defaults, remaining slice prerequisites | `docs/references/tma/runtime-readiness-and-slice-map.md` |
+| Screen structure, visual system, page map for the current TMA build | `apps/tma/DESIGN.md` |
 | Shared naming | `docs/references/shared/type-naming-pattern.md` |
 | Product behavior | `docs/product-specs/telegram-mini-app.md` |
 | Durable client direction | `docs/design-docs/telegram-mini-app-client-architecture.md` |

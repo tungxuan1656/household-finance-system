@@ -18,14 +18,16 @@ Offer a zero-install Telegram client for the same household-finance product, opt
    - invite preview and accept
    - other future targeted actions that the product explicitly supports
 4. Default navigation stays inside one SPA session. Back navigation uses Telegram `BackButton` when shown.
-5. Expense capture uses a three-step flow: amount -> category -> details.
-6. Read and write behavior follows the same worker rules already used by the web client.
+5. The root shell uses three tabs: `Home`, `Statistics`, and `Settings`. `Expenses` is a secondary page reached from shortcuts, recent activity, or the floating add/expense entry points.
+6. Expense capture uses a three-step flow: `date + category -> amount + source + note -> household + group + preview`.
+7. Read and write behavior follows the same worker rules already used by the web client.
 
 ## Acceptance Criteria
 
 - TMA opens without a separate install flow beyond Telegram.
 - Valid Telegram launch context can establish the same worker-backed app session model used by the web client.
 - Invite deep links can land a user inside TMA and preserve the invite-accept path.
+- Root TMA navigation exposes `Home`, `Statistics`, and `Settings` as the three top-level tabs, with a visible page header on every screen.
 - Expense create semantics stay identical to shared product rules even though the interaction model differs from web.
 - No offline write queue, guest mode, or product fork is implied.
 

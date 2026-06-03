@@ -104,8 +104,12 @@ AddExpenseFlowShell
   -> reads Zustand flow state and query data
   -> renders step page
 
-AmountStepPage
-  -> owns keypad UI and local input formatting
+CategoryDateStepPage
+  -> owns date summary and category selection UI
+  -> commits chosen category/date and advances on category tap
+
+ExpenseDetailsStepPage
+  -> owns amount, source, and note input formatting
   -> exposes current validity/value upward
 ```
 

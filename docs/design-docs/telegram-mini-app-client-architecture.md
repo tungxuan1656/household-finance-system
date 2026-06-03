@@ -26,6 +26,7 @@ This doc locks the durable client direction before runtime code starts.
 - Use React + Vite SPA. Do not embed TMA inside Next.js App Router.
 - Use SPA routing only. Full-page reload navigation is a bug.
 - TMA does not inherit `shadcn/ui` as its primary UI system.
+- The first TMA shell should use three root tabs: `Home`, `Statistics`, and `Settings`, with `Expenses` as a secondary flow page.
 - Telegram bridge features are first-class when supported: back button, bottom buttons, theme vars, haptics, closing confirmation, and deep links.
 - Bot chat is companion UX only: launch, invite, alerts, and summaries.
 
@@ -118,9 +119,9 @@ Not allowed:
 
 TMA expense capture may use separate routes such as:
 
-- `/add/amount`
-- `/add/category`
-- `/add/details`
+- `/expenses/new/category`
+- `/expenses/new/details`
+- `/expenses/new/context`
 
 That is correct only when the bundle stays loaded and state stays in memory/store.
 

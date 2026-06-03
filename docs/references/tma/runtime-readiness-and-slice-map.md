@@ -96,12 +96,13 @@ Read first:
 - `docs/product-specs/expense-categorization.md`
 - `docs/product-specs/expense-grouping.md`
 - `docs/product-specs/expense-household-context.md`
+- `apps/tma/DESIGN.md`
 - `docs/references/tma/native-ui-and-navigation-pattern.md`
 - `docs/references/tma/state-and-storage-pattern.md`
 
 Preserve these repo truths:
 
-- TMA expense flow is amount -> category -> details
+- TMA expense flow is `date + category -> amount + source + note -> household + group + preview`
 - shared worker expense semantics stay unchanged
 - TMA-specific UX is allowed only where it improves interaction quality, not domain behavior
 
@@ -138,6 +139,7 @@ Read first:
 - `docs/product-specs/expense-querying.md`
 - `docs/product-specs/analytics-overview.md`
 - `docs/product-specs/expense-grouping.md`
+- `apps/tma/DESIGN.md`
 - `docs/references/tma/app-structure-and-client-rules.md`
 - `docs/references/tma/native-ui-and-navigation-pattern.md`
 - `docs/references/tma/state-and-storage-pattern.md`
