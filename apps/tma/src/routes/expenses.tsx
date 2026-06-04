@@ -6,6 +6,7 @@ import {
   TmaMonogramBadge,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
+import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import {
   useExpenseListQuery,
   useHouseholdsQuery,
@@ -43,7 +44,7 @@ export const ExpensesPage = () => {
   const households = householdsQuery.data?.items ?? []
 
   const householdNameMap = useMemo(
-    () => new Map(households.map((h) => [h.id, h.name])),
+    () => buildHouseholdNameMap(households),
     [households],
   )
 

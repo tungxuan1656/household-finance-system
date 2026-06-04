@@ -16,6 +16,10 @@ import {
   useExpenseDetailQuery,
   useUpdateExpenseMutation,
 } from '@/features/expenses/api'
+import {
+  buildHouseholdNameMap,
+  getSourceLabel,
+} from '@/features/expenses/presentation'
 import { useEditExpenseStore } from '@/features/expenses/store'
 import {
   useHouseholdsQuery,
@@ -30,25 +34,6 @@ import {
 } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
-
-const getSourceLabel = (key: string): string => {
-  switch (key) {
-    case 'cash':
-      return 'Tiền mặt'
-    case 'bank-transfer':
-      return 'Chuyển khoản'
-    case 'card':
-      return 'Thẻ tín dụng'
-    case 'momo':
-      return 'Ví MoMo'
-    case 'zalo-pay':
-      return 'Ví ZaloPay'
-    case 'shopee-pay':
-      return 'Ví ShopeePay'
-    default:
-      return 'Khác'
-  }
-}
 
 // 1. MAIN EDIT FORM PAGE
 export const ExpenseEditPage = () => {
@@ -105,7 +90,7 @@ export const ExpenseEditPage = () => {
 
   // Map values
   const householdNameMap = useMemo(
-    () => new Map(households.map((h) => [h.id, h.name])),
+    () => buildHouseholdNameMap(households),
     [households],
   )
 

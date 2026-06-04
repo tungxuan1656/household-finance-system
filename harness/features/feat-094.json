@@ -27,7 +27,8 @@
       "Removed currently unreachable bootstrap branches in `apps/tma/src/features/auth/bootstrap.tsx`, `apps/tma/src/features/auth/bootstrap-deps.ts`, and `apps/tma/src/features/auth/store.ts` without changing the existing authenticated/fatal outcomes.",
       "Lazy-loaded the TMA route modules in `apps/tma/src/app/router/app-router.tsx`, removed the duplicate explicit `/home` route, and preserved the same page components behind `Suspense` + `LoadingFallback`.",
       "Tightened shared shell back-navigation in `apps/tma/src/components/shared/tma-page-shell.tsx` so SPA back now depends only on React Router's own `history.state.idx` and never on browser-history length outside the Mini App stack.",
-      "Added a focused shell navigation regression test covering SPA back and cold-detail fallback, preserved create-household partial-failure feedback across navigation, cached TMA currency formatters, removed the dead `AuthBootstrap.loadingFallback` prop, and reused shared `closeMiniApp` in both fatal screens."
+      "Added a focused shell navigation regression test covering SPA back and cold-detail fallback, preserved create-household partial-failure feedback across navigation, cached TMA currency formatters, removed the dead `AuthBootstrap.loadingFallback` prop, and reused shared `closeMiniApp` in both fatal screens.",
+      "Extracted `apps/tma/src/features/expenses/presentation.ts` so `getSourceLabel()` and `buildHouseholdNameMap()` are shared across `ExpensesPage`, `ExpenseDetailPage`, and `ExpenseEditPage` instead of being repeated in each route."
     ],
     "verification": [
       "Focused TMA verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/home-presentation.test.ts src/test/storage-adapter.test.ts src/test/theme.test.ts src/test/telegram-init.test.ts src/test/auth-bootstrap.test.ts src/test/safe-area.test.ts` passed with 24 tests across 6 files.",
@@ -36,7 +37,9 @@
       "Repo hygiene checks passed on 2026-06-04: `git diff --check` returned clean.",
       "Focused shell/navigation verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/tma-page-shell-navigation.test.tsx src/test/scroll-restoration.test.tsx src/test/theme.test.ts src/test/telegram-init.test.ts src/test/storage-adapter.test.ts src/test/auth-bootstrap.test.ts src/test/home-presentation.test.ts` passed with 27 tests across 7 files.",
       "Repo-wide follow-up verification passed on 2026-06-04 after the continued refactor: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, `./init.sh build`, and final `./init.sh` all completed successfully (`OK` / `Done!`).",
-      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 5 changed files / 12 changed symbols / 49 affected processes for the isolated shell/auth cleanup follow-up, concentrated in `TmaPageShell`, `AuthBootstrap`, and the router."
+      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 5 changed files / 12 changed symbols / 49 affected processes for the isolated shell/auth cleanup follow-up, concentrated in `TmaPageShell`, `AuthBootstrap`, and the router.",
+      "Focused helper-extraction verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/expense-presentation.test.ts src/test/tma-page-shell-navigation.test.tsx src/test/home-presentation.test.ts` passed with 9 tests across 3 files, `pnpm --filter tma typecheck` passed, `./init.sh lint` returned `OK`, `./init.sh test` returned `OK`, and final `./init.sh` again completed with `Done!`.",
+      "Final GitNexus check for the helper-extraction slice reported `high` risk with 3 changed files / 12 changed symbols / 14 affected processes, limited to the expected expense routes (`ExpensesPage`, `ExpenseDetailPage`, `ExpenseEditPage`)."
     ]
   },
   "notes": "This feature is a hardening and architecture pass over the active TMA worktree. It intentionally prioritizes runtime correctness and cold-start behavior over new product scope."

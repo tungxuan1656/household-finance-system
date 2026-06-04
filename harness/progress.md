@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Extracted shared expense-route presentation helpers in TMA
+
+- Who: Codex
+- Summary: Continued the `feat-094` cleanup pass with a very narrow pure-helper extraction inside the expense surface. Moved duplicated payment-source labeling and household-name lookup logic into new shared helpers under `apps/tma/src/features/expenses/presentation.ts`, then switched `ExpensesPage`, `ExpenseDetailPage`, and `ExpenseEditPage` to use them. This cuts repeated route-local code without touching higher-risk category formatting, auth bootstrap, or shared shell behavior.
+- Files changed: New TMA expense presentation helper module, the three TMA expense routes that previously duplicated those helpers, a focused helper regression test, feat-094 evidence, and this progress log.
+- Verification: Focused helper tests passed (`9` tests across `3` files). `pnpm --filter tma typecheck` passed. `./init.sh lint` returned `OK`. `./init.sh test` returned `OK`. Final `./init.sh` completed with `Done!`. `git diff --check` stayed clean. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `high` risk with `3` changed files, `12` changed symbols, and `14` affected processes, all concentrated in the expected expense routes.
+- Blockers: None.
+- Next steps: `feat-094` can stop here as a stable runtime/navigation/helper baseline, or continue later with the remaining optional duplication work (`getCurrentPeriod`, avatar-size constant, category-label/i18n unification) if we want a broader shared-helper cleanup pass.
+
 ## 2026-06-04 — Continued feat-094 with isolated shell/navigation refactor and cleanup
 
 - Who: Codex

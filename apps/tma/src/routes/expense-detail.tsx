@@ -11,6 +11,10 @@ import {
   useExpenseDetailQuery,
 } from '@/features/expenses/api'
 import {
+  buildHouseholdNameMap,
+  getSourceLabel,
+} from '@/features/expenses/presentation'
+import {
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
@@ -20,25 +24,6 @@ import {
 } from '@/features/home/presentation'
 import { formatDateLabel, formatTimeLabel } from '@/lib/formatters'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
-
-const getSourceLabel = (key: string): string => {
-  switch (key) {
-    case 'cash':
-      return 'Tiền mặt'
-    case 'bank-transfer':
-      return 'Chuyển khoản'
-    case 'card':
-      return 'Thẻ tín dụng'
-    case 'momo':
-      return 'Ví MoMo'
-    case 'zalo-pay':
-      return 'Ví ZaloPay'
-    case 'shopee-pay':
-      return 'Ví ShopeePay'
-    default:
-      return 'Khác'
-  }
-}
 
 export const ExpenseDetailPage = () => {
   const { id } = useParams<{ id: string }>()
@@ -62,7 +47,7 @@ export const ExpenseDetailPage = () => {
 
   // Map values
   const householdNameMap = useMemo(
-    () => new Map(households.map((h) => [h.id, h.name])),
+    () => buildHouseholdNameMap(households),
     [households],
   )
 

@@ -57,6 +57,7 @@ This change hardens `apps/tma` so the Mini App does not die before React renders
 - 2026-06-04: A browser-like non-TMA environment still throws from `init()` with a `LaunchParamsRetrieveError`, so startup hardening must happen before app render, not only inside auth bootstrap.
 - 2026-06-04: Route-level lazy loading reduced the eager entry chunk from roughly `525.83 kB` minified / `161.66 kB` gzip to `436.00 kB` minified / `139.30 kB` gzip, while splitting each TMA route into its own small chunk. `TmaPageShell` back-navigation fallback work was deferred because GitNexus marked that shared shell as `CRITICAL` blast radius.
 - 2026-06-04: The isolated `TmaPageShell` pass held up under focused regression coverage; switching back-navigation to React Router's own `history.state.idx` and dropping the `window.history.length` fallback did not break current SPA flows in focused tests.
+- 2026-06-04: The remaining low-risk duplication in expense routes was mostly presentation-only. Extracting shared `getSourceLabel()` and `buildHouseholdNameMap()` cut repeated logic across `ExpensesPage`, `ExpenseDetailPage`, and `ExpenseEditPage` without reopening the higher-risk category or auth helpers.
 
 ## Decision Log
 
