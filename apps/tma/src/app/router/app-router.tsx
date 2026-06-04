@@ -4,6 +4,7 @@ import { TMA_PATHS } from '@/lib/constants/routes'
 import { AddExpenseCategoryPage } from '@/routes/add-expense-category'
 import { AddExpenseContextPage } from '@/routes/add-expense-context'
 import { AddExpenseDetailsPage } from '@/routes/add-expense-details'
+import { CreateHouseholdRoute } from '@/routes/create-household'
 import { ExpenseDetailPage } from '@/routes/expense-detail'
 import {
   ExpenseEditCategoryPage,
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
       {
         path: TMA_PATHS.households,
         element: <HouseholdsPage />,
+      },
+      {
+        path: TMA_PATHS.householdsNew,
+        element: <CreateHouseholdRoute />,
       },
       {
         path: `${TMA_PATHS.households}/:id`,

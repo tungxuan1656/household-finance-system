@@ -7,6 +7,7 @@ export const TMA_PATHS = {
   expensesNewDetails: '/expenses/new/details',
   expensesNewContext: '/expenses/new/context',
   households: '/households',
+  householdsNew: '/households/new',
   fatal: '/fatal',
 } as const
 

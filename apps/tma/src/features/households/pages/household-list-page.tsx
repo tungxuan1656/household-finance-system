@@ -1,5 +1,5 @@
-import { type FormEvent, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
@@ -12,7 +12,6 @@ import { formatMonthLabel } from '@/lib/formatters'
 import { impact } from '@/lib/telegram/haptics'
 
 import {
-  useCreateHouseholdMutation,
   useHouseholdBudgetQueries,
   useHouseholdListQuery,
   useHouseholdMemberQueries,
@@ -25,16 +24,8 @@ import {
 } from '../presentation'
 
 export const HouseholdListPage = () => {
-  const navigate = useNavigate()
   const period = getCurrentPeriod()
   const householdsQuery = useHouseholdListQuery()
-  const createHouseholdMutation = useCreateHouseholdMutation()
-  const [draftName, setDraftName] = useState('')
-  const [isComposerOpen, setIsComposerOpen] = useState(false)
-  const [feedback, setFeedback] = useState<{
-    message: string
-    tone: 'error' | 'success'
-  } | null>(null)
 
   const households = householdsQuery.data?.items ?? []
   const memberQueries = useHouseholdMemberQueries(households)
@@ -64,45 +55,6 @@ export const HouseholdListPage = () => {
     [budgetQueries, households, memberQueries, overviewQueries],
   )
 
-  const handleCreateHousehold = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const name = draftName.trim()
-
-    if (!name) {
-      setFeedback({
-        message: 'Nhập tên household trước khi tạo mới.',
-        tone: 'error',
-      })
-
-      return
-    }
-
-    try {
-      const created = await createHouseholdMutation.mutateAsync({ name })
-
-      setDraftName('')
-      setIsComposerOpen(false)
-
-      setFeedback({
-        message: 'Đã tạo household mới. Mở chi tiết để tiếp tục chỉnh sửa.',
-        tone: 'success',
-      })
-
-      navigate(getHouseholdDetailPath(created.id))
-    } catch (error) {
-      setFeedback({
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Không thể tạo household lúc này.',
-        tone: 'error',
-      })
-    }
-  }
-
-  const showComposer = isComposerOpen || householdCards.length === 0
-
   return (
     <TmaPageShell showBackButton backTo={TMA_PATHS.root} title='Gia đình'>
       <section className='tma-hero-card tma-household-hub-card'>
@@ -122,13 +74,6 @@ export const HouseholdListPage = () => {
         </div>
       </section>
 
-      {feedback ? (
-        <section
-          className={`tma-feedback-banner tma-feedback-banner--${feedback.tone}`}>
-          <p>{feedback.message}</p>
-        </section>
-      ) : null}
-
       <section className='tma-section'>
         <div className='tma-section__header'>
           <div>
@@ -136,18 +81,16 @@ export const HouseholdListPage = () => {
             <h2 className='tma-section__title'>Household của bạn</h2>
           </div>
 
-          {showComposer ? null : (
-            <button
+          {householdCards.length > 0 ? (
+            <Link
               className='tma-chip-button'
-              type='button'
+              to={TMA_PATHS.householdsNew}
               onClick={() => {
                 impact('light')
-                setIsComposerOpen(true)
-                setFeedback(null)
               }}>
               <span>Tạo mới</span>
-            </button>
-          )}
+            </Link>
+          ) : null}
         </div>
 
         {householdsQuery.isError && householdCards.length === 0 ? (
@@ -169,6 +112,16 @@ export const HouseholdListPage = () => {
               Tạo household đầu tiên để bắt đầu theo dõi chi tiêu chia sẻ trong
               TMA.
             </p>
+            <div className='tma-action-row'>
+              <Link
+                className='tma-action-button tma-action-button--primary'
+                to={TMA_PATHS.householdsNew}
+                onClick={() => {
+                  impact('light')
+                }}>
+                Tạo household
+              </Link>
+            </div>
           </div>
         ) : (
           <div className='tma-household-grid'>
@@ -251,66 +204,21 @@ export const HouseholdListPage = () => {
 
         <section className='tma-list-card tma-create-household-card'>
           <div>
-            <h3>
-              {showComposer ? 'Đặt tên household mới' : 'Tạo thêm household'}
-            </h3>
+            <h3>Tạo thêm household</h3>
             <p>
-              Dùng tên ngắn, dễ nhận ra. Bạn có thể chỉnh avatar và thông tin
-              chi tiết sau khi tạo xong.
+              Chuyển sang màn hình tạo riêng để nhập tên, chọn avatar, rồi tạo
+              household mới với flow ảnh giống web profile-avatar.
             </p>
           </div>
 
-          {showComposer ? (
-            <form
-              className='tma-create-household-card__form'
-              onSubmit={handleCreateHousehold}>
-              <input
-                className='tma-text-input'
-                disabled={createHouseholdMutation.isPending}
-                placeholder='Ví dụ: Nhà Phùng Thịnh'
-                type='text'
-                value={draftName}
-                onChange={(event) => {
-                  setDraftName(event.target.value)
-                  setFeedback(null)
-                }}
-              />
-
-              <div className='tma-action-row'>
-                {householdCards.length > 0 ? (
-                  <button
-                    className='tma-action-button tma-action-button--ghost'
-                    disabled={createHouseholdMutation.isPending}
-                    type='button'
-                    onClick={() => {
-                      setIsComposerOpen(false)
-                      setDraftName('')
-                    }}>
-                    Hủy
-                  </button>
-                ) : null}
-
-                <button
-                  className='tma-action-button tma-action-button--primary'
-                  disabled={createHouseholdMutation.isPending}
-                  type='submit'>
-                  {createHouseholdMutation.isPending
-                    ? 'Đang tạo...'
-                    : 'Tạo household'}
-                </button>
-              </div>
-            </form>
-          ) : (
-            <button
-              className='tma-action-button tma-action-button--primary'
-              type='button'
-              onClick={() => {
-                impact('light')
-                setIsComposerOpen(true)
-              }}>
-              Mở form tạo mới
-            </button>
-          )}
+          <Link
+            className='tma-action-button tma-action-button--primary'
+            to={TMA_PATHS.householdsNew}
+            onClick={() => {
+              impact('light')
+            }}>
+            Mở màn hình tạo household
+          </Link>
         </section>
       </section>
     </TmaPageShell>

@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Restored TMA page-shell scroll position on back navigation
+
+- Who: Codex
+- Summary: Traced the TMA scroll-restoration regression to a mismatch between the current worktree and the actual scroll root. The earlier in-memory `page-memory` implementation had been removed, and the root route was relying on React Router's `ScrollRestoration`, but that helper only restores `window.scrollY` while the Telegram Mini App scrolls inside `main.tma-page-shell__content`. Added a TMA-specific container restoration hook keyed by the router location, wired it into `TmaPageShell`, removed the misleading root `ScrollRestoration`, and added a focused regression test that reproduces list -> detail -> back and verifies the previous `scrollTop` is restored.
+- Files changed: TMA root layout, shared TMA page shell, new TMA container-scroll restoration hook, focused regression test, feat-091 harness evidence, and this progress log.
+- Verification: `./node_modules/.bin/vitest run src/test/scroll-restoration.test.tsx` passed. `./init.sh build` passed with `OK`. Final repo verification `./init.sh` completed and printed `Done!`. `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` whole-worktree blast radius with 18 changed symbols across 11 files because unrelated TMA household and shell follow-ups are also present in the active worktree.
+- Blockers: None for this scroll fix. Real Telegram/on-device smoke is still pending because this environment cannot provide Telegram launch params.
+- Next steps: Open a long TMA list inside Telegram, navigate into a detail screen, then go back and confirm the content returns to the previous scroll position instead of resetting to the top.
+
+## 2026-06-04 — Added a dedicated TMA create-household page with shared avatar flow
+
+- Who: Codex
+- Summary: Replaced the inline create-household composer on the TMA household list page with a dedicated `/households/new` page that accepts both `name` and `avatar`. The avatar interaction now reuses the same shared household-avatar component as the detail page, so both create and detail follow one maintainable flow: pick file, preview in dialog, apply upload, then persist the resulting `avatarUrl` through the household API. The create page submits `POST /households` first, then applies the uploaded avatar to the new household via `PATCH /households/:id`, matching the existing web/API capabilities instead of inventing a new create contract.
+- Files changed: TMA household list page, new create-household page/route, route constants/router wiring, shared household avatar component, feat-082 harness evidence, and this progress log.
+- Verification: `pnpm --filter tma typecheck` passed. `pnpm --filter tma build` passed. `pnpm --filter tma lint` completed with only the two known pre-existing `no-console` warnings in `apps/tma/src/lib/i18n/index.ts` and `apps/tma/src/lib/storage/adapter.ts`.
+- Blockers: Full repo-level `./init.sh` was not rerun for this follow-up because the active worktree still contains unrelated TMA verification blockers outside the household create slice.
+- Next steps: Open `/households/new` inside Telegram, verify the preview/apply avatar timing feels right on-device, and confirm the create -> patch avatar sequence lands on the new household detail page with the chosen image.
+
 ## 2026-06-04 — Aligned TMA household avatar flow with the existing web profile-avatar flow
 
 - Who: Codex

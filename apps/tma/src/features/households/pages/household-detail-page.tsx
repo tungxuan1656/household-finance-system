@@ -190,12 +190,12 @@ export const HouseholdDetailPage = () => {
           <section className='tma-list-card tma-avatar-setup-card'>
             <HouseholdAvatarSection
               avatarUrl={household.avatarUrl}
+              canEdit={isAdmin}
               helperText='Hỗ trợ ảnh vuông JPEG hoặc PNG, tối đa 8MB. Hệ thống sẽ tự căn giữa ảnh trước khi lưu.'
               householdName={household.name}
-              isAdmin={isAdmin}
               isBusy={isBusy}
-              memberSummary={memberSummary}
-              roleLabel={getHouseholdRoleLabel(household.role)}
+              readOnlyMessage='Chỉ quản trị viên mới có thể chỉnh tên và avatar của household.'
+              summaryText={`${memberSummary} • ${getHouseholdRoleLabel(household.role)}`}
               onAvatarUploaded={handleAvatarUploaded}
             />
           </section>

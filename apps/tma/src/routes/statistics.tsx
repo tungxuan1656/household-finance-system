@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -5,7 +7,6 @@ import {
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { statisticMonths, statisticSlices } from '@/features/finance/mock-data'
 import { formatMonthLabel, formatVnd } from '@/lib/formatters'
-import { usePageMemoryState } from '@/lib/navigation/page-memory'
 import { impact, selection } from '@/lib/telegram/haptics'
 
 const rangeOptions = [
@@ -18,15 +19,9 @@ const rangeOptions = [
 const monthModifiers = [1, 0.92, 0.88]
 
 export const StatisticsPage = () => {
-  const [pageState, setPageState] = usePageMemoryState<{
-    monthIndex: number
-    range: (typeof rangeOptions)[number]['id']
-  }>('statistics-view', {
-    monthIndex: 0,
-    range: 'month',
-  })
-
-  const { monthIndex, range } = pageState
+  const [monthIndex, setMonthIndex] = useState(0)
+  const [range, setRange] =
+    useState<(typeof rangeOptions)[number]['id']>('month')
 
   const slice = statisticSlices[range]
   const modifier = monthModifiers[monthIndex] ?? 1
@@ -52,14 +47,7 @@ export const StatisticsPage = () => {
           type='button'
           onClick={() => {
             impact('light')
-
-            setPageState((current) => ({
-              ...current,
-              monthIndex:
-                current.monthIndex === 0
-                  ? statisticMonths.length - 1
-                  : current.monthIndex - 1,
-            }))
+            setMonthIndex((i) => (i === 0 ? statisticMonths.length - 1 : i - 1))
           }}>
           <ChevronLeftIcon height='18' width='18' />
         </button>
@@ -74,11 +62,7 @@ export const StatisticsPage = () => {
           type='button'
           onClick={() => {
             impact('light')
-
-            setPageState((current) => ({
-              ...current,
-              monthIndex: (current.monthIndex + 1) % statisticMonths.length,
-            }))
+            setMonthIndex((i) => (i + 1) % statisticMonths.length)
           }}>
           <ChevronRightIcon height='18' width='18' />
         </button>
@@ -92,11 +76,7 @@ export const StatisticsPage = () => {
             type='button'
             onClick={() => {
               selection()
-
-              setPageState((current) => ({
-                ...current,
-                range: option.id,
-              }))
+              setRange(option.id)
             }}>
             {option.label}
           </button>

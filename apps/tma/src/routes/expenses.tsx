@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { DotsIcon, FilterIcon } from '@/components/shared/tma-icons'
@@ -16,7 +16,6 @@ import {
   getCategoryPresentation,
 } from '@/features/home/presentation'
 import { formatDateLabel, formatTimeLabel, formatVnd } from '@/lib/formatters'
-import { usePageMemoryState } from '@/lib/navigation/page-memory'
 import { impact, selection } from '@/lib/telegram/haptics'
 
 interface ExpenseRouteState {
@@ -29,11 +28,8 @@ interface ExpenseRouteState {
 export const ExpensesPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [pageState, setPageState] = usePageMemoryState('expenses-view', {
-    showFilters: false,
-  })
+  const [showFilters, setShowFilters] = useState(false)
   const routeState = (location.state as ExpenseRouteState | null) ?? null
-  const showFilters = pageState.showFilters
 
   const expensesQuery = useExpenseListQuery({
     sort: 'occurred_at_desc',
@@ -87,11 +83,7 @@ export const ExpensesPage = () => {
           type='button'
           onClick={() => {
             selection()
-
-            setPageState((current) => ({
-              ...current,
-              showFilters: !current.showFilters,
-            }))
+            setShowFilters((v) => !v)
           }}>
           <FilterIcon height='16' width='16' />
           <span>Lọc</span>

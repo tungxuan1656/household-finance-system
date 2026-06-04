@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
+import { useContainerScrollRestoration } from '@/app/router/use-container-scroll-restoration'
 import { AppShell } from '@/components/shared/app-shell'
 import {
   ChevronRightIcon,
@@ -10,7 +11,6 @@ import {
   StatisticsIcon,
 } from '@/components/shared/tma-icons'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { pageMemoryStore } from '@/lib/navigation/page-memory'
 import {
   hideBackButton,
   showBackButton as bindBackButton,
@@ -189,14 +189,10 @@ export const TmaPageShell = ({
   bubbleHref,
   contentClassName,
 }: TmaPageShellProps) => {
-  const contentRef = useRef<HTMLElement | null>(null)
-  const location = useLocation()
   const navigate = useNavigate()
-  const normalizedPathname =
-    location.pathname === TMA_PATHS.home
-      ? HOME_FALLBACK_ROUTE
-      : location.pathname
-  const pageMemoryKey = `${normalizedPathname}${location.search}`
+  const contentRef = useRef<HTMLElement | null>(null)
+
+  useContainerScrollRestoration(contentRef)
 
   const handleBack = useEffectEvent(() => {
     const canGoBack =
@@ -223,7 +219,6 @@ export const TmaPageShell = ({
     hideBottomButton()
 
     if (closeAction) {
-      // Root screen: hide Telegram native BackButton, render our Close pill.
       hideBackButton()
 
       return
@@ -245,34 +240,6 @@ export const TmaPageShell = ({
       hideBackButton()
     }
   }, [handleBack, showBackButton, closeAction])
-
-  useEffect(() => {
-    const content = contentRef.current
-
-    if (!content) {
-      return
-    }
-
-    const restoreFrame = window.requestAnimationFrame(() => {
-      content.scrollTop = pageMemoryStore
-        .getState()
-        .getScrollOffset(pageMemoryKey)
-    })
-
-    const handleScroll = () => {
-      pageMemoryStore
-        .getState()
-        .setScrollOffset(pageMemoryKey, content.scrollTop)
-    }
-
-    content.addEventListener('scroll', handleScroll, { passive: true })
-
-    return () => {
-      window.cancelAnimationFrame(restoreFrame)
-      handleScroll()
-      content.removeEventListener('scroll', handleScroll)
-    }
-  }, [pageMemoryKey])
 
   return (
     <AppShell>

@@ -17,24 +17,28 @@ import { HouseholdAvatarDialog } from './household-avatar-dialog'
 
 type HouseholdAvatarSectionProps = {
   avatarUrl: string | null
-  householdName: string
+  canEdit: boolean
+  description?: string
   helperText: string
-  isAdmin: boolean
   isBusy: boolean
-  memberSummary: string
-  roleLabel: string
+  readOnlyMessage?: string
+  summaryText: string
+  title?: string
+  householdName: string
   onAvatarUploaded: (avatarUrl: string) => Promise<void>
 }
 
 export const HouseholdAvatarSection = ({
   avatarUrl,
+  canEdit,
+  description = 'Dùng avatar để mọi người nhận ra household nhanh hơn trong home và danh sách household.',
   helperText,
   householdName,
-  isAdmin,
   isBusy,
-  memberSummary,
   onAvatarUploaded,
-  roleLabel,
+  readOnlyMessage = 'Chỉ quản trị viên mới có thể chỉnh tên và avatar của household.',
+  summaryText,
+  title = 'Cài đặt ảnh đại diện household',
 }: HouseholdAvatarSectionProps) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false)
@@ -129,38 +133,35 @@ export const HouseholdAvatarSection = ({
     }
   }
 
+  const displayName = householdName.trim() || 'Household mới'
+
   return (
     <>
       <div>
-        <h2>Cài đặt ảnh đại diện household</h2>
-        <p>
-          Dùng avatar để mọi người nhận ra household nhanh hơn trong home và
-          danh sách household.
-        </p>
+        <h2>{title}</h2>
+        <p>{description}</p>
       </div>
 
       <div className='tma-avatar-setup-card__preview'>
         <div className='tma-household-avatar tma-household-avatar--xl'>
           {currentAvatarSrc ? (
             <img
-              alt={householdName}
+              alt={displayName}
               className='tma-avatar-image'
               src={currentAvatarSrc}
             />
           ) : (
-            <span>{getHouseholdAvatarFallback(householdName)}</span>
+            <span>{getHouseholdAvatarFallback(displayName)}</span>
           )}
         </div>
 
         <div className='tma-avatar-setup-card__copy'>
-          <strong>{householdName}</strong>
-          <p>
-            {memberSummary} • {roleLabel}
-          </p>
+          <strong>{displayName}</strong>
+          <p>{summaryText}</p>
         </div>
       </div>
 
-      {isAdmin ? (
+      {canEdit ? (
         <div className='tma-avatar-setup-card__actions'>
           <button
             className='tma-chip-button'
@@ -184,9 +185,7 @@ export const HouseholdAvatarSection = ({
           />
         </div>
       ) : (
-        <p className='tma-avatar-setup-card__help'>
-          Chỉ quản trị viên mới có thể chỉnh tên và avatar của household.
-        </p>
+        <p className='tma-avatar-setup-card__help'>{readOnlyMessage}</p>
       )}
 
       <p className='tma-avatar-setup-card__help'>{helperText}</p>
