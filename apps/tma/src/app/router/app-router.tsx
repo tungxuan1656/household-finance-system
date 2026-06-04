@@ -19,70 +19,75 @@ import { HouseholdsPage } from '@/routes/households'
 import { NotFoundPage } from '@/routes/not-found'
 import { StatisticsPage } from '@/routes/statistics'
 
+import RootLayout from './root-layout'
+
 const router = createBrowserRouter([
   {
     path: TMA_PATHS.root,
-    element: <HomePage />,
-  },
-  {
-    path: TMA_PATHS.home,
-    element: <HomePage />,
-  },
-  {
-    path: TMA_PATHS.statistics,
-    element: <StatisticsPage />,
-  },
-  {
-    path: TMA_PATHS.expenses,
-    element: <ExpensesPage />,
-  },
-  {
-    path: `${TMA_PATHS.expenses}/:id`,
-    element: <ExpenseDetailPage />,
-  },
-  {
-    path: `${TMA_PATHS.expenses}/:id/edit`,
-    element: <ExpenseEditPage />,
-  },
-  {
-    path: `${TMA_PATHS.expenses}/:id/edit/category`,
-    element: <ExpenseEditCategoryPage />,
-  },
-  {
-    path: `${TMA_PATHS.expenses}/:id/edit/source`,
-    element: <ExpenseEditSourcePage />,
-  },
-  {
-    path: `${TMA_PATHS.expenses}/:id/edit/household`,
-    element: <ExpenseEditHouseholdPage />,
-  },
-  {
-    path: TMA_PATHS.expensesNewCategory,
-    element: <AddExpenseCategoryPage />,
-  },
-  {
-    path: TMA_PATHS.expensesNewDetails,
-    element: <AddExpenseDetailsPage />,
-  },
-  {
-    path: TMA_PATHS.expensesNewContext,
-    element: <AddExpenseContextPage />,
-  },
-  {
-    path: TMA_PATHS.households,
-    element: <HouseholdsPage />,
-  },
-  {
-    path: `${TMA_PATHS.households}/:id`,
-    element: <HouseholdDetailRoute />,
-  },
-  {
-    path: TMA_PATHS.fatal,
-    element: <FatalLaunchPage />,
-  },
-  {
-    path: '*',
-    element: <NotFoundPage />,
+    errorElement: <NotFoundPage />,
+    element: <RootLayout />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: TMA_PATHS.home,
+        element: <HomePage />,
+      },
+      {
+        path: TMA_PATHS.statistics,
+        element: <StatisticsPage />,
+      },
+      {
+        path: TMA_PATHS.expenses,
+        element: <ExpensesPage />,
+      },
+      {
+        path: `${TMA_PATHS.expenses}/:id`,
+        element: <ExpenseDetailPage />,
+      },
+      {
+        path: `${TMA_PATHS.expenses}/:id/edit`,
+        element: <ExpenseEditPage />,
+      },
+      {
+        path: `${TMA_PATHS.expenses}/:id/edit/category`,
+        element: <ExpenseEditCategoryPage />,
+      },
+      {
+        path: `${TMA_PATHS.expenses}/:id/edit/source`,
+        element: <ExpenseEditSourcePage />,
+      },
+      {
+        path: `${TMA_PATHS.expenses}/:id/edit/household`,
+        element: <ExpenseEditHouseholdPage />,
+      },
+      {
+        path: TMA_PATHS.expensesNewCategory,
+        element: <AddExpenseCategoryPage />,
+      },
+      {
+        path: TMA_PATHS.expensesNewDetails,
+        element: <AddExpenseDetailsPage />,
+      },
+      {
+        path: TMA_PATHS.expensesNewContext,
+        element: <AddExpenseContextPage />,
+      },
+      {
+        path: TMA_PATHS.households,
+        element: <HouseholdsPage />,
+      },
+      {
+        path: `${TMA_PATHS.households}/:id`,
+        element: <HouseholdDetailRoute />,
+      },
+      {
+        path: TMA_PATHS.fatal,
+        element: <FatalLaunchPage />,
+      },
+    ],
   },
 ])
 
