@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 
 import type { FinanceCategory } from '@/features/finance/mock-data'
+import type { CategoryKey, SourceKey } from '@/features/home/types'
 
 export interface AddExpenseDraft {
   date: string
@@ -51,8 +52,8 @@ export interface EditExpenseDraft {
   title: string
   amount: number
   occurredAt: number
-  categoryKey: string
-  sourceKey: string
+  categoryKey: CategoryKey
+  sourceKey: SourceKey
   householdId: string | null
   note: string
 }

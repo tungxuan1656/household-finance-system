@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
-import type { ExpenseDTO } from '@/features/home/types'
+import type { CategoryKey, ExpenseDTO, SourceKey } from '@/features/home/types'
 import { deleteRequest, get, patch } from '@/lib/api/client'
 
 export interface UpdateExpenseRequest {
@@ -13,8 +13,8 @@ export interface UpdateExpenseRequest {
   amount?: number
   occurredAt?: number
   note?: string | null
-  categoryKey?: string
-  sourceKey?: string
+  categoryKey?: CategoryKey
+  sourceKey?: SourceKey
   householdId?: string | null
 }
 

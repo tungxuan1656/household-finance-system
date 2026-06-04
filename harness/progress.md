@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Removed unsafe casts from TMA expense edit flow and hardened init timer cleanup
+
+- Who: Codex
+- Summary: Continued `feat-094` with one last type-safety pass in the TMA expense edit flow. Introduced a typed `createEditExpenseDraft()` helper, aligned `EditExpenseDraft` and `UpdateExpenseRequest` to `CategoryKey`/`SourceKey`, and removed the remaining `as any` casts from `expense-edit.tsx`. While verifying that pass, full repo tests exposed a real unhandled-timer problem in `initTelegram()`: the deferred fullscreen `setTimeout` chain could outlive teardown and touch `window` after the test environment was gone. `initTelegram()` now tracks RAF/timeouts and cancels them in its cleanup wrapper, which is also the correct runtime behavior beyond tests.
+- Files changed: TMA startup bootstrap timer scheduling, TMA expense edit API/store/route typing, new typed expense-draft helper and test, feat-094 evidence, and this progress log.
+- Verification: Focused expense-edit helper tests passed with 7 tests across 3 files. Focused startup/auth tests passed with 11 tests across 3 files. `./init.sh lint` returned `OK`. `./init.sh test` returned `OK`. Final `./init.sh` completed with `Done!`. `git diff --check` stayed clean. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `medium` risk with 4 changed files, 15 changed symbols, and 5 affected processes, concentrated in `expense-edit.tsx` and `telegram-init.ts`.
+- Blockers: None.
+- Next steps: `feat-094` no longer has obvious low-risk cleanup left. If we continue, the next refactor tier is broader and more semantic: category-label/i18n unification or a real shared pure-helper package across `web` and `tma`.
+
 ## 2026-06-04 — Extracted period and media constants into dedicated TMA helper modules
 
 - Who: Codex

@@ -16,6 +16,7 @@ import {
   useExpenseDetailQuery,
   useUpdateExpenseMutation,
 } from '@/features/expenses/api'
+import { createEditExpenseDraft } from '@/features/expenses/draft'
 import {
   buildHouseholdNameMap,
   getSourceLabel,
@@ -64,20 +65,11 @@ export const ExpenseEditPage = () => {
   // Initialize draft if not present
   useEffect(() => {
     if (expense && !draft) {
-      const majorAmount = expense.amountMinor / 100
+      const editDraft = createEditExpenseDraft(expense)
 
-      setDraft({
-        id: expense.id,
-        title: expense.title,
-        amount: majorAmount,
-        occurredAt: expense.occurredAt,
-        categoryKey: expense.categoryKey,
-        sourceKey: expense.sourceKey,
-        householdId: expense.householdId,
-        note: expense.note ?? '',
-      })
+      setDraft(editDraft)
 
-      setAmountInput(formatAmountInput(String(Math.round(majorAmount))))
+      setAmountInput(formatAmountInput(String(Math.round(editDraft.amount))))
     }
   }, [expense, draft, setDraft])
 
@@ -95,7 +87,7 @@ export const ExpenseEditPage = () => {
   )
 
   const activeCategory = getCategoryPresentation(
-    (draft?.categoryKey ?? expense?.categoryKey) as any,
+    draft?.categoryKey ?? expense?.categoryKey,
     referenceCategories,
   )
 
@@ -117,8 +109,8 @@ export const ExpenseEditPage = () => {
           title: draft.title.trim(),
           amount: draft.amount,
           note: draft.note.trim() || null,
-          categoryKey: draft.categoryKey as any,
-          sourceKey: draft.sourceKey as any,
+          categoryKey: draft.categoryKey,
+          sourceKey: draft.sourceKey,
           occurredAt: draft.occurredAt,
           householdId: draft.householdId,
         },

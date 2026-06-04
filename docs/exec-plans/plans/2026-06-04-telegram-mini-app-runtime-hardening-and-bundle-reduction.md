@@ -59,6 +59,7 @@ This change hardens `apps/tma` so the Mini App does not die before React renders
 - 2026-06-04: The isolated `TmaPageShell` pass held up under focused regression coverage; switching back-navigation to React Router's own `history.state.idx` and dropping the `window.history.length` fallback did not break current SPA flows in focused tests.
 - 2026-06-04: The remaining low-risk duplication in expense routes was mostly presentation-only. Extracting shared `getSourceLabel()` and `buildHouseholdNameMap()` cut repeated logic across `ExpensesPage`, `ExpenseDetailPage`, and `ExpenseEditPage` without reopening the higher-risk category or auth helpers.
 - 2026-06-04: There is still no established cross-app code package in this repo, so the next-safe step for period/media constants was local extraction inside `apps/tma`, not a new workspace package shared with `apps/web`.
+- 2026-06-04: The last obvious type-safety gap in `apps/tma` was the expense edit flow, not the read-only routes. Tightening that flow required touching the draft/store/API types together, but the blast radius stayed manageable and verified cleanly once the edit draft became explicitly typed.
 
 ## Decision Log
 
