@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
 
 import { AppProviders } from '@/app/bootstrap/app-providers'
-import { teardownTelegram } from '@/app/bootstrap/telegram-init'
 import { AppRouter } from '@/app/router/app-router'
 import { AuthBootstrap } from '@/features/auth/bootstrap'
 import { createAuthApiBootstrapDeps } from '@/features/auth/bootstrap-deps'
@@ -20,16 +19,15 @@ const workerBaseUrl = import.meta.env.VITE_WORKER_URL ?? '/api/v1'
 
 export interface AppProps {
   startupError?: Error | null
-  telegramCleanup: () => void
 }
 
-export const App = ({ startupError = null, telegramCleanup }: AppProps) => {
-  // Apply locale once on mount (SDK already initialized in main.tsx)
+export const App = ({ startupError = null }: AppProps) => {
+  // Apply locale once on mount (SDK already initialized in main.tsx).
+  // Do not teardown Telegram from this effect cleanup: React StrictMode replays
+  // mount/cleanup in dev, which would cancel the deferred fullscreen request.
   useEffect(() => {
     if (startupError) {
-      return () => {
-        teardownTelegram(telegramCleanup)
-      }
+      return
     }
 
     const locale: SupportedLocale = detectTelegramLocale() ?? DEFAULT_LOCALE
@@ -37,11 +35,7 @@ export const App = ({ startupError = null, telegramCleanup }: AppProps) => {
     void i18n.changeLanguage(locale).then(() => {
       document.documentElement.lang = locale
     })
-
-    return () => {
-      teardownTelegram(telegramCleanup)
-    }
-  }, [telegramCleanup])
+  }, [startupError])
 
   const authClient = useMemo(
     () =>

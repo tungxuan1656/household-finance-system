@@ -60,6 +60,8 @@ This change hardens `apps/tma` so the Mini App does not die before React renders
 - 2026-06-04: The remaining low-risk duplication in expense routes was mostly presentation-only. Extracting shared `getSourceLabel()` and `buildHouseholdNameMap()` cut repeated logic across `ExpensesPage`, `ExpenseDetailPage`, and `ExpenseEditPage` without reopening the higher-risk category or auth helpers.
 - 2026-06-04: There is still no established cross-app code package in this repo, so the next-safe step for period/media constants was local extraction inside `apps/tma`, not a new workspace package shared with `apps/web`.
 - 2026-06-04: The last obvious type-safety gap in `apps/tma` was the expense edit flow, not the read-only routes. Tightening that flow required touching the draft/store/API types together, but the blast radius stayed manageable and verified cleanly once the edit draft became explicitly typed.
+- 2026-06-04: The fullscreen regression was caused by putting Telegram teardown inside `App`'s React effect cleanup while the app still renders under `StrictMode`. Dev-mode effect replay (`mount -> cleanup -> mount`) canceled fullscreen scheduling before the request could fire, so teardown had to move to module/HMR disposal instead of React cleanup.
+- 2026-06-04: The white-background regression shared the same bootstrap area but had a different cause. Our theme layer was still deriving `--tma-base-bg` from `themeParams.bgColor()`, so Telegram-provided theme params could override the intentionally light TMA surface. The docs-aligned fix is to keep the app-owned base background explicit while still binding Telegram CSS vars through the SDK.
 
 ## Decision Log
 

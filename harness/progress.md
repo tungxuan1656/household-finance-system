@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Re-aligned TMA init/theme flow with the local SDK docs
+
+- Who: Codex
+- Summary: Re-read the local `docs/library/tma-js-sdk/*` docs for `init`, `miniApp`, `viewport`, `themeParams`, `initData`, and `swipeBehavior`, then simplified the bootstrap flow to match those docs instead of relying on custom fullscreen choreography. `initTelegram()` now follows the documented order much more closely: `init()`, mount `themeParams`, mount `miniApp`, bind CSS vars, set the app-owned background colors, call `ready()`, mount `viewport`, expand, then request fullscreen without the previous `requestAnimationFrame + setTimeout` chain. In parallel, `theme.ts` no longer derives `--tma-base-bg` from `themeParams.bgColor()`; it keeps the app-owned `DEFAULT_TMA_BG` stable while still binding Telegram CSS vars through the SDK helpers. This isolates Telegram theme tokens from the intentional light TMA surface design and removes the white-background regression path.
+- Files changed: Telegram init/theme runtime code, focused startup/theme regression tests, feat-094 evidence, and this progress log.
+- Verification: Focused startup/theme tests passed with 11 tests across 3 files. `pnpm --filter tma typecheck` passed. `pnpm --filter tma build` passed. `./init.sh test` returned `OK`. Final `./init.sh` completed with `Done!`. `git diff --check` stayed clean. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `high` risk with 9 changed files, 11 changed symbols, and 7 affected processes, concentrated in init/theme/App lifecycle wiring.
+- Blockers: None in code or verification. Real confirmation now depends on retesting inside Telegram itself.
+- Next steps: Open the Mini App inside Telegram and confirm two user-visible behaviors: the TMA background stays on the intended light base color again, and fullscreen is requested successfully without the previous regression.
+
+## 2026-06-04 — Fixed the TMA fullscreen regression caused by React StrictMode teardown
+
+- Who: Codex
+- Summary: Investigated the reported fullscreen regression and found the root cause in lifecycle ownership, not Telegram config values. `initTelegram()` still scheduled fullscreen correctly, but `App` was calling `teardownTelegram()` from a React effect cleanup while the root was still wrapped in `StrictMode`. In dev, React replays the effect as `mount -> cleanup -> mount`, so the cleanup path was canceling fullscreen scheduling before `requestFullscreen()` could run. The fix removes Telegram teardown from the React effect cleanup path and moves it to module/HMR disposal in `main.tsx`, which preserves fullscreen scheduling while still giving us a real teardown hook when the module is replaced.
+- Files changed: TMA app lifecycle wiring, TMA main entry teardown ownership, feat-094 evidence, and this progress log.
+- Verification: Focused startup/auth tests passed with 11 tests across 3 files. `pnpm --filter tma typecheck` passed. `./init.sh lint` returned `OK`. `./init.sh test` returned `OK`. Final `./init.sh` completed with `Done!`. `git diff --check` stayed clean. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `high` risk with 2 changed files, 2 changed symbols, and 7 affected processes, centered on `App` lifecycle wiring.
+- Blockers: None.
+- Next steps: Re-test the Mini App inside Telegram dev/runtime and confirm fullscreen now requests correctly again. If you want more refactor after that, the next remaining work is no longer low-risk cleanup; it is broader architectural cleanup like cross-surface helper sharing or TMA/web label unification.
+
 ## 2026-06-04 — Removed unsafe casts from TMA expense edit flow and hardened init timer cleanup
 
 - Who: Codex

@@ -7,11 +7,12 @@ import {
   viewport,
 } from '@tma.js/sdk'
 
-import { bindTheme, resetTheme, syncViewportInsets } from '@/lib/telegram/theme'
-
-// Matches --tma-base-bg in index.css. Set on the Telegram WebView so
-// transitions between pages do not flash a default background color.
-const APP_BG = '#f5f7fb'
+import {
+  bindTheme,
+  DEFAULT_TMA_BG,
+  resetTheme,
+  syncViewportInsets,
+} from '@/lib/telegram/theme'
 
 export interface TelegramInitResult {
   cleanup: () => void
@@ -29,22 +30,6 @@ const toError = (error: unknown): Error =>
 
 export const initTelegram = (): (() => void) => {
   let disposed = false
-  let fullscreenRafId: number | null = null
-  const timeoutIds = new Set<number>()
-
-  const scheduleTimeout = (callback: () => void, delayMs: number): number => {
-    const timeoutId = window.setTimeout(() => {
-      timeoutIds.delete(timeoutId)
-
-      if (!disposed) {
-        callback()
-      }
-    }, delayMs)
-
-    timeoutIds.add(timeoutId)
-
-    return timeoutId
-  }
 
   // 1. Initialize the SDK — must be called before using any component
   const cleanup = init({
@@ -58,73 +43,52 @@ export const initTelegram = (): (() => void) => {
   miniApp.mount()
 
   // 4. Bind Telegram theme to CSS variables (must come AFTER mount)
-  bindTheme()
+  bindTheme(DEFAULT_TMA_BG)
 
   // 4b. Set the native background so route transitions never flash black.
   // Must run after miniApp.mount() and after themeParams are bound.
-  miniApp.setBgColor.ifAvailable(APP_BG)
-  miniApp.setHeaderColor.ifAvailable(APP_BG)
-  miniApp.setBottomBarColor.ifAvailable(APP_BG)
+  miniApp.setBgColor.ifAvailable(DEFAULT_TMA_BG)
+  miniApp.setHeaderColor.ifAvailable(DEFAULT_TMA_BG)
+  miniApp.setBottomBarColor.ifAvailable(DEFAULT_TMA_BG)
 
-  // 5. Signal to Telegram that the app is ready (hides loading screen)
-  miniApp.ready.ifAvailable()
-
-  // 6. Mount and expand viewport
+  // 5. Mount viewport, expand, try fullscreen, then signal ready.
+  // This keeps Telegram's placeholder visible until the app has attempted
+  // to reach its final viewport state, which reduces the visible modal ->
+  // fullscreen transition during open.
   void viewport
     .mount()
-    .then(() => {
+    .then(async () => {
       if (disposed) {
         return
       }
 
       syncViewportInsets()
       viewport.expand()
-      syncViewportInsets()
 
-      // Request fullscreen on the next frame so the first paint can land
-      // with the correct background instead of flashing during the transition.
       if (!viewport.isFullscreen()) {
-        fullscreenRafId = window.requestAnimationFrame(() => {
-          fullscreenRafId = null
+        await Promise.resolve(viewport.requestFullscreen.ifAvailable())
+      }
 
-          if (disposed) {
-            return
-          }
-
-          syncViewportInsets()
-
-          scheduleTimeout(() => {
-            viewport.requestFullscreen.ifAvailable()
-            syncViewportInsets()
-
-            scheduleTimeout(() => {
-              syncViewportInsets()
-            }, 120)
-          }, 32)
-        })
+      if (!disposed) {
+        syncViewportInsets()
       }
     })
     .catch(() => undefined)
+    .finally(() => {
+      if (!disposed) {
+        miniApp.ready.ifAvailable()
+      }
+    })
 
-  // 7. Disable vertical swipes to prevent accidental close while scrolling
+  // 6. Disable vertical swipes to prevent accidental close while scrolling
   swipeBehavior.mount()
   swipeBehavior.disableVertical.ifAvailable()
 
-  // 8. Restore initData from launch parameters
+  // 7. Restore initData from launch parameters
   initData.restore()
 
   return () => {
     disposed = true
-
-    if (fullscreenRafId !== null) {
-      window.cancelAnimationFrame(fullscreenRafId)
-      fullscreenRafId = null
-    }
-
-    for (const timeoutId of timeoutIds) {
-      window.clearTimeout(timeoutId)
-    }
-    timeoutIds.clear()
 
     cleanup()
   }

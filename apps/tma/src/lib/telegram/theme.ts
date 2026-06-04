@@ -1,6 +1,7 @@
 import { miniApp, themeParams, viewport } from '@tma.js/sdk'
 
 const ROOT = document.documentElement
+export const DEFAULT_TMA_BG = '#f5f7fb'
 
 const THEME_VARS = ['--tma-base-bg']
 const TG_THEME_PREFIX = '--tg-theme-'
@@ -68,18 +69,11 @@ const clearThemeVars = () => {
   }
 }
 
-// Apply themeParams CSS variables via SDK
-const applyThemeParams = () => {
-  if (!themeParams.isMounted()) return
-
-  // Apply background color as --tma-base-bg
-  const bg = themeParams.bgColor()
-  if (typeof bg === 'string' && bg.length > 0) {
-    ROOT.style.setProperty('--tma-base-bg', bg)
-  }
+const applyBaseBackground = (backgroundColor: string): void => {
+  ROOT.style.setProperty('--tma-base-bg', backgroundColor)
 }
 
-export const bindTheme = (): void => {
+export const bindTheme = (backgroundColor: string = DEFAULT_TMA_BG): void => {
   // themeParams and miniApp should already be mounted by initTelegram
   if (!unsubscribeMiniApp && miniApp.bindCssVars.isAvailable()) {
     unsubscribeMiniApp = miniApp.bindCssVars()
@@ -89,7 +83,7 @@ export const bindTheme = (): void => {
     unsubscribeTheme = themeParams.bindCssVars()
   }
 
-  applyThemeParams()
+  applyBaseBackground(backgroundColor)
   syncViewportInsets()
 }
 

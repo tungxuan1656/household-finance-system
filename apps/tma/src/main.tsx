@@ -5,7 +5,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import { App } from './app/app'
-import { initTelegramSafely } from './app/bootstrap/telegram-init'
+import {
+  initTelegramSafely,
+  teardownTelegram,
+} from './app/bootstrap/telegram-init'
 
 // Initialize Telegram SDK at module level, before rendering.
 // This is required so that initData, viewport, etc. are available
@@ -20,8 +23,14 @@ if (!rootElement) {
 
 const root = createRoot(rootElement)
 
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    teardownTelegram(telegramCleanup)
+  })
+}
+
 root.render(
   <StrictMode>
-    <App startupError={startupError} telegramCleanup={telegramCleanup} />
+    <App startupError={startupError} />
   </StrictMode>,
 )
