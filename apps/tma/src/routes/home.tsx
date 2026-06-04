@@ -103,7 +103,7 @@ export const HomePage = () => {
             <span>{resolveInitials(userName)}</span>
           )
         }
-        subtitle={`${featuredHousehold.name} đang dùng ${formatVnd(featuredHousehold.monthSpend)} trong ${formatMonthLabel(new Date()).toLowerCase()}.`}
+        subtitle={`Đã dùng ${formatVnd(featuredHousehold.monthSpend)} tại ${featuredHousehold.name}.`}
         title={userName}
         trailing={
           <span className='tma-chip tma-chip--strong'>
@@ -154,10 +154,7 @@ export const HomePage = () => {
 
       <section className='tma-section'>
         <div className='tma-section__header'>
-          <div>
-            <p className='tma-section-label'>Lối tắt</p>
-            <h2 className='tma-section__title'>Đi thẳng vào phần hay dùng</h2>
-          </div>
+          <h2 className='tma-section__title'>Lối tắt</h2>
         </div>
 
         <div className='tma-shortcuts-grid'>
@@ -206,10 +203,7 @@ export const HomePage = () => {
 
       <section className='tma-section'>
         <div className='tma-section__header'>
-          <div>
-            <p className='tma-section-label'>Gia đình</p>
-            <h2 className='tma-section__title'>Bạn đang tham gia</h2>
-          </div>
+          <h2 className='tma-section__title'>Gia đình</h2>
         </div>
 
         <div className='tma-household-carousel'>
@@ -241,11 +235,7 @@ export const HomePage = () => {
 
       <section className='tma-section'>
         <div className='tma-section__header'>
-          <div>
-            <p className='tma-section-label'>Lịch sử gần đây</p>
-            <h2 className='tma-section__title'>10 chi tiêu mới nhất</h2>
-          </div>
-
+          <h2 className='tma-section__title'>Lịch sử gần đây</h2>
           <TmaInlineAction href='/expenses'>Xem tất cả</TmaInlineAction>
         </div>
 

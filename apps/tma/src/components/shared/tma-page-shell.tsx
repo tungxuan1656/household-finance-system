@@ -196,14 +196,19 @@ export const TmaPageShell = ({
   const pageMemoryKey = `${normalizedPathname}${location.search}`
 
   const handleBack = useEffectEvent(() => {
-    if (backTo) {
-      navigate(backTo)
+    const canGoBack =
+      window.history.state && typeof window.history.state.idx === 'number'
+        ? window.history.state.idx > 0
+        : window.history.length > 1
+
+    if (canGoBack) {
+      navigate(-1)
 
       return
     }
 
-    if (window.history.length > 1) {
-      navigate(-1)
+    if (backTo) {
+      navigate(backTo, { replace: true })
 
       return
     }

@@ -8,6 +8,14 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Refined TMA home screen minimalism and visual details
+
+- Who: Antigravity
+- Summary: Redesigned and polished visual styling of the TMA Home page. Softened font-weights across headings, monograms, text cards, and badges from heavy 800/700 to elegant 700/600, reduced card shadow muddy details for cleaner layouts, adjusted sections spacing/margins, made shortcut grid items more compact, simplified redundant month mentions in page headers, and replaced cluttered double-header section structures with a single elegant section title. Also resolved a critical back-navigation history bug in `TmaPageShell` where the flow-back button caused an infinite loop between step 1 and step 2 of the add-expense page due to redundant push routing; the handler now checks `window.history.state.idx` to cleanly trigger history back (`navigate(-1)`) when navigating inside the SPA and only falls back to `backTo` via `replace` when loaded as a cold landing page.
+- Files changed: TMA main style sheet, TMA home page route component, TMA page shell wrapper component, harness feature index, feat-092 feature detail JSON, and this progress log.
+- Blockers: none.
+- Next steps: Ask the user to verify the visual polish and flow-back navigation fixes on their device.
+
 ## 2026-06-03 — Polished TMA header, navigation feel, and home hierarchy
 
 - Who: Codex

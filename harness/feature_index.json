@@ -459,6 +459,11 @@
       "id": "feat-091",
       "name": "TMA navigation-state and header polish",
       "status": "done"
+    },
+    {
+      "id": "feat-092",
+      "name": "TMA home screen minimalism and visual polish",
+      "status": "done"
     }
   ]
 }

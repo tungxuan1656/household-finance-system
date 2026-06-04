@@ -19,8 +19,8 @@
   --tma-primary: #3f7cff;
   --tma-positive: #5dd36d;
   --tma-warning: #ffd84d;
-  --tma-shadow: 0 16px 40px rgba(31, 41, 55, 0.06);
-  --tma-shadow-soft: 0 6px 18px rgba(31, 41, 55, 0.05);
+  --tma-shadow: 0 12px 30px rgba(17, 24, 39, 0.03);
+  --tma-shadow-soft: 0 4px 12px rgba(17, 24, 39, 0.02);
 }
 
 * {
@@ -271,6 +271,12 @@ button {
   color: var(--tma-primary);
 }
 
+.tma-status-pill {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
 .tma-soft-pill {
   background: rgba(17, 24, 39, 0.06);
   color: var(--tma-text-strong);
@@ -345,10 +351,10 @@ button {
 .tma-amount-card strong {
   display: block;
   margin-top: 4px;
-  font-size: clamp(26px, 7vw, 32px);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  font-weight: 800;
+  font-size: clamp(24px, 6.5vw, 30px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 700;
 }
 
 .tma-summary-card__meta,
@@ -441,7 +447,7 @@ button {
 .tma-summary-card__insight strong {
   margin: 0;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
@@ -461,7 +467,7 @@ button {
 }
 
 .tma-section {
-  margin-top: 20px;
+  margin-top: 26px;
 }
 
 .tma-section__header {
@@ -477,9 +483,10 @@ button {
 .tma-support-card h2,
 .tma-account-card h2,
 .tma-empty-card h2 {
-  margin: 4px 0 0;
+  margin: 0;
   color: var(--tma-text-strong);
-  font-size: 17px;
+  font-size: 16px;
+  font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
@@ -495,8 +502,8 @@ button {
 .tma-category-card {
   display: grid;
   align-content: start;
-  gap: 14px;
-  min-height: 132px;
+  gap: 10px;
+  min-height: 112px;
   padding: 14px;
   border-radius: 20px;
   border: 1px solid rgba(17, 24, 39, 0.04);
@@ -525,7 +532,7 @@ button {
   margin: 0;
   color: var(--tma-text-strong);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -1014,8 +1021,8 @@ button {
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.55);
   box-shadow:
-    0 8px 32px rgba(17, 24, 39, 0.1),
-    0 1px 2px rgba(17, 24, 39, 0.06),
+    0 6px 20px rgba(17, 24, 39, 0.05),
+    0 1px 2px rgba(17, 24, 39, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     inset 0 -1px 0 rgba(17, 24, 39, 0.04);
   backdrop-filter: blur(8px) saturate(1.8);
@@ -1085,7 +1092,7 @@ button {
   background: linear-gradient(150deg, #2a3a5c 0%, #111827 100%);
   color: #ffffff;
   box-shadow:
-    0 10px 24px rgba(17, 24, 39, 0.32),
+    0 8px 20px rgba(17, 24, 39, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     0 0 0 4px rgba(255, 255, 255, 0.55);
   pointer-events: auto;
@@ -1097,7 +1104,7 @@ button {
 .tma-bottom-tabs__action:active {
   transform: scale(0.92);
   box-shadow:
-    0 4px 12px rgba(17, 24, 39, 0.28),
+    0 4px 10px rgba(17, 24, 39, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     0 0 0 4px rgba(255, 255, 255, 0.55);
 }
@@ -1115,7 +1122,7 @@ button {
   height: 40px;
   border-radius: 14px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.03em;
 }
 
