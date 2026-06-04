@@ -2,8 +2,6 @@ import { resolveInitials } from '@/features/home/presentation'
 
 import type { HouseholdRoleDTO } from './types'
 
-export const MAX_AVATAR_SIZE_BYTES = 8 * 1024 * 1024
-
 export const getHouseholdAvatarFallback = (name: string): string => {
   const initials = resolveInitials(name)
 

@@ -7,12 +7,10 @@ import {
   prepareSquareAvatarImage,
 } from '@/lib/media/avatar-image'
 import { uploadMediaViaCloudinary } from '@/lib/media/cloudinary-upload'
+import { MAX_AVATAR_SIZE_BYTES } from '@/lib/media/constants'
 import { impact } from '@/lib/telegram/haptics'
 
-import {
-  getHouseholdAvatarFallback,
-  MAX_AVATAR_SIZE_BYTES,
-} from '../presentation'
+import { getHouseholdAvatarFallback } from '../presentation'
 import { HouseholdAvatarDialog } from './household-avatar-dialog'
 
 type HouseholdAvatarSectionProps = {

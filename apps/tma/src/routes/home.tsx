@@ -23,7 +23,6 @@ import {
   getBudgetProgress,
   getCategoryPresentation,
   getComparisonLabel,
-  getCurrentPeriod,
   getExpenseGroupLabel,
   getExpenseSecondaryText,
   getHouseholdBudgetLabel,
@@ -37,6 +36,7 @@ import type {
 } from '@/features/home/types'
 import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatMonthLabel, formatTimeLabel } from '@/lib/formatters'
+import { getCurrentPeriod } from '@/lib/period'
 import { impact, selection } from '@/lib/telegram/haptics'
 
 const shortcutItems = [

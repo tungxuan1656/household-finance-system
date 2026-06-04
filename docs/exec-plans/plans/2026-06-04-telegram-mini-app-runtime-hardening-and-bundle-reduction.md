@@ -47,7 +47,7 @@ This change hardens `apps/tma` so the Mini App does not die before React renders
 - [x] Batch 2 — route/bundle cleanup: lazy-load route modules, remove duplicate home route, and tighten shell back-navigation fallback.
 - [x] Batch 2 verification — `pnpm --filter tma build`, `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, `./init.sh build`, and full `./init.sh` all passed on 2026-06-04.
 - [ ] Batch 3 — helper/perf cleanup: shared format/period helpers, formatter caching, dead-prop cleanup, and small duplication reductions.
-- [x] Batch 3 partial — cached currency formatters, removed `AuthBootstrap.loadingFallback`, and reused shared `closeMiniApp` across fatal screens on 2026-06-04.
+- [x] Batch 3 partial — cached currency formatters, removed `AuthBootstrap.loadingFallback`, reused shared `closeMiniApp` across fatal screens, extracted shared expense-route presentation helpers, and moved TMA-only `getCurrentPeriod` / `MAX_AVATAR_SIZE_BYTES` into dedicated helper modules on 2026-06-04.
 - [ ] Final verification — run `./init.sh test`, full `./init.sh`, final GitNexus detect-changes, and update harness evidence/progress.
 
 ## Surprises & Discoveries
@@ -58,6 +58,7 @@ This change hardens `apps/tma` so the Mini App does not die before React renders
 - 2026-06-04: Route-level lazy loading reduced the eager entry chunk from roughly `525.83 kB` minified / `161.66 kB` gzip to `436.00 kB` minified / `139.30 kB` gzip, while splitting each TMA route into its own small chunk. `TmaPageShell` back-navigation fallback work was deferred because GitNexus marked that shared shell as `CRITICAL` blast radius.
 - 2026-06-04: The isolated `TmaPageShell` pass held up under focused regression coverage; switching back-navigation to React Router's own `history.state.idx` and dropping the `window.history.length` fallback did not break current SPA flows in focused tests.
 - 2026-06-04: The remaining low-risk duplication in expense routes was mostly presentation-only. Extracting shared `getSourceLabel()` and `buildHouseholdNameMap()` cut repeated logic across `ExpensesPage`, `ExpenseDetailPage`, and `ExpenseEditPage` without reopening the higher-risk category or auth helpers.
+- 2026-06-04: There is still no established cross-app code package in this repo, so the next-safe step for period/media constants was local extraction inside `apps/tma`, not a new workspace package shared with `apps/web`.
 
 ## Decision Log
 

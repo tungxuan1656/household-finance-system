@@ -153,14 +153,6 @@ export const resolveInitials = (value: string): string =>
     )
     .join('')
 
-export const getCurrentPeriod = (): string => {
-  const now = new Date()
-  const year = now.getUTCFullYear()
-  const month = String(now.getUTCMonth() + 1).padStart(2, '0')
-
-  return `${year}-${month}`
-}
-
 export const formatCurrencyMinor = (
   amountMinor: number,
   currencyCode: string,

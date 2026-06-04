@@ -7,11 +7,11 @@ import {
   formatCurrencyMinor,
   getBudgetProgress,
   getCategoryPresentation,
-  getCurrentPeriod,
   getExpenseSecondaryText,
 } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatMonthLabel, formatTimeLabel } from '@/lib/formatters'
+import { getCurrentPeriod } from '@/lib/period'
 
 import {
   useHouseholdBudgetListQuery,

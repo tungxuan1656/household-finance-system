@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Extracted period and media constants into dedicated TMA helper modules
+
+- Who: Codex
+- Summary: Continued the `feat-094` cleanup pass with the last clear low-risk extraction inside `apps/tma`. Moved `getCurrentPeriod()` out of `home/presentation.ts` into dedicated utility module `apps/tma/src/lib/period.ts`, moved `MAX_AVATAR_SIZE_BYTES` into `apps/tma/src/lib/media/constants.ts`, and updated the Home and Household surfaces plus avatar section to use those dedicated helpers. This does not create cross-app code sharing yet; it simply stops small shared values from hiding inside unrelated presentation files.
+- Files changed: New TMA period and media-constants helper modules, touched TMA home/household call sites, a focused period regression test, feat-094 evidence, and this progress log.
+- Verification: Focused helper tests passed with 10 tests across 4 files. `pnpm --filter tma typecheck` passed. `./init.sh lint` returned `OK`. `./init.sh test` returned `OK`. Final `./init.sh` completed with `Done!`. `git diff --check` stayed clean. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `low` risk with 6 changed files and no changed symbols/affected processes surfaced for this move-only helper slice.
+- Blockers: None.
+- Next steps: The remaining meaningful refactor work is no longer in the low-risk bucket. If we continue `feat-094`, the next candidates are broader cross-surface decisions such as category-label/i18n unification or a real shared code package for web+TMA pure helpers.
+
 ## 2026-06-04 — Extracted shared expense-route presentation helpers in TMA
 
 - Who: Codex

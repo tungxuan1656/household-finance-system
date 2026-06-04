@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   formatCurrencyMinor,
-  getCurrentPeriod,
   getHouseholdBudgetLabel,
 } from '@/features/home/presentation'
 import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatMonthLabel } from '@/lib/formatters'
+import { getCurrentPeriod } from '@/lib/period'
 import { impact } from '@/lib/telegram/haptics'
 
 import {
