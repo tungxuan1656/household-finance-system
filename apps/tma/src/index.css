@@ -1528,7 +1528,7 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: inherit;
+  min-height: 100dvh;
   padding: 24px;
   text-align: center;
 }
@@ -1568,6 +1568,99 @@ button {
   to {
     transform: rotate(360deg);
   }
+}
+
+.tma-ptr {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.tma-ptr-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding-top: 16px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.tma-ptr-indicator[data-ptr-state='idle'] {
+  display: none;
+}
+
+.tma-ptr-indicator[data-ptr-state='pulling'],
+.tma-ptr-indicator[data-ptr-state='ready'] {
+  opacity: 0.7;
+}
+
+.tma-ptr-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid var(--tma-text-muted);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: tma-spin 0.7s linear infinite;
+}
+
+.tma-ptr-indicator[data-ptr-state='ready'] .tma-ptr-spinner {
+  border-color: var(--tma-primary);
+  border-top-color: transparent;
+}
+
+.tma-ptr-indicator[data-ptr-state='refreshing'] .tma-ptr-spinner {
+  border-color: var(--tma-primary);
+  border-top-color: transparent;
+}
+
+.tma-ptr-label {
+  color: var(--tma-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* CSS-only pull-to-refresh via overscroll-behavior */
+.tma-page-shell__content--ptr {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.tma-page-shell__content[data-ptr-enabled='true'] {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* react-simple-pull-to-refresh spinner */
+.tma-ptr-spinner-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+}
+
+.tma-ptr-spinner-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid var(--tma-text-muted);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: tma-spin 0.7s linear infinite;
+}
+
+.tma-ptr-spinner-label {
+  color: var(--tma-text-muted);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 @media (min-width: 768px) {

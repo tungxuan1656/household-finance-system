@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import PullToRefresh from 'react-simple-pull-to-refresh'
 
 import { useContainerScrollRestoration } from '@/app/router/use-container-scroll-restoration'
 import { AppShell } from '@/components/shared/app-shell'
@@ -21,6 +22,13 @@ import { impact, selection } from '@/lib/telegram/haptics'
 const joinClassNames = (
   ...values: Array<string | false | null | undefined>
 ): string => values.filter(Boolean).join(' ')
+
+const PullToRefreshSpinner = ({ label }: { label?: string }) => (
+  <div className='tma-ptr-spinner-wrap'>
+    <span className='tma-ptr-spinner-icon' />
+    {label && <span className='tma-ptr-spinner-label'>{label}</span>}
+  </div>
+)
 
 const HOME_FALLBACK_ROUTE = TMA_PATHS.root
 
@@ -185,6 +193,11 @@ export interface TmaPageShellProps {
   reserveBottomButton?: boolean
   bubbleHref?: string
   contentClassName?: string
+  /**
+   * Enable pull-to-refresh via react-simple-pull-to-refresh.
+   * When provided, wrapping onRefresh callback will trigger pull-to-refresh.
+   */
+  onRefresh?: () => Promise<void>
 }
 
 export const TmaPageShell = ({
@@ -197,6 +210,7 @@ export const TmaPageShell = ({
   reserveBottomButton = false,
   bubbleHref,
   contentClassName,
+  onRefresh,
 }: TmaPageShellProps) => {
   const navigate = useNavigate()
   const contentRef = useRef<HTMLElement | null>(null)
@@ -253,14 +267,34 @@ export const TmaPageShell = ({
         <div className='tma-page-shell__viewport'>
           <TmaPageTitleBar title={title} />
 
-          <main
-            ref={contentRef}
-            className={joinClassNames(
-              'tma-page-shell__content',
-              contentClassName,
-            )}>
-            {children}
-          </main>
+          {onRefresh ? (
+            <PullToRefresh
+              pullDownThreshold={80}
+              pullingContent={<PullToRefreshSpinner />}
+              refreshingContent={
+                <PullToRefreshSpinner label='Đang làm mới...' />
+              }
+              resistance={2.5}
+              onRefresh={onRefresh}>
+              <main
+                ref={contentRef}
+                className={joinClassNames(
+                  'tma-page-shell__content',
+                  contentClassName,
+                )}>
+                {children}
+              </main>
+            </PullToRefresh>
+          ) : (
+            <main
+              ref={contentRef}
+              className={joinClassNames(
+                'tma-page-shell__content',
+                contentClassName,
+              )}>
+              {children}
+            </main>
+          )}
         </div>
 
         {showBottomTabs ? <TmaBottomTabs bubbleHref={bubbleHref} /> : null}
