@@ -31,7 +31,6 @@ export interface AuthState {
     refreshToken: string
   }) => void
   setError: (error: AuthError) => void
-  logout: () => void
   reset: () => void
 }
 
@@ -85,7 +84,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       status: 'error',
       error,
     }),
-  logout: () => set({ ...initialState(), status: 'idle' }),
   reset: () => set({ ...initialState(), status: 'idle' }),
 }))
 

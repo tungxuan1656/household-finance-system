@@ -158,12 +158,6 @@ export const runAuthBootstrap = async (
         return 'fatal'
       }
     }
-
-    notePhase('fatal-network')
-    useAuthStore.getState().setError({ code: 'networkError' })
-    deps.onFatal?.()
-
-    return 'fatal'
   } catch {
     notePhase('fatal-network')
     useAuthStore.getState().setError({ code: 'networkError' })

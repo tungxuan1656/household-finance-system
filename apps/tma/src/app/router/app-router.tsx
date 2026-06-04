@@ -1,26 +1,107 @@
+import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
+import { LoadingFallback } from '@/components/shared/loading-fallback'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { AddExpenseCategoryPage } from '@/routes/add-expense-category'
-import { AddExpenseContextPage } from '@/routes/add-expense-context'
-import { AddExpenseDetailsPage } from '@/routes/add-expense-details'
-import { CreateHouseholdRoute } from '@/routes/create-household'
-import { ExpenseDetailPage } from '@/routes/expense-detail'
-import {
-  ExpenseEditCategoryPage,
-  ExpenseEditHouseholdPage,
-  ExpenseEditPage,
-  ExpenseEditSourcePage,
-} from '@/routes/expense-edit'
-import { ExpensesPage } from '@/routes/expenses'
-import { FatalLaunchPage } from '@/routes/fatal-launch'
-import { HomePage } from '@/routes/home'
-import { HouseholdDetailRoute } from '@/routes/household-detail'
-import { HouseholdsPage } from '@/routes/households'
 import { NotFoundPage } from '@/routes/not-found'
-import { StatisticsPage } from '@/routes/statistics'
 
 import RootLayout from './root-layout'
+
+const HomePage = lazy(async () => {
+  const module = await import('@/routes/home')
+
+  return { default: module.HomePage }
+})
+
+const StatisticsPage = lazy(async () => {
+  const module = await import('@/routes/statistics')
+
+  return { default: module.StatisticsPage }
+})
+
+const ExpensesPage = lazy(async () => {
+  const module = await import('@/routes/expenses')
+
+  return { default: module.ExpensesPage }
+})
+
+const ExpenseDetailPage = lazy(async () => {
+  const module = await import('@/routes/expense-detail')
+
+  return { default: module.ExpenseDetailPage }
+})
+
+const ExpenseEditPage = lazy(async () => {
+  const module = await import('@/routes/expense-edit')
+
+  return { default: module.ExpenseEditPage }
+})
+
+const ExpenseEditCategoryPage = lazy(async () => {
+  const module = await import('@/routes/expense-edit')
+
+  return { default: module.ExpenseEditCategoryPage }
+})
+
+const ExpenseEditSourcePage = lazy(async () => {
+  const module = await import('@/routes/expense-edit')
+
+  return { default: module.ExpenseEditSourcePage }
+})
+
+const ExpenseEditHouseholdPage = lazy(async () => {
+  const module = await import('@/routes/expense-edit')
+
+  return { default: module.ExpenseEditHouseholdPage }
+})
+
+const AddExpenseCategoryPage = lazy(async () => {
+  const module = await import('@/routes/add-expense-category')
+
+  return { default: module.AddExpenseCategoryPage }
+})
+
+const AddExpenseDetailsPage = lazy(async () => {
+  const module = await import('@/routes/add-expense-details')
+
+  return { default: module.AddExpenseDetailsPage }
+})
+
+const AddExpenseContextPage = lazy(async () => {
+  const module = await import('@/routes/add-expense-context')
+
+  return { default: module.AddExpenseContextPage }
+})
+
+const HouseholdsPage = lazy(async () => {
+  const module = await import('@/routes/households')
+
+  return { default: module.HouseholdsPage }
+})
+
+const CreateHouseholdRoute = lazy(async () => {
+  const module = await import('@/routes/create-household')
+
+  return { default: module.CreateHouseholdRoute }
+})
+
+const HouseholdDetailRoute = lazy(async () => {
+  const module = await import('@/routes/household-detail')
+
+  return { default: module.HouseholdDetailRoute }
+})
+
+const FatalLaunchPage = lazy(async () => {
+  const module = await import('@/routes/fatal-launch')
+
+  return { default: module.FatalLaunchPage }
+})
+
+const renderLazyRoute = (Component: React.ComponentType) => (
+  <Suspense fallback={<LoadingFallback />}>
+    <Component />
+  </Suspense>
+)
 
 const router = createBrowserRouter([
   {
@@ -30,67 +111,63 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
-      },
-      {
-        path: TMA_PATHS.home,
-        element: <HomePage />,
+        element: renderLazyRoute(HomePage),
       },
       {
         path: TMA_PATHS.statistics,
-        element: <StatisticsPage />,
+        element: renderLazyRoute(StatisticsPage),
       },
       {
         path: TMA_PATHS.expenses,
-        element: <ExpensesPage />,
+        element: renderLazyRoute(ExpensesPage),
       },
       {
         path: `${TMA_PATHS.expenses}/:id`,
-        element: <ExpenseDetailPage />,
+        element: renderLazyRoute(ExpenseDetailPage),
       },
       {
         path: `${TMA_PATHS.expenses}/:id/edit`,
-        element: <ExpenseEditPage />,
+        element: renderLazyRoute(ExpenseEditPage),
       },
       {
         path: `${TMA_PATHS.expenses}/:id/edit/category`,
-        element: <ExpenseEditCategoryPage />,
+        element: renderLazyRoute(ExpenseEditCategoryPage),
       },
       {
         path: `${TMA_PATHS.expenses}/:id/edit/source`,
-        element: <ExpenseEditSourcePage />,
+        element: renderLazyRoute(ExpenseEditSourcePage),
       },
       {
         path: `${TMA_PATHS.expenses}/:id/edit/household`,
-        element: <ExpenseEditHouseholdPage />,
+        element: renderLazyRoute(ExpenseEditHouseholdPage),
       },
       {
         path: TMA_PATHS.expensesNewCategory,
-        element: <AddExpenseCategoryPage />,
+        element: renderLazyRoute(AddExpenseCategoryPage),
       },
       {
         path: TMA_PATHS.expensesNewDetails,
-        element: <AddExpenseDetailsPage />,
+        element: renderLazyRoute(AddExpenseDetailsPage),
       },
       {
         path: TMA_PATHS.expensesNewContext,
-        element: <AddExpenseContextPage />,
+        element: renderLazyRoute(AddExpenseContextPage),
       },
       {
         path: TMA_PATHS.households,
-        element: <HouseholdsPage />,
+        element: renderLazyRoute(HouseholdsPage),
       },
       {
         path: TMA_PATHS.householdsNew,
-        element: <CreateHouseholdRoute />,
+        element: renderLazyRoute(CreateHouseholdRoute),
       },
       {
         path: `${TMA_PATHS.households}/:id`,
-        element: <HouseholdDetailRoute />,
+        element: renderLazyRoute(HouseholdDetailRoute),
       },
       {
         path: TMA_PATHS.fatal,
-        element: <FatalLaunchPage />,
+        element: renderLazyRoute(FatalLaunchPage),
       },
     ],
   },

@@ -53,16 +53,9 @@ export const AuthBootstrap = ({
           setPhase(nextPhase)
         }
       },
+    }).finally(() => {
+      clearTimeout(timeoutId)
     })
-      .then(() => {
-        clearTimeout(timeoutId)
-      })
-      .catch(() => {
-        clearTimeout(timeoutId)
-        if (!cancelled) {
-          useAuthStore.getState().setError({ code: 'networkError' })
-        }
-      })
 
     return () => {
       cancelled = true

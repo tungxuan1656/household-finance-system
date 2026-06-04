@@ -158,11 +158,16 @@ export const createAuthStorage = (
   }
 
   const getRefreshToken = async (): Promise<string | null> => {
+    const hadSecureStorage = storageRef !== null
     const secure = await readSecure(
       storageRef,
       STORAGE_KEYS.refreshToken,
       timeoutMs,
     )
+
+    if (secure === undefined && hadSecureStorage) {
+      noteFallback()
+    }
 
     if (secure !== undefined && secure !== null) {
       return secure
@@ -188,7 +193,16 @@ export const createAuthStorage = (
 
   const clearRefreshToken = async (): Promise<void> => {
     memoryStore.delete(STORAGE_KEYS.refreshToken)
-    await deleteSecure(storageRef, STORAGE_KEYS.refreshToken, timeoutMs)
+
+    const ok = await deleteSecure(
+      storageRef,
+      STORAGE_KEYS.refreshToken,
+      timeoutMs,
+    )
+
+    if (!ok && storageRef !== null) {
+      noteFallback()
+    }
   }
 
   return {

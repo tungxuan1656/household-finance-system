@@ -59,14 +59,43 @@ const DEFAULT_ACCENT: AccentToken = {
   foreground: '#111827',
 }
 
+const currencyFormatterCache = new Map<string, Intl.NumberFormat>()
+const currencyFractionDigitsCache = new Map<string, number>()
+
+const getCurrencyFormatter = (currencyCode: string): Intl.NumberFormat => {
+  const cached = currencyFormatterCache.get(currencyCode)
+
+  if (cached) {
+    return cached
+  }
+
+  const formatter = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: currencyCode,
+  })
+
+  currencyFormatterCache.set(currencyCode, formatter)
+
+  return formatter
+}
+
 const getCurrencyFractionDigits = (currencyCode: string): number => {
+  const cached = currencyFractionDigitsCache.get(currencyCode)
+
+  if (typeof cached === 'number') {
+    return cached
+  }
+
   try {
-    return (
+    const fractionDigits =
       new Intl.NumberFormat('en', {
         style: 'currency',
         currency: currencyCode,
       }).resolvedOptions().maximumFractionDigits ?? 2
-    )
+
+    currencyFractionDigitsCache.set(currencyCode, fractionDigits)
+
+    return fractionDigits
   } catch {
     return 2
   }
@@ -139,10 +168,7 @@ export const formatCurrencyMinor = (
   const fractionDigits = getCurrencyFractionDigits(currencyCode)
   const amountMajor = amountMinor / 10 ** fractionDigits
 
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amountMajor)
+  return getCurrencyFormatter(currencyCode).format(amountMajor)
 }
 
 export const getCategoryLabel = (
@@ -157,10 +183,11 @@ export const getCategoryPresentation = (
   const key = categoryKey ?? 'other'
   const label = getCategoryLabel(key)
   const match = referenceCategories?.find((item) => item.key === key)
+  const accentBackground = match?.color ? withAlpha(match.color, 0.14) : null
   const accent =
-    match?.color && withAlpha(match.color, 0.14)
+    match?.color && accentBackground
       ? {
-          background: withAlpha(match.color, 0.14) ?? DEFAULT_ACCENT.background,
+          background: accentBackground,
           foreground: match.color,
         }
       : (FALLBACK_ACCENTS[key] ?? DEFAULT_ACCENT)

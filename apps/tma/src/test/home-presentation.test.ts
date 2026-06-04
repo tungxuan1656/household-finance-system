@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  formatCurrencyMinor,
   getBudgetProgress,
   getCategoryPresentation,
   getComparisonLabel,
@@ -78,5 +79,10 @@ describe('home presentation helpers', () => {
         4,
       ),
     ).toBe('+50% so với tháng trước')
+  })
+
+  it('formats minor currency units consistently across repeated calls', () => {
+    expect(formatCurrencyMinor(12_345, 'USD')).toBe('123,45 US$')
+    expect(formatCurrencyMinor(12_345, 'USD')).toBe('123,45 US$')
   })
 })

@@ -469,6 +469,11 @@
       "id": "feat-093",
       "name": "TMA expense detail view with edit and delete capabilities",
       "status": "done"
+    },
+    {
+      "id": "feat-094",
+      "name": "Telegram Mini App runtime hardening and bundle reduction",
+      "status": "in_progress"
     }
   ]
 }

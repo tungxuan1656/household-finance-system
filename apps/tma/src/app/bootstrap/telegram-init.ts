@@ -13,6 +13,20 @@ import { bindTheme, resetTheme, syncViewportInsets } from '@/lib/telegram/theme'
 // transitions between pages do not flash a default background color.
 const APP_BG = '#f5f7fb'
 
+export interface TelegramInitResult {
+  cleanup: () => void
+  error: Error | null
+}
+
+const NOOP_CLEANUP = () => undefined
+
+const toError = (error: unknown): Error =>
+  error instanceof Error
+    ? error
+    : new Error(
+        typeof error === 'string' ? error : 'Unknown Telegram init error',
+      )
+
 export const initTelegram = (): (() => void) => {
   // 1. Initialize the SDK — must be called before using any component
   const cleanup = init({
@@ -38,28 +52,31 @@ export const initTelegram = (): (() => void) => {
   miniApp.ready.ifAvailable()
 
   // 6. Mount and expand viewport
-  viewport.mount().then(() => {
-    syncViewportInsets()
-    viewport.expand()
-    syncViewportInsets()
+  void viewport
+    .mount()
+    .then(() => {
+      syncViewportInsets()
+      viewport.expand()
+      syncViewportInsets()
 
-    // Request fullscreen on the next frame so the first paint can land
-    // with the correct background instead of flashing during the transition.
-    if (!viewport.isFullscreen()) {
-      window.requestAnimationFrame(() => {
-        syncViewportInsets()
-
-        window.setTimeout(() => {
-          viewport.requestFullscreen.ifAvailable()
+      // Request fullscreen on the next frame so the first paint can land
+      // with the correct background instead of flashing during the transition.
+      if (!viewport.isFullscreen()) {
+        window.requestAnimationFrame(() => {
           syncViewportInsets()
 
           window.setTimeout(() => {
+            viewport.requestFullscreen.ifAvailable()
             syncViewportInsets()
-          }, 120)
-        }, 32)
-      })
-    }
-  })
+
+            window.setTimeout(() => {
+              syncViewportInsets()
+            }, 120)
+          }, 32)
+        })
+      }
+    })
+    .catch(() => undefined)
 
   // 7. Disable vertical swipes to prevent accidental close while scrolling
   swipeBehavior.mount()
@@ -69,6 +86,20 @@ export const initTelegram = (): (() => void) => {
   initData.restore()
 
   return cleanup
+}
+
+export const initTelegramSafely = (): TelegramInitResult => {
+  try {
+    return {
+      cleanup: initTelegram(),
+      error: null,
+    }
+  } catch (error) {
+    return {
+      cleanup: NOOP_CLEANUP,
+      error: toError(error),
+    }
+  }
 }
 
 export const teardownTelegram = (cleanup: () => void) => {

@@ -7,16 +7,18 @@ import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { useCreateHouseholdMutation, useUpdateHouseholdMutation } from '../api'
 import { HouseholdAvatarSection } from '../components/household-avatar-section'
 
+type HouseholdPageFeedback = {
+  message: string
+  tone: 'error' | 'success'
+}
+
 export const CreateHouseholdPage = () => {
   const navigate = useNavigate()
   const createHouseholdMutation = useCreateHouseholdMutation()
   const updateHouseholdMutation = useUpdateHouseholdMutation()
   const [draftName, setDraftName] = useState('')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
-  const [feedback, setFeedback] = useState<{
-    message: string
-    tone: 'error' | 'success'
-  } | null>(null)
+  const [feedback, setFeedback] = useState<HouseholdPageFeedback | null>(null)
 
   const isBusy =
     createHouseholdMutation.isPending || updateHouseholdMutation.isPending
@@ -64,15 +66,17 @@ export const CreateHouseholdPage = () => {
             payload: { avatarUrl },
           })
         } catch (error) {
-          setFeedback({
-            message:
-              error instanceof Error
-                ? `Đã tạo household nhưng chưa áp dụng được avatar: ${error.message}`
-                : 'Đã tạo household nhưng chưa áp dụng được avatar.',
-            tone: 'error',
+          navigate(getHouseholdDetailPath(created.id), {
+            state: {
+              feedback: {
+                message:
+                  error instanceof Error
+                    ? `Đã tạo household nhưng chưa áp dụng được avatar: ${error.message}`
+                    : 'Đã tạo household nhưng chưa áp dụng được avatar.',
+                tone: 'error',
+              } satisfies HouseholdPageFeedback,
+            },
           })
-
-          navigate(getHouseholdDetailPath(created.id))
 
           return
         }

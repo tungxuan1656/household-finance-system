@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Hardened TMA startup/auth runtime and reduced eager route bundle weight
+
+- Who: Codex
+- Summary: Started `feat-094` as a dedicated TMA hardening pass and completed the first milestone. The TMA now catches Telegram SDK startup failures before React render and routes them into the existing fatal launch UI instead of crashing on missing launch params. Safe-area vars now bind through the SDK viewport CSS-var bridge so they stay reactive after mount/fullscreen changes, SecureStorage read/delete failures now degrade permanently into explicit memory-only mode, and unreachable auth-bootstrap branches were removed. The router now lazy-loads route modules behind `Suspense`, which reduced the eager TMA entry chunk from about `525.83 kB` minified / `161.66 kB` gzip to `436.00 kB` minified / `139.30 kB` gzip. As a small UX follow-up, create-household avatar patch failures now survive navigation into the detail page instead of being lost on unmount.
+- Files changed: TMA startup/bootstrap wiring, theme/safe-area bridge, auth/storage control flow, route loader composition, a create-household/detail feedback handoff, focused TMA regression tests, new feat-094 plan/harness records, and this progress log.
+- Verification: Focused TMA Vitest run passed with 24 tests across 6 files. `./init.sh lint` returned `OK`. `./init.sh build` returned `OK`. Final `./init.sh` completed and printed `Done!`. `git diff --check` returned clean. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` whole-worktree blast radius because the milestone spans startup, auth, router, and shared presentation surfaces together.
+- Blockers: `TmaPageShell` back-navigation fallback tightening is intentionally deferred for now because GitNexus marks that shared shell as `CRITICAL` blast radius and it needs a narrower dedicated pass.
+- Next steps: Finish `feat-094` by deciding whether to normalize or retire the legacy `TMA_PATHS.home` constant, revisit `TmaPageShell` back-navigation fallback in isolation, and optionally extract the remaining duplicated pure helpers (`closeMiniApp`, current-period helpers, avatar size constant, household name map) only after a targeted shell-risk review.
+
 ## 2026-06-04 — Restored TMA page-shell scroll position on back navigation
 
 - Who: Codex

@@ -160,9 +160,25 @@ describe('auth storage adapter', () => {
   })
 
   it('recovers from a corrupt secure read and returns null', async () => {
+    const warn = vi.fn()
     const secure = createFakeSecureStorage({ failOn: 'get' })
-    const storage = createAuthStorage({ secureStorage: secure })
+    const storage = createAuthStorage({ secureStorage: secure, warn })
 
+    expect(await storage.getRefreshToken()).toBeNull()
+    expect(storage.isPersistent()).toBe(false)
+    expect(warn).toHaveBeenCalledTimes(1)
+  })
+
+  it('falls back to memory when SecureStorage fails on delete', async () => {
+    const warn = vi.fn()
+    const secure = createFakeSecureStorage({ failOn: 'delete' })
+    const storage = createAuthStorage({ secureStorage: secure, warn })
+
+    await storage.setRefreshToken('refresh-1')
+    await storage.clearRefreshToken()
+
+    expect(storage.isPersistent()).toBe(false)
+    expect(warn).toHaveBeenCalledTimes(1)
     expect(await storage.getRefreshToken()).toBeNull()
   })
 })

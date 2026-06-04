@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { useAuth } from '@/features/auth/auth-provider'
@@ -29,9 +29,15 @@ import {
   getHouseholdRoleLabel,
 } from '../presentation'
 
+type HouseholdPageFeedback = {
+  message: string
+  tone: 'error' | 'success'
+}
+
 export const HouseholdDetailPage = () => {
   const { user } = useAuth()
   const { id } = useParams<{ id: string }>()
+  const location = useLocation()
   const period = getCurrentPeriod()
   const householdQuery = useHouseholdDetailQuery(id)
   const membersQuery = useHouseholdMembersQuery(id)
@@ -41,10 +47,11 @@ export const HouseholdDetailPage = () => {
   const referenceCategoriesQuery = useReferenceCategoriesQuery()
   const updateHouseholdMutation = useUpdateHouseholdMutation()
   const [draftName, setDraftName] = useState('')
-  const [feedback, setFeedback] = useState<{
-    message: string
-    tone: 'error' | 'success'
-  } | null>(null)
+  const [feedback, setFeedback] = useState<HouseholdPageFeedback | null>(
+    () =>
+      (location.state as { feedback?: HouseholdPageFeedback } | null)
+        ?.feedback ?? null,
+  )
 
   const household = householdQuery.data
   const members = membersQuery.data?.items ?? []
