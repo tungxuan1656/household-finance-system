@@ -1,0 +1,29 @@
+{
+  "id": "feat-093",
+  "name": "TMA expense detail view with edit and delete capabilities",
+  "status": "done",
+  "description": "Implement the expense detail screen in TMA. When clicking on an expense at Home or in the history list page, open the details page which displays all expense metadata, and supports editing and deleting via live worker D1 queries/mutations.",
+  "dependencies": ["feat-079", "feat-080", "feat-090", "feat-091", "feat-092"],
+  "evidence": {
+    "planned": [
+      "Stated the Level 2 planned feature planning mode and wrote the implementation plan in implementation_plan.md.",
+      "Obtained user approval via the review policy.",
+      "Ran GitNexus impact analysis on HomePage and ExpensesPage symbols returning LOW risk."
+    ],
+    "artifacts": [
+      "Created apps/tma/src/features/expenses/api.ts with query options and mutations for detail view, update, and delete actions.",
+      "Created apps/tma/src/routes/expense-detail.tsx with View and Edit modes, support for custom inputs, haptics, and Telegram BottomButton.",
+      "Registered route /expenses/:id in apps/tma/src/app/router/app-router.tsx.",
+      "Linked recent expense clicks in apps/tma/src/routes/home.tsx to details view.",
+      "Migrated apps/tma/src/routes/expenses.tsx to fetch live API data and link clicks to details view."
+    ],
+    "verification": [
+      "Ran `./init.sh lint` to verify zero styling and Prettier errors.",
+      "Ran `./init.sh typecheck` to confirm type correctness across React router, state, and API layers.",
+      "Ran `./init.sh test` to execute the vitest suite successfully.",
+      "Ran `./init.sh build` to check production compilation outputs.",
+      "Ran final GitNexus changes detection to track affected symbols."
+    ]
+  },
+  "notes": "Ensured full integration with the live Cloudflare/Hono backend and verified that local/harness checks pass cleanly."
+}

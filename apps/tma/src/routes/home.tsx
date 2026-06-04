@@ -1,5 +1,5 @@
 import { useQueries } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import {
   TmaInlineAction,
@@ -35,6 +35,7 @@ import type {
   BudgetDTO,
   HouseholdDTO,
 } from '@/features/home/types'
+import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatMonthLabel, formatTimeLabel } from '@/lib/formatters'
 import { impact, selection } from '@/lib/telegram/haptics'
 
@@ -42,7 +43,7 @@ const shortcutItems = [
   {
     title: 'Chi tiêu',
     hint: 'Lịch sử và bộ lọc đầy đủ',
-    href: '/expenses',
+    href: TMA_PATHS.expenses,
     symbol: 'CT',
     accent: { background: '#edf4ff', foreground: '#3f7cff' },
     enabled: true,
@@ -50,10 +51,10 @@ const shortcutItems = [
   {
     title: 'Gia đình',
     hint: 'Danh sách thành viên và ngân sách',
-    href: '#',
+    href: TMA_PATHS.households,
     symbol: 'GD',
     accent: { background: '#eef9f0', foreground: '#2f9b44' },
-    enabled: false,
+    enabled: true,
   },
   {
     title: 'Nhóm',
@@ -85,6 +86,7 @@ interface HouseholdCardViewModel {
 }
 
 export const HomePage = () => {
+  const navigate = useNavigate()
   const { user } = useAuth()
   const period = getCurrentPeriod()
   const userName = resolveUserName(
@@ -188,14 +190,27 @@ export const HomePage = () => {
     referenceCategories,
   )
 
-  const headerSubtitle = featuredHousehold
-    ? featuredHousehold.totalSpendMinor != null &&
-      featuredHousehold.currencyCode
-      ? `Đã dùng ${formatCurrencyMinor(featuredHousehold.totalSpendMinor, featuredHousehold.currencyCode)} tại ${featuredHousehold.household.name}.`
-      : `Đang đồng bộ chi tiêu tại ${featuredHousehold.household.name}.`
-    : fallbackOverviewQuery.data
-      ? `Đã ghi nhận ${fallbackOverviewQuery.data.expenseCount} khoản chi trong tháng này.`
-      : 'Đang đồng bộ chi tiêu tháng này.'
+  const headerSubtitle = featuredHousehold ? (
+    featuredHousehold.totalSpendMinor != null &&
+    featuredHousehold.currencyCode ? (
+      <>
+        Đã dùng{' '}
+        <span className='font-mono'>
+          {formatCurrencyMinor(
+            featuredHousehold.totalSpendMinor,
+            featuredHousehold.currencyCode,
+          )}
+        </span>{' '}
+        tại {featuredHousehold.household.name}.
+      </>
+    ) : (
+      `Đang đồng bộ chi tiêu tại ${featuredHousehold.household.name}.`
+    )
+  ) : fallbackOverviewQuery.data ? (
+    `Đã ghi nhận ${fallbackOverviewQuery.data.expenseCount} khoản chi trong tháng này.`
+  ) : (
+    'Đang đồng bộ chi tiêu tháng này.'
+  )
 
   return (
     <TmaPageShell closeAction title='Trang chủ'>
@@ -229,7 +244,7 @@ export const HomePage = () => {
                 ? 'Tổng chi gia đình tháng này'
                 : 'Tổng chi tháng này'}
             </p>
-            <strong>
+            <strong className='font-mono'>
               {summaryOverview
                 ? formatCurrencyMinor(
                     summaryOverview.totalSpendMinor,
@@ -270,12 +285,14 @@ export const HomePage = () => {
               </span>
               <span>
                 {summaryBudgetProgress.isOverBudget ? 'Vượt ' : 'Còn '}
-                {formatCurrencyMinor(
-                  Math.abs(summaryBudgetProgress.remainingMinor),
-                  summaryBudget?.currencyCode ??
-                    summaryOverview?.currencyCode ??
-                    'VND',
-                )}
+                <span className='font-mono'>
+                  {formatCurrencyMinor(
+                    Math.abs(summaryBudgetProgress.remainingMinor),
+                    summaryBudget?.currencyCode ??
+                      summaryOverview?.currencyCode ??
+                      'VND',
+                  )}
+                </span>
               </span>
             </div>
           </div>
@@ -303,9 +320,19 @@ export const HomePage = () => {
             <span>Chi gần nhất</span>
             <strong>{latestExpense?.title || 'Chưa có giao dịch mới'}</strong>
             <p>
-              {latestExpense
-                ? `${formatCurrencyMinor(latestExpense.amountMinor, latestExpense.currencyCode)} • ${latestCategory.label}`
-                : 'Dữ liệu sẽ hiện khi có giao dịch đầu tiên.'}
+              {latestExpense ? (
+                <>
+                  <span className='font-mono'>
+                    {formatCurrencyMinor(
+                      latestExpense.amountMinor,
+                      latestExpense.currencyCode,
+                    )}
+                  </span>{' '}
+                  • {latestCategory.label}
+                </>
+              ) : (
+                'Dữ liệu sẽ hiện khi có giao dịch đầu tiên.'
+              )}
             </p>
           </article>
         </div>
@@ -392,18 +419,25 @@ export const HomePage = () => {
         ) : (
           <div className='tma-household-carousel'>
             {householdCards.map((householdCard) => (
-              <article
+              <Link
                 key={householdCard.household.id}
                 className='tma-household-card'
-                role='button'
-                tabIndex={0}
-                onClick={() => impact('light')}
-                onKeyDown={(event) => event.key === 'Enter' && impact('light')}>
+                to={getHouseholdDetailPath(householdCard.household.id)}
+                onClick={() => impact('light')}>
                 <div className='tma-household-card__top'>
-                  <TmaMonogramBadge
-                    accent={{ background: '#edf4ff', foreground: '#3f7cff' }}
-                    label={resolveInitials(householdCard.household.name)}
-                  />
+                  <div className='tma-household-avatar tma-household-avatar--sm'>
+                    {householdCard.household.avatarUrl ? (
+                      <img
+                        alt={householdCard.household.name}
+                        className='tma-avatar-image'
+                        src={householdCard.household.avatarUrl}
+                      />
+                    ) : (
+                      <span>
+                        {resolveInitials(householdCard.household.name)}
+                      </span>
+                    )}
+                  </div>
                   <span className='tma-soft-pill'>
                     {householdCard.memberCount != null
                       ? `${householdCard.memberCount} thành viên`
@@ -413,7 +447,7 @@ export const HomePage = () => {
 
                 <div>
                   <h3>{householdCard.household.name}</h3>
-                  <strong>
+                  <strong className='font-mono'>
                     {householdCard.totalSpendMinor != null &&
                     householdCard.currencyCode
                       ? formatCurrencyMinor(
@@ -434,7 +468,7 @@ export const HomePage = () => {
                         householdCard.budget,
                       )}
                 </p>
-              </article>
+              </Link>
             ))}
           </div>
         )}
@@ -443,7 +477,9 @@ export const HomePage = () => {
       <section className='tma-section'>
         <div className='tma-section__header'>
           <h2 className='tma-section__title'>Lịch sử gần đây</h2>
-          <TmaInlineAction href='/expenses'>Xem tất cả</TmaInlineAction>
+          <TmaInlineAction href={TMA_PATHS.expenses}>
+            Xem tất cả
+          </TmaInlineAction>
         </div>
 
         {recentExpensesQuery.isError && recentExpenses.length === 0 ? (
@@ -485,8 +521,16 @@ export const HomePage = () => {
                   className='tma-expense-row'
                   role='button'
                   tabIndex={0}
-                  onClick={() => selection()}
-                  onKeyDown={(event) => event.key === 'Enter' && selection()}>
+                  onClick={() => {
+                    selection()
+                    navigate(`/expenses/${expense.id}`)
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      selection()
+                      navigate(`/expenses/${expense.id}`)
+                    }
+                  }}>
                   <TmaMonogramBadge
                     accent={category.accent}
                     label={category.symbol}
@@ -495,7 +539,7 @@ export const HomePage = () => {
                   <div className='tma-expense-row__body'>
                     <div className='tma-expense-row__title-line'>
                       <h3>{expense.title.trim() || category.label}</h3>
-                      <strong>
+                      <strong className='font-mono'>
                         {formatCurrencyMinor(
                           expense.amountMinor,
                           expense.currencyCode,

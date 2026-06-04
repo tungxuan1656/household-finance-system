@@ -413,7 +413,7 @@
     {
       "id": "feat-082",
       "name": "Telegram Mini App household and invite flows",
-      "status": "todo"
+      "status": "in_progress"
     },
     {
       "id": "feat-083",
@@ -463,6 +463,11 @@
     {
       "id": "feat-092",
       "name": "TMA home screen minimalism and visual polish",
+      "status": "done"
+    },
+    {
+      "id": "feat-093",
+      "name": "TMA expense detail view with edit and delete capabilities",
       "status": "done"
     }
   ]

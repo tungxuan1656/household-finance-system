@@ -2,6 +2,7 @@ export interface StoredHousehold {
   id: string
   name: string
   slug: string
+  avatarUrl: string | null
   defaultCurrencyCode: string
   timezone: string
   role: 'admin' | 'member'
@@ -12,6 +13,7 @@ export interface StoredHouseholdDetail {
   id: string
   name: string
   slug: string
+  avatarUrl: string | null
   defaultCurrencyCode: string
   timezone: string
   createdAt: number
@@ -21,6 +23,7 @@ export const toStoredHousehold = (row: {
   id: string
   name: string
   slug: string
+  avatar_url: string | null
   default_currency_code: string
   timezone: string
   role: 'admin' | 'member'
@@ -29,6 +32,7 @@ export const toStoredHousehold = (row: {
   id: row.id,
   name: row.name,
   slug: row.slug,
+  avatarUrl: row.avatar_url,
   defaultCurrencyCode: row.default_currency_code,
   timezone: row.timezone,
   role: row.role,
@@ -39,6 +43,7 @@ export const toStoredHouseholdDetail = (row: {
   id: string
   name: string
   slug: string
+  avatar_url: string | null
   default_currency_code: string
   timezone: string
   created_at: number
@@ -46,6 +51,7 @@ export const toStoredHouseholdDetail = (row: {
   id: row.id,
   name: row.name,
   slug: row.slug,
+  avatarUrl: row.avatar_url,
   defaultCurrencyCode: row.default_currency_code,
   timezone: row.timezone,
   createdAt: row.created_at,

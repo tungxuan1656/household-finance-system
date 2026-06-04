@@ -8,6 +8,33 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Implemented TMA expense detail view with edit and delete capabilities
+
+- Who: Antigravity
+- Summary: Designed and implemented the expense detail screen in the Telegram Mini App (TMA). Created `api.ts` under the `expenses` feature package to wrap `GET /expenses/:id`, `PATCH /expenses/:id`, and `DELETE /expenses/:id` routes with query options and mutations, including comprehensive cache invalidation for the list, analytics, and budget queries. Built `expense-detail.tsx` route with View mode (renders monogram badges, large money amounts in JetBrains Mono font, occurred dates/times, payment source, household info, and notes) and Edit mode (uses inline forms, custom inputs, chip grids, and binds the Telegram BottomButton for saving). Configured `/expenses/:id` in `app-router.tsx`. Replaced the mock data rendering in the `/expenses` list view with live backend query data and linked recent expense clicks in both the Home dashboard and the history list to the new detail page. Addressed a pre-existing missing `lucide-react` workspace dependency inside `apps/tma/package.json` that broke typechecking.
+- Files changed: apps/tma/package.json, pnpm-lock.yaml, apps/tma/src/app/router/app-router.tsx, apps/tma/src/features/expenses/api.ts, apps/tma/src/routes/expense-detail.tsx, apps/tma/src/routes/home.tsx, apps/tma/src/routes/expenses.tsx, harness/feature_index.json, harness/features/feat-093.json, and this progress log.
+- Verification: Running `./init.sh typecheck` passed with `OK`. Running `./init.sh lint` passed with `OK`. Running `./init.sh test` passed with `OK`. Running `./init.sh build` passed with `OK`. Running `gitnexus detect-changes` mapped hunks to the updated pages/routes with a LOW blast radius.
+- Blockers: None.
+- Next steps: Ask the user to verify the expense detail view, inline editing, and deletion flow inside their Telegram Mini App.
+
+## 2026-06-04 — Built TMA household list/detail screens and household avatar flow
+
+- Who: Codex
+- Summary: Added the first dedicated household-management surfaces to the Telegram Mini App under `feat-082`. The worker now persists an additive `household.avatarUrl` field through migration `0002_household_avatar.sql`, exposes it on create/list/detail/update responses, and accepts avatar updates on the existing household patch route. On the TMA side, the app now has centralized route constants, a shared authenticated API client, signed Cloudinary upload helpers, a live `/households` list page with create-household entry, and a `/households/:id` detail page with avatar setup at the top, admin-only name/avatar editing, current-month spend/budget summary, recent household expenses, and member list. The home screen's `Gia đình` shortcut and household cards now open these new routes directly.
+- Files changed: Worker household contract/repository/handler/migration/test files, TMA shared route/API/media helpers, new TMA household feature files and routes, TMA home/router/shell/style updates, worker local seed SQL, feat-082 harness evidence, exec-plan tracking, and this progress log.
+- Verification: Focused worker verification passed with `pnpm --filter worker exec vitest run test/unit/dto-household.spec.ts test/integration/households-read-update.spec.ts` (18 tests). Focused TMA verification passed with `pnpm --filter tma typecheck` and `pnpm --filter tma exec vitest run src/test/home-presentation.test.ts src/test/household-presentation.test.ts` (6 tests). Focused TMA build passed with `pnpm --filter tma build` despite a non-blocking Vite chunk-size warning. Local D1 verification passed: `pnpm --filter worker db:migrate:local` applied `0002_household_avatar.sql`, `pnpm --filter worker db:seed:local` succeeded, and a follow-up query confirmed the Telegram test account sees `Demo Household` and `City Loft` with non-null `avatar_url` values. Final repo verification then passed on the updated harness state: touched harness JSON parse checks printed `OK`, `./scripts/check_harness_size.sh` printed `Harness size checks passed`, `git diff --check` was clean, `./init.sh build` printed `OK`, and final `./init.sh` completed with `Done!`. `gitnexus_detect_changes(scope: all, repo: household-finance-system)` returned `critical`, but that result reflects the whole active TMA worktree, including other route/shell edits outside this narrow household slice.
+- Blockers: Real Telegram/on-device smoke for the new household screens is still pending because this environment cannot launch the Mini App inside a live Telegram session.
+- Next steps: Run the final repo-level verification chain on the updated harness state, then open the Mini App with the Telegram test account to confirm the new household routes and avatar card feel correct on-device.
+
+## 2026-06-04 — Configured JetBrains Mono for TMA currency displays
+
+- Who: Antigravity
+- Summary: Configured and integrated the JetBrains Mono font for formatting numbers/currency values in the Telegram Mini App (TMA) to improve visual consistency and scanning. Loaded the font minimally via Google Fonts with a strict character subset (digits, decimals, currency symbols, and percentage sign) to prevent bundle size overhead, and defined a `.font-mono` utility class. Integrated this class across key TMA screens: Home (subtitles, totals, remaining budgets, latest spend, list values), Expenses (timeline list items, saved preview banner), Statistics (hero card total, legends, ranking amounts), and Add Expense details/contexts (amount input, preview text). Updated the shared TmaPageHeader to accept ReactNode subtitles to support rich inline styling.
+- Files changed: TMA main style sheet (index.css), shared TMA shell (tma-page-shell.tsx), Home page (home.tsx), Expenses list (expenses.tsx), Statistics (statistics.tsx), and Add Expense routes (add-expense-details.tsx, add-expense-context.tsx).
+- Verification: Running `./init.sh lint` passed with `OK`. Running `./init.sh typecheck` passed with `OK` (resolved a ReactNode/string typing issue on TmaPageHeader subtitle). Running `./init.sh test` passed with `OK`. Running `./init.sh build` passed with `OK`. Running `npx gitnexus detect-changes --repo household-finance-system --scope all` successfully detected 19 files and 50 symbols changed with the expected affected execution flows.
+- Blockers: none.
+- Next steps: Ask the user to verify the JetBrains Mono typography for money numbers on their Telegram Mini App screen.
+
 ## 2026-06-04 — Expanded local seed coverage for the Telegram test account
 
 - Who: Codex

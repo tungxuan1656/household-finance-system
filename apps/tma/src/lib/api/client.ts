@@ -1,0 +1,194 @@
+import { useAuthStore } from '@/features/auth/store'
+
+const API_BASE_PATH = (import.meta.env.VITE_WORKER_URL ?? '/api/v1').replace(
+  /\/$/,
+  '',
+)
+
+type ApiEnvelope<T> =
+  | {
+      success: true
+      data: T
+      error: null
+      meta: { requestId: string }
+    }
+  | {
+      success: false
+      data: null
+      error: {
+        code: string
+        message: string
+        details?: unknown
+      }
+      meta: { requestId: string }
+    }
+
+type PrimitiveParam = number | string | undefined
+
+export class ApiClientError extends Error {
+  public readonly code: string
+  public readonly details?: unknown
+  public readonly requestId?: string
+  public readonly status: number
+
+  public constructor(input: {
+    code: string
+    message: string
+    status: number
+    details?: unknown
+    requestId?: string
+  }) {
+    super(input.message)
+    this.name = 'ApiClientError'
+    this.code = input.code
+    this.details = input.details
+    this.requestId = input.requestId
+    this.status = input.status
+  }
+}
+
+export interface RequestOptions {
+  authenticated?: boolean
+  body?: unknown
+  method?: 'DELETE' | 'GET' | 'PATCH' | 'POST'
+  params?: Record<string, PrimitiveParam>
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const toApiClientError = (
+  status: number,
+  payload: unknown,
+  fallbackMessage: string,
+): ApiClientError => {
+  if (
+    isRecord(payload) &&
+    payload.success === false &&
+    isRecord(payload.error) &&
+    typeof payload.error.code === 'string'
+  ) {
+    return new ApiClientError({
+      code: payload.error.code,
+      details: payload.error.details,
+      message:
+        typeof payload.error.message === 'string'
+          ? payload.error.message
+          : fallbackMessage,
+      requestId:
+        isRecord(payload.meta) && typeof payload.meta.requestId === 'string'
+          ? payload.meta.requestId
+          : undefined,
+      status,
+    })
+  }
+
+  return new ApiClientError({
+    code: status === 0 ? 'NETWORK_ERROR' : 'HTTP_ERROR',
+    message: fallbackMessage,
+    requestId:
+      isRecord(payload) &&
+      isRecord(payload.meta) &&
+      typeof payload.meta.requestId === 'string'
+        ? payload.meta.requestId
+        : undefined,
+    status,
+  })
+}
+
+const buildUrl = (
+  path: string,
+  params?: Record<string, PrimitiveParam>,
+): string => {
+  const search = new URLSearchParams()
+
+  for (const [key, value] of Object.entries(params ?? {})) {
+    if (value !== undefined) {
+      search.set(key, String(value))
+    }
+  }
+
+  const query = search.toString()
+
+  return `${API_BASE_PATH}${path}${query.length > 0 ? `?${query}` : ''}`
+}
+
+export const request = async <TResponse>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<TResponse> => {
+  const headers = new Headers({ accept: 'application/json' })
+
+  if (options.body !== undefined) {
+    headers.set('content-type', 'application/json')
+  }
+
+  if (options.authenticated ?? true) {
+    const accessToken = useAuthStore.getState().accessToken
+
+    if (accessToken) {
+      headers.set('authorization', `Bearer ${accessToken}`)
+    }
+  }
+
+  let response: Response
+
+  try {
+    response = await fetch(buildUrl(path, options.params), {
+      body:
+        options.body !== undefined ? JSON.stringify(options.body) : undefined,
+      headers,
+      method: options.method ?? 'GET',
+    })
+  } catch {
+    throw toApiClientError(0, null, 'Network request failed.')
+  }
+
+  let payload: ApiEnvelope<TResponse> | null = null
+
+  try {
+    payload = (await response.json()) as ApiEnvelope<TResponse>
+  } catch {
+    payload = null
+  }
+
+  if (!response.ok) {
+    throw toApiClientError(
+      response.status,
+      payload,
+      `Request failed with status ${response.status}.`,
+    )
+  }
+
+  if (!payload || payload.success !== true) {
+    throw toApiClientError(
+      response.status,
+      payload,
+      'Response did not match the API envelope contract.',
+    )
+  }
+
+  return payload.data
+}
+
+export const get = <TResponse>(
+  path: string,
+  options?: Omit<RequestOptions, 'body' | 'method'>,
+) => request<TResponse>(path, { ...options, method: 'GET' })
+
+export const post = <TResponse>(
+  path: string,
+  body?: unknown,
+  options?: Omit<RequestOptions, 'body' | 'method'>,
+) => request<TResponse>(path, { ...options, body, method: 'POST' })
+
+export const patch = <TResponse>(
+  path: string,
+  body?: unknown,
+  options?: Omit<RequestOptions, 'body' | 'method'>,
+) => request<TResponse>(path, { ...options, body, method: 'PATCH' })
+
+export const deleteRequest = <TResponse>(
+  path: string,
+  options?: Omit<RequestOptions, 'body' | 'method'>,
+) => request<TResponse>(path, { ...options, method: 'DELETE' })

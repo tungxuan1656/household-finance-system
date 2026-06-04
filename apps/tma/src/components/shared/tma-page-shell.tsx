@@ -9,6 +9,7 @@ import {
   PlusIcon,
   StatisticsIcon,
 } from '@/components/shared/tma-icons'
+import { TMA_PATHS } from '@/lib/constants/routes'
 import { pageMemoryStore } from '@/lib/navigation/page-memory'
 import {
   hideBackButton,
@@ -21,25 +22,25 @@ const joinClassNames = (
   ...values: Array<string | false | null | undefined>
 ): string => values.filter(Boolean).join(' ')
 
-const HOME_FALLBACK_ROUTE = '/'
+const HOME_FALLBACK_ROUTE = TMA_PATHS.root
 
 const tabItems = [
   {
     href: HOME_FALLBACK_ROUTE,
     label: 'Trang chủ',
     icon: HomeIcon,
-    match: (path: string) => path === '/' || path === '/home',
+    match: (path: string) => path === TMA_PATHS.root || path === TMA_PATHS.home,
   },
   {
-    href: '/statistics',
+    href: TMA_PATHS.statistics,
     label: 'Thống kê',
     icon: StatisticsIcon,
-    match: (path: string) => path.startsWith('/statistics'),
+    match: (path: string) => path.startsWith(TMA_PATHS.statistics),
   },
 ] as const
 
 const TmaBottomTabs = ({
-  bubbleHref = '/expenses/new/category',
+  bubbleHref = TMA_PATHS.expensesNewCategory,
 }: {
   bubbleHref?: string
 }) => {
@@ -123,7 +124,7 @@ const TmaBottomTabs = ({
 export interface TmaPageHeaderProps {
   title: string
   eyebrow?: string
-  subtitle?: string
+  subtitle?: ReactNode
   leading?: ReactNode
   trailing?: ReactNode
 }
@@ -192,7 +193,9 @@ export const TmaPageShell = ({
   const location = useLocation()
   const navigate = useNavigate()
   const normalizedPathname =
-    location.pathname === '/home' ? HOME_FALLBACK_ROUTE : location.pathname
+    location.pathname === TMA_PATHS.home
+      ? HOME_FALLBACK_ROUTE
+      : location.pathname
   const pageMemoryKey = `${normalizedPathname}${location.search}`
 
   const handleBack = useEffectEvent(() => {

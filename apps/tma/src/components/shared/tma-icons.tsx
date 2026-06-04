@@ -139,6 +139,21 @@ export const NoteIcon = (props: IconProps) => (
   </IconBase>
 )
 
+export const CameraIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d='M5.25 8.25h13.5a1.5 1.5 0 0 1 1.5 1.5v7a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-7a1.5 1.5 0 0 1 1.5-1.5Z' />
+    <path d='m8 8.25 1.15-2h5.7l1.15 2' />
+    <circle cx='12' cy='13' r='3.25' />
+  </IconBase>
+)
+
+export const RefreshIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d='M19 6.75v4.5h-4.5' />
+    <path d='M18.25 11.25a6.5 6.5 0 1 0 1.25 3.75' />
+  </IconBase>
+)
+
 export const CloseIcon = (props: IconProps) => (
   <IconBase {...props}>
     <path d='m6.5 6.5 11 11' />

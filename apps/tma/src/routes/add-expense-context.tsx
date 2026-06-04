@@ -116,7 +116,8 @@ export const AddExpenseContextPage = () => {
         <div>
           <strong>{category.label}</strong>
           <p>
-            {formatDateLabel(date)} • {formatVnd(amount)}
+            {formatDateLabel(date)} •{' '}
+            <span className='font-mono'>{formatVnd(amount)}</span>
           </p>
         </div>
       </section>
@@ -184,7 +185,7 @@ export const AddExpenseContextPage = () => {
           </div>
           <div>
             <span>Số tiền</span>
-            <strong>{formatVnd(amount)}</strong>
+            <strong className='font-mono'>{formatVnd(amount)}</strong>
           </div>
           <div>
             <span>Ngày</span>

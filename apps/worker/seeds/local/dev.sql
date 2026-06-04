@@ -27,6 +27,7 @@ INSERT INTO households (
   name,
   slug,
   description,
+  avatar_url,
   default_currency_code,
   timezone,
   created_by_user_id
@@ -37,6 +38,7 @@ VALUES
     'Demo Household',
     'demo-household',
     'Main seeded household with shared spending, groups, and monthly budgets.',
+    'https://res.cloudinary.com/dbh6mlyky/image/upload/v1756263088/ico_giadinh_immyso.png',
     'USD',
     'UTC',
     'seed-user-admin'
@@ -46,6 +48,7 @@ VALUES
     'City Loft',
     'city-loft',
     'Second seeded household used to exercise multi-household reads for the Telegram test user.',
+    'https://res.cloudinary.com/dbh6mlyky/image/upload/v1756263088/ico_dulich_frrimr.png',
     'USD',
     'UTC',
     '01KT3YMJ8GHFQD6K0RM4FJEJT4'
@@ -54,6 +57,7 @@ ON CONFLICT(id) DO UPDATE SET
   name = excluded.name,
   slug = excluded.slug,
   description = excluded.description,
+  avatar_url = excluded.avatar_url,
   default_currency_code = excluded.default_currency_code,
   timezone = excluded.timezone,
   created_by_user_id = excluded.created_by_user_id;

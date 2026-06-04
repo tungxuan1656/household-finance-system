@@ -116,6 +116,7 @@ export const AddExpenseDetailsPage = () => {
         </div>
         <label className='tma-amount-input'>
           <input
+            className='font-mono'
             inputMode='numeric'
             placeholder='0'
             type='text'
@@ -127,9 +128,11 @@ export const AddExpenseDetailsPage = () => {
           <span>VND</span>
         </label>
         <p className='tma-amount-card__preview'>
-          {amount > 0
-            ? formatVnd(amount)
-            : 'Nhập một số tiền đủ rõ để tiếp tục.'}
+          {amount > 0 ? (
+            <span className='font-mono'>{formatVnd(amount)}</span>
+          ) : (
+            'Nhập một số tiền đủ rõ để tiếp tục.'
+          )}
         </p>
       </section>
 

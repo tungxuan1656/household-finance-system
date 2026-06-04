@@ -37,7 +37,7 @@ export const StatisticsPage = () => {
       <section className='tma-hero-card'>
         <div>
           <p className='tma-section-label'>Tổng chi</p>
-          <strong>{formatVnd(total)}</strong>
+          <strong className='font-mono'>{formatVnd(total)}</strong>
           <p>{slice.changeLabel}</p>
         </div>
 
@@ -130,7 +130,7 @@ export const StatisticsPage = () => {
               key={legend.label}
               className={`tma-legend-pill tone-${legend.tone}`}>
               <span>{legend.label}</span>
-              <strong>{formatVnd(legend.amount)}</strong>
+              <strong className='font-mono'>{formatVnd(legend.amount)}</strong>
             </div>
           ))}
         </div>
@@ -151,7 +151,7 @@ export const StatisticsPage = () => {
                 <h3>{entry.label}</h3>
                 <p>{entry.percent}% tổng chi</p>
               </div>
-              <strong>{formatVnd(entry.amount)}</strong>
+              <strong className='font-mono'>{formatVnd(entry.amount)}</strong>
             </article>
           ))}
         </div>

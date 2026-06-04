@@ -56,6 +56,7 @@ export type HouseholdDTO = {
   id: string
   name: string
   slug: string
+  avatarUrl: string | null
   defaultCurrencyCode: string
   timezone: string
   role: HouseholdRoleDTO

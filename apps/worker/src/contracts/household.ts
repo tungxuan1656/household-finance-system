@@ -62,13 +62,15 @@ export const updateHouseholdRequestSchema = (
           message: translate(locale, 'households.timezoneInvalid'),
         })
         .optional(),
+      avatarUrl: z.url().nullable().optional(),
     })
     .strict()
     .refine(
       (value) =>
         value.name !== undefined ||
         value.defaultCurrencyCode !== undefined ||
-        value.timezone !== undefined,
+        value.timezone !== undefined ||
+        value.avatarUrl !== undefined,
       {
         message: translate(locale, 'households.atLeastOneFieldRequired'),
       },
@@ -99,6 +101,7 @@ export interface HouseholdDTO {
   id: string
   name: string
   slug: string
+  avatarUrl: string | null
   defaultCurrencyCode: string
   timezone: string
   role: HouseholdRoleDTO

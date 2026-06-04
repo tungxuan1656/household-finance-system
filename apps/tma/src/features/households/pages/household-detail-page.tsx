@@ -1,0 +1,611 @@
+import {
+  type ChangeEvent,
+  type FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { useParams } from 'react-router-dom'
+
+import { CameraIcon, RefreshIcon } from '@/components/shared/tma-icons'
+import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { useAuth } from '@/features/auth/auth-provider'
+import {
+  formatCurrencyMinor,
+  getBudgetProgress,
+  getCategoryPresentation,
+  getCurrentPeriod,
+  getExpenseSecondaryText,
+} from '@/features/home/presentation'
+import { TMA_PATHS } from '@/lib/constants/routes'
+import { formatMonthLabel, formatTimeLabel } from '@/lib/formatters'
+import {
+  isAvatarImageFile,
+  prepareSquareAvatarImage,
+} from '@/lib/media/avatar-image'
+import { uploadMediaViaCloudinary } from '@/lib/media/cloudinary-upload'
+import { impact } from '@/lib/telegram/haptics'
+
+import {
+  useHouseholdBudgetListQuery,
+  useHouseholdDetailQuery,
+  useHouseholdMembersQuery,
+  useHouseholdOverviewQuery,
+  useHouseholdRecentExpensesQuery,
+  useReferenceCategoriesQuery,
+  useUpdateHouseholdMutation,
+} from '../api'
+import {
+  formatMemberCountLabel,
+  getHouseholdAvatarFallback,
+  getHouseholdRoleLabel,
+  MAX_AVATAR_SIZE_BYTES,
+} from '../presentation'
+
+export const HouseholdDetailPage = () => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const { user } = useAuth()
+  const { id } = useParams<{ id: string }>()
+  const period = getCurrentPeriod()
+  const householdQuery = useHouseholdDetailQuery(id)
+  const membersQuery = useHouseholdMembersQuery(id)
+  const overviewQuery = useHouseholdOverviewQuery(id, period)
+  const budgetQuery = useHouseholdBudgetListQuery(id, period)
+  const recentExpensesQuery = useHouseholdRecentExpensesQuery(id)
+  const referenceCategoriesQuery = useReferenceCategoriesQuery()
+  const updateHouseholdMutation = useUpdateHouseholdMutation()
+  const [draftName, setDraftName] = useState('')
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null)
+  const [removeAvatar, setRemoveAvatar] = useState(false)
+  const [feedback, setFeedback] = useState<{
+    message: string
+    tone: 'error' | 'success'
+  } | null>(null)
+
+  const household = householdQuery.data
+  const members = membersQuery.data?.items ?? []
+  const budget = budgetQuery.data?.items[0] ?? null
+  const recentExpenses = recentExpensesQuery.data?.items ?? []
+  const referenceCategories = referenceCategoriesQuery.data?.items
+  const isAdmin = household?.role === 'admin'
+  const isBusy = updateHouseholdMutation.isPending
+
+  useEffect(() => {
+    if (!household) {
+      return
+    }
+
+    setDraftName(household.name)
+    setRemoveAvatar(false)
+  }, [household])
+
+  useEffect(
+    () => () => {
+      if (avatarPreviewUrl) {
+        URL.revokeObjectURL(avatarPreviewUrl)
+      }
+    },
+    [avatarPreviewUrl],
+  )
+
+  const currentAvatarUrl = removeAvatar
+    ? null
+    : (avatarPreviewUrl ?? household?.avatarUrl ?? null)
+
+  const budgetProgress =
+    household && overviewQuery.data
+      ? getBudgetProgress(overviewQuery.data.totalSpendMinor, budget)
+      : null
+
+  const canClearAvatar = Boolean(avatarFile || household?.avatarUrl)
+  const memberSummary = useMemo(
+    () => formatMemberCountLabel(members.length),
+    [members.length],
+  )
+
+  const handleAvatarFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    if (!isAvatarImageFile(file)) {
+      setFeedback({
+        message: 'Chọn ảnh hợp lệ dạng JPEG, PNG, WEBP hoặc HEIC.',
+        tone: 'error',
+      })
+
+      return
+    }
+
+    if (file.size > MAX_AVATAR_SIZE_BYTES) {
+      setFeedback({
+        message: 'Ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 8MB.',
+        tone: 'error',
+      })
+
+      return
+    }
+
+    if (avatarPreviewUrl) {
+      URL.revokeObjectURL(avatarPreviewUrl)
+    }
+
+    setAvatarFile(file)
+    setAvatarPreviewUrl(URL.createObjectURL(file))
+    setRemoveAvatar(false)
+    setFeedback(null)
+  }
+
+  const handleClearAvatar = () => {
+    if (avatarPreviewUrl) {
+      URL.revokeObjectURL(avatarPreviewUrl)
+    }
+
+    setAvatarFile(null)
+    setAvatarPreviewUrl(null)
+    setRemoveAvatar(true)
+    setFeedback(null)
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleSave = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!id || !household || !isAdmin) {
+      return
+    }
+
+    const payload: {
+      avatarUrl?: string | null
+      name?: string
+    } = {}
+    const normalizedName = draftName.trim()
+
+    if (!normalizedName) {
+      setFeedback({
+        message: 'Tên household không được để trống.',
+        tone: 'error',
+      })
+
+      return
+    }
+
+    if (normalizedName !== household.name) {
+      payload.name = normalizedName
+    }
+
+    if (removeAvatar && household.avatarUrl) {
+      payload.avatarUrl = null
+    }
+
+    try {
+      if (avatarFile) {
+        const preparedAvatar = await prepareSquareAvatarImage({
+          file: avatarFile,
+        })
+        const uploadedAsset = await uploadMediaViaCloudinary({
+          file: preparedAvatar.blob,
+          signatureRequest: {
+            feature: 'household-avatar',
+            mimeType: preparedAvatar.blob.type,
+            resourceType: 'image',
+            sizeBytes: preparedAvatar.blob.size,
+          },
+        })
+
+        payload.avatarUrl = uploadedAsset.secureUrl
+      }
+
+      if (Object.keys(payload).length === 0) {
+        setFeedback({
+          message: 'Không có thay đổi mới để lưu.',
+          tone: 'success',
+        })
+
+        return
+      }
+
+      await updateHouseholdMutation.mutateAsync({
+        householdId: id,
+        payload,
+      })
+
+      if (avatarPreviewUrl) {
+        URL.revokeObjectURL(avatarPreviewUrl)
+      }
+
+      setAvatarFile(null)
+      setAvatarPreviewUrl(null)
+      setRemoveAvatar(false)
+
+      setFeedback({
+        message: 'Đã cập nhật household thành công.',
+        tone: 'success',
+      })
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Không thể cập nhật household lúc này.',
+        tone: 'error',
+      })
+    }
+  }
+
+  if (!id) {
+    return (
+      <TmaPageShell
+        showBackButton
+        backTo={TMA_PATHS.households}
+        title='Chi tiết gia đình'>
+        <div className='tma-empty-card'>
+          <h2>Household không hợp lệ</h2>
+          <p>Đường dẫn hiện tại thiếu mã household để tải chi tiết.</p>
+        </div>
+      </TmaPageShell>
+    )
+  }
+
+  return (
+    <TmaPageShell
+      showBackButton
+      backTo={TMA_PATHS.households}
+      title='Chi tiết gia đình'>
+      {feedback ? (
+        <section
+          className={`tma-feedback-banner tma-feedback-banner--${feedback.tone}`}>
+          <p>{feedback.message}</p>
+        </section>
+      ) : null}
+
+      {householdQuery.isLoading && !household ? (
+        <div className='tma-empty-card'>
+          <h2>Đang tải chi tiết household</h2>
+          <p>
+            Dữ liệu thành viên và chi tiêu sẽ hiện ngay sau khi đồng bộ xong.
+          </p>
+        </div>
+      ) : householdQuery.isError && !household ? (
+        <div className='tma-empty-card'>
+          <h2>Không tải được household</h2>
+          <p>
+            Household này có thể không còn truy cập được, hoặc phiên đăng nhập
+            hiện tại đã hết hạn.
+          </p>
+        </div>
+      ) : household ? (
+        <>
+          <section className='tma-list-card tma-avatar-setup-card'>
+            <div>
+              <h2>Cài đặt ảnh đại diện household</h2>
+              <p>
+                Dùng avatar để mọi người nhận ra household nhanh hơn trong home
+                và danh sách household.
+              </p>
+            </div>
+
+            <div className='tma-avatar-setup-card__preview'>
+              <div className='tma-household-avatar tma-household-avatar--xl'>
+                {currentAvatarUrl ? (
+                  <img
+                    alt={household.name}
+                    className='tma-avatar-image'
+                    src={currentAvatarUrl}
+                  />
+                ) : (
+                  <span>{getHouseholdAvatarFallback(household.name)}</span>
+                )}
+              </div>
+
+              <div className='tma-avatar-setup-card__copy'>
+                <strong>{household.name}</strong>
+                <p>
+                  {memberSummary} • {getHouseholdRoleLabel(household.role)}
+                </p>
+              </div>
+            </div>
+
+            {isAdmin ? (
+              <div className='tma-avatar-setup-card__actions'>
+                <button
+                  className='tma-chip-button'
+                  disabled={isBusy}
+                  type='button'
+                  onClick={() => {
+                    impact('light')
+                    fileInputRef.current?.click()
+                  }}>
+                  <CameraIcon height='14' width='14' />
+                  <span>{household.avatarUrl ? 'Đổi ảnh' : 'Thêm ảnh'}</span>
+                </button>
+
+                {canClearAvatar ? (
+                  <button
+                    className='tma-chip-button'
+                    disabled={isBusy}
+                    type='button'
+                    onClick={handleClearAvatar}>
+                    <RefreshIcon height='14' width='14' />
+                    <span>Xóa ảnh</span>
+                  </button>
+                ) : null}
+
+                <input
+                  ref={fileInputRef}
+                  accept='image/*'
+                  className='tma-hidden-input'
+                  disabled={isBusy}
+                  type='file'
+                  onChange={handleAvatarFileChange}
+                />
+              </div>
+            ) : (
+              <p className='tma-avatar-setup-card__help'>
+                Chỉ quản trị viên mới có thể chỉnh tên và avatar của household.
+              </p>
+            )}
+
+            <p className='tma-avatar-setup-card__help'>
+              Hỗ trợ ảnh vuông JPEG hoặc PNG, tối đa 8MB. Hệ thống sẽ tự căn
+              giữa ảnh trước khi lưu.
+            </p>
+          </section>
+
+          <section className='tma-summary-card tma-household-detail-summary'>
+            <div className='tma-summary-card__topline'>
+              <div>
+                <p className='tma-section-label'>Tổng quan tháng này</p>
+                <strong>
+                  {overviewQuery.data
+                    ? formatCurrencyMinor(
+                        overviewQuery.data.totalSpendMinor,
+                        overviewQuery.data.currencyCode,
+                      )
+                    : overviewQuery.isLoading
+                      ? 'Đang tải...'
+                      : '—'}
+                </strong>
+              </div>
+
+              <span className='tma-chip tma-chip--strong'>
+                {formatMonthLabel(new Date())}
+              </span>
+            </div>
+
+            {budgetProgress ? (
+              <div className='tma-summary-card__meter'>
+                <div className='tma-summary-card__meter-track'>
+                  <span
+                    className='tma-summary-card__meter-fill'
+                    style={{
+                      width: `${Math.min(budgetProgress.percentUsed, 100)}%`,
+                    }}
+                  />
+                </div>
+
+                <div className='tma-summary-card__meter-meta'>
+                  <span>Đã dùng {budgetProgress.percentUsed}% ngân sách</span>
+                  <span>
+                    {budgetProgress.isOverBudget ? 'Vượt ' : 'Còn '}
+                    <span className='font-mono-money'>
+                      {formatCurrencyMinor(
+                        Math.abs(budgetProgress.remainingMinor),
+                        budget?.currencyCode ??
+                          overviewQuery.data?.currencyCode ??
+                          'VND',
+                      )}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className='tma-summary-card__meter-meta'>
+                <span>{overviewQuery.data?.expenseCount ?? 0} khoản chi</span>
+                <span>{memberSummary}</span>
+              </div>
+            )}
+
+            <div className='tma-household-meta-grid'>
+              <article className='tma-household-meta-cell'>
+                <span>Múi giờ</span>
+                <strong>{household.timezone}</strong>
+              </article>
+
+              <article className='tma-household-meta-cell'>
+                <span>Tiền tệ</span>
+                <strong>{household.defaultCurrencyCode}</strong>
+              </article>
+
+              <article className='tma-household-meta-cell'>
+                <span>Quyền của bạn</span>
+                <strong>{getHouseholdRoleLabel(household.role)}</strong>
+              </article>
+            </div>
+          </section>
+
+          <section className='tma-section'>
+            <div className='tma-section__header'>
+              <div>
+                <p className='tma-section-label'>Thiết lập</p>
+                <h2 className='tma-section__title'>Thông tin household</h2>
+              </div>
+            </div>
+
+            <section className='tma-list-card tma-household-form-card'>
+              <form className='tma-household-form' onSubmit={handleSave}>
+                <label className='tma-field-block'>
+                  <span>Tên household</span>
+                  <input
+                    className='tma-text-input'
+                    disabled={!isAdmin || isBusy}
+                    placeholder='Nhập tên household'
+                    type='text'
+                    value={draftName}
+                    onChange={(event) => {
+                      setDraftName(event.target.value)
+                      setFeedback(null)
+                    }}
+                  />
+                </label>
+
+                {isAdmin ? (
+                  <div className='tma-action-row'>
+                    <button
+                      className='tma-action-button tma-action-button--primary'
+                      disabled={isBusy}
+                      type='submit'>
+                      {isBusy ? 'Đang lưu...' : 'Lưu thay đổi'}
+                    </button>
+                  </div>
+                ) : (
+                  <p className='tma-household-form__note'>
+                    Bạn có thể xem thông tin household và chi tiêu gần đây,
+                    nhưng chỉ quản trị viên mới được chỉnh sửa.
+                  </p>
+                )}
+              </form>
+            </section>
+          </section>
+
+          <section className='tma-section'>
+            <div className='tma-section__header'>
+              <div>
+                <p className='tma-section-label'>Hoạt động</p>
+                <h2 className='tma-section__title'>Chi tiêu gần đây</h2>
+              </div>
+            </div>
+
+            {recentExpensesQuery.isLoading && recentExpenses.length === 0 ? (
+              <div className='tma-empty-card'>
+                <h2>Đang tải chi tiêu gần đây</h2>
+                <p>Dữ liệu sẽ hiện ngay khi household sync xong.</p>
+              </div>
+            ) : recentExpensesQuery.isError && recentExpenses.length === 0 ? (
+              <div className='tma-empty-card'>
+                <h2>Không tải được chi tiêu gần đây</h2>
+                <p>Thử mở lại household hoặc kiểm tra lại dữ liệu local.</p>
+              </div>
+            ) : recentExpenses.length === 0 ? (
+              <div className='tma-empty-card'>
+                <h2>Chưa có dữ liệu chi tiêu</h2>
+                <p>Household này chưa có khoản chi trong phạm vi đang xem.</p>
+              </div>
+            ) : (
+              <div className='tma-list-card'>
+                {recentExpenses.map((expense) => {
+                  const category = getCategoryPresentation(
+                    expense.categoryKey,
+                    referenceCategories,
+                  )
+
+                  return (
+                    <article key={expense.id} className='tma-expense-row'>
+                      <div className='tma-household-avatar tma-household-avatar--sm'>
+                        <span>{category.symbol}</span>
+                      </div>
+
+                      <div className='tma-expense-row__body'>
+                        <div className='tma-expense-row__title-line'>
+                          <h3>{expense.title.trim() || category.label}</h3>
+                          <strong className='font-mono-money'>
+                            {formatCurrencyMinor(
+                              expense.amountMinor,
+                              expense.currencyCode,
+                            )}
+                          </strong>
+                        </div>
+
+                        <p>
+                          {getExpenseSecondaryText(
+                            expense.note,
+                            category.label,
+                          )}
+                        </p>
+
+                        <div className='tma-expense-row__meta'>
+                          <span>
+                            {formatTimeLabel(
+                              new Date(expense.occurredAt).toISOString(),
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            )}
+          </section>
+
+          <section className='tma-section'>
+            <div className='tma-section__header'>
+              <div>
+                <p className='tma-section-label'>Thành viên</p>
+                <h2 className='tma-section__title'>Danh sách hiện tại</h2>
+              </div>
+            </div>
+
+            {membersQuery.isLoading && members.length === 0 ? (
+              <div className='tma-empty-card'>
+                <h2>Đang tải thành viên</h2>
+                <p>Danh sách thành viên sẽ hiện khi truy vấn hoàn tất.</p>
+              </div>
+            ) : membersQuery.isError && members.length === 0 ? (
+              <div className='tma-empty-card'>
+                <h2>Không tải được thành viên</h2>
+                <p>Thử mở lại trang hoặc kiểm tra quyền truy cập household.</p>
+              </div>
+            ) : (
+              <div className='tma-list-card'>
+                {members.map((member) => (
+                  <article key={member.userId} className='tma-member-row'>
+                    <div className='tma-household-avatar tma-household-avatar--sm'>
+                      {member.avatarUrl ? (
+                        <img
+                          alt={member.name}
+                          className='tma-avatar-image'
+                          src={member.avatarUrl}
+                        />
+                      ) : (
+                        <span>{getHouseholdAvatarFallback(member.name)}</span>
+                      )}
+                    </div>
+
+                    <div className='tma-member-row__body'>
+                      <div className='tma-member-row__title'>
+                        <h3>
+                          {member.name || user?.displayName || 'Thành viên'}
+                        </h3>
+                        <span className='tma-soft-pill'>
+                          {getHouseholdRoleLabel(member.role)}
+                        </span>
+                      </div>
+
+                      <p>{member.email}</p>
+                    </div>
+
+                    {member.userId === user?.id ? (
+                      <span className='tma-soft-pill'>Bạn</span>
+                    ) : null}
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </>
+      ) : null}
+    </TmaPageShell>
+  )
+}

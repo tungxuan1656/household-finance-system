@@ -1,45 +1,61 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
+import { TMA_PATHS } from '@/lib/constants/routes'
 import { AddExpenseCategoryPage } from '@/routes/add-expense-category'
 import { AddExpenseContextPage } from '@/routes/add-expense-context'
 import { AddExpenseDetailsPage } from '@/routes/add-expense-details'
+import { ExpenseDetailPage } from '@/routes/expense-detail'
 import { ExpensesPage } from '@/routes/expenses'
 import { FatalLaunchPage } from '@/routes/fatal-launch'
 import { HomePage } from '@/routes/home'
+import { HouseholdDetailRoute } from '@/routes/household-detail'
+import { HouseholdsPage } from '@/routes/households'
 import { NotFoundPage } from '@/routes/not-found'
 import { StatisticsPage } from '@/routes/statistics'
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: TMA_PATHS.root,
     element: <HomePage />,
   },
   {
-    path: '/home',
+    path: TMA_PATHS.home,
     element: <HomePage />,
   },
   {
-    path: '/statistics',
+    path: TMA_PATHS.statistics,
     element: <StatisticsPage />,
   },
   {
-    path: '/expenses',
+    path: TMA_PATHS.expenses,
     element: <ExpensesPage />,
   },
   {
-    path: '/expenses/new/category',
+    path: `${TMA_PATHS.expenses}/:id`,
+    element: <ExpenseDetailPage />,
+  },
+  {
+    path: TMA_PATHS.expensesNewCategory,
     element: <AddExpenseCategoryPage />,
   },
   {
-    path: '/expenses/new/details',
+    path: TMA_PATHS.expensesNewDetails,
     element: <AddExpenseDetailsPage />,
   },
   {
-    path: '/expenses/new/context',
+    path: TMA_PATHS.expensesNewContext,
     element: <AddExpenseContextPage />,
   },
   {
-    path: '/fatal',
+    path: TMA_PATHS.households,
+    element: <HouseholdsPage />,
+  },
+  {
+    path: `${TMA_PATHS.households}/:id`,
+    element: <HouseholdDetailRoute />,
+  },
+  {
+    path: TMA_PATHS.fatal,
     element: <FatalLaunchPage />,
   },
   {
