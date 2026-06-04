@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Expanded local seed coverage for the Telegram test account
+
+- Who: Codex
+- Summary: Reworked `apps/worker/seeds/local/dev.sql` so the local demo data for Telegram user `01KT3YMJ8GHFQD6K0RM4FJEJT4` is no longer a single-expense stub. The seed now uses rerunnable upserts for seed-owned rows, preserves the real Telegram-created user profile if it already exists locally, and fills the account with meaningful read-surface data: 2 households, multiple household members, 10 household categories, 5 active groups, 4 household budgets across the current and previous month, and a broader expense history spanning personal and household scopes over many dates. The new expense rows also populate `category_key`, `source_key`, budget-limit `category_key`, and group-assignment rows consistently so analytics, budgets, group summaries, and feed views all read useful local data instead of sparse placeholders.
+- Files changed: Worker local seed SQL, feat-083 harness evidence, and this progress log.
+- Verification: `pnpm --filter worker db:seed:local` passed after one follow-up fix for an existing membership unique-key collision and a deliberate cleanup of seed-owned `expense_group_items` rows before reinsertion. Local D1 verification queries then confirmed the target account now has 2 memberships (`City Loft` admin, `Demo Household` member), 5 active groups, 4 budgets over `2026-05` and `2026-06`, 24 user-owned expenses across personal + both household scopes, 15 distinct expense dates, and 10 grouped expense assignments. Final repo verification with `./init.sh` completed and printed `Done!`.
+- Blockers: none.
+- Next steps: Keep this richer seed as the default local test bed for TMA read surfaces, then continue building the remaining group/budget/statistics pages against it.
+
+## 2026-06-04 — Wired live worker data into the TMA home page
+
+- Who: Codex
+- Summary: Replaced the TMA home screen's mock finance data with real worker-backed queries while preserving the current mobile-first layout. The new TMA home data layer reads analytics overview/comparison, households, household members, household budgets, recent expenses, and reference categories through typed TanStack Query options scoped to `apps/tma`, then maps those contracts into the existing summary card, household carousel, and recent-expense list with graceful loading/empty/error states. To make local Telegram verification practical, the worker local seed file was also repaired against the current D1 schema, converted to current-month dynamic dates, and extended so the Telegram test account `01KT3YMJ8GHFQD6K0RM4FJEJT4` joins the demo household and has visible seeded spend.
+- Files changed: TMA home route, new TMA home API/presentation/types helpers and focused tests, worker local seed SQL, feat-083 harness record, feature index, and this progress log.
+- Verification: `pnpm --filter tma exec vitest run src/test/home-presentation.test.ts` passed (3 tests). `pnpm --filter tma typecheck` passed. `pnpm --filter tma build` passed. `pnpm --filter tma lint` finished with only the two pre-existing `no-console` warnings in the TMA i18n/storage files and no new lint errors from this work. `pnpm --filter worker db:migrate:local` reported no pending migrations. `pnpm --filter worker db:seed:local` succeeded after the seed SQL was aligned to the live schema. A follow-up local D1 query confirmed the Telegram test account has active membership in `Demo Household`, its seeded `Team lunch` expense exists, and the latest seeded budget month is `2026-06`. Final repo verification: `./init.sh build` exited successfully with `OK`, and `./init.sh` completed and printed `Done!`.
+- Blockers: Real Telegram/on-device visual smoke for the authenticated home page is still pending because this environment cannot supply a real Telegram launch context to open the TMA directly inside Telegram.
+- Next steps: Open the Mini App with the Telegram test account after running the local worker/TMA dev stack, confirm the live home cards now show seeded household + expense data, then continue feat-083 with the remaining dedicated read surfaces (statistics/groups/budget detail flows).
+
 ## 2026-06-04 — Refined TMA home screen minimalism and visual details
 
 - Who: Antigravity

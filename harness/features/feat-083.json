@@ -1,7 +1,7 @@
 {
   "id": "feat-083",
   "name": "Telegram Mini App read surfaces for budgets, groups, and insights",
-  "status": "planned",
+  "status": "in_progress",
   "description": "Add TMA read-first pages for budgets, groups, and lightweight insights using existing worker data contracts, optimized for mobile WebView instead of desktop-style dashboards.",
   "dependencies": [
     "feat-021",
@@ -21,7 +21,23 @@
       "Reuse existing worker analytics, budget, group, and expense query contracts instead of inventing TMA-only APIs first.",
       "Design read surfaces for fast scan and drill-down, not for desktop-card parity.",
       "Lazy-load heavier analytics views and keep the default TMA path focused on fast open and quick context."
+    ],
+    "artifacts": [
+      "Added a TMA home data layer under `apps/tma/src/features/home/` with typed worker-backed query contracts for analytics overview/comparison, households, budgets, recent expenses, and reference categories, without importing feature code from `apps/web`.",
+      "Replaced the `apps/tma/src/routes/home.tsx` mock-data composition with live TanStack Query reads from the worker, while reshaping the summary card, household carousel, and recent-expense list so the current TMA layout stays readable with partial, empty, or non-VND data.",
+      "Updated `apps/worker/seeds/local/dev.sql` to match the current worker schema, make seeded budget/expense dates relative to the current month, and attach the Telegram test account `01KT3YMJ8GHFQD6K0RM4FJEJT4` to the demo household with visible current-month spend so the TMA home screen can be verified against real data locally.",
+      "Expanded the local seed so the Telegram test account now spans 2 households, 5 active groups, 4 household budgets across 2 months, and 24 user-owned expenses over 15 distinct dates, with both personal and household expenses plus grouped expense assignments for analytics and group-summary coverage.",
+      "Added `apps/tma/src/test/home-presentation.test.ts` to lock the new category/budget/comparison presentation helpers before wider TMA read-surface work continues."
+    ],
+    "verification": [
+      "Focused `pnpm --filter tma exec vitest run src/test/home-presentation.test.ts` passed (3 tests).",
+      "Focused `pnpm --filter tma typecheck` passed.",
+      "Focused `pnpm --filter tma build` passed.",
+      "Focused `pnpm --filter tma lint` completed with only the two pre-existing `no-console` warnings in `apps/tma/src/lib/i18n/index.ts` and `apps/tma/src/lib/storage/adapter.ts`; no new lint errors remain from this slice.",
+      "Local worker verification passed: `pnpm --filter worker db:migrate:local` reported no pending migrations, `pnpm --filter worker db:seed:local` succeeded after aligning the seed file to the live schema, and a follow-up `wrangler d1 execute ...` query confirmed the Telegram test account membership, seeded expense, and current-month budget rows.",
+      "A second local D1 verification query confirmed the richer dataset breadth for `01KT3YMJ8GHFQD6K0RM4FJEJT4`: 2 household memberships (`City Loft`, `Demo Household`), 5 active groups, 4 budgets spanning `2026-05` to `2026-06`, 24 user-owned expenses across personal + 2 household scopes, 15 distinct expense days, and 10 grouped expense assignments.",
+      "Repo-level verification passed: `./init.sh build` exited successfully with `OK`, and final `./init.sh` completed and printed `Done!`."
     ]
   },
-  "notes": "This feature aims for useful mobile read flows, not one-to-one visual parity with `apps/web`."
+  "notes": "This feature now has the first live TMA read surface on the home page. Dedicated group/budget/statistics pages are still pending; the current home screen only uses the existing worker contracts to surface summary, household, and recent-expense context in a Telegram-friendly layout."
 }
