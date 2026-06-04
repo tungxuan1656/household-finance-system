@@ -15,14 +15,9 @@ const BOOTSTRAP_TIMEOUT_MS = 15_000
 export interface AuthBootstrapProps {
   deps: AuthBootstrapDeps
   children: React.ReactNode
-  loadingFallback?: React.ReactNode
 }
 
-export const AuthBootstrap = ({
-  deps,
-  children,
-  loadingFallback,
-}: AuthBootstrapProps) => {
+export const AuthBootstrap = ({ deps, children }: AuthBootstrapProps) => {
   const status = useAuthStore((state) => state.status)
   const error = useAuthStore((state) => state.error)
   const startedRef = useRef(false)
@@ -68,7 +63,7 @@ export const AuthBootstrap = ({
       return <FatalLaunchScreen error={error} />
     }
 
-    return <>{loadingFallback ?? <LoadingFallback phase={phase} />}</>
+    return <LoadingFallback phase={phase} />
   }
 
   return <>{children}</>

@@ -1,11 +1,7 @@
-import { miniApp } from '@tma.js/sdk'
 import { useTranslation } from 'react-i18next'
 
 import { AppShell } from '@/components/shared/app-shell'
-
-const closeMiniApp = () => {
-  miniApp.close.ifAvailable()
-}
+import { closeMiniApp } from '@/lib/telegram/back-button'
 
 export const FatalLaunchPage = () => {
   const { t } = useTranslation()

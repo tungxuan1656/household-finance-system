@@ -26,14 +26,17 @@
       "Hardened `apps/tma/src/lib/storage/adapter.ts` so secure read/delete failures now trip the adapter into explicit memory-only mode instead of silently retrying broken SecureStorage calls forever.",
       "Removed currently unreachable bootstrap branches in `apps/tma/src/features/auth/bootstrap.tsx`, `apps/tma/src/features/auth/bootstrap-deps.ts`, and `apps/tma/src/features/auth/store.ts` without changing the existing authenticated/fatal outcomes.",
       "Lazy-loaded the TMA route modules in `apps/tma/src/app/router/app-router.tsx`, removed the duplicate explicit `/home` route, and preserved the same page components behind `Suspense` + `LoadingFallback`.",
-      "Preserved create-household partial-failure feedback by carrying avatar-patch errors through router state into the household detail page instead of setting feedback immediately before navigation and losing it on unmount."
+      "Tightened shared shell back-navigation in `apps/tma/src/components/shared/tma-page-shell.tsx` so SPA back now depends only on React Router's own `history.state.idx` and never on browser-history length outside the Mini App stack.",
+      "Added a focused shell navigation regression test covering SPA back and cold-detail fallback, preserved create-household partial-failure feedback across navigation, cached TMA currency formatters, removed the dead `AuthBootstrap.loadingFallback` prop, and reused shared `closeMiniApp` in both fatal screens."
     ],
     "verification": [
       "Focused TMA verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/home-presentation.test.ts src/test/storage-adapter.test.ts src/test/theme.test.ts src/test/telegram-init.test.ts src/test/auth-bootstrap.test.ts src/test/safe-area.test.ts` passed with 24 tests across 6 files.",
       "Focused TMA build verification passed on 2026-06-04: `pnpm --filter tma build` succeeded after lazy routes and formatter caching, emitting split route chunks and reducing the eager entry bundle to `436.00 kB` minified / `139.30 kB` gzip.",
       "Repo canonical verification passed on 2026-06-04: `./init.sh lint` returned `OK`, `./init.sh build` returned `OK`, and final `./init.sh` completed with `Done!`.",
       "Repo hygiene checks passed on 2026-06-04: `git diff --check` returned clean.",
-      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` whole-worktree risk with 16 changed files / 95 changed symbols / 20 affected processes because this milestone touches startup, auth, router, and shared presentation surfaces together."
+      "Focused shell/navigation verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/tma-page-shell-navigation.test.tsx src/test/scroll-restoration.test.tsx src/test/theme.test.ts src/test/telegram-init.test.ts src/test/storage-adapter.test.ts src/test/auth-bootstrap.test.ts src/test/home-presentation.test.ts` passed with 27 tests across 7 files.",
+      "Repo-wide follow-up verification passed on 2026-06-04 after the continued refactor: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, `./init.sh build`, and final `./init.sh` all completed successfully (`OK` / `Done!`).",
+      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 5 changed files / 12 changed symbols / 49 affected processes for the isolated shell/auth cleanup follow-up, concentrated in `TmaPageShell`, `AuthBootstrap`, and the router."
     ]
   },
   "notes": "This feature is a hardening and architecture pass over the active TMA worktree. It intentionally prioritizes runtime correctness and cold-start behavior over new product scope."

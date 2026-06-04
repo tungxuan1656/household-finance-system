@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Continued feat-094 with isolated shell/navigation refactor and cleanup
+
+- Who: Codex
+- Summary: Continued `feat-094` with the shared shell pass that had been intentionally deferred because of its blast radius. `TmaPageShell` back-navigation now trusts only React Router's own `history.state.idx` for in-app back and no longer falls back to `window.history.length`, so cold-open detail screens cannot accidentally escape the Mini App stack. The router keeps `/home` only as a replace-redirect alias into `/`, preserving one canonical home screen while keeping old links compatible. This pass also cleaned up a few low-risk leftovers inside the same scope: reused the shared `closeMiniApp` helper in both fatal screens and removed the dead `loadingFallback` prop from `AuthBootstrap`.
+- Files changed: Shared TMA shell navigation helper, TMA router alias handling, a focused shell-navigation regression test, fatal-launch helper reuse, auth bootstrap prop cleanup, feat-094 evidence, and this progress log.
+- Verification: Focused TMA shell/navigation regression tests passed with 27 tests across 7 files. `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, `./init.sh build`, and final `./init.sh` all passed (`OK` / `Done!`). `git diff --check` remained clean. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 5 changed files, 12 changed symbols, and 49 affected processes, concentrated in `TmaPageShell`, `AuthBootstrap`, and `app-router.tsx` as expected for this isolated shared-shell follow-up.
+- Blockers: None in code or verification. `feat-094` is still intentionally open because some helper normalization work remains if we want to continue shrinking duplication.
+- Next steps: Decide whether to finish the remaining lightweight helper extraction in `feat-094` now or stop here and treat the current milestone as the stable runtime/navigation baseline for subsequent TMA slices.
+
 ## 2026-06-04 — Hardened TMA startup/auth runtime and reduced eager route bundle weight
 
 - Who: Codex

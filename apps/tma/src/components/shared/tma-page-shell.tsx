@@ -24,6 +24,15 @@ const joinClassNames = (
 
 const HOME_FALLBACK_ROUTE = TMA_PATHS.root
 
+export const canUseRouterBack = (historyState: unknown): boolean =>
+  Boolean(
+    historyState &&
+    typeof historyState === 'object' &&
+    'idx' in historyState &&
+    typeof historyState.idx === 'number' &&
+    historyState.idx > 0,
+  )
+
 const tabItems = [
   {
     href: HOME_FALLBACK_ROUTE,
@@ -195,24 +204,13 @@ export const TmaPageShell = ({
   useContainerScrollRestoration(contentRef)
 
   const handleBack = useEffectEvent(() => {
-    const canGoBack =
-      window.history.state && typeof window.history.state.idx === 'number'
-        ? window.history.state.idx > 0
-        : window.history.length > 1
-
-    if (canGoBack) {
+    if (canUseRouterBack(window.history.state)) {
       navigate(-1)
 
       return
     }
 
-    if (backTo) {
-      navigate(backTo, { replace: true })
-
-      return
-    }
-
-    navigate(HOME_FALLBACK_ROUTE)
+    navigate(backTo ?? HOME_FALLBACK_ROUTE, { replace: true })
   })
 
   useEffect(() => {

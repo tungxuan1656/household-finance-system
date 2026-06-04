@@ -1,7 +1,7 @@
-import { miniApp } from '@tma.js/sdk'
 import { useTranslation } from 'react-i18next'
 
 import { AppShell } from '@/components/shared/app-shell'
+import { closeMiniApp } from '@/lib/telegram/back-button'
 import {
   getContentSafeAreaInsets,
   getSafeAreaInsets,
@@ -12,10 +12,6 @@ import type { AuthError } from './store'
 
 export interface FatalLaunchScreenProps {
   error?: AuthError | null
-}
-
-const closeMiniApp = () => {
-  miniApp.close.ifAvailable()
 }
 
 export const FatalLaunchScreen = ({ error }: FatalLaunchScreenProps) => {

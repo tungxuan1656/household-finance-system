@@ -44,9 +44,10 @@ This change hardens `apps/tma` so the Mini App does not die before React renders
 - [x] Batch 1 — viewport/theme hardening: make TMA safe-area CSS vars reactive after mount/fullscreen changes.
 - [x] Batch 1 — auth/storage resilience: trip permanently to memory-only mode after secure read/delete failures; remove current unreachable bootstrap branches.
 - [x] Batch 1 verification — focused TMA tests, `./init.sh lint`, `./init.sh build`, and full `./init.sh` all passed on 2026-06-04.
-- [ ] Batch 2 — route/bundle cleanup: lazy-load route modules, remove duplicate home route, and tighten shell back-navigation fallback.
-- [ ] Batch 2 verification — run `pnpm --filter tma build` to confirm chunking changes, then repo `./init.sh build`.
+- [x] Batch 2 — route/bundle cleanup: lazy-load route modules, remove duplicate home route, and tighten shell back-navigation fallback.
+- [x] Batch 2 verification — `pnpm --filter tma build`, `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, `./init.sh build`, and full `./init.sh` all passed on 2026-06-04.
 - [ ] Batch 3 — helper/perf cleanup: shared format/period helpers, formatter caching, dead-prop cleanup, and small duplication reductions.
+- [x] Batch 3 partial — cached currency formatters, removed `AuthBootstrap.loadingFallback`, and reused shared `closeMiniApp` across fatal screens on 2026-06-04.
 - [ ] Final verification — run `./init.sh test`, full `./init.sh`, final GitNexus detect-changes, and update harness evidence/progress.
 
 ## Surprises & Discoveries
@@ -55,6 +56,7 @@ This change hardens `apps/tma` so the Mini App does not die before React renders
 - 2026-06-04: The installed SDK version `@tma.js/sdk@3.2.0` exposes `secureStorage` methods directly and does not provide `secureStorage.mount()`, so any hardening must target fallback behavior rather than a missing mount call.
 - 2026-06-04: A browser-like non-TMA environment still throws from `init()` with a `LaunchParamsRetrieveError`, so startup hardening must happen before app render, not only inside auth bootstrap.
 - 2026-06-04: Route-level lazy loading reduced the eager entry chunk from roughly `525.83 kB` minified / `161.66 kB` gzip to `436.00 kB` minified / `139.30 kB` gzip, while splitting each TMA route into its own small chunk. `TmaPageShell` back-navigation fallback work was deferred because GitNexus marked that shared shell as `CRITICAL` blast radius.
+- 2026-06-04: The isolated `TmaPageShell` pass held up under focused regression coverage; switching back-navigation to React Router's own `history.state.idx` and dropping the `window.history.length` fallback did not break current SPA flows in focused tests.
 
 ## Decision Log
 
