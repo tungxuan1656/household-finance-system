@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react'
 import { useEffect, useEffectEvent, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import PullToRefresh from 'react-simple-pull-to-refresh'
 
 import { useContainerScrollRestoration } from '@/app/router/use-container-scroll-restoration'
 import { AppShell } from '@/components/shared/app-shell'
+import PullToRefresh from '@/components/shared/pull-to-refresh'
 import {
   ChevronRightIcon,
   HomeIcon,
