@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-04 — Aligned TMA household avatar flow with the existing web profile-avatar flow
+
+- Who: Codex
+- Summary: Refined the household detail avatar UX in `apps/tma` so it now follows the same interaction pattern already used by the web profile-avatar flow. The household detail page no longer uploads avatar changes as part of the general settings form. Instead, selecting a file opens a preview dialog, the dialog's apply action uploads through the signed Cloudinary helper and patches only `avatarUrl`, and avatar-specific validation/upload failures stay local to the avatar card instead of mixing into the household-name save flow.
+- Files changed: TMA household detail page, new TMA household avatar section/dialog components, shared TMA style sheet, feat-082 harness evidence, and this progress log.
+- Verification: `pnpm --filter tma typecheck` passed. `pnpm --filter tma build` passed. `pnpm --filter tma lint` completed with only the two known pre-existing `no-console` warnings in `apps/tma/src/lib/i18n/index.ts` and `apps/tma/src/lib/storage/adapter.ts`; no new lint errors remained from this follow-up. Harness JSON parse checks still printed `OK`, and `./scripts/check_harness_size.sh` still passed after updating feat-082 evidence.
+- Blockers: A final repo-level `./init.sh` attempt after this follow-up is currently blocked by out-of-scope worktree issues in other TMA files: `apps/tma/src/routes/expense-edit.tsx` has a type mismatch, and `git diff --check` reports an unrelated blank-line issue in `apps/tma/src/features/expenses/store.ts`.
+- Next steps: Smoke test the new avatar preview/apply flow inside Telegram with the seeded household data to confirm the dialog and upload timing feel right on-device.
+
 ## 2026-06-04 — Implemented TMA expense detail view with edit and delete capabilities
 
 - Who: Antigravity

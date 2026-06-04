@@ -45,3 +45,31 @@ export const useAddExpenseFlowStore = create<AddExpenseFlowState>((set) => ({
   setContext: ({ householdId, groupId }) => set({ householdId, groupId }),
   reset: () => set(buildInitialDraft()),
 }))
+
+export interface EditExpenseDraft {
+  id: string
+  title: string
+  amount: number
+  occurredAt: number
+  categoryKey: string
+  sourceKey: string
+  householdId: string | null
+  note: string
+}
+
+interface EditExpenseFlowState {
+  draft: EditExpenseDraft | null
+  setDraft: (draft: EditExpenseDraft) => void
+  updateDraft: (fields: Partial<EditExpenseDraft>) => void
+  reset: () => void
+}
+
+export const useEditExpenseStore = create<EditExpenseFlowState>((set) => ({
+  draft: null,
+  setDraft: (draft) => set({ draft }),
+  updateDraft: (fields) =>
+    set((state) => ({
+      draft: state.draft ? { ...state.draft, ...fields } : null,
+    })),
+  reset: () => set({ draft: null }),
+}))

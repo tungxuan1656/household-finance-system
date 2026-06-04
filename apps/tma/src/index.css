@@ -63,7 +63,11 @@ body {
 }
 
 .font-mono {
-  font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, monospace;
+  font-family:
+    'JetBrains Mono',
+    -apple-system,
+    BlinkMacSystemFont,
+    monospace;
 }
 
 a {
@@ -89,7 +93,7 @@ button {
   height: 100dvh;
   padding-top: var(--tma-safe-top);
   padding-right: var(--tma-safe-right);
-  padding-bottom: var(--tma-safe-bottom);
+  padding-bottom: 0;
   padding-left: var(--tma-safe-left);
   overflow: hidden;
 }
@@ -136,6 +140,7 @@ button {
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  padding-bottom: var(--tma-safe-bottom);
 }
 
 .tma-page-titlebar {
@@ -151,6 +156,41 @@ button {
   line-height: 1.2;
   letter-spacing: -0.01em;
   font-weight: 700;
+}
+
+.tma-page-titlebar__left,
+.tma-page-titlebar__right {
+  display: flex;
+  align-items: center;
+  min-width: 64px;
+}
+
+.tma-page-titlebar__right {
+  justify-content: flex-end;
+}
+
+.tma-page-titlebar__left {
+  justify-content: flex-start;
+}
+
+.tma-page-titlebar .tma-page-titlebar__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.06);
+  color: var(--tma-text-strong);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: background 0.15s ease;
+}
+
+.tma-page-titlebar .tma-page-titlebar__pill:active {
+  opacity: 0.75;
 }
 
 .tma-page-shell__content {
@@ -614,6 +654,79 @@ button {
 
 .tma-feedback-banner--error {
   background: rgba(255, 120, 120, 0.12);
+}
+
+.tma-field-error {
+  margin: 0;
+  color: #d14d7b;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.tma-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(24px + var(--tma-safe-top)) 16px
+    calc(24px + var(--tma-safe-bottom));
+}
+
+.tma-dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.32);
+  backdrop-filter: blur(10px);
+}
+
+.tma-dialog__surface {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 16px;
+  width: min(100%, 360px);
+  padding: 18px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 24px 48px rgba(17, 24, 39, 0.18);
+}
+
+.tma-dialog__header {
+  display: grid;
+  gap: 6px;
+}
+
+.tma-dialog__title {
+  margin: 0;
+  color: var(--tma-text-strong);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.tma-dialog__copy {
+  margin: 0;
+  color: var(--tma-text-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.tma-dialog__preview {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 24px;
+  object-fit: cover;
+  background: rgba(17, 24, 39, 0.04);
+}
+
+.tma-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .tma-household-avatar {

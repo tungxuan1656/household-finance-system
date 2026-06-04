@@ -5,6 +5,12 @@ import { AddExpenseCategoryPage } from '@/routes/add-expense-category'
 import { AddExpenseContextPage } from '@/routes/add-expense-context'
 import { AddExpenseDetailsPage } from '@/routes/add-expense-details'
 import { ExpenseDetailPage } from '@/routes/expense-detail'
+import {
+  ExpenseEditCategoryPage,
+  ExpenseEditHouseholdPage,
+  ExpenseEditPage,
+  ExpenseEditSourcePage,
+} from '@/routes/expense-edit'
 import { ExpensesPage } from '@/routes/expenses'
 import { FatalLaunchPage } from '@/routes/fatal-launch'
 import { HomePage } from '@/routes/home'
@@ -33,6 +39,22 @@ const router = createBrowserRouter([
   {
     path: `${TMA_PATHS.expenses}/:id`,
     element: <ExpenseDetailPage />,
+  },
+  {
+    path: `${TMA_PATHS.expenses}/:id/edit`,
+    element: <ExpenseEditPage />,
+  },
+  {
+    path: `${TMA_PATHS.expenses}/:id/edit/category`,
+    element: <ExpenseEditCategoryPage />,
+  },
+  {
+    path: `${TMA_PATHS.expenses}/:id/edit/source`,
+    element: <ExpenseEditSourcePage />,
+  },
+  {
+    path: `${TMA_PATHS.expenses}/:id/edit/household`,
+    element: <ExpenseEditHouseholdPage />,
   },
   {
     path: TMA_PATHS.expensesNewCategory,

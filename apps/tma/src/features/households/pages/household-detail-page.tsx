@@ -1,14 +1,6 @@
-import {
-  type ChangeEvent,
-  type FormEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { CameraIcon, RefreshIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { useAuth } from '@/features/auth/auth-provider'
 import {
@@ -20,12 +12,6 @@ import {
 } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatMonthLabel, formatTimeLabel } from '@/lib/formatters'
-import {
-  isAvatarImageFile,
-  prepareSquareAvatarImage,
-} from '@/lib/media/avatar-image'
-import { uploadMediaViaCloudinary } from '@/lib/media/cloudinary-upload'
-import { impact } from '@/lib/telegram/haptics'
 
 import {
   useHouseholdBudgetListQuery,
@@ -36,15 +22,14 @@ import {
   useReferenceCategoriesQuery,
   useUpdateHouseholdMutation,
 } from '../api'
+import { HouseholdAvatarSection } from '../components/household-avatar-section'
 import {
   formatMemberCountLabel,
   getHouseholdAvatarFallback,
   getHouseholdRoleLabel,
-  MAX_AVATAR_SIZE_BYTES,
 } from '../presentation'
 
 export const HouseholdDetailPage = () => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
   const { user } = useAuth()
   const { id } = useParams<{ id: string }>()
   const period = getCurrentPeriod()
@@ -56,9 +41,6 @@ export const HouseholdDetailPage = () => {
   const referenceCategoriesQuery = useReferenceCategoriesQuery()
   const updateHouseholdMutation = useUpdateHouseholdMutation()
   const [draftName, setDraftName] = useState('')
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
-  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null)
-  const [removeAvatar, setRemoveAvatar] = useState(false)
   const [feedback, setFeedback] = useState<{
     message: string
     tone: 'error' | 'success'
@@ -78,81 +60,32 @@ export const HouseholdDetailPage = () => {
     }
 
     setDraftName(household.name)
-    setRemoveAvatar(false)
   }, [household])
-
-  useEffect(
-    () => () => {
-      if (avatarPreviewUrl) {
-        URL.revokeObjectURL(avatarPreviewUrl)
-      }
-    },
-    [avatarPreviewUrl],
-  )
-
-  const currentAvatarUrl = removeAvatar
-    ? null
-    : (avatarPreviewUrl ?? household?.avatarUrl ?? null)
 
   const budgetProgress =
     household && overviewQuery.data
       ? getBudgetProgress(overviewQuery.data.totalSpendMinor, budget)
       : null
 
-  const canClearAvatar = Boolean(avatarFile || household?.avatarUrl)
   const memberSummary = useMemo(
     () => formatMemberCountLabel(members.length),
     [members.length],
   )
 
-  const handleAvatarFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.currentTarget.files?.[0]
-
-    if (!file) {
+  const handleAvatarUploaded = async (avatarUrl: string) => {
+    if (!id) {
       return
     }
 
-    if (!isAvatarImageFile(file)) {
-      setFeedback({
-        message: 'Chọn ảnh hợp lệ dạng JPEG, PNG, WEBP hoặc HEIC.',
-        tone: 'error',
-      })
+    await updateHouseholdMutation.mutateAsync({
+      householdId: id,
+      payload: { avatarUrl },
+    })
 
-      return
-    }
-
-    if (file.size > MAX_AVATAR_SIZE_BYTES) {
-      setFeedback({
-        message: 'Ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 8MB.',
-        tone: 'error',
-      })
-
-      return
-    }
-
-    if (avatarPreviewUrl) {
-      URL.revokeObjectURL(avatarPreviewUrl)
-    }
-
-    setAvatarFile(file)
-    setAvatarPreviewUrl(URL.createObjectURL(file))
-    setRemoveAvatar(false)
-    setFeedback(null)
-  }
-
-  const handleClearAvatar = () => {
-    if (avatarPreviewUrl) {
-      URL.revokeObjectURL(avatarPreviewUrl)
-    }
-
-    setAvatarFile(null)
-    setAvatarPreviewUrl(null)
-    setRemoveAvatar(true)
-    setFeedback(null)
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
+    setFeedback({
+      message: 'Đã cập nhật ảnh household thành công.',
+      tone: 'success',
+    })
   }
 
   const handleSave = async (event: FormEvent<HTMLFormElement>) => {
@@ -181,28 +114,7 @@ export const HouseholdDetailPage = () => {
       payload.name = normalizedName
     }
 
-    if (removeAvatar && household.avatarUrl) {
-      payload.avatarUrl = null
-    }
-
     try {
-      if (avatarFile) {
-        const preparedAvatar = await prepareSquareAvatarImage({
-          file: avatarFile,
-        })
-        const uploadedAsset = await uploadMediaViaCloudinary({
-          file: preparedAvatar.blob,
-          signatureRequest: {
-            feature: 'household-avatar',
-            mimeType: preparedAvatar.blob.type,
-            resourceType: 'image',
-            sizeBytes: preparedAvatar.blob.size,
-          },
-        })
-
-        payload.avatarUrl = uploadedAsset.secureUrl
-      }
-
       if (Object.keys(payload).length === 0) {
         setFeedback({
           message: 'Không có thay đổi mới để lưu.',
@@ -217,22 +129,10 @@ export const HouseholdDetailPage = () => {
         payload,
       })
 
-      if (avatarPreviewUrl) {
-        URL.revokeObjectURL(avatarPreviewUrl)
-      }
-
-      setAvatarFile(null)
-      setAvatarPreviewUrl(null)
-      setRemoveAvatar(false)
-
       setFeedback({
         message: 'Đã cập nhật household thành công.',
         tone: 'success',
       })
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
     } catch (error) {
       setFeedback({
         message:
@@ -288,79 +188,16 @@ export const HouseholdDetailPage = () => {
       ) : household ? (
         <>
           <section className='tma-list-card tma-avatar-setup-card'>
-            <div>
-              <h2>Cài đặt ảnh đại diện household</h2>
-              <p>
-                Dùng avatar để mọi người nhận ra household nhanh hơn trong home
-                và danh sách household.
-              </p>
-            </div>
-
-            <div className='tma-avatar-setup-card__preview'>
-              <div className='tma-household-avatar tma-household-avatar--xl'>
-                {currentAvatarUrl ? (
-                  <img
-                    alt={household.name}
-                    className='tma-avatar-image'
-                    src={currentAvatarUrl}
-                  />
-                ) : (
-                  <span>{getHouseholdAvatarFallback(household.name)}</span>
-                )}
-              </div>
-
-              <div className='tma-avatar-setup-card__copy'>
-                <strong>{household.name}</strong>
-                <p>
-                  {memberSummary} • {getHouseholdRoleLabel(household.role)}
-                </p>
-              </div>
-            </div>
-
-            {isAdmin ? (
-              <div className='tma-avatar-setup-card__actions'>
-                <button
-                  className='tma-chip-button'
-                  disabled={isBusy}
-                  type='button'
-                  onClick={() => {
-                    impact('light')
-                    fileInputRef.current?.click()
-                  }}>
-                  <CameraIcon height='14' width='14' />
-                  <span>{household.avatarUrl ? 'Đổi ảnh' : 'Thêm ảnh'}</span>
-                </button>
-
-                {canClearAvatar ? (
-                  <button
-                    className='tma-chip-button'
-                    disabled={isBusy}
-                    type='button'
-                    onClick={handleClearAvatar}>
-                    <RefreshIcon height='14' width='14' />
-                    <span>Xóa ảnh</span>
-                  </button>
-                ) : null}
-
-                <input
-                  ref={fileInputRef}
-                  accept='image/*'
-                  className='tma-hidden-input'
-                  disabled={isBusy}
-                  type='file'
-                  onChange={handleAvatarFileChange}
-                />
-              </div>
-            ) : (
-              <p className='tma-avatar-setup-card__help'>
-                Chỉ quản trị viên mới có thể chỉnh tên và avatar của household.
-              </p>
-            )}
-
-            <p className='tma-avatar-setup-card__help'>
-              Hỗ trợ ảnh vuông JPEG hoặc PNG, tối đa 8MB. Hệ thống sẽ tự căn
-              giữa ảnh trước khi lưu.
-            </p>
+            <HouseholdAvatarSection
+              avatarUrl={household.avatarUrl}
+              helperText='Hỗ trợ ảnh vuông JPEG hoặc PNG, tối đa 8MB. Hệ thống sẽ tự căn giữa ảnh trước khi lưu.'
+              householdName={household.name}
+              isAdmin={isAdmin}
+              isBusy={isBusy}
+              memberSummary={memberSummary}
+              roleLabel={getHouseholdRoleLabel(household.role)}
+              onAvatarUploaded={handleAvatarUploaded}
+            />
           </section>
 
           <section className='tma-summary-card tma-household-detail-summary'>
