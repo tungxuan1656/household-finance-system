@@ -213,7 +213,7 @@ export const HomePage = () => {
   )
 
   return (
-    <TmaPageShell closeAction title='Trang chủ'>
+    <TmaPageShell title='Trang chủ'>
       <TmaPageHeader
         eyebrow='Xin chào'
         leading={

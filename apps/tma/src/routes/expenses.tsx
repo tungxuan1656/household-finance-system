@@ -63,7 +63,7 @@ export const ExpensesPage = () => {
 
   if (expensesQuery.isLoading || referenceCategoriesQuery.isLoading) {
     return (
-      <TmaPageShell showBackButton title='Chi tiêu'>
+      <TmaPageShell title='Chi tiêu'>
         <div className='tma-empty-card'>
           <h2>Đang tải danh sách chi tiêu</h2>
           <p>Danh sách sẽ xuất hiện ngay khi truy vấn hoàn tất.</p>
@@ -73,7 +73,7 @@ export const ExpensesPage = () => {
   }
 
   return (
-    <TmaPageShell showBackButton title='Chi tiêu'>
+    <TmaPageShell title='Chi tiêu'>
       <div className='tma-page-toolbar'>
         <p className='tma-page-toolbar__copy'>
           Lịch sử đầy đủ, nhẹ để quét mắt và quay lại thật nhanh.

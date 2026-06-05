@@ -56,7 +56,7 @@ export const HouseholdListPage = () => {
   )
 
   return (
-    <TmaPageShell showBackButton backTo={TMA_PATHS.root} title='Gia đình'>
+    <TmaPageShell title='Gia đình'>
       <section className='tma-hero-card tma-household-hub-card'>
         <div className='tma-summary-card__topline'>
           <div>

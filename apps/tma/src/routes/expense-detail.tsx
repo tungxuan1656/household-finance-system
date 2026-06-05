@@ -71,7 +71,7 @@ export const ExpenseDetailPage = () => {
   // Safe area / UI status check
   if (expenseQuery.isLoading || categoriesQuery.isLoading) {
     return (
-      <TmaPageShell showBackButton title='Chi tiết'>
+      <TmaPageShell title='Chi tiết'>
         <div className='tma-empty-card'>
           <h2>Đang tải thông tin chi tiêu...</h2>
           <p>Dữ liệu chi tiết sẽ xuất hiện ngay sau đây.</p>
@@ -82,7 +82,7 @@ export const ExpenseDetailPage = () => {
 
   if (expenseQuery.isError || !expense) {
     return (
-      <TmaPageShell showBackButton title='Chi tiết'>
+      <TmaPageShell title='Chi tiết'>
         <div className='tma-empty-card'>
           <h2>Lỗi tải chi tiết</h2>
           <p>Không tìm thấy khoản chi này hoặc bạn không có quyền truy cập.</p>
@@ -92,7 +92,7 @@ export const ExpenseDetailPage = () => {
   }
 
   return (
-    <TmaPageShell showBackButton title='Chi tiết'>
+    <TmaPageShell title='Chi tiết'>
       <div className='tma-detail-view'>
         <TmaPageHeader
           eyebrow={category.label.toUpperCase()}

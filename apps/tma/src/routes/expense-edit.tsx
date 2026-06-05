@@ -143,7 +143,7 @@ export const ExpenseEditPage = () => {
 
   if (expenseQuery.isLoading || !draft) {
     return (
-      <TmaPageShell showBackButton title='Sửa chi tiêu'>
+      <TmaPageShell title='Sửa chi tiêu'>
         <div className='tma-empty-card'>
           <h2>Đang tải biểu mẫu...</h2>
           <p>Dữ liệu chỉnh sửa sẽ sẵn sàng ngay sau đây.</p>
@@ -155,7 +155,6 @@ export const ExpenseEditPage = () => {
   return (
     <TmaPageShell
       reserveBottomButton
-      showBackButton
       showBottomTabs={false}
       title='Sửa chi tiêu'>
       <div className='tma-edit-flow'>
@@ -419,7 +418,7 @@ export const ExpenseEditCategoryPage = () => {
   if (!draft) return null
 
   return (
-    <TmaPageShell showBackButton showBottomTabs={false} title='Chọn danh mục'>
+    <TmaPageShell showBottomTabs={false} title='Chọn danh mục'>
       <TmaPageHeader
         eyebrow='DANH MỤC CHI TIÊU'
         subtitle='Chọn danh mục phù hợp nhất cho khoản chi.'
@@ -469,7 +468,7 @@ export const ExpenseEditSourcePage = () => {
   if (!draft) return null
 
   return (
-    <TmaPageShell showBackButton showBottomTabs={false} title='Chọn nguồn tiền'>
+    <TmaPageShell showBottomTabs={false} title='Chọn nguồn tiền'>
       <TmaPageHeader
         eyebrow='NGUỒN THANH TOÁN'
         subtitle='Chọn tài khoản hoặc ví dùng để chi.'
@@ -536,7 +535,7 @@ export const ExpenseEditHouseholdPage = () => {
   if (!draft) return null
 
   return (
-    <TmaPageShell showBackButton showBottomTabs={false} title='Chọn không gian'>
+    <TmaPageShell showBottomTabs={false} title='Chọn không gian'>
       <TmaPageHeader
         eyebrow='KHÔNG GIAN GIA ĐÌNH'
         subtitle='Chọn gắn chi tiêu vào gia đình hoặc cá nhân.'

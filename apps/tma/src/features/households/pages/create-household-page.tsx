@@ -95,10 +95,7 @@ export const CreateHouseholdPage = () => {
   }
 
   return (
-    <TmaPageShell
-      showBackButton
-      backTo={TMA_PATHS.households}
-      title='Tạo household'>
+    <TmaPageShell title='Tạo household'>
       <section className='tma-hero-card tma-household-hub-card'>
         <div>
           <p className='tma-section-label'>Thiết lập mới</p>

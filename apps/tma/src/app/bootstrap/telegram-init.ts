@@ -1,6 +1,8 @@
 import {
+  backButton,
   init,
   initData,
+  mainButton,
   miniApp,
   swipeBehavior,
   themeParams,
@@ -41,6 +43,16 @@ export const initTelegram = (): (() => void) => {
 
   // 3. Mount miniApp (requires themeParams to be mounted first)
   miniApp.mount()
+
+  // 3b. Mount backButton and mainButton up-front so components only
+  // toggle visibility and swap onClick handlers. Mounting per-component
+  // forces a re-register against the native bridge on every page mount.
+  if (backButton.isSupported()) {
+    backButton.mount()
+  }
+  if (!mainButton.isMounted()) {
+    mainButton.mount()
+  }
 
   // 4. Bind Telegram theme to CSS variables (must come AFTER mount)
   bindTheme(DEFAULT_TMA_BG)

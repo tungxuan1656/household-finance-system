@@ -16,9 +16,17 @@ vi.mock('@/lib/telegram/theme', () => ({
 }))
 
 vi.mock('@tma.js/sdk', () => ({
+  backButton: {
+    isSupported: vi.fn(() => true),
+    mount: vi.fn(),
+  },
   init,
   initData: {
     restore: vi.fn(),
+  },
+  mainButton: {
+    isMounted: vi.fn(() => false),
+    mount: vi.fn(),
   },
   miniApp: {
     mount: vi.fn(),

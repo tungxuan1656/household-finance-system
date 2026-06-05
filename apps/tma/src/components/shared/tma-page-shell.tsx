@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { useEffect, useEffectEvent, useRef } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 import { useContainerScrollRestoration } from '@/app/router/use-container-scroll-restoration'
 import { AppShell } from '@/components/shared/app-shell'
@@ -12,10 +12,6 @@ import {
   StatisticsIcon,
 } from '@/components/shared/tma-icons'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import {
-  hideBackButton,
-  showBackButton as bindBackButton,
-} from '@/lib/telegram/back-button'
 import { hideBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, selection } from '@/lib/telegram/haptics'
 
@@ -31,15 +27,6 @@ const PullToRefreshSpinner = ({ label }: { label?: string }) => (
 )
 
 const HOME_FALLBACK_ROUTE = TMA_PATHS.root
-
-export const canUseRouterBack = (historyState: unknown): boolean =>
-  Boolean(
-    historyState &&
-    typeof historyState === 'object' &&
-    'idx' in historyState &&
-    typeof historyState.idx === 'number' &&
-    historyState.idx > 0,
-  )
 
 const tabItems = [
   {
@@ -183,13 +170,6 @@ export interface TmaPageShellProps {
   children: ReactNode
   title: string
   showBottomTabs?: boolean
-  showBackButton?: boolean
-  /**
-   * Root screen semantics. When true, the shell hides Telegram BackButton so
-   * fullscreen/native chrome can own the close affordance instead.
-   */
-  closeAction?: boolean
-  backTo?: string
   reserveBottomButton?: boolean
   bubbleHref?: string
   contentClassName?: string
@@ -204,54 +184,18 @@ export const TmaPageShell = ({
   children,
   title,
   showBottomTabs = true,
-  showBackButton = false,
-  closeAction = false,
-  backTo,
   reserveBottomButton = false,
   bubbleHref,
   contentClassName,
   onRefresh,
 }: TmaPageShellProps) => {
-  const navigate = useNavigate()
   const contentRef = useRef<HTMLElement | null>(null)
 
   useContainerScrollRestoration(contentRef)
 
-  const handleBack = useEffectEvent(() => {
-    if (canUseRouterBack(window.history.state)) {
-      navigate(-1)
-
-      return
-    }
-
-    navigate(backTo ?? HOME_FALLBACK_ROUTE, { replace: true })
-  })
-
   useEffect(() => {
     hideBottomButton()
-
-    if (closeAction) {
-      hideBackButton()
-
-      return
-    }
-
-    if (!showBackButton) {
-      hideBackButton()
-
-      return
-    }
-
-    const cleanup = bindBackButton(() => {
-      impact('light')
-      handleBack()
-    })
-
-    return () => {
-      cleanup()
-      hideBackButton()
-    }
-  }, [showBackButton, closeAction])
+  }, [])
 
   return (
     <AppShell>

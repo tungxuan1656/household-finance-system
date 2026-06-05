@@ -70,11 +70,7 @@ export const AddExpenseDetailsPage = () => {
 
   if (!category) {
     return (
-      <TmaPageShell
-        showBackButton
-        backTo='/expenses/new/category'
-        showBottomTabs={false}
-        title='Thêm chi tiêu'>
+      <TmaPageShell showBottomTabs={false} title='Thêm chi tiêu'>
         <TmaPageHeader eyebrow='Bước 2/3' title='Thiếu dữ liệu bước trước' />
         <section className='tma-empty-card'>
           <h2>Chưa có danh mục</h2>
@@ -92,8 +88,6 @@ export const AddExpenseDetailsPage = () => {
   return (
     <TmaPageShell
       reserveBottomButton
-      showBackButton
-      backTo='/expenses/new/category'
       showBottomTabs={false}
       title='Thêm chi tiêu'>
       <TmaPageHeader

@@ -28,7 +28,7 @@ export const StatisticsPage = () => {
   const total = Math.round(slice.total * modifier)
 
   return (
-    <TmaPageShell showBackButton title='Thống kê'>
+    <TmaPageShell title='Thống kê'>
       <section className='tma-hero-card'>
         <div>
           <p className='tma-section-label'>Tổng chi</p>

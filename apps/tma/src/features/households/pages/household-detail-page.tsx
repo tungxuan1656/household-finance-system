@@ -9,7 +9,6 @@ import {
   getCategoryPresentation,
   getExpenseSecondaryText,
 } from '@/features/home/presentation'
-import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatMonthLabel, formatTimeLabel } from '@/lib/formatters'
 import { getCurrentPeriod } from '@/lib/period'
 
@@ -153,10 +152,7 @@ export const HouseholdDetailPage = () => {
 
   if (!id) {
     return (
-      <TmaPageShell
-        showBackButton
-        backTo={TMA_PATHS.households}
-        title='Chi tiết gia đình'>
+      <TmaPageShell title='Chi tiết gia đình'>
         <div className='tma-empty-card'>
           <h2>Household không hợp lệ</h2>
           <p>Đường dẫn hiện tại thiếu mã household để tải chi tiết.</p>
@@ -166,10 +162,7 @@ export const HouseholdDetailPage = () => {
   }
 
   return (
-    <TmaPageShell
-      showBackButton
-      backTo={TMA_PATHS.households}
-      title='Chi tiết gia đình'>
+    <TmaPageShell title='Chi tiết gia đình'>
       {feedback ? (
         <section
           className={`tma-feedback-banner tma-feedback-banner--${feedback.tone}`}>
