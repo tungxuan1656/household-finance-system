@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-05 — Replaced TMA Home shortcut symbols with lightweight inline icons
+
+- Who: Codex
+- Summary: Updated the TMA Home shortcuts section so the four shortcut badges no longer show two-letter symbols. The section now renders small inline SVG icons for expenses, households, groups, and budgets while preserving the existing accent colors, badge size, haptics, and card layout. I initially tested a `lucide-react` path, but removed it to keep the change maximally local and avoid dependency plus lockfile churn for just four icons.
+- Files changed: One TMA Home component plus feat-092 evidence and this progress log.
+- Verification: `./init.sh typecheck` returned `OK`. Focused lint verification `pnpm --filter tma exec eslint src/features/home/components/home-shortcuts-section.tsx` passed with no output. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `low` risk with `1` changed file and no changed symbols or affected processes.
+- Blockers: None.
+- Next steps: Open the TMA Home screen in the Mini App or local preview and confirm the icon strokes feel balanced against the existing badge size on a real mobile viewport.
+
 ## 2026-06-04 — Re-aligned TMA init/theme flow with the local SDK docs
 
 - Who: Codex

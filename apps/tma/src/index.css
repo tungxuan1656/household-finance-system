@@ -1663,6 +1663,19 @@ button {
   font-weight: 600;
 }
 
+.font-xss {
+  font-size: 10px;
+}
+.font-xs {
+  font-size: 12px;
+}
+.font-sm {
+  font-size: 14px;
+}
+.font-base {
+  font-size: 16px;
+}
+
 @media (min-width: 768px) {
   .tma-page-shell__content {
     padding-right: 24px;

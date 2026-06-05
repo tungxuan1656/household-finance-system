@@ -143,7 +143,7 @@ export const HomeHouseholdsSection = () => {
 
               <div>
                 <h3>{householdCard.household.name}</h3>
-                <strong className='font-mono'>
+                <strong className='font-mono font-sm'>
                   {householdCard.totalSpendMinor != null &&
                   householdCard.currencyCode
                     ? formatCurrencyMinor(

@@ -18,12 +18,14 @@
       "Reduced shortcut card layout min-height to `112px` and inner gap to `10px` for a much sleeker grid alignment.",
       "Removed visually redundant double-header structures on the home screen, replacing them with a single clean section header ('Lối tắt', 'Gia đình', 'Lịch sử gần đây') at `font-size: 16px` and `font-weight: 600`.",
       "Avoided repeating month names in the header by cleaning up the profile card subtitle.",
+      "Replaced the Home shortcut monogram text badges with lightweight inline SVG icons scoped to `apps/tma/src/features/home/components/home-shortcuts-section.tsx`, preserving the existing accent colors and card layout without adding a new runtime dependency.",
       "Resolved a critical back navigation loop bug in `TmaPageShell` by utilizing `window.history.state.idx` to determine if we can trigger natural history back (`navigate(-1)`) rather than pushing new redundant pages onto the stack."
     ],
     "verification": [
       "Ran `./init.sh lint` and `./init.sh typecheck` to confirm zero script, style, or typing regressions.",
       "Executed `./init.sh` to run the full parallel verification pipeline successfully.",
       "Verified `harness/feature_index.json` and `harness/features/feat-092.json` parse correctly.",
+      "2026-06-05 follow-up verification passed with `./init.sh typecheck` and a focused `pnpm --filter tma exec eslint src/features/home/components/home-shortcuts-section.tsx` run after switching the shortcut badges from symbols to inline SVG icons.",
       "Executed final `gitnexus_detect_changes(scope: 'all')` to track modified files and styles."
     ]
   },
