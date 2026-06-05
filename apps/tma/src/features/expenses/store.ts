@@ -7,6 +7,7 @@ export interface ExpenseCategorySelection {
   id: CategoryKey
   label: string
   symbol: string
+  iconUrl?: string | null
   accent: AccentToken
 }
 
@@ -15,7 +16,7 @@ export interface AddExpenseDraft {
   category: ExpenseCategorySelection | null
   amount: number
   sourceId: SourceKey | null
-  note: string
+  title: string
   householdId: string | null
   groupId: string | null
 }
@@ -26,7 +27,7 @@ interface AddExpenseFlowState extends AddExpenseDraft {
   setDetails: (input: {
     amount: number
     sourceId: SourceKey | null
-    note: string
+    title: string
   }) => void
   setContext: (input: {
     householdId: string | null
@@ -40,7 +41,7 @@ const buildInitialDraft = (): AddExpenseDraft => ({
   category: null,
   amount: 0,
   sourceId: null,
-  note: '',
+  title: '',
   householdId: null,
   groupId: null,
 })
@@ -49,7 +50,7 @@ export const useAddExpenseFlowStore = create<AddExpenseFlowState>((set) => ({
   ...buildInitialDraft(),
   setDate: (date) => set({ date }),
   selectCategory: (category) => set({ category }),
-  setDetails: ({ amount, sourceId, note }) => set({ amount, sourceId, note }),
+  setDetails: ({ amount, sourceId, title }) => set({ amount, sourceId, title }),
   setContext: ({ householdId, groupId }) => set({ householdId, groupId }),
   reset: () => set(buildInitialDraft()),
 }))
@@ -62,7 +63,6 @@ export interface EditExpenseDraft {
   categoryKey: CategoryKey
   sourceKey: SourceKey
   householdId: string | null
-  note: string
 }
 
 interface EditExpenseFlowState {

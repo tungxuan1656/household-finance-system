@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import {
-  TmaMonogramBadge,
+  TmaCategoryIconBadge,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
@@ -109,27 +109,21 @@ export const ExpenseDetailPage = () => {
         title='Chi tiết chi tiêu'
       />
 
-      <Card className='mb-5 grid gap-4 p-5'>
-        <div className='flex items-start justify-between gap-3'>
-          <div>
-            <Eyebrow>Số tiền đã chi</Eyebrow>
-            <MoneyLabel className='mt-1 block text-[32px] leading-none font-extrabold'>
-              {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
-            </MoneyLabel>
-          </div>
-          <TmaMonogramBadge accent={category.accent} label={category.symbol} />
-        </div>
-
-        <div className='border-t border-tma-line pt-3'>
-          <Eyebrow>Mô tả</Eyebrow>
-          <p className='m-0 mt-1 text-sm leading-relaxed text-tma-text-strong'>
-            {expense.note || 'Không có mô tả.'}
-          </p>
+      <Card className='mb-5 flex items-center gap-4 p-5'>
+        <TmaCategoryIconBadge
+          accent={category.accent}
+          iconUrl={category.iconUrl}
+          symbol={category.symbol}
+        />
+        <div className='min-w-0 flex-1'>
+          <Eyebrow>Số tiền đã chi</Eyebrow>
+          <MoneyLabel className='mt-1 block text-[32px] leading-none font-extrabold'>
+            {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
+          </MoneyLabel>
         </div>
       </Card>
 
       <Card className='mb-5 grid grid-cols-2 gap-x-3 gap-y-4'>
-        <DetailCell label='Danh mục' value={category.label} />
         <DetailCell
           label='Nguồn tiền'
           value={getSourceLabel(expense.sourceKey)}

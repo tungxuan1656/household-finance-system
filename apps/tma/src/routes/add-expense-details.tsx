@@ -1,9 +1,9 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { CoinIcon, NoteIcon, SparkIcon } from '@/components/shared/tma-icons'
+import { CoinIcon, NoteIcon } from '@/components/shared/tma-icons'
 import {
-  TmaMonogramBadge,
+  TmaCategoryIconBadge,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
@@ -15,7 +15,6 @@ import {
   MoneyLabel,
   Section,
   SectionHeader,
-  Textarea,
 } from '@/components/ui'
 import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
@@ -37,17 +36,17 @@ export const AddExpenseDetailsPage = () => {
   const category = useAddExpenseFlowStore((state) => state.category)
   const draftAmount = useAddExpenseFlowStore((state) => state.amount)
   const draftSourceId = useAddExpenseFlowStore((state) => state.sourceId)
-  const draftNote = useAddExpenseFlowStore((state) => state.note)
+  const draftTitle = useAddExpenseFlowStore((state) => state.title)
   const setDetails = useAddExpenseFlowStore((state) => state.setDetails)
 
   const [amountInput, setAmountInput] = useState(
     draftAmount > 0 ? formatAmountInput(String(draftAmount)) : '',
   )
   const [sourceId, setSourceId] = useState<SourceKey | null>(draftSourceId)
-  const [note, setNote] = useState(draftNote)
+  const [title, setTitle] = useState(draftTitle)
 
   const amount = parseAmountInput(amountInput)
-  const isValid = amount > 0 && sourceId !== null
+  const isValid = amount > 0 && sourceId !== null && title.trim().length > 0
 
   const handleContinue = useEffectEvent(() => {
     if (!isValid || sourceId === null) {
@@ -55,7 +54,7 @@ export const AddExpenseDetailsPage = () => {
     }
 
     notification('success')
-    setDetails({ amount, sourceId, note })
+    setDetails({ amount, sourceId, title: title.trim() })
     navigate(TMA_PATHS.expensesNewContext)
   })
 
@@ -104,11 +103,15 @@ export const AddExpenseDetailsPage = () => {
     <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
       <TmaPageHeader
         eyebrow='Bước 2/3'
-        subtitle='Nhập số tiền, nguồn tiền và mô tả.'
+        subtitle='Nhập số tiền, nguồn tiền và tên khoản chi.'
         title='Số tiền là trọng tâm ở bước này'
       />
       <Card className='mb-3 flex items-center gap-3'>
-        <TmaMonogramBadge accent={category.accent} label={category.symbol} />
+        <TmaCategoryIconBadge
+          accent={category.accent}
+          iconUrl={category.iconUrl}
+          symbol={category.symbol}
+        />
         <div>
           <strong className='text-tma-text-strong'>{category.label}</strong>
           <CardDescription>{formatDateLabel(date)}</CardDescription>
@@ -142,6 +145,19 @@ export const AddExpenseDetailsPage = () => {
         </CardDescription>
       </Card>
 
+      <Card className='mt-3 grid gap-3'>
+        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
+          <NoteIcon height='16' width='16' />
+          <span>Tên *</span>
+        </div>
+        <input
+          className='w-full border-0 bg-transparent px-0 text-base font-semibold text-tma-text-strong outline-none'
+          placeholder='Nhập tên khoản chi tiêu...'
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+      </Card>
+
       <Section>
         <SectionHeader
           eyebrow='Nguồn tiền'
@@ -168,25 +184,6 @@ export const AddExpenseDetailsPage = () => {
           ))}
         </div>
       </Section>
-
-      <Card className='mt-6 grid gap-3'>
-        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
-          <NoteIcon height='18' width='18' />
-          <span>Mô tả</span>
-        </div>
-        <Textarea
-          placeholder='Ví dụ: đi chợ cuối tuần, cafe họp nhóm...'
-          rows={4}
-          value={note}
-          onChange={(event) => {
-            setNote(event.target.value)
-          }}
-        />
-        <CardDescription className='inline-flex items-center gap-2'>
-          <SparkIcon height='16' width='16' />
-          <span>BottomButton của Telegram sẽ dùng để sang bước 3.</span>
-        </CardDescription>
-      </Card>
     </TmaPageShell>
   )
 }

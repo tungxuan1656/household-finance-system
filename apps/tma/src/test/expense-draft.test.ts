@@ -25,7 +25,6 @@ describe('createEditExpenseDraft', () => {
       categoryKey: 'food',
       householdId: 'household-1',
       id: 'expense-1',
-      note: '',
       occurredAt: 1_717_584_000_000,
       sourceKey: 'cash',
       title: 'Lunch',

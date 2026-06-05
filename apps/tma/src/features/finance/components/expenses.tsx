@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 
-import { TmaInlineAction } from '@/components/shared/tma-page-shell'
+import {
+  TmaCategoryIconBadge,
+  TmaInlineAction,
+} from '@/components/shared/tma-page-shell'
 import {
   Chip,
   DataState,
@@ -15,7 +18,6 @@ import {
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
 import {
-  type CategoryPresentation,
   formatCurrencyMinor,
   getCategoryPresentation,
   getExpenseGroupLabel,
@@ -24,37 +26,6 @@ import type { ExpenseDTO, ReferenceCategoryDTO } from '@/features/home/types'
 import { getExpenseDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel } from '@/lib/formatters'
 import { selection } from '@/lib/telegram/haptics'
-import { cn } from '@/lib/utils'
-
-const CategoryIconBadge = ({
-  category,
-  className,
-}: {
-  category: CategoryPresentation
-  className?: string
-}) => (
-  <span
-    aria-hidden='true'
-    className={cn(
-      'grid shrink-0 place-items-center overflow-hidden rounded-[18px] font-bold',
-      className,
-    )}
-    style={{
-      backgroundColor: category.accent.background,
-      color: category.accent.foreground,
-    }}>
-    {category.iconUrl ? (
-      <img
-        alt=''
-        className='size-[58%] object-contain'
-        loading='lazy'
-        src={category.iconUrl}
-      />
-    ) : (
-      <span className='text-[12px]'>{category.symbol}</span>
-    )}
-  </span>
-)
 
 export const ExpenseItem = ({
   expense,
@@ -88,7 +59,11 @@ export const ExpenseItem = ({
       onKeyDown={(event) => {
         if (event.key === 'Enter') openDetail()
       }}>
-      <CategoryIconBadge category={category} className='size-12' />
+      <TmaCategoryIconBadge
+        accent={category.accent}
+        iconUrl={category.iconUrl}
+        symbol={category.symbol}
+      />
       <div className='min-w-0 flex-1'>
         <div className='flex items-start justify-between gap-3'>
           <div className='min-w-0 flex-1'>

@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-05 — Cleaned up TMA expense detail/edit/category UI and dropped note field
+
+- Who: Tùng (via Claude)
+- Summary: Refactored TMA expense surfaces to match the canonical `ExpenseItem` category badge pattern (icon + accent bg) and removed the `note` free-text field from both create and edit flows. Extracted the private `CategoryIconBadge` from the finance component into a shared `TmaCategoryIconBadge` (with `sm` and `md` sizes) and removed the now-unused `TmaMonogramBadge`. The `add-expense` flow now requires a user-entered `title` in step 2 (was previously defaulting to `category.label` server-side), and the `add-expense` step 1 category grid lost its redundant `Eyebrow` per tile. The expense detail page dropped the `Mô tả` card and the duplicated `Danh mục` cell, and the edit page dropped the `Ghi chú` card; the edit `UpdateExpenseRequest` payload no longer sends `note`, so existing server-side notes are preserved untouched.
+- Files changed: `apps/tma/src/components/shared/tma-page-shell.tsx` (new `TmaCategoryIconBadge`, removed `TmaMonogramBadge` + `IconBadge` import), `apps/tma/src/features/expenses/store.ts` (drop `note`, add `title` to `AddExpenseDraft`; `setDetails` signature), `apps/tma/src/features/expenses/draft.ts` (drop `note` from `createEditExpenseDraft`), `apps/tma/src/features/finance/components/expenses.tsx` (use shared badge), `apps/tma/src/routes/expense-detail.tsx`, `apps/tma/src/routes/expense-edit.tsx` (incl. `ExpenseEditCategoryPage`), `apps/tma/src/routes/add-expense-category.tsx`, `apps/tma/src/routes/add-expense-details.tsx`, `apps/tma/src/routes/add-expense-context.tsx`, and the two related tests.
+- Verification: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and full `./init.sh` all returned `OK` / `Done!`. `ExpenseCategorySelection` was extended with optional `iconUrl` so step 2/3 can render the same icon pattern as the list rows.
+- Blockers: None. Visual smoke on a real Telegram viewport still pending because the TMA requires launch context.
+- Next steps: Open the TMA through Telegram/local launch and confirm the new step 1 category grid, the new step 2 title field, the detail page layout, and the edit page (incl. category picker) all feel right on-device.
+
 ## 2026-06-05 — Corrected TMA period picker week logic, scroll behavior, and BottomButton lifecycle
 
 - Who: Codex

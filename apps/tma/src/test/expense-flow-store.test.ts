@@ -39,7 +39,7 @@ describe('useAddExpenseFlowStore', () => {
     store.setDetails({
       amount: 315000,
       sourceId: 'cash',
-      note: 'Đi chợ',
+      title: 'Đi chợ',
     })
 
     store.setContext({ householdId: 'household-1', groupId: 'group-1' })
@@ -49,7 +49,7 @@ describe('useAddExpenseFlowStore', () => {
     expect(snapshot.category?.id).toBe('shopping')
     expect(snapshot.amount).toBe(315000)
     expect(snapshot.sourceId).toBe('cash')
-    expect(snapshot.note).toBe('Đi chợ')
+    expect(snapshot.title).toBe('Đi chợ')
     expect(snapshot.householdId).toBe('household-1')
     expect(snapshot.groupId).toBe('group-1')
   })
@@ -60,7 +60,7 @@ describe('useAddExpenseFlowStore', () => {
     useAddExpenseFlowStore.getState().setDetails({
       amount: 540000,
       sourceId: 'bank-transfer',
-      note: 'Bữa tối',
+      title: 'Bữa tối',
     })
 
     useAddExpenseFlowStore.getState().reset()
@@ -70,7 +70,7 @@ describe('useAddExpenseFlowStore', () => {
     expect(snapshot.category).toBeNull()
     expect(snapshot.amount).toBe(0)
     expect(snapshot.sourceId).toBeNull()
-    expect(snapshot.note).toBe('')
+    expect(snapshot.title).toBe('')
     expect(snapshot.householdId).toBeNull()
     expect(snapshot.groupId).toBeNull()
   })

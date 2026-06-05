@@ -9,7 +9,7 @@ import {
   NoteIcon,
 } from '@/components/shared/tma-icons'
 import {
-  TmaMonogramBadge,
+  TmaCategoryIconBadge,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
@@ -21,7 +21,6 @@ import {
   Chip,
   Eyebrow,
   Input,
-  Textarea,
 } from '@/components/ui'
 import {
   useExpenseDetailQuery,
@@ -148,7 +147,6 @@ export const ExpenseEditPage = () => {
         payload: {
           title: draft.title.trim(),
           amount: draft.amount,
-          note: draft.note.trim() || null,
           categoryKey: draft.categoryKey,
           sourceKey: draft.sourceKey,
           occurredAt: draft.occurredAt,
@@ -202,9 +200,10 @@ export const ExpenseEditPage = () => {
       />
 
       <Card className='mb-3 flex items-center gap-3 p-3.5'>
-        <TmaMonogramBadge
+        <TmaCategoryIconBadge
           accent={activeCategory.accent}
-          label={activeCategory.symbol}
+          iconUrl={activeCategory.iconUrl}
+          symbol={activeCategory.symbol}
         />
         <div>
           <strong className='text-base text-tma-text-strong'>
@@ -219,7 +218,7 @@ export const ExpenseEditPage = () => {
       <Card className='grid gap-3'>
         <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
           <NoteIcon height='16' width='16' />
-          <span>Tên chi tiêu *</span>
+          <span>Tên *</span>
         </div>
         <Input
           className='border-0 bg-transparent px-0 text-base font-semibold'
@@ -286,10 +285,11 @@ export const ExpenseEditPage = () => {
             selection()
             navigate(getExpenseEditCategoryPath(expenseId))
           }}>
-          <TmaMonogramBadge
+          <TmaCategoryIconBadge
             accent={activeCategory.accent}
-            label={activeCategory.symbol}
+            iconUrl={activeCategory.iconUrl}
             size='sm'
+            symbol={activeCategory.symbol}
           />
         </EditSelectRow>
         <EditSelectRow
@@ -311,19 +311,6 @@ export const ExpenseEditPage = () => {
             selection()
             navigate(getExpenseEditHouseholdPath(expenseId))
           }}
-        />
-      </Card>
-
-      <Card className='mt-3 grid gap-3'>
-        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
-          <NoteIcon height='16' width='16' />
-          <span>Ghi chú</span>
-        </div>
-        <Textarea
-          placeholder='Nhập mô tả thêm...'
-          rows={4}
-          value={draft.note}
-          onChange={(event) => updateDraft({ note: event.target.value })}
         />
       </Card>
 
@@ -385,9 +372,10 @@ export const ExpenseEditCategoryPage = () => {
                   updateDraft({ categoryKey: category.key })
                   navigate(-1)
                 }}>
-                <TmaMonogramBadge
+                <TmaCategoryIconBadge
                   accent={presentation.accent}
-                  label={presentation.symbol}
+                  iconUrl={presentation.iconUrl}
+                  symbol={presentation.symbol}
                 />
                 <span className='text-[15px] font-semibold text-tma-text-strong'>
                   {presentation.label}

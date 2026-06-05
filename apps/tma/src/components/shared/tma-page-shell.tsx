@@ -11,7 +11,6 @@ import {
   PlusIcon,
   StatisticsIcon,
 } from '@/components/shared/tma-icons'
-import { IconBadge } from '@/components/ui'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { hideBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, selection } from '@/lib/telegram/haptics'
@@ -256,20 +255,38 @@ export const TmaPageShell = ({
   )
 }
 
-export interface TmaBadgeProps {
+export interface TmaCategoryIconBadgeProps {
   accent: { background: string; foreground: string }
-  label: string
+  iconUrl?: string | null
+  symbol: string
   size?: 'sm' | 'md'
 }
 
-export const TmaMonogramBadge = ({
+export const TmaCategoryIconBadge = ({
   accent,
-  label,
+  iconUrl,
+  symbol,
   size = 'md',
-}: TmaBadgeProps) => (
-  <IconBadge accent={accent} size={size}>
-    {label}
-  </IconBadge>
+}: TmaCategoryIconBadgeProps) => (
+  <span
+    aria-hidden='true'
+    className={cn(
+      'grid shrink-0 place-items-center overflow-hidden font-bold',
+      size === 'sm' && 'size-10 rounded-[14px] text-[11px]',
+      size === 'md' && 'size-12 rounded-[18px] text-xs',
+    )}
+    style={{ backgroundColor: accent.background, color: accent.foreground }}>
+    {iconUrl ? (
+      <img
+        alt=''
+        className='size-[58%] object-contain'
+        loading='lazy'
+        src={iconUrl}
+      />
+    ) : (
+      symbol
+    )}
+  </span>
 )
 
 export const TmaInlineAction = ({

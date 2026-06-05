@@ -12,5 +12,4 @@ export const createEditExpenseDraft = (
   categoryKey: expense.categoryKey,
   sourceKey: expense.sourceKey,
   householdId: expense.householdId,
-  note: expense.note ?? '',
 })

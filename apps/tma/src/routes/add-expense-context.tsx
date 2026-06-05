@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import {
-  TmaMonogramBadge,
+  TmaCategoryIconBadge,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
@@ -22,7 +22,7 @@ import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import { useHouseholdsQuery } from '@/features/home/api'
-import { getExpenseDetailPath, TMA_PATHS } from '@/lib/constants/routes'
+import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
@@ -33,7 +33,7 @@ export const AddExpenseContextPage = () => {
   const date = useAddExpenseFlowStore((state) => state.date)
   const category = useAddExpenseFlowStore((state) => state.category)
   const amount = useAddExpenseFlowStore((state) => state.amount)
-  const note = useAddExpenseFlowStore((state) => state.note)
+  const title = useAddExpenseFlowStore((state) => state.title)
   const sourceId = useAddExpenseFlowStore((state) => state.sourceId)
   const householdId = useAddExpenseFlowStore((state) => state.householdId)
   const groupId = useAddExpenseFlowStore((state) => state.groupId)
@@ -59,19 +59,21 @@ export const AddExpenseContextPage = () => {
     try {
       setFeedback(null)
 
-      const created = await createExpenseMutation.mutateAsync({
+      await createExpenseMutation.mutateAsync({
         amount,
         categoryKey: category.id,
         sourceKey: sourceId,
-        title: category.label,
+        title: title.trim(),
         occurredAt: new Date(date).getTime(),
-        ...(note.trim() ? { note: note.trim() } : {}),
         ...(householdId ? { householdId } : {}),
       })
 
       notification('success')
       reset()
-      navigate(getExpenseDetailPath(created.id), { replace: true })
+      // Pop the 3 add-flow steps from history, then replace the origin with
+      // home so back from the landing screen does not reopen the form.
+      navigate(-3)
+      navigate(TMA_PATHS.root, { replace: true })
     } catch (error) {
       notification('error')
 
@@ -143,7 +145,11 @@ export const AddExpenseContextPage = () => {
       ) : null}
 
       <Card className='mb-3 flex items-center gap-3'>
-        <TmaMonogramBadge accent={category.accent} label={category.symbol} />
+        <TmaCategoryIconBadge
+          accent={category.accent}
+          iconUrl={category.iconUrl}
+          symbol={category.symbol}
+        />
         <div>
           <strong className='text-tma-text-strong'>{category.label}</strong>
           <CardDescription>
@@ -213,6 +219,7 @@ export const AddExpenseContextPage = () => {
         <Eyebrow>Preview</Eyebrow>
         <div className='grid grid-cols-2 gap-x-3 gap-y-4'>
           {[
+            ['Tên', title.trim() || 'Chưa đặt tên'],
             ['Danh mục', category.label],
             ['Số tiền', formatVnd(amount)],
             ['Ngày', formatDateLabel(date)],
@@ -225,12 +232,6 @@ export const AddExpenseContextPage = () => {
               <strong className='text-sm text-tma-text-strong'>{value}</strong>
             </div>
           ))}
-          <div className='col-span-2 grid gap-1'>
-            <span className='text-xs text-tma-text-muted'>Ghi chú</span>
-            <strong className='text-sm text-tma-text-strong'>
-              {note || 'Không có mô tả'}
-            </strong>
-          </div>
         </div>
         <Button
           className='md:hidden'

@@ -2,18 +2,11 @@ import { useNavigate } from 'react-router-dom'
 
 import { CalendarIcon } from '@/components/shared/tma-icons'
 import {
-  TmaMonogramBadge,
+  TmaCategoryIconBadge,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
-import {
-  Card,
-  CardTitle,
-  DataState,
-  Eyebrow,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
+import { Card, DataState, Section, SectionHeader } from '@/components/ui'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import { useReferenceCategoriesQuery } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
@@ -37,7 +30,7 @@ export const AddExpenseCategoryPage = () => {
 
   return (
     <TmaPageShell title='Thêm chi tiêu'>
-      <TmaPageHeader eyebrow='Bước 1/3' title='Bắt đầu từ phần dễ nhất' />
+      <TmaPageHeader eyebrow='Bước 1/3' title='Chọn danh mục cho khoản chi' />
       <Card>
         <label className='relative flex items-center gap-3 overflow-hidden rounded-[18px] bg-black/[0.04] p-3.5'>
           <CalendarIcon
@@ -68,10 +61,7 @@ export const AddExpenseCategoryPage = () => {
       </Card>
 
       <Section>
-        <SectionHeader
-          eyebrow='Danh mục'
-          title='Nhấn một lần là sang bước tiếp'
-        />
+        <SectionHeader title='Chọn danh mục phù hợp' />
         <DataState
           emptyDescription='Reference categories chưa có danh mục chi tiêu khả dụng.'
           emptyTitle='Chưa có danh mục'
@@ -91,6 +81,7 @@ export const AddExpenseCategoryPage = () => {
             {categoryOptions.map((category) => (
               <button
                 key={category.id}
+                aria-pressed={false}
                 className='grid min-h-28 content-start gap-3 rounded-[20px] border border-black/[0.04] bg-white p-3.5 text-left shadow-tma-soft transition active:scale-[0.98]'
                 type='button'
                 onClick={() => {
@@ -98,16 +89,14 @@ export const AddExpenseCategoryPage = () => {
                   selectCategory(category)
                   navigate(TMA_PATHS.expensesNewDetails)
                 }}>
-                <TmaMonogramBadge
+                <TmaCategoryIconBadge
                   accent={category.accent}
-                  label={category.symbol}
+                  iconUrl={category.iconUrl}
+                  symbol={category.symbol}
                 />
-                <div>
-                  <Eyebrow>Danh mục</Eyebrow>
-                  <CardTitle className='text-[15px]'>
-                    {category.label}
-                  </CardTitle>
-                </div>
+                <span className='text-[15px] font-semibold text-tma-text-strong'>
+                  {category.label}
+                </span>
               </button>
             ))}
           </div>
