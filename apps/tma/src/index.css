@@ -140,7 +140,7 @@ button {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  padding-bottom: var(--tma-safe-bottom);
+  /* padding-bottom: calc(var(--tma-safe-bottom) + 100px); */
 }
 
 .tma-page-titlebar {
@@ -199,13 +199,13 @@ button {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: 4px 16px calc(96px + var(--tma-content-safe-bottom));
+  padding: 8px 16px calc(96px + var(--tma-content-safe-bottom));
   scroll-padding-bottom: calc(96px + var(--tma-content-safe-bottom));
 }
 
 .tma-page-shell--focus .tma-page-shell__content {
-  padding-bottom: calc(28px + var(--tma-content-safe-bottom));
-  scroll-padding-bottom: calc(28px + var(--tma-content-safe-bottom));
+  padding-bottom: calc(48px + var(--tma-content-safe-bottom));
+  scroll-padding-bottom: calc(48px + var(--tma-content-safe-bottom));
 }
 
 .tma-page-shell--native-bottom .tma-page-shell__content {
@@ -295,6 +295,10 @@ button {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
+}
+
+.border {
+  border: 0.5px solid rgba(17, 24, 39, 0.08);
 }
 
 .tma-chip,
@@ -1663,16 +1667,16 @@ button {
   font-weight: 600;
 }
 
-.font-xss {
+.text-xss {
   font-size: 10px;
 }
-.font-xs {
+.text-xs {
   font-size: 12px;
 }
-.font-sm {
+.text-sm {
   font-size: 14px;
 }
-.font-base {
+.text-base {
   font-size: 16px;
 }
 

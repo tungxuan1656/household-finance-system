@@ -25,6 +25,7 @@
     "artifacts": [
       "Added a TMA home data layer under `apps/tma/src/features/home/` with typed worker-backed query contracts for analytics overview/comparison, households, budgets, recent expenses, and reference categories, without importing feature code from `apps/web`.",
       "Replaced the `apps/tma/src/routes/home.tsx` mock-data composition with live TanStack Query reads from the worker, while reshaping the summary card, household carousel, and recent-expense list so the current TMA layout stays readable with partial, empty, or non-VND data.",
+      "Added shared TMA-local `TmaDataState` placeholder logic under `apps/tma/src/components/shared/` and rewired the Home overview, households, and recent-expenses sections to use one consistent loading/error/empty-state pattern instead of repeating section-local `if/else` cards.",
       "Updated `apps/worker/seeds/local/dev.sql` to match the current worker schema, make seeded budget/expense dates relative to the current month, and attach the Telegram test account `01KT3YMJ8GHFQD6K0RM4FJEJT4` to the demo household with visible current-month spend so the TMA home screen can be verified against real data locally.",
       "Expanded the local seed so the Telegram test account now spans 2 households, 5 active groups, 4 household budgets across 2 months, and 24 user-owned expenses over 15 distinct dates, with both personal and household expenses plus grouped expense assignments for analytics and group-summary coverage.",
       "Added `apps/tma/src/test/home-presentation.test.ts` to lock the new category/budget/comparison presentation helpers before wider TMA read-surface work continues."
@@ -32,6 +33,7 @@
     "verification": [
       "Focused `pnpm --filter tma exec vitest run src/test/home-presentation.test.ts` passed (3 tests).",
       "Focused `pnpm --filter tma typecheck` passed.",
+      "2026-06-05 Home-state refactor verification passed with `./init.sh typecheck` and focused lint `pnpm --filter tma exec eslint src/components/shared/tma-data-state.tsx src/features/home/components/home-overview-section.tsx src/features/home/components/home-households-section.tsx src/features/home/components/home-recent-expenses-section.tsx`.",
       "Focused `pnpm --filter tma build` passed.",
       "Focused `pnpm --filter tma lint` completed with only the two pre-existing `no-console` warnings in `apps/tma/src/lib/i18n/index.ts` and `apps/tma/src/lib/storage/adapter.ts`; no new lint errors remain from this slice.",
       "Local worker verification passed: `pnpm --filter worker db:migrate:local` reported no pending migrations, `pnpm --filter worker db:seed:local` succeeded after aligning the seed file to the live schema, and a follow-up `wrangler d1 execute ...` query confirmed the Telegram test account membership, seeded expense, and current-month budget rows.",

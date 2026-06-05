@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 
+import { TmaDataState } from '@/components/shared/tma-data-state'
 import {
   TmaInlineAction,
   TmaMonogramBadge,
@@ -44,28 +45,21 @@ export const HomeRecentExpensesSection = () => {
         <TmaInlineAction href={TMA_PATHS.expenses}>Xem tất cả</TmaInlineAction>
       </div>
 
-      {recentExpensesQuery.isError && recentExpenses.length === 0 ? (
-        <div className='tma-empty-card'>
-          <h2>Không tải được lịch sử chi tiêu</h2>
-          <p>
-            API chi tiêu đang lỗi hoặc account hiện tại chưa thấy dữ liệu
-            household đã seed.
-          </p>
-        </div>
-      ) : recentExpenses.length === 0 ? (
-        <div className='tma-empty-card'>
-          <h2>
-            {recentExpensesQuery.isLoading
-              ? 'Đang tải lịch sử chi tiêu'
-              : 'Chưa có chi tiêu gần đây'}
-          </h2>
-          <p>
-            {recentExpensesQuery.isLoading
-              ? 'Danh sách sẽ xuất hiện ngay khi truy vấn đầu tiên hoàn tất.'
-              : 'Tạo giao dịch mới hoặc seed local để home-page hiện dữ liệu thật.'}
-          </p>
-        </div>
-      ) : (
+      <TmaDataState
+        emptyDescription='Tạo giao dịch mới hoặc seed local để home-page hiện dữ liệu thật.'
+        emptyTitle='Chưa có chi tiêu gần đây'
+        errorDescription='API chi tiêu đang lỗi hoặc account hiện tại chưa thấy dữ liệu household đã seed.'
+        errorTitle='Không tải được lịch sử chi tiêu'
+        isEmpty={
+          !recentExpensesQuery.isLoading &&
+          recentExpenses.length === 0 &&
+          !recentExpensesQuery.isError
+        }
+        isError={recentExpensesQuery.isError && recentExpenses.length === 0}
+        isLoading={recentExpensesQuery.isLoading && recentExpenses.length === 0}
+        loadingDescription='Danh sách sẽ xuất hiện ngay khi truy vấn đầu tiên hoàn tất.'
+        loadingTitle='Đang tải lịch sử chi tiêu'
+        retryAction={recentExpensesQuery.refetch}>
         <div className='tma-list-card'>
           {recentExpenses.map((expense) => {
             const category = getCategoryPresentation(
@@ -123,7 +117,7 @@ export const HomeRecentExpensesSection = () => {
             )
           })}
         </div>
-      )}
+      </TmaDataState>
     </section>
   )
 }

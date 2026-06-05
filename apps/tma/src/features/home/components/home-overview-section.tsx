@@ -1,3 +1,4 @@
+import { TmaDataState } from '@/components/shared/tma-data-state'
 import {
   useAnalyticsComparisonQuery,
   useAnalyticsOverviewQuery,
@@ -15,38 +16,49 @@ export const HomeOverviewSection = () => {
 
   const overview = overviewQuery.data
   const comparison = comparisonQuery.data
-  const isLoading = overviewQuery.isLoading || comparisonQuery.isLoading
-  const isError = Boolean(overviewQuery.error || comparisonQuery.error)
+  const isLoading =
+    !overview && (overviewQuery.isLoading || comparisonQuery.isLoading)
+  const isError =
+    !overview && Boolean(overviewQuery.error || comparisonQuery.error)
 
   return (
-    <section className='tma-summary-card tma-summary-card--home'>
-      <div className='tma-summary-card__topline'>
-        <div>
-          <p className='tma-section-label'>Tổng chi tháng này</p>
-          <strong className='font-mono'>
-            {overview
-              ? formatCurrencyMinor(
-                  overview.totalSpendMinor,
-                  overview.currencyCode,
-                )
-              : isLoading
-                ? 'Đang tải...'
+    <TmaDataState
+      errorDescription='Không tải được tổng quan tháng này. Kiểm tra kết nối rồi thử lại.'
+      errorTitle='Không tải được tổng quan'
+      isError={isError}
+      isLoading={isLoading}
+      loadingDescription='Đang đồng bộ số liệu chi tiêu tháng này.'
+      loadingTitle='Đang tải tổng quan'
+      retryAction={async () => {
+        await Promise.all([overviewQuery.refetch(), comparisonQuery.refetch()])
+      }}>
+      <section className='tma-summary-card tma-summary-card--home'>
+        <div className='tma-summary-card__topline'>
+          <div>
+            <p className='tma-section-label'>Tổng chi tháng này</p>
+            <strong className='font-mono'>
+              {overview
+                ? formatCurrencyMinor(
+                    overview.totalSpendMinor,
+                    overview.currencyCode,
+                  )
                 : '—'}
-          </strong>
+            </strong>
+          </div>
+
+          <span className='tma-status-pill'>
+            {overviewQuery.isFetching || comparisonQuery.isFetching
+              ? 'Đang cập nhật'
+              : overviewQuery.error || comparisonQuery.error
+                ? 'Lỗi dữ liệu'
+                : getComparisonLabel(comparison, overview?.expenseCount ?? 0)}
+          </span>
         </div>
 
-        <span className='tma-status-pill'>
-          {isError
-            ? 'Lỗi dữ liệu'
-            : isLoading
-              ? 'Đang cập nhật'
-              : getComparisonLabel(comparison, overview?.expenseCount ?? 0)}
-        </span>
-      </div>
-
-      <div className='tma-summary-card__meter-meta'>
-        <span>{overview?.expenseCount ?? 0} khoản chi</span>
-      </div>
-    </section>
+        <div className='tma-summary-card__meter-meta'>
+          <span>{overview?.expenseCount ?? 0} khoản chi</span>
+        </div>
+      </section>
+    </TmaDataState>
   )
 }

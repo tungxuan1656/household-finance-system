@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-05 — Extended the shared TMA data-state pattern to household pages
+
+- Who: Codex
+- Summary: Continued the `DataState` follow-up by applying the shared TMA-local `TmaDataState` component to the household surfaces as well. `HouseholdListPage` now uses it for the main list query states, including the empty-state CTA to create a new household. `HouseholdDetailPage` now uses the same pattern for its top-level detail load failure plus the recent-expenses and members sections, with section-local retry actions preserved. I intentionally did not force the pattern into the editable form or avatar blocks because those are not query-state placeholders and would only add abstraction noise.
+- Files changed: Two TMA household pages plus feat-082 evidence and this progress log.
+- Verification: `./init.sh typecheck` returned `OK`. Focused lint verification `pnpm --filter tma exec eslint src/features/households/pages/household-list-page.tsx src/features/households/pages/household-detail-page.tsx src/components/shared/tma-data-state.tsx` passed clean. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `medium` risk, surfacing touched `HouseholdListPage` and `HouseholdDetailPage` symbols with 5 affected list/detail/member/overview processes.
+- Blockers: None.
+- Next steps: Open the household list and detail screens in the TMA and confirm the new placeholder cards still feel proportionate on small mobile viewports, especially the top-level detail failure state and the empty members state.
+
+## 2026-06-05 — Applied a TMA-local DataState pattern to Home query sections
+
+- Who: Codex
+- Summary: Reviewed `apps/web/src/components/shared/data-state.tsx` and confirmed the pattern is useful for TMA, but direct reuse is not allowed because `apps/tma` must not import UI code from `apps/web`. Implemented a TMA-local equivalent at `apps/tma/src/components/shared/tma-data-state.tsx` using existing `tma-empty-card` and `tma-action-button` styles, then applied it to the Home overview, households, and recent-expenses sections. This removes repeated `loading/error/empty` branching while preserving TMA visuals and per-section retry behavior. I intentionally did not force it onto `HomeShortcutsSection` because that section is static and has no async data state to normalize.
+- Files changed: One new shared TMA state component, three TMA Home query sections, feat-083 evidence, and this progress log.
+- Verification: `./init.sh typecheck` returned `OK`. Focused lint verification `pnpm --filter tma exec eslint src/components/shared/tma-data-state.tsx src/features/home/components/home-overview-section.tsx src/features/home/components/home-households-section.tsx src/features/home/components/home-recent-expenses-section.tsx` passed clean. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `low` risk with `3` changed files and no changed symbols or affected processes surfaced by the index.
+- Blockers: None.
+- Next steps: Open the TMA Home screen and confirm the empty/error/loading cards still feel balanced in mobile layout, especially the overview section now that its initial hard-failure state uses the shared placeholder card.
+
 ## 2026-06-05 — Replaced TMA Home shortcut symbols with lightweight inline icons
 
 - Who: Codex

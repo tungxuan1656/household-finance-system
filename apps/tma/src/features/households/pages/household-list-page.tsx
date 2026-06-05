@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
+import { TmaDataState } from '@/components/shared/tma-data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   formatCurrencyMinor,
@@ -62,10 +63,6 @@ export const HouseholdListPage = () => {
           <div>
             <p className='tma-section-label'>Household hub</p>
             <strong>{householdCards.length}</strong>
-            <p>
-              Chọn từng household để xem avatar, thành viên và chi tiêu trong
-              tháng.
-            </p>
           </div>
 
           <span className='tma-chip tma-chip--strong'>
@@ -83,36 +80,19 @@ export const HouseholdListPage = () => {
 
           {householdCards.length > 0 ? (
             <Link
-              className='tma-chip-button'
+              className='tma-chip-button border'
               to={TMA_PATHS.householdsNew}
               onClick={() => {
                 impact('light')
               }}>
-              <span>Tạo mới</span>
+              <span className='text-sm'>Tạo mới</span>
             </Link>
           ) : null}
         </div>
 
-        {householdsQuery.isError && householdCards.length === 0 ? (
-          <div className='tma-empty-card'>
-            <h2>Không tải được household</h2>
-            <p>
-              Kiểm tra phiên đăng nhập hoặc dữ liệu local rồi thử mở lại trang.
-            </p>
-          </div>
-        ) : householdsQuery.isLoading && householdCards.length === 0 ? (
-          <div className='tma-empty-card'>
-            <h2>Đang tải household</h2>
-            <p>Danh sách sẽ hiện ngay khi các truy vấn hoàn tất.</p>
-          </div>
-        ) : householdCards.length === 0 ? (
-          <div className='tma-empty-card'>
-            <h2>Chưa có household nào</h2>
-            <p>
-              Tạo household đầu tiên để bắt đầu theo dõi chi tiêu chia sẻ trong
-              TMA.
-            </p>
-            <div className='tma-action-row'>
+        <TmaDataState
+          customAction={
+            householdCards.length === 0 && !householdsQuery.isLoading ? (
               <Link
                 className='tma-action-button tma-action-button--primary'
                 to={TMA_PATHS.householdsNew}
@@ -121,9 +101,22 @@ export const HouseholdListPage = () => {
                 }}>
                 Tạo household
               </Link>
-            </div>
-          </div>
-        ) : (
+            ) : null
+          }
+          emptyDescription='Tạo household đầu tiên để bắt đầu theo dõi chi tiêu chia sẻ trong TMA.'
+          emptyTitle='Chưa có household nào'
+          errorDescription='Kiểm tra phiên đăng nhập hoặc dữ liệu local rồi thử mở lại trang.'
+          errorTitle='Không tải được household'
+          isEmpty={
+            !householdsQuery.isLoading &&
+            !householdsQuery.isError &&
+            householdCards.length === 0
+          }
+          isError={householdsQuery.isError && householdCards.length === 0}
+          isLoading={householdsQuery.isLoading && householdCards.length === 0}
+          loadingDescription='Danh sách sẽ hiện ngay khi các truy vấn hoàn tất.'
+          loadingTitle='Đang tải household'
+          retryAction={householdsQuery.refetch}>
           <div className='tma-household-grid'>
             {householdCards.map((card) => (
               <Link
@@ -191,35 +184,7 @@ export const HouseholdListPage = () => {
               </Link>
             ))}
           </div>
-        )}
-      </section>
-
-      <section className='tma-section'>
-        <div className='tma-section__header'>
-          <div>
-            <p className='tma-section-label'>Hành động</p>
-            <h2 className='tma-section__title'>Tạo household mới</h2>
-          </div>
-        </div>
-
-        <section className='tma-list-card tma-create-household-card'>
-          <div>
-            <h3>Tạo thêm household</h3>
-            <p>
-              Chuyển sang màn hình tạo riêng để nhập tên, chọn avatar, rồi tạo
-              household mới với flow ảnh giống web profile-avatar.
-            </p>
-          </div>
-
-          <Link
-            className='tma-action-button tma-action-button--primary'
-            to={TMA_PATHS.householdsNew}
-            onClick={() => {
-              impact('light')
-            }}>
-            Mở màn hình tạo household
-          </Link>
-        </section>
+        </TmaDataState>
       </section>
     </TmaPageShell>
   )

@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
+import { TmaDataState } from '@/components/shared/tma-data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { useAuth } from '@/features/auth/auth-provider'
 import {
@@ -170,279 +171,280 @@ export const HouseholdDetailPage = () => {
         </section>
       ) : null}
 
-      {householdQuery.isLoading && !household ? (
-        <div className='tma-empty-card'>
-          <h2>Đang tải chi tiết household</h2>
-          <p>
-            Dữ liệu thành viên và chi tiêu sẽ hiện ngay sau khi đồng bộ xong.
-          </p>
-        </div>
-      ) : householdQuery.isError && !household ? (
-        <div className='tma-empty-card'>
-          <h2>Không tải được household</h2>
-          <p>
-            Household này có thể không còn truy cập được, hoặc phiên đăng nhập
-            hiện tại đã hết hạn.
-          </p>
-        </div>
-      ) : household ? (
-        <>
-          <section className='tma-list-card tma-avatar-setup-card'>
-            <HouseholdAvatarSection
-              avatarUrl={household.avatarUrl}
-              canEdit={isAdmin}
-              helperText='Hỗ trợ ảnh vuông JPEG hoặc PNG, tối đa 8MB. Hệ thống sẽ tự căn giữa ảnh trước khi lưu.'
-              householdName={household.name}
-              isBusy={isBusy}
-              readOnlyMessage='Chỉ quản trị viên mới có thể chỉnh tên và avatar của household.'
-              summaryText={`${memberSummary} • ${getHouseholdRoleLabel(household.role)}`}
-              onAvatarUploaded={handleAvatarUploaded}
-            />
-          </section>
-
-          <section className='tma-summary-card tma-household-detail-summary'>
-            <div className='tma-summary-card__topline'>
-              <div>
-                <p className='tma-section-label'>Tổng quan tháng này</p>
-                <strong>
-                  {overviewQuery.data
-                    ? formatCurrencyMinor(
-                        overviewQuery.data.totalSpendMinor,
-                        overviewQuery.data.currencyCode,
-                      )
-                    : overviewQuery.isLoading
-                      ? 'Đang tải...'
-                      : '—'}
-                </strong>
-              </div>
-
-              <span className='tma-chip tma-chip--strong'>
-                {formatMonthLabel(new Date())}
-              </span>
-            </div>
-
-            {budgetProgress ? (
-              <div className='tma-summary-card__meter'>
-                <div className='tma-summary-card__meter-track'>
-                  <span
-                    className='tma-summary-card__meter-fill'
-                    style={{
-                      width: `${Math.min(budgetProgress.percentUsed, 100)}%`,
-                    }}
-                  />
-                </div>
-
-                <div className='tma-summary-card__meter-meta'>
-                  <span>Đã dùng {budgetProgress.percentUsed}% ngân sách</span>
-                  <span>
-                    {budgetProgress.isOverBudget ? 'Vượt ' : 'Còn '}
-                    <span className='font-mono-money'>
-                      {formatCurrencyMinor(
-                        Math.abs(budgetProgress.remainingMinor),
-                        budget?.currencyCode ??
-                          overviewQuery.data?.currencyCode ??
-                          'VND',
-                      )}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className='tma-summary-card__meter-meta'>
-                <span>{overviewQuery.data?.expenseCount ?? 0} khoản chi</span>
-                <span>{memberSummary}</span>
-              </div>
-            )}
-
-            <div className='tma-household-meta-grid'>
-              <article className='tma-household-meta-cell'>
-                <span>Múi giờ</span>
-                <strong>{household.timezone}</strong>
-              </article>
-
-              <article className='tma-household-meta-cell'>
-                <span>Tiền tệ</span>
-                <strong>{household.defaultCurrencyCode}</strong>
-              </article>
-
-              <article className='tma-household-meta-cell'>
-                <span>Quyền của bạn</span>
-                <strong>{getHouseholdRoleLabel(household.role)}</strong>
-              </article>
-            </div>
-          </section>
-
-          <section className='tma-section'>
-            <div className='tma-section__header'>
-              <div>
-                <p className='tma-section-label'>Thiết lập</p>
-                <h2 className='tma-section__title'>Thông tin household</h2>
-              </div>
-            </div>
-
-            <section className='tma-list-card tma-household-form-card'>
-              <form className='tma-household-form' onSubmit={handleSave}>
-                <label className='tma-field-block'>
-                  <span>Tên household</span>
-                  <input
-                    className='tma-text-input'
-                    disabled={!isAdmin || isBusy}
-                    placeholder='Nhập tên household'
-                    type='text'
-                    value={draftName}
-                    onChange={(event) => {
-                      setDraftName(event.target.value)
-                      setFeedback(null)
-                    }}
-                  />
-                </label>
-
-                {isAdmin ? (
-                  <div className='tma-action-row'>
-                    <button
-                      className='tma-action-button tma-action-button--primary'
-                      disabled={isBusy}
-                      type='submit'>
-                      {isBusy ? 'Đang lưu...' : 'Lưu thay đổi'}
-                    </button>
-                  </div>
-                ) : (
-                  <p className='tma-household-form__note'>
-                    Bạn có thể xem thông tin household và chi tiêu gần đây,
-                    nhưng chỉ quản trị viên mới được chỉnh sửa.
-                  </p>
-                )}
-              </form>
+      <TmaDataState
+        errorDescription='Household này có thể không còn truy cập được, hoặc phiên đăng nhập hiện tại đã hết hạn.'
+        errorTitle='Không tải được household'
+        isError={householdQuery.isError && !household}
+        isLoading={householdQuery.isLoading && !household}
+        loadingDescription='Dữ liệu thành viên và chi tiêu sẽ hiện ngay sau khi đồng bộ xong.'
+        loadingTitle='Đang tải chi tiết household'
+        retryAction={householdQuery.refetch}>
+        {household ? (
+          <>
+            <section className='tma-list-card tma-avatar-setup-card'>
+              <HouseholdAvatarSection
+                avatarUrl={household.avatarUrl}
+                canEdit={isAdmin}
+                helperText='Hỗ trợ ảnh vuông JPEG hoặc PNG, tối đa 8MB. Hệ thống sẽ tự căn giữa ảnh trước khi lưu.'
+                householdName={household.name}
+                isBusy={isBusy}
+                readOnlyMessage='Chỉ quản trị viên mới có thể chỉnh tên và avatar của household.'
+                summaryText={`${memberSummary} • ${getHouseholdRoleLabel(household.role)}`}
+                onAvatarUploaded={handleAvatarUploaded}
+              />
             </section>
-          </section>
 
-          <section className='tma-section'>
-            <div className='tma-section__header'>
-              <div>
-                <p className='tma-section-label'>Hoạt động</p>
-                <h2 className='tma-section__title'>Chi tiêu gần đây</h2>
-              </div>
-            </div>
+            <section className='tma-summary-card tma-household-detail-summary'>
+              <div className='tma-summary-card__topline'>
+                <div>
+                  <p className='tma-section-label'>Tổng quan tháng này</p>
+                  <strong>
+                    {overviewQuery.data
+                      ? formatCurrencyMinor(
+                          overviewQuery.data.totalSpendMinor,
+                          overviewQuery.data.currencyCode,
+                        )
+                      : overviewQuery.isLoading
+                        ? 'Đang tải...'
+                        : '—'}
+                  </strong>
+                </div>
 
-            {recentExpensesQuery.isLoading && recentExpenses.length === 0 ? (
-              <div className='tma-empty-card'>
-                <h2>Đang tải chi tiêu gần đây</h2>
-                <p>Dữ liệu sẽ hiện ngay khi household sync xong.</p>
+                <span className='tma-chip tma-chip--strong'>
+                  {formatMonthLabel(new Date())}
+                </span>
               </div>
-            ) : recentExpensesQuery.isError && recentExpenses.length === 0 ? (
-              <div className='tma-empty-card'>
-                <h2>Không tải được chi tiêu gần đây</h2>
-                <p>Thử mở lại household hoặc kiểm tra lại dữ liệu local.</p>
-              </div>
-            ) : recentExpenses.length === 0 ? (
-              <div className='tma-empty-card'>
-                <h2>Chưa có dữ liệu chi tiêu</h2>
-                <p>Household này chưa có khoản chi trong phạm vi đang xem.</p>
-              </div>
-            ) : (
-              <div className='tma-list-card'>
-                {recentExpenses.map((expense) => {
-                  const category = getCategoryPresentation(
-                    expense.categoryKey,
-                    referenceCategories,
-                  )
 
-                  return (
-                    <article key={expense.id} className='tma-expense-row'>
-                      <div className='tma-household-avatar tma-household-avatar--sm'>
-                        <span>{category.symbol}</span>
-                      </div>
+              {budgetProgress ? (
+                <div className='tma-summary-card__meter'>
+                  <div className='tma-summary-card__meter-track'>
+                    <span
+                      className='tma-summary-card__meter-fill'
+                      style={{
+                        width: `${Math.min(budgetProgress.percentUsed, 100)}%`,
+                      }}
+                    />
+                  </div>
 
-                      <div className='tma-expense-row__body'>
-                        <div className='tma-expense-row__title-line'>
-                          <h3>{expense.title.trim() || category.label}</h3>
-                          <strong className='font-mono-money'>
-                            {formatCurrencyMinor(
-                              expense.amountMinor,
-                              expense.currencyCode,
-                            )}
-                          </strong>
+                  <div className='tma-summary-card__meter-meta'>
+                    <span>Đã dùng {budgetProgress.percentUsed}% ngân sách</span>
+                    <span>
+                      {budgetProgress.isOverBudget ? 'Vượt ' : 'Còn '}
+                      <span className='font-mono-money'>
+                        {formatCurrencyMinor(
+                          Math.abs(budgetProgress.remainingMinor),
+                          budget?.currencyCode ??
+                            overviewQuery.data?.currencyCode ??
+                            'VND',
+                        )}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className='tma-summary-card__meter-meta'>
+                  <span>{overviewQuery.data?.expenseCount ?? 0} khoản chi</span>
+                  <span>{memberSummary}</span>
+                </div>
+              )}
+
+              <div className='tma-household-meta-grid'>
+                <article className='tma-household-meta-cell'>
+                  <span>Múi giờ</span>
+                  <strong>{household.timezone}</strong>
+                </article>
+
+                <article className='tma-household-meta-cell'>
+                  <span>Tiền tệ</span>
+                  <strong>{household.defaultCurrencyCode}</strong>
+                </article>
+
+                <article className='tma-household-meta-cell'>
+                  <span>Quyền của bạn</span>
+                  <strong>{getHouseholdRoleLabel(household.role)}</strong>
+                </article>
+              </div>
+            </section>
+
+            <section className='tma-section'>
+              <div className='tma-section__header'>
+                <div>
+                  <p className='tma-section-label'>Thiết lập</p>
+                  <h2 className='tma-section__title'>Thông tin household</h2>
+                </div>
+              </div>
+
+              <section className='tma-list-card tma-household-form-card'>
+                <form className='tma-household-form' onSubmit={handleSave}>
+                  <label className='tma-field-block'>
+                    <span>Tên household</span>
+                    <input
+                      className='tma-text-input'
+                      disabled={!isAdmin || isBusy}
+                      placeholder='Nhập tên household'
+                      type='text'
+                      value={draftName}
+                      onChange={(event) => {
+                        setDraftName(event.target.value)
+                        setFeedback(null)
+                      }}
+                    />
+                  </label>
+
+                  {isAdmin ? (
+                    <div className='tma-action-row'>
+                      <button
+                        className='tma-action-button tma-action-button--primary'
+                        disabled={isBusy}
+                        type='submit'>
+                        {isBusy ? 'Đang lưu...' : 'Lưu thay đổi'}
+                      </button>
+                    </div>
+                  ) : (
+                    <p className='tma-household-form__note'>
+                      Bạn có thể xem thông tin household và chi tiêu gần đây,
+                      nhưng chỉ quản trị viên mới được chỉnh sửa.
+                    </p>
+                  )}
+                </form>
+              </section>
+            </section>
+
+            <section className='tma-section'>
+              <div className='tma-section__header'>
+                <div>
+                  <p className='tma-section-label'>Hoạt động</p>
+                  <h2 className='tma-section__title'>Chi tiêu gần đây</h2>
+                </div>
+              </div>
+
+              <TmaDataState
+                emptyDescription='Household này chưa có khoản chi trong phạm vi đang xem.'
+                emptyTitle='Chưa có dữ liệu chi tiêu'
+                errorDescription='Thử mở lại household hoặc kiểm tra lại dữ liệu local.'
+                errorTitle='Không tải được chi tiêu gần đây'
+                isEmpty={
+                  !recentExpensesQuery.isLoading &&
+                  !recentExpensesQuery.isError &&
+                  recentExpenses.length === 0
+                }
+                isError={
+                  recentExpensesQuery.isError && recentExpenses.length === 0
+                }
+                isLoading={
+                  recentExpensesQuery.isLoading && recentExpenses.length === 0
+                }
+                loadingDescription='Dữ liệu sẽ hiện ngay khi household sync xong.'
+                loadingTitle='Đang tải chi tiêu gần đây'
+                retryAction={recentExpensesQuery.refetch}>
+                <div className='tma-list-card'>
+                  {recentExpenses.map((expense) => {
+                    const category = getCategoryPresentation(
+                      expense.categoryKey,
+                      referenceCategories,
+                    )
+
+                    return (
+                      <article key={expense.id} className='tma-expense-row'>
+                        <div className='tma-household-avatar tma-household-avatar--sm'>
+                          <span>{category.symbol}</span>
                         </div>
 
-                        <p>
-                          {getExpenseSecondaryText(
-                            expense.note,
-                            category.label,
-                          )}
-                        </p>
+                        <div className='tma-expense-row__body'>
+                          <div className='tma-expense-row__title-line'>
+                            <h3>{expense.title.trim() || category.label}</h3>
+                            <strong className='font-mono-money'>
+                              {formatCurrencyMinor(
+                                expense.amountMinor,
+                                expense.currencyCode,
+                              )}
+                            </strong>
+                          </div>
 
-                        <div className='tma-expense-row__meta'>
-                          <span>
-                            {formatTimeLabel(
-                              new Date(expense.occurredAt).toISOString(),
+                          <p>
+                            {getExpenseSecondaryText(
+                              expense.note,
+                              category.label,
                             )}
+                          </p>
+
+                          <div className='tma-expense-row__meta'>
+                            <span>
+                              {formatTimeLabel(
+                                new Date(expense.occurredAt).toISOString(),
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </article>
+                    )
+                  })}
+                </div>
+              </TmaDataState>
+            </section>
+
+            <section className='tma-section'>
+              <div className='tma-section__header'>
+                <div>
+                  <p className='tma-section-label'>Thành viên</p>
+                  <h2 className='tma-section__title'>Danh sách hiện tại</h2>
+                </div>
+              </div>
+
+              <TmaDataState
+                emptyDescription='Household này hiện chưa có thành viên nào khả dụng để hiển thị.'
+                emptyTitle='Chưa có thành viên'
+                errorDescription='Thử mở lại trang hoặc kiểm tra quyền truy cập household.'
+                errorTitle='Không tải được thành viên'
+                isEmpty={
+                  !membersQuery.isLoading &&
+                  !membersQuery.isError &&
+                  members.length === 0
+                }
+                isError={membersQuery.isError && members.length === 0}
+                isLoading={membersQuery.isLoading && members.length === 0}
+                loadingDescription='Danh sách thành viên sẽ hiện khi truy vấn hoàn tất.'
+                loadingTitle='Đang tải thành viên'
+                retryAction={membersQuery.refetch}>
+                <div className='tma-list-card'>
+                  {members.map((member) => (
+                    <article key={member.userId} className='tma-member-row'>
+                      <div className='tma-household-avatar tma-household-avatar--sm'>
+                        {member.avatarUrl ? (
+                          <img
+                            alt={member.name}
+                            className='tma-avatar-image'
+                            src={member.avatarUrl}
+                          />
+                        ) : (
+                          <span>{getHouseholdAvatarFallback(member.name)}</span>
+                        )}
+                      </div>
+
+                      <div className='tma-member-row__body'>
+                        <div className='tma-member-row__title'>
+                          <h3>
+                            {member.name || user?.displayName || 'Thành viên'}
+                          </h3>
+                          <span className='tma-soft-pill'>
+                            {getHouseholdRoleLabel(member.role)}
                           </span>
                         </div>
+
+                        <p>{member.email}</p>
                       </div>
+
+                      {member.userId === user?.id ? (
+                        <span className='tma-soft-pill'>Bạn</span>
+                      ) : null}
                     </article>
-                  )
-                })}
-              </div>
-            )}
-          </section>
-
-          <section className='tma-section'>
-            <div className='tma-section__header'>
-              <div>
-                <p className='tma-section-label'>Thành viên</p>
-                <h2 className='tma-section__title'>Danh sách hiện tại</h2>
-              </div>
-            </div>
-
-            {membersQuery.isLoading && members.length === 0 ? (
-              <div className='tma-empty-card'>
-                <h2>Đang tải thành viên</h2>
-                <p>Danh sách thành viên sẽ hiện khi truy vấn hoàn tất.</p>
-              </div>
-            ) : membersQuery.isError && members.length === 0 ? (
-              <div className='tma-empty-card'>
-                <h2>Không tải được thành viên</h2>
-                <p>Thử mở lại trang hoặc kiểm tra quyền truy cập household.</p>
-              </div>
-            ) : (
-              <div className='tma-list-card'>
-                {members.map((member) => (
-                  <article key={member.userId} className='tma-member-row'>
-                    <div className='tma-household-avatar tma-household-avatar--sm'>
-                      {member.avatarUrl ? (
-                        <img
-                          alt={member.name}
-                          className='tma-avatar-image'
-                          src={member.avatarUrl}
-                        />
-                      ) : (
-                        <span>{getHouseholdAvatarFallback(member.name)}</span>
-                      )}
-                    </div>
-
-                    <div className='tma-member-row__body'>
-                      <div className='tma-member-row__title'>
-                        <h3>
-                          {member.name || user?.displayName || 'Thành viên'}
-                        </h3>
-                        <span className='tma-soft-pill'>
-                          {getHouseholdRoleLabel(member.role)}
-                        </span>
-                      </div>
-
-                      <p>{member.email}</p>
-                    </div>
-
-                    {member.userId === user?.id ? (
-                      <span className='tma-soft-pill'>Bạn</span>
-                    ) : null}
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
-        </>
-      ) : null}
+                  ))}
+                </div>
+              </TmaDataState>
+            </section>
+          </>
+        ) : null}
+      </TmaDataState>
     </TmaPageShell>
   )
 }

@@ -1,6 +1,7 @@
 import { useQueries } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 
+import { TmaDataState } from '@/components/shared/tma-data-state'
 import {
   analyticsOverviewQueryOptions,
   budgetListQueryOptions,
@@ -91,30 +92,21 @@ export const HomeHouseholdsSection = () => {
         <h2 className='tma-section__title'>Gia đình</h2>
       </div>
 
-      {householdsQuery.isError ? (
-        <div className='tma-empty-card'>
-          <h2>Không tải được danh sách gia đình</h2>
-          <p>
-            Kiểm tra phiên đăng nhập hoặc dữ liệu seed local rồi mở lại Mini
-            App.
-          </p>
-        </div>
-      ) : householdsQuery.isLoading ? (
-        <div className='tma-empty-card'>
-          <h2>Đang tải danh sách gia đình</h2>
-          <p>
-            Thẻ household sẽ xuất hiện ngay khi các truy vấn đầu tiên hoàn tất.
-          </p>
-        </div>
-      ) : householdCards.length === 0 ? (
-        <div className='tma-empty-card'>
-          <h2>Chưa tham gia gia đình nào</h2>
-          <p>
-            Home vẫn hiển thị chi tiêu cá nhân, còn thẻ gia đình sẽ xuất hiện
-            khi có membership.
-          </p>
-        </div>
-      ) : (
+      <TmaDataState
+        emptyDescription='Home vẫn hiển thị chi tiêu cá nhân, còn thẻ gia đình sẽ xuất hiện khi có membership.'
+        emptyTitle='Chưa tham gia gia đình nào'
+        errorDescription='Kiểm tra phiên đăng nhập hoặc dữ liệu seed local rồi mở lại Mini App.'
+        errorTitle='Không tải được danh sách gia đình'
+        isEmpty={
+          !householdsQuery.isLoading &&
+          !householdsQuery.isError &&
+          householdCards.length === 0
+        }
+        isError={householdsQuery.isError}
+        isLoading={householdsQuery.isLoading && householdCards.length === 0}
+        loadingDescription='Thẻ household sẽ xuất hiện ngay khi các truy vấn đầu tiên hoàn tất.'
+        loadingTitle='Đang tải danh sách gia đình'
+        retryAction={householdsQuery.refetch}>
         <div className='tma-household-carousel'>
           {householdCards.map((householdCard) => (
             <Link
@@ -143,7 +135,7 @@ export const HomeHouseholdsSection = () => {
 
               <div>
                 <h3>{householdCard.household.name}</h3>
-                <strong className='font-mono font-sm'>
+                <strong className='font-mono text-sm'>
                   {householdCard.totalSpendMinor != null &&
                   householdCard.currencyCode
                     ? formatCurrencyMinor(
@@ -167,7 +159,7 @@ export const HomeHouseholdsSection = () => {
             </Link>
           ))}
         </div>
-      )}
+      </TmaDataState>
     </section>
   )
 }
