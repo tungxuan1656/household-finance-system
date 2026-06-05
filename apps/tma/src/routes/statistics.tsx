@@ -8,6 +8,7 @@ import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { statisticMonths, statisticSlices } from '@/features/finance/mock-data'
 import { formatMonthLabel, formatVnd } from '@/lib/formatters'
 import { impact, selection } from '@/lib/telegram/haptics'
+import { cn } from '@/lib/utils'
 
 const rangeOptions = [
   { id: 'day', label: 'Ngày' },
@@ -72,7 +73,10 @@ export const StatisticsPage = () => {
         {rangeOptions.map((option) => (
           <button
             key={option.id}
-            className={`tma-segmented__item${range === option.id ? 'is-active' : ''}`}
+            className={cn(
+              'tma-segmented__item',
+              range === option.id && 'bg-tma-primary/12 text-tma-primary',
+            )}
             type='button'
             onClick={() => {
               selection()

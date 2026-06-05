@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&text=0123456789.,-%2B%20%E2%82%AB%C4%91%C4%90VND$%25');
 
 :root {
@@ -25,6 +27,28 @@
   --tma-shadow-soft: 0 4px 12px rgba(17, 24, 39, 0.02);
 }
 
+@theme inline {
+  /* Colors — referenced by utility classes like `bg-tma-primary` */
+  --color-tma-base-bg: var(--tma-base-bg);
+  --color-tma-page-bg: var(--tma-page-bg);
+  --color-tma-card-bg: var(--tma-card-bg);
+  --color-tma-card-plain: var(--tma-card-plain);
+  --color-tma-text-strong: var(--tma-text-strong);
+  --color-tma-text-muted: var(--tma-text-muted);
+  --color-tma-line: var(--tma-line);
+  --color-tma-primary: var(--tma-primary);
+  --color-tma-positive: var(--tma-positive);
+  --color-tma-warning: var(--tma-warning);
+  /* Shadows */
+  --shadow-tma-card: var(--tma-shadow);
+  --shadow-tma-soft: var(--tma-shadow-soft);
+  /* Font family for `.font-mono` Tailwind utility */
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* Animation keyframes — `animate-tma-spin` utility */
+  --animate-tma-spin: tma-spin 0.8s linear infinite;
+}
+
+@layer base {
 * {
   box-sizing: border-box;
 }
@@ -86,7 +110,9 @@ button {
   background: transparent;
   color: inherit;
 }
+}
 
+@layer components {
 .tma-app-shell {
   display: flex;
   flex-direction: column;
@@ -1709,4 +1735,5 @@ button {
     align-items: flex-start;
     flex-direction: column;
   }
+}
 }

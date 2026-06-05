@@ -17,6 +17,7 @@ import {
 } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
+import { cn } from '@/lib/utils'
 
 export const AddExpenseDetailsPage = () => {
   const navigate = useNavigate()
@@ -141,7 +142,10 @@ export const AddExpenseDetailsPage = () => {
           {expenseSources.map((source) => (
             <button
               key={source.id}
-              className={`tma-select-chip${sourceId === source.id ? 'is-active' : ''}`}
+              className={cn(
+                'tma-select-chip',
+                sourceId === source.id && 'bg-tma-primary/12 text-tma-primary',
+              )}
               type='button'
               onClick={() => {
                 selection()

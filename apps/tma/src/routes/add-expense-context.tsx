@@ -15,6 +15,7 @@ import {
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
+import { cn } from '@/lib/utils'
 
 export const AddExpenseContextPage = () => {
   const navigate = useNavigate()
@@ -127,7 +128,11 @@ export const AddExpenseContextPage = () => {
           {householdOptions.map((household) => (
             <button
               key={household.id}
-              className={`tma-select-chip${householdId === household.id ? 'is-active' : ''}`}
+              className={cn(
+                'tma-select-chip',
+                householdId === household.id &&
+                  'bg-tma-primary/12 text-tma-primary',
+              )}
               type='button'
               onClick={() => {
                 selection()
@@ -154,7 +159,10 @@ export const AddExpenseContextPage = () => {
           {groupOptions.map((group) => (
             <button
               key={group.id}
-              className={`tma-select-chip${groupId === group.id ? 'is-active' : ''}`}
+              className={cn(
+                'tma-select-chip',
+                groupId === group.id && 'bg-tma-primary/12 text-tma-primary',
+              )}
               type='button'
               onClick={() => {
                 selection()

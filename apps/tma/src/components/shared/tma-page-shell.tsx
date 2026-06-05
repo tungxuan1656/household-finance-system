@@ -14,10 +14,7 @@ import {
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { hideBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, selection } from '@/lib/telegram/haptics'
-
-const joinClassNames = (
-  ...values: Array<string | false | null | undefined>
-): string => values.filter(Boolean).join(' ')
+import { cn } from '@/lib/utils'
 
 const PullToRefreshSpinner = ({ label }: { label?: string }) => (
   <div className='tma-ptr-spinner-wrap'>
@@ -61,10 +58,7 @@ const TmaBottomTabs = ({
               <Link
                 key={href}
                 aria-current={isActive ? 'page' : undefined}
-                className={joinClassNames(
-                  'tma-bottom-tabs__item',
-                  isActive && 'is-active',
-                )}
+                className={cn('tma-bottom-tabs__item', isActive && 'is-active')}
                 to={href}
                 onClick={() => {
                   selection()
@@ -102,10 +96,7 @@ const TmaBottomTabs = ({
               <Link
                 key={href}
                 aria-current={isActive ? 'page' : undefined}
-                className={joinClassNames(
-                  'tma-bottom-tabs__item',
-                  isActive && 'is-active',
-                )}
+                className={cn('tma-bottom-tabs__item', isActive && 'is-active')}
                 to={href}
                 onClick={() => {
                   selection()
@@ -206,7 +197,7 @@ export const TmaPageShell = ({
   return (
     <AppShell>
       <div
-        className={joinClassNames(
+        className={cn(
           'tma-page-shell',
           !isShowBottomTabs && 'tma-page-shell--focus',
           reserveBottomButton && 'tma-page-shell--native-bottom',
@@ -228,20 +219,14 @@ export const TmaPageShell = ({
               onRefresh={onRefresh}>
               <main
                 ref={contentRef}
-                className={joinClassNames(
-                  'tma-page-shell__content',
-                  contentClassName,
-                )}>
+                className={cn('tma-page-shell__content', contentClassName)}>
                 {children}
               </main>
             </PullToRefresh>
           ) : (
             <main
               ref={contentRef}
-              className={joinClassNames(
-                'tma-page-shell__content',
-                contentClassName,
-              )}>
+              className={cn('tma-page-shell__content', contentClassName)}>
               {children}
             </main>
           )}
@@ -265,7 +250,7 @@ export const TmaMonogramBadge = ({
   size = 'md',
 }: TmaBadgeProps) => (
   <span
-    className={joinClassNames('tma-monogram', size === 'sm' && 'is-sm')}
+    className={cn('tma-monogram', size === 'sm' && 'is-sm')}
     style={{
       backgroundColor: accent.background,
       color: accent.foreground,

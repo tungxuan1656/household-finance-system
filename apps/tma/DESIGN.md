@@ -300,3 +300,37 @@ Rules:
 - `expenses` and `add-expense-*` should live under a separate flow shell so Telegram `BackButton` and `BottomButton` wiring stays centralized.
 - Keep the floating add bubble available on root tabs only.
 - If a surface is not implemented yet, ship a truthful placeholder inside the final shell instead of breaking the page map.
+
+## Styling
+
+TMA uses **Tailwind CSS v4** (`@tailwindcss/vite`) with a custom design-token layer. The full token list lives in `apps/tma/src/index.css` inside the `@theme inline` block — that file is the source of truth, this section is the user-facing summary.
+
+### Tokens available as utility classes
+
+| Domain | Utility prefix | Example |
+|---|---|---|
+| Colors | `bg-tma-*`, `text-tma-*`, `border-tma-*` | `bg-tma-primary`, `text-tma-text-muted`, `border-tma-line` |
+| Shadows | `shadow-tma-*` | `shadow-tma-card`, `shadow-tma-soft` |
+| Font | `font-mono` | JetBrains Mono (used for money values) |
+| Animation | `animate-tma-spin` | pull-to-refresh and loading spinner |
+
+Opacity modifier works on colors: `bg-tma-primary/12` produces the 12 % primary tint used for selected states.
+
+### Component classes (`@layer components`)
+
+`src/index.css` keeps BEM-style component classes (e.g. `.tma-page-shell`, `.tma-summary-card`, `.tma-bottom-tabs__rail`) for non-trivial layout composites. These are intentionally longer than the utility tokens and are reserved for shapes that would balloon JSX if expressed as utilities (full-page shells, carousels, glass-morphism rails).
+
+### Class composition helper
+
+Use `cn()` from `@/lib/utils` (clsx + tailwind-merge) for conditional className. Never hand-roll template literals for state modifiers.
+
+```tsx
+cn('tma-select-chip', isActive && 'bg-tma-primary/12 text-tma-primary')
+```
+
+### Conventions
+
+- ≤ 2 CSS properties per class → prefer utility. Layout / multi-property shapes → keep the component class.
+- Dynamic values (chart bar height, runtime safe-area) → keep inline `style={{ ... }}`. Static `style={{ margin: 0 }}` and `style={{ color: 'var(--tma-*)' }}` → convert to utility.
+- Safe-area runtime vars (`--tma-safe-*`, `--tma-content-safe-*`) come from the Telegram SDK. Never hardcode; use `pt-[var(--tma-safe-top)]` or the existing composite class.
+- Pseudo-classes (`:active`, `:hover`) use Tailwind variants (`active:scale-95`). Add `transition-transform` / `transition-opacity` so the variant actually animates.

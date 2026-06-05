@@ -101,11 +101,11 @@ export const ExpenseDetailPage = () => {
         />
 
         {/* Hero Card */}
-        <section className='tma-summary-card' style={{ marginBottom: '20px' }}>
+        <section className='tma-summary-card mb-5'>
           <div className='tma-summary-card__topline'>
             <div>
               <p className='tma-section-label'>SỐ TIỀN ĐÃ CHI</p>
-              <strong className='font-mono' style={{ fontSize: '32px' }}>
+              <strong className='font-mono text-[32px]'>
                 {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
               </strong>
             </div>
@@ -115,27 +115,16 @@ export const ExpenseDetailPage = () => {
             />
           </div>
 
-          <div
-            style={{
-              marginTop: '12px',
-              paddingTop: '12px',
-              borderTop: '1px solid var(--tma-line)',
-            }}>
+          <div className='mt-3 border-t border-tma-line pt-3'>
             <p className='tma-section-label'>MÔ TẢ</p>
-            <p
-              style={{
-                color: 'var(--tma-text-strong)',
-                fontSize: '14px',
-                marginTop: '4px',
-                lineHeight: 1.5,
-              }}>
+            <p className='mt-1 text-sm leading-relaxed text-tma-text-strong'>
               {expense.note || 'Không có mô tả.'}
             </p>
           </div>
         </section>
 
         {/* Grid Card */}
-        <section className='tma-preview-card' style={{ marginBottom: '20px' }}>
+        <section className='tma-preview-card mb-5'>
           <div className='tma-preview-card__grid'>
             <div>
               <span>Danh mục</span>
@@ -177,48 +166,29 @@ export const ExpenseDetailPage = () => {
         {/* Delete Confirmation Block */}
         {showDeleteConfirm ? (
           <section
-            className='tma-inline-banner'
+            className='tma-inline-banner mt-5 flex flex-col gap-3'
             style={{
-              marginTop: '20px',
               border: '1px solid rgba(255, 63, 63, 0.2)',
               background: 'rgba(255, 237, 237, 0.88)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
             }}>
             <div>
-              <p className='tma-section-label' style={{ color: '#d93838' }}>
-                XÁC NHẬN XÓA
-              </p>
-              <strong style={{ fontSize: '14px', fontWeight: 600 }}>
+              <p className='tma-section-label text-[#d93838]'>XÁC NHẬN XÓA</p>
+              <strong className='text-sm font-semibold'>
                 Bạn có chắc chắn muốn xóa khoản chi này? Thao tác này không thể
                 hoàn tác.
               </strong>
             </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div className='flex gap-2'>
               <button
-                className='tma-chip-button'
-                style={{
-                  background: '#d93838',
-                  color: '#ffffff',
-                  border: 'none',
-                  flex: 1,
-                  justifyContent: 'center',
-                  padding: '10px',
-                }}
+                className='tma-chip-button w-full justify-center border-0 p-2.5 text-white'
+                style={{ background: '#d93838' }}
                 type='button'
                 onClick={handleDelete}>
                 Xóa vĩnh viễn
               </button>
               <button
-                className='tma-chip-button'
-                style={{
-                  background: 'rgba(17, 24, 39, 0.06)',
-                  color: 'var(--tma-text-strong)',
-                  flex: 1,
-                  justifyContent: 'center',
-                  padding: '10px',
-                }}
+                className='tma-chip-button w-full justify-center p-2.5 text-tma-text-strong'
+                style={{ background: 'rgba(17, 24, 39, 0.06)' }}
                 type='button'
                 onClick={() => {
                   selection()
@@ -230,23 +200,9 @@ export const ExpenseDetailPage = () => {
           </section>
         ) : (
           // Action Buttons
-          <div
-            style={{
-              marginTop: '24px',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '12px',
-            }}>
+          <div className='mt-6 grid grid-cols-2 gap-3'>
             <button
-              className='tma-select-chip'
-              style={{
-                background: 'rgba(63, 124, 255, 0.12)',
-                color: 'var(--tma-primary)',
-                justifyContent: 'center',
-                padding: '14px',
-                borderRadius: '18px',
-                fontWeight: 600,
-              }}
+              className='tma-select-chip justify-center rounded-[18px] bg-tma-primary/12 p-3.5 font-semibold text-tma-primary'
               type='button'
               onClick={() => {
                 selection()
@@ -255,15 +211,8 @@ export const ExpenseDetailPage = () => {
               Sửa chi tiêu
             </button>
             <button
-              className='tma-select-chip'
-              style={{
-                background: 'rgba(255, 63, 63, 0.08)',
-                color: '#d93838',
-                justifyContent: 'center',
-                padding: '14px',
-                borderRadius: '18px',
-                fontWeight: 600,
-              }}
+              className='tma-select-chip justify-center rounded-[18px] p-3.5 font-semibold text-[#d93838]'
+              style={{ background: 'rgba(255, 63, 63, 0.08)' }}
               type='button'
               onClick={() => {
                 selection()

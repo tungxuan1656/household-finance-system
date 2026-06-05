@@ -112,10 +112,47 @@ Keep shell responsibilities explicit:
 ## UI-system rules
 
 - TMA does not inherit `shadcn/ui` as its default UI language.
+- TMA uses **Tailwind CSS v4** (`@tailwindcss/vite`) for styling. See the `Styling` section below for the hybrid token + component-class convention.
 - Telegram-adaptive list/form primitives are allowed for low-level mobile scaffolding.
 - Project-owned components should own amount entry, bottom sheets, segmented tabs, and finance-specific interaction states.
 - Theme from Telegram CSS vars first. Hardcoded web-theme assumptions are not allowed.
 - There is no native Telegram tab bar, title header, or bottom sheet. Build those as web UI.
+
+## Styling
+
+Tailwind v4 is configured in `apps/tma/src/index.css` via the `@theme inline` block. That file is the source of truth for design tokens; this section is the user-facing summary.
+
+### Tokens exposed to Tailwind
+
+`@theme inline` maps every `--tma-*` CSS variable defined in `:root` to a Tailwind utility token:
+
+- Colors: `--color-tma-base-bg`, `--color-tma-page-bg`, `--color-tma-card-bg`, `--color-tma-card-plain`, `--color-tma-text-strong`, `--color-tma-text-muted`, `--color-tma-line`, `--color-tma-primary`, `--color-tma-positive`, `--color-tma-warning`.
+- Shadows: `--shadow-tma-card`, `--shadow-tma-soft`.
+- Font: `--font-mono` (JetBrains Mono, used for money values).
+- Animation: `--animate-tma-spin` (consumed by `animate-tma-spin`).
+
+Opacity modifier works on color utilities: `bg-tma-primary/12` produces the 12 % primary tint used by selected states.
+
+Safe-area runtime vars (`--tma-safe-*`, `--tma-content-safe-*`) stay raw CSS variables. The Telegram SDK sets them at boot; Tailwind arbitrary values like `pt-[var(--tma-safe-top)]` read them directly.
+
+### Component classes
+
+`src/index.css` also keeps BEM-style component classes inside `@layer components` for non-trivial layout composites that would balloon JSX if expressed as utilities: full-page shells (`.tma-page-shell*`, `.tma-bottom-tabs*`), carousels (`.tma-household-carousel`), glass-morphism rails, and the like. These stay in CSS — do not convert them.
+
+### Class composition
+
+Use `cn()` from `@/lib/utils` (clsx + tailwind-merge) for conditional className. Never hand-roll template literals for state modifiers.
+
+```tsx
+cn('tma-select-chip', isActive && 'bg-tma-primary/12 text-tma-primary')
+```
+
+### Conventions
+
+- ≤ 2 CSS properties per class → prefer utility. Layout / multi-property shapes → keep the component class in `@layer components`.
+- Dynamic values (chart bar height, runtime safe-area) → keep inline `style={{ ... }}`. Static `style={{ margin: 0 }}` and `style={{ color: 'var(--tma-*)' }}` → convert to utility.
+- Pseudo-classes use Tailwind variants (`active:scale-95`, `hover:opacity-80`). Add `transition-transform` / `transition-opacity` so the variant actually animates.
+- Do not introduce `tailwind.config.ts`. Tailwind v4 is CSS-first; add tokens to `@theme inline`, not to a JS config.
 
 ## State placement rules
 

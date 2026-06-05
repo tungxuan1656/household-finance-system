@@ -35,6 +35,7 @@ import {
 } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
+import { cn } from '@/lib/utils'
 
 // 1. MAIN EDIT FORM PAGE
 export const ExpenseEditPage = () => {
@@ -162,15 +163,13 @@ export const ExpenseEditPage = () => {
         />
 
         {/* Category + Date Summary Header Card */}
-        <section
-          className='tma-step-summary'
-          style={{ padding: '12px 14px', marginBottom: '14px' }}>
+        <section className='tma-step-summary mb-3.5 p-3.5'>
           <TmaMonogramBadge
             accent={activeCategory.accent}
             label={activeCategory.symbol}
           />
           <div>
-            <strong style={{ fontSize: '16px' }}>{activeCategory.label}</strong>
+            <strong className='text-base'>{activeCategory.label}</strong>
             <p>{formatDateLabel(new Date(draft.occurredAt).toISOString())}</p>
           </div>
         </section>
@@ -182,17 +181,9 @@ export const ExpenseEditPage = () => {
             <span>Tên chi tiêu *</span>
           </div>
           <input
+            className='w-full border-0 bg-transparent text-base font-semibold text-tma-text-strong outline-none'
             placeholder='Nhập tên khoản chi tiêu...'
-            style={{
-              width: '100%',
-              border: 0,
-              background: 'transparent',
-              color: 'var(--tma-text-strong)',
-              outline: 'none',
-              fontSize: '16px',
-              padding: '6px 0',
-              fontWeight: 600,
-            }}
+            style={{ padding: '6px 0' }}
             type='text'
             value={draft.title}
             onChange={(e) => updateDraft({ title: e.target.value })}
@@ -244,122 +235,87 @@ export const ExpenseEditPage = () => {
         </section>
 
         {/* Clickable rows for Category, Payment Source, Household */}
-        <section
-          className='tma-list-card'
-          style={{ display: 'grid', gap: '0', padding: '0 16px' }}>
+        <section className='tma-list-card grid gap-0 px-4'>
           {/* Category row */}
           <div
-            className='tma-settings-row'
+            className='tma-settings-row flex cursor-pointer items-center justify-between border-b border-tma-line py-4'
             role='button'
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '16px 0',
-              borderBottom: '1px solid var(--tma-line)',
-              cursor: 'pointer',
-            }}
             tabIndex={0}
             onClick={() => {
               selection()
               navigate(`/expenses/${expenseId}/edit/category`)
             }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className='flex items-center gap-3'>
               <TmaMonogramBadge
                 accent={activeCategory.accent}
                 label={activeCategory.symbol}
                 size='sm'
               />
               <div>
-                <p
-                  className='tma-section-label'
-                  style={{ fontSize: '11px', margin: 0 }}>
-                  Danh mục
-                </p>
-                <h3 style={{ margin: '2px 0 0 0', fontSize: '15px' }}>
-                  {activeCategory.label}
-                </h3>
+                <p className='tma-section-label m-0 text-[11px]'>Danh mục</p>
+                <h3 className='mt-0.5 text-[15px]'>{activeCategory.label}</h3>
               </div>
             </div>
             <ChevronRightIcon
+              className='text-tma-text-muted'
               height='18'
-              style={{ color: 'var(--tma-text-muted)' }}
               width='18'
             />
           </div>
 
           {/* Payment Source row */}
           <div
-            className='tma-settings-row'
+            className='tma-settings-row flex cursor-pointer items-center justify-between border-b border-tma-line py-4'
             role='button'
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '16px 0',
-              borderBottom: '1px solid var(--tma-line)',
-              cursor: 'pointer',
-            }}
             tabIndex={0}
             onClick={() => {
               selection()
               navigate(`/expenses/${expenseId}/edit/source`)
             }}>
             <div>
-              <p
-                className='tma-section-label'
-                style={{ fontSize: '11px', margin: 0 }}>
+              <p className='tma-section-label m-0 text-[11px]'>
                 Nguồn thanh toán
               </p>
-              <h3 style={{ margin: '2px 0 0 0', fontSize: '15px' }}>
+              <h3 className='mt-0.5 text-[15px]'>
                 {getSourceLabel(draft.sourceKey)}
               </h3>
             </div>
             <ChevronRightIcon
+              className='text-tma-text-muted'
               height='18'
-              style={{ color: 'var(--tma-text-muted)' }}
               width='18'
             />
           </div>
 
           {/* Household space row */}
           <div
-            className='tma-settings-row'
+            className='tma-settings-row flex cursor-pointer items-center justify-between py-4'
             role='button'
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '16px 0',
-              cursor: 'pointer',
-            }}
             tabIndex={0}
             onClick={() => {
               selection()
               navigate(`/expenses/${expenseId}/edit/household`)
             }}>
             <div>
-              <p
-                className='tma-section-label'
-                style={{ fontSize: '11px', margin: 0 }}>
+              <p className='tma-section-label m-0 text-[11px]'>
                 Không gian gia đình
               </p>
-              <h3 style={{ margin: '2px 0 0 0', fontSize: '15px' }}>
+              <h3 className='mt-0.5 text-[15px]'>
                 {draft.householdId
                   ? householdNameMap.get(draft.householdId) || 'Gia đình'
                   : 'Cá nhân (Không gắn)'}
               </h3>
             </div>
             <ChevronRightIcon
+              className='text-tma-text-muted'
               height='18'
-              style={{ color: 'var(--tma-text-muted)' }}
               width='18'
             />
           </div>
         </section>
 
         {/* Notes Input */}
-        <section className='tma-note-card' style={{ marginTop: '14px' }}>
+        <section className='tma-note-card mt-3.5'>
           <div className='tma-input-head'>
             <NoteIcon height='16' width='16' />
             <span>Ghi chú</span>
@@ -373,17 +329,10 @@ export const ExpenseEditPage = () => {
         </section>
 
         {/* Cancel button */}
-        <div style={{ marginTop: '20px', display: 'grid' }}>
+        <div className='mt-5 grid'>
           <button
-            className='tma-select-chip'
-            style={{
-              background: 'rgba(17, 24, 39, 0.05)',
-              color: 'var(--tma-text-strong)',
-              justifyContent: 'center',
-              padding: '14px',
-              borderRadius: '18px',
-              fontWeight: 600,
-            }}
+            className='tma-select-chip justify-center rounded-[18px] p-3.5 font-semibold text-tma-text-strong'
+            style={{ background: 'rgba(17, 24, 39, 0.05)' }}
             type='button'
             onClick={() => {
               selection()
@@ -431,11 +380,10 @@ export const ExpenseEditCategoryPage = () => {
             return (
               <button
                 key={c.key}
-                className={`tma-category-card ${isActive ? 'is-active' : ''}`}
-                style={{
-                  border: isActive ? '1px solid var(--tma-primary)' : undefined,
-                  background: isActive ? 'rgba(63, 124, 255, 0.08)' : undefined,
-                }}
+                className={cn(
+                  'tma-category-card',
+                  isActive && 'border-tma-primary bg-tma-primary/8',
+                )}
                 type='button'
                 onClick={() => {
                   selection()
@@ -471,31 +419,21 @@ export const ExpenseEditSourcePage = () => {
         subtitle='Chọn tài khoản hoặc ví dùng để chi.'
         title='Nguồn tiền thanh toán'
       />
-      <section
-        className='tma-list-card'
-        style={{ display: 'grid', gap: '0', padding: '0 16px' }}>
+      <section className='tma-list-card grid gap-0 px-4'>
         {SOURCE_KEYS.map((key, index) => {
           const isActive = draft.sourceKey === key
 
           return (
             <div
               key={key}
+              className={cn(
+                'flex cursor-pointer items-center justify-between py-4',
+                index < SOURCE_KEYS.length - 1 && 'border-b border-tma-line',
+                isActive
+                  ? 'font-bold text-tma-primary'
+                  : 'font-medium text-tma-text-strong',
+              )}
               role='button'
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '16px 0',
-                borderBottom:
-                  index < SOURCE_KEYS.length - 1
-                    ? '1px solid var(--tma-line)'
-                    : undefined,
-                cursor: 'pointer',
-                color: isActive
-                  ? 'var(--tma-primary)'
-                  : 'var(--tma-text-strong)',
-                fontWeight: isActive ? 700 : 500,
-              }}
               tabIndex={0}
               onClick={() => {
                 selection()
@@ -504,9 +442,7 @@ export const ExpenseEditSourcePage = () => {
               }}>
               <span>{getSourceLabel(key)}</span>
               {isActive && (
-                <span className='tma-status-pill' style={{ margin: 0 }}>
-                  Đang chọn
-                </span>
+                <span className='tma-status-pill m-0'>Đang chọn</span>
               )}
             </div>
           )
@@ -538,26 +474,17 @@ export const ExpenseEditHouseholdPage = () => {
         subtitle='Chọn gắn chi tiêu vào gia đình hoặc cá nhân.'
         title='Gắn bối cảnh chi tiêu'
       />
-      <section
-        className='tma-list-card'
-        style={{ display: 'grid', gap: '0', padding: '0 16px' }}>
+      <section className='tma-list-card grid gap-0 px-4'>
         {/* Personal Row Option */}
         <div
+          className={cn(
+            'flex cursor-pointer items-center justify-between py-4',
+            households.length > 0 && 'border-b border-tma-line',
+            draft.householdId === null
+              ? 'font-bold text-tma-primary'
+              : 'font-medium text-tma-text-strong',
+          )}
           role='button'
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px 0',
-            borderBottom:
-              households.length > 0 ? '1px solid var(--tma-line)' : undefined,
-            cursor: 'pointer',
-            color:
-              draft.householdId === null
-                ? 'var(--tma-primary)'
-                : 'var(--tma-text-strong)',
-            fontWeight: draft.householdId === null ? 700 : 500,
-          }}
           tabIndex={0}
           onClick={() => {
             selection()
@@ -566,9 +493,7 @@ export const ExpenseEditHouseholdPage = () => {
           }}>
           <span>Cá nhân (Không gắn)</span>
           {draft.householdId === null && (
-            <span className='tma-status-pill' style={{ margin: 0 }}>
-              Đang chọn
-            </span>
+            <span className='tma-status-pill m-0'>Đang chọn</span>
           )}
         </div>
 
@@ -579,22 +504,14 @@ export const ExpenseEditHouseholdPage = () => {
           return (
             <div
               key={h.id}
+              className={cn(
+                'flex cursor-pointer items-center justify-between py-4',
+                index < households.length - 1 && 'border-b border-tma-line',
+                isActive
+                  ? 'font-bold text-tma-primary'
+                  : 'font-medium text-tma-text-strong',
+              )}
               role='button'
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '16px 0',
-                borderBottom:
-                  index < households.length - 1
-                    ? '1px solid var(--tma-line)'
-                    : undefined,
-                cursor: 'pointer',
-                color: isActive
-                  ? 'var(--tma-primary)'
-                  : 'var(--tma-text-strong)',
-                fontWeight: isActive ? 700 : 500,
-              }}
               tabIndex={0}
               onClick={() => {
                 selection()
@@ -603,9 +520,7 @@ export const ExpenseEditHouseholdPage = () => {
               }}>
               <span>{h.name}</span>
               {isActive && (
-                <span className='tma-status-pill' style={{ margin: 0 }}>
-                  Đang chọn
-                </span>
+                <span className='tma-status-pill m-0'>Đang chọn</span>
               )}
             </div>
           )
