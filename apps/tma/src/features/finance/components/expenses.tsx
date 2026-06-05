@@ -1,9 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 
-import {
-  TmaInlineAction,
-  TmaMonogramBadge,
-} from '@/components/shared/tma-page-shell'
+import { TmaInlineAction } from '@/components/shared/tma-page-shell'
 import {
   Chip,
   DataState,
@@ -18,15 +15,46 @@ import {
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
 import {
+  type CategoryPresentation,
   formatCurrencyMinor,
   getCategoryPresentation,
   getExpenseGroupLabel,
-  getExpenseSecondaryText,
 } from '@/features/home/presentation'
 import type { ExpenseDTO, ReferenceCategoryDTO } from '@/features/home/types'
 import { getExpenseDetailPath, TMA_PATHS } from '@/lib/constants/routes'
-import { formatDateLabel, formatTimeLabel } from '@/lib/formatters'
+import { formatDateLabel } from '@/lib/formatters'
 import { selection } from '@/lib/telegram/haptics'
+import { cn } from '@/lib/utils'
+
+const CategoryIconBadge = ({
+  category,
+  className,
+}: {
+  category: CategoryPresentation
+  className?: string
+}) => (
+  <span
+    aria-hidden='true'
+    className={cn(
+      'grid shrink-0 place-items-center overflow-hidden rounded-[18px] font-bold',
+      className,
+    )}
+    style={{
+      backgroundColor: category.accent.background,
+      color: category.accent.foreground,
+    }}>
+    {category.iconUrl ? (
+      <img
+        alt=''
+        className='size-[58%] object-contain'
+        loading='lazy'
+        src={category.iconUrl}
+      />
+    ) : (
+      <span className='text-[12px]'>{category.symbol}</span>
+    )}
+  </span>
+)
 
 export const ExpenseItem = ({
   expense,
@@ -53,43 +81,42 @@ export const ExpenseItem = ({
 
   return (
     <article
-      className='flex cursor-pointer items-start gap-3 rounded-[20px] bg-tma-card-plain p-3.5 shadow-tma-soft transition active:scale-[0.99]'
+      className='flex cursor-pointer items-center gap-3 rounded-[24px] bg-tma-card-plain p-4 shadow-tma-soft transition active:scale-[0.99]'
       role='button'
       tabIndex={0}
       onClick={openDetail}
       onKeyDown={(event) => {
         if (event.key === 'Enter') openDetail()
       }}>
-      <TmaMonogramBadge
-        accent={category.accent}
-        label={category.symbol}
-        size='sm'
-      />
+      <CategoryIconBadge category={category} className='size-12' />
       <div className='min-w-0 flex-1'>
         <div className='flex items-start justify-between gap-3'>
-          <div className='min-w-0'>
-            <h3 className='m-0 truncate text-[15px] leading-tight font-semibold text-tma-text-strong'>
-              {expense.title.trim() || category.label}
+          <div className='min-w-0 flex-1'>
+            <h3 className='m-0 truncate text-[15px] leading-tight font-bold text-tma-text-strong'>
+              {category.label}
             </h3>
-            <p className='m-0 mt-1 line-clamp-2 text-sm leading-normal text-tma-text-muted'>
-              {getExpenseSecondaryText(expense.note, category.label)}
+            <p className='m-0 mt-1 truncate text-sm leading-normal font-medium text-tma-text-muted'>
+              {expense.title.trim() || category.label}
             </p>
           </div>
-          <MoneyLabel className='shrink-0 text-sm font-bold'>
+          <MoneyLabel className='shrink-0 pt-0.5 text-[15px] leading-tight font-extrabold'>
             {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
           </MoneyLabel>
         </div>
-        <div className='mt-2 flex flex-wrap gap-1.5'>
-          <Chip className='min-h-6 px-2 text-[11px]'>
-            {formatTimeLabel(new Date(expense.occurredAt).toISOString())}
-          </Chip>
-          {showHouseholdLabel && householdLabel ? (
-            <Chip className='min-h-6 px-2 text-[11px]'>{householdLabel}</Chip>
-          ) : null}
-          {groupLabel ? (
+        {showHouseholdLabel && householdLabel ? (
+          <div className='mt-2 flex flex-wrap gap-1.5'>
+            <Chip className='min-h-6 max-w-full px-2 text-[11px]'>
+              <span className='truncate'>{householdLabel}</span>
+            </Chip>
+            {groupLabel ? (
+              <Chip className='min-h-6 px-2 text-[11px]'>{groupLabel}</Chip>
+            ) : null}
+          </div>
+        ) : groupLabel ? (
+          <div className='mt-2 flex flex-wrap gap-1.5'>
             <Chip className='min-h-6 px-2 text-[11px]'>{groupLabel}</Chip>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
     </article>
   )

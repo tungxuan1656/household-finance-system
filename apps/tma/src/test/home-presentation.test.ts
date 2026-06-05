@@ -21,9 +21,10 @@ describe('home presentation helpers', () => {
       ]),
     ).toEqual({
       accent: {
-        background: 'rgba(63, 124, 255, 0.14)',
+        background: 'rgba(63, 124, 255, 0.1)',
         foreground: '#3f7cff',
       },
+      iconUrl: 'https://example.com/food.svg',
       label: 'Ăn uống',
       symbol: 'AU',
     })

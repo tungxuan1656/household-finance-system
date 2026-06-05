@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-05 — Restyled shared TMA expense rows
+
+- Who: Codex
+- Summary: Restyled the shared TMA expense row used by the expenses list and recent expense surfaces. Rows now render the category icon from the reference-category API, tint the icon container with the category color at 10% alpha, show category label first and expense title second, and no longer show expense note or occurred time.
+- Files changed: TMA finance expense smart component, category presentation helper, focused presentation/component tests, and feat-095 harness evidence.
+- Verification: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` returned `OK`. Final `./init.sh` completed with `Done!`. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `low` risk with 10 changed symbols, 0 affected symbols/processes, and 5 changed files.
+- Blockers: None.
+- Next steps: Open the TMA expenses list and Home recent-expense section on a narrow mobile viewport to visually confirm the new row hierarchy and icon image sizing.
+
 ## 2026-06-05 — Fixed TMA component/page review notes
 
 - Who: Codex

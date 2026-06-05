@@ -13,6 +13,7 @@ export interface AccentToken {
 export interface CategoryPresentation {
   label: string
   symbol: string
+  iconUrl?: string
   accent: AccentToken
 }
 
@@ -175,7 +176,7 @@ export const getCategoryPresentation = (
   const key = categoryKey ?? 'other'
   const label = getCategoryLabel(key)
   const match = referenceCategories?.find((item) => item.key === key)
-  const accentBackground = match?.color ? withAlpha(match.color, 0.14) : null
+  const accentBackground = match?.color ? withAlpha(match.color, 0.1) : null
   const accent =
     match?.color && accentBackground
       ? {
@@ -187,6 +188,7 @@ export const getCategoryPresentation = (
   return {
     label,
     symbol: resolveInitials(label),
+    iconUrl: match?.iconUrl,
     accent,
   }
 }
