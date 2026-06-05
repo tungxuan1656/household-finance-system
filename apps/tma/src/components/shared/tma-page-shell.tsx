@@ -11,15 +11,16 @@ import {
   PlusIcon,
   StatisticsIcon,
 } from '@/components/shared/tma-icons'
+import { IconBadge } from '@/components/ui'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { hideBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 const PullToRefreshSpinner = ({ label }: { label?: string }) => (
-  <div className='tma-ptr-spinner-wrap'>
-    <span className='tma-ptr-spinner-icon' />
-    {label && <span className='tma-ptr-spinner-label'>{label}</span>}
+  <div className='grid justify-items-center gap-2 py-2 text-xs font-semibold text-tma-text-muted'>
+    <span className='size-5 animate-tma-spin rounded-full border-2 border-current border-t-transparent' />
+    {label ? <span>{label}</span> : null}
   </div>
 )
 
@@ -48,9 +49,11 @@ const TmaBottomTabs = ({
   const location = useLocation()
 
   return (
-    <div aria-label='Điều hướng chính' className='tma-bottom-tabs'>
-      <nav className='tma-bottom-tabs__rail'>
-        <div className='tma-bottom-tabs__slot tma-bottom-tabs__slot--start'>
+    <div
+      aria-label='Điều hướng chính'
+      className='pointer-events-none fixed right-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] left-0 z-30 flex justify-center px-4'>
+      <nav className='pointer-events-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 rounded-[28px] border border-white/50 bg-white/55 p-1 shadow-[0_6px_20px_rgba(17,24,39,0.05),0_1px_2px_rgba(17,24,39,0.04),inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.04)] backdrop-blur-md md:min-w-[360px]'>
+        <div className='flex justify-start'>
           {tabItems.slice(0, 1).map(({ href, label, icon: Icon, match }) => {
             const isActive = match(location.pathname)
 
@@ -58,13 +61,19 @@ const TmaBottomTabs = ({
               <Link
                 key={href}
                 aria-current={isActive ? 'page' : undefined}
-                className={cn('tma-bottom-tabs__item', isActive && 'is-active')}
+                className={cn(
+                  'relative flex h-[52px] min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-tma-text-muted transition-colors',
+                  isActive && 'bg-tma-primary/10 text-tma-primary',
+                )}
                 to={href}
                 onClick={() => {
                   selection()
                 }}>
                 <Icon
-                  className='tma-bottom-tabs__icon'
+                  className={cn(
+                    'size-5 transition-transform',
+                    isActive && '-translate-y-px',
+                  )}
                   height='20'
                   width='20'
                 />
@@ -76,19 +85,15 @@ const TmaBottomTabs = ({
 
         <Link
           aria-label='Tạo chi tiêu mới'
-          className='tma-bottom-tabs__action'
+          className='pointer-events-auto mx-1 -my-4 grid size-[54px] place-items-center rounded-full bg-gradient-to-br from-[#2a3a5c] to-tma-text-strong text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
           to={bubbleHref}
           onClick={() => {
             impact('medium')
           }}>
-          <PlusIcon
-            className='tma-bottom-tabs__action-icon'
-            height='24'
-            width='24'
-          />
+          <PlusIcon height='24' width='24' />
         </Link>
 
-        <div className='tma-bottom-tabs__slot tma-bottom-tabs__slot--end'>
+        <div className='flex justify-end'>
           {tabItems.slice(1).map(({ href, label, icon: Icon, match }) => {
             const isActive = match(location.pathname)
 
@@ -96,13 +101,19 @@ const TmaBottomTabs = ({
               <Link
                 key={href}
                 aria-current={isActive ? 'page' : undefined}
-                className={cn('tma-bottom-tabs__item', isActive && 'is-active')}
+                className={cn(
+                  'relative flex h-[52px] min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-tma-text-muted transition-colors',
+                  isActive && 'bg-tma-primary/10 text-tma-primary',
+                )}
                 to={href}
                 onClick={() => {
                   selection()
                 }}>
                 <Icon
-                  className='tma-bottom-tabs__icon'
+                  className={cn(
+                    'size-5 transition-transform',
+                    isActive && '-translate-y-px',
+                  )}
                   height='20'
                   width='20'
                 />
@@ -131,29 +142,41 @@ export const TmaPageHeader = ({
   leading,
   trailing,
 }: TmaPageHeaderProps) => (
-  <section className='tma-page-header'>
-    <div className='tma-page-header__lead'>
+  <section className='flex items-start justify-between gap-3 px-1 py-3 md:px-6'>
+    <div className='flex min-w-0 items-center gap-3'>
       {leading ? (
-        <div className='tma-page-header__avatar'>{leading}</div>
+        <div className='grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-tma-primary/20 to-tma-positive/30 text-sm font-bold text-tma-text-strong shadow-[inset_0_0_0_1px_rgba(255,255,255,0.5)]'>
+          {leading}
+        </div>
       ) : null}
-      <div>
-        {eyebrow ? <p className='tma-page-header__eyebrow'>{eyebrow}</p> : null}
-        <h2 className='tma-page-header__title'>{title}</h2>
+      <div className='min-w-0'>
+        {eyebrow ? (
+          <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'>
+            {eyebrow}
+          </p>
+        ) : null}
+        <h2 className='m-0 mt-1 text-xl leading-tight font-bold text-tma-text-strong'>
+          {title}
+        </h2>
         {subtitle ? (
-          <p className='tma-page-header__subtitle'>{subtitle}</p>
+          <p className='m-0 mt-1 text-sm leading-normal text-tma-text-muted'>
+            {subtitle}
+          </p>
         ) : null}
       </div>
     </div>
 
     {trailing ? (
-      <div className='tma-page-header__actions'>{trailing}</div>
+      <div className='flex shrink-0 items-center gap-2'>{trailing}</div>
     ) : null}
   </section>
 )
 
 export const TmaPageTitleBar = ({ title }: { title: string }) => (
-  <header className='tma-page-titlebar'>
-    <h1 className='tma-page-titlebar__title'>{title}</h1>
+  <header className='grid min-h-11 place-items-center'>
+    <h1 className='m-0 text-base leading-tight font-bold text-tma-text-strong'>
+      {title}
+    </h1>
   </header>
 )
 
@@ -163,20 +186,16 @@ export interface TmaPageShellProps {
   reserveBottomButton?: boolean
   bubbleHref?: string
   contentClassName?: string
-  /**
-   * Enable pull-to-refresh via react-simple-pull-to-refresh.
-   * When provided, wrapping onRefresh callback will trigger pull-to-refresh.
-   */
   onRefresh?: () => Promise<void>
 }
 
 export const TmaPageShell = ({
-  children,
-  title,
-  reserveBottomButton = false,
   bubbleHref,
+  children,
   contentClassName,
   onRefresh,
+  reserveBottomButton = false,
+  title,
 }: TmaPageShellProps) => {
   const contentRef = useRef<HTMLElement | null>(null)
 
@@ -194,18 +213,25 @@ export const TmaPageShell = ({
     hideBottomButton()
   }, [])
 
+  const content = (
+    <main
+      ref={contentRef}
+      className={cn(
+        'relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-[calc(96px+var(--tma-content-safe-bottom))] [-webkit-overflow-scrolling:touch] md:px-6',
+        !isShowBottomTabs && 'pb-[calc(48px+var(--tma-content-safe-bottom))]',
+        reserveBottomButton &&
+          'pb-[calc(100px+var(--tma-content-safe-bottom))]',
+        contentClassName,
+      )}
+      data-testid='tma-page-scroll'>
+      {children}
+    </main>
+  )
+
   return (
     <AppShell>
-      <div
-        className={cn(
-          'tma-page-shell',
-          !isShowBottomTabs && 'tma-page-shell--focus',
-          reserveBottomButton && 'tma-page-shell--native-bottom',
-        )}>
-        <div className='tma-page-shell__glow tma-page-shell__glow--primary' />
-        <div className='tma-page-shell__glow tma-page-shell__glow--accent' />
-
-        <div className='tma-page-shell__viewport'>
+      <div className='relative flex min-h-0 flex-1 flex-col overflow-hidden'>
+        <div className='relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden'>
           <TmaPageTitleBar title={title} />
 
           {onRefresh ? (
@@ -217,18 +243,10 @@ export const TmaPageShell = ({
               }
               resistance={2.5}
               onRefresh={onRefresh}>
-              <main
-                ref={contentRef}
-                className={cn('tma-page-shell__content', contentClassName)}>
-                {children}
-              </main>
+              {content}
             </PullToRefresh>
           ) : (
-            <main
-              ref={contentRef}
-              className={cn('tma-page-shell__content', contentClassName)}>
-              {children}
-            </main>
+            content
           )}
         </div>
 
@@ -249,14 +267,9 @@ export const TmaMonogramBadge = ({
   label,
   size = 'md',
 }: TmaBadgeProps) => (
-  <span
-    className={cn('tma-monogram', size === 'sm' && 'is-sm')}
-    style={{
-      backgroundColor: accent.background,
-      color: accent.foreground,
-    }}>
+  <IconBadge accent={accent} size={size}>
     {label}
-  </span>
+  </IconBadge>
 )
 
 export const TmaInlineAction = ({
@@ -266,8 +279,11 @@ export const TmaInlineAction = ({
   children: ReactNode
   href: string
 }) => (
-  <Link className='tma-inline-action' to={href} onClick={() => selection()}>
-    <span>{children}</span>
+  <Link
+    className='inline-flex items-center gap-1 text-xs font-bold text-tma-primary'
+    to={href}
+    onClick={() => selection()}>
+    {children}
     <ChevronRightIcon height='14' width='14' />
   </Link>
 )

@@ -1,17 +1,19 @@
+import type { CategoryKey, SourceKey } from '@/features/home/types'
+
 export interface AccentToken {
   background: string
   foreground: string
 }
 
 export interface FinanceCategory {
-  id: string
+  id: CategoryKey
   label: string
   symbol: string
   accent: AccentToken
 }
 
 export interface ExpenseSource {
-  id: string
+  id: SourceKey
   label: string
   detail: string
 }
@@ -78,7 +80,7 @@ export const categoryOptions: FinanceCategory[] = [
     accent: { background: '#fff3e8', foreground: '#ff8a3d' },
   },
   {
-    id: 'bills',
+    id: 'living-costs',
     label: 'Hóa đơn',
     symbol: 'HD',
     accent: { background: '#fff6d9', foreground: '#b48800' },
@@ -111,8 +113,8 @@ export const categoryOptions: FinanceCategory[] = [
 
 export const expenseSources: ExpenseSource[] = [
   { id: 'cash', label: 'Tiền mặt', detail: 'Ví cá nhân' },
-  { id: 'bank', label: 'Ngân hàng', detail: 'Tài khoản chính' },
-  { id: 'ewallet', label: 'Ví điện tử', detail: 'MoMo / ZaloPay' },
+  { id: 'bank-transfer', label: 'Ngân hàng', detail: 'Tài khoản chính' },
+  { id: 'momo', label: 'Ví điện tử', detail: 'MoMo / ZaloPay' },
 ]
 
 export const householdOptions: HouseholdCardItem[] = [

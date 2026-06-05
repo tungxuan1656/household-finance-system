@@ -28,7 +28,7 @@ export const PullToRefresh = ({
       resistance={resistance}
       onRefresh={onRefresh ?? (async () => {})}>
       <div
-        className='tma-ptr-scroll'
+        className='h-full min-h-0'
         onScroll={(e) => {
           e.currentTarget.dispatchEvent(
             new CustomEvent('scroll', { bubbles: true }),

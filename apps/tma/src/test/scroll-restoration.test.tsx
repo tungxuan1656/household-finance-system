@@ -50,7 +50,7 @@ const NavigationHarness = () => {
 
 const getScrollContainer = (): HTMLElement => {
   const container = document.querySelector<HTMLElement>(
-    '.tma-page-shell__content',
+    '[data-testid="tma-page-scroll"]',
   )
 
   if (!container) {

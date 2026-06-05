@@ -36,7 +36,7 @@ describe('useAddExpenseFlowStore', () => {
 
     useAddExpenseFlowStore.getState().setDetails({
       amount: 540000,
-      sourceId: 'bank',
+      sourceId: 'bank-transfer',
       note: 'Bữa tối',
     })
 

@@ -5,24 +5,43 @@ import {
   ChevronRightIcon,
 } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import {
+  Button,
+  Card,
+  CardDescription,
+  CardTitle,
+  Chip,
+  Eyebrow,
+  MoneyLabel,
+  Section,
+  SectionHeader,
+  SegmentedControl,
+} from '@/components/ui'
 import { statisticMonths, statisticSlices } from '@/features/finance/mock-data'
 import { formatMonthLabel, formatVnd } from '@/lib/formatters'
 import { impact, selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 const rangeOptions = [
-  { id: 'day', label: 'Ngày' },
-  { id: 'week', label: 'Tuần' },
-  { id: 'month', label: 'Tháng' },
-  { id: 'year', label: 'Năm' },
+  { value: 'day', label: 'Ngày' },
+  { value: 'week', label: 'Tuần' },
+  { value: 'month', label: 'Tháng' },
+  { value: 'year', label: 'Năm' },
 ] as const
 
 const monthModifiers = [1, 0.92, 0.88]
 
+const toneClassName = {
+  muted: 'from-[#dfe7f7] to-[#c5d0e7]',
+  positive: 'from-[#8ae293] to-tma-positive',
+  primary: 'from-[#76a2ff] to-tma-primary',
+  warning: 'from-[#ffe58a] to-tma-warning',
+} as const
+
 export const StatisticsPage = () => {
   const [monthIndex, setMonthIndex] = useState(0)
   const [range, setRange] =
-    useState<(typeof rangeOptions)[number]['id']>('month')
+    useState<(typeof rangeOptions)[number]['value']>('month')
 
   const slice = statisticSlices[range]
   const modifier = monthModifiers[monthIndex] ?? 1
@@ -30,116 +49,119 @@ export const StatisticsPage = () => {
 
   return (
     <TmaPageShell title='Thống kê'>
-      <section className='tma-hero-card'>
-        <div>
-          <p className='tma-section-label'>Tổng chi</p>
-          <strong className='font-mono'>{formatVnd(total)}</strong>
-          <p>{slice.changeLabel}</p>
+      <Card className='relative mb-3 grid gap-3 overflow-hidden p-5 after:absolute after:-right-8 after:-bottom-20 after:size-56 after:rounded-full after:bg-tma-warning/25 after:content-[""]'>
+        <div className='relative z-10'>
+          <Eyebrow>Tổng chi</Eyebrow>
+          <MoneyLabel className='mt-1 block text-[30px] leading-none font-extrabold'>
+            {formatVnd(total)}
+          </MoneyLabel>
+          <CardDescription className='mt-2'>
+            {slice.changeLabel}
+          </CardDescription>
         </div>
-
-        <span className='tma-soft-pill'>
+        <Chip className='relative z-10 justify-self-start'>
           Điểm nổi bật: {slice.selectedCategory}
-        </span>
-      </section>
+        </Chip>
+      </Card>
 
-      <section className='tma-month-switcher'>
-        <button
-          className='tma-icon-button'
-          type='button'
+      <Card className='mb-3 flex items-center justify-between gap-3 p-4'>
+        <Button
+          size='icon'
+          variant='outline'
           onClick={() => {
             impact('light')
             setMonthIndex((i) => (i === 0 ? statisticMonths.length - 1 : i - 1))
           }}>
           <ChevronLeftIcon height='18' width='18' />
-        </button>
+        </Button>
 
-        <div>
-          <p className='tma-section-label'>Chu kỳ đang xem</p>
-          <strong>{formatMonthLabel(statisticMonths[monthIndex])}</strong>
+        <div className='text-center'>
+          <Eyebrow>Chu kỳ đang xem</Eyebrow>
+          <strong className='mt-0.5 block text-[17px] text-tma-text-strong'>
+            {formatMonthLabel(statisticMonths[monthIndex])}
+          </strong>
         </div>
 
-        <button
-          className='tma-icon-button'
-          type='button'
+        <Button
+          size='icon'
+          variant='outline'
           onClick={() => {
             impact('light')
             setMonthIndex((i) => (i + 1) % statisticMonths.length)
           }}>
           <ChevronRightIcon height='18' width='18' />
-        </button>
-      </section>
+        </Button>
+      </Card>
 
-      <section className='tma-segmented'>
-        {rangeOptions.map((option) => (
-          <button
-            key={option.id}
-            className={cn(
-              'tma-segmented__item',
-              range === option.id && 'bg-tma-primary/12 text-tma-primary',
-            )}
-            type='button'
-            onClick={() => {
-              selection()
-              setRange(option.id)
-            }}>
-            {option.label}
-          </button>
-        ))}
-      </section>
+      <SegmentedControl
+        options={[...rangeOptions]}
+        value={range}
+        onChange={(value) => {
+          selection()
+          setRange(value)
+        }}
+      />
 
-      <section className='tma-chart-card'>
-        <div className='tma-chart-card__header'>
+      <Card className='mt-3 grid gap-4'>
+        <div className='flex items-start justify-between gap-3'>
           <div>
-            <p className='tma-section-label'>Biểu đồ chính</p>
-            <h2>{slice.selectedCategory}</h2>
+            <Eyebrow>Biểu đồ chính</Eyebrow>
+            <CardTitle>{slice.selectedCategory}</CardTitle>
           </div>
-          <span className='tma-status-pill'>Mặc định: Tháng</span>
+          <Chip tone='primary'>Mặc định: Tháng</Chip>
         </div>
 
-        <div className='tma-chart-card__bars'>
+        <div className='grid min-h-32 auto-cols-fr grid-flow-col items-end gap-2.5 pt-2'>
           {slice.chartBars.map((bar) => (
-            <div key={bar.label} className='tma-chart-bar'>
+            <div key={bar.label} className='grid justify-items-center gap-2'>
               <div
-                className={`tma-chart-bar__value tone-${bar.tone}`}
+                className={cn(
+                  'min-h-3 w-full rounded-t-full rounded-b-2xl bg-gradient-to-b',
+                  toneClassName[bar.tone],
+                )}
                 style={{ height: `${bar.amount * 2}px` }}
               />
-              <span>{bar.label}</span>
+              <span className='text-xs font-semibold text-tma-text-muted'>
+                {bar.label}
+              </span>
             </div>
           ))}
         </div>
 
-        <div className='tma-legend-grid'>
+        <div className='grid gap-2'>
           {slice.legends.map((legend) => (
             <div
               key={legend.label}
-              className={`tma-legend-pill tone-${legend.tone}`}>
+              className='flex items-center justify-between gap-3 rounded-2xl bg-black/[0.04] px-3.5 py-3 text-sm'>
               <span>{legend.label}</span>
-              <strong className='font-mono'>{formatVnd(legend.amount)}</strong>
+              <MoneyLabel className='font-bold'>
+                {formatVnd(legend.amount)}
+              </MoneyLabel>
             </div>
           ))}
         </div>
-      </section>
+      </Card>
 
-      <section className='tma-section'>
-        <div className='tma-section__header'>
-          <div>
-            <p className='tma-section-label'>Xếp hạng</p>
-            <h2 className='tma-section__title'>Những phần chi nổi bật</h2>
-          </div>
-        </div>
-
-        <div className='tma-list-card'>
+      <Section>
+        <SectionHeader eyebrow='Xếp hạng' title='Những phần chi nổi bật' />
+        <Card className='grid gap-2'>
           {slice.ranking.map((entry) => (
-            <article key={entry.label} className='tma-ranking-row'>
+            <article
+              key={entry.label}
+              className='flex items-start justify-between gap-3'>
               <div>
-                <h3>{entry.label}</h3>
-                <p>{entry.percent}% tổng chi</p>
+                <h3 className='m-0 text-[15px] font-semibold text-tma-text-strong'>
+                  {entry.label}
+                </h3>
+                <CardDescription>{entry.percent}% tổng chi</CardDescription>
               </div>
-              <strong className='font-mono'>{formatVnd(entry.amount)}</strong>
+              <MoneyLabel className='text-sm font-bold'>
+                {formatVnd(entry.amount)}
+              </MoneyLabel>
             </article>
           ))}
-        </div>
-      </section>
+        </Card>
+      </Section>
     </TmaPageShell>
   )
 }

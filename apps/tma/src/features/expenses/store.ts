@@ -7,7 +7,7 @@ export interface AddExpenseDraft {
   date: string
   category: FinanceCategory | null
   amount: number
-  sourceId: string | null
+  sourceId: SourceKey | null
   note: string
   householdId: string | null
   groupId: string | null
@@ -18,7 +18,7 @@ interface AddExpenseFlowState extends AddExpenseDraft {
   selectCategory: (category: FinanceCategory) => void
   setDetails: (input: {
     amount: number
-    sourceId: string | null
+    sourceId: SourceKey | null
     note: string
   }) => void
   setContext: (input: {

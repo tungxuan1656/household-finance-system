@@ -1,13 +1,18 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
-import { TmaDataState } from '@/components/shared/tma-data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
-  formatCurrencyMinor,
-  getHouseholdBudgetLabel,
-} from '@/features/home/presentation'
-import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
+  buttonVariants,
+  Card,
+  Chip,
+  DataState,
+  Eyebrow,
+  Section,
+  SectionHeader,
+} from '@/components/ui'
+import { HouseholdItem } from '@/features/finance/components'
+import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatMonthLabel } from '@/lib/formatters'
 import { getCurrentPeriod } from '@/lib/period'
 import { impact } from '@/lib/telegram/haptics'
@@ -18,16 +23,11 @@ import {
   useHouseholdMemberQueries,
   useHouseholdOverviewQueries,
 } from '../api'
-import {
-  formatMemberCountLabel,
-  getHouseholdAvatarFallback,
-  getHouseholdRoleLabel,
-} from '../presentation'
+import { getHouseholdRoleLabel } from '../presentation'
 
 export const HouseholdListPage = () => {
   const period = getCurrentPeriod()
   const householdsQuery = useHouseholdListQuery()
-
   const households = householdsQuery.data?.items ?? []
   const memberQueries = useHouseholdMemberQueries(households)
   const overviewQueries = useHouseholdOverviewQueries(households, period)
@@ -58,47 +58,41 @@ export const HouseholdListPage = () => {
 
   return (
     <TmaPageShell title='Gia đình'>
-      <section className='tma-hero-card tma-household-hub-card'>
-        <div className='tma-summary-card__topline'>
+      <Card className='grid gap-3 p-5'>
+        <div className='flex items-start justify-between gap-3'>
           <div>
-            <p className='tma-section-label'>Household hub</p>
-            <strong>{householdCards.length}</strong>
+            <Eyebrow>Household hub</Eyebrow>
+            <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
+              {householdCards.length}
+            </strong>
           </div>
-
-          <span className='tma-chip tma-chip--strong'>
-            {formatMonthLabel(new Date())}
-          </span>
+          <Chip tone='primary'>{formatMonthLabel(new Date())}</Chip>
         </div>
-      </section>
+      </Card>
 
-      <section className='tma-section'>
-        <div className='tma-section__header'>
-          <div>
-            <p className='tma-section-label'>Danh sách</p>
-            <h2 className='tma-section__title'>Household của bạn</h2>
-          </div>
+      <Section>
+        <SectionHeader
+          action={
+            householdCards.length > 0 ? (
+              <Link
+                className={buttonVariants({ size: 'sm', variant: 'outline' })}
+                to={TMA_PATHS.householdsNew}
+                onClick={() => impact('light')}>
+                Tạo mới
+              </Link>
+            ) : null
+          }
+          eyebrow='Danh sách'
+          title='Household của bạn'
+        />
 
-          {householdCards.length > 0 ? (
-            <Link
-              className='tma-chip-button border'
-              to={TMA_PATHS.householdsNew}
-              onClick={() => {
-                impact('light')
-              }}>
-              <span className='text-sm'>Tạo mới</span>
-            </Link>
-          ) : null}
-        </div>
-
-        <TmaDataState
+        <DataState
           customAction={
             householdCards.length === 0 && !householdsQuery.isLoading ? (
               <Link
-                className='tma-action-button tma-action-button--primary'
+                className={buttonVariants({ variant: 'secondary' })}
                 to={TMA_PATHS.householdsNew}
-                onClick={() => {
-                  impact('light')
-                }}>
+                onClick={() => impact('light')}>
                 Tạo household
               </Link>
             ) : null
@@ -117,75 +111,17 @@ export const HouseholdListPage = () => {
           loadingDescription='Danh sách sẽ hiện ngay khi các truy vấn hoàn tất.'
           loadingTitle='Đang tải household'
           retryAction={householdsQuery.refetch}>
-          <div className='tma-household-grid'>
+          <div className='grid gap-3'>
             {householdCards.map((card) => (
-              <Link
+              <HouseholdItem
                 key={card.household.id}
-                className='tma-household-overview-card'
-                to={getHouseholdDetailPath(card.household.id)}
-                onClick={() => {
-                  impact('light')
-                }}>
-                <div className='tma-household-overview-card__head'>
-                  <div className='tma-household-avatar'>
-                    {card.household.avatarUrl ? (
-                      <img
-                        alt={card.household.name}
-                        className='tma-avatar-image'
-                        src={card.household.avatarUrl}
-                      />
-                    ) : (
-                      <span>
-                        {getHouseholdAvatarFallback(card.household.name)}
-                      </span>
-                    )}
-                  </div>
-
-                  <span className='tma-status-pill'>
-                    {getHouseholdRoleLabel(card.household.role)}
-                  </span>
-                </div>
-
-                <div className='tma-household-overview-card__copy'>
-                  <h3>{card.household.name}</h3>
-                  <p>{formatMemberCountLabel(card.memberCount)}</p>
-                </div>
-
-                <div className='tma-household-stat-grid'>
-                  <article className='tma-household-stat'>
-                    <span>Chi tháng này</span>
-                    <strong className='font-mono-money'>
-                      {card.totalSpendMinor != null && card.currencyCode
-                        ? formatCurrencyMinor(
-                            card.totalSpendMinor,
-                            card.currencyCode,
-                          )
-                        : card.isLoading
-                          ? 'Đang tải...'
-                          : '—'}
-                    </strong>
-                  </article>
-
-                  <article className='tma-household-stat'>
-                    <span>Ngân sách</span>
-                    <strong>
-                      {getHouseholdBudgetLabel(
-                        card.totalSpendMinor,
-                        card.budget,
-                      )}
-                    </strong>
-                  </article>
-                </div>
-
-                <div className='tma-household-overview-card__foot'>
-                  <span>Mở chi tiết</span>
-                  <span>{card.household.defaultCurrencyCode}</span>
-                </div>
-              </Link>
+                card={card}
+                roleLabel={getHouseholdRoleLabel(card.household.role)}
+              />
             ))}
           </div>
-        </TmaDataState>
-      </section>
+        </DataState>
+      </Section>
     </TmaPageShell>
   )
 }

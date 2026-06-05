@@ -6,6 +6,13 @@ import {
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
+import {
+  Card,
+  CardTitle,
+  Eyebrow,
+  Section,
+  SectionHeader,
+} from '@/components/ui'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import { categoryOptions } from '@/features/finance/mock-data'
 import { formatDateLabel } from '@/lib/formatters'
@@ -20,14 +27,21 @@ export const AddExpenseCategoryPage = () => {
   return (
     <TmaPageShell title='Thêm chi tiêu'>
       <TmaPageHeader eyebrow='Bước 1/3' title='Bắt đầu từ phần dễ nhất' />
-      <section className='tma-step-card'>
-        <label className='tma-date-pill'>
-          <CalendarIcon height='18' width='18' />
-          <div>
-            <span>Ngày chi tiêu</span>
-            <strong>{formatDateLabel(date)}</strong>
+      <Card>
+        <label className='relative flex items-center gap-3 overflow-hidden rounded-[18px] bg-black/[0.04] p-3.5'>
+          <CalendarIcon
+            className='text-tma-text-muted'
+            height='18'
+            width='18'
+          />
+          <div className='grid gap-1'>
+            <span className='text-xs text-tma-text-muted'>Ngày chi tiêu</span>
+            <strong className='text-tma-text-strong'>
+              {formatDateLabel(date)}
+            </strong>
           </div>
           <input
+            className='absolute inset-0 opacity-0'
             type='date'
             value={date.slice(0, 10)}
             onChange={(event) => {
@@ -40,23 +54,18 @@ export const AddExpenseCategoryPage = () => {
             }}
           />
         </label>
-      </section>
+      </Card>
 
-      <section className='tma-section'>
-        <div className='tma-section__header'>
-          <div>
-            <p className='tma-section-label'>Danh mục</p>
-            <h2 className='tma-section__title'>
-              Nhấn một lần là sang bước tiếp
-            </h2>
-          </div>
-        </div>
-
-        <div className='tma-category-grid'>
+      <Section>
+        <SectionHeader
+          eyebrow='Danh mục'
+          title='Nhấn một lần là sang bước tiếp'
+        />
+        <div className='grid grid-cols-2 gap-2.5'>
           {categoryOptions.map((category) => (
             <button
               key={category.id}
-              className='tma-category-card'
+              className='grid min-h-28 content-start gap-3 rounded-[20px] border border-black/[0.04] bg-white p-3.5 text-left shadow-tma-soft transition active:scale-[0.98]'
               type='button'
               onClick={() => {
                 selection()
@@ -67,11 +76,14 @@ export const AddExpenseCategoryPage = () => {
                 accent={category.accent}
                 label={category.symbol}
               />
-              <span>{category.label}</span>
+              <div>
+                <Eyebrow>Danh mục</Eyebrow>
+                <CardTitle className='text-[15px]'>{category.label}</CardTitle>
+              </div>
             </button>
           ))}
         </div>
-      </section>
+      </Section>
     </TmaPageShell>
   )
 }

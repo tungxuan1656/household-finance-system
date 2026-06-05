@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -12,6 +13,16 @@ import {
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
+import {
+  Button,
+  Card,
+  CardDescription,
+  CardTitle,
+  Chip,
+  Eyebrow,
+  Input,
+  Textarea,
+} from '@/components/ui'
 import {
   useExpenseDetailQuery,
   useUpdateExpenseMutation,
@@ -37,63 +48,84 @@ import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
-// 1. MAIN EDIT FORM PAGE
+const EditSelectRow = ({
+  children,
+  label,
+  onClick,
+  value,
+}: {
+  children?: ReactNode
+  label: string
+  onClick: () => void
+  value: string
+}) => (
+  <div
+    className='flex cursor-pointer items-center justify-between gap-3 border-b border-tma-line py-4 last:border-b-0'
+    role='button'
+    tabIndex={0}
+    onClick={onClick}
+    onKeyDown={(event) => {
+      if (event.key === 'Enter') onClick()
+    }}>
+    <div className='flex min-w-0 items-center gap-3'>
+      {children}
+      <div className='min-w-0'>
+        <Eyebrow>{label}</Eyebrow>
+        <h3 className='m-0 mt-0.5 truncate text-[15px] font-semibold text-tma-text-strong'>
+          {value}
+        </h3>
+      </div>
+    </div>
+    <ChevronRightIcon
+      className='shrink-0 text-tma-text-muted'
+      height='18'
+      width='18'
+    />
+  </div>
+)
+
 export const ExpenseEditPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const expenseId = id ?? 'unknown'
-
-  // Queries
   const expenseQuery = useExpenseDetailQuery(expenseId, {
     enabled: expenseId !== 'unknown',
   })
   const categoriesQuery = useReferenceCategoriesQuery()
   const householdsQuery = useHouseholdsQuery()
-
   const expense = expenseQuery.data
   const referenceCategories = categoriesQuery.data?.items ?? []
   const households = householdsQuery.data?.items ?? []
-
-  // Store
   const draft = useEditExpenseStore((state) => state.draft)
   const setDraft = useEditExpenseStore((state) => state.setDraft)
   const updateDraft = useEditExpenseStore((state) => state.updateDraft)
   const resetStore = useEditExpenseStore((state) => state.reset)
-
-  // Local state for formatted amount input
   const [amountInput, setAmountInput] = useState('')
 
-  // Initialize draft if not present
   useEffect(() => {
     if (expense && !draft) {
       const editDraft = createEditExpenseDraft(expense)
 
       setDraft(editDraft)
-
       setAmountInput(formatAmountInput(String(Math.round(editDraft.amount))))
     }
   }, [expense, draft, setDraft])
 
-  // Synchronize local amount changes into store
-  const handleAmountChange = (val: string) => {
-    const formatted = formatAmountInput(val)
+  const handleAmountChange = (value: string) => {
+    const formatted = formatAmountInput(value)
     setAmountInput(formatted)
     updateDraft({ amount: parseAmountInput(formatted) })
   }
 
-  // Map values
   const householdNameMap = useMemo(
     () => buildHouseholdNameMap(households),
     [households],
   )
-
   const activeCategory = getCategoryPresentation(
     draft?.categoryKey ?? expense?.categoryKey,
     referenceCategories,
   )
-
   const updateMutation = useUpdateExpenseMutation()
-
   const isValid = Boolean(
     draft && draft.title.trim().length > 0 && draft.amount > 0,
   )
@@ -125,14 +157,13 @@ export const ExpenseEditPage = () => {
     }
   })
 
-  // Telegram BottomButton coordination
   useEffect(() => {
     const cleanup = setBottomButton({
       text: 'Lưu thay đổi',
       enabled: isValid && !updateMutation.isPending,
       showProgress: updateMutation.isPending,
       onClick: () => {
-        handleSave()
+        void handleSave()
       },
     })
 
@@ -145,218 +176,172 @@ export const ExpenseEditPage = () => {
   if (expenseQuery.isLoading || !draft) {
     return (
       <TmaPageShell title='Sửa chi tiêu'>
-        <div className='tma-empty-card'>
-          <h2>Đang tải biểu mẫu...</h2>
-          <p>Dữ liệu chỉnh sửa sẽ sẵn sàng ngay sau đây.</p>
-        </div>
+        <Card>
+          <CardTitle>Đang tải biểu mẫu...</CardTitle>
+          <CardDescription>
+            Dữ liệu chỉnh sửa sẽ sẵn sàng ngay sau đây.
+          </CardDescription>
+        </Card>
       </TmaPageShell>
     )
   }
 
   return (
     <TmaPageShell reserveBottomButton title='Sửa chi tiêu'>
-      <div className='tma-edit-flow'>
-        <TmaPageHeader
-          eyebrow='CHẾ ĐỘ CHỈNH SỬA'
-          subtitle='Thay đổi các thông tin và nhấn Lưu thay đổi.'
-          title='Chỉnh sửa chi tiêu'
-        />
+      <TmaPageHeader
+        eyebrow='Chế độ chỉnh sửa'
+        subtitle='Thay đổi các thông tin và nhấn Lưu thay đổi.'
+        title='Chỉnh sửa chi tiêu'
+      />
 
-        {/* Category + Date Summary Header Card */}
-        <section className='tma-step-summary mb-3.5 p-3.5'>
+      <Card className='mb-3 flex items-center gap-3 p-3.5'>
+        <TmaMonogramBadge
+          accent={activeCategory.accent}
+          label={activeCategory.symbol}
+        />
+        <div>
+          <strong className='text-base text-tma-text-strong'>
+            {activeCategory.label}
+          </strong>
+          <CardDescription>
+            {formatDateLabel(new Date(draft.occurredAt).toISOString())}
+          </CardDescription>
+        </div>
+      </Card>
+
+      <Card className='grid gap-3'>
+        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
+          <NoteIcon height='16' width='16' />
+          <span>Tên chi tiêu *</span>
+        </div>
+        <Input
+          className='border-0 bg-transparent px-0 text-base font-semibold'
+          placeholder='Nhập tên khoản chi tiêu...'
+          value={draft.title}
+          onChange={(event) => updateDraft({ title: event.target.value })}
+        />
+      </Card>
+
+      <Card className='mt-3 grid gap-3'>
+        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
+          <CoinIcon height='16' width='16' />
+          <span>Số tiền</span>
+        </div>
+        <label className='flex items-end justify-between gap-2 rounded-[20px] bg-black/[0.04] p-4'>
+          <input
+            className='w-full bg-transparent font-mono text-[34px] leading-none font-extrabold text-tma-text-strong outline-none'
+            inputMode='numeric'
+            placeholder='0'
+            type='text'
+            value={amountInput}
+            onChange={(event) => handleAmountChange(event.target.value)}
+          />
+          <span className='text-xs font-semibold text-tma-text-muted'>
+            {expense?.currencyCode ?? 'VND'}
+          </span>
+        </label>
+      </Card>
+
+      <Card className='mt-3'>
+        <label className='relative flex items-center gap-3 overflow-hidden rounded-[18px] bg-black/[0.04] p-3.5'>
+          <CalendarIcon
+            className='text-tma-text-muted'
+            height='18'
+            width='18'
+          />
+          <div className='grid gap-1'>
+            <span className='text-xs text-tma-text-muted'>Ngày chi tiêu</span>
+            <strong className='text-tma-text-strong'>
+              {formatDateLabel(new Date(draft.occurredAt).toISOString())}
+            </strong>
+          </div>
+          <input
+            className='absolute inset-0 opacity-0'
+            type='date'
+            value={new Date(draft.occurredAt).toISOString().slice(0, 10)}
+            onChange={(event) => {
+              selection()
+
+              const nextDate = new Date(
+                `${event.target.value}T12:00:00+07:00`,
+              ).toISOString()
+              updateDraft({ occurredAt: new Date(nextDate).getTime() })
+            }}
+          />
+        </label>
+      </Card>
+
+      <Card className='mt-3 grid gap-0 px-4'>
+        <EditSelectRow
+          label='Danh mục'
+          value={activeCategory.label}
+          onClick={() => {
+            selection()
+            navigate(`/expenses/${expenseId}/edit/category`)
+          }}>
           <TmaMonogramBadge
             accent={activeCategory.accent}
             label={activeCategory.symbol}
+            size='sm'
           />
-          <div>
-            <strong className='text-base'>{activeCategory.label}</strong>
-            <p>{formatDateLabel(new Date(draft.occurredAt).toISOString())}</p>
-          </div>
-        </section>
+        </EditSelectRow>
+        <EditSelectRow
+          label='Nguồn thanh toán'
+          value={getSourceLabel(draft.sourceKey)}
+          onClick={() => {
+            selection()
+            navigate(`/expenses/${expenseId}/edit/source`)
+          }}
+        />
+        <EditSelectRow
+          label='Không gian gia đình'
+          value={
+            draft.householdId
+              ? householdNameMap.get(draft.householdId) || 'Gia đình'
+              : 'Cá nhân (Không gắn)'
+          }
+          onClick={() => {
+            selection()
+            navigate(`/expenses/${expenseId}/edit/household`)
+          }}
+        />
+      </Card>
 
-        {/* Title input */}
-        <section className='tma-note-card'>
-          <div className='tma-input-head'>
-            <NoteIcon height='16' width='16' />
-            <span>Tên chi tiêu *</span>
-          </div>
-          <input
-            className='w-full border-0 bg-transparent text-base font-semibold text-tma-text-strong outline-none'
-            placeholder='Nhập tên khoản chi tiêu...'
-            style={{ padding: '6px 0' }}
-            type='text'
-            value={draft.title}
-            onChange={(e) => updateDraft({ title: e.target.value })}
-          />
-        </section>
-
-        {/* Amount Input */}
-        <section className='tma-amount-card'>
-          <div className='tma-input-head'>
-            <CoinIcon height='16' width='16' />
-            <span>Số tiền</span>
-          </div>
-          <label className='tma-amount-input'>
-            <input
-              className='font-mono'
-              inputMode='numeric'
-              placeholder='0'
-              type='text'
-              value={amountInput}
-              onChange={(e) => handleAmountChange(e.target.value)}
-            />
-            <span>{expense?.currencyCode ?? 'VND'}</span>
-          </label>
-        </section>
-
-        {/* Date Picker */}
-        <section className='tma-step-card'>
-          <label className='tma-date-pill'>
-            <CalendarIcon height='18' width='18' />
-            <div>
-              <span>Ngày chi tiêu</span>
-              <strong>
-                {formatDateLabel(new Date(draft.occurredAt).toISOString())}
-              </strong>
-            </div>
-            <input
-              type='date'
-              value={new Date(draft.occurredAt).toISOString().slice(0, 10)}
-              onChange={(event) => {
-                selection()
-
-                const nextDate = new Date(
-                  `${event.target.value}T12:00:00+07:00`,
-                ).toISOString()
-                updateDraft({ occurredAt: new Date(nextDate).getTime() })
-              }}
-            />
-          </label>
-        </section>
-
-        {/* Clickable rows for Category, Payment Source, Household */}
-        <section className='tma-list-card grid gap-0 px-4'>
-          {/* Category row */}
-          <div
-            className='tma-settings-row flex cursor-pointer items-center justify-between border-b border-tma-line py-4'
-            role='button'
-            tabIndex={0}
-            onClick={() => {
-              selection()
-              navigate(`/expenses/${expenseId}/edit/category`)
-            }}>
-            <div className='flex items-center gap-3'>
-              <TmaMonogramBadge
-                accent={activeCategory.accent}
-                label={activeCategory.symbol}
-                size='sm'
-              />
-              <div>
-                <p className='tma-section-label m-0 text-[11px]'>Danh mục</p>
-                <h3 className='mt-0.5 text-[15px]'>{activeCategory.label}</h3>
-              </div>
-            </div>
-            <ChevronRightIcon
-              className='text-tma-text-muted'
-              height='18'
-              width='18'
-            />
-          </div>
-
-          {/* Payment Source row */}
-          <div
-            className='tma-settings-row flex cursor-pointer items-center justify-between border-b border-tma-line py-4'
-            role='button'
-            tabIndex={0}
-            onClick={() => {
-              selection()
-              navigate(`/expenses/${expenseId}/edit/source`)
-            }}>
-            <div>
-              <p className='tma-section-label m-0 text-[11px]'>
-                Nguồn thanh toán
-              </p>
-              <h3 className='mt-0.5 text-[15px]'>
-                {getSourceLabel(draft.sourceKey)}
-              </h3>
-            </div>
-            <ChevronRightIcon
-              className='text-tma-text-muted'
-              height='18'
-              width='18'
-            />
-          </div>
-
-          {/* Household space row */}
-          <div
-            className='tma-settings-row flex cursor-pointer items-center justify-between py-4'
-            role='button'
-            tabIndex={0}
-            onClick={() => {
-              selection()
-              navigate(`/expenses/${expenseId}/edit/household`)
-            }}>
-            <div>
-              <p className='tma-section-label m-0 text-[11px]'>
-                Không gian gia đình
-              </p>
-              <h3 className='mt-0.5 text-[15px]'>
-                {draft.householdId
-                  ? householdNameMap.get(draft.householdId) || 'Gia đình'
-                  : 'Cá nhân (Không gắn)'}
-              </h3>
-            </div>
-            <ChevronRightIcon
-              className='text-tma-text-muted'
-              height='18'
-              width='18'
-            />
-          </div>
-        </section>
-
-        {/* Notes Input */}
-        <section className='tma-note-card mt-3.5'>
-          <div className='tma-input-head'>
-            <NoteIcon height='16' width='16' />
-            <span>Ghi chú</span>
-          </div>
-          <textarea
-            placeholder='Nhập mô tả thêm...'
-            rows={4}
-            value={draft.note}
-            onChange={(e) => updateDraft({ note: e.target.value })}
-          />
-        </section>
-
-        {/* Cancel button */}
-        <div className='mt-5 grid'>
-          <button
-            className='tma-select-chip justify-center rounded-[18px] p-3.5 font-semibold text-tma-text-strong'
-            style={{ background: 'rgba(17, 24, 39, 0.05)' }}
-            type='button'
-            onClick={() => {
-              selection()
-              resetStore()
-              navigate(-1)
-            }}>
-            Hủy bỏ
-          </button>
+      <Card className='mt-3 grid gap-3'>
+        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
+          <NoteIcon height='16' width='16' />
+          <span>Ghi chú</span>
         </div>
+        <Textarea
+          placeholder='Nhập mô tả thêm...'
+          rows={4}
+          value={draft.note}
+          onChange={(event) => updateDraft({ note: event.target.value })}
+        />
+      </Card>
+
+      <div className='mt-5 grid'>
+        <Button
+          variant='ghost'
+          onClick={() => {
+            selection()
+            resetStore()
+            navigate(-1)
+          }}>
+          Hủy bỏ
+        </Button>
       </div>
     </TmaPageShell>
   )
 }
 
-// 2. CATEGORY SELECT SUB-PAGE
 export const ExpenseEditCategoryPage = () => {
   const navigate = useNavigate()
   const categoriesQuery = useReferenceCategoriesQuery()
   const referenceCategories = categoriesQuery.data?.items ?? []
-
   const draft = useEditExpenseStore((state) => state.draft)
   const updateDraft = useEditExpenseStore((state) => state.updateDraft)
 
-  // Navigate back if refreshed and store is lost
   useEffect(() => {
     if (!draft) navigate('/expenses')
   }, [draft, navigate])
@@ -366,32 +351,40 @@ export const ExpenseEditCategoryPage = () => {
   return (
     <TmaPageShell title='Chọn danh mục'>
       <TmaPageHeader
-        eyebrow='DANH MỤC CHI TIÊU'
+        eyebrow='Danh mục chi tiêu'
         subtitle='Chọn danh mục phù hợp nhất cho khoản chi.'
         title='Phân loại chi tiêu'
       />
-      <div className='tma-category-grid'>
+      <div className='grid grid-cols-2 gap-2.5'>
         {referenceCategories
-          .filter((c) => c.kind === 'expense')
-          .map((c) => {
-            const pres = getCategoryPresentation(c.key, referenceCategories)
-            const isActive = draft.categoryKey === c.key
+          .filter((category) => category.kind === 'expense')
+          .map((category) => {
+            const presentation = getCategoryPresentation(
+              category.key,
+              referenceCategories,
+            )
+            const isActive = draft.categoryKey === category.key
 
             return (
               <button
-                key={c.key}
+                key={category.key}
                 className={cn(
-                  'tma-category-card',
-                  isActive && 'border-tma-primary bg-tma-primary/8',
+                  'grid min-h-28 content-start gap-3 rounded-[20px] border border-black/[0.04] bg-white p-3.5 text-left shadow-tma-soft transition active:scale-[0.98]',
+                  isActive && 'border-tma-primary bg-tma-primary/10',
                 )}
                 type='button'
                 onClick={() => {
                   selection()
-                  updateDraft({ categoryKey: c.key })
+                  updateDraft({ categoryKey: category.key })
                   navigate(-1)
                 }}>
-                <TmaMonogramBadge accent={pres.accent} label={pres.symbol} />
-                <span>{pres.label}</span>
+                <TmaMonogramBadge
+                  accent={presentation.accent}
+                  label={presentation.symbol}
+                />
+                <span className='text-[15px] font-semibold text-tma-text-strong'>
+                  {presentation.label}
+                </span>
               </button>
             )
           })}
@@ -400,7 +393,6 @@ export const ExpenseEditCategoryPage = () => {
   )
 }
 
-// 3. PAYMENT SOURCE SELECT SUB-PAGE
 export const ExpenseEditSourcePage = () => {
   const navigate = useNavigate()
   const draft = useEditExpenseStore((state) => state.draft)
@@ -415,11 +407,11 @@ export const ExpenseEditSourcePage = () => {
   return (
     <TmaPageShell title='Chọn nguồn tiền'>
       <TmaPageHeader
-        eyebrow='NGUỒN THANH TOÁN'
+        eyebrow='Nguồn thanh toán'
         subtitle='Chọn tài khoản hoặc ví dùng để chi.'
         title='Nguồn tiền thanh toán'
       />
-      <section className='tma-list-card grid gap-0 px-4'>
+      <Card className='grid gap-0 px-4'>
         {SOURCE_KEYS.map((key, index) => {
           const isActive = draft.sourceKey === key
 
@@ -427,7 +419,7 @@ export const ExpenseEditSourcePage = () => {
             <div
               key={key}
               className={cn(
-                'flex cursor-pointer items-center justify-between py-4',
+                'flex cursor-pointer items-center justify-between gap-3 py-4',
                 index < SOURCE_KEYS.length - 1 && 'border-b border-tma-line',
                 isActive
                   ? 'font-bold text-tma-primary'
@@ -441,23 +433,19 @@ export const ExpenseEditSourcePage = () => {
                 navigate(-1)
               }}>
               <span>{getSourceLabel(key)}</span>
-              {isActive && (
-                <span className='tma-status-pill m-0'>Đang chọn</span>
-              )}
+              {isActive ? <Chip tone='primary'>Đang chọn</Chip> : null}
             </div>
           )
         })}
-      </section>
+      </Card>
     </TmaPageShell>
   )
 }
 
-// 4. HOUSEHOLD SPACE SELECT SUB-PAGE
 export const ExpenseEditHouseholdPage = () => {
   const navigate = useNavigate()
   const householdsQuery = useHouseholdsQuery()
   const households = householdsQuery.data?.items ?? []
-
   const draft = useEditExpenseStore((state) => state.draft)
   const updateDraft = useEditExpenseStore((state) => state.updateDraft)
 
@@ -470,15 +458,14 @@ export const ExpenseEditHouseholdPage = () => {
   return (
     <TmaPageShell title='Chọn không gian'>
       <TmaPageHeader
-        eyebrow='KHÔNG GIAN GIA ĐÌNH'
+        eyebrow='Không gian gia đình'
         subtitle='Chọn gắn chi tiêu vào gia đình hoặc cá nhân.'
         title='Gắn bối cảnh chi tiêu'
       />
-      <section className='tma-list-card grid gap-0 px-4'>
-        {/* Personal Row Option */}
+      <Card className='grid gap-0 px-4'>
         <div
           className={cn(
-            'flex cursor-pointer items-center justify-between py-4',
+            'flex cursor-pointer items-center justify-between gap-3 py-4',
             households.length > 0 && 'border-b border-tma-line',
             draft.householdId === null
               ? 'font-bold text-tma-primary'
@@ -492,20 +479,19 @@ export const ExpenseEditHouseholdPage = () => {
             navigate(-1)
           }}>
           <span>Cá nhân (Không gắn)</span>
-          {draft.householdId === null && (
-            <span className='tma-status-pill m-0'>Đang chọn</span>
-          )}
+          {draft.householdId === null ? (
+            <Chip tone='primary'>Đang chọn</Chip>
+          ) : null}
         </div>
 
-        {/* Households */}
-        {households.map((h, index) => {
-          const isActive = draft.householdId === h.id
+        {households.map((household, index) => {
+          const isActive = draft.householdId === household.id
 
           return (
             <div
-              key={h.id}
+              key={household.id}
               className={cn(
-                'flex cursor-pointer items-center justify-between py-4',
+                'flex cursor-pointer items-center justify-between gap-3 py-4',
                 index < households.length - 1 && 'border-b border-tma-line',
                 isActive
                   ? 'font-bold text-tma-primary'
@@ -515,17 +501,15 @@ export const ExpenseEditHouseholdPage = () => {
               tabIndex={0}
               onClick={() => {
                 selection()
-                updateDraft({ householdId: h.id })
+                updateDraft({ householdId: household.id })
                 navigate(-1)
               }}>
-              <span>{h.name}</span>
-              {isActive && (
-                <span className='tma-status-pill m-0'>Đang chọn</span>
-              )}
+              <span>{household.name}</span>
+              {isActive ? <Chip tone='primary'>Đang chọn</Chip> : null}
             </div>
           )
         })}
-      </section>
+      </Card>
     </TmaPageShell>
   )
 }

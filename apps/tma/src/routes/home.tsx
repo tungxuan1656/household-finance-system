@@ -1,4 +1,5 @@
 import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
+import { Chip } from '@/components/ui'
 import { useAuth } from '@/features/auth/auth-provider'
 import { HomeHouseholdsSection } from '@/features/home/components/home-households-section'
 import { HomeOverviewSection } from '@/features/home/components/home-overview-section'
@@ -20,16 +21,12 @@ export const HomePage = () => {
         leading={
           <img
             alt={userName}
-            className='tma-avatar-image'
+            className='size-full rounded-full object-cover'
             src={user?.avatarUrl ?? undefined}
           />
         }
         title={userName}
-        trailing={
-          <span className='tma-chip tma-chip--strong'>
-            {formatMonthLabel(new Date())}
-          </span>
-        }
+        trailing={<Chip tone='primary'>{formatMonthLabel(new Date())}</Chip>}
       />
 
       <HomeOverviewSection />

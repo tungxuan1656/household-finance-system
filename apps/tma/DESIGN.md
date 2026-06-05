@@ -316,21 +316,21 @@ TMA uses **Tailwind CSS v4** (`@tailwindcss/vite`) with a custom design-token la
 
 Opacity modifier works on colors: `bg-tma-primary/12` produces the 12 % primary tint used for selected states.
 
-### Component classes (`@layer components`)
+### Component styling
 
-`src/index.css` keeps BEM-style component classes (e.g. `.tma-page-shell`, `.tma-summary-card`, `.tma-bottom-tabs__rail`) for non-trivial layout composites. These are intentionally longer than the utility tokens and are reserved for shapes that would balloon JSX if expressed as utilities (full-page shells, carousels, glass-morphism rails).
+`src/index.css` is limited to `:root` tokens, `@theme inline`, base reset rules, and shared keyframes. Do not add BEM-style component classes there. Reusable shapes live in `src/components/ui`, while shared/smart components compose Tailwind utilities in JSX.
 
 ### Class composition helper
 
 Use `cn()` from `@/lib/utils` (clsx + tailwind-merge) for conditional className. Never hand-roll template literals for state modifiers.
 
 ```tsx
-cn('tma-select-chip', isActive && 'bg-tma-primary/12 text-tma-primary')
+cn('rounded-[18px] px-3 py-2', isActive && 'bg-tma-primary/12 text-tma-primary')
 ```
 
 ### Conventions
 
 - ≤ 2 CSS properties per class → prefer utility. Layout / multi-property shapes → keep the component class.
 - Dynamic values (chart bar height, runtime safe-area) → keep inline `style={{ ... }}`. Static `style={{ margin: 0 }}` and `style={{ color: 'var(--tma-*)' }}` → convert to utility.
-- Safe-area runtime vars (`--tma-safe-*`, `--tma-content-safe-*`) come from the Telegram SDK. Never hardcode; use `pt-[var(--tma-safe-top)]` or the existing composite class.
+- Safe-area runtime vars (`--tma-safe-*`, `--tma-content-safe-*`) come from the Telegram SDK. Never hardcode; read them with Tailwind arbitrary values such as `pt-[var(--tma-safe-top)]`.
 - Pseudo-classes (`:active`, `:hover`) use Tailwind variants (`active:scale-95`). Add `transition-transform` / `transition-opacity` so the variant actually animates.

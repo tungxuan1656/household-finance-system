@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-05 — Fixed TMA household detail loading crash
+
+- Who: Codex
+- Summary: Investigated the reported issue where tapping a household from Home or the household list showed the TMA not-found screen. The route matcher confirmed `/households/:id` was valid, so the root cause was render-time: `HouseholdDetailPage` evaluated `household!.avatarUrl`, `household!.name`, and `household!.role` inside `DataState` children before the household detail query had loaded. React Router caught that render error and displayed the route `errorElement`, which looked like a missing page. The fix only creates the detail content once `household` exists and shows an explicit empty state if the query completes without data.
+- Files changed: TMA household detail page, a focused household-detail regression test, and feat-095 evidence/progress records.
+- Verification: Focused `pnpm --filter tma exec vitest run src/test/household-detail-page.test.tsx` passed. `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` returned `OK`. Final `./init.sh` completed with `Done!`.
+- Blockers: None.
+- Next steps: Reopen the TMA and tap household cards from both Home and the household list to confirm the loading card appears briefly and then the detail page renders.
+
+## 2026-06-05 — Rewrote TMA pages around Tailwind primitives and smart components
+
+- Who: Codex
+- Summary: Completed `feat-095` by replacing existing TMA route/page styling with Tailwind utility composition and shared components. Added TMA-local UI primitives for buttons, cards, form fields, chips, avatars, money labels, data states, and segmented controls, plus smart finance components for summaries, shortcuts, recent expense lists/timelines, expense items, and household preview/list items. The add-expense confirmation step now calls the real worker-backed create expense mutation and invalidates related read surfaces. `apps/tma/src/index.css` now contains only Tailwind import, tokens, theme mappings, base reset, and the spinner keyframe.
+- Files changed: TMA shared shell/UI components, TMA finance smart components, Home/Statistics/Expenses/add-expense/expense detail-edit/household/fatal/not-found routes, TMA expense API/store/mock fixtures, TMA CSS and design docs, focused tests, ExecPlan and harness records.
+- Verification: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` each returned `OK`. Final `./init.sh` completed with `Done!`. `git diff --check` returned no output. CSS/custom-class scan found no old BEM-style component class usage in `apps/tma/src` and no `@layer components` in `apps/tma/src/index.css`. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 145 changed symbols, 78 affected symbols, and 37 changed files, expected for the requested TMA shell/page rewrite.
+- Blockers: None.
+- Next steps: Open the TMA in Telegram or a mobile WebView preview and do a visual pass across Home, Statistics, Expenses, add-expense, expense detail/edit, and household screens.
+
 ## 2026-06-05 — Extended the shared TMA data-state pattern to household pages
 
 - Who: Codex

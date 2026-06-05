@@ -1,6 +1,13 @@
 import { type ChangeEvent, useMemo, useRef, useState } from 'react'
 
 import { CameraIcon } from '@/components/shared/tma-icons'
+import {
+  Avatar,
+  Button,
+  CardDescription,
+  CardTitle,
+  FieldError,
+} from '@/components/ui'
 import { ApiClientError } from '@/lib/api/client'
 import {
   isAvatarImageFile,
@@ -136,58 +143,55 @@ export const HouseholdAvatarSection = ({
   return (
     <>
       <div>
-        <h2>{title}</h2>
-        <p>{description}</p>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </div>
 
-      <div className='tma-avatar-setup-card__preview'>
-        <div className='tma-household-avatar tma-household-avatar--xl'>
-          {currentAvatarSrc ? (
-            <img
-              alt={displayName}
-              className='tma-avatar-image'
-              src={currentAvatarSrc}
-            />
-          ) : (
-            <span>{getHouseholdAvatarFallback(displayName)}</span>
-          )}
-        </div>
+      <div className='flex items-center gap-3.5'>
+        <Avatar
+          alt={displayName}
+          fallback={getHouseholdAvatarFallback(displayName)}
+          size='xl'
+          src={currentAvatarSrc}
+        />
 
-        <div className='tma-avatar-setup-card__copy'>
-          <strong>{displayName}</strong>
-          <p>{summaryText}</p>
+        <div className='grid gap-1.5'>
+          <strong className='text-base font-semibold text-tma-text-strong'>
+            {displayName}
+          </strong>
+          <CardDescription>{summaryText}</CardDescription>
         </div>
       </div>
 
       {canEdit ? (
-        <div className='tma-avatar-setup-card__actions'>
-          <button
-            className='tma-chip-button'
+        <div className='flex flex-wrap gap-2.5'>
+          <Button
             disabled={isBusy || isUploadingAvatar}
             type='button'
+            variant='outline'
             onClick={() => {
               impact('light')
               fileInputRef.current?.click()
             }}>
             <CameraIcon height='14' width='14' />
             <span>{avatarUrl ? 'Đổi ảnh' : 'Thêm ảnh'}</span>
-          </button>
+          </Button>
 
           <input
             ref={fileInputRef}
             accept='image/*'
-            className='tma-hidden-input'
+            className='hidden'
             disabled={isBusy || isUploadingAvatar}
             type='file'
             onChange={handleAvatarFileChange}
           />
         </div>
       ) : (
-        <p className='tma-avatar-setup-card__help'>{readOnlyMessage}</p>
+        <CardDescription>{readOnlyMessage}</CardDescription>
       )}
 
-      <p className='tma-avatar-setup-card__help'>{helperText}</p>
-      {avatarError ? <p className='tma-field-error'>{avatarError}</p> : null}
+      <CardDescription>{helperText}</CardDescription>
+      {avatarError ? <FieldError>{avatarError}</FieldError> : null}
 
       <HouseholdAvatarDialog
         isUploading={isUploadingAvatar}

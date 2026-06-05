@@ -1,8 +1,8 @@
 import type { ReactElement, SVGProps } from 'react'
-import { Link } from 'react-router-dom'
 
+import { Section, SectionHeader } from '@/components/ui'
+import { ShortcutItem } from '@/features/finance/components'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { impact } from '@/lib/telegram/haptics'
 
 const iconProps = {
   fill: 'none',
@@ -84,73 +84,30 @@ const shortcutItems = [
     accent: { background: '#fff6d9', foreground: '#b48800' },
     enabled: false,
   },
-] as const
-
-const ShortcutBadge = ({
-  accent,
-  icon: Icon,
-}: {
+] as const satisfies Array<{
   accent: { background: string; foreground: string }
+  enabled: boolean
+  hint: string
+  href: string
   icon: (props: SVGProps<SVGSVGElement>) => ReactElement
-}) => (
-  <span
-    aria-hidden='true'
-    className='tma-monogram'
-    style={{
-      backgroundColor: accent.background,
-      color: accent.foreground,
-    }}>
-    <Icon height={20} strokeWidth={2.1} width={20} />
-  </span>
-)
+  title: string
+}>
 
 export const HomeShortcutsSection = () => (
-  <section className='tma-section'>
-    <div className='tma-section__header'>
-      <h2 className='tma-section__title'>Lối tắt</h2>
+  <Section>
+    <SectionHeader title='Lối tắt' />
+    <div className='grid grid-cols-2 gap-2.5'>
+      {shortcutItems.map((item) => (
+        <ShortcutItem
+          key={item.title}
+          accent={item.accent}
+          disabled={!item.enabled}
+          hint={item.hint}
+          href={item.href}
+          icon={item.icon}
+          title={item.title}
+        />
+      ))}
     </div>
-
-    <div className='tma-shortcuts-grid'>
-      {shortcutItems.map((item) => {
-        const content = (
-          <>
-            <div className='tma-shortcut-card__head'>
-              <ShortcutBadge accent={item.accent} icon={item.icon} />
-              {!item.enabled ? (
-                <span className='tma-status-pill'>Sớm có</span>
-              ) : null}
-            </div>
-
-            <div>
-              <h3>{item.title}</h3>
-              <p>{item.hint}</p>
-            </div>
-          </>
-        )
-
-        if (!item.enabled) {
-          return (
-            <div
-              key={item.title}
-              aria-disabled='true'
-              className='tma-shortcut-card is-disabled'>
-              {content}
-            </div>
-          )
-        }
-
-        return (
-          <Link
-            key={item.title}
-            className='tma-shortcut-card'
-            to={item.href}
-            onClick={() => {
-              impact('light')
-            }}>
-            {content}
-          </Link>
-        )
-      })}
-    </div>
-  </section>
+  </Section>
 )

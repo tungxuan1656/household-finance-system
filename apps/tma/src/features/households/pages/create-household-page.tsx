@@ -2,6 +2,16 @@ import { type FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import {
+  Button,
+  Card,
+  CardDescription,
+  CardTitle,
+  Eyebrow,
+  Field,
+  FieldLabel,
+  Input,
+} from '@/components/ui'
 import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 
 import { useCreateHouseholdMutation, useUpdateHouseholdMutation } from '../api'
@@ -19,7 +29,6 @@ export const CreateHouseholdPage = () => {
   const [draftName, setDraftName] = useState('')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [feedback, setFeedback] = useState<HouseholdPageFeedback | null>(null)
-
   const isBusy =
     createHouseholdMutation.isPending || updateHouseholdMutation.isPending
   const normalizedName = draftName.trim()
@@ -60,26 +69,10 @@ export const CreateHouseholdPage = () => {
       })
 
       if (avatarUrl) {
-        try {
-          await updateHouseholdMutation.mutateAsync({
-            householdId: created.id,
-            payload: { avatarUrl },
-          })
-        } catch (error) {
-          navigate(getHouseholdDetailPath(created.id), {
-            state: {
-              feedback: {
-                message:
-                  error instanceof Error
-                    ? `Đã tạo household nhưng chưa áp dụng được avatar: ${error.message}`
-                    : 'Đã tạo household nhưng chưa áp dụng được avatar.',
-                tone: 'error',
-              } satisfies HouseholdPageFeedback,
-            },
-          })
-
-          return
-        }
+        await updateHouseholdMutation.mutateAsync({
+          householdId: created.id,
+          payload: { avatarUrl },
+        })
       }
 
       navigate(getHouseholdDetailPath(created.id))
@@ -96,52 +89,58 @@ export const CreateHouseholdPage = () => {
 
   return (
     <TmaPageShell title='Tạo household'>
-      <section className='tma-hero-card tma-household-hub-card'>
-        <div>
-          <p className='tma-section-label'>Thiết lập mới</p>
-          <strong>Tạo household</strong>
-          <p>
-            Đặt tên rõ ràng và chuẩn bị avatar ngay từ đầu để household mới dễ
-            nhận diện trong TMA.
-          </p>
-        </div>
-      </section>
+      <Card className='grid gap-2 p-5'>
+        <Eyebrow>Thiết lập mới</Eyebrow>
+        <strong className='text-2xl font-extrabold text-tma-text-strong'>
+          Tạo household
+        </strong>
+        <CardDescription>
+          Đặt tên rõ ràng và chuẩn bị avatar ngay từ đầu để household mới dễ
+          nhận diện trong TMA.
+        </CardDescription>
+      </Card>
 
       {feedback ? (
-        <section
-          className={`tma-feedback-banner tma-feedback-banner--${feedback.tone}`}>
-          <p>{feedback.message}</p>
-        </section>
+        <Card
+          className={
+            feedback.tone === 'error'
+              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90'
+              : 'mt-3 border-tma-positive/20 bg-tma-positive/10'
+          }>
+          <CardDescription
+            className={
+              feedback.tone === 'error' ? 'text-[#d93838]' : 'text-[#2f9b44]'
+            }>
+            {feedback.message}
+          </CardDescription>
+        </Card>
       ) : null}
 
-      <section className='tma-list-card tma-avatar-setup-card'>
+      <Card className='mt-3 grid gap-3'>
         <HouseholdAvatarSection
           canEdit
           avatarUrl={avatarUrl}
           description='Chọn ảnh đại diện trước để household mới có giao diện hoàn chỉnh ngay sau khi tạo.'
-          helperText='Flow avatar dùng cùng pattern với web profile-avatar: chọn file, xem trước, áp dụng để upload trước, rồi create page sẽ gắn avatar này vào household vừa tạo.'
+          helperText='Chọn file, xem trước, áp dụng để upload trước, rồi create page sẽ gắn avatar này vào household vừa tạo.'
           householdName={normalizedName || 'Household mới'}
           isBusy={isBusy}
           summaryText='Avatar này sẽ được áp dụng cho household mới sau khi bạn hoàn tất bước tạo.'
           title='Avatar household'
           onAvatarUploaded={handleAvatarUploaded}
         />
-      </section>
+      </Card>
 
-      <section className='tma-section'>
-        <div className='tma-section__header'>
-          <div>
-            <p className='tma-section-label'>Thông tin chính</p>
-            <h2 className='tma-section__title'>Tên household</h2>
-          </div>
+      <section className='mt-6'>
+        <div className='mb-3'>
+          <Eyebrow>Thông tin chính</Eyebrow>
+          <CardTitle>Tên household</CardTitle>
         </div>
 
-        <section className='tma-list-card tma-household-form-card'>
-          <form className='tma-household-form' onSubmit={handleCreateHousehold}>
-            <label className='tma-field-block'>
-              <span>Tên household</span>
-              <input
-                className='tma-text-input'
+        <Card>
+          <form className='grid gap-3.5' onSubmit={handleCreateHousehold}>
+            <Field>
+              <FieldLabel>Tên household</FieldLabel>
+              <Input
                 disabled={isBusy}
                 maxLength={120}
                 placeholder='Ví dụ: Nhà Phùng Thịnh'
@@ -152,31 +151,28 @@ export const CreateHouseholdPage = () => {
                   setFeedback(null)
                 }}
               />
-            </label>
+            </Field>
 
-            <p className='tma-household-form__note'>
+            <CardDescription>
               Bạn sẽ trở thành quản trị viên đầu tiên của household này sau khi
               tạo thành công.
-            </p>
+            </CardDescription>
 
-            <div className='tma-action-row'>
-              <button
-                className='tma-action-button tma-action-button--ghost'
+            <div className='flex flex-wrap justify-end gap-2.5'>
+              <Button
                 disabled={isBusy}
                 type='button'
+                variant='ghost'
                 onClick={() => navigate(TMA_PATHS.households)}>
                 Hủy
-              </button>
+              </Button>
 
-              <button
-                className='tma-action-button tma-action-button--primary'
-                disabled={isBusy}
-                type='submit'>
+              <Button disabled={isBusy} type='submit' variant='secondary'>
                 {isBusy ? 'Đang tạo...' : 'Tạo household'}
-              </button>
+              </Button>
             </div>
           </form>
-        </section>
+        </Card>
       </section>
     </TmaPageShell>
   )

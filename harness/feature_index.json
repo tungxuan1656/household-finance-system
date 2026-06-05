@@ -474,6 +474,11 @@
       "id": "feat-094",
       "name": "Telegram Mini App runtime hardening and bundle reduction",
       "status": "in_progress"
+    },
+    {
+      "id": "feat-095",
+      "name": "Telegram Mini App Tailwind component rewrite",
+      "status": "done"
     }
   ]
 }
