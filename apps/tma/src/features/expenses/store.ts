@@ -1,11 +1,18 @@
 import { create } from 'zustand'
 
-import type { FinanceCategory } from '@/features/finance/mock-data'
+import type { AccentToken } from '@/features/home/presentation'
 import type { CategoryKey, SourceKey } from '@/features/home/types'
+
+export interface ExpenseCategorySelection {
+  id: CategoryKey
+  label: string
+  symbol: string
+  accent: AccentToken
+}
 
 export interface AddExpenseDraft {
   date: string
-  category: FinanceCategory | null
+  category: ExpenseCategorySelection | null
   amount: number
   sourceId: SourceKey | null
   note: string
@@ -15,7 +22,7 @@ export interface AddExpenseDraft {
 
 interface AddExpenseFlowState extends AddExpenseDraft {
   setDate: (date: string) => void
-  selectCategory: (category: FinanceCategory) => void
+  selectCategory: (category: ExpenseCategorySelection) => void
   setDetails: (input: {
     amount: number
     sourceId: SourceKey | null

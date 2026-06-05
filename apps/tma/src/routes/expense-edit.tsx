@@ -40,6 +40,13 @@ import {
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { SOURCE_KEYS } from '@/features/home/types'
 import {
+  getExpenseDetailPath,
+  getExpenseEditCategoryPath,
+  getExpenseEditHouseholdPath,
+  getExpenseEditSourcePath,
+  TMA_PATHS,
+} from '@/lib/constants/routes'
+import {
   formatAmountInput,
   formatDateLabel,
   parseAmountInput,
@@ -151,7 +158,7 @@ export const ExpenseEditPage = () => {
 
       notification('success')
       resetStore()
-      navigate(`/expenses/${draft.id}`, { replace: true })
+      navigate(getExpenseDetailPath(draft.id), { replace: true })
     } catch {
       notification('error')
     }
@@ -277,7 +284,7 @@ export const ExpenseEditPage = () => {
           value={activeCategory.label}
           onClick={() => {
             selection()
-            navigate(`/expenses/${expenseId}/edit/category`)
+            navigate(getExpenseEditCategoryPath(expenseId))
           }}>
           <TmaMonogramBadge
             accent={activeCategory.accent}
@@ -290,7 +297,7 @@ export const ExpenseEditPage = () => {
           value={getSourceLabel(draft.sourceKey)}
           onClick={() => {
             selection()
-            navigate(`/expenses/${expenseId}/edit/source`)
+            navigate(getExpenseEditSourcePath(expenseId))
           }}
         />
         <EditSelectRow
@@ -302,7 +309,7 @@ export const ExpenseEditPage = () => {
           }
           onClick={() => {
             selection()
-            navigate(`/expenses/${expenseId}/edit/household`)
+            navigate(getExpenseEditHouseholdPath(expenseId))
           }}
         />
       </Card>
@@ -343,7 +350,7 @@ export const ExpenseEditCategoryPage = () => {
   const updateDraft = useEditExpenseStore((state) => state.updateDraft)
 
   useEffect(() => {
-    if (!draft) navigate('/expenses')
+    if (!draft) navigate(TMA_PATHS.expenses)
   }, [draft, navigate])
 
   if (!draft) return null
@@ -399,7 +406,7 @@ export const ExpenseEditSourcePage = () => {
   const updateDraft = useEditExpenseStore((state) => state.updateDraft)
 
   useEffect(() => {
-    if (!draft) navigate('/expenses')
+    if (!draft) navigate(TMA_PATHS.expenses)
   }, [draft, navigate])
 
   if (!draft) return null
@@ -450,7 +457,7 @@ export const ExpenseEditHouseholdPage = () => {
   const updateDraft = useEditExpenseStore((state) => state.updateDraft)
 
   useEffect(() => {
-    if (!draft) navigate('/expenses')
+    if (!draft) navigate(TMA_PATHS.expenses)
   }, [draft, navigate])
 
   if (!draft) return null

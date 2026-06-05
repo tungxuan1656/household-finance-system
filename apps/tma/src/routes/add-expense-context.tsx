@@ -19,9 +19,10 @@ import {
   SectionHeader,
 } from '@/components/ui'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
+import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
-import { expenseSources } from '@/features/finance/mock-data'
 import { useHouseholdsQuery } from '@/features/home/api'
+import { getExpenseDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
@@ -44,7 +45,7 @@ export const AddExpenseContextPage = () => {
 
   const households = householdsQuery.data?.items ?? []
   const selectedSource =
-    expenseSources.find((source) => source.id === sourceId) ?? null
+    getSourceOptions().find((source) => source.id === sourceId) ?? null
   const selectedHousehold = households.find(
     (household) => household.id === householdId,
   )
@@ -70,7 +71,7 @@ export const AddExpenseContextPage = () => {
 
       notification('success')
       reset()
-      navigate(`/expenses/${created.id}`, { replace: true })
+      navigate(getExpenseDetailPath(created.id), { replace: true })
     } catch (error) {
       notification('error')
 
@@ -118,7 +119,7 @@ export const AddExpenseContextPage = () => {
           </CardDescription>
           <Link
             className={buttonVariants({ className: 'justify-self-start' })}
-            to='/expenses/new/details'>
+            to={TMA_PATHS.expensesNewDetails}>
             Quay lại bước 2
           </Link>
         </Card>

@@ -17,9 +17,10 @@ import {
   SectionHeader,
   Textarea,
 } from '@/components/ui'
+import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
-import { expenseSources } from '@/features/finance/mock-data'
 import type { SourceKey } from '@/features/home/types'
+import { TMA_PATHS } from '@/lib/constants/routes'
 import {
   formatAmountInput,
   formatDateLabel,
@@ -55,7 +56,7 @@ export const AddExpenseDetailsPage = () => {
 
     notification('success')
     setDetails({ amount, sourceId, note })
-    navigate('/expenses/new/context')
+    navigate(TMA_PATHS.expensesNewContext)
   })
 
   useEffect(() => {
@@ -91,7 +92,7 @@ export const AddExpenseDetailsPage = () => {
           </CardDescription>
           <Link
             className={buttonVariants({ className: 'justify-self-start' })}
-            to='/expenses/new/category'>
+            to={TMA_PATHS.expensesNewCategory}>
             Quay lại bước 1
           </Link>
         </Card>
@@ -147,7 +148,7 @@ export const AddExpenseDetailsPage = () => {
           title='Chọn tài khoản hoặc ví dùng để chi'
         />
         <div className='grid gap-2.5'>
-          {expenseSources.map((source) => (
+          {getSourceOptions().map((source) => (
             <button
               key={source.id}
               className={cn(

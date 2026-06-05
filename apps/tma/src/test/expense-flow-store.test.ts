@@ -1,7 +1,30 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { useAddExpenseFlowStore } from '@/features/expenses/store'
-import { categoryOptions } from '@/features/finance/mock-data'
+import {
+  type ExpenseCategorySelection,
+  useAddExpenseFlowStore,
+} from '@/features/expenses/store'
+
+const categoryOptions: ExpenseCategorySelection[] = [
+  {
+    id: 'food',
+    label: 'Ăn uống',
+    symbol: 'AU',
+    accent: { background: '#edf4ff', foreground: '#3f7cff' },
+  },
+  {
+    id: 'transport',
+    label: 'Di chuyển',
+    symbol: 'DC',
+    accent: { background: '#eef9f0', foreground: '#2f9b44' },
+  },
+  {
+    id: 'shopping',
+    label: 'Mua sắm',
+    symbol: 'MS',
+    accent: { background: '#fff3e8', foreground: '#ff8a3d' },
+  },
+]
 
 describe('useAddExpenseFlowStore', () => {
   beforeEach(() => {

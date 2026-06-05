@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-05 — Fixed TMA component/page review notes
+
+- Who: Codex
+- Summary: Addressed the review notes from the TMA Tailwind rewrite. `StatisticsPage` now renders live analytics/reference-category data for the selected month instead of `mock-data`, with the range control filtering/grouping returned monthly data without inventing unavailable year-level API data. Add-expense category selection now reads `/categories`, source selection uses canonical `SOURCE_KEYS`, expense navigation paths use route helpers, and the large finance smart-component barrel was split into summary, expenses, households, shortcuts, and link-button modules. The stale finance mock-data module was removed.
+- Files changed: TMA finance smart components, statistics and add-expense/expense routes, expense presentation/store helpers, route constants, focused store test, and feat-095 harness evidence/progress records.
+- Verification: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` returned `OK`. Final `./init.sh` completed with `Done!`. `jq empty` on touched harness JSON and `git diff --check` returned no output before final `./init.sh`. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 94 changed symbols, 41 affected symbols, and 13 changed files across the expected Statistics/add-expense/expense detail-edit flows.
+- Blockers: None.
+- Next steps: Reopen the TMA Statistics and add-expense flow in Telegram/local preview to visually confirm the live empty/loading/data states on a narrow mobile viewport.
+
+## 2026-06-05 — Reviewed TMA Tailwind components and pages
+
+- Who: Codex
+- Summary: Re-audited the TMA Tailwind rewrite across shared UI primitives, smart finance components, route pages, shared shell, route constants, and `index.css`. The structure is broadly reasonable for the requested rewrite: UI primitives stay feature-free, smart finance components own their read queries, household detail no longer falls through to not-found while loading, and `index.css` is limited to Tailwind import, tokens, base reset, and keyframes. Remaining review notes are non-blocking but important: statistics and add-expense category/source still depend on local mock/static data, several routes still hardcode path strings instead of route helpers, and `features/finance/components/index.tsx` is now large enough to split by ownership.
+- Files changed: Harness evidence and progress metadata only.
+- Verification: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` returned `OK`.
+- Blockers: None.
+- Next steps: Decide whether to tackle the review notes as a cleanup slice before expanding TMA group/budget/statistics features.
+
 ## 2026-06-05 — Fixed TMA household detail loading crash
 
 - Who: Codex

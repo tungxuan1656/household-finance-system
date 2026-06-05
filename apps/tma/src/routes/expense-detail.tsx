@@ -30,6 +30,7 @@ import {
   formatCurrencyMinor,
   getCategoryPresentation,
 } from '@/features/home/presentation'
+import { getExpenseEditPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatTimeLabel } from '@/lib/formatters'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
 
@@ -68,7 +69,7 @@ export const ExpenseDetailPage = () => {
       impact('heavy')
       await deleteMutation.mutateAsync(expense.id)
       notification('success')
-      navigate('/expenses', { replace: true })
+      navigate(TMA_PATHS.expenses, { replace: true })
     } catch {
       notification('error')
     }
@@ -187,7 +188,7 @@ export const ExpenseDetailPage = () => {
             variant='outline'
             onClick={() => {
               selection()
-              navigate(`/expenses/${expense.id}/edit`)
+              navigate(getExpenseEditPath(expense.id))
             }}>
             Sửa chi tiêu
           </Button>
