@@ -153,10 +153,7 @@ export const ExpenseEditPage = () => {
   }
 
   return (
-    <TmaPageShell
-      reserveBottomButton
-      showBottomTabs={false}
-      title='Sửa chi tiêu'>
+    <TmaPageShell reserveBottomButton title='Sửa chi tiêu'>
       <div className='tma-edit-flow'>
         <TmaPageHeader
           eyebrow='CHẾ ĐỘ CHỈNH SỬA'
@@ -418,7 +415,7 @@ export const ExpenseEditCategoryPage = () => {
   if (!draft) return null
 
   return (
-    <TmaPageShell showBottomTabs={false} title='Chọn danh mục'>
+    <TmaPageShell title='Chọn danh mục'>
       <TmaPageHeader
         eyebrow='DANH MỤC CHI TIÊU'
         subtitle='Chọn danh mục phù hợp nhất cho khoản chi.'
@@ -468,7 +465,7 @@ export const ExpenseEditSourcePage = () => {
   if (!draft) return null
 
   return (
-    <TmaPageShell showBottomTabs={false} title='Chọn nguồn tiền'>
+    <TmaPageShell title='Chọn nguồn tiền'>
       <TmaPageHeader
         eyebrow='NGUỒN THANH TOÁN'
         subtitle='Chọn tài khoản hoặc ví dùng để chi.'
@@ -535,7 +532,7 @@ export const ExpenseEditHouseholdPage = () => {
   if (!draft) return null
 
   return (
-    <TmaPageShell showBottomTabs={false} title='Chọn không gian'>
+    <TmaPageShell title='Chọn không gian'>
       <TmaPageHeader
         eyebrow='KHÔNG GIAN GIA ĐÌNH'
         subtitle='Chọn gắn chi tiêu vào gia đình hoặc cá nhân.'

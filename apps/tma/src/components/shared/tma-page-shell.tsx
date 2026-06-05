@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 import { useContainerScrollRestoration } from '@/app/router/use-container-scroll-restoration'
@@ -33,13 +33,13 @@ const tabItems = [
     href: HOME_FALLBACK_ROUTE,
     label: 'Trang chủ',
     icon: HomeIcon,
-    match: (path: string) => path === TMA_PATHS.root || path === TMA_PATHS.home,
+    match: (path: string) => path === TMA_PATHS.root,
   },
   {
     href: TMA_PATHS.statistics,
     label: 'Thống kê',
     icon: StatisticsIcon,
-    match: (path: string) => path.startsWith(TMA_PATHS.statistics),
+    match: (path: string) => path === TMA_PATHS.statistics,
   },
 ] as const
 
@@ -71,8 +71,8 @@ const TmaBottomTabs = ({
                 }}>
                 <Icon
                   className='tma-bottom-tabs__icon'
-                  height='19'
-                  width='19'
+                  height='20'
+                  width='20'
                 />
                 <span>{label}</span>
               </Link>
@@ -112,8 +112,8 @@ const TmaBottomTabs = ({
                 }}>
                 <Icon
                   className='tma-bottom-tabs__icon'
-                  height='19'
-                  width='19'
+                  height='20'
+                  width='20'
                 />
                 <span>{label}</span>
               </Link>
@@ -169,7 +169,6 @@ export const TmaPageTitleBar = ({ title }: { title: string }) => (
 export interface TmaPageShellProps {
   children: ReactNode
   title: string
-  showBottomTabs?: boolean
   reserveBottomButton?: boolean
   bubbleHref?: string
   contentClassName?: string
@@ -183,7 +182,6 @@ export interface TmaPageShellProps {
 export const TmaPageShell = ({
   children,
   title,
-  showBottomTabs = true,
   reserveBottomButton = false,
   bubbleHref,
   contentClassName,
@@ -192,6 +190,14 @@ export const TmaPageShell = ({
   const contentRef = useRef<HTMLElement | null>(null)
 
   useContainerScrollRestoration(contentRef)
+
+  const location = useLocation()
+  const isShowBottomTabs = useMemo(
+    () =>
+      location.pathname === TMA_PATHS.root ||
+      location.pathname === TMA_PATHS.statistics,
+    [location.pathname],
+  )
 
   useEffect(() => {
     hideBottomButton()
@@ -202,7 +208,7 @@ export const TmaPageShell = ({
       <div
         className={joinClassNames(
           'tma-page-shell',
-          !showBottomTabs && 'tma-page-shell--focus',
+          !isShowBottomTabs && 'tma-page-shell--focus',
           reserveBottomButton && 'tma-page-shell--native-bottom',
         )}>
         <div className='tma-page-shell__glow tma-page-shell__glow--primary' />
@@ -241,7 +247,7 @@ export const TmaPageShell = ({
           )}
         </div>
 
-        {showBottomTabs ? <TmaBottomTabs bubbleHref={bubbleHref} /> : null}
+        {isShowBottomTabs ? <TmaBottomTabs bubbleHref={bubbleHref} /> : null}
       </div>
     </AppShell>
   )

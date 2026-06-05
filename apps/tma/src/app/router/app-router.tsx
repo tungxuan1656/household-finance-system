@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import { LoadingFallback } from '@/components/shared/loading-fallback'
 import { TMA_PATHS } from '@/lib/constants/routes'
@@ -112,10 +112,6 @@ const router = createBrowserRouter([
       {
         index: true,
         element: renderLazyRoute(HomePage),
-      },
-      {
-        path: TMA_PATHS.home,
-        element: <Navigate replace to={TMA_PATHS.root} />,
       },
       {
         path: TMA_PATHS.statistics,

@@ -79,7 +79,7 @@ export const AddExpenseContextPage = () => {
 
   if (!isReady || !category) {
     return (
-      <TmaPageShell showBottomTabs={false} title='Thêm chi tiêu'>
+      <TmaPageShell title='Thêm chi tiêu'>
         <TmaPageHeader eyebrow='Bước 3/3' title='Quay lại để hoàn tất bước 2' />
         <section className='tma-empty-card'>
           <h2>Chưa có dữ liệu preview</h2>
@@ -96,10 +96,7 @@ export const AddExpenseContextPage = () => {
   }
 
   return (
-    <TmaPageShell
-      reserveBottomButton
-      showBottomTabs={false}
-      title='Thêm chi tiêu'>
+    <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
       <TmaPageHeader
         eyebrow='Bước 3/3'
         subtitle='Chọn gia đình, nhóm và xem lại toàn bộ thông tin.'

@@ -22,13 +22,13 @@ vi.mock('@/lib/telegram/haptics', () => ({
 }))
 
 const ListPage = () => (
-  <TmaPageShell showBottomTabs={false} title='Danh sach'>
+  <TmaPageShell title='Danh sach'>
     <div style={{ height: '2000px' }}>Danh sach chi tieu</div>
   </TmaPageShell>
 )
 
 const DetailPage = () => (
-  <TmaPageShell showBottomTabs={false} title='Chi tiet'>
+  <TmaPageShell title='Chi tiet'>
     <div style={{ height: '2000px' }}>Chi tiet chi tieu</div>
   </TmaPageShell>
 )
