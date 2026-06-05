@@ -100,6 +100,7 @@ export type ExpenseListParams = {
   cursor?: string
   limit?: number
   household_id?: string
+  group_id?: string
   sort?: 'occurred_at_desc' | 'amount_desc'
 }
 

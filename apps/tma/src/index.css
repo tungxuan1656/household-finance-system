@@ -976,6 +976,10 @@ button {
   align-items: flex-start;
 }
 
+.tma-member-row__name--admin {
+  color: #d3a10c !important;
+}
+
 .tma-list-card,
 .tma-list-stack {
   display: grid;

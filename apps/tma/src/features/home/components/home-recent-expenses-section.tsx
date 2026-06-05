@@ -20,10 +20,28 @@ import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatTimeLabel } from '@/lib/formatters'
 import { selection } from '@/lib/telegram/haptics'
 
-export const HomeRecentExpensesSection = () => {
+type HomeRecentExpensesSectionProps = {
+  groupId?: string
+  householdId?: string
+  limit?: number
+  showHouseholdLabel?: boolean
+  title?: string
+  viewAllHref?: string
+}
+
+export const HomeRecentExpensesSection = ({
+  groupId,
+  householdId,
+  limit = 10,
+  showHouseholdLabel = true,
+  title = 'Lịch sử gần đây',
+  viewAllHref = TMA_PATHS.expenses,
+}: HomeRecentExpensesSectionProps) => {
   const navigate = useNavigate()
   const recentExpensesQuery = useExpenseListQuery({
-    limit: 10,
+    group_id: groupId,
+    household_id: householdId,
+    limit,
     sort: 'occurred_at_desc',
   })
   const householdsQuery = useHouseholdsQuery()
@@ -41,8 +59,8 @@ export const HomeRecentExpensesSection = () => {
   return (
     <section className='tma-section'>
       <div className='tma-section__header'>
-        <h2 className='tma-section__title'>Lịch sử gần đây</h2>
-        <TmaInlineAction href={TMA_PATHS.expenses}>Xem tất cả</TmaInlineAction>
+        <h2 className='tma-section__title'>{title}</h2>
+        <TmaInlineAction href={viewAllHref}>Xem tất cả</TmaInlineAction>
       </div>
 
       <TmaDataState
@@ -109,7 +127,9 @@ export const HomeRecentExpensesSection = () => {
                         new Date(expense.occurredAt).toISOString(),
                       )}
                     </span>
-                    {householdLabel ? <span>{householdLabel}</span> : null}
+                    {showHouseholdLabel && householdLabel ? (
+                      <span>{householdLabel}</span>
+                    ) : null}
                     {groupLabel ? <span>{groupLabel}</span> : null}
                   </div>
                 </div>

@@ -28,6 +28,16 @@ export const formatMonthLabel = (value: Date): string => {
   return label.slice(0, 1).toUpperCase() + label.slice(1)
 }
 
+export const formatPeriodLabel = (period: string): string => {
+  const match = /^(\d{4})-(\d{2})$/.exec(period)
+
+  if (!match) {
+    return period
+  }
+
+  return `${match[2]}/${match[1]}`
+}
+
 export const formatDateLabel = (value: string): string =>
   DATE_FORMATTER.format(new Date(value))
 
