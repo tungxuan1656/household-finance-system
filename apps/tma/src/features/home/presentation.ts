@@ -1,3 +1,8 @@
+import {
+  getComparisonGranularityLabel,
+  type PeriodGranularity,
+} from '@/lib/period'
+
 import type {
   AnalyticsComparisonDTO,
   BudgetDTO,
@@ -217,6 +222,7 @@ export const getBudgetProgress = (
 export const getComparisonLabel = (
   comparison: AnalyticsComparisonDTO | undefined,
   fallbackExpenseCount: number,
+  granularity: PeriodGranularity = 'month',
 ): string => {
   if (!comparison) {
     return `${fallbackExpenseCount} khoản`
@@ -227,12 +233,12 @@ export const getComparisonLabel = (
   }
 
   if (comparison.totalDeltaPercent === 0) {
-    return 'Không đổi so với tháng trước'
+    return `Không đổi so với ${getComparisonGranularityLabel(granularity)}`
   }
 
   const prefix = comparison.totalDeltaPercent > 0 ? '+' : ''
 
-  return `${prefix}${comparison.totalDeltaPercent}% so với tháng trước`
+  return `${prefix}${comparison.totalDeltaPercent}% so với ${getComparisonGranularityLabel(granularity)}`
 }
 
 export const getHouseholdBudgetLabel = (

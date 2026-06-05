@@ -128,10 +128,20 @@ export type ListBudgetsResponse = {
   items: BudgetDTO[]
 }
 
-export type AnalyticsOverviewParams = {
+type AnalyticsMonthParams = {
   period: string
   household_id?: string
 }
+
+type AnalyticsRangeParams = {
+  date_from: number
+  date_to: number
+  household_id?: string
+}
+
+export type AnalyticsOverviewParams =
+  | AnalyticsMonthParams
+  | AnalyticsRangeParams
 
 export type AnalyticsComparisonParams = AnalyticsOverviewParams
 

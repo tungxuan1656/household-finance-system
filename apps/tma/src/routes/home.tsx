@@ -1,12 +1,11 @@
 import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Chip } from '@/components/ui'
 import { useAuth } from '@/features/auth/auth-provider'
 import { HomeHouseholdsSection } from '@/features/home/components/home-households-section'
 import { HomeOverviewSection } from '@/features/home/components/home-overview-section'
 import { HomeRecentExpensesSection } from '@/features/home/components/home-recent-expenses-section'
 import { HomeShortcutsSection } from '@/features/home/components/home-shortcuts-section'
 import { resolveUserName } from '@/features/home/presentation'
-import { formatMonthLabel } from '@/lib/formatters'
+import { PeriodChipLink } from '@/features/period/components/period-chip-link'
 
 export const HomePage = () => {
   const { user } = useAuth()
@@ -26,7 +25,7 @@ export const HomePage = () => {
           />
         }
         title={userName}
-        trailing={<Chip tone='primary'>{formatMonthLabel(new Date())}</Chip>}
+        trailing={<PeriodChipLink />}
       />
 
       <HomeOverviewSection />

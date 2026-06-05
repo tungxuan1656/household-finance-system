@@ -45,6 +45,68 @@ describe('GET /api/v1/analytics/comparison', () => {
     expect(response.status).toBe(401)
   })
 
+  it('returns comparison analytics for an explicit date range', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-analytics-comparison-range:analytics-comparison-range@example.com',
+    )
+
+    await createExpense(auth.accessToken, {
+      amount: 10000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      title: 'April breakfast',
+      occurredAt: Date.UTC(2026, 3, 3, 8),
+    })
+
+    await createExpense(auth.accessToken, {
+      amount: 30000,
+      categoryKey: 'transport',
+      sourceKey: 'cash',
+      title: 'April commute',
+      occurredAt: Date.UTC(2026, 3, 5, 8),
+    })
+
+    await createExpense(auth.accessToken, {
+      amount: 20000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      title: 'May groceries',
+      occurredAt: Date.UTC(2026, 4, 4, 8),
+    })
+
+    await createExpense(auth.accessToken, {
+      amount: 50000,
+      categoryKey: 'travel',
+      sourceKey: 'cash',
+      title: 'May hotel',
+      occurredAt: Date.UTC(2026, 4, 9, 8),
+    })
+
+    const dateFrom = Date.UTC(2026, 4, 1)
+    const dateTo = Date.UTC(2026, 5, 1)
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/analytics/comparison?date_from=${dateFrom}&date_to=${dateTo}`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(200)
+
+    const payload =
+      await parseJson<ApiEnvelope<AnalyticsComparisonDTO>>(response)
+
+    expect(payload.data.currentPeriod.totalSpendMinor).toBe(70000)
+    expect(payload.data.currentPeriod.expenseCount).toBe(2)
+    expect(payload.data.previousPeriod.totalSpendMinor).toBe(40000)
+    expect(payload.data.previousPeriod.expenseCount).toBe(2)
+    expect(payload.data.totalDeltaSpendMinor).toBe(30000)
+    expect(payload.data.totalDeltaPercent).toBe(75)
+  })
+
   it('returns household comparison analytics with payer attribution and category deltas', async () => {
     const owner = await exchangeAccessToken(
       'test:firebase-user-analytics-comparison-owner:analytics-comparison-owner@example.com',
@@ -195,6 +257,23 @@ describe('GET /api/v1/analytics/comparison', () => {
 
     const response = await SELF.fetch(
       'https://example.com/api/v1/analytics/comparison?period=2026-5',
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(400)
+  })
+
+  it('returns 400 for reversed date range', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-analytics-comparison-reversed:analytics-comparison-reversed@example.com',
+    )
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/analytics/comparison?date_from=${Date.UTC(2026, 5, 1)}&date_to=${Date.UTC(2026, 4, 1)}`,
       {
         headers: {
           authorization: `Bearer ${auth.accessToken}`,

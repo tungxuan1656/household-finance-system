@@ -27,6 +27,25 @@ import type {
   UpdateHouseholdRequest,
 } from './types'
 
+type AnalyticsOverviewScopeParams =
+  | { period: string }
+  | {
+      date_from: number
+      date_to: number
+    }
+
+const withHouseholdAnalyticsParams = (
+  householdId: string,
+  params: AnalyticsOverviewScopeParams,
+): AnalyticsOverviewParams =>
+  'period' in params
+    ? { household_id: householdId, period: params.period }
+    : {
+        household_id: householdId,
+        date_from: params.date_from,
+        date_to: params.date_to,
+      }
+
 const getHousehold = (householdId: string) =>
   get<HouseholdDTO>(`/households/${householdId}`)
 
@@ -172,22 +191,22 @@ export const useHouseholdMembersQuery = (householdId: string | undefined) =>
 
 export const useHouseholdOverviewQuery = (
   householdId: string | undefined,
-  period: string,
+  params: AnalyticsOverviewScopeParams,
 ) =>
   useQuery({
     ...analyticsOverviewQueryOptions(
-      householdId ? { household_id: householdId, period } : { period },
+      householdId ? withHouseholdAnalyticsParams(householdId, params) : params,
     ),
     enabled: Boolean(householdId),
   })
 
 export const useHouseholdBudgetListQuery = (
   householdId: string | undefined,
-  period: string,
+  period: string | null,
 ) =>
   useQuery({
-    ...budgetListQueryOptions(householdId ?? 'unknown', period),
-    enabled: Boolean(householdId),
+    ...budgetListQueryOptions(householdId ?? 'unknown', period ?? 'unknown'),
+    enabled: Boolean(householdId && period),
   })
 
 export const useHouseholdRecentExpensesQuery = (
@@ -308,21 +327,27 @@ export const useUpdateHouseholdMemberRoleMutation = () => {
 
 export const useHouseholdOverviewQueries = (
   households: HouseholdDTO[],
-  period: string,
+  params: AnalyticsOverviewScopeParams,
 ) =>
   useQueries({
     queries: households.map((household) =>
-      analyticsOverviewQueryOptions({ household_id: household.id, period }),
+      analyticsOverviewQueryOptions(
+        withHouseholdAnalyticsParams(household.id, params),
+      ),
     ),
   })
 
 export const useHouseholdBudgetQueries = (
   households: HouseholdDTO[],
-  period: string,
+  period: string | null,
 ) =>
   useQueries({
-    queries: households.map((household) =>
-      budgetListQueryOptions(household.id, period),
+    queries: households.map(
+      (household) =>
+        ({
+          ...budgetListQueryOptions(household.id, period ?? 'unknown'),
+          enabled: Boolean(period),
+        }) as ReturnType<typeof budgetListQueryOptions> & { enabled: boolean },
     ),
   })
 

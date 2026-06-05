@@ -1,6 +1,6 @@
 import type { Context } from 'hono'
 
-import { analyticsOverviewQuerySchema } from '@/contracts'
+import { analyticsGroupsQuerySchema } from '@/contracts'
 import { getAnalyticsExport } from '@/db/repositories/expense-query-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { forbidden, invalidInput } from '@/lib/errors'
@@ -16,7 +16,7 @@ export const getAnalyticsExportHandler = async (
 ): Promise<Response> => {
   const locale = ctx.get('locale') ?? defaultLocale
   const currentUser = ctx.get('currentUser')
-  const parsed = analyticsOverviewQuerySchema().safeParse(ctx.req.query())
+  const parsed = analyticsGroupsQuerySchema().safeParse(ctx.req.query())
 
   if (!parsed.success) {
     throw invalidInput(

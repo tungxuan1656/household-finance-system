@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { Card, Chip, DataState, Eyebrow, MoneyLabel } from '@/components/ui'
+import { Card, DataState, Eyebrow, MoneyLabel } from '@/components/ui'
 import {
   budgetListQueryOptions,
   useAnalyticsComparisonQuery,
@@ -12,25 +12,34 @@ import {
   getComparisonLabel,
   getHouseholdBudgetLabel,
 } from '@/features/home/presentation'
-import { getCurrentPeriod } from '@/lib/period'
+import { PeriodChipLink } from '@/features/period/components/period-chip-link'
+import { usePeriodStore } from '@/features/period/store'
+import {
+  getMonthBudgetPeriod,
+  isMonthPeriodSelection,
+  toAnalyticsRangeParams,
+} from '@/lib/period'
 
 export const FinanceSummaryCard = ({
   householdId,
-  period = getCurrentPeriod(),
-  title = 'Tổng chi tháng này',
+  showPeriodChip = true,
+  title = 'Tổng chi kỳ này',
 }: {
   householdId?: string
-  period?: string
+  showPeriodChip?: boolean
   title?: string
 }) => {
-  const overviewParams = householdId
-    ? { household_id: householdId, period }
-    : { period }
+  const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
+  const overviewParams = toAnalyticsRangeParams(selectedPeriod, householdId)
+  const budgetPeriod = getMonthBudgetPeriod(selectedPeriod)
   const overviewQuery = useAnalyticsOverviewQuery(overviewParams)
   const comparisonQuery = useAnalyticsComparisonQuery(overviewParams)
   const budgetQuery = useQuery({
-    ...budgetListQueryOptions(householdId ?? 'unknown', period),
-    enabled: Boolean(householdId),
+    ...budgetListQueryOptions(
+      householdId ?? 'unknown',
+      budgetPeriod ?? 'unknown',
+    ),
+    enabled: Boolean(householdId && budgetPeriod),
   })
   const overview = overviewQuery.data
   const budget = budgetQuery.data?.items[0] ?? null
@@ -47,11 +56,11 @@ export const FinanceSummaryCard = ({
 
   return (
     <DataState
-      errorDescription='Không tải được tổng quan tháng này. Kiểm tra kết nối rồi thử lại.'
+      errorDescription='Không tải được tổng quan kỳ này. Kiểm tra kết nối rồi thử lại.'
       errorTitle='Không tải được tổng quan'
       isError={isError}
       isLoading={isLoading}
-      loadingDescription='Đang đồng bộ số liệu chi tiêu tháng này.'
+      loadingDescription='Đang đồng bộ số liệu chi tiêu theo kỳ đã chọn.'
       loadingTitle='Đang tải tổng quan'
       retryAction={async () => {
         await Promise.all([
@@ -73,17 +82,20 @@ export const FinanceSummaryCard = ({
                 : '-'}
             </MoneyLabel>
           </div>
-          <Chip tone='primary'>
-            {overviewQuery.isFetching || comparisonQuery.isFetching
-              ? 'Đang cập nhật'
-              : getComparisonLabel(
-                  comparisonQuery.data,
-                  overview?.expenseCount ?? 0,
-                )}
-          </Chip>
+          {showPeriodChip ? <PeriodChipLink /> : null}
         </div>
 
-        {budgetProgress ? (
+        <div className='text-xs font-semibold text-tma-text-muted'>
+          {overviewQuery.isFetching || comparisonQuery.isFetching
+            ? 'Đang cập nhật'
+            : getComparisonLabel(
+                comparisonQuery.data,
+                overview?.expenseCount ?? 0,
+                selectedPeriod.granularity,
+              )}
+        </div>
+
+        {budgetProgress && isMonthPeriodSelection(selectedPeriod) ? (
           <div className='grid gap-2'>
             <div className='h-3 overflow-hidden rounded-full bg-black/[0.07]'>
               <span
@@ -110,9 +122,9 @@ export const FinanceSummaryCard = ({
           <div className='flex items-center justify-between gap-3 text-xs font-semibold text-tma-text-muted'>
             <span>{overview?.expenseCount ?? 0} khoản chi</span>
             <span>
-              {budget
+              {budget && isMonthPeriodSelection(selectedPeriod)
                 ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget)
-                : 'Tháng hiện tại'}
+                : 'Ngân sách chỉ có theo tháng'}
             </span>
           </div>
         )}

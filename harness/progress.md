@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-05 — Corrected TMA period picker week logic, scroll behavior, and BottomButton lifecycle
+
+- Who: Codex
+- Summary: Applied the requested follow-up fixes to the new TMA period picker. The year column and week/month value list now scroll independently and no longer imply matched heights. Week generation now uses real ISO-style Monday-Sunday weeks instead of naive `Jan 1 + 7-day blocks`, so `2026` week `1` resolves to `29/12/25 - 04/01/26`. Inside the picker, range previews and option descriptions now use `dd/MM/yy`, and the picker BottomButton is mounted/hidden only once in a dependency-free effect while later candidate changes only update its params to avoid flicker.
+- Files changed: TMA period helpers, the TMA BottomButton helper, picker page UI/layout, focused period tests, and feat-096 harness evidence.
+- Verification: Focused `pnpm --filter tma exec vitest run src/test/period.test.ts` passed with 7 tests. Focused `pnpm --filter tma exec vitest run src/test/period-store-and-picker.test.tsx` passed with 2 tests. `./init.sh build` returned `OK`. Final `./init.sh` completed with `Done!`.
+- Blockers: None.
+- Next steps: Open the TMA picker on a real narrow Telegram viewport and confirm the two scroll columns feel natural with long year/week lists, especially around ISO week 1 and week 53 boundaries.
+
+## 2026-06-05 — Added shared TMA period picker and range-backed analytics sync
+
+- Who: Codex
+- Summary: Completed `feat-096` by adding one shared TMA period chip and `/period` picker route for week/month/year presets, storing the selected range in a small Zustand store, and rewiring Home, household list, and household detail to read the same selected analytics range. Worker analytics overview/comparison now accept additive `date_from` / `date_to` queries without breaking existing month callers, while household/home budget UI stays month-only and explicitly says so for week/year views.
+- Files changed: Worker analytics schema/handler tests and range helpers, TMA period utilities/store/picker route, TMA home/household summary surfaces, router/path wiring, exec-plan index/state, and feat-096 harness records.
+- Verification: Focused worker tests passed for `test/unit/dto-analytics.spec.ts`, `test/integration/analytics-overview-read.spec.ts`, and `test/integration/analytics-comparison.spec.ts`. Focused TMA tests passed for `src/test/period.test.ts`, `src/test/period-chip-entrypoints.test.tsx`, and `src/test/period-store-and-picker.test.tsx`. `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` returned `OK`. Final `./init.sh` completed with `Done!`. `git diff --check` returned no output. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 132 changed symbols, 24 affected symbols, and 23 changed files, expected because the slice touches shared TMA period helpers, shared finance summary cards, household list routing, and worker analytics query contracts.
+- Blockers: None in code or verification. Plain browser smoke is limited because the TMA still expects Telegram launch context for full authenticated runtime behavior.
+- Next steps: Open the TMA through the normal Telegram/local launch path and confirm the new picker flow on Home, household list, and household detail feels right on-device, especially the week/year budget fallback copy and BottomButton confirm behavior.
+
 ## 2026-06-05 — Restyled shared TMA expense rows
 
 - Who: Codex

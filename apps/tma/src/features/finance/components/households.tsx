@@ -29,8 +29,13 @@ import type {
   BudgetDTO,
   HouseholdDTO,
 } from '@/features/home/types'
+import { usePeriodStore } from '@/features/period/store'
 import { getHouseholdDetailPath } from '@/lib/constants/routes'
-import { getCurrentPeriod } from '@/lib/period'
+import {
+  getMonthBudgetPeriod,
+  isMonthPeriodSelection,
+  toAnalyticsRangeParams,
+} from '@/lib/period'
 import { impact } from '@/lib/telegram/haptics'
 
 interface HouseholdCardViewModel {
@@ -42,6 +47,7 @@ interface HouseholdCardViewModel {
   memberCount?: number
   overview?: AnalyticsOverviewDTO
   totalSpendMinor?: number
+  budgetLabel: string
 }
 
 export const HouseholdPreviewItem = ({
@@ -79,9 +85,7 @@ export const HouseholdPreviewItem = ({
       </MoneyLabel>
     </div>
     <CardDescription>
-      {card.isError
-        ? 'Không tải được tổng quan gia đình.'
-        : getHouseholdBudgetLabel(card.totalSpendMinor, card.budget)}
+      {card.isError ? 'Không tải được tổng quan gia đình.' : card.budgetLabel}
     </CardDescription>
   </Link>
 )
@@ -118,7 +122,7 @@ export const HouseholdItem = ({
     </div>
     <div className='grid grid-cols-2 gap-2.5'>
       <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
-        <Eyebrow>Chi tháng này</Eyebrow>
+        <Eyebrow>Chi kỳ này</Eyebrow>
         <MoneyLabel className='text-sm font-bold'>
           {card.totalSpendMinor != null && card.currencyCode
             ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
@@ -130,7 +134,7 @@ export const HouseholdItem = ({
       <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
         <Eyebrow>Ngân sách</Eyebrow>
         <strong className='text-sm text-tma-text-strong'>
-          {getHouseholdBudgetLabel(card.totalSpendMinor, card.budget)}
+          {card.budgetLabel}
         </strong>
       </div>
     </div>
@@ -142,7 +146,8 @@ export const HouseholdItem = ({
 )
 
 export const HouseholdPreviewCarousel = () => {
-  const period = getCurrentPeriod()
+  const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
+  const budgetPeriod = getMonthBudgetPeriod(selectedPeriod)
   const householdsQuery = useHouseholdsQuery()
   const households = householdsQuery.data?.items ?? []
 
@@ -153,12 +158,18 @@ export const HouseholdPreviewCarousel = () => {
   })
   const overviewQueries = useQueries({
     queries: households.map((household) =>
-      analyticsOverviewQueryOptions({ household_id: household.id, period }),
+      analyticsOverviewQueryOptions(
+        toAnalyticsRangeParams(selectedPeriod, household.id),
+      ),
     ),
   })
   const budgetQueries = useQueries({
-    queries: households.map((household) =>
-      budgetListQueryOptions(household.id, period),
+    queries: households.map(
+      (household) =>
+        ({
+          ...budgetListQueryOptions(household.id, budgetPeriod ?? 'unknown'),
+          enabled: Boolean(budgetPeriod),
+        }) as ReturnType<typeof budgetListQueryOptions> & { enabled: boolean },
     ),
   })
 
@@ -166,6 +177,13 @@ export const HouseholdPreviewCarousel = () => {
     .map((household, index) => ({
       household,
       budget: budgetQueries[index]?.data?.items[0] ?? null,
+      budgetLabel:
+        budgetPeriod && isMonthPeriodSelection(selectedPeriod)
+          ? getHouseholdBudgetLabel(
+              overviewQueries[index]?.data?.totalSpendMinor,
+              budgetQueries[index]?.data?.items[0] ?? null,
+            )
+          : 'Ngân sách chỉ có theo tháng',
       currencyCode: overviewQueries[index]?.data?.currencyCode,
       isError: Boolean(
         memberQueries[index]?.error ||

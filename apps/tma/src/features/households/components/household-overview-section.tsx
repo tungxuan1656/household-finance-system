@@ -1,5 +1,4 @@
 import { FinanceSummaryCard } from '@/features/finance/components'
-import { getCurrentPeriod } from '@/lib/period'
 
 type HouseholdOverviewSectionProps = {
   householdId: string
@@ -8,9 +7,5 @@ type HouseholdOverviewSectionProps = {
 export const HouseholdOverviewSection = ({
   householdId,
 }: HouseholdOverviewSectionProps) => (
-  <FinanceSummaryCard
-    householdId={householdId}
-    period={getCurrentPeriod()}
-    title='Tổng quan tháng này'
-  />
+  <FinanceSummaryCard householdId={householdId} title='Tổng quan kỳ này' />
 )

@@ -79,6 +79,12 @@ const HouseholdsPage = lazy(async () => {
   return { default: module.HouseholdsPage }
 })
 
+const PeriodRoute = lazy(async () => {
+  const module = await import('@/routes/period')
+
+  return { default: module.PeriodRoute }
+})
+
 const CreateHouseholdRoute = lazy(async () => {
   const module = await import('@/routes/create-household')
 
@@ -112,6 +118,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: renderLazyRoute(HomePage),
+      },
+      {
+        path: TMA_PATHS.period,
+        element: renderLazyRoute(PeriodRoute),
       },
       {
         path: TMA_PATHS.statistics,

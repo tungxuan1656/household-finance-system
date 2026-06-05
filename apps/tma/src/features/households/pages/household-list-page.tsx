@@ -5,16 +5,21 @@ import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   buttonVariants,
   Card,
-  Chip,
   DataState,
   Eyebrow,
   Section,
   SectionHeader,
 } from '@/components/ui'
 import { HouseholdItem } from '@/features/finance/components'
+import { getHouseholdBudgetLabel } from '@/features/home/presentation'
+import { PeriodChipLink } from '@/features/period/components/period-chip-link'
+import { usePeriodStore } from '@/features/period/store'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { formatMonthLabel } from '@/lib/formatters'
-import { getCurrentPeriod } from '@/lib/period'
+import {
+  getMonthBudgetPeriod,
+  isMonthPeriodSelection,
+  toAnalyticsRangeParams,
+} from '@/lib/period'
 import { impact } from '@/lib/telegram/haptics'
 
 import {
@@ -26,12 +31,17 @@ import {
 import { getHouseholdRoleLabel } from '../presentation'
 
 export const HouseholdListPage = () => {
-  const period = getCurrentPeriod()
+  const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
+  const analyticsParams = toAnalyticsRangeParams(selectedPeriod)
+  const budgetPeriod = getMonthBudgetPeriod(selectedPeriod)
   const householdsQuery = useHouseholdListQuery()
   const households = householdsQuery.data?.items ?? []
   const memberQueries = useHouseholdMemberQueries(households)
-  const overviewQueries = useHouseholdOverviewQueries(households, period)
-  const budgetQueries = useHouseholdBudgetQueries(households, period)
+  const overviewQueries = useHouseholdOverviewQueries(
+    households,
+    analyticsParams,
+  )
+  const budgetQueries = useHouseholdBudgetQueries(households, budgetPeriod)
 
   const householdCards = useMemo(
     () =>
@@ -43,6 +53,13 @@ export const HouseholdListPage = () => {
         return {
           household,
           budget: budgetQuery?.data?.items[0] ?? null,
+          budgetLabel:
+            budgetPeriod && isMonthPeriodSelection(selectedPeriod)
+              ? getHouseholdBudgetLabel(
+                  overviewQuery?.data?.totalSpendMinor,
+                  budgetQuery?.data?.items[0] ?? null,
+                )
+              : 'Ngân sách chỉ có theo tháng',
           currencyCode: overviewQuery?.data?.currencyCode,
           isLoading: Boolean(
             memberQuery?.isLoading ||
@@ -66,7 +83,7 @@ export const HouseholdListPage = () => {
               {householdCards.length}
             </strong>
           </div>
-          <Chip tone='primary'>{formatMonthLabel(new Date())}</Chip>
+          <PeriodChipLink />
         </div>
       </Card>
 

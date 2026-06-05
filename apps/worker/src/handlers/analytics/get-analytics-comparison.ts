@@ -8,7 +8,7 @@ import { forbidden, invalidInput } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
 import type { AppBindings } from '@/types'
 
-import { toPeriodRange, toPreviousPeriod } from './period'
+import { toAnalyticsRange, toPreviousAnalyticsRange } from './period'
 
 type GetAnalyticsComparisonHandlerCtx = Context<AppBindings>
 
@@ -44,18 +44,17 @@ export const getAnalyticsComparisonHandler = async (
     }
   }
 
-  const currentPeriodRange = toPeriodRange(query.period)
-  const previousPeriod = toPreviousPeriod(query.period)
-  const previousPeriodRange = toPeriodRange(previousPeriod)
+  const currentRange = toAnalyticsRange(query)
+  const previousRange = toPreviousAnalyticsRange(currentRange)
 
   return getAnalyticsComparison(ctx.env.DB, {
     userId: currentUser.id,
     householdId: query.household_id,
-    period: query.period,
-    periodStart: currentPeriodRange.start,
-    periodEnd: currentPeriodRange.end,
-    previousPeriod,
-    previousPeriodStart: previousPeriodRange.start,
-    previousPeriodEnd: previousPeriodRange.end,
+    period: currentRange.period,
+    periodStart: currentRange.start,
+    periodEnd: currentRange.end,
+    previousPeriod: previousRange.period,
+    previousPeriodStart: previousRange.start,
+    previousPeriodEnd: previousRange.end,
   })
 }

@@ -1,6 +1,7 @@
 export const TMA_PATHS = {
   root: '/',
   home: '/home',
+  period: '/period',
   statistics: '/statistics',
   expenses: '/expenses',
   expensesNewCategory: '/expenses/new/category',

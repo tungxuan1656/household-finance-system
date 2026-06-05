@@ -7,23 +7,22 @@ export interface BottomButtonOptions {
   onClick: () => void
 }
 
+export type BottomButtonVisualOptions = Omit<BottomButtonOptions, 'onClick'>
+
 type Cleanup = () => void
 
-export const setBottomButton = (options: BottomButtonOptions): Cleanup => {
-  // themeParams and mainButton may already be mounted by initTelegram
+const ensureBottomButtonMounted = (): void => {
   if (!themeParams.isMounted()) {
     themeParams.mount()
   }
   if (!mainButton.isMounted()) {
     mainButton.mount()
   }
+}
 
-  mainButton.setParams({
-    text: options.text,
-    isEnabled: options.enabled,
-    isLoaderVisible: options.showProgress,
-    isVisible: true,
-  })
+export const setBottomButton = (options: BottomButtonOptions): Cleanup => {
+  ensureBottomButtonMounted()
+  updateBottomButton(options)
 
   const offClick = mainButton.onClick(options.onClick)
 
@@ -31,6 +30,19 @@ export const setBottomButton = (options: BottomButtonOptions): Cleanup => {
     offClick()
     mainButton.setParams({ isVisible: false })
   }
+}
+
+export const updateBottomButton = (
+  options: BottomButtonVisualOptions,
+): void => {
+  ensureBottomButtonMounted()
+
+  mainButton.setParams({
+    text: options.text,
+    isEnabled: options.enabled,
+    isLoaderVisible: options.showProgress,
+    isVisible: true,
+  })
 }
 
 export const hideBottomButton = (): void => {
