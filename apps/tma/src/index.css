@@ -231,9 +231,9 @@ button {
 .tma-page-header__avatar {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 16px;
+  width: 44px;
+  height: 44px!;
+  border-radius: 100px;
   background: linear-gradient(
     135deg,
     rgba(63, 124, 255, 0.18),
@@ -246,8 +246,8 @@ button {
 }
 
 .tma-avatar-image {
-  width: 100%;
-  height: 100%;
+  width: 42px;
+  height: 44px;
   border-radius: inherit;
   object-fit: cover;
 }
@@ -265,9 +265,9 @@ button {
 .tma-page-header__title {
   margin: 4px 0 0;
   color: var(--tma-text-strong);
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.15;
-  letter-spacing: -0.025em;
+  font-weight: 700;
 }
 
 .tma-page-header__subtitle {

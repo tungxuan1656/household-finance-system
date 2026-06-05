@@ -190,44 +190,16 @@ export const HomePage = () => {
     referenceCategories,
   )
 
-  const headerSubtitle = featuredHousehold ? (
-    featuredHousehold.totalSpendMinor != null &&
-    featuredHousehold.currencyCode ? (
-      <>
-        Đã dùng{' '}
-        <span className='font-mono'>
-          {formatCurrencyMinor(
-            featuredHousehold.totalSpendMinor,
-            featuredHousehold.currencyCode,
-          )}
-        </span>{' '}
-        tại {featuredHousehold.household.name}.
-      </>
-    ) : (
-      `Đang đồng bộ chi tiêu tại ${featuredHousehold.household.name}.`
-    )
-  ) : fallbackOverviewQuery.data ? (
-    `Đã ghi nhận ${fallbackOverviewQuery.data.expenseCount} khoản chi trong tháng này.`
-  ) : (
-    'Đang đồng bộ chi tiêu tháng này.'
-  )
-
   return (
     <TmaPageShell title='Trang chủ'>
       <TmaPageHeader
-        eyebrow='Xin chào'
         leading={
-          user?.avatarUrl ? (
-            <img
-              alt={userName}
-              className='tma-avatar-image'
-              src={user.avatarUrl}
-            />
-          ) : (
-            <span>{resolveInitials(userName)}</span>
-          )
+          <img
+            alt={userName}
+            className='tma-avatar-image'
+            src={user?.avatarUrl ?? undefined}
+          />
         }
-        subtitle={headerSubtitle}
         title={userName}
         trailing={
           <span className='tma-chip tma-chip--strong'>
