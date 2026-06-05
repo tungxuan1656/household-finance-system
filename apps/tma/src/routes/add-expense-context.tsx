@@ -75,7 +75,7 @@ export const AddExpenseContextPage = () => {
       cleanup()
       hideBottomButton()
     }
-  }, [amount, handleSave, isReady])
+  }, [amount, isReady])
 
   if (!isReady || !category) {
     return (

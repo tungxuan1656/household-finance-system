@@ -139,7 +139,7 @@ export const ExpenseEditPage = () => {
       cleanup()
       hideBottomButton()
     }
-  }, [isValid, updateMutation.isPending, handleSave])
+  }, [isValid, updateMutation.isPending])
 
   if (expenseQuery.isLoading || !draft) {
     return (

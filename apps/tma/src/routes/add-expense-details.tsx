@@ -66,7 +66,7 @@ export const AddExpenseDetailsPage = () => {
       cleanup()
       hideBottomButton()
     }
-  }, [category, handleContinue, isValid])
+  }, [category, isValid])
 
   if (!category) {
     return (

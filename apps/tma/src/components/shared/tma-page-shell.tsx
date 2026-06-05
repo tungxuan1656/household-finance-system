@@ -251,7 +251,7 @@ export const TmaPageShell = ({
       cleanup()
       hideBackButton()
     }
-  }, [handleBack, showBackButton, closeAction])
+  }, [showBackButton, closeAction])
 
   return (
     <AppShell>
