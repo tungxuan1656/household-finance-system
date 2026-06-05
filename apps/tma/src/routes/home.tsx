@@ -1,4 +1,3 @@
-import { useQueries } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 
 import {
@@ -9,32 +8,22 @@ import {
 } from '@/components/shared/tma-page-shell'
 import { useAuth } from '@/features/auth/auth-provider'
 import {
-  analyticsOverviewQueryOptions,
-  budgetListQueryOptions,
-  householdMembersQueryOptions,
   useAnalyticsComparisonQuery,
   useAnalyticsOverviewQuery,
   useExpenseListQuery,
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
+import { HomeHouseholdsSection } from '@/features/home/components/home-households-section'
 import {
   formatCurrencyMinor,
-  getBudgetProgress,
   getCategoryPresentation,
   getComparisonLabel,
   getExpenseGroupLabel,
   getExpenseSecondaryText,
-  getHouseholdBudgetLabel,
-  resolveInitials,
   resolveUserName,
 } from '@/features/home/presentation'
-import type {
-  AnalyticsOverviewDTO,
-  BudgetDTO,
-  HouseholdDTO,
-} from '@/features/home/types'
-import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
+import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatMonthLabel, formatTimeLabel } from '@/lib/formatters'
 import { getCurrentPeriod } from '@/lib/period'
 import { impact, selection } from '@/lib/telegram/haptics'
@@ -74,17 +63,6 @@ const shortcutItems = [
   },
 ] as const
 
-interface HouseholdCardViewModel {
-  household: HouseholdDTO
-  budget: BudgetDTO | null
-  currencyCode?: string
-  isError: boolean
-  isLoading: boolean
-  memberCount?: number
-  overview?: AnalyticsOverviewDTO
-  totalSpendMinor?: number
-}
-
 export const HomePage = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -99,84 +77,23 @@ export const HomePage = () => {
     limit: 10,
     sort: 'occurred_at_desc',
   })
-  const fallbackOverviewQuery = useAnalyticsOverviewQuery({ period })
-  const fallbackComparisonQuery = useAnalyticsComparisonQuery({ period })
-  const households = householdsQuery.data?.items ?? []
+  const summaryOverviewQuery = useAnalyticsOverviewQuery({ period })
+  const summaryComparisonQuery = useAnalyticsComparisonQuery({ period })
 
-  const householdMemberQueries = useQueries({
-    queries: households.map((household) =>
-      householdMembersQueryOptions(household.id),
-    ),
-  })
-  const householdOverviewQueries = useQueries({
-    queries: households.map((household) =>
-      analyticsOverviewQueryOptions({
-        household_id: household.id,
-        period,
-      }),
-    ),
-  })
-  const householdBudgetQueries = useQueries({
-    queries: households.map((household) =>
-      budgetListQueryOptions(household.id, period),
-    ),
-  })
-
-  const householdCards: HouseholdCardViewModel[] = households
-    .map((household, index) => {
-      const membersQuery = householdMemberQueries[index]
-      const overviewQuery = householdOverviewQueries[index]
-      const budgetQuery = householdBudgetQueries[index]
-
-      return {
-        household,
-        budget: budgetQuery?.data?.items[0] ?? null,
-        currencyCode: overviewQuery?.data?.currencyCode,
-        isError: Boolean(
-          membersQuery?.error || overviewQuery?.error || budgetQuery?.error,
-        ),
-        isLoading: Boolean(
-          membersQuery?.isLoading ||
-          overviewQuery?.isLoading ||
-          budgetQuery?.isLoading,
-        ),
-        memberCount: membersQuery?.data?.items.length,
-        overview: overviewQuery?.data,
-        totalSpendMinor: overviewQuery?.data?.totalSpendMinor,
-      }
-    })
-    .sort(
-      (left, right) =>
-        (right.totalSpendMinor ?? Number.NEGATIVE_INFINITY) -
-        (left.totalSpendMinor ?? Number.NEGATIVE_INFINITY),
-    )
   const householdNameById = new Map(
-    householdCards.map((item) => [item.household.id, item.household.name]),
-  )
-  const featuredHousehold = householdCards[0]
-  const featuredComparisonQuery = useAnalyticsComparisonQuery(
-    {
-      household_id: featuredHousehold?.household.id,
-      period,
-    },
-    { enabled: Boolean(featuredHousehold?.household.id) },
+    (householdsQuery.data?.items ?? []).map((household) => [
+      household.id,
+      household.name,
+    ]),
   )
 
-  const summaryOverview =
-    featuredHousehold?.overview ?? fallbackOverviewQuery.data
-  const summaryComparison = featuredHousehold
-    ? featuredComparisonQuery.data
-    : fallbackComparisonQuery.data
-  const summaryBudget = featuredHousehold?.budget ?? null
-  const summaryLoading = featuredHousehold
-    ? featuredHousehold.isLoading || featuredComparisonQuery.isLoading
-    : fallbackOverviewQuery.isLoading || fallbackComparisonQuery.isLoading
-  const summaryError = featuredHousehold
-    ? featuredHousehold.isError || Boolean(featuredComparisonQuery.error)
-    : Boolean(fallbackOverviewQuery.error || fallbackComparisonQuery.error)
-  const summaryBudgetProgress = summaryOverview
-    ? getBudgetProgress(summaryOverview.totalSpendMinor, summaryBudget)
-    : null
+  const summaryOverview = summaryOverviewQuery.data
+  const summaryComparison = summaryComparisonQuery.data
+  const summaryLoading =
+    summaryOverviewQuery.isLoading || summaryComparisonQuery.isLoading
+  const summaryError = Boolean(
+    summaryOverviewQuery.error || summaryComparisonQuery.error,
+  )
   const recentExpenses = recentExpensesQuery.data?.items ?? []
   const referenceCategories = referenceCategoriesQuery.data?.items
   const latestExpense = recentExpenses[0]
@@ -211,11 +128,7 @@ export const HomePage = () => {
       <section className='tma-summary-card tma-summary-card--home'>
         <div className='tma-summary-card__topline'>
           <div>
-            <p className='tma-section-label'>
-              {featuredHousehold
-                ? 'Tổng chi gia đình tháng này'
-                : 'Tổng chi tháng này'}
-            </p>
+            <p className='tma-section-label'>Tổng chi tháng này</p>
             <strong className='font-mono'>
               {summaryOverview
                 ? formatCurrencyMinor(
@@ -240,42 +153,10 @@ export const HomePage = () => {
           </span>
         </div>
 
-        {summaryBudgetProgress ? (
-          <div className='tma-summary-card__meter'>
-            <div className='tma-summary-card__meter-track'>
-              <span
-                className='tma-summary-card__meter-fill'
-                style={{
-                  width: `${Math.min(summaryBudgetProgress.percentUsed, 100)}%`,
-                }}
-              />
-            </div>
-
-            <div className='tma-summary-card__meter-meta'>
-              <span>
-                Đã dùng {summaryBudgetProgress.percentUsed}% ngân sách
-              </span>
-              <span>
-                {summaryBudgetProgress.isOverBudget ? 'Vượt ' : 'Còn '}
-                <span className='font-mono'>
-                  {formatCurrencyMinor(
-                    Math.abs(summaryBudgetProgress.remainingMinor),
-                    summaryBudget?.currencyCode ??
-                      summaryOverview?.currencyCode ??
-                      'VND',
-                  )}
-                </span>
-              </span>
-            </div>
-          </div>
-        ) : (
-          <div className='tma-summary-card__meter-meta'>
-            <span>{summaryOverview?.expenseCount ?? 0} khoản chi</span>
-            <span>
-              {featuredHousehold ? featuredHousehold.household.name : 'Cá nhân'}
-            </span>
-          </div>
-        )}
+        <div className='tma-summary-card__meter-meta'>
+          <span>{summaryOverview?.expenseCount ?? 0} khoản chi</span>
+          <span>Cá nhân</span>
+        </div>
 
         <div className='tma-summary-card__insights'>
           <article className='tma-summary-card__insight'>
@@ -359,92 +240,7 @@ export const HomePage = () => {
         </div>
       </section>
 
-      <section className='tma-section'>
-        <div className='tma-section__header'>
-          <h2 className='tma-section__title'>Gia đình</h2>
-        </div>
-
-        {householdsQuery.isError ? (
-          <div className='tma-empty-card'>
-            <h2>Không tải được danh sách gia đình</h2>
-            <p>
-              Kiểm tra phiên đăng nhập hoặc dữ liệu seed local rồi mở lại Mini
-              App.
-            </p>
-          </div>
-        ) : householdsQuery.isLoading ? (
-          <div className='tma-empty-card'>
-            <h2>Đang tải danh sách gia đình</h2>
-            <p>
-              Thẻ household sẽ xuất hiện ngay khi các truy vấn đầu tiên hoàn
-              tất.
-            </p>
-          </div>
-        ) : householdCards.length === 0 ? (
-          <div className='tma-empty-card'>
-            <h2>Chưa tham gia gia đình nào</h2>
-            <p>
-              Home vẫn hiển thị chi tiêu cá nhân, còn thẻ gia đình sẽ xuất hiện
-              khi có membership.
-            </p>
-          </div>
-        ) : (
-          <div className='tma-household-carousel'>
-            {householdCards.map((householdCard) => (
-              <Link
-                key={householdCard.household.id}
-                className='tma-household-card'
-                to={getHouseholdDetailPath(householdCard.household.id)}
-                onClick={() => impact('light')}>
-                <div className='tma-household-card__top'>
-                  <div className='tma-household-avatar tma-household-avatar--sm'>
-                    {householdCard.household.avatarUrl ? (
-                      <img
-                        alt={householdCard.household.name}
-                        className='tma-avatar-image'
-                        src={householdCard.household.avatarUrl}
-                      />
-                    ) : (
-                      <span>
-                        {resolveInitials(householdCard.household.name)}
-                      </span>
-                    )}
-                  </div>
-                  <span className='tma-soft-pill'>
-                    {householdCard.memberCount != null
-                      ? `${householdCard.memberCount} thành viên`
-                      : 'Đang tải thành viên'}
-                  </span>
-                </div>
-
-                <div>
-                  <h3>{householdCard.household.name}</h3>
-                  <strong className='font-mono'>
-                    {householdCard.totalSpendMinor != null &&
-                    householdCard.currencyCode
-                      ? formatCurrencyMinor(
-                          householdCard.totalSpendMinor,
-                          householdCard.currencyCode,
-                        )
-                      : householdCard.isLoading
-                        ? 'Đang tải...'
-                        : '—'}
-                  </strong>
-                </div>
-
-                <p>
-                  {householdCard.isError
-                    ? 'Không tải được tổng quan gia đình.'
-                    : getHouseholdBudgetLabel(
-                        householdCard.totalSpendMinor,
-                        householdCard.budget,
-                      )}
-                </p>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+      <HomeHouseholdsSection />
 
       <section className='tma-section'>
         <div className='tma-section__header'>
