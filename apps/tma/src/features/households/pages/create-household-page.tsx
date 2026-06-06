@@ -75,7 +75,7 @@ export const CreateHouseholdPage = () => {
         })
       }
 
-      navigate(getHouseholdDetailPath(created.id))
+      navigate(getHouseholdDetailPath(created.id), { replace: true })
     } catch (error) {
       setFeedback({
         message:
