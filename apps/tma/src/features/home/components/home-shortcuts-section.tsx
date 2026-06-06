@@ -71,10 +71,10 @@ const shortcutItems = [
   {
     title: 'Nhóm',
     hint: 'Theo dõi chi tiêu nhóm nhỏ',
-    href: '#',
+    href: TMA_PATHS.groups,
     icon: GroupIcon,
     accent: { background: '#fff3e8', foreground: '#ff8a3d' },
-    enabled: false,
+    enabled: true,
   },
   {
     title: 'Ngân sách',

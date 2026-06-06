@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-07 — Adjusted TMA create group form spacing
+
+- Who: Codex
+- Summary: Updated the TMA create group form so the start date and end date inputs render as two separate full-width rows, and increased the household/context select height for easier mobile tapping. Also restored the existing household card footer usage of its `action` prop so repo lint remains clean in the current dirty worktree.
+- Files changed: TMA create group page, one existing household card component lint fix, and feat-097 harness evidence.
+- Verification: `./init.sh typecheck` and `./init.sh lint` returned `OK`.
+- Blockers: None.
+- Next steps: Open `/groups/new` in the TMA mobile viewport and confirm the taller context select and stacked date fields feel right.
+
+## 2026-06-06 — Added TMA group list, create, and detail surfaces
+
+- Who: Codex
+- Summary: Added Telegram Mini App group management screens backed by the existing worker group APIs. The Home shortcut now opens the new group hub. TMA routes now include `/groups`, `/groups/new`, and `/groups/:id`. The list loads personal groups plus groups for each joined household, create posts to `/groups` without any avatar flow, and detail reads `/groups/:id`, `/groups/:id/summary`, plus recent expenses filtered by `group_id` with `household_id` when the group is household-backed.
+- Files changed: TMA group feature module, route wrappers, router/path wiring, Home shortcut entrypoint, focused group tests, one existing household component lint fix, and feat-097 harness records.
+- Verification: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` returned `OK`. `jq empty` on touched harness JSON and `git diff --check` returned no output. `./scripts/check_harness_size.sh` passed. Final `./init.sh` completed with `Done!`. Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `high` risk with 47 changed symbols and 6 affected processes, mostly from pre-existing dirty TMA expense filter/period picker changes in the worktree rather than the new group files.
+- Blockers: None in code. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA through the normal Telegram/local launch path and confirm `/groups`, `/groups/new`, and `/groups/:id` on a narrow Telegram viewport with real seeded group data.
+
 ## 2026-06-05 — Cleaned up TMA expense detail/edit/category UI and dropped note field
 
 - Who: Tùng (via Claude)

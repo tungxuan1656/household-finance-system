@@ -484,6 +484,11 @@
       "id": "feat-096",
       "name": "TMA shared period selection and multi-range analytics",
       "status": "done"
+    },
+    {
+      "id": "feat-097",
+      "name": "TMA group list create and detail surfaces",
+      "status": "done"
     }
   ]
 }

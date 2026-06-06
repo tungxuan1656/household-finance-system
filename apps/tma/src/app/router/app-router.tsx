@@ -79,6 +79,12 @@ const HouseholdsPage = lazy(async () => {
   return { default: module.HouseholdsPage }
 })
 
+const GroupsPage = lazy(async () => {
+  const module = await import('@/routes/groups')
+
+  return { default: module.GroupsPage }
+})
+
 const PeriodRoute = lazy(async () => {
   const module = await import('@/routes/period')
 
@@ -95,6 +101,18 @@ const HouseholdDetailRoute = lazy(async () => {
   const module = await import('@/routes/household-detail')
 
   return { default: module.HouseholdDetailRoute }
+})
+
+const CreateGroupRoute = lazy(async () => {
+  const module = await import('@/routes/create-group')
+
+  return { default: module.CreateGroupRoute }
+})
+
+const GroupDetailRoute = lazy(async () => {
+  const module = await import('@/routes/group-detail')
+
+  return { default: module.GroupDetailRoute }
 })
 
 const FatalLaunchPage = lazy(async () => {
@@ -174,6 +192,18 @@ const router = createBrowserRouter([
       {
         path: `${TMA_PATHS.households}/:id`,
         element: renderLazyRoute(HouseholdDetailRoute),
+      },
+      {
+        path: TMA_PATHS.groups,
+        element: renderLazyRoute(GroupsPage),
+      },
+      {
+        path: TMA_PATHS.groupsNew,
+        element: renderLazyRoute(CreateGroupRoute),
+      },
+      {
+        path: `${TMA_PATHS.groups}/:id`,
+        element: renderLazyRoute(GroupDetailRoute),
       },
       {
         path: TMA_PATHS.fatal,

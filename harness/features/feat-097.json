@@ -1,0 +1,36 @@
+{
+  "id": "feat-097",
+  "name": "TMA group list create and detail surfaces",
+  "status": "done",
+  "description": "Add Telegram Mini App group surfaces for listing personal and household groups, creating a group without avatar requirements, and viewing group detail with real worker group, summary, and group-filtered expense APIs.",
+  "dependencies": [
+    "feat-022",
+    "feat-023",
+    "feat-079",
+    "feat-080",
+    "feat-083",
+    "feat-095"
+  ],
+  "evidence": {
+    "planned": [
+      "Reuse existing worker `/api/v1/groups` endpoints instead of adding TMA-specific API routes.",
+      "Add TMA `/groups`, `/groups/new`, and `/groups/:id` routes with lazy router wiring and Home shortcut access.",
+      "List personal groups with `GET /groups` and household groups with `GET /groups?household_id=...` for each joined household.",
+      "Create groups with `POST /groups`, no avatar field, and optional household context limited to admin households.",
+      "Render detail from `GET /groups/:id`, `GET /groups/:id/summary`, and recent expenses filtered by `group_id` plus household context when needed."
+    ],
+    "verification": [
+      "`./init.sh typecheck` returned `OK`.",
+      "`./init.sh lint` returned `OK` after restoring existing `HouseholdItem` footer usage required by its public `action` prop.",
+      "`./init.sh test` returned `OK`.",
+      "`./init.sh build` returned `OK`.",
+      "`jq empty harness/feature_index.json harness/features/feat-097.json` returned no output.",
+      "`git diff --check` returned no output.",
+      "`./scripts/check_harness_size.sh` returned `Harness size checks passed`.",
+      "Final `./init.sh` completed with `Done!`.",
+      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `high` risk with 47 changed symbols, 6 affected processes, and 10 indexed changed files. The affected processes are concentrated in pre-existing TMA expense filter and period picker work already present in the dirty worktree; the group slice adds TMA route/path/shortcut wiring and new untracked group files.",
+      "Follow-up create group UI adjustment on 2026-06-07 passed `./init.sh typecheck` and `./init.sh lint` after making the context select taller and stacking start/end date fields into separate rows."
+    ]
+  },
+  "notes": "Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required."
+}

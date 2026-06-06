@@ -157,6 +157,10 @@ export const HouseholdItem = ({
         )}
       </div>
     </div>
+    <div className='flex items-center justify-between text-sm text-tma-text-muted'>
+      <span>Mở chi tiết</span>
+      {action ?? <span>{card.household.defaultCurrencyCode}</span>}
+    </div>
   </Link>
 )
 
