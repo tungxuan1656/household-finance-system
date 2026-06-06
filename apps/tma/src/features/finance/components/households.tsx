@@ -133,14 +133,29 @@ export const HouseholdItem = ({
       </div>
       <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
         <Eyebrow>Ngân sách</Eyebrow>
-        <strong className='text-sm text-tma-text-strong'>
-          {card.budgetLabel}
-        </strong>
+        {card.budget ? (
+          <>
+            <strong className='text-sm text-tma-text-strong'>
+              {card.budgetLabel}
+            </strong>
+            <div className='mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/[0.08]'>
+              <div
+                className='h-full rounded-full bg-tma-positive transition-all'
+                style={{
+                  width: `${Math.min(
+                    100,
+                    ((card.totalSpendMinor ?? 0) /
+                      card.budget.totalLimitMinor) *
+                      100,
+                  )}%`,
+                }}
+              />
+            </div>
+          </>
+        ) : (
+          <strong className='text-sm text-tma-text-muted'>—</strong>
+        )}
       </div>
-    </div>
-    <div className='flex items-center justify-between text-sm text-tma-text-muted'>
-      <span>Mở chi tiết</span>
-      {action ?? <span>{card.household.defaultCurrencyCode}</span>}
     </div>
   </Link>
 )
