@@ -4,6 +4,7 @@ export const TMA_PATHS = {
   period: '/period',
   statistics: '/statistics',
   expenses: '/expenses',
+  expensesFilter: '/expenses/filter',
   expensesNewCategory: '/expenses/new/category',
   expensesNewDetails: '/expenses/new/details',
   expensesNewContext: '/expenses/new/context',
@@ -11,6 +12,8 @@ export const TMA_PATHS = {
   householdsNew: '/households/new',
   groups: '/groups',
   groupsNew: '/groups/new',
+  budgets: '/budgets',
+  budgetsNew: '/budgets/new',
   fatal: '/fatal',
 } as const
 
@@ -34,3 +37,6 @@ export const getHouseholdDetailPath = (householdId: string): string =>
 
 export const getGroupDetailPath = (groupId: string): string =>
   `${TMA_PATHS.groups}/${groupId}`
+
+export const getBudgetDetailPath = (budgetId: string): string =>
+  `${TMA_PATHS.budgets}/${budgetId}`

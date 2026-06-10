@@ -16,6 +16,7 @@ import {
   getPeriodYears,
   getWeeksInYear,
   type PeriodGranularity,
+  type PeriodSelection,
 } from '@/lib/period'
 import {
   hideBottomButton,
@@ -34,6 +35,11 @@ const periodTabs: Array<{ label: string; value: PeriodGranularity }> = [
 ]
 
 const monthOptions = Array.from({ length: 12 }, (_, index) => index + 1)
+
+interface PeriodPickerLocationState {
+  backTo?: string
+  initialPeriod?: PeriodSelection | null
+}
 
 const PeriodOptionButton = ({
   description,
@@ -65,25 +71,39 @@ export const PeriodPickerPage = () => {
   const location = useLocation()
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
   const setSelectedPeriod = usePeriodStore((state) => state.setSelectedPeriod)
-  const [tab, setTab] = useState<PeriodGranularity>(selectedPeriod.granularity)
+
+  const locationState = (location.state ??
+    null) as PeriodPickerLocationState | null
+  const isSubPage = !!locationState?.backTo
+  const initialPeriodFromState = locationState?.initialPeriod
+  const initialPeriod =
+    initialPeriodFromState !== undefined && initialPeriodFromState !== null
+      ? initialPeriodFromState
+      : selectedPeriod
+
+  const [tab, setTab] = useState<PeriodGranularity>(initialPeriod.granularity)
   const [activeYear, setActiveYear] = useState(
-    getPeriodSelectionYear(selectedPeriod),
+    getPeriodSelectionYear(initialPeriod),
   )
   const [selectedMonth, setSelectedMonth] = useState(
-    getPeriodSelectionMonth(selectedPeriod) ?? 1,
+    getPeriodSelectionMonth(initialPeriod) ?? 1,
   )
   const [selectedWeek, setSelectedWeek] = useState(
-    getPeriodSelectionWeek(selectedPeriod) ?? 1,
+    getPeriodSelectionWeek(initialPeriod) ?? 1,
   )
 
   const years = useMemo(() => getPeriodYears(), [])
 
   useEffect(() => {
+    if (isSubPage) {
+      return
+    }
+
     setTab(selectedPeriod.granularity)
     setActiveYear(getPeriodSelectionYear(selectedPeriod))
     setSelectedMonth(getPeriodSelectionMonth(selectedPeriod) ?? 1)
     setSelectedWeek(getPeriodSelectionWeek(selectedPeriod) ?? 1)
-  }, [selectedPeriod])
+  }, [selectedPeriod, isSubPage])
 
   const candidate = useMemo(() => {
     if (tab === 'year') {
@@ -101,8 +121,19 @@ export const PeriodPickerPage = () => {
   }, [activeYear, selectedMonth, selectedWeek, tab])
 
   const handleApply = useEffectEvent(() => {
-    const backTo =
-      (location.state as { backTo?: string } | null)?.backTo ?? TMA_PATHS.root
+    const backTo = locationState?.backTo ?? TMA_PATHS.root
+
+    if (isSubPage) {
+      navigate(backTo, {
+        replace: true,
+        state: {
+          ...(locationState ?? {}),
+          appliedPeriod: candidate,
+        },
+      })
+
+      return
+    }
 
     setSelectedPeriod(candidate)
 

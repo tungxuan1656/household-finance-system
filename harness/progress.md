@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-07 — Added TMA budget CRUD surfaces
+
+- Who: Codex
+- Summary: Added Telegram Mini App budget management backed by the existing worker budget API. The Home Budget shortcut now opens `/budgets`; the list selects a household and reads real budget rows; create posts a monthly household budget with optional expense-category limits; detail reads budget detail/status, shows planned vs actual and threshold/category progress, supports admin edit, and deletes obsolete budgets.
+- Files changed: TMA budget feature module, route wrappers, router/path wiring, Home shortcut entrypoint, focused budget tests, ExecPlan records, and feat-098 harness records.
+- Verification: Focused budget tests passed after the intended RED steps. `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` returned `OK`. `jq empty` on feat-098 harness JSON returned no output, `git diff --check` returned no output, `./scripts/check_harness_size.sh` passed, and final `./init.sh` completed with `Done!`. Final GitNexus detect changes reported `medium` risk with affected processes in pre-existing TMA period picker and expense filter work rather than new indexed budget flows.
+- Blockers: None in code. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA through the normal Telegram/local launch path and confirm `/budgets`, `/budgets/new`, and `/budgets/:id` on a narrow Telegram viewport with real seeded household budget data.
+
 ## 2026-06-07 — Adjusted TMA create group form spacing
 
 - Who: Codex

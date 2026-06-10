@@ -79,10 +79,10 @@ const shortcutItems = [
   {
     title: 'Ngân sách',
     hint: 'Xem mức còn lại trong tháng',
-    href: '#',
+    href: TMA_PATHS.budgets,
     icon: BudgetIcon,
     accent: { background: '#fff6d9', foreground: '#b48800' },
-    enabled: false,
+    enabled: true,
   },
 ] as const satisfies Array<{
   accent: { background: string; foreground: string }

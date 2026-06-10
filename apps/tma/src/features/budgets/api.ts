@@ -1,0 +1,130 @@
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
+
+import { deleteRequest, get, patch, post } from '@/lib/api/client'
+
+import type {
+  BudgetDTO,
+  CreateBudgetRequest,
+  DeleteBudgetResponse,
+  ListBudgetsResponse,
+  UpdateBudgetMutationInput,
+} from './types'
+import type { BudgetStatusDTO } from './types'
+
+const listBudgets = (householdId: string, period?: string) =>
+  get<ListBudgetsResponse>('/budgets', {
+    params: { household_id: householdId, period },
+  })
+
+const createBudget = (payload: CreateBudgetRequest) =>
+  post<BudgetDTO>('/budgets', payload)
+
+const getBudget = (budgetId: string) => get<BudgetDTO>(`/budgets/${budgetId}`)
+
+const getBudgetStatus = (budgetId: string) =>
+  get<BudgetStatusDTO>(`/budgets/${budgetId}/status`)
+
+const updateBudget = ({ id, payload }: UpdateBudgetMutationInput) =>
+  patch<BudgetDTO>(`/budgets/${id}`, payload)
+
+const deleteBudget = (budgetId: string) =>
+  deleteRequest<DeleteBudgetResponse>(`/budgets/${budgetId}`)
+
+export const BUDGET_KEYS = {
+  all: ['budgets'] as const,
+  list: (householdId: string, period?: string) =>
+    [...BUDGET_KEYS.all, 'list', householdId, period ?? 'all'] as const,
+  detail: (budgetId: string) =>
+    [...BUDGET_KEYS.all, 'detail', budgetId] as const,
+  status: (budgetId: string) =>
+    [...BUDGET_KEYS.all, 'status', budgetId] as const,
+}
+
+export const budgetListQueryOptions = (householdId: string, period?: string) =>
+  queryOptions({
+    queryKey: BUDGET_KEYS.list(householdId, period),
+    queryFn: () => listBudgets(householdId, period),
+  })
+
+export const budgetDetailQueryOptions = (budgetId: string) =>
+  queryOptions({
+    queryKey: BUDGET_KEYS.detail(budgetId),
+    queryFn: () => getBudget(budgetId),
+  })
+
+export const budgetStatusQueryOptions = (budgetId: string) =>
+  queryOptions({
+    queryKey: BUDGET_KEYS.status(budgetId),
+    queryFn: () => getBudgetStatus(budgetId),
+  })
+
+export const useBudgetListQuery = (
+  householdId: string | undefined,
+  period?: string,
+) =>
+  useQuery({
+    ...budgetListQueryOptions(householdId ?? 'unknown', period),
+    enabled: Boolean(householdId),
+  })
+
+export const useBudgetDetailQuery = (budgetId: string | undefined) =>
+  useQuery({
+    ...budgetDetailQueryOptions(budgetId ?? 'unknown'),
+    enabled: Boolean(budgetId),
+  })
+
+export const useBudgetStatusQuery = (budgetId: string | undefined) =>
+  useQuery({
+    ...budgetStatusQueryOptions(budgetId ?? 'unknown'),
+    enabled: Boolean(budgetId),
+  })
+
+const invalidateBudgetDependents = async (
+  queryClient: ReturnType<typeof useQueryClient>,
+) => {
+  await Promise.all([
+    queryClient.invalidateQueries({ queryKey: BUDGET_KEYS.all }),
+    queryClient.invalidateQueries({ queryKey: ['analytics'] }),
+    queryClient.invalidateQueries({ queryKey: ['households'] }),
+  ])
+}
+
+export const useCreateBudgetMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: createBudget,
+    onSuccess: async (budget) => {
+      queryClient.setQueryData(BUDGET_KEYS.detail(budget.id), budget)
+      await invalidateBudgetDependents(queryClient)
+    },
+  })
+}
+
+export const useUpdateBudgetMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: updateBudget,
+    onSuccess: async (budget) => {
+      queryClient.setQueryData(BUDGET_KEYS.detail(budget.id), budget)
+      await invalidateBudgetDependents(queryClient)
+    },
+  })
+}
+
+export const useDeleteBudgetMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: deleteBudget,
+    onSuccess: async () => {
+      await invalidateBudgetDependents(queryClient)
+    },
+  })
+}

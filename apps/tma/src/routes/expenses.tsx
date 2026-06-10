@@ -1,8 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { FilterIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Button, Card, CardDescription, CardTitle, Chip } from '@/components/ui'
+import {
+  countActiveExpenseListFilters,
+  useExpenseListFilterStore,
+} from '@/features/expenses/filter-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import { ExpenseTimeline } from '@/features/finance/components'
 import {
@@ -10,12 +15,31 @@ import {
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
+import { TMA_PATHS } from '@/lib/constants/routes'
 import { selection } from '@/lib/telegram/haptics'
 
 export const ExpensesPage = () => {
-  const [showFilters, setShowFilters] = useState(false)
+  const navigate = useNavigate()
+  const filter = useExpenseListFilterStore((state) => state.filter)
+  const activeFilterCount = countActiveExpenseListFilters(filter)
+
+  const queryParams = useMemo(
+    () => ({
+      sort: filter.sort,
+      ...(filter.dateFrom != null ? { date_from: filter.dateFrom } : {}),
+      ...(filter.dateTo != null ? { date_to: filter.dateTo } : {}),
+      ...(filter.householdId != null
+        ? { household_id: filter.householdId }
+        : {}),
+      ...(filter.categoryKey != null
+        ? { category_key: filter.categoryKey }
+        : {}),
+    }),
+    [filter],
+  )
+
   const expensesQuery = useExpenseListQuery({
-    sort: 'occurred_at_desc',
+    ...queryParams,
     limit: 50,
   })
   const referenceCategoriesQuery = useReferenceCategoriesQuery()
@@ -48,22 +72,36 @@ export const ExpensesPage = () => {
         </CardDescription>
 
         <Button
+          aria-label='Mở bộ lọc'
           size='sm'
-          variant='outline'
+          variant={activeFilterCount > 0 ? 'primary' : 'outline'}
           onClick={() => {
             selection()
-            setShowFilters((v) => !v)
+            navigate(TMA_PATHS.expensesFilter)
           }}>
           <FilterIcon height='16' width='16' />
-          <span>Lọc</span>
+          <span>
+            Lọc{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+          </span>
         </Button>
       </div>
 
-      {showFilters ? (
+      {activeFilterCount > 0 ? (
         <Card className='mb-3 flex flex-wrap gap-2'>
-          <Chip>Tháng này</Chip>
-          <Chip>Tất cả nguồn tiền</Chip>
-          <Chip>Gia đình + cá nhân</Chip>
+          {filter.dateFrom != null || filter.dateTo != null ? (
+            <Chip tone='primary'>Đang lọc theo thời gian</Chip>
+          ) : null}
+          {filter.householdId != null ? (
+            <Chip tone='primary'>
+              Hộ: {householdNameMap.get(filter.householdId) ?? 'đã chọn'}
+            </Chip>
+          ) : null}
+          {filter.categoryKey != null ? (
+            <Chip tone='primary'>Danh mục đã chọn</Chip>
+          ) : null}
+          {filter.sort === 'amount_desc' ? (
+            <Chip tone='primary'>Sắp xếp theo số tiền</Chip>
+          ) : null}
         </Card>
       ) : null}
 

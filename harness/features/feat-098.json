@@ -1,0 +1,40 @@
+{
+  "id": "feat-098",
+  "name": "TMA budget CRUD surfaces",
+  "status": "done",
+  "description": "Add Telegram Mini App household budget management surfaces for listing budgets by household, creating monthly budgets, viewing detail/status, editing total/category limits, and deleting obsolete budgets using the existing worker budget API.",
+  "dependencies": [
+    "feat-011",
+    "feat-015a",
+    "feat-016",
+    "feat-026",
+    "feat-027",
+    "feat-079",
+    "feat-080",
+    "feat-095"
+  ],
+  "evidence": {
+    "planned": [
+      "Use existing worker `/api/v1/budgets` endpoints instead of adding TMA-specific API routes.",
+      "Keep TMA budget CRUD truthful to the current household-scoped worker contract: list requires `household_id`, create requires `householdId`, and group event budgets remain owned by the group feature.",
+      "Add TMA `/budgets`, `/budgets/new`, and `/budgets/:id` routes with lazy router wiring and Home shortcut access.",
+      "List household budgets, create monthly household budgets, view planned-vs-actual status from `/budgets/:id/status`, edit total/category limits with `PATCH /budgets/:id`, and delete with `DELETE /budgets/:id`.",
+      "Use reference category data and only expense categories for per-category budget limits."
+    ],
+    "verification": [
+      "`pnpm --filter tma exec vitest run src/test/budget-presentation.test.ts` failed before implementation because `@/features/budgets/presentation` did not exist.",
+      "`pnpm --filter tma exec vitest run src/test/budget-detail-page.test.tsx` failed before implementation because `@/features/budgets/pages/budget-detail-page` did not exist.",
+      "`pnpm --filter tma exec vitest run src/test/budget-presentation.test.ts src/test/budget-detail-page.test.tsx` passed with 4 tests.",
+      "`./init.sh typecheck` returned `OK`.",
+      "`./init.sh lint` returned `OK`.",
+      "`./init.sh test` returned `OK`.",
+      "`./init.sh build` returned `OK`.",
+      "`jq empty harness/feature_index.json harness/features/feat-098.json` returned no output.",
+      "`git diff --check` returned no output.",
+      "`./scripts/check_harness_size.sh` returned `Harness size checks passed`.",
+      "Final `./init.sh` completed with `Done!`.",
+      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `medium` risk with 47 changed symbols, 5 affected processes, and 10 indexed changed files. The affected processes reported are pre-existing TMA period picker and expense filter work already present in the dirty worktree; new budget files are not yet indexed as affected processes."
+    ]
+  },
+  "notes": "Current worker budget CRUD is household-scoped. Personal budgets and first-class group budgets from the broad shared spec are not exposed by `/budgets`; group event budgets remain available through group `eventBudget`. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required."
+}

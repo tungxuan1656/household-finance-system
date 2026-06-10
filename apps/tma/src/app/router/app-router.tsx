@@ -31,6 +31,12 @@ const ExpenseDetailPage = lazy(async () => {
   return { default: module.ExpenseDetailPage }
 })
 
+const ExpenseFilterPage = lazy(async () => {
+  const module = await import('@/routes/expense-filter')
+
+  return { default: module.ExpenseFilterRoute }
+})
+
 const ExpenseEditPage = lazy(async () => {
   const module = await import('@/routes/expense-edit')
 
@@ -85,6 +91,12 @@ const GroupsPage = lazy(async () => {
   return { default: module.GroupsPage }
 })
 
+const BudgetsPage = lazy(async () => {
+  const module = await import('@/routes/budgets')
+
+  return { default: module.BudgetsPage }
+})
+
 const PeriodRoute = lazy(async () => {
   const module = await import('@/routes/period')
 
@@ -113,6 +125,18 @@ const GroupDetailRoute = lazy(async () => {
   const module = await import('@/routes/group-detail')
 
   return { default: module.GroupDetailRoute }
+})
+
+const CreateBudgetRoute = lazy(async () => {
+  const module = await import('@/routes/create-budget')
+
+  return { default: module.CreateBudgetRoute }
+})
+
+const BudgetDetailRoute = lazy(async () => {
+  const module = await import('@/routes/budget-detail')
+
+  return { default: module.BudgetDetailRoute }
 })
 
 const FatalLaunchPage = lazy(async () => {
@@ -152,6 +176,10 @@ const router = createBrowserRouter([
       {
         path: `${TMA_PATHS.expenses}/:id`,
         element: renderLazyRoute(ExpenseDetailPage),
+      },
+      {
+        path: TMA_PATHS.expensesFilter,
+        element: renderLazyRoute(ExpenseFilterPage),
       },
       {
         path: `${TMA_PATHS.expenses}/:id/edit`,
@@ -204,6 +232,18 @@ const router = createBrowserRouter([
       {
         path: `${TMA_PATHS.groups}/:id`,
         element: renderLazyRoute(GroupDetailRoute),
+      },
+      {
+        path: TMA_PATHS.budgets,
+        element: renderLazyRoute(BudgetsPage),
+      },
+      {
+        path: TMA_PATHS.budgetsNew,
+        element: renderLazyRoute(CreateBudgetRoute),
+      },
+      {
+        path: `${TMA_PATHS.budgets}/:id`,
+        element: renderLazyRoute(BudgetDetailRoute),
       },
       {
         path: TMA_PATHS.fatal,

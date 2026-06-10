@@ -1,6 +1,6 @@
-import { act } from 'react'
+import { act, useEffect } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { PeriodPickerPage } from '@/features/period/pages/period-picker-page'
@@ -75,8 +75,7 @@ describe('period store and picker', () => {
   it('applies the picker draft into zustand only when BottomButton confirms', async () => {
     await act(async () => {
       root.render(
-        <MemoryRouter
-          initialEntries={[{ pathname: '/period', state: { backTo: '/' } }]}>
+        <MemoryRouter initialEntries={[{ pathname: '/period' }]}>
           <Routes>
             <Route element={<PeriodPickerPage />} path='/period' />
             <Route element={<div>Home</div>} path='/' />
@@ -129,4 +128,83 @@ describe('period store and picker', () => {
       createWeekPeriodSelection(2026, 1),
     )
   })
+
+  it('returns the chosen period via navigation state when opened as a sub-page and leaves zustand untouched', async () => {
+    const initialPeriod = usePeriodStore.getState().selectedPeriod
+
+    let lastLocationState: unknown = undefined
+
+    await act(async () => {
+      root.render(
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: '/period',
+              state: {
+                backTo: '/expenses/filter',
+                initialPeriod: null,
+              },
+            },
+          ]}>
+          <Routes>
+            <Route element={<PeriodPickerPage />} path='/period' />
+            <Route
+              element={
+                <CaptureStateProbe
+                  onState={(value) => {
+                    lastLocationState = value
+                  }}
+                />
+              }
+              path='/expenses/filter'
+            />
+          </Routes>
+        </MemoryRouter>,
+      )
+    })
+
+    const weekTab = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent === 'Tuần',
+    )
+
+    expect(weekTab).toBeTruthy()
+
+    await act(async () => {
+      weekTab?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    })
+
+    const latestBottomButtonOptions = setBottomButtonMock.mock.calls.at(
+      -1,
+    )?.[0] as { onClick: () => void; text: string } | undefined
+
+    expect(latestBottomButtonOptions?.onClick).toBeTypeOf('function')
+
+    await act(async () => {
+      latestBottomButtonOptions?.onClick()
+    })
+
+    expect(usePeriodStore.getState().selectedPeriod).toEqual(initialPeriod)
+
+    expect(lastLocationState).toEqual(
+      expect.objectContaining({
+        appliedPeriod: expect.objectContaining({
+          granularity: expect.stringMatching(/^(week|month|year)$/),
+        }),
+      }),
+    )
+  })
 })
+
+const CaptureStateProbe = ({
+  onState,
+}: {
+  onState: (state: unknown) => void
+}) => {
+  const location = useLocation()
+
+  useEffect(() => {
+    onState(location.state)
+  }, [location.state, onState])
+
+  return <div>Filter</div>
+}

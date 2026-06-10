@@ -101,6 +101,9 @@ export type ExpenseListParams = {
   limit?: number
   household_id?: string
   group_id?: string
+  date_from?: number
+  date_to?: number
+  category_key?: CategoryKey
   sort?: 'occurred_at_desc' | 'amount_desc'
 }
 
