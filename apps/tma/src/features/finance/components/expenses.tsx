@@ -148,7 +148,7 @@ export const RecentExpenses = ({
         loadingDescription='Danh sách sẽ xuất hiện ngay khi truy vấn đầu tiên hoàn tất.'
         loadingTitle='Đang tải lịch sử chi tiêu'
         retryAction={recentExpensesQuery.refetch}>
-        <div className='grid gap-2 rounded-[24px] border border-white/70 bg-tma-card-bg p-3 shadow-tma-card'>
+        <div className='grid gap-2'>
           {recentExpenses.map((expense) => (
             <ExpenseItem
               key={expense.id}
