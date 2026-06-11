@@ -13,6 +13,7 @@ import {
   CardDescription,
   CardTitle,
   Chip,
+  ChipButton,
   Eyebrow,
   MoneyLabel,
   Section,
@@ -26,7 +27,6 @@ import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
-import { cn } from '@/lib/utils'
 
 export const AddExpenseContextPage = () => {
   const navigate = useNavigate()
@@ -131,11 +131,6 @@ export const AddExpenseContextPage = () => {
 
   return (
     <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
-      <TmaPageHeader
-        eyebrow='Bước 3/3'
-        subtitle='Chọn gia đình và xem lại toàn bộ thông tin.'
-        title='Gắn đúng bối cảnh trước khi lưu'
-      />
       {feedback ? (
         <Card className='mb-3 border-[#d93838]/20 bg-[#ffeded]/90'>
           <CardDescription className='text-[#d93838]'>
@@ -144,14 +139,14 @@ export const AddExpenseContextPage = () => {
         </Card>
       ) : null}
 
-      <Card className='mb-3 flex items-center gap-3'>
+      <Card className='mb-3 flex items-center gap-3 p-2.5'>
         <TmaCategoryIconBadge
           accent={category.accent}
           iconUrl={category.iconUrl}
           symbol={category.symbol}
         />
         <div>
-          <strong className='text-tma-text-strong'>{category.label}</strong>
+          <CardTitle>{category.label}</CardTitle>
           <CardDescription>
             {formatDateLabel(date)} ·{' '}
             <MoneyLabel>{formatVnd(amount)}</MoneyLabel>
@@ -160,44 +155,32 @@ export const AddExpenseContextPage = () => {
       </Card>
 
       <Section>
-        <SectionHeader
-          eyebrow='Gia đình'
-          title='Gắn chi tiêu vào đúng ngữ cảnh'
-        />
-        <div className='grid gap-2.5'>
-          <button
-            className={cn(
-              'grid justify-items-start gap-1 rounded-2xl bg-black/[0.04] px-3.5 py-3 text-left shadow-[inset_0_0_0_1px_rgba(17,24,39,0.04)] transition active:scale-[0.99]',
-              householdId === null && 'bg-tma-primary/12 text-tma-primary',
-            )}
-            type='button'
+        <SectionHeader title='Gia đình' />
+        <div className='grid grid-cols-3 gap-2.5'>
+          <ChipButton
+            className={
+              householdId === null ? 'bg-tma-primary/12 text-tma-primary' : ''
+            }
             onClick={() => {
               selection()
               setContext({ householdId: null, groupId })
             }}>
             <span className='font-semibold'>Cá nhân</span>
-            <small className='text-xs text-tma-text-muted'>
-              Không gắn household
-            </small>
-          </button>
+          </ChipButton>
           {households.map((household) => (
-            <button
+            <ChipButton
               key={household.id}
-              className={cn(
-                'grid justify-items-start gap-1 rounded-2xl bg-black/[0.04] px-3.5 py-3 text-left shadow-[inset_0_0_0_1px_rgba(17,24,39,0.04)] transition active:scale-[0.99]',
-                householdId === household.id &&
-                  'bg-tma-primary/12 text-tma-primary',
-              )}
-              type='button'
+              className={
+                householdId === household.id
+                  ? 'bg-tma-primary/12 text-tma-primary'
+                  : ''
+              }
               onClick={() => {
                 selection()
                 setContext({ householdId: household.id, groupId: null })
               }}>
               <span className='font-semibold'>{household.name}</span>
-              <small className='text-xs text-tma-text-muted'>
-                {household.defaultCurrencyCode}
-              </small>
-            </button>
+            </ChipButton>
           ))}
         </div>
       </Section>

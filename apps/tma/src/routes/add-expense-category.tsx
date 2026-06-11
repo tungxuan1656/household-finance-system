@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { CalendarIcon } from '@/components/shared/tma-icons'
 import {
   TmaCategoryIconBadge,
-  TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
-import { Card, DataState, Section, SectionHeader } from '@/components/ui'
+import { ChipButton, DataState, Section, SectionHeader } from '@/components/ui'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import { useReferenceCategoriesQuery } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
@@ -30,35 +29,30 @@ export const AddExpenseCategoryPage = () => {
 
   return (
     <TmaPageShell title='Thêm chi tiêu'>
-      <TmaPageHeader eyebrow='Bước 1/3' title='Chọn danh mục cho khoản chi' />
-      <Card>
-        <label className='relative flex items-center gap-3 overflow-hidden rounded-[18px] bg-black/[0.04] p-3.5'>
-          <CalendarIcon
-            className='text-tma-text-muted'
-            height='18'
-            width='18'
-          />
-          <div className='grid gap-1'>
-            <span className='text-xs text-tma-text-muted'>Ngày chi tiêu</span>
-            <strong className='text-tma-text-strong'>
-              {formatDateLabel(date)}
-            </strong>
-          </div>
-          <input
-            className='absolute inset-0 opacity-0'
-            type='date'
-            value={date.slice(0, 10)}
-            onChange={(event) => {
-              selection()
+      <label className='relative mt-4 flex items-center overflow-hidden rounded-[18px] bg-white p-3.5'>
+        <CalendarIcon className='text-tma-text-muted' height='24' width='24' />
+        <div className='ml-2 flex flex-1 items-center justify-between'>
+          <span className='text-base font-medium text-tma-text-strong'>
+            Ngày chi tiêu
+          </span>
+          <strong className='text-tma-text-strong'>
+            {formatDateLabel(date)}
+          </strong>
+        </div>
+        <input
+          className='absolute inset-0 opacity-0'
+          type='date'
+          value={date.slice(0, 10)}
+          onChange={(event) => {
+            selection()
 
-              const nextDate = new Date(
-                `${event.target.value}T12:00:00+07:00`,
-              ).toISOString()
-              setDate(nextDate)
-            }}
-          />
-        </label>
-      </Card>
+            const nextDate = new Date(
+              `${event.target.value}T12:00:00+07:00`,
+            ).toISOString()
+            setDate(nextDate)
+          }}
+        />
+      </label>
 
       <Section>
         <SectionHeader title='Chọn danh mục phù hợp' />
@@ -77,13 +71,12 @@ export const AddExpenseCategoryPage = () => {
           loadingDescription='Danh mục chi tiêu sẽ hiện ngay khi API trả về.'
           loadingTitle='Đang tải danh mục'
           retryAction={categoriesQuery.refetch}>
-          <div className='grid grid-cols-2 gap-2.5'>
+          <div className='grid grid-cols-3 gap-2'>
             {categoryOptions.map((category) => (
-              <button
+              <ChipButton
                 key={category.id}
                 aria-pressed={false}
-                className='grid min-h-28 content-start gap-3 rounded-[20px] border border-black/[0.04] bg-white p-3.5 text-left shadow-tma-soft transition active:scale-[0.98]'
-                type='button'
+                className='grid min-h-20 content-start'
                 onClick={() => {
                   selection()
                   selectCategory(category)
@@ -94,10 +87,10 @@ export const AddExpenseCategoryPage = () => {
                   iconUrl={category.iconUrl}
                   symbol={category.symbol}
                 />
-                <span className='text-[15px] font-semibold text-tma-text-strong'>
+                <span className='text-xs font-semibold text-tma-text-strong'>
                   {category.label}
                 </span>
-              </button>
+              </ChipButton>
             ))}
           </div>
         </DataState>

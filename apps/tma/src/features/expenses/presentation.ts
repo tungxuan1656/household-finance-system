@@ -8,9 +8,9 @@ const SOURCE_LABELS: Record<SourceKey, string> = {
   cash: 'Tiền mặt',
   'bank-transfer': 'Chuyển khoản',
   card: 'Thẻ tín dụng',
-  momo: 'Ví MoMo',
-  'zalo-pay': 'Ví ZaloPay',
-  'shopee-pay': 'Ví ShopeePay',
+  momo: 'MoMo',
+  'zalo-pay': 'ZaloPay',
+  'shopee-pay': 'ShopeePay',
   other: 'Khác',
 }
 

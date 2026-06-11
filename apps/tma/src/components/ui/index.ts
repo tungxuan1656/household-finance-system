@@ -1,5 +1,6 @@
 export * from './button'
 export * from './card'
+export * from './chip-button'
 export * from './data-state'
 export * from './form'
 export * from './primitives'

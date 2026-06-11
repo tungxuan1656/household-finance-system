@@ -38,8 +38,9 @@
   --color-tma-warning: var(--tma-warning);
   --shadow-tma-card: var(--tma-shadow);
   --shadow-tma-soft: var(--tma-shadow-soft);
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
   --animate-tma-spin: tma-spin 0.8s linear infinite;
 }
 
@@ -88,4 +89,9 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+input,
+textarea {
+  caret-color: #555666;
 }

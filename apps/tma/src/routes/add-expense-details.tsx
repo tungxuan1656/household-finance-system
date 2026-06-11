@@ -1,7 +1,7 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { CoinIcon, NoteIcon } from '@/components/shared/tma-icons'
+import { CoinIcon, NoteIcon, SunIcon } from '@/components/shared/tma-icons'
 import {
   TmaCategoryIconBadge,
   TmaPageHeader,
@@ -12,9 +12,8 @@ import {
   Card,
   CardDescription,
   CardTitle,
-  MoneyLabel,
+  ChipButton,
   Section,
-  SectionHeader,
 } from '@/components/ui'
 import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
@@ -23,24 +22,24 @@ import { TMA_PATHS } from '@/lib/constants/routes'
 import {
   formatAmountInput,
   formatDateLabel,
-  formatVnd,
   parseAmountInput,
 } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
-import { cn } from '@/lib/utils'
 
 export const AddExpenseDetailsPage = () => {
   const navigate = useNavigate()
   const date = useAddExpenseFlowStore((state) => state.date)
   const category = useAddExpenseFlowStore((state) => state.category)
   const draftAmount = useAddExpenseFlowStore((state) => state.amount)
-  const draftSourceId = useAddExpenseFlowStore((state) => state.sourceId)
+  const draftSourceId = useAddExpenseFlowStore(
+    (state) => state.sourceId || 'bank-transfer',
+  )
   const draftTitle = useAddExpenseFlowStore((state) => state.title)
   const setDetails = useAddExpenseFlowStore((state) => state.setDetails)
 
   const [amountInput, setAmountInput] = useState(
-    draftAmount > 0 ? formatAmountInput(String(draftAmount)) : '',
+    draftAmount > 0 ? formatAmountInput(String(draftAmount / 1000)) : '',
   )
   const [sourceId, setSourceId] = useState<SourceKey | null>(draftSourceId)
   const [title, setTitle] = useState(draftTitle)
@@ -54,17 +53,11 @@ export const AddExpenseDetailsPage = () => {
     }
 
     notification('success')
-    setDetails({ amount, sourceId, title: title.trim() })
+    setDetails({ amount: amount * 1000, sourceId, title: title.trim() })
     navigate(TMA_PATHS.expensesNewContext)
   })
 
   useEffect(() => {
-    if (!category) {
-      hideBottomButton()
-
-      return
-    }
-
     const cleanup = setBottomButton({
       text: 'Tiếp tục',
       enabled: isValid,
@@ -101,31 +94,27 @@ export const AddExpenseDetailsPage = () => {
 
   return (
     <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
-      <TmaPageHeader
-        eyebrow='Bước 2/3'
-        subtitle='Nhập số tiền, nguồn tiền và tên khoản chi.'
-        title='Số tiền là trọng tâm ở bước này'
-      />
-      <Card className='mb-3 flex items-center gap-3'>
+      <Card className='mt-2 mb-3 flex items-center gap-3 p-2.5'>
         <TmaCategoryIconBadge
           accent={category.accent}
           iconUrl={category.iconUrl}
           symbol={category.symbol}
         />
         <div>
-          <strong className='text-tma-text-strong'>{category.label}</strong>
+          <CardTitle>{category.label}</CardTitle>
           <CardDescription>{formatDateLabel(date)}</CardDescription>
         </div>
       </Card>
 
-      <Card className='grid gap-3'>
-        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
-          <CoinIcon height='18' width='18' />
+      <Section className='grid gap-1'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+          <CoinIcon className='mt-1 size-6' />
           <span>Số tiền</span>
         </div>
-        <label className='flex items-end justify-between gap-2 rounded-[20px] bg-black/[0.04] p-4'>
+        <label className='flex items-end justify-between gap-2 rounded-3xl bg-white p-4'>
           <input
-            className='w-full bg-transparent font-mono text-[34px] leading-none font-extrabold text-tma-text-strong outline-none'
+            autoFocus={true}
+            className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-tma-text-strong outline-none'
             inputMode='numeric'
             placeholder='0'
             type='text'
@@ -134,53 +123,44 @@ export const AddExpenseDetailsPage = () => {
               setAmountInput(formatAmountInput(event.target.value))
             }}
           />
+          <span className='font-mono text-3xl font-semibold text-tma-text-strong/80'>
+            .000
+          </span>
           <span className='text-xs font-semibold text-tma-text-muted'>VND</span>
         </label>
-        <CardDescription>
-          {amount > 0 ? (
-            <MoneyLabel>{formatVnd(amount)}</MoneyLabel>
-          ) : (
-            'Nhập một số tiền đủ rõ để tiếp tục.'
-          )}
-        </CardDescription>
-      </Card>
+      </Section>
 
-      <Card className='mt-3 grid gap-3'>
-        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
-          <NoteIcon height='16' width='16' />
-          <span>Tên *</span>
+      <Section className='grid gap-1'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+          <NoteIcon className='size-6' />
+          <span>Khoản chi</span>
         </div>
-        <input
-          className='w-full border-0 bg-transparent px-0 text-base font-semibold text-tma-text-strong outline-none'
-          placeholder='Nhập tên khoản chi tiêu...'
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
-      </Card>
+        <div className='rounded-3xl bg-white p-5'>
+          <input
+            className='w-full border-0 bg-transparent px-0 text-base font-medium text-tma-text-strong outline-none'
+            placeholder='Nhập tên khoản chi tiêu...'
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+        </div>
+      </Section>
 
       <Section>
-        <SectionHeader
-          eyebrow='Nguồn tiền'
-          title='Chọn tài khoản hoặc ví dùng để chi'
-        />
-        <div className='grid gap-2.5'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+          <SunIcon className='size-6' />
+          <span>Khoản chi</span>
+        </div>
+        <div className='grid grid-cols-3 gap-2.5'>
           {getSourceOptions().map((source) => (
-            <button
+            <ChipButton
               key={source.id}
-              className={cn(
-                'grid justify-items-start gap-1 rounded-2xl bg-black/[0.04] px-3.5 py-3 text-left shadow-[inset_0_0_0_1px_rgba(17,24,39,0.04)] transition active:scale-[0.99]',
-                sourceId === source.id && 'bg-tma-primary/12 text-tma-primary',
-              )}
-              type='button'
+              className={sourceId === source.id ? 'ring-2 ring-blue-300' : ''}
               onClick={() => {
                 selection()
                 setSourceId(source.id)
               }}>
               <span className='font-semibold'>{source.label}</span>
-              <small className='text-xs text-tma-text-muted'>
-                {source.detail}
-              </small>
-            </button>
+            </ChipButton>
           ))}
         </div>
       </Section>
