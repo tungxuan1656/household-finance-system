@@ -12,7 +12,6 @@ import {
   Card,
   CardDescription,
   CardTitle,
-  Chip,
   ChipButton,
   Eyebrow,
   MoneyLabel,
@@ -245,14 +244,7 @@ export const AddExpenseContextPage = () => {
       </Section>
 
       <Section>
-        <SectionHeader
-          action={
-            groupItems.length > 0 ? (
-              <Chip tone='muted'>{groupItems.length} nhóm khả dụng</Chip>
-            ) : null
-          }
-          title='Nhóm'
-        />
+        <SectionHeader title='Nhóm' />
         <div className='grid grid-cols-2 gap-2.5'>
           <ChipButton
             className={
@@ -277,9 +269,6 @@ export const AddExpenseContextPage = () => {
                 setContext({ householdId, groupId: item.group.id })
               }}>
               <span className='font-semibold'>{item.group.name}</span>
-              <span className='text-[11px] text-tma-text-muted'>
-                {getGroupContextLabel(item)}
-              </span>
             </ChipButton>
           ))}
         </div>
