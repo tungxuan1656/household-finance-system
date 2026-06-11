@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from 'react'
+import { useEffectEvent, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import {
@@ -22,11 +22,25 @@ import {
 import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
+import {
+  useHouseholdExpenseGroupQueries,
+  usePersonalExpenseGroupListQuery,
+} from '@/features/groups/api'
+import { getGroupContextLabel } from '@/features/groups/presentation'
+import type { GroupListItem } from '@/features/groups/types'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
-import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
+
+const SummaryRow = ({ label, value }: { label: string; value: string }) => (
+  <div className='grid gap-1'>
+    <span className='text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'>
+      {label}
+    </span>
+    <strong className='text-sm text-tma-text-strong'>{value}</strong>
+  </div>
+)
 
 export const AddExpenseContextPage = () => {
   const navigate = useNavigate()
@@ -40,15 +54,34 @@ export const AddExpenseContextPage = () => {
   const setContext = useAddExpenseFlowStore((state) => state.setContext)
   const reset = useAddExpenseFlowStore((state) => state.reset)
   const householdsQuery = useHouseholdsQuery()
+  const personalGroupsQuery = usePersonalExpenseGroupListQuery()
   const createExpenseMutation = useCreateExpenseMutation()
   const [feedback, setFeedback] = useState<string | null>(null)
 
   const households = householdsQuery.data?.items ?? []
+  const householdGroupQueries = useHouseholdExpenseGroupQueries(households)
+
+  const groupItems = useMemo<GroupListItem[]>(() => {
+    const personalGroups = personalGroupsQuery.data?.items ?? []
+
+    return [
+      ...personalGroups.map((group) => ({ group, household: null })),
+      ...households.flatMap((household, index) => {
+        const query = householdGroupQueries[index]
+        const groups = query?.data?.items ?? []
+
+        return groups.map((group) => ({ group, household }))
+      }),
+    ].sort((left, right) => right.group.createdAt - left.group.createdAt)
+  }, [householdGroupQueries, households, personalGroupsQuery.data?.items])
+
   const selectedSource =
     getSourceOptions().find((source) => source.id === sourceId) ?? null
   const selectedHousehold = households.find(
     (household) => household.id === householdId,
   )
+  const selectedGroupItem =
+    groupItems.find((item) => item.group.id === groupId) ?? null
   const isReady = category !== null && amount > 0 && sourceId !== null
 
   const handleSave = useEffectEvent(async () => {
@@ -66,6 +99,7 @@ export const AddExpenseContextPage = () => {
         title: title.trim(),
         occurredAt: new Date(date).getTime(),
         ...(householdId ? { householdId } : {}),
+        ...(groupId ? { groupIds: [groupId] } : {}),
       })
 
       notification('success')
@@ -84,30 +118,6 @@ export const AddExpenseContextPage = () => {
       )
     }
   })
-
-  useEffect(() => {
-    if (!isReady) {
-      hideBottomButton()
-
-      return
-    }
-
-    const cleanup = setBottomButton({
-      text: createExpenseMutation.isPending
-        ? 'Đang lưu...'
-        : `Lưu ${formatVnd(amount)}`,
-      enabled: !createExpenseMutation.isPending,
-      showProgress: createExpenseMutation.isPending,
-      onClick: () => {
-        void handleSave()
-      },
-    })
-
-    return () => {
-      cleanup()
-      hideBottomButton()
-    }
-  }, [amount, createExpenseMutation.isPending, isReady])
 
   if (!isReady || !category) {
     return (
@@ -130,7 +140,19 @@ export const AddExpenseContextPage = () => {
   }
 
   return (
-    <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
+    <TmaPageShell
+      reserveBottomButton
+      bottomAction={
+        <Button
+          className='w-full'
+          disabled={createExpenseMutation.isPending}
+          onClick={() => {
+            void handleSave()
+          }}>
+          {createExpenseMutation.isPending ? 'Đang lưu...' : 'Lưu chi tiêu'}
+        </Button>
+      }
+      title='Thêm chi tiêu'>
       {feedback ? (
         <Card className='mb-3 border-[#d93838]/20 bg-[#ffeded]/90'>
           <CardDescription className='text-[#d93838]'>
@@ -139,18 +161,55 @@ export const AddExpenseContextPage = () => {
         </Card>
       ) : null}
 
-      <Card className='mb-3 flex items-center gap-3 p-2.5'>
-        <TmaCategoryIconBadge
-          accent={category.accent}
-          iconUrl={category.iconUrl}
-          symbol={category.symbol}
-        />
-        <div>
-          <CardTitle>{category.label}</CardTitle>
-          <CardDescription>
-            {formatDateLabel(date)} ·{' '}
-            <MoneyLabel>{formatVnd(amount)}</MoneyLabel>
-          </CardDescription>
+      <Card className='mb-3 grid gap-3 p-3.5'>
+        <div className='flex items-center gap-3'>
+          <TmaCategoryIconBadge
+            accent={category.accent}
+            iconUrl={category.iconUrl}
+            symbol={category.symbol}
+          />
+          <div className='min-w-0 flex-1'>
+            <CardTitle className='truncate'>{category.label}</CardTitle>
+            <CardDescription>
+              {formatDateLabel(date)} ·{' '}
+              <MoneyLabel>{formatVnd(amount)}</MoneyLabel>
+            </CardDescription>
+          </div>
+        </div>
+
+        <div className='grid gap-2.5 border-t border-tma-line pt-3'>
+          <div className='grid gap-1'>
+            <Eyebrow>Tên khoản chi</Eyebrow>
+            <strong className='truncate text-base font-semibold text-tma-text-strong'>
+              {title.trim() || 'Chưa đặt tên'}
+            </strong>
+          </div>
+          <div className='grid grid-cols-2 gap-3'>
+            <SummaryRow
+              label='Nguồn tiền'
+              value={selectedSource?.label ?? 'Chưa chọn'}
+            />
+            <SummaryRow
+              label='Gia đình'
+              value={selectedHousehold?.name ?? 'Cá nhân'}
+            />
+            <SummaryRow
+              label='Nhóm'
+              value={
+                selectedGroupItem
+                  ? selectedGroupItem.group.name
+                  : 'Không gắn nhóm'
+              }
+            />
+            <SummaryRow
+              label='Ngữ cảnh nhóm'
+              value={
+                selectedGroupItem
+                  ? getGroupContextLabel(selectedGroupItem)
+                  : 'Cá nhân'
+              }
+            />
+          </div>
         </div>
       </Card>
 
@@ -187,44 +246,44 @@ export const AddExpenseContextPage = () => {
 
       <Section>
         <SectionHeader
-          eyebrow='Nhóm'
-          title='Sẽ dùng khi TMA group picker sẵn sàng'
+          action={
+            groupItems.length > 0 ? (
+              <Chip tone='muted'>{groupItems.length} nhóm khả dụng</Chip>
+            ) : null
+          }
+          title='Nhóm'
         />
-        <Card className='flex items-center justify-between gap-3'>
-          <CardDescription>
-            Chi tiêu này sẽ lưu không gắn nhóm để tránh dùng dữ liệu nhóm giả.
-          </CardDescription>
-          <Chip tone='warning'>Sớm có</Chip>
-        </Card>
-      </Section>
-
-      <Card className='mt-6 grid gap-4'>
-        <Eyebrow>Preview</Eyebrow>
-        <div className='grid grid-cols-2 gap-x-3 gap-y-4'>
-          {[
-            ['Tên', title.trim() || 'Chưa đặt tên'],
-            ['Danh mục', category.label],
-            ['Số tiền', formatVnd(amount)],
-            ['Ngày', formatDateLabel(date)],
-            ['Nguồn tiền', selectedSource?.label ?? 'Chưa chọn'],
-            ['Gia đình', selectedHousehold?.name ?? 'Không gắn'],
-            ['Nhóm', 'Không gắn'],
-          ].map(([label, value]) => (
-            <div key={label} className='grid gap-1'>
-              <span className='text-xs text-tma-text-muted'>{label}</span>
-              <strong className='text-sm text-tma-text-strong'>{value}</strong>
-            </div>
+        <div className='grid grid-cols-2 gap-2.5'>
+          <ChipButton
+            className={
+              groupId === null ? 'bg-tma-primary/12 text-tma-primary' : ''
+            }
+            onClick={() => {
+              selection()
+              setContext({ householdId, groupId: null })
+            }}>
+            <span className='font-semibold'>Không gắn nhóm</span>
+          </ChipButton>
+          {groupItems.map((item) => (
+            <ChipButton
+              key={item.group.id}
+              className={
+                groupId === item.group.id
+                  ? 'bg-tma-primary/12 text-tma-primary'
+                  : ''
+              }
+              onClick={() => {
+                selection()
+                setContext({ householdId, groupId: item.group.id })
+              }}>
+              <span className='font-semibold'>{item.group.name}</span>
+              <span className='text-[11px] text-tma-text-muted'>
+                {getGroupContextLabel(item)}
+              </span>
+            </ChipButton>
           ))}
         </div>
-        <Button
-          className='md:hidden'
-          disabled={createExpenseMutation.isPending}
-          onClick={() => {
-            void handleSave()
-          }}>
-          {createExpenseMutation.isPending ? 'Đang lưu...' : 'Lưu chi tiêu'}
-        </Button>
-      </Card>
+      </Section>
     </TmaPageShell>
   )
 }

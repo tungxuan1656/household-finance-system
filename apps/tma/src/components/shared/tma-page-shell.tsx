@@ -182,13 +182,23 @@ export const TmaPageTitleBar = ({ title }: { title: string }) => (
 export interface TmaPageShellProps {
   children: ReactNode
   title: string
+  bottomAction?: ReactNode
   reserveBottomButton?: boolean
   bubbleHref?: string
   contentClassName?: string
   onRefresh?: () => Promise<void>
 }
 
+export const TmaStickyActionBar = ({ children }: { children: ReactNode }) => (
+  <div className='pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pt-3 pb-[calc(14px+var(--tma-content-safe-bottom))] md:px-6'>
+    <div className='pointer-events-auto mx-auto flex w-full max-w-md justify-center bg-gradient-to-t from-tma-base-bg via-tma-base-bg/95 to-tma-base-bg/0 pt-4'>
+      <div className='w-full'>{children}</div>
+    </div>
+  </div>
+)
+
 export const TmaPageShell = ({
+  bottomAction,
   bubbleHref,
   children,
   contentClassName,
@@ -251,6 +261,10 @@ export const TmaPageShell = ({
 
         {isShowBottomTabs ? <TmaBottomTabs bubbleHref={bubbleHref} /> : null}
       </div>
+
+      {bottomAction ? (
+        <TmaStickyActionBar>{bottomAction}</TmaStickyActionBar>
+      ) : null}
     </AppShell>
   )
 }

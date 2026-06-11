@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from 'react'
+import { useEffectEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { CoinIcon, NoteIcon, SunIcon } from '@/components/shared/tma-icons'
@@ -8,6 +8,7 @@ import {
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import {
+  Button,
   buttonVariants,
   Card,
   CardDescription,
@@ -24,7 +25,6 @@ import {
   formatDateLabel,
   parseAmountInput,
 } from '@/lib/formatters'
-import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseDetailsPage = () => {
@@ -57,22 +57,6 @@ export const AddExpenseDetailsPage = () => {
     navigate(TMA_PATHS.expensesNewContext)
   })
 
-  useEffect(() => {
-    const cleanup = setBottomButton({
-      text: 'Tiếp tục',
-      enabled: isValid,
-      showProgress: false,
-      onClick: () => {
-        handleContinue()
-      },
-    })
-
-    return () => {
-      cleanup()
-      hideBottomButton()
-    }
-  }, [category, isValid])
-
   if (!category) {
     return (
       <TmaPageShell title='Thêm chi tiêu'>
@@ -93,7 +77,19 @@ export const AddExpenseDetailsPage = () => {
   }
 
   return (
-    <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
+    <TmaPageShell
+      reserveBottomButton
+      bottomAction={
+        <Button
+          className='w-full'
+          disabled={!isValid}
+          onClick={() => {
+            handleContinue()
+          }}>
+          Tiếp tục
+        </Button>
+      }
+      title='Thêm chi tiêu'>
       <Card className='mt-2 mb-3 flex items-center gap-3 p-2.5'>
         <TmaCategoryIconBadge
           accent={category.accent}
