@@ -54,7 +54,7 @@ const BudgetListCard = ({
   household?: HouseholdDTO
 }) => (
   <Link
-    className='grid gap-3 rounded-[24px] bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
+    className='grid gap-3 rounded-3xl bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
     to={getBudgetDetailPath(budget.id)}
     onClick={() => selection()}>
     <div className='flex items-start justify-between gap-3'>

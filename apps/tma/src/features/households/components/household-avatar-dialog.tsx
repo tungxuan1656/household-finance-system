@@ -60,7 +60,7 @@ export const HouseholdAvatarDialog = ({
         {previewUrl ? (
           <img
             alt='Xem trước avatar household'
-            className='aspect-square w-full rounded-[24px] bg-black/[0.04] object-cover'
+            className='aspect-square w-full rounded-3xl bg-black/[0.04] object-cover'
             src={previewUrl}
           />
         ) : null}

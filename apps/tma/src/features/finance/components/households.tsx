@@ -100,7 +100,7 @@ export const HouseholdItem = ({
   roleLabel: string
 }) => (
   <Link
-    className='grid gap-3 rounded-[24px] bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
+    className='grid gap-3 rounded-3xl bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
     to={getHouseholdDetailPath(card.household.id)}
     onClick={() => impact('light')}>
     <div className='flex items-center justify-between gap-3'>

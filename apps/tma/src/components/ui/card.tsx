@@ -9,7 +9,7 @@ export const Card = ({
 }: HTMLAttributes<HTMLElement> & { children: ReactNode }) => (
   <section
     className={cn(
-      'rounded-[24px] border border-white/70 bg-tma-card-bg p-4 shadow-tma-card',
+      'rounded-3xl border border-white/70 bg-tma-card-bg p-4 shadow-tma-card',
       className,
     )}
     {...props}>

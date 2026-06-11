@@ -52,7 +52,7 @@ export const ExpenseItem = ({
 
   return (
     <article
-      className='flex cursor-pointer items-center gap-3 rounded-[24px] bg-tma-card-plain p-4 shadow-tma-soft transition active:scale-[0.99]'
+      className='flex cursor-pointer items-center gap-3 rounded-3xl bg-tma-card-plain p-4 shadow-tma-soft transition active:scale-[0.99]'
       role='button'
       tabIndex={0}
       onClick={openDetail}
