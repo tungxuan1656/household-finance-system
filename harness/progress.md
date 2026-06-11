@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-11 — Restored native TMA BottomButton for add-expense
+
+- Who: Codex
+- Summary: Rolled back the custom web sticky action button in the TMA add-expense flow because it moved unpredictably around the mobile keyboard. Step 2 and step 3 now use Telegram native BottomButton again. Each route separates BottomButton lifecycle into one-time click registration, state-only visual updates, and a dedicated unmount-only `hideBottomButton` cleanup so form state changes do not remount the native button. For step 2 focus, step 1 now navigates with `flushSync`, and the amount input focuses immediately from its ref callback with `preventScroll` plus `autoFocus`, avoiding the previous delayed timer.
+- Files changed: TMA shared shell rollback, add-expense category/details/context routes, focused focus regression test, theme test rollback, and feat-084 harness records.
+- Verification: Focused add-expense details focus test passed. `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build` returned `OK`. Final `./init.sh` completed with `Done!`.
+- Blockers: Real Telegram WebView keyboard smoke remains pending because this harness cannot open an authenticated Telegram launch context.
+- Next steps: Open add-expense step 2 and step 3 in Telegram on iOS and Android, confirm the amount input auto-focuses, and verify the native BottomButton follows keyboard behavior correctly.
+
 ## 2026-06-07 — Added TMA budget CRUD surfaces
 
 - Who: Codex

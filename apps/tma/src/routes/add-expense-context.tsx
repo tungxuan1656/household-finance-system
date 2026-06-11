@@ -1,4 +1,4 @@
-import { useEffectEvent, useMemo, useState } from 'react'
+import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import {
@@ -7,7 +7,6 @@ import {
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import {
-  Button,
   buttonVariants,
   Card,
   CardDescription,
@@ -30,6 +29,11 @@ import type { GroupListItem } from '@/features/groups/types'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
+import {
+  hideBottomButton,
+  setBottomButton,
+  updateBottomButton,
+} from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
 
 const SummaryRow = ({ label, value }: { label: string; value: string }) => (
@@ -118,6 +122,44 @@ export const AddExpenseContextPage = () => {
     }
   })
 
+  useEffect(() => {
+    if (!isReady) {
+      return
+    }
+
+    const cleanup = setBottomButton({
+      text: 'Lưu chi tiêu',
+      enabled: false,
+      showProgress: false,
+      onClick: () => {
+        void handleSave()
+      },
+    })
+
+    return cleanup
+  }, [isReady])
+
+  useEffect(() => {
+    if (!isReady) {
+      return
+    }
+
+    updateBottomButton({
+      text: createExpenseMutation.isPending
+        ? 'Đang lưu...'
+        : `Lưu ${formatVnd(amount)}`,
+      enabled: !createExpenseMutation.isPending,
+      showProgress: createExpenseMutation.isPending,
+    })
+  }, [amount, createExpenseMutation.isPending, isReady])
+
+  useEffect(
+    () => () => {
+      hideBottomButton()
+    },
+    [],
+  )
+
   if (!isReady || !category) {
     return (
       <TmaPageShell title='Thêm chi tiêu'>
@@ -139,19 +181,7 @@ export const AddExpenseContextPage = () => {
   }
 
   return (
-    <TmaPageShell
-      reserveBottomButton
-      bottomAction={
-        <Button
-          className='w-full'
-          disabled={createExpenseMutation.isPending}
-          onClick={() => {
-            void handleSave()
-          }}>
-          {createExpenseMutation.isPending ? 'Đang lưu...' : 'Lưu chi tiêu'}
-        </Button>
-      }
-      title='Thêm chi tiêu'>
+    <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
       {feedback ? (
         <Card className='mb-3 border-[#d93838]/20 bg-[#ffeded]/90'>
           <CardDescription className='text-[#d93838]'>

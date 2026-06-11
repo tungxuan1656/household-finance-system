@@ -1,4 +1,4 @@
-import { useEffectEvent, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { CoinIcon, NoteIcon, SunIcon } from '@/components/shared/tma-icons'
@@ -8,7 +8,6 @@ import {
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import {
-  Button,
   buttonVariants,
   Card,
   CardDescription,
@@ -25,10 +24,16 @@ import {
   formatDateLabel,
   parseAmountInput,
 } from '@/lib/formatters'
+import {
+  hideBottomButton,
+  setBottomButton,
+  updateBottomButton,
+} from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseDetailsPage = () => {
   const navigate = useNavigate()
+  const amountInputRef = useRef<HTMLInputElement | null>(null)
   const date = useAddExpenseFlowStore((state) => state.date)
   const category = useAddExpenseFlowStore((state) => state.category)
   const draftAmount = useAddExpenseFlowStore((state) => state.amount)
@@ -46,6 +51,7 @@ export const AddExpenseDetailsPage = () => {
 
   const amount = parseAmountInput(amountInput)
   const isValid = amount > 0 && sourceId !== null && title.trim().length > 0
+  const hasCategory = category !== null
 
   const handleContinue = useEffectEvent(() => {
     if (!isValid || sourceId === null) {
@@ -56,6 +62,43 @@ export const AddExpenseDetailsPage = () => {
     setDetails({ amount: amount * 1000, sourceId, title: title.trim() })
     navigate(TMA_PATHS.expensesNewContext)
   })
+
+  useEffect(() => {
+    if (!hasCategory) {
+      return
+    }
+
+    const cleanup = setBottomButton({
+      text: 'Tiếp tục',
+      enabled: false,
+      showProgress: false,
+      onClick: () => {
+        handleContinue()
+      },
+    })
+
+    return cleanup
+  }, [hasCategory])
+
+  useEffect(() => {
+    if (!hasCategory) {
+      return
+    }
+
+    updateBottomButton({
+      text: 'Tiếp tục',
+      enabled: isValid,
+      showProgress: false,
+    })
+  }, [hasCategory, isValid])
+
+  useEffect(() => {
+    amountInputRef.current?.focus({ preventScroll: true })
+
+    return () => {
+      hideBottomButton()
+    }
+  }, [])
 
   if (!category) {
     return (
@@ -77,19 +120,7 @@ export const AddExpenseDetailsPage = () => {
   }
 
   return (
-    <TmaPageShell
-      reserveBottomButton
-      bottomAction={
-        <Button
-          className='w-full'
-          disabled={!isValid}
-          onClick={() => {
-            handleContinue()
-          }}>
-          Tiếp tục
-        </Button>
-      }
-      title='Thêm chi tiêu'>
+    <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
       <Card className='mt-2 mb-3 flex items-center gap-3 p-2.5'>
         <TmaCategoryIconBadge
           accent={category.accent}
@@ -109,6 +140,7 @@ export const AddExpenseDetailsPage = () => {
         </div>
         <label className='flex items-end justify-between gap-2 rounded-3xl bg-white p-4'>
           <input
+            ref={amountInputRef}
             autoFocus={true}
             className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-tma-text-strong outline-none'
             inputMode='numeric'

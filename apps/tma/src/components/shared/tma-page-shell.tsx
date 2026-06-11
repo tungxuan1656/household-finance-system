@@ -51,7 +51,7 @@ const TmaBottomTabs = ({
     <div
       aria-label='Điều hướng chính'
       className='pointer-events-none fixed right-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] left-0 z-30 flex justify-center px-4'>
-      <nav className='pointer-events-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 rounded-[28px] border border-white/50 bg-white/55 p-1 shadow-[0_6px_20px_rgba(17,24,39,0.05),0_1px_2px_rgba(17,24,39,0.04),inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.04)] backdrop-blur-md md:min-w-[360px]'>
+      <nav className='pointer-events-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 rounded-[28px] border border-white/50 bg-white/55 p-1 shadow-[0_6px_20px_rgba(17,24,39,0.05),0_1px_2px_rgba(17,24,39,0.04),inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.04)] backdrop-blur-md md:min-w-90'>
         <div className='flex justify-start'>
           {tabItems.slice(0, 1).map(({ href, label, icon: Icon, match }) => {
             const isActive = match(location.pathname)
@@ -61,7 +61,7 @@ const TmaBottomTabs = ({
                 key={href}
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'relative flex h-[52px] min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-tma-text-muted transition-colors',
+                  'relative flex h-13 min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-tma-text-muted transition-colors',
                   isActive && 'bg-tma-primary/10 text-tma-primary',
                 )}
                 to={href}
@@ -84,7 +84,7 @@ const TmaBottomTabs = ({
 
         <Link
           aria-label='Tạo chi tiêu mới'
-          className='pointer-events-auto mx-1 -my-4 grid size-[54px] place-items-center rounded-full bg-gradient-to-br from-[#2a3a5c] to-tma-text-strong text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
+          className='pointer-events-auto mx-1 -my-4 grid size-13.5 place-items-center rounded-full bg-linear-to-br from-[#2a3a5c] to-tma-text-strong text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
           to={bubbleHref}
           onClick={() => {
             impact('medium')
@@ -101,7 +101,7 @@ const TmaBottomTabs = ({
                 key={href}
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'relative flex h-[52px] min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-tma-text-muted transition-colors',
+                  'relative flex h-13 min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-tma-text-muted transition-colors',
                   isActive && 'bg-tma-primary/10 text-tma-primary',
                 )}
                 to={href}
@@ -144,7 +144,7 @@ export const TmaPageHeader = ({
   <section className='flex items-start justify-between gap-3 px-1 py-3 md:px-6'>
     <div className='flex min-w-0 items-center gap-3'>
       {leading ? (
-        <div className='grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-tma-primary/20 to-tma-positive/30 text-sm font-bold text-tma-text-strong shadow-[inset_0_0_0_1px_rgba(255,255,255,0.5)]'>
+        <div className='grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-linear-to-br from-tma-primary/20 to-tma-positive/30 text-sm font-bold text-tma-text-strong shadow-[inset_0_0_0_1px_rgba(255,255,255,0.5)]'>
           {leading}
         </div>
       ) : null}
@@ -182,23 +182,13 @@ export const TmaPageTitleBar = ({ title }: { title: string }) => (
 export interface TmaPageShellProps {
   children: ReactNode
   title: string
-  bottomAction?: ReactNode
   reserveBottomButton?: boolean
   bubbleHref?: string
   contentClassName?: string
   onRefresh?: () => Promise<void>
 }
 
-export const TmaStickyActionBar = ({ children }: { children: ReactNode }) => (
-  <div className='pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pt-3 pb-[calc(14px+var(--tma-content-safe-bottom))] md:px-6'>
-    <div className='pointer-events-auto mx-auto flex w-full max-w-md justify-center bg-gradient-to-t from-tma-base-bg via-tma-base-bg/95 to-tma-base-bg/0 pt-4'>
-      <div className='w-full'>{children}</div>
-    </div>
-  </div>
-)
-
 export const TmaPageShell = ({
-  bottomAction,
   bubbleHref,
   children,
   contentClassName,
@@ -261,10 +251,6 @@ export const TmaPageShell = ({
 
         {isShowBottomTabs ? <TmaBottomTabs bubbleHref={bubbleHref} /> : null}
       </div>
-
-      {bottomAction ? (
-        <TmaStickyActionBar>{bottomAction}</TmaStickyActionBar>
-      ) : null}
     </AppShell>
   )
 }

@@ -80,7 +80,7 @@ export const AddExpenseCategoryPage = () => {
                 onClick={() => {
                   selection()
                   selectCategory(category)
-                  navigate(TMA_PATHS.expensesNewDetails)
+                  navigate(TMA_PATHS.expensesNewDetails, { flushSync: true })
                 }}>
                 <TmaCategoryIconBadge
                   accent={category.accent}
