@@ -7,7 +7,7 @@ import { PeriodPickerPage } from '@/features/period/pages/period-picker-page'
 import { usePeriodStore } from '@/features/period/store'
 import {
   createCurrentMonthPeriodSelection,
-  createWeekPeriodSelection,
+  createReportingPeriodPresetSelection,
 } from '@/lib/period'
 
 const { setBottomButtonMock } = vi.hoisted(() => ({
@@ -72,7 +72,7 @@ describe('period store and picker', () => {
     )
   })
 
-  it('applies the picker draft into zustand only when BottomButton confirms', async () => {
+  it('applies a preset chip into zustand only when BottomButton confirms', async () => {
     await act(async () => {
       root.render(
         <MemoryRouter initialEntries={[{ pathname: '/period' }]}>
@@ -84,14 +84,14 @@ describe('period store and picker', () => {
       )
     })
 
-    const weekTab = Array.from(host.querySelectorAll('button')).find(
-      (button) => button.textContent === 'Tuần',
+    const lastWeekPreset = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent === 'Tuần trước',
     )
 
-    expect(weekTab).toBeTruthy()
+    expect(lastWeekPreset).toBeTruthy()
 
     await act(async () => {
-      weekTab?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+      lastWeekPreset?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     })
 
     expect(usePeriodStore.getState().selectedPeriod).toEqual(
@@ -100,24 +100,18 @@ describe('period store and picker', () => {
 
     expect(setBottomButtonMock).toHaveBeenCalledTimes(1)
 
-    const yearList = host.querySelector('[data-testid="period-year-list"]')
-    const valueList = host.querySelector('[data-testid="period-value-list"]')
-
-    expect(yearList).toBeTruthy()
-    expect(valueList).toBeTruthy()
-
     const latestBottomButtonOptions = setBottomButtonMock.mock.calls.at(
       -1,
     )?.[0] as { onClick: () => void; text: string } | undefined
 
-    expect(latestBottomButtonOptions?.text).toContain('01/06/26 - 30/06/26')
+    expect(latestBottomButtonOptions?.text).toContain('01/06/26 -> 30/06/26')
 
     expect(setBottomButtonMock).toHaveBeenCalledTimes(1)
 
     expect(updateBottomButtonMock).toHaveBeenLastCalledWith({
       enabled: true,
       showProgress: false,
-      text: 'Chọn 29/12/25 - 04/01/26',
+      text: 'Chọn 08/06/26 -> 14/06/26',
     })
 
     await act(async () => {
@@ -125,7 +119,10 @@ describe('period store and picker', () => {
     })
 
     expect(usePeriodStore.getState().selectedPeriod).toEqual(
-      createWeekPeriodSelection(2026, 1),
+      createReportingPeriodPresetSelection(
+        'lastWeek',
+        new Date('2026-06-15T23:45:00Z'),
+      ),
     )
   })
 
@@ -163,14 +160,14 @@ describe('period store and picker', () => {
       )
     })
 
-    const weekTab = Array.from(host.querySelectorAll('button')).find(
-      (button) => button.textContent === 'Tuần',
+    const lastMonthPreset = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent === 'Tháng trước',
     )
 
-    expect(weekTab).toBeTruthy()
+    expect(lastMonthPreset).toBeTruthy()
 
     await act(async () => {
-      weekTab?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+      lastMonthPreset?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     })
 
     const latestBottomButtonOptions = setBottomButtonMock.mock.calls.at(

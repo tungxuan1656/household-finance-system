@@ -1,0 +1,44 @@
+{
+  "id": "feat-099",
+  "name": "TMA reporting period and statistics pie",
+  "status": "done",
+  "description": "Refine TMA reporting periods so Home, household summaries, statistics, and expense-list date filters share the requested current/previous month, week, year, and custom date range semantics while Statistics renders a selected-period pie chart with percentage legends.",
+  "dependencies": [
+    "feat-028",
+    "feat-029",
+    "feat-079",
+    "feat-080",
+    "feat-083",
+    "feat-095",
+    "feat-096",
+    "feat-098"
+  ],
+  "plan": "docs/exec-plans/plans/2026-06-11-tma-reporting-period-and-statistics-pie.md",
+  "evidence": {
+    "planned": [
+      "Use shared TMA period helpers for `Tháng này`, `Tháng trước`, `Tuần này`, `Tuần trước`, `Năm nay`, `Năm ngoái`, and custom date-from/date-to ranges.",
+      "Keep the reporting period default as current month.",
+      "Align expense-list date filter presets with shared reporting period semantics while preserving sort, household, and category filters.",
+      "Rebuild TMA Statistics around the selected reporting period with pie/donut category breakdown and legend percentages.",
+      "Keep budget periods monthly and avoid weekly/yearly budget semantics."
+    ],
+    "verification": [
+      "GitNexus impact checks for `createCurrentMonthPeriodSelection`, `PeriodPickerPage`, `FinanceSummaryCard`, and the indexed Statistics/ExpenseFilter route wrappers returned LOW risk with no upstream impacted symbols/processes; source-specific contexts were inspected for the ambiguous page symbols.",
+      "RED focused TMA tests failed for missing reporting preset helpers, missing preset chips, and Statistics not yet using shared selected period.",
+      "Focused TMA tests passed for `src/test/period.test.ts`, `src/test/period-store-and-picker.test.tsx`, `src/test/statistics-page.test.tsx`, and `src/test/period-chip-entrypoints.test.tsx` with 17 tests.",
+      "Follow-up timezone fix moved shared TMA reporting-period boundaries from UTC to Vietnam local time (`Asia/Ho_Chi_Minh` semantics via `UTC+07:00`) so month/week/custom ranges and labels line up with Vietnam day rollover instead of UTC midnight.",
+      "Focused TMA tests passed again for `src/test/period.test.ts`, `src/test/period-store-and-picker.test.tsx`, `src/test/statistics-page.test.tsx`, and `src/test/period-chip-entrypoints.test.tsx` with 18 tests after the Vietnam-time follow-up.",
+      "`./init.sh typecheck` returned `OK` after the Vietnam-time follow-up.",
+      "`./init.sh typecheck` returned `OK`.",
+      "`./init.sh lint` returned `OK`.",
+      "`./init.sh test` returned `OK`.",
+      "`./init.sh build` returned `OK`.",
+      "Final `./init.sh` completed with `Done!`.",
+      "`jq empty harness/feature_index.json harness/features/feat-099.json` returned no output.",
+      "`git diff --check` returned no output.",
+      "`./scripts/check_harness_size.sh` returned `Harness size checks passed`.",
+      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 97 changed symbols, 36 affected symbols/processes, and 10 indexed changed files. The affected processes are expected for this slice and center on the shared TMA period helper, period picker, expense filter, finance/household period flows, and Statistics analytics rendering."
+    ]
+  },
+  "notes": "Worker analytics range support already exists from feat-096, so this follow-up stayed TMA-only. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required."
+}

@@ -2,21 +2,31 @@ import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, Eyebrow, Section, SectionHeader } from '@/components/ui'
+import {
+  Card,
+  CardDescription,
+  Eyebrow,
+  Field,
+  FieldError,
+  FieldLabel,
+  Input,
+  Section,
+  SectionHeader,
+} from '@/components/ui'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {
-  createMonthPeriodSelection,
-  createWeekPeriodSelection,
-  createYearPeriodSelection,
+  createCustomPeriodSelection,
+  createReportingPeriodPresetSelection,
+  formatPeriodDateInputValue,
   formatPeriodSelectionDate,
+  formatPeriodSelectionLabel,
   formatPeriodSelectionRangeLabel,
-  getPeriodSelectionMonth,
-  getPeriodSelectionWeek,
-  getPeriodSelectionYear,
-  getPeriodYears,
-  getWeeksInYear,
-  type PeriodGranularity,
+  getMatchingReportingPeriodPreset,
+  getReportingPeriodPresetLabel,
+  parsePeriodDateInputValue,
   type PeriodSelection,
+  REPORTING_PERIOD_PRESETS,
+  type ReportingPeriodPreset,
 } from '@/lib/period'
 import {
   hideBottomButton,
@@ -28,41 +38,31 @@ import { cn } from '@/lib/utils'
 
 import { usePeriodStore } from '../store'
 
-const periodTabs: Array<{ label: string; value: PeriodGranularity }> = [
-  { label: 'Tuần', value: 'week' },
-  { label: 'Tháng', value: 'month' },
-  { label: 'Năm', value: 'year' },
-]
-
-const monthOptions = Array.from({ length: 12 }, (_, index) => index + 1)
-
 interface PeriodPickerLocationState {
   backTo?: string
   initialPeriod?: PeriodSelection | null
 }
 
-const PeriodOptionButton = ({
-  description,
+const PeriodPresetButton = ({
   isActive,
-  label,
   onClick,
+  preset,
 }: {
-  description?: string
   isActive: boolean
-  label: string
   onClick: () => void
+  preset: ReportingPeriodPreset
 }) => (
   <button
+    aria-pressed={isActive}
     className={cn(
-      'grid justify-items-start gap-1 rounded-2xl bg-black/[0.04] px-3.5 py-3 text-left shadow-[inset_0_0_0_1px_rgba(17,24,39,0.04)] transition active:scale-[0.99]',
-      isActive && 'bg-tma-primary/12 text-tma-primary',
+      'min-h-10 rounded-full border px-3.5 text-sm font-bold transition active:scale-95',
+      isActive
+        ? 'border-tma-primary bg-tma-primary/12 text-tma-primary'
+        : 'border-black/[0.06] bg-white/75 text-tma-text-strong shadow-tma-soft',
     )}
     type='button'
     onClick={onClick}>
-    <span className='font-semibold'>{label}</span>
-    {description ? (
-      <small className='text-xs text-tma-text-muted'>{description}</small>
-    ) : null}
+    {getReportingPeriodPresetLabel(preset)}
   </button>
 )
 
@@ -81,46 +81,51 @@ export const PeriodPickerPage = () => {
       ? initialPeriodFromState
       : selectedPeriod
 
-  const [tab, setTab] = useState<PeriodGranularity>(initialPeriod.granularity)
-  const [activeYear, setActiveYear] = useState(
-    getPeriodSelectionYear(initialPeriod),
+  const [candidate, setCandidate] = useState<PeriodSelection>(initialPeriod)
+  const [customFrom, setCustomFrom] = useState(
+    formatPeriodDateInputValue(initialPeriod.dateFrom),
   )
-  const [selectedMonth, setSelectedMonth] = useState(
-    getPeriodSelectionMonth(initialPeriod) ?? 1,
+  const [customTo, setCustomTo] = useState(
+    formatPeriodDateInputValue(initialPeriod.dateTo - 1),
   )
-  const [selectedWeek, setSelectedWeek] = useState(
-    getPeriodSelectionWeek(initialPeriod) ?? 1,
-  )
-
-  const years = useMemo(() => getPeriodYears(), [])
 
   useEffect(() => {
     if (isSubPage) {
       return
     }
 
-    setTab(selectedPeriod.granularity)
-    setActiveYear(getPeriodSelectionYear(selectedPeriod))
-    setSelectedMonth(getPeriodSelectionMonth(selectedPeriod) ?? 1)
-    setSelectedWeek(getPeriodSelectionWeek(selectedPeriod) ?? 1)
+    setCandidate(selectedPeriod)
+    setCustomFrom(formatPeriodDateInputValue(selectedPeriod.dateFrom))
+    setCustomTo(formatPeriodDateInputValue(selectedPeriod.dateTo - 1))
   }, [selectedPeriod, isSubPage])
 
-  const candidate = useMemo(() => {
-    if (tab === 'year') {
-      return createYearPeriodSelection(activeYear)
-    }
+  const activePreset = useMemo(
+    () => getMatchingReportingPeriodPreset(candidate),
+    [candidate],
+  )
+  const customFromTimestamp = parsePeriodDateInputValue(customFrom)
+  const customToTimestamp = parsePeriodDateInputValue(customTo)
+  const customError =
+    customFromTimestamp == null || customToTimestamp == null
+      ? 'Chọn đủ ngày bắt đầu và ngày kết thúc.'
+      : customToTimestamp < customFromTimestamp
+        ? 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.'
+        : null
 
-    if (tab === 'week') {
-      return createWeekPeriodSelection(
-        activeYear,
-        Math.min(selectedWeek, getWeeksInYear(activeYear)),
-      )
-    }
+  const updateCustomCandidate = (fromValue: string, toValue: string) => {
+    const from = parsePeriodDateInputValue(fromValue)
+    const to = parsePeriodDateInputValue(toValue)
 
-    return createMonthPeriodSelection(activeYear, selectedMonth)
-  }, [activeYear, selectedMonth, selectedWeek, tab])
+    if (from != null && to != null && to >= from) {
+      setCandidate(createCustomPeriodSelection(from, to))
+    }
+  }
 
   const handleApply = useEffectEvent(() => {
+    if (customError) {
+      return
+    }
+
     const backTo = locationState?.backTo ?? TMA_PATHS.root
 
     if (isSubPage) {
@@ -149,7 +154,7 @@ export const PeriodPickerPage = () => {
   useEffect(() => {
     const cleanup = setBottomButton({
       text: `Chọn ${formatPeriodSelectionRangeLabel(candidate)}`,
-      enabled: true,
+      enabled: customError == null,
       showProgress: false,
       onClick: () => {
         handleApply()
@@ -165,140 +170,96 @@ export const PeriodPickerPage = () => {
   useEffect(() => {
     updateBottomButton({
       text: `Chọn ${formatPeriodSelectionRangeLabel(candidate)}`,
-      enabled: true,
+      enabled: customError == null,
       showProgress: false,
     })
-  }, [candidate])
+  }, [candidate, customError])
 
   return (
     <TmaPageShell reserveBottomButton title='Chọn kỳ'>
       <TmaPageHeader
-        eyebrow='Analytics range'
-        subtitle='Chọn preset tuần, tháng, hoặc năm. App sẽ lưu range tương ứng để Home và household đồng bộ.'
+        eyebrow='Kỳ báo cáo'
+        subtitle='Chọn nhanh một khoảng thời gian hoặc tự nhập từ ngày đến ngày.'
         title='Đổi kỳ xem dữ liệu'
       />
 
-      <div className='grid grid-cols-3 gap-1.5 rounded-[18px] bg-white/65 p-1.5 shadow-[inset_0_0_0_1px_rgba(17,24,39,0.04)]'>
-        {periodTabs.map((periodTab) => (
-          <button
-            key={periodTab.value}
-            className={cn(
-              'min-h-9 rounded-[13px] px-2 text-xs font-bold text-tma-text-muted transition active:scale-95',
-              tab === periodTab.value && 'bg-tma-primary/12 text-tma-primary',
-            )}
-            type='button'
-            onClick={() => {
-              selection()
-              setTab(periodTab.value)
-            }}>
-            {periodTab.label}
-          </button>
-        ))}
-      </div>
+      <Section className='mt-0'>
+        <SectionHeader eyebrow='Chọn nhanh' title='Khoảng thời gian' />
+        <div className='flex flex-wrap gap-2'>
+          {REPORTING_PERIOD_PRESETS.map((preset) => (
+            <PeriodPresetButton
+              key={preset}
+              isActive={activePreset === preset}
+              preset={preset}
+              onClick={() => {
+                selection()
+
+                const next = createReportingPeriodPresetSelection(preset)
+                setCandidate(next)
+                setCustomFrom(formatPeriodDateInputValue(next.dateFrom))
+                setCustomTo(formatPeriodDateInputValue(next.dateTo - 1))
+              }}
+            />
+          ))}
+        </div>
+      </Section>
+
+      <Section>
+        <SectionHeader eyebrow='Tùy chỉnh' title='Từ ngày -> đến ngày' />
+        <Card className='grid gap-3'>
+          <div className='grid grid-cols-2 gap-2.5'>
+            <Field>
+              <FieldLabel>Từ ngày</FieldLabel>
+              <Input
+                type='date'
+                value={customFrom}
+                onChange={(event) => {
+                  const value = event.target.value
+                  setCustomFrom(value)
+                  updateCustomCandidate(value, customTo)
+                }}
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Đến ngày</FieldLabel>
+              <Input
+                type='date'
+                value={customTo}
+                onChange={(event) => {
+                  const value = event.target.value
+                  setCustomTo(value)
+                  updateCustomCandidate(customFrom, value)
+                }}
+              />
+            </Field>
+          </div>
+          {customError ? <FieldError>{customError}</FieldError> : null}
+          <CardDescription>
+            Khi chọn ngày hợp lệ, kỳ tùy chỉnh sẽ được áp dụng sau khi bấm nút
+            xác nhận.
+          </CardDescription>
+        </Card>
+      </Section>
 
       <Section>
         <SectionHeader
-          eyebrow='Preview'
-          title={formatPeriodSelectionRangeLabel(candidate)}
+          eyebrow='Đang chọn'
+          title={formatPeriodSelectionLabel(candidate)}
         />
         <Card className='grid gap-2 p-4'>
-          <Eyebrow>Giá trị lưu trong store/API</Eyebrow>
+          <Eyebrow>{formatPeriodSelectionRangeLabel(candidate)}</Eyebrow>
           <div className='grid gap-1 text-sm text-tma-text-strong'>
             <span>
-              from:{' '}
+              Từ:{' '}
               <strong>{formatPeriodSelectionDate(candidate.dateFrom)}</strong>
             </span>
             <span>
-              to:{' '}
+              Đến:{' '}
               <strong>{formatPeriodSelectionDate(candidate.dateTo - 1)}</strong>
             </span>
           </div>
         </Card>
       </Section>
-
-      {tab === 'year' ? (
-        <Section>
-          <SectionHeader eyebrow='Năm' title='10 năm gần nhất' />
-          <div className='grid gap-2.5'>
-            {years.map((year) => (
-              <PeriodOptionButton
-                key={year}
-                isActive={activeYear === year}
-                label={String(year)}
-                onClick={() => {
-                  selection()
-                  setActiveYear(year)
-                }}
-              />
-            ))}
-          </div>
-        </Section>
-      ) : (
-        <Section>
-          <SectionHeader
-            eyebrow={tab === 'month' ? 'Tháng' : 'Tuần'}
-            title='Chọn năm và giá trị tương ứng'
-          />
-          <div className='flex items-start gap-3'>
-            <div
-              className='grid max-h-[320px] w-[120px] gap-2.5 overflow-y-auto pr-1'
-              data-testid='period-year-list'>
-              {years.map((year) => (
-                <PeriodOptionButton
-                  key={year}
-                  isActive={activeYear === year}
-                  label={String(year)}
-                  onClick={() => {
-                    selection()
-                    setActiveYear(year)
-                    if (tab === 'week') {
-                      setSelectedWeek((value) =>
-                        Math.min(value, getWeeksInYear(year)),
-                      )
-                    }
-                  }}
-                />
-              ))}
-            </div>
-            <div
-              className='grid max-h-[440px] min-w-0 flex-1 gap-2.5 overflow-y-auto pr-1'
-              data-testid='period-value-list'>
-              {tab === 'month'
-                ? monthOptions.map((month) => (
-                    <PeriodOptionButton
-                      key={month}
-                      description={formatPeriodSelectionRangeLabel(
-                        createMonthPeriodSelection(activeYear, month),
-                      )}
-                      isActive={selectedMonth === month}
-                      label={`Tháng ${String(month).padStart(2, '0')}`}
-                      onClick={() => {
-                        selection()
-                        setSelectedMonth(month)
-                      }}
-                    />
-                  ))
-                : Array.from(
-                    { length: getWeeksInYear(activeYear) },
-                    (_, index) => index + 1,
-                  ).map((week) => (
-                    <PeriodOptionButton
-                      key={week}
-                      description={formatPeriodSelectionRangeLabel(
-                        createWeekPeriodSelection(activeYear, week),
-                      )}
-                      isActive={selectedWeek === week}
-                      label={`Tuần ${week}`}
-                      onClick={() => {
-                        selection()
-                        setSelectedWeek(week)
-                      }}
-                    />
-                  ))}
-            </div>
-          </div>
-        </Section>
-      )}
     </TmaPageShell>
   )
 }

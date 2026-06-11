@@ -17,7 +17,15 @@ import {
 import { getCategoryLabel } from '@/features/home/presentation'
 import type { CategoryKey } from '@/features/home/types'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import type { PeriodSelection } from '@/lib/period'
+import {
+  createReportingPeriodPresetSelection,
+  formatPeriodSelectionRangeLabel,
+  getMatchingReportingPeriodPreset,
+  getReportingPeriodPresetLabel,
+  type PeriodSelection,
+  REPORTING_PERIOD_PRESETS,
+  type ReportingPeriodPreset,
+} from '@/lib/period'
 import {
   hideBottomButton,
   setBottomButton,
@@ -40,102 +48,36 @@ const SORT_OPTIONS: Array<{ label: string; value: ExpenseListSort }> = [
 const ALL_HOUSEHOLDS_VALUE = '__all__'
 const ALL_CATEGORIES_VALUE = '__all__'
 
-type PresetKey = 'today' | 'thisWeek' | 'thisMonth' | 'custom'
+type ActivePresetKey = 'custom' | ReportingPeriodPreset
 
-const ONE_DAY_MS = 24 * 60 * 60 * 1000
-
-const startOfDay = (timestamp: number): number => {
-  const date = new Date(timestamp)
-
-  date.setHours(0, 0, 0, 0)
-
-  return date.getTime()
-}
-
-const getWeekRange = (timestamp: number): { from: number; to: number } => {
-  const date = new Date(timestamp)
-  const day = date.getDay()
-  const diffToMonday = day === 0 ? -6 : 1 - day
-
-  date.setHours(0, 0, 0, 0)
-  date.setDate(date.getDate() + diffToMonday)
-
-  const from = date.getTime()
-  const to = from + 7 * ONE_DAY_MS
-
-  return { from, to }
-}
-
-const getMonthRange = (timestamp: number): { from: number; to: number } => {
-  const date = new Date(timestamp)
-
-  date.setDate(1)
-  date.setHours(0, 0, 0, 0)
-
-  const from = date.getTime()
-
-  const next = new Date(date)
-  next.setMonth(next.getMonth() + 1)
-
-  return { from, to: next.getTime() }
-}
-
-const PRESET_PRESETS: Array<{ label: string; value: PresetKey }> = [
-  { label: 'Hôm nay', value: 'today' },
-  { label: 'Tuần này', value: 'thisWeek' },
-  { label: 'Tháng này', value: 'thisMonth' },
-]
-
-const resolvePreset = (
-  preset: PresetKey,
-): { dateFrom?: number; dateTo?: number } => {
-  const now = Date.now()
-
-  if (preset === 'today') {
-    const start = startOfDay(now)
-
-    return { dateFrom: start, dateTo: start + ONE_DAY_MS }
-  }
-
-  if (preset === 'thisWeek') {
-    const { from, to } = getWeekRange(now)
-
-    return { dateFrom: from, dateTo: to }
-  }
-
-  if (preset === 'thisMonth') {
-    const { from, to } = getMonthRange(now)
-
-    return { dateFrom: from, dateTo: to }
-  }
-
-  return {}
-}
-
-const detectActivePreset = (filter: ExpenseListFilter): PresetKey | null => {
+const toFilterPeriodSelection = (
+  filter: ExpenseListFilter,
+): PeriodSelection | null => {
   if (filter.dateFrom == null && filter.dateTo == null) {
     return null
   }
 
-  const { dateFrom, dateTo } = resolvePreset('today')
-
-  if (filter.dateFrom === dateFrom && filter.dateTo === dateTo) {
-    return 'today'
+  if (filter.dateFrom == null || filter.dateTo == null) {
+    return null
   }
 
-  const week = resolvePreset('thisWeek')
+  return {
+    granularity: 'custom',
+    dateFrom: filter.dateFrom,
+    dateTo: filter.dateTo,
+  }
+}
 
-  if (filter.dateFrom === week.dateFrom && filter.dateTo === week.dateTo) {
-    return 'thisWeek'
+const detectActivePreset = (
+  filter: ExpenseListFilter,
+): ActivePresetKey | null => {
+  const period = toFilterPeriodSelection(filter)
+
+  if (!period) {
+    return null
   }
 
-  const month = resolvePreset('thisMonth')
-
-  if (filter.dateFrom === month.dateFrom && filter.dateTo === month.dateTo) {
-    return 'thisMonth'
-  }
-
-  return 'custom'
+  return getMatchingReportingPeriodPreset(period) ?? 'custom'
 }
 
 const FilterChipButton = ({
@@ -164,14 +106,12 @@ const FilterChipButton = ({
   </button>
 )
 
-const formatRangeLabel = (dateFrom: number, dateTo: number): string => {
-  const fromDate = new Date(dateFrom)
-  const toDate = new Date(dateTo - ONE_DAY_MS)
-  const fromLabel = `${fromDate.getDate()}/${fromDate.getMonth() + 1}/${fromDate.getFullYear()}`
-  const toLabel = `${toDate.getDate()}/${toDate.getMonth() + 1}/${toDate.getFullYear()}`
-
-  return `${fromLabel} → ${toLabel}`
-}
+const formatFilterRangeLabel = (dateFrom: number, dateTo: number): string =>
+  formatPeriodSelectionRangeLabel({
+    granularity: 'custom',
+    dateFrom,
+    dateTo,
+  })
 
 const previewDescription = (
   filter: ExpenseListFilter,
@@ -181,7 +121,7 @@ const previewDescription = (
 
   if (filter.dateFrom != null && filter.dateTo != null) {
     parts.push(
-      `trong khoảng ${formatRangeLabel(filter.dateFrom, filter.dateTo)}`,
+      `trong khoảng ${formatFilterRangeLabel(filter.dateFrom, filter.dateTo)}`,
     )
   }
 
@@ -218,7 +158,7 @@ export const ExpenseFilterPage = () => {
   const setFilter = useExpenseListFilterStore((state) => state.setFilter)
   const reset = useExpenseListFilterStore((state) => state.reset)
 
-  const [activePreset, setActivePreset] = useState<PresetKey | null>(() =>
+  const [activePreset, setActivePreset] = useState<ActivePresetKey | null>(() =>
     detectActivePreset(filter),
   )
 
@@ -253,7 +193,7 @@ export const ExpenseFilterPage = () => {
     }
   }, [location.state, setFilter])
 
-  const handlePresetToggle = useEffectEvent((preset: PresetKey) => {
+  const handlePresetToggle = useEffectEvent((preset: ReportingPeriodPreset) => {
     if (activePreset === preset) {
       setActivePreset(null)
       setFilter({ dateFrom: undefined, dateTo: undefined })
@@ -262,14 +202,20 @@ export const ExpenseFilterPage = () => {
     }
 
     setActivePreset(preset)
-    setFilter(resolvePreset(preset))
+
+    const selection = createReportingPeriodPresetSelection(preset)
+
+    setFilter({
+      dateFrom: selection.dateFrom,
+      dateTo: selection.dateTo,
+    })
   })
 
   const handleCustomPeriod = useEffectEvent(() => {
     const initialPeriod: PeriodSelection | null =
       filter.dateFrom != null && filter.dateTo != null
         ? {
-            granularity: 'month',
+            granularity: 'custom',
             dateFrom: filter.dateFrom,
             dateTo: filter.dateTo,
           }
@@ -375,12 +321,12 @@ export const ExpenseFilterPage = () => {
       <Section>
         <SectionHeader eyebrow='Thời gian' title='Khoảng thời gian' />
         <div className='flex flex-wrap gap-2'>
-          {PRESET_PRESETS.map((preset) => (
+          {REPORTING_PERIOD_PRESETS.map((preset) => (
             <FilterChipButton
-              key={preset.value}
-              active={activePreset === preset.value}
-              label={preset.label}
-              onClick={() => handlePresetToggle(preset.value)}
+              key={preset}
+              active={activePreset === preset}
+              label={getReportingPeriodPresetLabel(preset)}
+              onClick={() => handlePresetToggle(preset)}
             />
           ))}
           <FilterChipButton
@@ -389,8 +335,8 @@ export const ExpenseFilterPage = () => {
               activePreset === 'custom' &&
               filter.dateFrom != null &&
               filter.dateTo != null
-                ? `Khoảng khác · ${formatRangeLabel(filter.dateFrom, filter.dateTo)}`
-                : 'Khoảng khác...'
+                ? `Từ ngày -> đến ngày · ${formatFilterRangeLabel(filter.dateFrom, filter.dateTo)}`
+                : 'Từ ngày -> đến ngày'
             }
             onClick={handleCustomPeriod}
           />

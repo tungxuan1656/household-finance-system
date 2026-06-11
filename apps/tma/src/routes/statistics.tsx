@@ -1,12 +1,5 @@
-import { useMemo, useState } from 'react'
-
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
-  Button,
   Card,
   CardDescription,
   CardTitle,
@@ -16,7 +9,6 @@ import {
   MoneyLabel,
   Section,
   SectionHeader,
-  SegmentedControl,
 } from '@/components/ui'
 import {
   useAnalyticsComparisonQuery,
@@ -29,156 +21,59 @@ import {
   getComparisonLabel,
 } from '@/features/home/presentation'
 import type { AnalyticsOverviewDTO } from '@/features/home/types'
+import { PeriodChipLink } from '@/features/period/components/period-chip-link'
+import { usePeriodStore } from '@/features/period/store'
 import {
-  formatDateLabel,
-  formatMonthLabel,
-  formatPeriodLabel,
-} from '@/lib/formatters'
-import { getCurrentPeriod } from '@/lib/period'
-import { impact, selection } from '@/lib/telegram/haptics'
-import { cn } from '@/lib/utils'
+  formatPeriodSelectionLabel,
+  formatPeriodSelectionRangeLabel,
+  toAnalyticsRangeParams,
+} from '@/lib/period'
 
-const rangeOptions = [
-  { value: 'day', label: 'Ngày' },
-  { value: 'week', label: 'Tuần' },
-  { value: 'month', label: 'Tháng' },
-  { value: 'year', label: 'Năm' },
-] as const
+const chartColors = ['#3f7cff', '#5dd36d', '#ffd84d', '#ff8a3d', '#c5d0e7']
 
-type StatisticRange = (typeof rangeOptions)[number]['value']
-
-const toneClassNames = [
-  'from-[#76a2ff] to-tma-primary',
-  'from-[#8ae293] to-tma-positive',
-  'from-[#dfe7f7] to-[#c5d0e7]',
-  'from-[#ffe58a] to-tma-warning',
-] as const
-
-const toPeriodDate = (period: string) => new Date(`${period}-01T00:00:00+07:00`)
-
-const toPeriod = (date: Date): string =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-
-const shiftPeriod = (period: string, months: number): string => {
-  const date = toPeriodDate(period)
-  date.setMonth(date.getMonth() + months)
-
-  return toPeriod(date)
-}
-
-const sameDateKey = (left: Date, right: Date): boolean =>
-  left.getFullYear() === right.getFullYear() &&
-  left.getMonth() === right.getMonth() &&
-  left.getDate() === right.getDate()
-
-const getDailySpendRows = (
-  overview: AnalyticsOverviewDTO,
-): Array<{ date: Date; totalSpendMinor: number }> =>
-  overview.dailySpend
-    .map((item) => ({
-      date: new Date(item.date),
-      totalSpendMinor: item.totalSpendMinor,
-    }))
-    .sort((left, right) => left.date.getTime() - right.date.getTime())
-
-const getRangeRows = (
-  overview: AnalyticsOverviewDTO,
-  range: StatisticRange,
-): Array<{ date: Date; totalSpendMinor: number }> => {
-  const rows = getDailySpendRows(overview)
-
-  if (range === 'week') {
-    return rows.slice(-7)
+const getPieBackground = (
+  categories: AnalyticsOverviewDTO['topCategories'],
+): string => {
+  if (categories.length === 0) {
+    return 'conic-gradient(rgba(17,24,39,0.08) 0deg 360deg)'
   }
 
-  if (range === 'day') {
-    const periodDate = toPeriodDate(overview.period)
-    const today = new Date()
-    const selectedDate =
-      today.getFullYear() === periodDate.getFullYear() &&
-      today.getMonth() === periodDate.getMonth()
-        ? today
-        : rows.at(-1)?.date
+  let cursor = 0
+  const segments = categories.map((category, index) => {
+    const start = cursor
+    const degrees = Math.max(0, (category.percentOfTotal / 100) * 360)
+    cursor += degrees
 
-    return selectedDate
-      ? rows.filter((row) => sameDateKey(row.date, selectedDate))
-      : []
+    return `${chartColors[index % chartColors.length]} ${start}deg ${cursor}deg`
+  })
+
+  if (cursor < 360) {
+    segments.push(`rgba(17,24,39,0.06) ${cursor}deg 360deg`)
   }
 
-  return rows
+  return `conic-gradient(${segments.join(', ')})`
 }
 
-const getRangeTotalMinor = (
-  overview: AnalyticsOverviewDTO,
-  range: StatisticRange,
+const getLegendPercent = (
+  category: AnalyticsOverviewDTO['topCategories'][number],
+  totalSpendMinor: number,
 ): number => {
-  if (range === 'month' || range === 'year') {
-    return overview.totalSpendMinor
+  if (totalSpendMinor <= 0) {
+    return 0
   }
 
-  return getRangeRows(overview, range).reduce(
-    (total, row) => total + row.totalSpendMinor,
-    0,
-  )
-}
-
-const getChartBars = (
-  overview: AnalyticsOverviewDTO,
-  range: StatisticRange,
-): Array<{ label: string; totalSpendMinor: number }> => {
-  const rows = getRangeRows(overview, range)
-
-  if (range === 'month' || range === 'year') {
-    const buckets = new Map<string, number>()
-
-    for (const row of rows) {
-      const weekNumber = Math.ceil(row.date.getDate() / 7)
-      const label = `Tuần ${weekNumber}`
-      buckets.set(label, (buckets.get(label) ?? 0) + row.totalSpendMinor)
-    }
-
-    return [...buckets.entries()].map(([label, totalSpendMinor]) => ({
-      label,
-      totalSpendMinor,
-    }))
-  }
-
-  return rows.map((row) => ({
-    label:
-      range === 'day'
-        ? formatDateLabel(row.date.toISOString())
-        : `${row.date.getDate()}/${row.date.getMonth() + 1}`,
-    totalSpendMinor: row.totalSpendMinor,
-  }))
-}
-
-const getRangeDescription = (range: StatisticRange): string => {
-  if (range === 'day') return 'Chi tiêu trong ngày đang có dữ liệu gần nhất.'
-  if (range === 'week')
-    return '7 ngày có dữ liệu gần nhất trong tháng đang xem.'
-  if (range === 'year') return 'API hiện trả dữ liệu theo tháng đang xem.'
-
-  return 'Toàn bộ tháng đang xem.'
+  return Math.round((category.totalSpendMinor / totalSpendMinor) * 100)
 }
 
 export const StatisticsPage = () => {
-  const [period, setPeriod] = useState(getCurrentPeriod())
-  const [range, setRange] = useState<StatisticRange>('month')
-  const overviewQuery = useAnalyticsOverviewQuery({ period })
-  const comparisonQuery = useAnalyticsComparisonQuery({ period })
+  const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
+  const overviewParams = toAnalyticsRangeParams(selectedPeriod)
+  const overviewQuery = useAnalyticsOverviewQuery(overviewParams)
+  const comparisonQuery = useAnalyticsComparisonQuery(overviewParams)
   const categoriesQuery = useReferenceCategoriesQuery()
   const overview = overviewQuery.data
-  const totalMinor = overview ? getRangeTotalMinor(overview, range) : 0
-  const chartBars = overview ? getChartBars(overview, range) : []
-  const maxBarMinor = Math.max(
-    ...chartBars.map((bar) => bar.totalSpendMinor),
-    1,
-  )
-
-  const topCategories = useMemo(
-    () => overview?.topCategories.slice(0, 4) ?? [],
-    [overview?.topCategories],
-  )
+  const topCategories = overview?.topCategories.slice(0, 5) ?? []
+  const periodLabel = formatPeriodSelectionLabel(selectedPeriod)
 
   return (
     <TmaPageShell title='Thống kê'>
@@ -200,158 +95,111 @@ export const StatisticsPage = () => {
         retryAction={overviewQuery.refetch}>
         {overview ? (
           <>
-            <Card className='relative mb-3 grid gap-3 overflow-hidden p-5 after:absolute after:-right-8 after:-bottom-20 after:size-56 after:rounded-full after:bg-tma-warning/25 after:content-[""]'>
-              <div className='relative z-10'>
-                <Eyebrow>Tổng chi</Eyebrow>
-                <MoneyLabel className='mt-1 block text-[30px] leading-none font-extrabold'>
-                  {formatCurrencyMinor(totalMinor, overview.currencyCode)}
-                </MoneyLabel>
-                <CardDescription className='mt-2'>
-                  {range === 'month'
-                    ? getComparisonLabel(
-                        comparisonQuery.data,
-                        overview.expenseCount,
-                      )
-                    : getRangeDescription(range)}
-                </CardDescription>
-              </div>
-              <Chip className='relative z-10 justify-self-start'>
-                Dữ liệu thật: {formatPeriodLabel(overview.period)}
-              </Chip>
-            </Card>
-
-            <Card className='mb-3 flex items-center justify-between gap-3 p-4'>
-              <Button
-                size='icon'
-                variant='outline'
-                onClick={() => {
-                  impact('light')
-                  setPeriod((value) => shiftPeriod(value, -1))
-                }}>
-                <ChevronLeftIcon height='18' width='18' />
-              </Button>
-
-              <div className='text-center'>
-                <Eyebrow>Chu kỳ đang xem</Eyebrow>
-                <strong className='mt-0.5 block text-[17px] text-tma-text-strong'>
-                  {formatMonthLabel(toPeriodDate(period))}
-                </strong>
-              </div>
-
-              <Button
-                size='icon'
-                variant='outline'
-                onClick={() => {
-                  impact('light')
-                  setPeriod((value) => shiftPeriod(value, 1))
-                }}>
-                <ChevronRightIcon height='18' width='18' />
-              </Button>
-            </Card>
-
-            <SegmentedControl
-              options={[...rangeOptions]}
-              value={range}
-              onChange={(value) => {
-                selection()
-                setRange(value)
-              }}
-            />
-
-            <Card className='mt-3 grid gap-4'>
+            <Card className='mb-3 grid gap-4 p-5'>
               <div className='flex items-start justify-between gap-3'>
                 <div>
-                  <Eyebrow>Biểu đồ chính</Eyebrow>
-                  <CardTitle>{getRangeDescription(range)}</CardTitle>
+                  <Eyebrow>Tổng chi</Eyebrow>
+                  <MoneyLabel className='mt-1 block text-[30px] leading-none font-extrabold'>
+                    {formatCurrencyMinor(
+                      overview.totalSpendMinor,
+                      overview.currencyCode,
+                    )}
+                  </MoneyLabel>
+                  <CardDescription className='mt-2'>
+                    {getComparisonLabel(
+                      comparisonQuery.data,
+                      overview.expenseCount,
+                      selectedPeriod.granularity,
+                    )}
+                  </CardDescription>
+                </div>
+                <PeriodChipLink />
+              </div>
+
+              <div className='flex flex-wrap gap-2'>
+                <Chip tone='primary'>{periodLabel}</Chip>
+                <Chip>{formatPeriodSelectionRangeLabel(selectedPeriod)}</Chip>
+              </div>
+            </Card>
+
+            <Card className='grid gap-5 p-5'>
+              <div className='flex items-start justify-between gap-3'>
+                <div>
+                  <Eyebrow>Phân bổ</Eyebrow>
+                  <CardTitle>Biểu đồ danh mục</CardTitle>
+                  <CardDescription className='mt-1'>
+                    Tỷ trọng chi tiêu trong {periodLabel.toLowerCase()}.
+                  </CardDescription>
                 </div>
                 <Chip tone='primary'>
                   {overviewQuery.isFetching ? 'Đang cập nhật' : 'Live API'}
                 </Chip>
               </div>
 
-              {chartBars.length > 0 ? (
-                <div className='grid min-h-32 auto-cols-fr grid-flow-col items-end gap-2.5 pt-2'>
-                  {chartBars.map((bar, index) => (
-                    <div
-                      key={bar.label}
-                      className='grid justify-items-center gap-2'>
-                      <div
-                        className={cn(
-                          'min-h-3 w-full rounded-t-full rounded-b-2xl bg-gradient-to-b',
-                          toneClassNames[index % toneClassNames.length],
-                        )}
-                        style={{
-                          height: `${Math.max(
-                            (bar.totalSpendMinor / maxBarMinor) * 120,
-                            12,
-                          )}px`,
-                        }}
-                      />
-                      <span className='text-xs font-semibold text-tma-text-muted'>
-                        {bar.label}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <CardDescription>Chưa có dữ liệu biểu đồ.</CardDescription>
-              )}
-
-              <div className='grid gap-2'>
-                {topCategories.map((category) => {
-                  const presentation = getCategoryPresentation(
-                    category.categoryKey,
-                    categoriesQuery.data?.items,
-                  )
-
-                  return (
-                    <div
-                      key={category.categoryKey}
-                      className='flex items-center justify-between gap-3 rounded-2xl bg-black/[0.04] px-3.5 py-3 text-sm'>
-                      <span>{presentation.label}</span>
-                      <MoneyLabel className='font-bold'>
+              <div className='grid justify-items-center gap-4'>
+                <div
+                  aria-label='Biểu đồ danh mục'
+                  className='relative grid size-44 place-items-center rounded-full shadow-[inset_0_0_0_1px_rgba(255,255,255,0.7),0_18px_34px_rgba(17,24,39,0.08)]'
+                  role='img'
+                  style={{ background: getPieBackground(topCategories) }}>
+                  <div className='grid size-24 place-items-center rounded-full bg-white/95 text-center shadow-tma-soft'>
+                    <div>
+                      <Eyebrow>Tổng</Eyebrow>
+                      <MoneyLabel className='block text-sm font-extrabold'>
                         {formatCurrencyMinor(
-                          category.totalSpendMinor,
+                          overview.totalSpendMinor,
                           overview.currencyCode,
                         )}
                       </MoneyLabel>
                     </div>
-                  )
-                })}
+                  </div>
+                </div>
               </div>
-            </Card>
 
-            <Section>
-              <SectionHeader
-                eyebrow='Xếp hạng'
-                title='Những phần chi nổi bật'
-              />
-              <Card className='grid gap-2'>
+              <div className='grid gap-2'>
                 {topCategories.length > 0 ? (
-                  topCategories.map((entry) => {
+                  topCategories.map((category, index) => {
                     const presentation = getCategoryPresentation(
-                      entry.categoryKey,
+                      category.categoryKey,
                       categoriesQuery.data?.items,
+                    )
+                    const percent = getLegendPercent(
+                      category,
+                      overview.totalSpendMinor,
                     )
 
                     return (
                       <article
-                        key={entry.categoryKey}
-                        className='flex items-start justify-between gap-3'>
-                        <div>
-                          <h3 className='m-0 text-[15px] font-semibold text-tma-text-strong'>
-                            {presentation.label}
-                          </h3>
-                          <CardDescription>
-                            {entry.percentOfTotal}% tổng chi
-                          </CardDescription>
+                        key={category.categoryKey}
+                        className='flex items-center justify-between gap-3 rounded-2xl bg-black/[0.04] px-3.5 py-3'>
+                        <div className='flex min-w-0 items-center gap-3'>
+                          <span
+                            className='size-3 shrink-0 rounded-full'
+                            style={{
+                              background:
+                                chartColors[index % chartColors.length],
+                            }}
+                          />
+                          <div className='min-w-0'>
+                            <h3 className='m-0 truncate text-sm font-bold text-tma-text-strong'>
+                              {presentation.label}
+                            </h3>
+                            <CardDescription>
+                              {category.expenseCount} khoản
+                            </CardDescription>
+                          </div>
                         </div>
-                        <MoneyLabel className='text-sm font-bold'>
-                          {formatCurrencyMinor(
-                            entry.totalSpendMinor,
-                            overview.currencyCode,
-                          )}
-                        </MoneyLabel>
+                        <div className='shrink-0 text-right'>
+                          <MoneyLabel className='block text-sm font-bold'>
+                            {formatCurrencyMinor(
+                              category.totalSpendMinor,
+                              overview.currencyCode,
+                            )}
+                          </MoneyLabel>
+                          <span className='text-xs font-bold text-tma-primary'>
+                            {percent}%
+                          </span>
+                        </div>
                       </article>
                     )
                   })
@@ -360,6 +208,24 @@ export const StatisticsPage = () => {
                     Chưa có category đủ lớn để xếp hạng.
                   </CardDescription>
                 )}
+              </div>
+            </Card>
+
+            <Section>
+              <SectionHeader eyebrow='Kỳ đang xem' title={periodLabel} />
+              <Card className='grid gap-2'>
+                <div className='flex items-center justify-between gap-3 text-sm'>
+                  <span className='text-tma-text-muted'>Số khoản</span>
+                  <strong className='text-tma-text-strong'>
+                    {overview.expenseCount}
+                  </strong>
+                </div>
+                <div className='flex items-center justify-between gap-3 text-sm'>
+                  <span className='text-tma-text-muted'>Khoảng ngày</span>
+                  <strong className='text-right text-tma-text-strong'>
+                    {formatPeriodSelectionRangeLabel(selectedPeriod)}
+                  </strong>
+                </div>
               </Card>
             </Section>
           </>

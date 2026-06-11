@@ -95,7 +95,7 @@ describe('period chip entrypoints', () => {
 
     const periodLink = host.querySelector('a[href="/period"]')
 
-    expect(periodLink?.textContent).toBe('06/26')
+    expect(periodLink?.textContent).toBe('Tháng này')
   })
 
   it('renders a shared period chip link on the household list page', async () => {
@@ -109,6 +109,6 @@ describe('period chip entrypoints', () => {
 
     const periodLink = host.querySelector('a[href="/period"]')
 
-    expect(periodLink?.textContent).toBe('06/26')
+    expect(periodLink?.textContent).toBe('Tháng này')
   })
 })

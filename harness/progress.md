@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-11 — Shifted TMA reporting periods to Vietnam local time
+
+- Who: Codex
+- Summary: Updated the shared TMA period helper so reporting ranges, labels, input parsing, and budget-month derivation now use Vietnam local day boundaries instead of UTC midnight. `Tuần này` and `Tuần trước` still resolve Monday through Sunday, but the stored `date_from` / `date_to` timestamps now represent `00:00` in `UTC+07:00`, which keeps Home, expense filters, and Statistics aligned with real Vietnam calendar days near UTC rollover.
+- Files changed: Shared TMA period helper, focused TMA period/statistics tests, and feat-099 harness evidence.
+- Verification: Focused TMA Vitest run passed for `src/test/period.test.ts`, `src/test/period-store-and-picker.test.tsx`, `src/test/statistics-page.test.tsx`, and `src/test/period-chip-entrypoints.test.tsx` with 18 tests. `./init.sh typecheck` returned `OK`.
+- Blockers: None in code. Real Telegram WebView smoke is still pending because this environment cannot provide an authenticated Telegram launch context.
+- Next steps: Open the TMA through the normal Telegram launch path and spot-check a UTC rollover case near midnight Vietnam time to confirm labels and analytics ranges match the expected local date.
+
+## 2026-06-11 — Refined TMA reporting periods and statistics chart
+
+- Who: Codex
+- Summary: Replaced the TMA period picker tab model with wrapable reporting chips for `Tháng này`, `Tháng trước`, `Tuần này`, `Tuần trước`, `Năm nay`, `Năm ngoái`, plus custom `Từ ngày -> đến ngày` inputs. The reporting period still defaults to current month. Expense-list date filtering now reuses the same period helper semantics, while non-date filters remain local. Statistics now reads the shared selected period, calls analytics with `date_from` / `date_to`, and renders a category pie/donut chart plus legend rows with amount and percentage. Budget periods remain monthly.
+- Files changed: TMA period helper/store-facing tests, period picker page, expense filter page, Statistics route, focused tests, feat-099 ExecPlan/harness records, and plan index/progress records.
+- Verification: GitNexus impact checks on the main touched symbols reported LOW/no indexed upstream impact. Focused TMA tests for period helpers, picker, chip entrypoints, and Statistics passed with 17 tests. `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, `./init.sh build`, and final `./init.sh` returned `OK` / `Done!`. JSON, diff whitespace, and harness size checks passed. Final GitNexus detect changes reported `critical` risk with 97 changed symbols, 36 affected symbols/processes, and 10 indexed changed files, expected for shared TMA period/filter/statistics changes.
+- Blockers: Real Telegram WebView visual smoke remains pending because this environment cannot provide an authenticated Telegram launch context.
+- Next steps: Open TMA in Telegram/local authenticated launch and visually confirm the picker chip wrapping, custom date inputs, expense filter date chips, and Statistics pie legend on a narrow mobile viewport.
+
 ## 2026-06-11 — Restored native TMA BottomButton for add-expense
 
 - Who: Codex
