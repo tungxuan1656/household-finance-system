@@ -223,7 +223,7 @@ export const formatPeriodSelectionLabel = (
     const from = toVietnamDateParts(selection.dateFrom)
     const to = toVietnamDateParts(selection.dateTo - 1)
 
-    return `${from.day}/${from.month} -> ${to.day}/${to.month}`
+    return `${from.day}/${from.month} → ${to.day}/${to.month}`
   }
 
   if (selection.granularity === 'year') {
@@ -239,7 +239,7 @@ export const formatPeriodSelectionLabel = (
   const from = toVietnamDateParts(selection.dateFrom)
   const to = toVietnamDateParts(selection.dateTo - 1)
 
-  return `${from.day}/${from.month} -> ${to.day}/${to.month}`
+  return `${from.day}/${from.month} → ${to.day}/${to.month}`
 }
 
 export const formatPeriodSelectionDate = (value: number): string => {
@@ -251,7 +251,7 @@ export const formatPeriodSelectionDate = (value: number): string => {
 export const formatPeriodSelectionRangeLabel = (
   selection: PeriodSelection,
 ): string =>
-  `${formatPeriodSelectionDate(selection.dateFrom)} -> ${formatPeriodSelectionDate(selection.dateTo - 1)}`
+  `${formatPeriodSelectionDate(selection.dateFrom)} → ${formatPeriodSelectionDate(selection.dateTo - 1)}`
 
 export const formatPeriodDateInputValue = (value: number): string => {
   const { day, month, year } = toVietnamDateParts(value)

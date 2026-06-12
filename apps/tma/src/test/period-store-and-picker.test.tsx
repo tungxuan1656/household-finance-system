@@ -8,6 +8,7 @@ import { PeriodPickerPage } from '@/features/period/pages/period-picker-page'
 import { usePeriodStore } from '@/features/period/store'
 import {
   createCurrentMonthPeriodSelection,
+  createCustomPeriodSelection,
   createReportingPeriodPresetSelection,
 } from '@/lib/period'
 
@@ -32,6 +33,7 @@ vi.mock('@/lib/telegram/bottom-button', () => ({
 }))
 
 vi.mock('@/lib/telegram/haptics', () => ({
+  impact: vi.fn(),
   selection: vi.fn(),
 }))
 
@@ -40,11 +42,11 @@ describe('period store and picker', () => {
   let root: Root
 
   beforeEach(() => {
-    ;(
-      globalThis as typeof globalThis & {
-        IS_REACT_ACT_ENVIRONMENT?: boolean
-      }
-    ).IS_REACT_ACT_ENVIRONMENT = true
+    const globalWithAct = globalThis as typeof globalThis & {
+      IS_REACT_ACT_ENVIRONMENT?: boolean
+    }
+
+    globalWithAct.IS_REACT_ACT_ENVIRONMENT = true
 
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-06-15T23:45:00Z'))
@@ -105,14 +107,14 @@ describe('period store and picker', () => {
       -1,
     )?.[0] as { onClick: () => void; text: string } | undefined
 
-    expect(latestBottomButtonOptions?.text).toContain('01/06/26 -> 30/06/26')
+    expect(latestBottomButtonOptions?.text).toBe('Chọn')
 
     expect(setBottomButtonMock).toHaveBeenCalledTimes(1)
 
     expect(updateBottomButtonMock).toHaveBeenLastCalledWith({
       enabled: true,
       showProgress: false,
-      text: 'Chọn 08/06/26 -> 14/06/26',
+      text: 'Chọn',
     })
 
     await act(async () => {
@@ -247,7 +249,74 @@ describe('period store and picker', () => {
       }),
     )
   })
+
+  it('uses hidden timeline date pickers for custom ranges', async () => {
+    await act(async () => {
+      root.render(
+        <MemoryRouter initialEntries={[{ pathname: '/period' }]}>
+          <Routes>
+            <Route element={<PeriodPickerPage />} path='/period' />
+            <Route element={<div>Home</div>} path='/' />
+          </Routes>
+        </MemoryRouter>,
+      )
+    })
+
+    expect(host.textContent).not.toContain('Tùy chỉnh')
+
+    const fromInput = host.querySelector(
+      'input[type="date"][aria-label="Chọn từ ngày"]',
+    ) as HTMLInputElement | null
+    const toInput = host.querySelector(
+      'input[type="date"][aria-label="Chọn đến ngày"]',
+    ) as HTMLInputElement | null
+
+    expect(fromInput).toBeTruthy()
+    expect(toInput).toBeTruthy()
+
+    await act(async () => {
+      setInputValue(fromInput, '2026-06-05')
+      fromInput?.dispatchEvent(new Event('input', { bubbles: true }))
+      fromInput?.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+
+    expect(host.textContent).toContain('Tùy chỉnh')
+
+    expect(updateBottomButtonMock).toHaveBeenLastCalledWith({
+      enabled: true,
+      showProgress: false,
+      text: 'Chọn',
+    })
+
+    const latestBottomButtonOptions = setBottomButtonMock.mock.calls.at(
+      -1,
+    )?.[0] as { onClick: () => void } | undefined
+
+    await act(async () => {
+      latestBottomButtonOptions?.onClick()
+    })
+
+    expect(usePeriodStore.getState().selectedPeriod).toEqual(
+      createCustomPeriodSelection(
+        new Date('2026-06-04T17:00:00.000Z').getTime(),
+        new Date('2026-06-29T17:00:00.000Z').getTime(),
+      ),
+    )
+  })
 })
+
+const setInputValue = (input: HTMLInputElement | null, value: string) => {
+  if (!input) {
+    return
+  }
+
+  const valueSetter = Object.getOwnPropertyDescriptor(
+    HTMLInputElement.prototype,
+    'value',
+  )?.set
+
+  valueSetter?.call(input, value)
+}
 
 const CaptureStateProbe = ({
   onState,

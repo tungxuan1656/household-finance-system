@@ -1,16 +1,13 @@
-import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { CalendarIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
+  Button,
   Card,
   Chip,
   Eyebrow,
-  Field,
-  FieldError,
-  FieldLabel,
-  Input,
   Section,
   SectionHeader,
 } from '@/components/ui'
@@ -21,7 +18,6 @@ import {
   formatPeriodDateInputValue,
   formatPeriodSelectionDate,
   formatPeriodSelectionLabel,
-  formatPeriodSelectionRangeLabel,
   getMatchingReportingPeriodPreset,
   getReportingPeriodPresetLabel,
   parsePeriodDateInputValue,
@@ -34,7 +30,7 @@ import {
   setBottomButton,
   updateBottomButton,
 } from '@/lib/telegram/bottom-button'
-import { selection } from '@/lib/telegram/haptics'
+import { impact, selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 import { usePeriodStore } from '../store'
@@ -68,49 +64,81 @@ const PeriodPresetButton = ({
   </button>
 )
 
-const PeriodDateField = ({
-  hasError,
+const PeriodTimelineDateButton = ({
+  displayValue,
+  inputLabel,
   label,
   onChange,
-  value,
+  inputValue,
 }: {
-  hasError: boolean
+  displayValue: string
+  inputLabel: string
   label: string
   onChange: (value: string) => void
-  value: string
-}) => (
-  <Field>
-    <FieldLabel>{label}</FieldLabel>
-    <div
-      className={cn(
-        'relative flex max-w-40 items-center rounded-[18px] border bg-black/4 transition focus-within:border-tma-primary/30 focus-within:ring-4 focus-within:ring-tma-primary/10',
-        hasError
-          ? 'border-[#d93838]/40 focus-within:border-[#d93838]/60 focus-within:ring-[#d93838]/15'
-          : 'border-tma-line',
-      )}>
-      <span
-        aria-hidden='true'
-        className='pointer-events-none absolute top-1/2 left-3.5 grid size-5 -translate-y-1/2 place-items-center text-tma-text-muted'>
-        <CalendarIcon height='14' width='14' />
-      </span>
-      <Input
-        className='border-0 bg-transparent pl-10 shadow-none focus:border-0 focus:ring-0'
+  inputValue: string
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const openDatePicker = () => {
+    impact('light')
+
+    const input = inputRef.current
+
+    if (!input) {
+      return
+    }
+
+    if (input.showPicker) {
+      input.showPicker()
+    } else {
+      input.click()
+    }
+
+    input.focus()
+  }
+
+  return (
+    <div className='relative overflow-hidden rounded-[18px]'>
+      <Button
+        aria-label={inputLabel}
+        className='grid h-full w-full justify-start gap-1 rounded-[18px] border-0 bg-white/80 p-3 text-left text-tma-text-strong shadow-none ring-1 ring-tma-line active:scale-[0.98]'
+        variant='outline'
+        onClick={openDatePicker}>
+        <Eyebrow>{label}</Eyebrow>
+        <span className='font-mono text-sm font-bold [font-variant-numeric:tabular-nums]'>
+          {displayValue}
+        </span>
+      </Button>
+      <input
+        ref={inputRef}
+        aria-label={inputLabel}
+        className='pointer-events-none absolute inset-0 h-full w-full opacity-0'
+        tabIndex={-1}
         type='date'
-        value={value}
+        value={inputValue}
         onChange={(event) => onChange(event.target.value)}
       />
     </div>
-  </Field>
-)
+  )
+}
 
-const PeriodRangeTimeline = ({ candidate }: { candidate: PeriodSelection }) => (
+const PeriodRangeTimeline = ({
+  candidate,
+  onFromChange,
+  onToChange,
+}: {
+  candidate: PeriodSelection
+  onFromChange: (value: string) => void
+  onToChange: (value: string) => void
+}) => (
   <div className='grid grid-cols-[1fr_auto_1fr] items-stretch gap-2.5'>
-    <div className='grid gap-1 rounded-[18px] bg-white/80 p-3 ring-1 ring-tma-line'>
-      <Eyebrow>Từ ngày</Eyebrow>
-      <span className='font-mono text-sm font-bold text-tma-text-strong [font-variant-numeric:tabular-nums]'>
-        {formatPeriodSelectionDate(candidate.dateFrom)}
-      </span>
-    </div>
+    <PeriodTimelineDateButton
+      displayValue={formatPeriodSelectionDate(candidate.dateFrom)}
+      inputLabel='Chọn từ ngày'
+      inputValue={formatPeriodDateInputValue(candidate.dateFrom)}
+      label='Từ ngày'
+      onChange={onFromChange}
+    />
     <div
       aria-hidden='true'
       className='grid place-items-center text-tma-text-muted'>
@@ -127,12 +155,13 @@ const PeriodRangeTimeline = ({ candidate }: { candidate: PeriodSelection }) => (
         <path d='m13 6 6 6-6 6' />
       </svg>
     </div>
-    <div className='grid gap-1 rounded-[18px] bg-white/80 p-3 ring-1 ring-tma-line'>
-      <Eyebrow>Đến ngày</Eyebrow>
-      <span className='font-mono text-sm font-bold text-tma-text-strong [font-variant-numeric:tabular-nums]'>
-        {formatPeriodSelectionDate(candidate.dateTo - 1)}
-      </span>
-    </div>
+    <PeriodTimelineDateButton
+      displayValue={formatPeriodSelectionDate(candidate.dateTo - 1)}
+      inputLabel='Chọn đến ngày'
+      inputValue={formatPeriodDateInputValue(candidate.dateTo - 1)}
+      label='Đến ngày'
+      onChange={onToChange}
+    />
   </div>
 )
 
@@ -152,12 +181,6 @@ export const PeriodPickerPage = () => {
       : selectedPeriod
 
   const [candidate, setCandidate] = useState<PeriodSelection>(initialPeriod)
-  const [customFrom, setCustomFrom] = useState(
-    formatPeriodDateInputValue(initialPeriod.dateFrom),
-  )
-  const [customTo, setCustomTo] = useState(
-    formatPeriodDateInputValue(initialPeriod.dateTo - 1),
-  )
 
   useEffect(() => {
     if (isSubPage) {
@@ -165,37 +188,43 @@ export const PeriodPickerPage = () => {
     }
 
     setCandidate(selectedPeriod)
-    setCustomFrom(formatPeriodDateInputValue(selectedPeriod.dateFrom))
-    setCustomTo(formatPeriodDateInputValue(selectedPeriod.dateTo - 1))
   }, [selectedPeriod, isSubPage])
 
   const activePreset = useMemo(
-    () => getMatchingReportingPeriodPreset(candidate),
+    () =>
+      candidate.granularity === 'custom'
+        ? null
+        : getMatchingReportingPeriodPreset(candidate),
     [candidate],
   )
-  const customFromTimestamp = parsePeriodDateInputValue(customFrom)
-  const customToTimestamp = parsePeriodDateInputValue(customTo)
-  const customError =
-    customFromTimestamp == null || customToTimestamp == null
-      ? 'Chọn đủ ngày bắt đầu và ngày kết thúc.'
-      : customToTimestamp < customFromTimestamp
-        ? 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.'
-        : null
 
-  const updateCustomCandidate = (fromValue: string, toValue: string) => {
-    const from = parsePeriodDateInputValue(fromValue)
-    const to = parsePeriodDateInputValue(toValue)
+  const handleFromChange = (value: string) => {
+    const nextFrom = parsePeriodDateInputValue(value)
 
-    if (from != null && to != null && to >= from) {
-      setCandidate(createCustomPeriodSelection(from, to))
-    }
-  }
-
-  const handleApply = useEffectEvent(() => {
-    if (customError) {
+    if (nextFrom == null) {
       return
     }
 
+    const currentTo = candidate.dateTo - 1
+    const nextTo = currentTo < nextFrom ? nextFrom : currentTo
+
+    setCandidate(createCustomPeriodSelection(nextFrom, nextTo))
+  }
+
+  const handleToChange = (value: string) => {
+    const nextTo = parsePeriodDateInputValue(value)
+
+    if (nextTo == null) {
+      return
+    }
+
+    const currentFrom = candidate.dateFrom
+    const nextFrom = nextTo < currentFrom ? nextTo : currentFrom
+
+    setCandidate(createCustomPeriodSelection(nextFrom, nextTo))
+  }
+
+  const handleApply = useEffectEvent(() => {
     const backTo = locationState?.backTo ?? TMA_PATHS.root
 
     if (isSubPage) {
@@ -223,8 +252,8 @@ export const PeriodPickerPage = () => {
 
   useEffect(() => {
     const cleanup = setBottomButton({
-      text: `Chọn ${formatPeriodSelectionRangeLabel(candidate)}`,
-      enabled: customError == null,
+      text: 'Chọn',
+      enabled: true,
       showProgress: false,
       onClick: () => {
         handleApply()
@@ -239,11 +268,11 @@ export const PeriodPickerPage = () => {
 
   useEffect(() => {
     updateBottomButton({
-      text: `Chọn ${formatPeriodSelectionRangeLabel(candidate)}`,
-      enabled: customError == null,
+      text: 'Chọn',
+      enabled: true,
       showProgress: false,
     })
-  }, [candidate, customError])
+  }, [candidate])
 
   return (
     <TmaPageShell reserveBottomButton title='Chọn kỳ'>
@@ -260,8 +289,6 @@ export const PeriodPickerPage = () => {
 
                 const next = createReportingPeriodPresetSelection(preset)
                 setCandidate(next)
-                setCustomFrom(formatPeriodDateInputValue(next.dateFrom))
-                setCustomTo(formatPeriodDateInputValue(next.dateTo - 1))
               }}
             />
           ))}
@@ -269,36 +296,11 @@ export const PeriodPickerPage = () => {
       </Section>
 
       <Section>
-        <SectionHeader title='Tùy chỉnh' />
-        <Card className='grid gap-3'>
-          <div className='grid grid-cols-2 gap-2.5'>
-            <PeriodDateField
-              hasError={Boolean(customError)}
-              label='Từ ngày'
-              value={customFrom}
-              onChange={(value) => {
-                setCustomFrom(value)
-                updateCustomCandidate(value, customTo)
-              }}
-            />
-            <PeriodDateField
-              hasError={Boolean(customError)}
-              label='Đến ngày'
-              value={customTo}
-              onChange={(value) => {
-                setCustomTo(value)
-                updateCustomCandidate(customFrom, value)
-              }}
-            />
-          </div>
-          {customError ? <FieldError>{customError}</FieldError> : null}
-        </Card>
-      </Section>
-
-      <Section>
         <SectionHeader
           eyebrow='Đang chọn'
-          title={formatPeriodSelectionLabel(candidate)}
+          title={
+            activePreset ? formatPeriodSelectionLabel(candidate) : 'Tùy chỉnh'
+          }
         />
         <Card
           className={cn(
@@ -319,7 +321,11 @@ export const PeriodPickerPage = () => {
                 : 'Khoảng thời gian tuỳ chỉnh'}
             </span>
           </div>
-          <PeriodRangeTimeline candidate={candidate} />
+          <PeriodRangeTimeline
+            candidate={candidate}
+            onFromChange={handleFromChange}
+            onToChange={handleToChange}
+          />
         </Card>
       </Section>
     </TmaPageShell>

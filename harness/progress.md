@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-12 — Moved TMA custom period picking into selected range cards
+
+- Who: Codex
+- Summary: Removed the separate custom date section from the TMA period picker while keeping quick presets unchanged. The selected range timeline cards now act as date-picker buttons with hidden native date inputs kept inside each card boundary and light impact haptics on open. Timeline date edits create a custom period and show `Tùy chỉnh`; the native BottomButton now stays as `Chọn` without appending the from-to range.
+- Files changed: TMA period picker page, focused period picker/store test, and feat-099 harness evidence.
+- Verification: RED focused TMA test failed before implementation on old BottomButton range text and the still-visible custom section. After the fix, `pnpm --filter tma exec vitest run src/test/period-store-and-picker.test.tsx` passed with 5 tests, changed-file ESLint passed, `pnpm --filter tma typecheck` returned `OK`, `jq empty harness/feature_index.json harness/features/feat-099.json` passed, and `git diff --check` passed.
+- Blockers: Final `./init.sh` rerun is blocked by a concurrent/unrelated dirty change in `apps/tma/src/lib/period.ts`: period labels now emit Unicode `→` while `src/test/period.test.ts` still expects ASCII `->`. Real Telegram WebView visual smoke also remains pending because authenticated TMA launch context is required.
+- Next steps: Decide whether to keep the Unicode arrow and update period tests, or restore ASCII arrows in the period helper; then rerun final `./init.sh`. Open the TMA picker in Telegram and confirm tapping the two selected-range cards opens native date pickers cleanly on device.
+
 ## 2026-06-12 — Sped up repeated init verification
 
 - Who: Codex

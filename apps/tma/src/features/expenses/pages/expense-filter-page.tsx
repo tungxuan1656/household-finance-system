@@ -335,8 +335,8 @@ export const ExpenseFilterPage = () => {
               activePreset === 'custom' &&
               filter.dateFrom != null &&
               filter.dateTo != null
-                ? `Từ ngày -> đến ngày · ${formatFilterRangeLabel(filter.dateFrom, filter.dateTo)}`
-                : 'Từ ngày -> đến ngày'
+                ? `Từ ngày → đến ngày · ${formatFilterRangeLabel(filter.dateFrom, filter.dateTo)}`
+                : 'Từ ngày → đến ngày'
             }
             onClick={handleCustomPeriod}
           />

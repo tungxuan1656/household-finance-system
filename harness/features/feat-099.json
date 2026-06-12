@@ -45,8 +45,14 @@
       "`jq empty harness/feature_index.json harness/features/feat-099.json` returned no output.",
       "`git diff --check` returned no output.",
       "`./scripts/check_harness_size.sh` returned `Harness size checks passed`.",
-      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 97 changed symbols, 36 affected symbols/processes, and 10 indexed changed files. The affected processes are expected for this slice and center on the shared TMA period helper, period picker, expense filter, finance/household period flows, and Statistics analytics rendering."
+      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 97 changed symbols, 36 affected symbols/processes, and 10 indexed changed files. The affected processes are expected for this slice and center on the shared TMA period helper, period picker, expense filter, finance/household period flows, and Statistics analytics rendering.",
+      "Period picker follow-up removed the separate custom date section, moved date selection into the visible `PeriodRangeTimeline` cards with hidden native date inputs, added light impact haptics when opening the pickers, and changed custom timeline edits to show `Tùy chỉnh` while keeping preset chips unchanged.",
+      "RED focused TMA test first failed because BottomButton still showed the selected from-to range and the page still rendered the separate `Tùy chỉnh` section. After the fix, `src/test/period-store-and-picker.test.tsx` passed with 5 tests.",
+      "Focused changed-file ESLint passed for `src/features/period/pages/period-picker-page.tsx` and `src/test/period-store-and-picker.test.tsx`.",
+      "Focused `pnpm --filter tma typecheck` returned `OK` after the period picker follow-up.",
+      "Artifact checks after harness updates passed: `jq empty harness/feature_index.json harness/features/feat-099.json` returned no output and `git diff --check` returned no output.",
+      "Final `./init.sh` rerun after harness updates was blocked by a concurrent/unrelated dirty change in `apps/tma/src/lib/period.ts`: `formatPeriodSelectionLabel` and `formatPeriodSelectionRangeLabel` now emit Unicode `→` while `src/test/period.test.ts` still expects ASCII `->`. The focused period picker test, changed-file ESLint, and TMA typecheck all passed before this blocker."
     ]
   },
-  "notes": "Worker analytics range support already exists from feat-096, so this follow-up stayed TMA-only. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required."
+  "notes": "Worker analytics range support already exists from feat-096, so this follow-up stayed TMA-only. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required. The latest picker edit was UI-only and did not change API contracts or period storage shape."
 }
