@@ -5,7 +5,7 @@ import type {
 } from '@/lib/auth/api'
 import { AuthApiError } from '@/lib/auth/api'
 
-import { useAuthStore } from './store'
+import { type AuthErrorCode, useAuthStore } from './store'
 
 export interface AuthBootstrapDeps {
   loadLaunchData: () => string | null
@@ -50,7 +50,6 @@ export const createAuthApiBootstrapDeps = (options: {
     options.api.exchangeProviderToken({ provider: 'telegram', initData }),
   refreshSession: (refreshToken) => options.api.refreshSession(refreshToken),
   onFatal: options.onFatal,
-  onPhase: undefined,
 })
 
 const isAuthApiError = (error: unknown): error is AuthApiError =>
@@ -65,35 +64,31 @@ const isTransientBootstrapFailure = (error: unknown): boolean =>
 export const runAuthBootstrap = async (
   deps: AuthBootstrapDeps,
 ): Promise<'authenticated' | 'fatal'> => {
-  const notePhase = (phase: AuthBootstrapPhase) => {
+  const exit = (phase: AuthBootstrapPhase, code: AuthErrorCode): 'fatal' => {
     deps.onPhase?.(phase)
+    useAuthStore.getState().setError({ code })
+    deps.onFatal?.()
+
+    return 'fatal'
   }
 
   try {
     useAuthStore.getState().setBootstrapping()
-    notePhase('start')
-
-    notePhase('launch')
+    deps.onPhase?.('launch')
 
     const launchData = deps.loadLaunchData()
-
     if (!launchData) {
-      notePhase('fatal-launch')
-      useAuthStore.getState().setError({ code: 'launchInvalid' })
-      deps.onFatal?.()
-
-      return 'fatal'
+      return exit('fatal-launch', 'launchInvalid')
     }
 
     try {
-      notePhase('exchange')
+      deps.onPhase?.('exchange')
 
       const session = await deps.exchangeLaunchData(launchData)
-      notePhase('exchange-success')
-      notePhase('storage')
+      deps.onPhase?.('exchange-success')
+      deps.onPhase?.('storage')
       await deps.setRefreshToken(session.refreshToken)
-
-      notePhase('session')
+      deps.onPhase?.('session')
 
       useAuthStore.getState().setSession({
         user: session.user,
@@ -105,34 +100,24 @@ export const runAuthBootstrap = async (
       return 'authenticated'
     } catch (error) {
       if (isLaunchRejected(error)) {
-        notePhase('fatal-launch')
-        useAuthStore.getState().setError({ code: 'launchInvalid' })
-        deps.onFatal?.()
-
-        return 'fatal'
+        return exit('fatal-launch', 'launchInvalid')
       }
 
-      notePhase('refresh-token-load')
+      deps.onPhase?.('refresh-token-load')
 
       const refreshToken = await deps.loadRefreshToken()
-
       if (!refreshToken) {
-        notePhase('fatal-network')
-        useAuthStore.getState().setError({ code: 'networkError' })
-        deps.onFatal?.()
-
-        return 'fatal'
+        return exit('fatal-network', 'networkError')
       }
 
       try {
-        notePhase('refresh')
+        deps.onPhase?.('refresh')
 
         const refreshed = await deps.refreshSession(refreshToken)
-        notePhase('refresh-success')
-        notePhase('storage')
+        deps.onPhase?.('refresh-success')
+        deps.onPhase?.('storage')
         await deps.setRefreshToken(refreshed.refreshToken)
-
-        notePhase('session')
+        deps.onPhase?.('session')
 
         useAuthStore.getState().refresh({
           accessToken: refreshed.accessToken,
@@ -143,26 +128,16 @@ export const runAuthBootstrap = async (
         return 'authenticated'
       } catch (refreshError) {
         if (isTransientBootstrapFailure(refreshError)) {
-          notePhase('fatal-network')
-          useAuthStore.getState().setError({ code: 'networkError' })
-          deps.onFatal?.()
-
-          return 'fatal'
+          return exit('fatal-network', 'networkError')
         }
 
-        notePhase('fatal-session')
+        deps.onPhase?.('fatal-session')
         await deps.clearRefreshToken()
-        useAuthStore.getState().setError({ code: 'sessionExpired' })
-        deps.onFatal?.()
 
-        return 'fatal'
+        return exit('fatal-session', 'sessionExpired')
       }
     }
   } catch {
-    notePhase('fatal-network')
-    useAuthStore.getState().setError({ code: 'networkError' })
-    deps.onFatal?.()
-
-    return 'fatal'
+    return exit('fatal-network', 'networkError')
   }
 }

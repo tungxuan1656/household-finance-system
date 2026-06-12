@@ -16,17 +16,7 @@ export const HomePage = () => {
 
   return (
     <TmaPageShell title='Trang chủ'>
-      <TmaPageHeader
-        leading={
-          <img
-            alt={userName}
-            className='size-full rounded-full object-cover'
-            src={user?.avatarUrl ?? undefined}
-          />
-        }
-        title={userName}
-        trailing={<PeriodChipLink />}
-      />
+      <TmaPageHeader title={userName} trailing={<PeriodChipLink />} />
 
       <HomeOverviewSection />
       <HomeShortcutsSection />
