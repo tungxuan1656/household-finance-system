@@ -51,7 +51,8 @@
       "Focused changed-file ESLint passed for `src/features/period/pages/period-picker-page.tsx` and `src/test/period-store-and-picker.test.tsx`.",
       "Focused `pnpm --filter tma typecheck` returned `OK` after the period picker follow-up.",
       "Artifact checks after harness updates passed: `jq empty harness/feature_index.json harness/features/feat-099.json` returned no output and `git diff --check` returned no output.",
-      "Final `./init.sh` rerun after harness updates was blocked by a concurrent/unrelated dirty change in `apps/tma/src/lib/period.ts`: `formatPeriodSelectionLabel` and `formatPeriodSelectionRangeLabel` now emit Unicode `→` while `src/test/period.test.ts` still expects ASCII `->`. The focused period picker test, changed-file ESLint, and TMA typecheck all passed before this blocker."
+      "Final `./init.sh` rerun after harness updates was initially blocked by a concurrent/unrelated dirty change in `apps/tma/src/lib/period.ts`: period label helpers now emit Unicode `→` while `src/test/period.test.ts` still expected ASCII `->`. User chose to keep Unicode arrows, so the period tests were updated to expect `→` for custom, week, and full range labels.",
+      "After the Unicode arrow test alignment, focused TMA period tests passed for `src/test/period.test.ts` and `src/test/period-store-and-picker.test.tsx` with 17 tests, changed-file ESLint returned no output, and final `./init.sh` completed with `Done!`."
     ]
   },
   "notes": "Worker analytics range support already exists from feat-096, so this follow-up stayed TMA-only. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required. The latest picker edit was UI-only and did not change API contracts or period storage shape."

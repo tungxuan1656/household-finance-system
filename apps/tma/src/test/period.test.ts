@@ -122,10 +122,10 @@ describe('getCurrentPeriod', () => {
       dateTo: vietnamTimestamp(2026, 5, 12),
     })
 
-    expect(formatPeriodSelectionLabel(selection)).toBe('03/06 -> 11/06')
+    expect(formatPeriodSelectionLabel(selection)).toBe('03/06 → 11/06')
 
     expect(formatPeriodSelectionRangeLabel(selection)).toBe(
-      '03/06/26 -> 11/06/26',
+      '03/06/26 → 11/06/26',
     )
 
     expect(formatPeriodDateInputValue(selection.dateFrom)).toBe('2026-06-03')
@@ -137,7 +137,7 @@ describe('getCurrentPeriod', () => {
 
   it('formats a week selection as dd/MM-dd/MM', () => {
     expect(formatPeriodSelectionLabel(createWeekPeriodSelection(2026, 1))).toBe(
-      '29/12 -> 04/01',
+      '29/12 → 04/01',
     )
   })
 
@@ -162,7 +162,7 @@ describe('getCurrentPeriod', () => {
   it('formats picker week ranges with full dates', () => {
     expect(
       formatPeriodSelectionRangeLabel(createWeekPeriodSelection(2026, 1)),
-    ).toBe('29/12/25 -> 04/01/26')
+    ).toBe('29/12/25 → 04/01/26')
   })
 
   it('uses Vietnam local week boundaries near UTC day rollover', () => {
