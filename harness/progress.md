@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-12 — Sped up repeated init verification
+
+- Who: Codex
+- Summary: Reviewed `init.sh` for remaining speed wins. The script already parallelizes checks heavily, so the safe improvement was to reduce repeat-run overhead: `pnpm install` now uses `--prefer-offline`, each app lint job passes ESLint cache args, and each app test job passes Vitest `--cache` while preserving full-suite coverage.
+- Files changed: Verification shell script, gitignore for ESLint cache files, and feat-055 harness evidence.
+- Verification: `bash -n init.sh` passed after each script edit. `./init.sh lint` returned `OK` with ESLint cache args. `./init.sh test` returned `OK` with Vitest cache enabled. `jq empty harness/features/feat-055.json` passed. Final `./init.sh` returned `Done!`.
+- Blockers: None.
+- Next steps: Run final `./init.sh` before closing the session.
+
 ## 2026-06-12 — Kept TMA budget periods monthly on Home
 
 - Who: Codex
