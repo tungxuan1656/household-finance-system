@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-11 — Fixed global TMA period selection not applying
+
+- Who: Codex
+- Summary: Traced the period picker through its real entry path and found that every `PeriodChipLink` supplied a `backTo` route, while the picker interpreted any `backTo` as a local sub-page. Applying from Home, Statistics, or household screens therefore returned the candidate through navigation state without updating the shared Zustand period. The picker now reserves local return-state behavior for callers that provide `initialPeriod`, which is the expense-filter custom-date flow; normal period chips update the shared store and then navigate back.
+- Files changed: TMA period picker routing logic, its focused store/navigation regression test, and feat-099 harness evidence.
+- Verification: The new regression test failed before the fix because the store remained on the current month, then passed after the fix. Focused period/statistics tests passed with 19 tests. `./init.sh typecheck` and `./init.sh lint` returned `OK`.
+- Blockers: Real Telegram WebView smoke remains pending because this environment cannot provide authenticated Telegram launch context.
+- Next steps: In Telegram, open the picker from Home and Statistics, choose a different preset, press the native BottomButton, and confirm the chip label and data range both change after returning.
+
 ## 2026-06-11 — Shifted TMA reporting periods to Vietnam local time
 
 - Who: Codex

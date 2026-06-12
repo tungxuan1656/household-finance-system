@@ -3,6 +3,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { PeriodChipLink } from '@/features/period/components/period-chip-link'
 import { PeriodPickerPage } from '@/features/period/pages/period-picker-page'
 import { usePeriodStore } from '@/features/period/store'
 import {
@@ -124,6 +125,62 @@ describe('period store and picker', () => {
         new Date('2026-06-15T23:45:00Z'),
       ),
     )
+  })
+
+  it('applies the global period when opened through PeriodChipLink', async () => {
+    await act(async () => {
+      root.render(
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route
+              element={
+                <div>
+                  <PeriodChipLink />
+                  <span>Home</span>
+                </div>
+              }
+              path='/'
+            />
+            <Route element={<PeriodPickerPage />} path='/period' />
+          </Routes>
+        </MemoryRouter>,
+      )
+    })
+
+    const periodLink = host.querySelector('a[href="/period"]')
+
+    expect(periodLink).toBeTruthy()
+
+    await act(async () => {
+      periodLink?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    })
+
+    const lastWeekPreset = Array.from(host.querySelectorAll('button')).find(
+      (button) => button.textContent === 'Tuần trước',
+    )
+
+    expect(lastWeekPreset).toBeTruthy()
+
+    await act(async () => {
+      lastWeekPreset?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    })
+
+    const latestBottomButtonOptions = setBottomButtonMock.mock.calls.at(
+      -1,
+    )?.[0] as { onClick: () => void } | undefined
+
+    await act(async () => {
+      latestBottomButtonOptions?.onClick()
+    })
+
+    expect(usePeriodStore.getState().selectedPeriod).toEqual(
+      createReportingPeriodPresetSelection(
+        'lastWeek',
+        new Date('2026-06-15T23:45:00Z'),
+      ),
+    )
+
+    expect(host.textContent).toContain('Home')
   })
 
   it('returns the chosen period via navigation state when opened as a sub-page and leaves zustand untouched', async () => {

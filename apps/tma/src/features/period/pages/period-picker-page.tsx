@@ -74,7 +74,7 @@ export const PeriodPickerPage = () => {
 
   const locationState = (location.state ??
     null) as PeriodPickerLocationState | null
-  const isSubPage = !!locationState?.backTo
+  const isSubPage = locationState?.initialPeriod !== undefined
   const initialPeriodFromState = locationState?.initialPeriod
   const initialPeriod =
     initialPeriodFromState !== undefined && initialPeriodFromState !== null
