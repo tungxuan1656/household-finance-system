@@ -22,7 +22,6 @@ coverage/
 __pycache__/
 .vscode-test/
 .omx/
-.gitnexus
 .sisyphus
 .playwright-cli
 .playwright

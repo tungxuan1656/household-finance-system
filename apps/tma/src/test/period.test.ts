@@ -129,6 +129,7 @@ describe('getCurrentPeriod', () => {
     )
 
     expect(formatPeriodDateInputValue(selection.dateFrom)).toBe('2026-06-03')
+
     expect(parsePeriodDateInputValue('2026-06-03')).toBe(
       vietnamTimestamp(2026, 5, 3),
     )

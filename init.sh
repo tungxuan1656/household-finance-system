@@ -16,7 +16,7 @@ Command behavior:
   typecheck  run web, worker, and tma typecheck in parallel
   test       run web, worker, and tma tests in parallel
   build      run web, worker dry-run deploy, and tma build in parallel
-  sync       sync GitNexus index
+  sync       (removed)
 EOF
 }
 
@@ -55,10 +55,6 @@ run_install() {
 
 run_harness_check() {
   run_quiet "harness" ./scripts/check_harness_size.sh
-}
-
-run_sync() {
-  run_quiet "sync" ./scripts/sync_gitnexus.sh
 }
 
 run_worker_build() {
@@ -235,7 +231,6 @@ run_full() {
     "worker test" \
     "tma test"
   local status=$?
-  run_sync || true
   if [ $status -eq 0 ]; then
     echo "Done!"
   fi
@@ -248,7 +243,7 @@ command_set=false
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --verbose) VERBOSE=true ;;
-    install|lint|typecheck|test|build|sync|full|help|--help|-h)
+    install|lint|typecheck|test|build|full|help|--help|-h)
       if [ "$command_set" = "true" ]; then
         usage
         exit 2
@@ -271,7 +266,6 @@ case "$command" in
   typecheck) run_typecheck && echo "OK" ;;
   test) run_test && echo "OK" ;;
   build) run_build && echo "OK" ;;
-  sync) run_sync && echo "OK" ;;
   help|--help|-h) usage ;;
   *)
     usage
