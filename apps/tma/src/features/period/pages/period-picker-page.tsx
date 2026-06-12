@@ -1,11 +1,10 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { CalendarIcon, RefreshIcon } from '@/components/shared/tma-icons'
-import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
+import { CalendarIcon } from '@/components/shared/tma-icons'
+import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   Card,
-  CardDescription,
   Chip,
   Eyebrow,
   Field,
@@ -17,7 +16,6 @@ import {
 } from '@/components/ui'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {
-  createCurrentMonthPeriodSelection,
   createCustomPeriodSelection,
   createReportingPeriodPresetSelection,
   formatPeriodDateInputValue,
@@ -58,19 +56,14 @@ const PeriodPresetButton = ({
   <button
     aria-pressed={isActive}
     className={cn(
-      'inline-flex min-h-10 items-center gap-1.5 rounded-full border px-3.5 text-sm font-bold transition active:scale-95',
+      'inline-flex min-h-10 items-center gap-1 rounded-full border pr-3 pl-2 text-sm font-medium transition active:scale-95',
       isActive
         ? 'border-tma-primary bg-tma-primary/12 text-tma-primary shadow-[inset_0_0_0_1px_rgba(63,124,255,0.12)]'
         : 'border-black/6 bg-white/75 text-tma-text-strong shadow-tma-soft',
     )}
     type='button'
     onClick={onClick}>
-    <CalendarIcon
-      aria-hidden='true'
-      className='size-3.5'
-      height='14'
-      width='14'
-    />
+    <CalendarIcon aria-hidden='true' className='size-4 text-neutral-700' />
     {getReportingPeriodPresetLabel(preset)}
   </button>
 )
@@ -90,7 +83,7 @@ const PeriodDateField = ({
     <FieldLabel>{label}</FieldLabel>
     <div
       className={cn(
-        'relative flex items-center rounded-[18px] border bg-black/[0.04] transition focus-within:border-tma-primary/30 focus-within:ring-4 focus-within:ring-tma-primary/10',
+        'relative flex max-w-40 items-center rounded-[18px] border bg-black/4 transition focus-within:border-tma-primary/30 focus-within:ring-4 focus-within:ring-tma-primary/10',
         hasError
           ? 'border-[#d93838]/40 focus-within:border-[#d93838]/60 focus-within:ring-[#d93838]/15'
           : 'border-tma-line',
@@ -228,15 +221,6 @@ export const PeriodPickerPage = () => {
     navigate(backTo, { replace: true })
   })
 
-  const handleResetToCurrentMonth = useEffectEvent(() => {
-    selection()
-
-    const now = createCurrentMonthPeriodSelection()
-    setCandidate(now)
-    setCustomFrom(formatPeriodDateInputValue(now.dateFrom))
-    setCustomTo(formatPeriodDateInputValue(now.dateTo - 1))
-  })
-
   useEffect(() => {
     const cleanup = setBottomButton({
       text: `Chọn ${formatPeriodSelectionRangeLabel(candidate)}`,
@@ -261,19 +245,10 @@ export const PeriodPickerPage = () => {
     })
   }, [candidate, customError])
 
-  const showReset = !isSubPage
-
   return (
     <TmaPageShell reserveBottomButton title='Chọn kỳ'>
-      <TmaPageHeader
-        eyebrow='Kỳ báo cáo'
-        leading={<CalendarIcon aria-hidden='true' height='22' width='22' />}
-        subtitle='Chọn nhanh một khoảng thời gian hoặc tự nhập từ ngày đến ngày.'
-        title='Đổi kỳ xem dữ liệu'
-      />
-
       <Section className='mt-0'>
-        <SectionHeader eyebrow='Chọn nhanh' title='Khoảng thời gian' />
+        <SectionHeader title='Chọn nhanh' />
         <div className='flex flex-wrap gap-2'>
           {REPORTING_PERIOD_PRESETS.map((preset) => (
             <PeriodPresetButton
@@ -294,7 +269,7 @@ export const PeriodPickerPage = () => {
       </Section>
 
       <Section>
-        <SectionHeader eyebrow='Tùy chỉnh' title='Từ ngày -> đến ngày' />
+        <SectionHeader title='Tùy chỉnh' />
         <Card className='grid gap-3'>
           <div className='grid grid-cols-2 gap-2.5'>
             <PeriodDateField
@@ -317,27 +292,11 @@ export const PeriodPickerPage = () => {
             />
           </div>
           {customError ? <FieldError>{customError}</FieldError> : null}
-          <CardDescription>
-            Khi chọn ngày hợp lệ, kỳ tùy chỉnh sẽ được áp dụng sau khi bấm nút
-            xác nhận.
-          </CardDescription>
         </Card>
       </Section>
 
       <Section>
         <SectionHeader
-          action={
-            showReset ? (
-              <button
-                aria-label='Đặt lại về tháng này'
-                className='inline-flex shrink-0 items-center gap-1 rounded-full bg-black/[0.05] px-3 py-1.5 text-xs font-bold text-tma-text-strong transition active:scale-95'
-                type='button'
-                onClick={handleResetToCurrentMonth}>
-                <RefreshIcon aria-hidden='true' height='12' width='12' />
-                Tháng này
-              </button>
-            ) : null
-          }
           eyebrow='Đang chọn'
           title={formatPeriodSelectionLabel(candidate)}
         />
@@ -357,7 +316,7 @@ export const PeriodPickerPage = () => {
             <span className='text-xs text-tma-text-muted'>
               {activePreset
                 ? 'Áp dụng nhanh theo preset'
-                : 'Khoảng thời gian riêng'}
+                : 'Khoảng thời gian tuỳ chỉnh'}
             </span>
           </div>
           <PeriodRangeTimeline candidate={candidate} />

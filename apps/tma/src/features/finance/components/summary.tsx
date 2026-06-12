@@ -22,10 +22,12 @@ import {
 
 export const FinanceSummaryCard = ({
   householdId,
+  showBudgetPeriodContext = false,
   showPeriodChip = true,
   title = 'Tổng chi kỳ này',
 }: {
   householdId?: string
+  showBudgetPeriodContext?: boolean
   showPeriodChip?: boolean
   title?: string
 }) => {
@@ -35,14 +37,12 @@ export const FinanceSummaryCard = ({
   const overviewQuery = useAnalyticsOverviewQuery(overviewParams)
   const comparisonQuery = useAnalyticsComparisonQuery(overviewParams)
   const budgetQuery = useQuery({
-    ...budgetListQueryOptions(
-      householdId ?? 'unknown',
-      budgetPeriod ?? 'unknown',
-    ),
-    enabled: Boolean(householdId && budgetPeriod),
+    ...budgetListQueryOptions(householdId ?? 'unknown', budgetPeriod),
+    enabled: Boolean(householdId),
   })
   const overview = overviewQuery.data
   const budget = budgetQuery.data?.items[0] ?? null
+  const budgetPeriodContext = formatBudgetPeriodContext(budgetPeriod)
   const budgetProgress = overview
     ? getBudgetProgress(overview.totalSpendMinor, budget)
     : null
@@ -124,11 +124,19 @@ export const FinanceSummaryCard = ({
             <span>
               {budget && isMonthPeriodSelection(selectedPeriod)
                 ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget)
-                : 'Ngân sách chỉ có theo tháng'}
+                : showBudgetPeriodContext
+                  ? budgetPeriodContext
+                  : 'Ngân sách chỉ có theo tháng'}
             </span>
           </div>
         )}
       </Card>
     </DataState>
   )
+}
+
+const formatBudgetPeriodContext = (period: string): string => {
+  const [year, month] = period.split('-')
+
+  return year && month ? `Ngân sách tháng ${month}/${year}` : 'Ngân sách tháng'
 }

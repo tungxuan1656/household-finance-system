@@ -183,12 +183,8 @@ export const HouseholdPreviewCarousel = () => {
     ),
   })
   const budgetQueries = useQueries({
-    queries: households.map(
-      (household) =>
-        ({
-          ...budgetListQueryOptions(household.id, budgetPeriod ?? 'unknown'),
-          enabled: Boolean(budgetPeriod),
-        }) as ReturnType<typeof budgetListQueryOptions> & { enabled: boolean },
+    queries: households.map((household) =>
+      budgetListQueryOptions(household.id, budgetPeriod),
     ),
   })
 
@@ -196,13 +192,12 @@ export const HouseholdPreviewCarousel = () => {
     .map((household, index) => ({
       household,
       budget: budgetQueries[index]?.data?.items[0] ?? null,
-      budgetLabel:
-        budgetPeriod && isMonthPeriodSelection(selectedPeriod)
-          ? getHouseholdBudgetLabel(
-              overviewQueries[index]?.data?.totalSpendMinor,
-              budgetQueries[index]?.data?.items[0] ?? null,
-            )
-          : 'Ngân sách chỉ có theo tháng',
+      budgetLabel: isMonthPeriodSelection(selectedPeriod)
+        ? getHouseholdBudgetLabel(
+            overviewQueries[index]?.data?.totalSpendMinor,
+            budgetQueries[index]?.data?.items[0] ?? null,
+          )
+        : 'Ngân sách chỉ có theo tháng',
       currencyCode: overviewQueries[index]?.data?.currencyCode,
       isError: Boolean(
         memberQueries[index]?.error ||

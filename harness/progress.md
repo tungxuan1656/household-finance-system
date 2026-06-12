@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-12 — Kept TMA budget periods monthly on Home
+
+- Who: Codex
+- Summary: Fixed TMA budget-period derivation so budget queries always receive a `YYYY-MM` month from the selected range instead of disabling/falling back to `unknown` for weekly or yearly global periods. Home now opts into monthly budget context copy, so a weekly Home selection shows text like `Ngân sách tháng 06/2026` instead of mixing the main summary with `Ngân sách chỉ có theo tháng`.
+- Files changed: TMA shared period helper, shared finance summary card, Home overview wrapper, household budget query call sites, focused Home overview regression test, user-approved unused-local cleanup in the period picker, and feat-099 harness evidence.
+- Verification: The new focused test failed before the fix on `unknown` budget period and missing `Ngân sách tháng 06/2026`, then passed after the fix. `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and final `./init.sh` returned `OK` / `Done!`; final lint required the approved cleanup of unused period-picker reset locals left by unrelated edits.
+- Blockers: None in code. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open Home in the TMA with a weekly period selected and visually confirm the summary shows the monthly budget context without implying a weekly budget.
+
 ## 2026-06-11 — Fixed global TMA period selection not applying
 
 - Who: Codex

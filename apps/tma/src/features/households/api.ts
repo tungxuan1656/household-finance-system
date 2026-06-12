@@ -339,15 +339,11 @@ export const useHouseholdOverviewQueries = (
 
 export const useHouseholdBudgetQueries = (
   households: HouseholdDTO[],
-  period: string | null,
+  period: string,
 ) =>
   useQueries({
-    queries: households.map(
-      (household) =>
-        ({
-          ...budgetListQueryOptions(household.id, period ?? 'unknown'),
-          enabled: Boolean(period),
-        }) as ReturnType<typeof budgetListQueryOptions> & { enabled: boolean },
+    queries: households.map((household) =>
+      budgetListQueryOptions(household.id, period),
     ),
   })
 

@@ -277,13 +277,7 @@ export const parsePeriodDateInputValue = (value: string): number | null => {
     : null
 }
 
-export const getMonthBudgetPeriod = (
-  selection: PeriodSelection,
-): string | null => {
-  if (selection.granularity !== 'month') {
-    return null
-  }
-
+export const getMonthBudgetPeriod = (selection: PeriodSelection): string => {
   const { month, year } = toVietnamDateParts(selection.dateFrom)
 
   return `${year}-${month}`

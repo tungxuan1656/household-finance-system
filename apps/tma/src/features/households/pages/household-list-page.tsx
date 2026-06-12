@@ -53,13 +53,12 @@ export const HouseholdListPage = () => {
         return {
           household,
           budget: budgetQuery?.data?.items[0] ?? null,
-          budgetLabel:
-            budgetPeriod && isMonthPeriodSelection(selectedPeriod)
-              ? getHouseholdBudgetLabel(
-                  overviewQuery?.data?.totalSpendMinor,
-                  budgetQuery?.data?.items[0] ?? null,
-                )
-              : 'Ngân sách chỉ có theo tháng',
+          budgetLabel: isMonthPeriodSelection(selectedPeriod)
+            ? getHouseholdBudgetLabel(
+                overviewQuery?.data?.totalSpendMinor,
+                budgetQuery?.data?.items[0] ?? null,
+              )
+            : 'Ngân sách chỉ có theo tháng',
           currencyCode: overviewQuery?.data?.currencyCode,
           isLoading: Boolean(
             memberQuery?.isLoading ||
@@ -70,7 +69,7 @@ export const HouseholdListPage = () => {
           totalSpendMinor: overviewQuery?.data?.totalSpendMinor,
         }
       }),
-    [budgetQueries, households, memberQueries, overviewQueries],
+    [budgetQueries, households, memberQueries, overviewQueries, selectedPeriod],
   )
 
   return (
