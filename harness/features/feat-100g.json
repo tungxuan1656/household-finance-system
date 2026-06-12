@@ -1,0 +1,14 @@
+{
+  "id": "feat-100g",
+  "name": "TMA scope toggle on /budgets/new",
+  "status": "todo",
+  "description": "TMA `/budgets/new` adds a scope toggle. Choosing 'Cá nhân' hides the household `<select>` and shows a `Currency` selector (VND default, allow any 3-letter code). Choosing 'Household' hides the currency and shows the household `<select>` (admin-only, current behaviour). Submission builds the scope-aware payload via extended `buildBudgetMutationRequest`.",
+  "dependencies": ["feat-100b", "feat-100e"],
+  "evidence": {
+    "planned": [
+      "New `apps/tma/src/test/budget-create-page.test.tsx` covers both field sets and the resulting payload (household payload keeps `householdId`; personal payload sets `ownerUserId` + `currencyCode`).",
+      "TMA typecheck + build OK.",
+      "HITL: visual smoke in a real Telegram WebView flagged as pending."
+    ]
+  }
+}

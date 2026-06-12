@@ -1,0 +1,22 @@
+{
+  "id": "feat-100i",
+  "name": "Spec + harness closeout + final verify",
+  "status": "todo",
+  "description": "Tighten `docs/product-specs/shared/budget-management.md` with explicit acceptance criteria for personal scope (currency rule, list-merge behaviour, status aggregate rule, ownership gate). Fill `harness/features/feat-100.json` evidence with verification commands. Append the closing `progress.md` entry. Final `./init.sh` must print `Done!`.",
+  "dependencies": [
+    "feat-100a",
+    "feat-100b",
+    "feat-100c",
+    "feat-100d",
+    "feat-100e",
+    "feat-100f",
+    "feat-100g",
+    "feat-100h"
+  ],
+  "evidence": {
+    "planned": [
+      "Spec change is surface-agnostic: lives under `docs/product-specs/shared/`.",
+      "Final `./init.sh` returns `Done!`; `jq empty harness/feature_index.json harness/features/feat-100*.json` returns no output; `git diff --check` is clean."
+    ]
+  }
+}

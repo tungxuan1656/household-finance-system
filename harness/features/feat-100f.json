@@ -1,0 +1,14 @@
+{
+  "id": "feat-100f",
+  "name": "TMA merged list page",
+  "status": "todo",
+  "description": "TMA `/budgets` renders a single scroll of personal + household cards sorted by period DESC, each with a 'Cá nhân' / 'Household' chip. Household `<select>` dropdown and the 'Budget của household' header section are removed. The 'Tạo mới' button is always visible. Empty state copy mentions both scopes.",
+  "dependencies": ["feat-100e"],
+  "evidence": {
+    "planned": [
+      "New `apps/tma/src/test/budget-list-page.test.tsx` asserts both scope cards render and no household `<select>` is present in the list page.",
+      "Focused TMA vitest + typecheck + lint pass.",
+      "HITL: visual smoke in a real Telegram WebView flagged as pending (env cannot provide authenticated launch context)."
+    ]
+  }
+}

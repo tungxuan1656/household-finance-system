@@ -499,6 +499,56 @@
       "id": "feat-099",
       "name": "TMA reporting period and statistics pie",
       "status": "done"
+    },
+    {
+      "id": "feat-100",
+      "name": "Personal budgets end-to-end",
+      "status": "in_progress"
+    },
+    {
+      "id": "feat-100a",
+      "name": "Personal-budget DB foundation",
+      "status": "todo"
+    },
+    {
+      "id": "feat-100b",
+      "name": "Personal budget create + duplicate-period guard",
+      "status": "todo"
+    },
+    {
+      "id": "feat-100c",
+      "name": "Unified list endpoint",
+      "status": "todo"
+    },
+    {
+      "id": "feat-100d",
+      "name": "Personal status aggregate + update/delete ownership gates",
+      "status": "todo"
+    },
+    {
+      "id": "feat-100e",
+      "name": "TMA contracts and presentation helpers",
+      "status": "todo"
+    },
+    {
+      "id": "feat-100f",
+      "name": "TMA merged list page",
+      "status": "todo"
+    },
+    {
+      "id": "feat-100g",
+      "name": "TMA scope toggle on /budgets/new",
+      "status": "todo"
+    },
+    {
+      "id": "feat-100h",
+      "name": "Web parity (merged list + scope toggle)",
+      "status": "todo"
+    },
+    {
+      "id": "feat-100i",
+      "name": "Spec + harness closeout + final verify",
+      "status": "todo"
     }
   ]
 }

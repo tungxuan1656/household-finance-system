@@ -1,0 +1,21 @@
+{
+  "id": "feat-100",
+  "name": "Personal budgets end-to-end",
+  "status": "in_progress",
+  "description": "Extend the budget system to support a user-owned personal scope (no household) alongside the existing household scope. Widen D1 `budgets` to add `scope='personal'` + nullable `household_id` + `owner_user_id` with scope-aware partial unique indexes; widen worker contracts/handlers for list, create, get, get-status, update, delete; aggregate personal budget status from the owner's personal expenses only; refactor TMA `/budgets` to render a merged list sorted by period DESC without the household filter, add a `Cá nhân`/`Household` chip, and refactor `/budgets/new` to add a scope toggle (personal asks for currency, household asks for householdId). Mirror the change on web. Tighten shared `docs/product-specs/shared/budget-management.md` acceptance criteria.",
+  "dependencies": ["feat-007", "feat-026", "feat-027", "feat-083", "feat-098"],
+  "evidence": {
+    "planned": [
+      "D1 migration `apps/worker/migrations/0003_personal_budgets.sql`: widen `budgets.scope` CHECK to include `'personal'`, make `household_id` nullable with a scope-driven CHECK mirroring the expenses pattern, add `owner_user_id` with FK to users, and add a partial unique index `idx_budgets_personal_owner_month` on `(owner_user_id, budget_month) WHERE scope='personal' AND archived_at IS NULL`.",
+      "Worker contracts: extend `BudgetDTO`/`BudgetStatusDTO` with `scope` + `ownerUserId`; widen `CreateBudgetRequest` to a discriminated union by `scope`; make `budgetListQuerySchema.household_id` optional and add optional `scope` + `owner_user_id` + `period`; require `currencyCode` for personal create.",
+      "Worker repository: add `listBudgetsForUser(db, { userId, scope?, period? })` returning the unioned list (active household memberships + personal rows owned by the user), add `findPersonalBudgetByPeriod`, and split `getBudgetSpendSummary` into household + personal paths (personal filters by `e.spent_by_user_id = ? AND e.household_id IS NULL`).",
+      "Worker handlers: branch auth on `budget.scope` (household needs active admin membership via `canManageBudgets`, personal needs `currentUser.id == ownerUserId`); use `notFound` on cross-user access to avoid leaking existence; pass `householdId: null` to the audit log for personal events.",
+      "TMA: extend `BudgetDTO`/`BudgetStatusDTO`, widen `useBudgetListQuery` to default `scope: 'all'` and accept optional filters; refactor `budget-list-page.tsx` to drop the household selector and render cards with a `Cá nhân`/`Household` chip sorted by period DESC; refactor `create-budget-page.tsx` with a scope toggle (personal hides household selector and shows currency, household hides currency and uses household default).",
+      "Web parity: same `BudgetDTO`/`useBudgetListQuery` widening; `budgets-page.tsx` and `create-budget-dialog.tsx` adopt the unioned list and scope toggle; `edit-budget-dialog.tsx` keeps period immutable but gains the scope-aware currency/owner display.",
+      "Worker integration tests: `apps/worker/test/integration/budgets-personal-scope.spec.ts` covers personal create + 409 duplicate + unioned list + per-scope filter + cross-user 404 + status aggregate from owner's personal expenses only; extend `budgets-create-list.spec.ts` to assert `scope` is present in list items.",
+      "TMA tests: extend `budget-presentation.test.ts` with `getBudgetScopeLabel`/`getBudgetScopeTone` and a multi-scope `getLatestBudget`; add `budget-list-page.test.tsx` for the merged view; add `budget-create-page.test.tsx` for the scope toggle field set and payload shape.",
+      "Spec: tighten `docs/product-specs/shared/budget-management.md` with explicit acceptance criteria for personal scope (currency, list-merge, status aggregate, ownership gate)."
+    ]
+  },
+  "notes": "Spec already lists personal/household/group as scopes, but DB and API were household-only. Plan is additive: existing household budgets and existing partial unique index `idx_budgets_household_scope_month` stay intact. Personal budget ownership uses `notFound` (not `forbidden`) to avoid leaking existence. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required."
+}

@@ -8,6 +8,14 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-12 — Wrote personal-budgets end-to-end ExecPlan and harness record
+
+- Who: Codex
+- Summary: Locked direction after `grill-with-docs` for adding personal-scope budgets alongside household budgets. Wrote `docs/exec-plans/plans/2026-06-12-personal-budgets-end-to-end.md` covering D1 migration, worker contracts/repository/handlers widening, TMA list+create refactor, web parity, and integration tests. Created `harness/features/feat-100.json` and added the active entry to `docs/exec-plans/index.md`. Implementation steps are tracked in the plan's Progress checklist; the next move is `to-issues` to break the 11 steps into vertical slices.
+- Files changed: New ExecPlan file, `harness/features/feat-100.json`, `harness/feature_index.json`, `docs/exec-plans/index.md`.
+- Blockers: None. The migration is additive (widens a CHECK, makes a column nullable, adds a column + two indexes) and personal expenses already aggregate via `expense-query-scope.ts:28-31`.
+- Next steps: Run `to-issues` to slice the 11 plan steps into vertical harness features/JSON, then start with the D1 migration and worker contract widening.
+
 ## 2026-06-12 — Moved TMA custom period picking into selected range cards
 
 - Who: Codex

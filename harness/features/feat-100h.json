@@ -1,0 +1,14 @@
+{
+  "id": "feat-100h",
+  "name": "Web parity (merged list + scope toggle)",
+  "status": "todo",
+  "description": "Web `BudgetDTO`/`useBudgetListQuery` mirror TMA. `budgets-page.tsx` renders the unioned list with a scope badge per card. `create-budget-dialog.tsx` gains the scope toggle; `edit-budget-dialog.tsx` shows scope + currency + owner; both flows build the scope-aware payload.",
+  "dependencies": ["feat-100c", "feat-100e"],
+  "evidence": {
+    "planned": [
+      "Focused web vitest for the budget feature passes.",
+      "Web typecheck + lint OK.",
+      "HITL: browser visual smoke flagged as pending."
+    ]
+  }
+}

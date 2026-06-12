@@ -1,0 +1,14 @@
+{
+  "id": "feat-100d",
+  "name": "Personal status aggregate + update/delete ownership gates",
+  "status": "todo",
+  "description": "Worker `getBudgetStatusHandler` branches on `scope`: household uses the existing path; personal uses new `getPersonalBudgetSpendSummary` aggregating only `e.spent_by_user_id = ? AND e.household_id IS NULL`. `updateBudget` and `deleteBudget` apply the same ownership gate: household needs active admin membership via `canManageBudgets`; personal needs `currentUser.id == ownerUserId` (else 404). Audit log: `household_id = null` for personal events.",
+  "dependencies": ["feat-100b", "feat-100c"],
+  "evidence": {
+    "planned": [
+      "Integration test seeds 1 personal expense + 1 household expense in the same month and asserts personal budget status includes only the personal expense.",
+      "Cross-user PATCH/DELETE on a personal budget returns 404.",
+      "Audit log entry for a personal `budget.created` event has `household_id = null`."
+    ]
+  }
+}
