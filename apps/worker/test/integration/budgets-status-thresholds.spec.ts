@@ -46,6 +46,7 @@ describe('GET /api/v1/budgets/:id/status thresholds', () => {
           'content-type': 'application/json',
         },
         body: JSON.stringify({
+          scope: 'household',
           householdId,
           period: '2026-04',
           totalLimit: 100000,
@@ -107,6 +108,7 @@ describe('GET /api/v1/budgets/:id/status thresholds', () => {
           'content-type': 'application/json',
         },
         body: JSON.stringify({
+          scope: 'household',
           householdId,
           period: '2026-04',
           totalLimit: 100000,
@@ -176,6 +178,7 @@ describe('GET /api/v1/budgets/:id/status thresholds', () => {
             'content-type': 'application/json',
           },
           body: JSON.stringify({
+            scope: 'household',
             householdId,
             period: '2026-04',
             totalLimit: 100000,

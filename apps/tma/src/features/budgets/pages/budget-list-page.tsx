@@ -23,7 +23,11 @@ import { selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 import { useBudgetListQuery } from '../api'
-import { formatBudgetPeriodLabel, getLatestBudget } from '../presentation'
+import {
+  formatBudgetPeriodLabel,
+  getBudgetScopeLabel,
+  getLatestBudget,
+} from '../presentation'
 import type { BudgetDTO } from '../types'
 
 const budgetAccent = { background: '#fff6d9', foreground: '#b48800' }
@@ -46,6 +50,36 @@ const BudgetGlyph = () => (
   </svg>
 )
 
+type ScopeFilter = 'all' | 'household' | 'personal'
+
+const SCOPE_FILTER_OPTIONS: { label: string; value: ScopeFilter }[] = [
+  { label: 'Tất cả', value: 'all' },
+  { label: 'Household', value: 'household' },
+  { label: 'Cá nhân', value: 'personal' },
+]
+
+const ScopeFilterChip = ({
+  isSelected,
+  label,
+  onClick,
+}: {
+  isSelected: boolean
+  label: string
+  onClick: () => void
+}) => (
+  <button
+    className={cn(
+      'inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition active:scale-95',
+      isSelected
+        ? 'bg-tma-primary/12 text-tma-primary'
+        : 'bg-black/[0.06] text-tma-text-strong',
+    )}
+    type='button'
+    onClick={onClick}>
+    {label}
+  </button>
+)
+
 const BudgetListCard = ({
   budget,
   household,
@@ -61,12 +95,25 @@ const BudgetListCard = ({
       <IconBadge accent={budgetAccent}>
         <BudgetGlyph />
       </IconBadge>
-      <Chip tone='primary'>{formatBudgetPeriodLabel(budget.period)}</Chip>
+      <div className='flex flex-wrap gap-1.5'>
+        <Chip tone='primary'>{formatBudgetPeriodLabel(budget.period)}</Chip>
+        <Chip
+          className={
+            budget.scope === 'personal'
+              ? 'bg-tma-warning/20 text-[#8a6800]'
+              : undefined
+          }
+          tone={budget.scope === 'personal' ? 'warning' : 'muted'}>
+          {getBudgetScopeLabel(budget.scope, household)}
+        </Chip>
+      </div>
     </div>
 
     <div className='min-w-0'>
       <CardTitle className='truncate'>
-        {household?.name ?? 'Household'}
+        {budget.scope === 'personal'
+          ? 'Ngân sách cá nhân'
+          : (household?.name ?? 'Household')}
       </CardTitle>
       <CardDescription className='mt-1'>
         {budget.categoryLimits.length > 0
@@ -95,11 +142,30 @@ const BudgetListCard = ({
 export const BudgetListPage = () => {
   const householdsQuery = useHouseholdsQuery()
   const households = householdsQuery.data?.items ?? []
+  const adminHouseholds = households.filter(
+    (household) => household.role === 'admin',
+  )
+  const [scopeFilter, setScopeFilter] = useState<ScopeFilter>('all')
   const [selectedHouseholdId, setSelectedHouseholdId] = useState('')
   const selectedHousehold = households.find(
     (household) => household.id === selectedHouseholdId,
   )
-  const budgetsQuery = useBudgetListQuery(selectedHouseholdId || undefined)
+
+  const listParams = useMemo(() => {
+    if (scopeFilter === 'personal') {
+      return { scope: 'personal' as const }
+    }
+    if (scopeFilter === 'household') {
+      return {
+        scope: 'household' as const,
+        householdId: selectedHouseholdId || undefined,
+      }
+    }
+
+    return {}
+  }, [scopeFilter, selectedHouseholdId])
+
+  const budgetsQuery = useBudgetListQuery(listParams)
   const budgets = useMemo(
     () =>
       [...(budgetsQuery.data?.items ?? [])].sort((left, right) =>
@@ -107,13 +173,20 @@ export const BudgetListPage = () => {
       ),
     [budgetsQuery.data?.items],
   )
-  const latestBudget = getLatestBudget(budgets)
+
+  const filteredBudgets = useMemo(() => {
+    if (scopeFilter === 'all') return budgets
+
+    return budgets.filter((budget) => budget.scope === scopeFilter)
+  }, [budgets, scopeFilter])
+
+  const latestBudget = getLatestBudget(filteredBudgets)
 
   useEffect(() => {
-    if (!selectedHouseholdId && households[0]) {
-      setSelectedHouseholdId(households[0].id)
+    if (!selectedHouseholdId && adminHouseholds[0]) {
+      setSelectedHouseholdId(adminHouseholds[0].id)
     }
-  }, [households, selectedHouseholdId])
+  }, [adminHouseholds, selectedHouseholdId])
 
   const isInitialLoading =
     (householdsQuery.isLoading && households.length === 0) ||
@@ -122,6 +195,25 @@ export const BudgetListPage = () => {
     (householdsQuery.isError && households.length === 0) ||
     (budgetsQuery.isError && budgets.length === 0)
 
+  const canCreateBudget =
+    scopeFilter === 'personal' ||
+    scopeFilter === 'all' ||
+    adminHouseholds.length > 0
+
+  const emptyTitle =
+    scopeFilter === 'personal'
+      ? 'Chưa có ngân sách cá nhân'
+      : scopeFilter === 'household'
+        ? 'Chưa có ngân sách household'
+        : 'Chưa có ngân sách'
+
+  const emptyDescription =
+    scopeFilter === 'personal'
+      ? 'Tạo ngân sách cá nhân để theo dõi chi tiêu của bạn theo tháng.'
+      : scopeFilter === 'household'
+        ? 'Tạo ngân sách tháng đầu tiên cho household để xem planned vs actual.'
+        : 'Tạo ngân sách để theo dõi chi tiêu theo tháng.'
+
   return (
     <TmaPageShell title='Ngân sách'>
       <Card className='grid gap-3 p-5'>
@@ -129,7 +221,7 @@ export const BudgetListPage = () => {
           <div>
             <Eyebrow>Budget hub</Eyebrow>
             <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
-              {budgets.length}
+              {filteredBudgets.length}
             </strong>
           </div>
           <IconBadge accent={budgetAccent}>
@@ -137,15 +229,16 @@ export const BudgetListPage = () => {
           </IconBadge>
         </div>
         <CardDescription>
-          Theo dõi ngân sách tháng theo household. Detail sẽ dùng API status để
-          hiển thị planned vs actual và cảnh báo 80% / vượt ngưỡng.
+          Theo dõi ngân sách tháng theo household hoặc cá nhân. Detail sẽ dùng
+          API status để hiển thị planned vs actual và cảnh báo 80% / vượt
+          ngưỡng.
         </CardDescription>
       </Card>
 
       <Section>
         <SectionHeader
           action={
-            selectedHousehold?.role === 'admin' ? (
+            canCreateBudget ? (
               <Link
                 className={buttonVariants({ size: 'sm', variant: 'outline' })}
                 to={TMA_PATHS.budgetsNew}
@@ -154,39 +247,54 @@ export const BudgetListPage = () => {
               </Link>
             ) : null
           }
-          eyebrow={selectedHousehold?.name ?? 'Household'}
-          title='Budget của household'
+          eyebrow='Lọc theo phạm vi'
+          title='Ngân sách'
         />
 
-        <Card className='mb-3 grid gap-2'>
-          <label className='grid gap-2'>
-            <span className='text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'>
-              Household
-            </span>
-            <select
-              className={cn(
-                'min-h-14 w-full rounded-[18px] border border-tma-line bg-black/[0.04] px-4 text-base text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
-              )}
-              disabled={householdsQuery.isLoading || households.length === 0}
-              value={selectedHouseholdId}
-              onChange={(event) => setSelectedHouseholdId(event.target.value)}>
-              {households.length === 0 ? (
-                <option value=''>Chưa có household</option>
-              ) : null}
-              {households.map((household) => (
-                <option key={household.id} value={household.id}>
-                  {household.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {selectedHousehold?.role !== 'admin' ? (
-            <CardDescription>
-              Bạn có thể xem ngân sách household này. Tạo, sửa, xóa cần quyền
-              admin.
-            </CardDescription>
-          ) : null}
-        </Card>
+        <div className='mb-3 flex flex-wrap gap-2'>
+          {SCOPE_FILTER_OPTIONS.map((option) => (
+            <ScopeFilterChip
+              key={option.value}
+              isSelected={scopeFilter === option.value}
+              label={option.label}
+              onClick={() => setScopeFilter(option.value)}
+            />
+          ))}
+        </div>
+
+        {scopeFilter === 'household' ? (
+          <Card className='mb-3 grid gap-2'>
+            <label className='grid gap-2'>
+              <span className='text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'>
+                Household
+              </span>
+              <select
+                className={cn(
+                  'min-h-14 w-full rounded-[18px] border border-tma-line bg-black/[0.04] px-4 text-base text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
+                )}
+                disabled={householdsQuery.isLoading || households.length === 0}
+                value={selectedHouseholdId}
+                onChange={(event) =>
+                  setSelectedHouseholdId(event.target.value)
+                }>
+                {households.length === 0 ? (
+                  <option value=''>Chưa có household</option>
+                ) : null}
+                {households.map((household) => (
+                  <option key={household.id} value={household.id}>
+                    {household.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {selectedHousehold?.role !== 'admin' ? (
+              <CardDescription>
+                Bạn có thể xem ngân sách household này. Tạo, sửa, xóa cần quyền
+                admin.
+              </CardDescription>
+            ) : null}
+          </Card>
+        ) : null}
 
         {latestBudget ? (
           <Card className='mb-3 grid gap-2 border-tma-warning/30 bg-[#fff9e6]'>
@@ -212,9 +320,7 @@ export const BudgetListPage = () => {
 
         <DataState
           customAction={
-            budgets.length === 0 &&
-            !isInitialLoading &&
-            selectedHousehold?.role === 'admin' ? (
+            budgets.length === 0 && !isInitialLoading && canCreateBudget ? (
               <Link
                 className={buttonVariants({ variant: 'secondary' })}
                 to={TMA_PATHS.budgetsNew}
@@ -223,8 +329,8 @@ export const BudgetListPage = () => {
               </Link>
             ) : null
           }
-          emptyDescription='Tạo ngân sách tháng đầu tiên cho household để xem planned vs actual.'
-          emptyTitle='Chưa có ngân sách'
+          emptyDescription={emptyDescription}
+          emptyTitle={emptyTitle}
           errorDescription='API budget hoặc household đang lỗi. Thử tải lại sau khi phiên đăng nhập ổn định.'
           errorTitle='Không tải được ngân sách'
           isEmpty={!isInitialLoading && !isInitialError && budgets.length === 0}
@@ -239,11 +345,13 @@ export const BudgetListPage = () => {
             ])
           }}>
           <div className='grid gap-3'>
-            {budgets.map((budget) => (
+            {filteredBudgets.map((budget) => (
               <BudgetListCard
                 key={budget.id}
                 budget={budget}
-                household={selectedHousehold}
+                household={households.find(
+                  (household) => household.id === budget.householdId,
+                )}
               />
             ))}
           </div>

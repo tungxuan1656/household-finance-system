@@ -10,20 +10,38 @@ import {
 describe('budget contract schema', () => {
   describe('createBudgetBodySchema', () => {
     describe('valid payloads', () => {
-      it('accepts minimal valid payload', () => {
+      it('accepts minimal valid household payload', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 500000,
         })
 
         expect(parsed.success).toBe(true)
         if (parsed.success) {
+          expect(parsed.data.scope).toBe('household')
           expect(parsed.data.categoryLimits).toEqual([])
+        }
+      })
+
+      it('accepts minimal valid personal payload with currencyCode', () => {
+        const parsed = createBudgetBodySchema().safeParse({
+          scope: 'personal',
+          currencyCode: 'VND',
+          period: '2026-05',
+          totalLimit: 500000,
+        })
+
+        expect(parsed.success).toBe(true)
+        if (parsed.success) {
+          expect(parsed.data.scope).toBe('personal')
+          expect(parsed.data.currencyCode).toBe('VND')
         }
       })
 
       it('accepts full valid payload with categoryLimits', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 1000000,
           categoryLimits: [
@@ -42,6 +60,7 @@ describe('budget contract schema', () => {
         'accepts valid period %s',
         (period) => {
           const parsed = createBudgetBodySchema().safeParse({
+            scope: 'household',
             period,
             totalLimit: 1000,
           })
@@ -52,6 +71,7 @@ describe('budget contract schema', () => {
 
       it('accepts empty categoryLimits array', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 1000,
           categoryLimits: [],
@@ -69,6 +89,7 @@ describe('budget contract schema', () => {
         'rejects invalid period %s',
         (period) => {
           const parsed = createBudgetBodySchema().safeParse({
+            scope: 'household',
             period,
             totalLimit: 1000,
           })
@@ -79,6 +100,7 @@ describe('budget contract schema', () => {
 
       it('rejects zero totalLimit', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 0,
         })
@@ -88,6 +110,7 @@ describe('budget contract schema', () => {
 
       it('rejects negative totalLimit', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: -1,
         })
@@ -97,6 +120,7 @@ describe('budget contract schema', () => {
 
       it('rejects non-integer totalLimit', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 1000.5,
         })
@@ -106,6 +130,7 @@ describe('budget contract schema', () => {
 
       it('rejects totalLimit exceeding max', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 1000000000000,
         })
@@ -117,6 +142,7 @@ describe('budget contract schema', () => {
         'rejects invalid categoryKey %s',
         (categoryKey) => {
           const parsed = createBudgetBodySchema().safeParse({
+            scope: 'household',
             period: '2026-05',
             totalLimit: 1000,
             categoryLimits: [{ categoryKey, limitMinor: 100 }],
@@ -128,6 +154,7 @@ describe('budget contract schema', () => {
 
       it('rejects zero limitMinor in categoryLimits', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 1000,
           categoryLimits: [{ categoryKey: 'food', limitMinor: 0 }],
@@ -138,6 +165,7 @@ describe('budget contract schema', () => {
 
       it('rejects negative limitMinor in categoryLimits', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 1000,
           categoryLimits: [{ categoryKey: 'food', limitMinor: -1 }],
@@ -148,6 +176,7 @@ describe('budget contract schema', () => {
 
       it('rejects duplicate categoryKeys in categoryLimits', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 1000,
           categoryLimits: [
@@ -161,6 +190,7 @@ describe('budget contract schema', () => {
 
       it('rejects unknown fields', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
           totalLimit: 1000,
           unknownField: 'should fail',
@@ -171,6 +201,7 @@ describe('budget contract schema', () => {
 
       it('rejects missing period', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           totalLimit: 1000,
         })
 
@@ -179,7 +210,37 @@ describe('budget contract schema', () => {
 
       it('rejects missing totalLimit', () => {
         const parsed = createBudgetBodySchema().safeParse({
+          scope: 'household',
           period: '2026-05',
+        })
+
+        expect(parsed.success).toBe(false)
+      })
+
+      it('rejects missing scope', () => {
+        const parsed = createBudgetBodySchema().safeParse({
+          period: '2026-05',
+          totalLimit: 1000,
+        })
+
+        expect(parsed.success).toBe(false)
+      })
+
+      it('rejects personal scope without currencyCode', () => {
+        const parsed = createBudgetBodySchema().safeParse({
+          scope: 'personal',
+          period: '2026-05',
+          totalLimit: 1000,
+        })
+
+        expect(parsed.success).toBe(false)
+      })
+
+      it('rejects invalid scope', () => {
+        const parsed = createBudgetBodySchema().safeParse({
+          scope: 'category',
+          period: '2026-05',
+          totalLimit: 1000,
         })
 
         expect(parsed.success).toBe(false)
@@ -303,19 +364,44 @@ describe('budget contract schema', () => {
 
         expect(parsed.success).toBe(true)
       })
+
+      it('accepts no filters (unioned list)', () => {
+        const parsed = budgetListQuerySchema().safeParse({})
+
+        expect(parsed.success).toBe(true)
+      })
+
+      it('accepts scope=personal', () => {
+        const parsed = budgetListQuerySchema().safeParse({
+          scope: 'personal',
+        })
+
+        expect(parsed.success).toBe(true)
+      })
+
+      it('accepts scope=household with household_id', () => {
+        const parsed = budgetListQuerySchema().safeParse({
+          household_id: 'hh_abc123',
+          scope: 'household',
+        })
+
+        expect(parsed.success).toBe(true)
+      })
     })
 
     describe('validation errors', () => {
-      it('rejects missing household_id', () => {
-        const parsed = budgetListQuerySchema().safeParse({})
-
-        expect(parsed.success).toBe(false)
-      })
-
       it('rejects invalid period format', () => {
         const parsed = budgetListQuerySchema().safeParse({
           household_id: 'hh_abc123',
           period: '2026-5',
+        })
+
+        expect(parsed.success).toBe(false)
+      })
+
+      it('rejects invalid scope', () => {
+        const parsed = budgetListQuerySchema().safeParse({
+          scope: 'category',
         })
 
         expect(parsed.success).toBe(false)

@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { defaultLocale, type SupportedLocale, translate } from '@/lib/i18n'
+
 const messages = {
   householdIdRequired: 'Household ID is required',
   periodInvalid: 'Period must be in YYYY-MM format',
@@ -10,6 +12,9 @@ const messages = {
   limitMinorTooLarge: 'Category limit must be at most 999999999999',
   duplicateCategoryKeys: 'Category keys must be unique',
   atLeastOneFieldRequired: 'At least one field must be provided for update',
+  scopeInvalid: 'Scope must be either "household" or "personal"',
+  currencyCodeRequired: 'Currency code is required for personal budgets',
+  currencyCodeInvalid: 'Currency code must be a 3-letter ISO code',
 }
 
 const periodRegex = /^\d{4}-(?:0[1-9]|1[0-2])$/
@@ -39,15 +44,28 @@ const EXPENSE_CATEGORY_KEYS = [
   'other',
 ] as const
 
-export const createBudgetBodySchema = () =>
+const currencyCodeSchema = () =>
+  z
+    .string()
+    .trim()
+    .regex(/^[a-zA-Z]{3}$/, messages.currencyCodeInvalid)
+    .transform((value) => value.toUpperCase())
+
+export const createBudgetBodySchema = (
+  locale: SupportedLocale = defaultLocale,
+) =>
   z
     .object({
+      scope: z.enum(['household', 'personal'], {
+        message: messages.scopeInvalid,
+      }),
       period: z.string().regex(periodRegex, messages.periodInvalid),
       totalLimit: z
         .number()
         .int()
         .positive(messages.totalLimitMustBePositive)
         .max(999999999999, messages.totalLimitTooLarge),
+      currencyCode: currencyCodeSchema().optional(),
       categoryLimits: z
         .array(
           z.object({
@@ -65,6 +83,19 @@ export const createBudgetBodySchema = () =>
         .default([]),
     })
     .strict()
+    .refine(
+      (data) => {
+        if (data.scope === 'personal' && !data.currencyCode) {
+          return false
+        }
+
+        return true
+      },
+      {
+        message: translate(locale, 'budgets.personalCurrencyRequired'),
+        path: ['currencyCode'],
+      },
+    )
     .refine(
       (data) => {
         if (!data.categoryLimits || data.categoryLimits.length === 0)
@@ -130,7 +161,8 @@ export const budgetPathParamsSchema = () =>
 export const budgetListQuerySchema = () =>
   z
     .object({
-      household_id: z.string().trim().min(1, 'Household ID is required'),
+      household_id: z.string().trim().min(1).optional(),
+      scope: z.enum(['household', 'personal']).optional(),
       period: z.string().regex(periodRegex, messages.periodInvalid).optional(),
     })
     .strict()

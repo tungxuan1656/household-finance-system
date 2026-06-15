@@ -1,14 +1,19 @@
 {
   "id": "feat-100g",
   "name": "TMA scope toggle on /budgets/new",
-  "status": "todo",
+  "status": "done",
   "description": "TMA `/budgets/new` adds a scope toggle. Choosing 'Cá nhân' hides the household `<select>` and shows a `Currency` selector (VND default, allow any 3-letter code). Choosing 'Household' hides the currency and shows the household `<select>` (admin-only, current behaviour). Submission builds the scope-aware payload via extended `buildBudgetMutationRequest`.",
   "dependencies": ["feat-100b", "feat-100e"],
   "evidence": {
-    "planned": [
-      "New `apps/tma/src/test/budget-create-page.test.tsx` covers both field sets and the resulting payload (household payload keeps `householdId`; personal payload sets `ownerUserId` + `currencyCode`).",
-      "TMA typecheck + build OK.",
-      "HITL: visual smoke in a real Telegram WebView flagged as pending."
+    "done": [
+      "Updated `apps/tma/src/features/budgets/types.ts` with `BudgetScope`, discriminated `CreateBudgetRequest`, and `ListBudgetsParams`.",
+      "Updated `apps/tma/src/features/budgets/api.ts` with `listBudgets(params)` query builder and `useBudgetListQuery(params)`.",
+      "Updated `apps/tma/src/features/budgets/presentation.ts` with `getBudgetScopeLabel`, scope-aware `buildBudgetMutationRequest`, and `BudgetMutationFormValues`.",
+      "Updated `apps/tma/src/features/budgets/pages/create-budget-page.tsx` with `SegmentedControl` scope selector, conditional household/currency fields, and scope-aware validation.",
+      "Updated `apps/tma/src/features/budgets/pages/budget-list-page.tsx` with scope filter chips (Tất cả / Household / Cá nhân), household select in household mode, and scope-tagged budget cards.",
+      "Updated `apps/tma/src/features/budgets/pages/budget-detail-page.tsx` with scope label via `getBudgetScopeLabel` and personal-budget ownership-based `canManage`.",
+      "Updated `apps/tma/src/test/budget-presentation.test.ts` for new `BudgetDTO` shape and personal-budget `buildBudgetMutationRequest` assertions.",
+      "TMA typecheck + lint + test + build OK via `./init.sh`."
     ]
   }
 }

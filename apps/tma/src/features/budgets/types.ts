@@ -1,5 +1,7 @@
 import type { CategoryKey } from '@/features/home/types'
 
+export type BudgetScope = 'household' | 'personal' | 'category'
+
 export type BudgetCategoryLimitDTO = {
   categoryKey: CategoryKey
   limitMinor: number
@@ -7,7 +9,9 @@ export type BudgetCategoryLimitDTO = {
 
 export type BudgetDTO = {
   id: string
-  householdId: string
+  scope: BudgetScope
+  householdId: string | null
+  ownerUserId: string | null
   period: string
   totalLimitMinor: number
   currencyCode: string
@@ -30,7 +34,9 @@ export type BudgetCategoryStatusDTO = {
 
 export type BudgetStatusDTO = {
   budgetId: string
-  householdId: string
+  scope: BudgetScope
+  householdId: string | null
+  ownerUserId: string | null
   period: string
   currencyCode: string
   totalPlannedMinor: number
@@ -49,12 +55,21 @@ export type DeleteBudgetResponse = {
   deleted: true
 }
 
-export type CreateBudgetRequest = {
-  householdId: string
-  period: string
-  totalLimit: number
-  categoryLimits?: BudgetCategoryLimitDTO[]
-}
+export type CreateBudgetRequest =
+  | {
+      scope: 'household'
+      householdId: string
+      period: string
+      totalLimit: number
+      categoryLimits?: BudgetCategoryLimitDTO[]
+    }
+  | {
+      scope: 'personal'
+      period: string
+      totalLimit: number
+      currencyCode: string
+      categoryLimits?: BudgetCategoryLimitDTO[]
+    }
 
 export type UpdateBudgetRequest = {
   totalLimit?: number
@@ -64,4 +79,10 @@ export type UpdateBudgetRequest = {
 export type UpdateBudgetMutationInput = {
   id: string
   payload: UpdateBudgetRequest
+}
+
+export type ListBudgetsParams = {
+  householdId?: string
+  scope?: 'household' | 'personal'
+  period?: string
 }

@@ -8,6 +8,24 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-15 — Personal budgets end-to-end (slices 100a-100i)
+
+- Who: Codex
+- Summary: Shipped personal-scope budgets across worker, web, and TMA. Worker widens the budget CHECK to include `personal`, makes `household_id` nullable, adds `owner_user_id` with a partial unique index per user, and exposes discriminated create/update/get/list/get-status. Web and TMA add a `personal` flow with a scope filter (All / Household / Cá nhân), a `currencyCode` field for personal, scope badges on cards, and unioned lists sorted by period DESC. Created new test coverage for personal CRUD, list union, and cross-user not-found.
+- Files changed: Worker migration `0003_personal_budgets.sql`; budget contracts, types, schemas, messages; budget repository and spend-summary repository; budget create/get/update/delete/list/status handlers; new `test/integration/budgets-personal.spec.ts`; updated `budgets-create-list.spec.ts`, `budgets-read-update.spec.ts`, `budgets-status.spec.ts`, `budgets-status-thresholds.spec.ts`; web `features/budgets/{types,api,hooks,components,pages}/...`; new `currency-code-field.tsx`; web vi.json keys; TMA `features/budgets/{types,api,presentation,pages}/...`; TMA `test/budget-presentation.test.ts`; harness `feature_index.json` and feature records.
+- Verification: `./init.sh` (full) completed with `Done!` — install, harness, lint, typecheck, test all pass. Worker integration: 416 tests pass (8 new personal budget tests). Web and TMA lint + typecheck clean. TMA vitest passes.
+- Blockers: None. Real Telegram WebView visual smoke for the scope chips and SegmentedControl remains pending because an authenticated TMA launch context is required.
+- Next steps: Open the TMA budget list, create, and detail flows in Telegram to confirm personal vs household rendering. Consider a future cleanup slice to unify the home feature `BudgetDTO` shape (currently has its own non-nullable `householdId`).
+
+## 2026-06-15 — Implemented TMA personal budgets slices 100g and 100h
+
+- Who: Codex
+- Summary: Implemented the TMA personal budgets feature slices 100g (types + queries) and 100h (UI). Updated `budgets/types.ts` to add `BudgetScope`, nullable `householdId`/`ownerUserId`, discriminated `CreateBudgetRequest`, and `ListBudgetsParams`. Updated `budgets/api.ts` to build query strings from params and use stable tuple keys. Updated `budgets/presentation.ts` with `getBudgetScopeLabel`, scope-aware `buildBudgetMutationRequest`, and extended `BudgetMutationFormValues`. Updated `budget-list-page.tsx` with scope filter chips (Tất cả / Household / Cá nhân), household select in household mode, scope-tagged budget cards, and scope-aware empty states. Updated `create-budget-page.tsx` with `SegmentedControl` scope selector, conditional household/currency fields, and scope-aware validation. Updated `budget-detail-page.tsx` with scope label via `getBudgetScopeLabel` and personal-budget ownership-based `canManage` using the auth store user ID. Updated `test/budget-presentation.test.ts` for the new `BudgetDTO` shape and personal-budget assertions.
+- Files changed: TMA budget feature types, API, presentation helpers, list/create/detail pages, focused budget presentation test, and harness records for feat-100g/feat-100h.
+- Verification: `./init.sh lint` returned `OK`. `./init.sh typecheck` returned `OK`. `./init.sh test` returned `OK`. Final `./init.sh` completed with `Done!`.
+- Blockers: None in code. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA budget list, create, and detail flows in Telegram and confirm personal vs household budgets render correctly, scope chips toggle cleanly, and the create form switches field sets as expected.
+
 ## 2026-06-12 — Wrote personal-budgets end-to-end ExecPlan and harness record
 
 - Who: Codex

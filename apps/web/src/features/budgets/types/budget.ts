@@ -1,6 +1,8 @@
 import type { TranslationKey } from '@/lib/i18n/i18n-init'
 import type { CategoryKey } from '@/types/reference-data'
 
+export type BudgetScope = 'household' | 'personal' | 'category'
+
 export type BudgetCategoryLimitDTO = {
   categoryKey: CategoryKey
   limitMinor: number
@@ -8,7 +10,9 @@ export type BudgetCategoryLimitDTO = {
 
 export type BudgetDTO = {
   id: string
-  householdId: string
+  scope: BudgetScope
+  householdId: string | null
+  ownerUserId: string | null
   period: string
   totalLimitMinor: number
   currencyCode: string
@@ -38,7 +42,9 @@ export type BudgetCategoryStatus = {
 
 export type BudgetStatusDTO = {
   budgetId: string
-  householdId: string
+  scope: BudgetScope
+  householdId: string | null
+  ownerUserId: string | null
   period: string
   currencyCode: string
   totalPlannedMinor: number
@@ -61,9 +67,11 @@ export type ListBudgetsResponse = {
 }
 
 export type CreateBudgetRequest = {
-  householdId: string
+  scope: BudgetScope
+  householdId?: string
   period: string
   totalLimit: number
+  currencyCode?: string
   categoryLimits?: BudgetCategoryLimitDTO[]
 }
 
@@ -75,4 +83,10 @@ export type UpdateBudgetRequest = {
 export type UpdateBudgetMutationInput = {
   id: string
   payload: UpdateBudgetRequest
+}
+
+export type ListBudgetsParams = {
+  householdId?: string
+  scope?: Extract<BudgetScope, 'household' | 'personal'>
+  period?: string
 }

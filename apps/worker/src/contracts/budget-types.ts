@@ -21,6 +21,8 @@ export type BudgetPathParams = z.output<
 
 export type BudgetListQuery = z.output<ReturnType<typeof budgetListQuerySchema>>
 
+export type BudgetScope = 'household' | 'personal'
+
 export interface BudgetCategoryLimitDTO {
   categoryKey: string
   limitMinor: number
@@ -28,7 +30,9 @@ export interface BudgetCategoryLimitDTO {
 
 export interface BudgetDTO {
   id: string
-  householdId: string
+  scope: BudgetScope
+  householdId: string | null
+  ownerUserId: string | null
   period: string
   totalLimitMinor: number
   currencyCode: string
@@ -51,7 +55,9 @@ export interface BudgetCategoryStatusDTO {
 
 export interface BudgetStatusDTO {
   budgetId: string
-  householdId: string
+  scope: BudgetScope
+  householdId: string | null
+  ownerUserId: string | null
   period: string
   currencyCode: string
   totalPlannedMinor: number

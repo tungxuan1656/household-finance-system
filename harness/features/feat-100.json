@@ -1,7 +1,7 @@
 {
   "id": "feat-100",
   "name": "Personal budgets end-to-end",
-  "status": "in_progress",
+  "status": "done",
   "description": "Extend the budget system to support a user-owned personal scope (no household) alongside the existing household scope. Widen D1 `budgets` to add `scope='personal'` + nullable `household_id` + `owner_user_id` with scope-aware partial unique indexes; widen worker contracts/handlers for list, create, get, get-status, update, delete; aggregate personal budget status from the owner's personal expenses only; refactor TMA `/budgets` to render a merged list sorted by period DESC without the household filter, add a `Cá nhân`/`Household` chip, and refactor `/budgets/new` to add a scope toggle (personal asks for currency, household asks for householdId). Mirror the change on web. Tighten shared `docs/product-specs/shared/budget-management.md` acceptance criteria.",
   "dependencies": ["feat-007", "feat-026", "feat-027", "feat-083", "feat-098"],
   "evidence": {

@@ -1,8 +1,10 @@
 import type { CategoryKey } from '@/features/home/types'
+import type { HouseholdDTO } from '@/features/home/types'
 
 import type {
   BudgetCategoryLimitDTO,
   BudgetDTO,
+  BudgetScope,
   BudgetThresholdStatus,
   CreateBudgetRequest,
   UpdateBudgetRequest,
@@ -71,19 +73,33 @@ export const getLatestBudget = (budgets: BudgetDTO[]): BudgetDTO | null =>
     null,
   )
 
+export const getBudgetScopeLabel = (
+  scope: BudgetScope,
+  household?: HouseholdDTO,
+): string => {
+  if (scope === 'personal') return 'Cá nhân'
+  if (scope === 'household') return household?.name ?? 'Household'
+
+  return 'Danh mục'
+}
+
 export type BudgetMutationFormValues = {
   categoryLimits: BudgetCategoryLimitDTO[]
-  householdId: string
+  currencyCode?: string
+  householdId?: string
   mode: 'create' | 'edit'
   period: string
+  scope: BudgetScope
   totalLimitMinor: number
 }
 
 export const buildBudgetMutationRequest = ({
   categoryLimits,
+  currencyCode,
   householdId,
   mode,
   period,
+  scope,
   totalLimitMinor,
 }: BudgetMutationFormValues): CreateBudgetRequest | UpdateBudgetRequest => {
   const activeCategoryLimits = categoryLimits.filter(
@@ -91,7 +107,34 @@ export const buildBudgetMutationRequest = ({
   )
 
   if (mode === 'create') {
+    if (scope === 'category') {
+      throw new Error('Ngân sách danh mục chưa được hỗ trợ.')
+    }
+
+    if (scope === 'personal') {
+      if (!currencyCode || !/^[A-Z]{3}$/.test(currencyCode)) {
+        throw new Error(
+          'Mã tiền tệ không hợp lệ. Vui lòng nhập 3 ký tự in hoa (ví dụ: VND).',
+        )
+      }
+
+      return {
+        scope: 'personal',
+        period,
+        totalLimit: totalLimitMinor,
+        currencyCode,
+        ...(activeCategoryLimits.length > 0
+          ? { categoryLimits: activeCategoryLimits }
+          : {}),
+      }
+    }
+
+    if (!householdId) {
+      throw new Error('Household ID là bắt buộc cho ngân sách household.')
+    }
+
     return {
+      scope: 'household',
       householdId,
       period,
       totalLimit: totalLimitMinor,

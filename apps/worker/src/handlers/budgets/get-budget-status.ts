@@ -66,13 +66,23 @@ export const getBudgetStatusHandler = async (
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  const membership = await findActiveHouseholdMembership(
-    db,
-    currentUser.id,
-    budget.householdId,
-  )
-  if (!membership) {
-    throw notFound(locale, 'errors.resourceNotFound')
+  if (budget.scope === 'personal') {
+    if (budget.ownerUserId !== currentUser.id) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
+  } else {
+    if (!budget.householdId) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
+
+    const membership = await findActiveHouseholdMembership(
+      db,
+      currentUser.id,
+      budget.householdId,
+    )
+    if (!membership) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
   }
 
   const limits = await findBudgetLimits(db, budget.id)
@@ -83,7 +93,11 @@ export const getBudgetStatusHandler = async (
   const spendSummary =
     budget.startDate && budget.endDate
       ? await getBudgetSpendSummary(db, {
-          householdId: budget.householdId,
+          ...(budget.scope === 'personal' && budget.ownerUserId
+            ? { ownerUserId: budget.ownerUserId }
+            : budget.householdId
+              ? { householdId: budget.householdId }
+              : { ownerUserId: '' }),
           startDate: budget.startDate,
           endDate: budget.endDate,
           categoryKeys,
@@ -101,6 +115,8 @@ export const getBudgetStatusHandler = async (
   return {
     budgetId: budget.id,
     householdId: budget.householdId,
+    ownerUserId: budget.ownerUserId,
+    scope: budget.scope,
     period: budget.budgetMonth,
     currencyCode: budget.currencyCode,
     totalPlannedMinor: budget.totalLimitMinor,

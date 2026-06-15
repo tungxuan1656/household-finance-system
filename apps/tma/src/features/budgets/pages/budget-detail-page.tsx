@@ -17,6 +17,7 @@ import {
   Section,
   SectionHeader,
 } from '@/components/ui'
+import { useAuthStore } from '@/features/auth/store'
 import {
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
@@ -46,6 +47,7 @@ import {
   buildCategoryLimitMap,
   formatBudgetPeriodLabel,
   getBudgetProgress,
+  getBudgetScopeLabel,
   getBudgetStatusCopy,
   parseBudgetAmountInputToMinor,
 } from '../presentation'
@@ -96,6 +98,7 @@ export const BudgetDetailPage = () => {
   const categoriesQuery = useReferenceCategoriesQuery()
   const updateBudgetMutation = useUpdateBudgetMutation()
   const deleteBudgetMutation = useDeleteBudgetMutation()
+  const currentUserId = useAuthStore((state) => state.user?.id)
   const [feedback, setFeedback] = useState<BudgetFeedback | null>(
     () =>
       (location.state as { feedback?: BudgetFeedback } | null)?.feedback ??
@@ -112,7 +115,10 @@ export const BudgetDetailPage = () => {
   const household = households.find(
     (candidate) => candidate.id === budget?.householdId,
   )
-  const canManage = household?.role === 'admin'
+  const canManage =
+    budget?.scope === 'personal'
+      ? budget.ownerUserId === currentUserId
+      : household?.role === 'admin'
   const expenseCategories = getExpenseBudgetCategories(
     categoriesQuery.data?.items ?? [],
   )
@@ -170,9 +176,11 @@ export const BudgetDetailPage = () => {
         id: budget.id,
         payload: buildBudgetMutationRequest({
           categoryLimits,
-          householdId: budget.householdId,
+          currencyCode: budget.currencyCode,
+          householdId: budget.householdId ?? undefined,
           mode: 'edit',
           period: budget.period,
+          scope: budget.scope,
           totalLimitMinor,
         }),
       })
@@ -277,7 +285,9 @@ export const BudgetDetailPage = () => {
             <Card className='grid gap-4 p-5'>
               <div className='flex items-start justify-between gap-3'>
                 <div className='min-w-0'>
-                  <Eyebrow>{household?.name ?? 'Household'}</Eyebrow>
+                  <Eyebrow>
+                    {getBudgetScopeLabel(budget.scope, household)}
+                  </Eyebrow>
                   <h1 className='m-0 mt-1 text-2xl leading-tight font-extrabold text-tma-text-strong'>
                     {formatBudgetPeriodLabel(budget.period)}
                   </h1>

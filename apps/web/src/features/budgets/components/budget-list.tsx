@@ -9,7 +9,8 @@ import { t } from '@/lib/i18n/t'
 import { BudgetCard } from './budget-card'
 
 type BudgetListProps = {
-  householdId: string
+  householdId?: string
+  scope?: 'household' | 'personal'
   period?: string
   deletingBudgetId?: string | null
   onDelete: (budget: BudgetDTO) => Promise<void>
@@ -17,15 +18,17 @@ type BudgetListProps = {
 }
 function BudgetList({
   householdId,
+  scope,
   period,
   deletingBudgetId,
   onDelete,
   onEdit,
 }: BudgetListProps) {
-  const { data, isLoading, isError, refetch } = useBudgetListQuery(
+  const { data, isLoading, isError, refetch } = useBudgetListQuery({
     householdId,
+    scope,
     period,
-  )
+  })
   const isEmpty = !isLoading && !isError && (!data || data.items.length === 0)
 
   return (

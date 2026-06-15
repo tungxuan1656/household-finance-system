@@ -10,6 +10,7 @@ import {
   PageContent,
   PageHeader,
 } from '@/components/shared/page'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   BudgetList,
   BudgetStatusPanel,
@@ -32,11 +33,14 @@ import type {
 import { t } from '@/lib/i18n/t'
 import { householdActions, useHouseholdStore } from '@/stores/household.store'
 
+type ScopeFilter = 'all' | 'household' | 'personal'
+
 function BudgetsPage() {
   const currentHousehold = useHouseholdStore.use.currentHousehold()
   const households = useHouseholdStore.use.households()
   const selectedHouseholdId = currentHousehold?.id ?? households[0]?.id
 
+  const [scopeFilter, setScopeFilter] = useState<ScopeFilter>('all')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [deletingBudgetId, setDeletingBudgetId] = useState<string | null>(null)
   const [editingBudget, setEditingBudget] = useState<BudgetDTO | null>(null)
@@ -44,7 +48,15 @@ function BudgetsPage() {
   const createMutation = useCreateBudgetMutation()
   const deleteMutation = useDeleteBudgetMutation()
   const updateMutation = useUpdateBudgetMutation()
-  const { data: budgetsData } = useBudgetListQuery(selectedHouseholdId)
+
+  const listParams =
+    scopeFilter === 'household'
+      ? { householdId: selectedHouseholdId, scope: 'household' as const }
+      : scopeFilter === 'personal'
+        ? { scope: 'personal' as const }
+        : {}
+
+  const { data: budgetsData } = useBudgetListQuery(listParams)
   const latestBudget = budgetsData?.items.reduce<BudgetDTO | null>(
     (latest, budget) =>
       !latest || budget.period > latest.period ? budget : latest,
@@ -116,6 +128,22 @@ function BudgetsPage() {
     }
   }
 
+  const canCreateBudget =
+    scopeFilter === 'personal' || scopeFilter === 'all' || !!selectedHouseholdId
+  const createDialogHouseholdId =
+    scopeFilter === 'household' ? (selectedHouseholdId ?? null) : null
+
+  const isEmpty = !budgetsData || budgetsData.items.length === 0
+
+  const emptyTitle =
+    scopeFilter === 'personal'
+      ? t('budgets.empty.personalTitle')
+      : t('budgets.empty.title')
+  const emptyDescription =
+    scopeFilter === 'personal'
+      ? t('budgets.empty.personalDescription')
+      : t('budgets.empty.description')
+
   return (
     <PageContainer>
       <PageHeader showBack title={t('budgets.title')} />
@@ -126,9 +154,9 @@ function BudgetsPage() {
               {t('budgets.description')}
             </p>
             <div>
-              {selectedHouseholdId && (
+              {canCreateBudget && (
                 <CreateBudgetDialog
-                  householdId={selectedHouseholdId}
+                  householdId={createDialogHouseholdId}
                   isSubmitting={createMutation.isPending}
                   open={isCreateDialogOpen}
                   onOpenChange={setIsCreateDialogOpen}
@@ -138,11 +166,34 @@ function BudgetsPage() {
             </div>
           </div>
 
+          <ToggleGroup
+            spacing={0}
+            type='single'
+            value={scopeFilter}
+            variant='outline'
+            onValueChange={(value) => {
+              if (value) setScopeFilter(value as ScopeFilter)
+            }}>
+            <ToggleGroupItem value='all'>
+              {t('budgets.scopeFilter.all')}
+            </ToggleGroupItem>
+            <ToggleGroupItem value='household'>
+              {t('budgets.scopeFilter.household')}
+            </ToggleGroupItem>
+            <ToggleGroupItem value='personal'>
+              {t('budgets.scopeFilter.personal')}
+            </ToggleGroupItem>
+          </ToggleGroup>
+
           <DataState
-            emptyDescription={t('budgets.empty.description')}
-            emptyTitle={t('budgets.empty.title')}
-            isEmpty={!selectedHouseholdId}>
-            {selectedHouseholdId ? (
+            emptyDescription={emptyDescription}
+            emptyTitle={emptyTitle}
+            isEmpty={
+              scopeFilter === 'household' && !selectedHouseholdId
+                ? true
+                : isEmpty
+            }>
+            {scopeFilter === 'household' && !selectedHouseholdId ? null : (
               <>
                 {latestBudget && <BudgetSummaryCard budget={latestBudget} />}
 
@@ -157,12 +208,23 @@ function BudgetsPage() {
 
                 <BudgetList
                   deletingBudgetId={deletingBudgetId}
-                  householdId={selectedHouseholdId}
+                  householdId={
+                    scopeFilter === 'household'
+                      ? selectedHouseholdId
+                      : undefined
+                  }
+                  scope={
+                    scopeFilter === 'personal'
+                      ? 'personal'
+                      : scopeFilter === 'household'
+                        ? 'household'
+                        : undefined
+                  }
                   onDelete={handleDelete}
                   onEdit={setEditingBudget}
                 />
               </>
-            ) : null}
+            )}
           </DataState>
 
           <EditBudgetDialog

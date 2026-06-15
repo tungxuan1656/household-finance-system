@@ -1000,6 +1000,20 @@
       "updating": "Đang cập nhật...",
       "retry": "Thử lại"
     },
+    "scope": {
+      "label": "Phạm vi ngân sách",
+      "household": "Gia đình",
+      "personal": "Cá nhân"
+    },
+    "scopeFilter": {
+      "all": "Tất cả",
+      "household": "Gia đình",
+      "personal": "Cá nhân"
+    },
+    "badge": {
+      "household": "Gia đình",
+      "personal": "Cá nhân"
+    },
     "create": {
       "title": "Tạo ngân sách mới",
       "description": "Thiết lập ngân sách cho một tháng cụ thể."
@@ -1021,6 +1035,10 @@
       "totalLimit": {
         "label": "Tổng ngân sách",
         "placeholder": "Nhập tổng ngân sách"
+      },
+      "currencyCode": {
+        "label": "Đơn vị tiền tệ",
+        "placeholder": "VD: USD, VND, EUR"
       },
       "categoryLimits": {
         "label": "Phân bổ theo danh mục",
@@ -1075,7 +1093,9 @@
     },
     "empty": {
       "title": "Chưa có ngân sách",
-      "description": "Tạo ngân sách đầu tiên để bắt đầu quản lý chi tiêu hàng tháng."
+      "description": "Tạo ngân sách đầu tiên để bắt đầu quản lý chi tiêu hàng tháng.",
+      "personalTitle": "Chưa có ngân sách cá nhân",
+      "personalDescription": "Tạo ngân sách cá nhân để theo dõi chi tiêu của bạn."
     },
     "error": {
       "loadFailed": "Không thể tải danh sách ngân sách. Vui lòng thử lại."

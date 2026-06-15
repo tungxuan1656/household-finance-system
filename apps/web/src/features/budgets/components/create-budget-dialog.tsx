@@ -20,7 +20,7 @@ import { t } from '@/lib/i18n/t'
 import { BudgetForm } from './budget-form'
 
 type CreateBudgetDialogProps = {
-  householdId: string
+  householdId: string | null
   open: boolean
   onOpenChange: (open: boolean) => void
   onSubmit: (values: CreateBudgetRequest | UpdateBudgetRequest) => void

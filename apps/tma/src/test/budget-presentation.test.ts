@@ -17,7 +17,9 @@ const makeBudget = (overrides: Partial<BudgetDTO>): BudgetDTO => ({
   currencyCode: 'VND',
   householdId: 'household-1',
   id: 'budget-1',
+  ownerUserId: null,
   period: '2026-06',
+  scope: 'household',
   totalLimitMinor: 1_000_000,
   updatedAt: 0,
   ...overrides,
@@ -39,12 +41,15 @@ describe('budget presentation helpers', () => {
           { categoryKey: 'food', limitMinor: 500_000 },
           { categoryKey: 'transport', limitMinor: 0 },
         ],
+        currencyCode: 'VND',
         householdId: 'household-1',
         mode: 'create',
         period: '2026-06',
+        scope: 'household',
         totalLimitMinor: 2_000_000,
       }),
     ).toEqual({
+      scope: 'household',
       householdId: 'household-1',
       period: '2026-06',
       totalLimit: 2_000_000,
@@ -54,15 +59,56 @@ describe('budget presentation helpers', () => {
     expect(
       buildBudgetMutationRequest({
         categoryLimits: [],
+        currencyCode: 'VND',
         householdId: 'household-1',
         mode: 'edit',
         period: '2026-06',
+        scope: 'household',
         totalLimitMinor: 2_000_000,
       }),
     ).toEqual({
       totalLimit: 2_000_000,
       categoryLimits: [],
     })
+
+    expect(
+      buildBudgetMutationRequest({
+        categoryLimits: [],
+        currencyCode: 'VND',
+        mode: 'create',
+        period: '2026-06',
+        scope: 'personal',
+        totalLimitMinor: 1_000_000,
+      }),
+    ).toEqual({
+      scope: 'personal',
+      period: '2026-06',
+      totalLimit: 1_000_000,
+      currencyCode: 'VND',
+    })
+  })
+
+  it('throws for invalid personal budget currency code', () => {
+    expect(() =>
+      buildBudgetMutationRequest({
+        categoryLimits: [],
+        mode: 'create',
+        period: '2026-06',
+        scope: 'personal',
+        totalLimitMinor: 1_000_000,
+      }),
+    ).toThrow('Mã tiền tệ không hợp lệ')
+
+    expect(() =>
+      buildBudgetMutationRequest({
+        categoryLimits: [],
+        currencyCode: 'vn',
+        mode: 'create',
+        period: '2026-06',
+        scope: 'personal',
+        totalLimitMinor: 1_000_000,
+      }),
+    ).toThrow('Mã tiền tệ không hợp lệ')
   })
 
   it('derives status copy, latest budget, and clamped progress', () => {

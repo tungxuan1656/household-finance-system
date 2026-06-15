@@ -55,17 +55,27 @@ export const updateBudgetHandler = async (
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  const membership = await findActiveHouseholdMembership(
-    db,
-    currentUser.id,
-    budget.householdId,
-  )
-  if (!membership) {
-    throw notFound(locale, 'errors.resourceNotFound')
-  }
+  if (budget.scope === 'personal') {
+    if (budget.ownerUserId !== currentUser.id) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
+  } else {
+    if (!budget.householdId) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
 
-  if (!canManageBudgets(membership.role)) {
-    throw forbidden(locale, 'errors.forbidden')
+    const membership = await findActiveHouseholdMembership(
+      db,
+      currentUser.id,
+      budget.householdId,
+    )
+    if (!membership) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
+
+    if (!canManageBudgets(membership.role)) {
+      throw forbidden(locale, 'errors.forbidden')
+    }
   }
 
   await updateBudget(db, budget.id, {
@@ -90,6 +100,7 @@ export const updateBudgetHandler = async (
     targetType: 'budget',
     targetId: budget.id,
     payloadJson: JSON.stringify({
+      scope: budget.scope,
       totalLimitMinor: parsed.data.totalLimit,
       categoryLimitCount: parsed.data.categoryLimits?.length,
     }),
@@ -97,7 +108,9 @@ export const updateBudgetHandler = async (
 
   return {
     id: updated.id,
+    scope: updated.scope,
     householdId: updated.householdId,
+    ownerUserId: updated.ownerUserId,
     period: updated.budgetMonth,
     totalLimitMinor: updated.totalLimitMinor,
     currencyCode: updated.currencyCode,

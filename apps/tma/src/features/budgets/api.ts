@@ -11,14 +11,19 @@ import type {
   BudgetDTO,
   CreateBudgetRequest,
   DeleteBudgetResponse,
+  ListBudgetsParams,
   ListBudgetsResponse,
   UpdateBudgetMutationInput,
 } from './types'
 import type { BudgetStatusDTO } from './types'
 
-const listBudgets = (householdId: string, period?: string) =>
+const listBudgets = (params: ListBudgetsParams) =>
   get<ListBudgetsResponse>('/budgets', {
-    params: { household_id: householdId, period },
+    params: {
+      household_id: params.householdId,
+      scope: params.scope,
+      period: params.period,
+    },
   })
 
 const createBudget = (payload: CreateBudgetRequest) =>
@@ -37,18 +42,18 @@ const deleteBudget = (budgetId: string) =>
 
 export const BUDGET_KEYS = {
   all: ['budgets'] as const,
-  list: (householdId: string, period?: string) =>
-    [...BUDGET_KEYS.all, 'list', householdId, period ?? 'all'] as const,
+  list: (params: ListBudgetsParams) =>
+    [...BUDGET_KEYS.all, 'list', params] as const,
   detail: (budgetId: string) =>
     [...BUDGET_KEYS.all, 'detail', budgetId] as const,
   status: (budgetId: string) =>
     [...BUDGET_KEYS.all, 'status', budgetId] as const,
 }
 
-export const budgetListQueryOptions = (householdId: string, period?: string) =>
+export const budgetListQueryOptions = (params: ListBudgetsParams) =>
   queryOptions({
-    queryKey: BUDGET_KEYS.list(householdId, period),
-    queryFn: () => listBudgets(householdId, period),
+    queryKey: BUDGET_KEYS.list(params),
+    queryFn: () => listBudgets(params),
   })
 
 export const budgetDetailQueryOptions = (budgetId: string) =>
@@ -63,13 +68,10 @@ export const budgetStatusQueryOptions = (budgetId: string) =>
     queryFn: () => getBudgetStatus(budgetId),
   })
 
-export const useBudgetListQuery = (
-  householdId: string | undefined,
-  period?: string,
-) =>
+export const useBudgetListQuery = (params: ListBudgetsParams | undefined) =>
   useQuery({
-    ...budgetListQueryOptions(householdId ?? 'unknown', period),
-    enabled: Boolean(householdId),
+    ...budgetListQueryOptions(params ?? {}),
+    enabled: Boolean(params),
   })
 
 export const useBudgetDetailQuery = (budgetId: string | undefined) =>

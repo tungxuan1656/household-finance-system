@@ -3,25 +3,46 @@ export interface StoredBudgetSpendSummary {
   categoryActualMinorByKey: Record<string, number>
 }
 
+export type BudgetSpendSummaryInput = {
+  startDate: string
+  endDate: string
+  categoryKeys: string[]
+} & (
+  | { householdId: string; ownerUserId?: never }
+  | { ownerUserId: string; householdId?: never }
+)
+
+const buildDateFilter = () =>
+  `date(e.occurred_at / 1000, 'unixepoch') >= ?\n           AND date(e.occurred_at / 1000, 'unixepoch') <= ?`
+
+const buildScopeFilter = (input: BudgetSpendSummaryInput) => {
+  if ('householdId' in input) {
+    return {
+      clause: 'e.household_id = ?',
+      param: input.householdId,
+    }
+  }
+
+  return {
+    clause: 'e.spent_by_user_id = ? AND e.household_id IS NULL',
+    param: input.ownerUserId,
+  }
+}
+
 export const getBudgetSpendSummary = async (
   db: D1Database,
-  input: {
-    householdId: string
-    startDate: string
-    endDate: string
-    categoryKeys: string[]
-  },
+  input: BudgetSpendSummaryInput,
 ): Promise<StoredBudgetSpendSummary> => {
-  const baseParams = [input.householdId, input.startDate, input.endDate]
+  const scope = buildScopeFilter(input)
+  const baseParams = [scope.param, input.startDate, input.endDate]
 
   const totalRow = await db
     .prepare(
       `SELECT COALESCE(SUM(e.amount_minor), 0) AS totalActualMinor
          FROM expenses e
         WHERE e.deleted_at IS NULL
-          AND e.household_id = ?
-          AND date(e.occurred_at / 1000, 'unixepoch') >= ?
-          AND date(e.occurred_at / 1000, 'unixepoch') <= ?`,
+          AND ${scope.clause}
+          AND ${buildDateFilter()}`,
     )
     .bind(...baseParams)
     .first<{ totalActualMinor: number | null }>()
@@ -41,9 +62,8 @@ export const getBudgetSpendSummary = async (
       `SELECT e.category_key AS categoryKey, COALESCE(SUM(e.amount_minor), 0) AS totalActualMinor
          FROM expenses e
         WHERE e.deleted_at IS NULL
-          AND e.household_id = ?
-          AND date(e.occurred_at / 1000, 'unixepoch') >= ?
-          AND date(e.occurred_at / 1000, 'unixepoch') <= ?
+          AND ${scope.clause}
+          AND ${buildDateFilter()}
           AND e.category_key IN (${placeholders})
         GROUP BY e.category_key
         ORDER BY e.category_key`,

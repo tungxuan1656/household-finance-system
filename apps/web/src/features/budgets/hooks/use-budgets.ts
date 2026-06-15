@@ -13,6 +13,7 @@ import type {
   CreateBudgetRequest,
   DeleteBudgetResponse,
   GetBudgetStatusResponse,
+  ListBudgetsParams,
   ListBudgetsResponse,
   UpdateBudgetMutationInput,
 } from '@/features/budgets/types/budget'
@@ -21,10 +22,13 @@ import { ANALYTICS_KEYS } from '@/features/insights/api/use-analytics'
 export const BUDGET_KEYS = {
   all: ['budgets'] as const,
   lists: () => [...BUDGET_KEYS.all, 'list'] as const,
-  list: (householdId: string, period?: string) =>
-    [...BUDGET_KEYS.lists(), householdId, period].filter(
-      (x) => x != null,
-    ) as unknown as readonly unknown[],
+  list: (params: ListBudgetsParams) =>
+    [
+      ...BUDGET_KEYS.lists(),
+      params.householdId ?? null,
+      params.scope ?? null,
+      params.period ?? null,
+    ] as const,
   detail: (id: string) => [...BUDGET_KEYS.all, id] as const,
   status: (id: string) => [...BUDGET_KEYS.detail(id), 'status'] as const,
 }
@@ -65,14 +69,10 @@ export const useDeleteBudgetMutation = () => {
   })
 }
 
-export const useBudgetListQuery = (
-  householdId: string | undefined,
-  period?: string,
-) => {
+export const useBudgetListQuery = (params: ListBudgetsParams = {}) => {
   return useQuery<ListBudgetsResponse, Error>({
-    queryKey: BUDGET_KEYS.list(householdId ?? 'unknown', period),
-    queryFn: () => listBudgets(householdId!, period),
-    enabled: !!householdId,
+    queryKey: BUDGET_KEYS.list(params),
+    queryFn: () => listBudgets(params),
   })
 }
 

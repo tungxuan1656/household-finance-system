@@ -36,20 +36,32 @@ export const getBudgetHandler = async (
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  const membership = await findActiveHouseholdMembership(
-    db,
-    currentUser.id,
-    budget.householdId,
-  )
-  if (!membership) {
-    throw notFound(locale, 'errors.resourceNotFound')
+  if (budget.scope === 'personal') {
+    if (budget.ownerUserId !== currentUser.id) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
+  } else {
+    if (!budget.householdId) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
+
+    const membership = await findActiveHouseholdMembership(
+      db,
+      currentUser.id,
+      budget.householdId,
+    )
+    if (!membership) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
   }
 
   const limits = await findBudgetLimits(db, budget.id)
 
   return {
     id: budget.id,
+    scope: budget.scope,
     householdId: budget.householdId,
+    ownerUserId: budget.ownerUserId,
     period: budget.budgetMonth,
     totalLimitMinor: budget.totalLimitMinor,
     currencyCode: budget.currencyCode,
