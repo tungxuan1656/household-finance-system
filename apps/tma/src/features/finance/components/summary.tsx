@@ -119,15 +119,12 @@ export const FinanceSummaryCard = ({
             </div>
           </div>
         ) : (
-          <div className='flex items-center justify-between gap-3 text-xs font-semibold text-tma-text-muted'>
-            <span>{overview?.expenseCount ?? 0} khoản chi</span>
-            <span>
-              {budget && isMonthPeriodSelection(selectedPeriod)
-                ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget)
-                : showBudgetPeriodContext
-                  ? budgetPeriodContext
-                  : 'Ngân sách chỉ có theo tháng'}
-            </span>
+          <div className='text-xs font-semibold text-tma-text-muted'>
+            {budget && isMonthPeriodSelection(selectedPeriod)
+              ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget)
+              : showBudgetPeriodContext
+                ? budgetPeriodContext
+                : 'Ngân sách chỉ có theo tháng'}
           </div>
         )}
       </Card>

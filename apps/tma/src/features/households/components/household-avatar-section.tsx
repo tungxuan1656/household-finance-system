@@ -27,7 +27,7 @@ type HouseholdAvatarSectionProps = {
   helperText: string
   isBusy: boolean
   readOnlyMessage?: string
-  summaryText: string
+  summaryText?: string
   title?: string
   householdName: string
   onAvatarUploaded: (avatarUrl: string) => Promise<void>
@@ -36,7 +36,7 @@ type HouseholdAvatarSectionProps = {
 export const HouseholdAvatarSection = ({
   avatarUrl,
   canEdit,
-  description = 'Dùng avatar để mọi người nhận ra household nhanh hơn trong home và danh sách household.',
+  description,
   helperText,
   householdName,
   isBusy,
@@ -144,7 +144,7 @@ export const HouseholdAvatarSection = ({
     <>
       <div>
         <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        {description ? <CardDescription>{description}</CardDescription> : null}
       </div>
 
       <div className='flex items-center gap-3.5'>
@@ -159,7 +159,9 @@ export const HouseholdAvatarSection = ({
           <strong className='text-base font-semibold text-tma-text-strong'>
             {displayName}
           </strong>
-          <CardDescription>{summaryText}</CardDescription>
+          {summaryText ? (
+            <CardDescription>{summaryText}</CardDescription>
+          ) : null}
         </div>
       </div>
 

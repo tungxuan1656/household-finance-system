@@ -10,7 +10,6 @@ import {
   createCustomPeriodSelection,
   createReportingPeriodPresetSelection,
   formatPeriodDateInputValue,
-  formatPeriodSelectionLabel,
   getMatchingReportingPeriodPreset,
   getReportingPeriodPresetLabel,
   parsePeriodDateInputValue,
@@ -249,11 +248,6 @@ export const PeriodPickerPage = () => {
       </Section>
 
       <Section>
-        <SectionHeader
-          title={
-            activePreset ? formatPeriodSelectionLabel(candidate) : 'Tùy chỉnh'
-          }
-        />
         <Card
           className={cn(
             'grid gap-3',

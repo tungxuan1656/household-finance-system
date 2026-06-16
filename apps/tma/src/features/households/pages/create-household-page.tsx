@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   CardDescription,
-  CardTitle,
   Field,
   FieldLabel,
   Input,
@@ -108,19 +107,15 @@ export const CreateHouseholdPage = () => {
         <HouseholdAvatarSection
           canEdit
           avatarUrl={avatarUrl}
-          description='Chọn ảnh đại diện trước để household mới có giao diện hoàn chỉnh ngay sau khi tạo.'
-          helperText='Chọn file, xem trước, áp dụng để upload trước, rồi create page sẽ gắn avatar này vào household vừa tạo.'
+          helperText='Chọn ảnh, xem trước, áp dụng để upload.'
           householdName={normalizedName || 'Household mới'}
           isBusy={isBusy}
-          summaryText='Avatar này sẽ được áp dụng cho household mới sau khi bạn hoàn tất bước tạo.'
           title='Avatar household'
           onAvatarUploaded={handleAvatarUploaded}
         />
       </Card>
 
       <section className='mt-6'>
-        <CardTitle className='mb-3'>Tên household</CardTitle>
-
         <Card>
           <form className='grid gap-3.5' onSubmit={handleCreateHousehold}>
             <Field>

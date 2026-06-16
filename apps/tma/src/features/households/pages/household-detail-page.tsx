@@ -205,12 +205,7 @@ export const HouseholdDetailPage = () => {
                       {isBusy ? 'Đang lưu...' : 'Lưu thay đổi'}
                     </Button>
                   </div>
-                ) : (
-                  <CardDescription>
-                    Bạn có thể xem thông tin household và chi tiêu gần đây,
-                    nhưng chỉ quản trị viên mới được chỉnh sửa.
-                  </CardDescription>
-                )}
+                ) : null}
               </form>
             </Card>
 

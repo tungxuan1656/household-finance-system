@@ -3,12 +3,10 @@ import {
   Card,
   CardDescription,
   CardTitle,
-  Chip,
   DataState,
   Eyebrow,
   MoneyLabel,
   Section,
-  SectionHeader,
 } from '@/components/ui'
 import {
   useAnalyticsComparisonQuery,
@@ -24,7 +22,6 @@ import type { AnalyticsOverviewDTO } from '@/features/home/types'
 import { PeriodChipLink } from '@/features/period/components/period-chip-link'
 import { usePeriodStore } from '@/features/period/store'
 import {
-  formatPeriodSelectionLabel,
   formatPeriodSelectionRangeLabel,
   toAnalyticsRangeParams,
 } from '@/lib/period'
@@ -73,21 +70,21 @@ export const StatisticsPage = () => {
   const categoriesQuery = useReferenceCategoriesQuery()
   const overview = overviewQuery.data
   const topCategories = overview?.topCategories.slice(0, 5) ?? []
-  const periodLabel = formatPeriodSelectionLabel(selectedPeriod)
+  const isOverviewEmpty =
+    !overviewQuery.isLoading &&
+    !overviewQuery.isError &&
+    Boolean(overview) &&
+    overview?.expenseCount === 0
 
   return (
     <TmaPageShell title='Thống kê'>
       <DataState
+        customAction={isOverviewEmpty ? <PeriodChipLink tone='muted' /> : null}
         emptyDescription='Kỳ đang xem chưa có khoản chi nào để tổng hợp.'
         emptyTitle='Chưa có dữ liệu thống kê'
         errorDescription='Không tải được analytics thật từ API. Kiểm tra kết nối rồi thử lại.'
         errorTitle='Không tải được thống kê'
-        isEmpty={
-          !overviewQuery.isLoading &&
-          !overviewQuery.isError &&
-          Boolean(overview) &&
-          overview?.expenseCount === 0
-        }
+        isEmpty={isOverviewEmpty}
         isError={overviewQuery.isError && !overview}
         isLoading={overviewQuery.isLoading && !overview}
         loadingDescription='Đang đọc analytics theo kỳ đang chọn.'
@@ -115,8 +112,6 @@ export const StatisticsPage = () => {
                 </div>
                 <PeriodChipLink />
               </div>
-
-              <Chip tone='primary'>{periodLabel}</Chip>
             </Card>
 
             <Card className='grid gap-5 p-5'>
@@ -198,19 +193,24 @@ export const StatisticsPage = () => {
             </Card>
 
             <Section>
-              <SectionHeader title={periodLabel} />
-              <Card className='grid gap-2'>
-                <div className='flex items-center justify-between gap-3 text-sm'>
-                  <span className='text-tma-text-muted'>Số khoản</span>
-                  <strong className='text-tma-text-strong'>
-                    {overview.expenseCount}
-                  </strong>
-                </div>
-                <div className='flex items-center justify-between gap-3 text-sm'>
-                  <span className='text-tma-text-muted'>Khoảng ngày</span>
-                  <strong className='text-right text-tma-text-strong'>
-                    {formatPeriodSelectionRangeLabel(selectedPeriod)}
-                  </strong>
+              <Card className='grid gap-3'>
+                <div className='grid grid-cols-2 gap-2.5'>
+                  <div className='rounded-2xl border border-black/6 bg-white/80 px-3.5 py-3 shadow-tma-soft'>
+                    <span className='block text-xs font-semibold text-tma-text-muted'>
+                      Số khoản
+                    </span>
+                    <strong className='mt-1 block font-mono text-base font-extrabold text-tma-text-strong [font-variant-numeric:tabular-nums]'>
+                      {overview.expenseCount}
+                    </strong>
+                  </div>
+                  <div className='rounded-2xl border border-black/6 bg-white/80 px-3.5 py-3 shadow-tma-soft'>
+                    <span className='block text-xs font-semibold text-tma-text-muted'>
+                      Khoảng ngày
+                    </span>
+                    <strong className='mt-1 block font-mono text-sm font-extrabold text-tma-text-strong [font-variant-numeric:tabular-nums]'>
+                      {formatPeriodSelectionRangeLabel(selectedPeriod)}
+                    </strong>
+                  </div>
                 </div>
               </Card>
             </Section>
