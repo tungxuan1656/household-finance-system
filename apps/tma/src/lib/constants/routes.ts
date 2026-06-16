@@ -29,9 +29,6 @@ export const getExpenseEditCategoryPath = (expenseId: string): string =>
 export const getExpenseEditSourcePath = (expenseId: string): string =>
   `${getExpenseEditPath(expenseId)}/source`
 
-export const getExpenseEditHouseholdPath = (expenseId: string): string =>
-  `${getExpenseEditPath(expenseId)}/household`
-
 export const getHouseholdDetailPath = (householdId: string): string =>
   `${TMA_PATHS.households}/${householdId}`
 

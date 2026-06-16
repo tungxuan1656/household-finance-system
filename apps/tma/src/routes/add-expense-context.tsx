@@ -11,11 +11,11 @@ import {
   Card,
   CardDescription,
   CardTitle,
-  ChipButton,
   Eyebrow,
+  Field,
+  FieldLabel,
   MoneyLabel,
-  Section,
-  SectionHeader,
+  NativePicker,
 } from '@/components/ui'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { getSourceOptions } from '@/features/expenses/presentation'
@@ -86,6 +86,25 @@ export const AddExpenseContextPage = () => {
   const selectedGroupItem =
     groupItems.find((item) => item.group.id === groupId) ?? null
   const isReady = category !== null && amount > 0 && sourceId !== null
+
+  const householdPickerOptions = useMemo(
+    () => [
+      { value: '', label: 'Cá nhân' },
+      ...households.map((h) => ({ value: h.id, label: h.name })),
+    ],
+    [households],
+  )
+
+  const groupPickerOptions = useMemo(
+    () => [
+      { value: '', label: 'Không gắn nhóm' },
+      ...groupItems.map((item) => ({
+        value: item.group.id,
+        label: item.group.name,
+      })),
+    ],
+    [groupItems],
+  )
 
   const handleSave = useEffectEvent(async () => {
     if (!category || amount <= 0 || !sourceId) {
@@ -242,67 +261,44 @@ export const AddExpenseContextPage = () => {
         </div>
       </Card>
 
-      <Section>
-        <SectionHeader title='Gia đình' />
-        <div className='grid grid-cols-3 gap-2.5'>
-          <ChipButton
-            className={
-              householdId === null ? 'bg-tma-primary/12 text-tma-primary' : ''
-            }
-            onClick={() => {
+      <Card className='grid gap-3'>
+        <Field>
+          <FieldLabel>Gia đình</FieldLabel>
+          <NativePicker
+            fullWidth
+            aria-label='Chọn gia đình'
+            disabled={householdsQuery.isLoading}
+            options={householdPickerOptions}
+            value={householdId ?? ''}
+            onChange={(next) => {
               selection()
-              setContext({ householdId: null, groupId })
-            }}>
-            <span className='font-semibold'>Cá nhân</span>
-          </ChipButton>
-          {households.map((household) => (
-            <ChipButton
-              key={household.id}
-              className={
-                householdId === household.id
-                  ? 'bg-tma-primary/12 text-tma-primary'
-                  : ''
-              }
-              onClick={() => {
-                selection()
-                setContext({ householdId: household.id, groupId: null })
-              }}>
-              <span className='font-semibold'>{household.name}</span>
-            </ChipButton>
-          ))}
-        </div>
-      </Section>
 
-      <Section>
-        <SectionHeader title='Nhóm' />
-        <div className='grid grid-cols-2 gap-2.5'>
-          <ChipButton
-            className={
-              groupId === null ? 'bg-tma-primary/12 text-tma-primary' : ''
-            }
-            onClick={() => {
+              setContext({
+                householdId: next || null,
+                groupId,
+              })
+            }}
+          />
+        </Field>
+        <Field>
+          <FieldLabel>Nhóm</FieldLabel>
+          <NativePicker
+            fullWidth
+            aria-label='Chọn nhóm'
+            disabled={personalGroupsQuery.isLoading}
+            options={groupPickerOptions}
+            value={groupId ?? ''}
+            onChange={(next) => {
               selection()
-              setContext({ householdId, groupId: null })
-            }}>
-            <span className='font-semibold'>Không gắn nhóm</span>
-          </ChipButton>
-          {groupItems.map((item) => (
-            <ChipButton
-              key={item.group.id}
-              className={
-                groupId === item.group.id
-                  ? 'bg-tma-primary/12 text-tma-primary'
-                  : ''
-              }
-              onClick={() => {
-                selection()
-                setContext({ householdId, groupId: item.group.id })
-              }}>
-              <span className='font-semibold'>{item.group.name}</span>
-            </ChipButton>
-          ))}
-        </div>
-      </Section>
+
+              setContext({
+                householdId,
+                groupId: next || null,
+              })
+            }}
+          />
+        </Field>
+      </Card>
     </TmaPageShell>
   )
 }

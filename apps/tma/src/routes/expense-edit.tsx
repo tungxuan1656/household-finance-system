@@ -15,9 +15,11 @@ import {
   Button,
   Card,
   CardDescription,
-  CardTitle,
   Eyebrow,
+  Field,
+  FieldLabel,
   Input,
+  NativePicker,
 } from '@/components/ui'
 import { DatePicker } from '@/components/ui/date-picker'
 import {
@@ -25,10 +27,7 @@ import {
   useUpdateExpenseMutation,
 } from '@/features/expenses/api'
 import { createEditExpenseDraft } from '@/features/expenses/draft'
-import {
-  buildHouseholdNameMap,
-  getSourceLabel,
-} from '@/features/expenses/presentation'
+import { getSourceLabel } from '@/features/expenses/presentation'
 import { useEditExpenseStore } from '@/features/expenses/store'
 import {
   useHouseholdsQuery,
@@ -39,7 +38,6 @@ import { SOURCE_KEYS } from '@/features/home/types'
 import {
   getExpenseDetailPath,
   getExpenseEditCategoryPath,
-  getExpenseEditHouseholdPath,
   getExpenseEditSourcePath,
   TMA_PATHS,
 } from '@/lib/constants/routes'
@@ -117,10 +115,6 @@ export const ExpenseEditPage = () => {
     updateDraft({ amount: parseAmountInput(formatted) })
   }
 
-  const householdNameMap = useMemo(
-    () => buildHouseholdNameMap(households),
-    [households],
-  )
   const activeCategory = getCategoryPresentation(
     draft?.categoryKey ?? expense?.categoryKey,
     referenceCategories,
@@ -128,6 +122,14 @@ export const ExpenseEditPage = () => {
   const updateMutation = useUpdateExpenseMutation()
   const isValid = Boolean(
     draft && draft.title.trim().length > 0 && draft.amount > 0,
+  )
+
+  const householdPickerOptions = useMemo(
+    () => [
+      { value: '', label: 'Cá nhân (Không gắn)' },
+      ...households.map((h) => ({ value: h.id, label: h.name })),
+    ],
+    [households],
   )
 
   const handleSave = useEffectEvent(async () => {
@@ -176,10 +178,7 @@ export const ExpenseEditPage = () => {
     return (
       <TmaPageShell title='Sửa chi tiêu'>
         <Card>
-          <CardTitle>Đang tải biểu mẫu...</CardTitle>
-          <CardDescription>
-            Dữ liệu chỉnh sửa sẽ sẵn sàng ngay sau đây.
-          </CardDescription>
+          <CardDescription>Đang tải biểu mẫu...</CardDescription>
         </Card>
       </TmaPageShell>
     )
@@ -257,18 +256,23 @@ export const ExpenseEditPage = () => {
             navigate(getExpenseEditSourcePath(expenseId))
           }}
         />
-        <EditSelectRow
-          label='Không gian gia đình'
-          value={
-            draft.householdId
-              ? householdNameMap.get(draft.householdId) || 'Gia đình'
-              : 'Cá nhân (Không gắn)'
-          }
-          onClick={() => {
-            selection()
-            navigate(getExpenseEditHouseholdPath(expenseId))
-          }}
-        />
+      </Card>
+
+      <Card className='mt-3 grid gap-3'>
+        <Field>
+          <FieldLabel>Không gian gia đình</FieldLabel>
+          <NativePicker
+            fullWidth
+            aria-label='Chọn không gian gia đình'
+            disabled={householdsQuery.isLoading}
+            options={householdPickerOptions}
+            value={draft.householdId ?? ''}
+            onChange={(next) => {
+              selection()
+              updateDraft({ householdId: next || null })
+            }}
+          />
+        </Field>
       </Card>
 
       <div className='mt-5 grid'>
@@ -375,69 +379,6 @@ export const ExpenseEditSourcePage = () => {
                 navigate(-1)
               }}>
               <span>{getSourceLabel(key)}</span>
-            </div>
-          )
-        })}
-      </Card>
-    </TmaPageShell>
-  )
-}
-
-export const ExpenseEditHouseholdPage = () => {
-  const navigate = useNavigate()
-  const householdsQuery = useHouseholdsQuery()
-  const households = householdsQuery.data?.items ?? []
-  const draft = useEditExpenseStore((state) => state.draft)
-  const updateDraft = useEditExpenseStore((state) => state.updateDraft)
-
-  useEffect(() => {
-    if (!draft) navigate(TMA_PATHS.expenses)
-  }, [draft, navigate])
-
-  if (!draft) return null
-
-  return (
-    <TmaPageShell title='Chọn không gian'>
-      <Card className='grid gap-0 px-4'>
-        <div
-          className={cn(
-            'flex cursor-pointer items-center justify-between gap-3 py-4',
-            households.length > 0 && 'border-b border-tma-line',
-            draft.householdId === null
-              ? 'font-bold text-tma-primary'
-              : 'font-medium text-tma-text-strong',
-          )}
-          role='button'
-          tabIndex={0}
-          onClick={() => {
-            selection()
-            updateDraft({ householdId: null })
-            navigate(-1)
-          }}>
-          <span>Cá nhân (Không gắn)</span>
-        </div>
-
-        {households.map((household, index) => {
-          const isActive = draft.householdId === household.id
-
-          return (
-            <div
-              key={household.id}
-              className={cn(
-                'flex cursor-pointer items-center justify-between gap-3 py-4',
-                index < households.length - 1 && 'border-b border-tma-line',
-                isActive
-                  ? 'font-bold text-tma-primary'
-                  : 'font-medium text-tma-text-strong',
-              )}
-              role='button'
-              tabIndex={0}
-              onClick={() => {
-                selection()
-                updateDraft({ householdId: household.id })
-                navigate(-1)
-              }}>
-              <span>{household.name}</span>
             </div>
           )
         })}

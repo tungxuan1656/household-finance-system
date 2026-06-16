@@ -55,12 +55,6 @@ const ExpenseEditSourcePage = lazy(async () => {
   return { default: module.ExpenseEditSourcePage }
 })
 
-const ExpenseEditHouseholdPage = lazy(async () => {
-  const module = await import('@/routes/expense-edit')
-
-  return { default: module.ExpenseEditHouseholdPage }
-})
-
 const AddExpenseCategoryPage = lazy(async () => {
   const module = await import('@/routes/add-expense-category')
 
@@ -192,10 +186,6 @@ const router = createBrowserRouter([
       {
         path: `${TMA_PATHS.expenses}/:id/edit/source`,
         element: renderLazyRoute(ExpenseEditSourcePage),
-      },
-      {
-        path: `${TMA_PATHS.expenses}/:id/edit/household`,
-        element: renderLazyRoute(ExpenseEditHouseholdPage),
       },
       {
         path: TMA_PATHS.expensesNewCategory,

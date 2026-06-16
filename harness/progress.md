@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-16 — Minimalist redesign of TMA expense pages (add step 3, detail, edit)
+
+- Who: Codex
+- Summary: Redesigned three TMA expense pages for minimalism and consistency. **Add-expense-context (step 3):** Replaced noisy `ChipButton` grids for household and group selection with inline `NativePicker` fields inside a clean `Card`. Kept the summary preview card and all BottomButton/save logic. **Expense-detail:** Replaced scattered 2-col `DetailCell` grid with clean `Section` + `SectionHeader` blocks: a "Thông tin" section with category row + source/space grid, and a "Thời gian" section with combined date+time. Removed the metadata "Thời điểm ghi" field. Kept hero card with category icon + big amount, and inline delete confirmation. **Expense-edit:** Replaced the household `EditSelectRow` (which navigated to a separate dead sub-page) with an inline `NativePicker` for household selection. Removed the dead `ExpenseEditHouseholdPage` component, its router route, and the `getExpenseEditHouseholdPath` route helper. Kept category and source sub-pages, amount/title/date inputs, BottomButton save logic, and all validation.
+- Files changed: `apps/tma/src/routes/add-expense-context.tsx`, `apps/tma/src/routes/expense-detail.tsx`, `apps/tma/src/routes/expense-edit.tsx`, `apps/tma/src/app/router/app-router.tsx`, `apps/tma/src/lib/constants/routes.ts`.
+- Verification: `pnpm --filter tma exec eslint --ext .ts,.tsx` on all 5 modified files returned 0 problems. `pnpm --filter tma typecheck` passed with 0 errors. `pnpm --filter tma exec vitest run src/test/` reports 92/93 tests pass; the single failure is the pre-existing `src/test/statistics-page.test.tsx` (expects legacy `Biểu đồ danh mục` while page renders `Phân bổ danh mục`), unchanged by this work.
+- Blockers: None. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA add-expense step 3, expense detail, and expense edit flows in Telegram and confirm the NativePicker household/group selectors, the clean detail sections, and the inline household edit all feel consistent with the rest of the app.
+
 ## 2026-06-16 — Minimalist redesign of TMA budget list page
 
 - Who: Codex

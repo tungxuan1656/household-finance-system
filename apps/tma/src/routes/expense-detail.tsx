@@ -9,9 +9,10 @@ import {
   Button,
   Card,
   CardDescription,
-  CardTitle,
   Eyebrow,
   MoneyLabel,
+  Section,
+  SectionHeader,
 } from '@/components/ui'
 import {
   useDeleteExpenseMutation,
@@ -32,13 +33,6 @@ import {
 import { getExpenseEditPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatTimeLabel } from '@/lib/formatters'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
-
-const DetailCell = ({ label, value }: { label: string; value: string }) => (
-  <div className='grid gap-1'>
-    <span className='text-xs text-tma-text-muted'>{label}</span>
-    <strong className='text-sm text-tma-text-strong'>{value}</strong>
-  </div>
-)
 
 export const ExpenseDetailPage = () => {
   const { id } = useParams<{ id: string }>()
@@ -64,8 +58,10 @@ export const ExpenseDetailPage = () => {
 
   const handleDelete = async () => {
     if (!expense) return
+
     try {
       impact('heavy')
+
       await deleteMutation.mutateAsync(expense.id)
       notification('success')
       navigate(TMA_PATHS.expenses, { replace: true })
@@ -78,10 +74,7 @@ export const ExpenseDetailPage = () => {
     return (
       <TmaPageShell title='Chi tiết'>
         <Card>
-          <CardTitle>Đang tải thông tin chi tiêu...</CardTitle>
-          <CardDescription>
-            Dữ liệu chi tiết sẽ xuất hiện ngay sau đây.
-          </CardDescription>
+          <CardDescription>Đang tải thông tin chi tiêu...</CardDescription>
         </Card>
       </TmaPageShell>
     )
@@ -91,7 +84,6 @@ export const ExpenseDetailPage = () => {
     return (
       <TmaPageShell title='Chi tiết'>
         <Card>
-          <CardTitle>Lỗi tải chi tiết</CardTitle>
           <CardDescription>
             Không tìm thấy khoản chi này hoặc bạn không có quyền truy cập.
           </CardDescription>
@@ -100,9 +92,16 @@ export const ExpenseDetailPage = () => {
     )
   }
 
+  const dateLabel = formatDateLabel(new Date(expense.occurredAt).toISOString())
+  const timeLabel = formatTimeLabel(new Date(expense.occurredAt).toISOString())
+  const spaceLabel = expense.householdId
+    ? householdNameMap.get(expense.householdId) || 'Gia đình'
+    : 'Cá nhân'
+
   return (
     <TmaPageShell title='Chi tiết'>
-      <Card className='mb-5 flex items-center gap-4 p-5'>
+      {/* Hero */}
+      <Card className='mb-3 flex items-center gap-4 p-5'>
         <TmaCategoryIconBadge
           accent={category.accent}
           iconUrl={category.iconUrl}
@@ -116,35 +115,55 @@ export const ExpenseDetailPage = () => {
         </div>
       </Card>
 
-      <Card className='mb-5 grid grid-cols-2 gap-x-3 gap-y-4'>
-        <DetailCell
-          label='Nguồn tiền'
-          value={getSourceLabel(expense.sourceKey)}
-        />
-        <DetailCell
-          label='Ngày chi'
-          value={formatDateLabel(new Date(expense.occurredAt).toISOString())}
-        />
-        <DetailCell
-          label='Giờ chi'
-          value={formatTimeLabel(new Date(expense.occurredAt).toISOString())}
-        />
-        <DetailCell
-          label='Không gian'
-          value={
-            expense.householdId
-              ? householdNameMap.get(expense.householdId) || 'Gia đình'
-              : 'Cá nhân'
-          }
-        />
-        <DetailCell
-          label='Thời điểm ghi'
-          value={formatDateLabel(new Date(expense.createdAt).toISOString())}
-        />
-      </Card>
+      {/* Info */}
+      <Section>
+        <SectionHeader title='Thông tin' />
+        <Card className='grid gap-3'>
+          <div className='flex items-center gap-3'>
+            <TmaCategoryIconBadge
+              accent={category.accent}
+              iconUrl={category.iconUrl}
+              size='sm'
+              symbol={category.symbol}
+            />
+            <div>
+              <Eyebrow>Danh mục</Eyebrow>
+              <strong className='text-sm font-semibold text-tma-text-strong'>
+                {category.label}
+              </strong>
+            </div>
+          </div>
+          <div className='grid grid-cols-2 gap-3'>
+            <div className='grid gap-1'>
+              <Eyebrow>Nguồn tiền</Eyebrow>
+              <strong className='text-sm font-semibold text-tma-text-strong'>
+                {getSourceLabel(expense.sourceKey)}
+              </strong>
+            </div>
+            <div className='grid gap-1'>
+              <Eyebrow>Không gian</Eyebrow>
+              <strong className='text-sm font-semibold text-tma-text-strong'>
+                {spaceLabel}
+              </strong>
+            </div>
+          </div>
+        </Card>
+      </Section>
 
+      {/* Date & Time */}
+      <Section>
+        <SectionHeader title='Thời gian' />
+        <Card className='grid gap-1'>
+          <Eyebrow>Ngày & giờ</Eyebrow>
+          <strong className='text-base font-semibold text-tma-text-strong'>
+            {dateLabel}, {timeLabel}
+          </strong>
+        </Card>
+      </Section>
+
+      {/* Actions */}
       {showDeleteConfirm ? (
-        <Card className='mt-5 grid gap-3 border-[#d93838]/20 bg-[#ffeded]/90'>
+        <Card className='mt-3 grid gap-3 border-[#d93838]/20 bg-[#ffeded]/90'>
           <div>
             <Eyebrow className='text-[#d93838]'>Xác nhận xóa</Eyebrow>
             <strong className='text-sm font-semibold text-tma-text-strong'>
