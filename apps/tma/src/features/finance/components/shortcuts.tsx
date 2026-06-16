@@ -8,14 +8,12 @@ import { cn } from '@/lib/utils'
 export const ShortcutItem = ({
   accent,
   disabled,
-  hint,
   href,
   icon: Icon,
   title,
 }: {
   accent: { background: string; foreground: string }
   disabled?: boolean
-  hint: string
   href: string
   icon: (props: SVGProps<SVGSVGElement>) => ReactElement
   title: string
@@ -32,9 +30,6 @@ export const ShortcutItem = ({
         <h3 className='m-0 text-[15px] leading-tight font-semibold text-tma-text-strong'>
           {title}
         </h3>
-        <p className='m-0 mt-1 text-xs leading-normal text-tma-text-muted'>
-          {hint}
-        </p>
       </div>
     </>
   )

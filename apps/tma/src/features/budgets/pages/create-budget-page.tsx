@@ -8,7 +8,6 @@ import {
   CardDescription,
   CardTitle,
   DatePicker,
-  Eyebrow,
   Field,
   FieldLabel,
   Input,
@@ -79,22 +78,6 @@ const CreateBudgetPage = () => {
     ],
     [adminHouseholds],
   )
-  const selectedHousehold = useMemo(
-    () =>
-      isPersonal
-        ? undefined
-        : adminHouseholds.find((household) => household.id === targetValue),
-    [adminHouseholds, isPersonal, targetValue],
-  )
-  const heroTitle = isPersonal
-    ? 'Ngân sách cá nhân'
-    : `Ngân sách ${selectedHousehold?.name ?? ''}`.trim()
-  const heroDescription = isPersonal
-    ? 'Budget cá nhân dùng VND làm mã tiền tệ mặc định và quản lý theo tháng.'
-    : 'Budget household lấy mã tiền tệ từ household và quản lý theo tháng. Chỉ admin mới tạo được.'
-  const helperCopy = isPersonal
-    ? 'Ngân sách cá nhân dùng VND. Chỉ đặt tổng ngân sách tháng.'
-    : 'Chỉ household admin mới tạo hoặc sửa ngân sách. Chỉ đặt tổng ngân sách tháng.'
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -166,14 +149,6 @@ const CreateBudgetPage = () => {
 
   return (
     <TmaPageShell title='Tạo ngân sách'>
-      <Card className='grid gap-2 p-5'>
-        <Eyebrow>Monthly budget</Eyebrow>
-        <strong className='text-2xl font-extrabold text-tma-text-strong'>
-          {heroTitle}
-        </strong>
-        <CardDescription>{heroDescription}</CardDescription>
-      </Card>
-
       {feedback ? (
         <Card
           className={
@@ -191,34 +166,31 @@ const CreateBudgetPage = () => {
       ) : null}
 
       <section className='mt-6'>
-        <div className='mb-3'>
-          <Eyebrow>Thiết lập</Eyebrow>
-          <CardTitle>Ngân sách mới</CardTitle>
-        </div>
+        <CardTitle className='mb-3'>Ngân sách mới</CardTitle>
 
         <Card>
           <form className='grid gap-3.5' onSubmit={handleSubmit}>
             <Field>
               <FieldLabel>Phạm vi ngân sách</FieldLabel>
               <NativePicker
+                fullWidth
                 aria-label='Chọn phạm vi ngân sách'
                 disabled={isBusy || householdsQuery.isLoading}
-                fullWidth
+                options={targetOptions}
+                value={targetValue}
                 onChange={(next) => {
                   setTargetValue(next)
                   setFeedback(null)
                 }}
-                options={targetOptions}
-                value={targetValue}
               />
             </Field>
 
             <Field>
               <FieldLabel>Tháng ngân sách</FieldLabel>
               <DatePicker
+                fullWidth
                 aria-label='Chọn tháng ngân sách'
                 disabled={isBusy}
-                fullWidth
                 mode='month'
                 value={period}
                 onChange={(next) => {
@@ -241,8 +213,6 @@ const CreateBudgetPage = () => {
                 }}
               />
             </Field>
-
-            <CardDescription>{helperCopy}</CardDescription>
 
             <div className='flex flex-wrap justify-end gap-2.5'>
               <Button

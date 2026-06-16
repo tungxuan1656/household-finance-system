@@ -55,7 +55,7 @@ export const AddExpenseCategoryPage = () => {
       </label>
 
       <Section>
-        <SectionHeader title='Chọn danh mục phù hợp' />
+        <SectionHeader title='Danh mục' />
         <DataState
           emptyDescription='Reference categories chưa có danh mục chi tiêu khả dụng.'
           emptyTitle='Chưa có danh mục'

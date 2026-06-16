@@ -19,11 +19,7 @@ import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import type { SourceKey } from '@/features/home/types'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import {
-  formatAmountInput,
-  formatDateLabel,
-  parseAmountInput,
-} from '@/lib/formatters'
+import { formatAmountInput, parseAmountInput } from '@/lib/formatters'
 import {
   hideBottomButton,
   setBottomButton,
@@ -34,7 +30,6 @@ import { notification, selection } from '@/lib/telegram/haptics'
 export const AddExpenseDetailsPage = () => {
   const navigate = useNavigate()
   const amountInputRef = useRef<HTMLInputElement | null>(null)
-  const date = useAddExpenseFlowStore((state) => state.date)
   const category = useAddExpenseFlowStore((state) => state.category)
   const draftAmount = useAddExpenseFlowStore((state) => state.amount)
   const draftSourceId = useAddExpenseFlowStore(
@@ -129,7 +124,6 @@ export const AddExpenseDetailsPage = () => {
         />
         <div>
           <CardTitle>{category.label}</CardTitle>
-          <CardDescription>{formatDateLabel(date)}</CardDescription>
         </div>
       </Card>
 

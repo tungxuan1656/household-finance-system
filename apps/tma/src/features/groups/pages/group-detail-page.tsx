@@ -156,7 +156,7 @@ export const GroupDetailPage = () => {
             </Card>
 
             <Section>
-              <SectionHeader eyebrow='Summary' title='Tổng quan group' />
+              <SectionHeader title='Tổng quan' />
               <DataState
                 errorDescription='Không tải được tổng hợp chi tiêu của group này.'
                 errorTitle='Summary đang lỗi'
@@ -227,10 +227,7 @@ export const GroupDetailPage = () => {
 
             {summary?.memberContributions.length ? (
               <Section>
-                <SectionHeader
-                  eyebrow='Đóng góp'
-                  title='Thành viên trong group'
-                />
+                <SectionHeader title='Thành viên' />
                 <Card className='grid gap-2'>
                   {summary.memberContributions.map((member) => (
                     <article

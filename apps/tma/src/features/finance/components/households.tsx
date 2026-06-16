@@ -1,5 +1,4 @@
 import { useQueries } from '@tanstack/react-query'
-import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
 import {
@@ -8,10 +7,8 @@ import {
   CardTitle,
   Chip,
   DataState,
-  Eyebrow,
   MoneyLabel,
   Section,
-  SectionHeader,
 } from '@/components/ui'
 import {
   analyticsOverviewQueryOptions,
@@ -84,18 +81,13 @@ export const HouseholdPreviewItem = ({
             : '-'}
       </MoneyLabel>
     </div>
-    <CardDescription>
-      {card.isError ? 'Không tải được tổng quan gia đình.' : card.budgetLabel}
-    </CardDescription>
   </Link>
 )
 
 export const HouseholdItem = ({
-  action,
   card,
   roleLabel,
 }: {
-  action?: ReactNode
   card: HouseholdCardViewModel
   roleLabel: string
 }) => (
@@ -122,7 +114,6 @@ export const HouseholdItem = ({
     </div>
     <div className='grid grid-cols-2 gap-2.5'>
       <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
-        <Eyebrow>Chi kỳ này</Eyebrow>
         <MoneyLabel className='text-sm font-bold'>
           {card.totalSpendMinor != null && card.currencyCode
             ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
@@ -132,7 +123,6 @@ export const HouseholdItem = ({
         </MoneyLabel>
       </div>
       <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
-        <Eyebrow>Ngân sách</Eyebrow>
         {card.budget ? (
           <>
             <strong className='text-sm text-tma-text-strong'>
@@ -156,10 +146,6 @@ export const HouseholdItem = ({
           <strong className='text-sm text-tma-text-muted'>—</strong>
         )}
       </div>
-    </div>
-    <div className='flex items-center justify-between text-sm text-tma-text-muted'>
-      <span>Mở chi tiết</span>
-      {action ?? <span>{card.household.defaultCurrencyCode}</span>}
     </div>
   </Link>
 )
@@ -221,7 +207,6 @@ export const HouseholdPreviewCarousel = () => {
 
   return (
     <Section>
-      <SectionHeader title='Gia đình' />
       <DataState
         emptyDescription='Home vẫn hiển thị chi tiêu cá nhân, còn thẻ gia đình sẽ xuất hiện khi có membership.'
         emptyTitle='Chưa tham gia gia đình nào'

@@ -219,7 +219,6 @@ export const BudgetListPage = () => {
       <Card className='grid gap-3 p-5'>
         <div className='flex items-start justify-between gap-3'>
           <div>
-            <Eyebrow>Budget hub</Eyebrow>
             <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
               {filteredBudgets.length}
             </strong>
@@ -228,11 +227,6 @@ export const BudgetListPage = () => {
             <BudgetGlyph />
           </IconBadge>
         </div>
-        <CardDescription>
-          Theo dõi ngân sách tháng theo household hoặc cá nhân. Detail sẽ dùng
-          API status để hiển thị planned vs actual và cảnh báo 80% / vượt
-          ngưỡng.
-        </CardDescription>
       </Card>
 
       <Section>
@@ -247,7 +241,6 @@ export const BudgetListPage = () => {
               </Link>
             ) : null
           }
-          eyebrow='Lọc theo phạm vi'
           title='Ngân sách'
         />
 
@@ -304,9 +297,6 @@ export const BudgetListPage = () => {
                 <CardTitle>
                   {formatBudgetPeriodLabel(latestBudget.period)}
                 </CardTitle>
-                <CardDescription>
-                  Tháng đang được theo dõi gần nhất
-                </CardDescription>
               </div>
               <MoneyLabel className='text-lg font-extrabold'>
                 {formatCurrencyMinor(

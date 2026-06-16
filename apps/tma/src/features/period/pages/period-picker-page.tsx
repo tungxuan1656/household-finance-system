@@ -297,7 +297,6 @@ export const PeriodPickerPage = () => {
 
       <Section>
         <SectionHeader
-          eyebrow='Đang chọn'
           title={
             activePreset ? formatPeriodSelectionLabel(candidate) : 'Tùy chỉnh'
           }
@@ -315,11 +314,6 @@ export const PeriodPickerPage = () => {
                 ? getReportingPeriodPresetLabel(activePreset)
                 : 'Tùy chỉnh'}
             </Chip>
-            <span className='text-xs text-tma-text-muted'>
-              {activePreset
-                ? 'Áp dụng nhanh theo preset'
-                : 'Khoảng thời gian tuỳ chỉnh'}
-            </span>
           </div>
           <PeriodRangeTimeline
             candidate={candidate}

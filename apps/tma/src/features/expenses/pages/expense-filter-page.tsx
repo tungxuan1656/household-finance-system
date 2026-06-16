@@ -1,12 +1,11 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
+import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   Button,
   Card,
   CardDescription,
-  Eyebrow,
   Section,
   SectionHeader,
 } from '@/components/ui'
@@ -112,40 +111,6 @@ const formatFilterRangeLabel = (dateFrom: number, dateTo: number): string =>
     dateFrom,
     dateTo,
   })
-
-const previewDescription = (
-  filter: ExpenseListFilter,
-  households: Array<{ id: string; name: string }>,
-): string => {
-  const parts: string[] = []
-
-  if (filter.dateFrom != null && filter.dateTo != null) {
-    parts.push(
-      `trong khoảng ${formatFilterRangeLabel(filter.dateFrom, filter.dateTo)}`,
-    )
-  }
-
-  if (filter.householdId != null) {
-    const match = households.find((h) => h.id === filter.householdId)
-
-    parts.push(`trong "${match?.name ?? 'hộ đã chọn'}"`)
-  }
-
-  if (filter.categoryKey != null) {
-    parts.push(`danh mục "${getCategoryLabel(filter.categoryKey)}"`)
-  }
-
-  if (parts.length === 0) {
-    return 'Không có bộ lọc nào — sẽ hiển thị toàn bộ chi tiêu.'
-  }
-
-  const head = `Hiển thị chi tiêu ${parts.join(' và ')}`
-
-  const sortLabel =
-    filter.sort === 'amount_desc' ? 'theo số tiền giảm dần' : 'mới nhất trước'
-
-  return `${head}, sắp xếp ${sortLabel}.`
-}
 
 interface FilterReturnState {
   appliedPeriod?: PeriodSelection
@@ -298,14 +263,8 @@ export const ExpenseFilterPage = () => {
 
   return (
     <TmaPageShell reserveBottomButton title='Lọc chi tiêu'>
-      <TmaPageHeader
-        eyebrow='Bộ lọc'
-        subtitle='Chọn khoảng thời gian, hộ gia đình, danh mục và cách sắp xếp. Bấm Áp dụng để cập nhật danh sách.'
-        title='Lọc danh sách chi tiêu'
-      />
-
       <Section>
-        <SectionHeader eyebrow='Sắp xếp' title='Thứ tự hiển thị' />
+        <SectionHeader title='Sắp xếp' />
         <div className='grid grid-cols-2 gap-2'>
           {SORT_OPTIONS.map((option) => (
             <FilterChipButton
@@ -319,7 +278,7 @@ export const ExpenseFilterPage = () => {
       </Section>
 
       <Section>
-        <SectionHeader eyebrow='Thời gian' title='Khoảng thời gian' />
+        <SectionHeader title='Thời gian' />
         <div className='flex flex-wrap gap-2'>
           {REPORTING_PERIOD_PRESETS.map((preset) => (
             <FilterChipButton
@@ -344,7 +303,7 @@ export const ExpenseFilterPage = () => {
       </Section>
 
       <Section>
-        <SectionHeader eyebrow='Nguồn' title='Hộ gia đình' />
+        <SectionHeader title='Hộ gia đình' />
         {householdsQuery.isLoading ? (
           <Card>
             <CardDescription>Đang tải danh sách hộ gia đình...</CardDescription>
@@ -369,7 +328,7 @@ export const ExpenseFilterPage = () => {
       </Section>
 
       <Section>
-        <SectionHeader eyebrow='Phân loại' title='Danh mục chi tiêu' />
+        <SectionHeader title='Danh mục chi tiêu' />
         {referenceCategoriesQuery.isLoading ? (
           <Card>
             <CardDescription>Đang tải danh mục...</CardDescription>
@@ -393,19 +352,11 @@ export const ExpenseFilterPage = () => {
         )}
       </Section>
 
-      <Section>
-        <Card className='flex items-center justify-between gap-3'>
-          <div className='grid gap-1'>
-            <Eyebrow>Xem trước</Eyebrow>
-            <CardDescription>
-              {previewDescription(filter, households)}
-            </CardDescription>
-          </div>
-          <Button size='sm' variant='ghost' onClick={handleReset}>
-            Đặt lại tất cả
-          </Button>
-        </Card>
-      </Section>
+      <div className='flex justify-start px-1 pb-4'>
+        <Button size='sm' variant='ghost' onClick={handleReset}>
+          Đặt lại tất cả
+        </Button>
+      </div>
     </TmaPageShell>
   )
 }

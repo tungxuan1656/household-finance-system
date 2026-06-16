@@ -322,7 +322,7 @@ export const BudgetDetailPage = () => {
             </Card>
 
             <Section>
-              <SectionHeader eyebrow='Status' title='Planned vs Actual' />
+              <SectionHeader title='Planned vs Actual' />
               <DataState
                 errorDescription='Không tải được trạng thái planned vs actual.'
                 errorTitle='Status đang lỗi'
@@ -402,7 +402,7 @@ export const BudgetDetailPage = () => {
             </Section>
 
             <Section>
-              <SectionHeader eyebrow='Category limits' title='Theo danh mục' />
+              <SectionHeader title='Theo danh mục' />
               <Card className='grid gap-2'>
                 {(status?.categoryStatuses.length
                   ? status.categoryStatuses
@@ -492,8 +492,7 @@ export const BudgetDetailPage = () => {
                       </Button>
                     ) : null
                   }
-                  eyebrow='CRUD'
-                  title='Quản lý ngân sách'
+                  title='Quản lý'
                 />
                 {isEditing ? (
                   <Card>
@@ -558,10 +557,6 @@ export const BudgetDetailPage = () => {
                   </Card>
                 ) : (
                   <Card className='grid gap-3'>
-                    <CardDescription>
-                      Bạn có thể cập nhật tổng budget, hạn mức danh mục, hoặc
-                      xóa budget đã lỗi thời.
-                    </CardDescription>
                     <Button
                       disabled={deleteBudgetMutation.isPending}
                       type='button'

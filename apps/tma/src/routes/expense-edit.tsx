@@ -10,7 +10,6 @@ import {
 } from '@/components/shared/tma-icons'
 import {
   TmaCategoryIconBadge,
-  TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import {
@@ -18,7 +17,6 @@ import {
   Card,
   CardDescription,
   CardTitle,
-  Chip,
   Eyebrow,
   Input,
 } from '@/components/ui'
@@ -193,29 +191,7 @@ export const ExpenseEditPage = () => {
 
   return (
     <TmaPageShell reserveBottomButton title='Sửa chi tiêu'>
-      <TmaPageHeader
-        eyebrow='Chế độ chỉnh sửa'
-        subtitle='Thay đổi các thông tin và nhấn Lưu thay đổi.'
-        title='Chỉnh sửa chi tiêu'
-      />
-
-      <Card className='mb-3 flex items-center gap-3 p-3.5'>
-        <TmaCategoryIconBadge
-          accent={activeCategory.accent}
-          iconUrl={activeCategory.iconUrl}
-          symbol={activeCategory.symbol}
-        />
-        <div>
-          <strong className='text-base text-tma-text-strong'>
-            {activeCategory.label}
-          </strong>
-          <CardDescription>
-            {formatDateLabel(new Date(draft.occurredAt).toISOString())}
-          </CardDescription>
-        </div>
-      </Card>
-
-      <Card className='grid gap-3'>
+      <Card className='mt-3 grid gap-3'>
         <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
           <NoteIcon height='16' width='16' />
           <span>Tên *</span>
@@ -344,11 +320,6 @@ export const ExpenseEditCategoryPage = () => {
 
   return (
     <TmaPageShell title='Chọn danh mục'>
-      <TmaPageHeader
-        eyebrow='Danh mục chi tiêu'
-        subtitle='Chọn danh mục phù hợp nhất cho khoản chi.'
-        title='Phân loại chi tiêu'
-      />
       <div className='grid grid-cols-2 gap-2.5'>
         {referenceCategories
           .filter((category) => category.kind === 'expense')
@@ -401,11 +372,6 @@ export const ExpenseEditSourcePage = () => {
 
   return (
     <TmaPageShell title='Chọn nguồn tiền'>
-      <TmaPageHeader
-        eyebrow='Nguồn thanh toán'
-        subtitle='Chọn tài khoản hoặc ví dùng để chi.'
-        title='Nguồn tiền thanh toán'
-      />
       <Card className='grid gap-0 px-4'>
         {SOURCE_KEYS.map((key, index) => {
           const isActive = draft.sourceKey === key
@@ -428,7 +394,6 @@ export const ExpenseEditSourcePage = () => {
                 navigate(-1)
               }}>
               <span>{getSourceLabel(key)}</span>
-              {isActive ? <Chip tone='primary'>Đang chọn</Chip> : null}
             </div>
           )
         })}
@@ -452,11 +417,6 @@ export const ExpenseEditHouseholdPage = () => {
 
   return (
     <TmaPageShell title='Chọn không gian'>
-      <TmaPageHeader
-        eyebrow='Không gian gia đình'
-        subtitle='Chọn gắn chi tiêu vào gia đình hoặc cá nhân.'
-        title='Gắn bối cảnh chi tiêu'
-      />
       <Card className='grid gap-0 px-4'>
         <div
           className={cn(
@@ -474,9 +434,6 @@ export const ExpenseEditHouseholdPage = () => {
             navigate(-1)
           }}>
           <span>Cá nhân (Không gắn)</span>
-          {draft.householdId === null ? (
-            <Chip tone='primary'>Đang chọn</Chip>
-          ) : null}
         </div>
 
         {households.map((household, index) => {
@@ -500,7 +457,6 @@ export const ExpenseEditHouseholdPage = () => {
                 navigate(-1)
               }}>
               <span>{household.name}</span>
-              {isActive ? <Chip tone='primary'>Đang chọn</Chip> : null}
             </div>
           )
         })}

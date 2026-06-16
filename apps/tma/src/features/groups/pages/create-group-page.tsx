@@ -7,7 +7,6 @@ import {
   Card,
   CardDescription,
   CardTitle,
-  Eyebrow,
   Field,
   FieldLabel,
   Input,
@@ -142,17 +141,6 @@ export const CreateGroupPage = () => {
 
   return (
     <TmaPageShell title='Tạo group'>
-      <Card className='grid gap-2 p-5'>
-        <Eyebrow>Thiết lập mới</Eyebrow>
-        <strong className='text-2xl font-extrabold text-tma-text-strong'>
-          Tạo group
-        </strong>
-        <CardDescription>
-          Group không cần avatar. Chỉ cần tên, context và ngân sách nếu muốn
-          theo dõi tiến độ chi tiêu.
-        </CardDescription>
-      </Card>
-
       {feedback ? (
         <Card
           className={
@@ -170,10 +158,7 @@ export const CreateGroupPage = () => {
       ) : null}
 
       <section className='mt-6'>
-        <div className='mb-3'>
-          <Eyebrow>Thông tin chính</Eyebrow>
-          <CardTitle>Group mới</CardTitle>
-        </div>
+        <CardTitle className='mb-3'>Group mới</CardTitle>
 
         <Card>
           <form className='grid gap-3.5' onSubmit={handleSubmit}>
@@ -270,8 +255,7 @@ export const CreateGroupPage = () => {
             </Field>
 
             <CardDescription>
-              Chỉ household admin mới tạo được group gắn household. Nếu không
-              chọn household, group sẽ là group cá nhân.
+              Admin mới tạo group gắn household. Không chọn = cá nhân.
             </CardDescription>
 
             <div className='flex flex-wrap justify-end gap-2.5'>

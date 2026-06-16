@@ -6,7 +6,6 @@ import {
   buttonVariants,
   Card,
   DataState,
-  Eyebrow,
   Section,
   SectionHeader,
 } from '@/components/ui'
@@ -77,7 +76,6 @@ export const HouseholdListPage = () => {
       <Card className='grid gap-3 p-5'>
         <div className='flex items-start justify-between gap-3'>
           <div>
-            <Eyebrow>Household hub</Eyebrow>
             <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
               {householdCards.length}
             </strong>
@@ -98,7 +96,6 @@ export const HouseholdListPage = () => {
               </Link>
             ) : null
           }
-          eyebrow='Danh sách'
           title='Household của bạn'
         />
 

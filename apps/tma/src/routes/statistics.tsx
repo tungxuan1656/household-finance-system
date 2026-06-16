@@ -116,25 +116,11 @@ export const StatisticsPage = () => {
                 <PeriodChipLink />
               </div>
 
-              <div className='flex flex-wrap gap-2'>
-                <Chip tone='primary'>{periodLabel}</Chip>
-                <Chip>{formatPeriodSelectionRangeLabel(selectedPeriod)}</Chip>
-              </div>
+              <Chip tone='primary'>{periodLabel}</Chip>
             </Card>
 
             <Card className='grid gap-5 p-5'>
-              <div className='flex items-start justify-between gap-3'>
-                <div>
-                  <Eyebrow>Phân bổ</Eyebrow>
-                  <CardTitle>Biểu đồ danh mục</CardTitle>
-                  <CardDescription className='mt-1'>
-                    Tỷ trọng chi tiêu trong {periodLabel.toLowerCase()}.
-                  </CardDescription>
-                </div>
-                <Chip tone='primary'>
-                  {overviewQuery.isFetching ? 'Đang cập nhật' : 'Live API'}
-                </Chip>
-              </div>
+              <CardTitle>Phân bổ danh mục</CardTitle>
 
               <div className='grid justify-items-center gap-4'>
                 <div
@@ -212,7 +198,7 @@ export const StatisticsPage = () => {
             </Card>
 
             <Section>
-              <SectionHeader eyebrow='Kỳ đang xem' title={periodLabel} />
+              <SectionHeader title={periodLabel} />
               <Card className='grid gap-2'>
                 <div className='flex items-center justify-between gap-3 text-sm'>
                   <span className='text-tma-text-muted'>Số khoản</span>

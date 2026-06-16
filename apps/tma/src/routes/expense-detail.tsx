@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import {
   TmaCategoryIconBadge,
-  TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import {
@@ -103,12 +102,6 @@ export const ExpenseDetailPage = () => {
 
   return (
     <TmaPageShell title='Chi tiết'>
-      <TmaPageHeader
-        eyebrow={category.label.toUpperCase()}
-        subtitle={expense.title || category.label}
-        title='Chi tiết chi tiêu'
-      />
-
       <Card className='mb-5 flex items-center gap-4 p-5'>
         <TmaCategoryIconBadge
           accent={category.accent}

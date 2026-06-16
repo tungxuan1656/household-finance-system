@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { FilterIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Button, Card, CardDescription, CardTitle, Chip } from '@/components/ui'
+import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
 import {
   countActiveExpenseListFilters,
   useExpenseListFilterStore,
@@ -66,11 +66,7 @@ export const ExpensesPage = () => {
 
   return (
     <TmaPageShell title='Chi tiêu'>
-      <div className='flex items-start justify-between gap-3 px-1 py-2'>
-        <CardDescription>
-          Lịch sử đầy đủ, nhẹ để quét mắt và quay lại thật nhanh.
-        </CardDescription>
-
+      <div className='px-1 py-2'>
         <Button
           aria-label='Mở bộ lọc'
           size='sm'
@@ -85,25 +81,6 @@ export const ExpensesPage = () => {
           </span>
         </Button>
       </div>
-
-      {activeFilterCount > 0 ? (
-        <Card className='mb-3 flex flex-wrap gap-2'>
-          {filter.dateFrom != null || filter.dateTo != null ? (
-            <Chip tone='primary'>Đang lọc theo thời gian</Chip>
-          ) : null}
-          {filter.householdId != null ? (
-            <Chip tone='primary'>
-              Hộ: {householdNameMap.get(filter.householdId) ?? 'đã chọn'}
-            </Chip>
-          ) : null}
-          {filter.categoryKey != null ? (
-            <Chip tone='primary'>Danh mục đã chọn</Chip>
-          ) : null}
-          {filter.sort === 'amount_desc' ? (
-            <Chip tone='primary'>Sắp xếp theo số tiền</Chip>
-          ) : null}
-        </Card>
-      ) : null}
 
       {expenses.length === 0 ? (
         <Card>

@@ -162,16 +162,12 @@ export const GroupListPage = () => {
     (householdsQuery.isError ||
       personalGroupsQuery.isError ||
       householdGroupQueries.some((query) => query.isError))
-  const totalBudgeted = groupItems.filter(
-    (item) => item.group.eventBudgetMinor != null,
-  ).length
 
   return (
     <TmaPageShell title='Nhóm'>
       <Card className='grid gap-3 p-5'>
         <div className='flex items-start justify-between gap-3'>
           <div>
-            <Eyebrow>Group hub</Eyebrow>
             <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
               {groupItems.length}
             </strong>
@@ -180,10 +176,6 @@ export const GroupListPage = () => {
             <GroupGlyph />
           </IconBadge>
         </div>
-        <CardDescription>
-          Theo dõi chi tiêu theo sự kiện, chuyến đi hoặc dự án nhỏ. Group có thể
-          là cá nhân hoặc gắn với household.
-        </CardDescription>
       </Card>
 
       <Section>
@@ -198,7 +190,6 @@ export const GroupListPage = () => {
               </Link>
             ) : null
           }
-          eyebrow={`${totalBudgeted} có ngân sách`}
           title='Group của bạn'
         />
 

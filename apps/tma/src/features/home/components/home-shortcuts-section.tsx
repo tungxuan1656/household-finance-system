@@ -1,6 +1,6 @@
 import type { ReactElement, SVGProps } from 'react'
 
-import { Section, SectionHeader } from '@/components/ui'
+import { Section } from '@/components/ui'
 import { ShortcutItem } from '@/features/finance/components'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
@@ -54,7 +54,6 @@ const BudgetIcon = (props: SVGProps<SVGSVGElement>) => (
 const shortcutItems = [
   {
     title: 'Chi tiêu',
-    hint: 'Lịch sử và bộ lọc đầy đủ',
     href: TMA_PATHS.expenses,
     icon: ReceiptIcon,
     accent: { background: '#edf4ff', foreground: '#3f7cff' },
@@ -62,7 +61,6 @@ const shortcutItems = [
   },
   {
     title: 'Gia đình',
-    hint: 'Danh sách thành viên và ngân sách',
     href: TMA_PATHS.households,
     icon: HouseholdIcon,
     accent: { background: '#eef9f0', foreground: '#2f9b44' },
@@ -70,7 +68,6 @@ const shortcutItems = [
   },
   {
     title: 'Nhóm',
-    hint: 'Theo dõi chi tiêu nhóm nhỏ',
     href: TMA_PATHS.groups,
     icon: GroupIcon,
     accent: { background: '#fff3e8', foreground: '#ff8a3d' },
@@ -78,7 +75,6 @@ const shortcutItems = [
   },
   {
     title: 'Ngân sách',
-    hint: 'Xem mức còn lại trong tháng',
     href: TMA_PATHS.budgets,
     icon: BudgetIcon,
     accent: { background: '#fff6d9', foreground: '#b48800' },
@@ -87,7 +83,6 @@ const shortcutItems = [
 ] as const satisfies Array<{
   accent: { background: string; foreground: string }
   enabled: boolean
-  hint: string
   href: string
   icon: (props: SVGProps<SVGSVGElement>) => ReactElement
   title: string
@@ -95,14 +90,12 @@ const shortcutItems = [
 
 export const HomeShortcutsSection = () => (
   <Section>
-    <SectionHeader title='Lối tắt' />
     <div className='grid grid-cols-2 gap-2.5'>
       {shortcutItems.map((item) => (
         <ShortcutItem
           key={item.title}
           accent={item.accent}
           disabled={!item.enabled}
-          hint={item.hint}
           href={item.href}
           icon={item.icon}
           title={item.title}

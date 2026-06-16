@@ -221,7 +221,7 @@ export const HouseholdDetailPage = () => {
             />
 
             <Section>
-              <SectionHeader eyebrow='Thành viên' title='Danh sách hiện tại' />
+              <SectionHeader title='Thành viên' />
               <DataState
                 emptyDescription='Household này hiện chưa có thành viên nào khả dụng để hiển thị.'
                 emptyTitle='Chưa có thành viên'

@@ -7,7 +7,6 @@ import {
   Card,
   CardDescription,
   CardTitle,
-  Eyebrow,
   Field,
   FieldLabel,
   Input,
@@ -89,17 +88,6 @@ export const CreateHouseholdPage = () => {
 
   return (
     <TmaPageShell title='Tạo household'>
-      <Card className='grid gap-2 p-5'>
-        <Eyebrow>Thiết lập mới</Eyebrow>
-        <strong className='text-2xl font-extrabold text-tma-text-strong'>
-          Tạo household
-        </strong>
-        <CardDescription>
-          Đặt tên rõ ràng và chuẩn bị avatar ngay từ đầu để household mới dễ
-          nhận diện trong TMA.
-        </CardDescription>
-      </Card>
-
       {feedback ? (
         <Card
           className={
@@ -131,10 +119,7 @@ export const CreateHouseholdPage = () => {
       </Card>
 
       <section className='mt-6'>
-        <div className='mb-3'>
-          <Eyebrow>Thông tin chính</Eyebrow>
-          <CardTitle>Tên household</CardTitle>
-        </div>
+        <CardTitle className='mb-3'>Tên household</CardTitle>
 
         <Card>
           <form className='grid gap-3.5' onSubmit={handleCreateHousehold}>
@@ -152,11 +137,6 @@ export const CreateHouseholdPage = () => {
                 }}
               />
             </Field>
-
-            <CardDescription>
-              Bạn sẽ trở thành quản trị viên đầu tiên của household này sau khi
-              tạo thành công.
-            </CardDescription>
 
             <div className='flex flex-wrap justify-end gap-2.5'>
               <Button
