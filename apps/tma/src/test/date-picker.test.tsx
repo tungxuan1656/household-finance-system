@@ -21,8 +21,11 @@ const setNativeValue = (input: HTMLInputElement, value: string) => {
   valueSetter?.call(input, value)
 }
 
-const queryInput = (host: HTMLDivElement) =>
-  host.querySelector('input[type="date"]') as HTMLInputElement | null
+const queryInput = (host: HTMLDivElement, type = 'date') =>
+  host.querySelector(`input[type="${type}"]`) as HTMLInputElement | null
+
+const queryButton = (host: HTMLDivElement) =>
+  host.querySelector('button') as HTMLButtonElement | null
 
 describe('DatePicker', () => {
   let host: HTMLDivElement
@@ -49,7 +52,7 @@ describe('DatePicker', () => {
     host.remove()
   })
 
-  it('renders the value as dd/MM/yyyy on the visible button', async () => {
+  it('renders the value as dd/MM/yyyy on the visual button', async () => {
     await act(async () => {
       root.render(
         <DatePicker
@@ -60,17 +63,20 @@ describe('DatePicker', () => {
       )
     })
 
-    const button = host.querySelector('button[aria-label="Chọn ngày"]')
+    const button = queryButton(host)
 
     expect(button).toBeTruthy()
+    expect(button?.getAttribute('aria-hidden')).toBe('true')
     expect(button?.textContent).toContain('15/06/2026')
 
     const input = queryInput(host)
 
     expect(input).toBeTruthy()
+    expect(input?.getAttribute('aria-label')).toBe('Chọn ngày')
     expect(input?.value).toBe('2026-06-15')
     expect(input?.className).toContain('opacity-0')
-    expect(input?.className).toContain('pointer-events-none')
+    expect(input?.className).not.toContain('pointer-events-none')
+    expect(button?.className).toContain('pointer-events-none')
   })
 
   it('falls back to the placeholder when the value is empty', async () => {
@@ -88,40 +94,30 @@ describe('DatePicker', () => {
     expect(host.textContent).toContain('Pick a date')
   })
 
-  it('opens the native picker and triggers a light haptic on click', async () => {
-    const showPicker = vi.fn()
-    const originalShowPicker = HTMLInputElement.prototype.showPicker
+  it('triggers a light haptic and forwards the input ref when the picker is clicked', async () => {
+    const inputRef = createRef<HTMLInputElement>()
 
-    HTMLInputElement.prototype.showPicker = showPicker
+    await act(async () => {
+      root.render(
+        <DatePicker
+          ref={inputRef}
+          aria-label='Chọn ngày'
+          value='2026-06-15'
+          onChange={() => {}}
+        />,
+      )
+    })
 
-    try {
-      const inputRef = createRef<HTMLInputElement>()
+    const input = queryInput(host)
 
-      await act(async () => {
-        root.render(
-          <DatePicker
-            ref={inputRef}
-            aria-label='Chọn ngày'
-            value='2026-06-15'
-            onChange={() => {}}
-          />,
-        )
-      })
+    expect(input).toBeTruthy()
+    expect(inputRef.current).toBe(input)
 
-      const input = queryInput(host)
+    await act(async () => {
+      input?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    })
 
-      const button = host.querySelector('button[aria-label="Chọn ngày"]')
-
-      await act(async () => {
-        button?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-      })
-
-      expect(impactMock).toHaveBeenCalledWith('light')
-      expect(showPicker).toHaveBeenCalledTimes(1)
-      expect(inputRef.current).toBe(input)
-    } finally {
-      HTMLInputElement.prototype.showPicker = originalShowPicker
-    }
+    expect(impactMock).toHaveBeenCalledWith('light')
   })
 
   it('forwards onChange with the new ISO yyyy-MM-dd value', async () => {
@@ -162,7 +158,7 @@ describe('DatePicker', () => {
       )
     })
 
-    const button = host.querySelector('button[aria-label="Chọn ngày"]')
+    const button = queryButton(host)
     const svg = button?.querySelector('svg')
 
     expect(svg).toBeNull()
@@ -182,10 +178,55 @@ describe('DatePicker', () => {
       )
     })
 
-    const button = host.querySelector(
-      'button[aria-label="Chọn ngày"]',
-    ) as HTMLButtonElement | null
+    const button = queryButton(host)
 
     expect(button?.className).toContain('w-full')
+  })
+
+  it('renders month picker with localized label and month input type when mode is month', async () => {
+    await act(async () => {
+      root.render(
+        <DatePicker
+          aria-label='Chọn tháng'
+          mode='month'
+          value='2026-06'
+          onChange={() => {}}
+        />,
+      )
+    })
+
+    const button = queryButton(host)
+    const input = queryInput(host, 'month')
+
+    expect(button?.textContent).toContain('tháng 6 năm 2026')
+    expect(input).toBeTruthy()
+    expect(input?.value).toBe('2026-06')
+  })
+
+  it('forwards onChange with the YYYY-MM value in month mode', async () => {
+    const onChange = vi.fn()
+
+    await act(async () => {
+      root.render(
+        <DatePicker
+          aria-label='Chọn tháng'
+          mode='month'
+          value='2026-06'
+          onChange={onChange}
+        />,
+      )
+    })
+
+    const input = queryInput(host, 'month')
+
+    expect(input).toBeTruthy()
+
+    await act(async () => {
+      setNativeValue(input as HTMLInputElement, '2026-12')
+      input?.dispatchEvent(new Event('input', { bubbles: true }))
+      input?.dispatchEvent(new Event('change', { bubbles: true }))
+    })
+
+    expect(onChange).toHaveBeenCalledWith('2026-12')
   })
 })

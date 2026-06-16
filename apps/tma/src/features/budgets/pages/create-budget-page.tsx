@@ -7,16 +7,13 @@ import {
   Card,
   CardDescription,
   CardTitle,
+  DatePicker,
   Eyebrow,
   Field,
   FieldLabel,
   Input,
-  SegmentedControl,
 } from '@/components/ui'
-import {
-  useHouseholdsQuery,
-  useReferenceCategoriesQuery,
-} from '@/features/home/api'
+import { useHouseholdsQuery } from '@/features/home/api'
 import { getBudgetDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatAmountInput } from '@/lib/formatters'
 import { getCurrentPeriod } from '@/lib/period'
@@ -24,49 +21,27 @@ import { cn } from '@/lib/utils'
 
 import { useCreateBudgetMutation } from '../api'
 import {
-  BudgetCategoryLimitFields,
-  type CategoryLimitInputMap,
-  getExpenseBudgetCategories,
-} from '../components/budget-category-limit-fields'
-import {
   buildBudgetMutationRequest,
   isValidBudgetPeriod,
   parseBudgetAmountInputToMinor,
 } from '../presentation'
-import type { BudgetCategoryLimitDTO, CreateBudgetRequest } from '../types'
+import type { CreateBudgetRequest } from '../types'
 
 type BudgetFeedback = {
   message: string
   tone: 'error' | 'success'
 }
 
-const toCategoryLimits = (
-  inputs: CategoryLimitInputMap,
-): BudgetCategoryLimitDTO[] =>
-  Object.entries(inputs)
-    .map(([categoryKey, value]) => ({
-      categoryKey: categoryKey as BudgetCategoryLimitDTO['categoryKey'],
-      limitMinor: parseBudgetAmountInputToMinor(value ?? '') ?? 0,
-    }))
-    .filter((limit) => limit.limitMinor > 0)
+const DEFAULT_CURRENCY_CODE = 'VND'
+const PERSONAL_TARGET_VALUE = 'personal'
 
-const SCOPE_OPTIONS = [
-  { label: 'Household', value: 'household' as const },
-  { label: 'Cá nhân', value: 'personal' as const },
-]
-
-export const CreateBudgetPage = () => {
+const CreateBudgetPage = () => {
   const navigate = useNavigate()
   const householdsQuery = useHouseholdsQuery()
-  const categoriesQuery = useReferenceCategoriesQuery()
   const createBudgetMutation = useCreateBudgetMutation()
-  const [scope, setScope] = useState<'household' | 'personal'>('household')
-  const [householdId, setHouseholdId] = useState('')
+  const [targetValue, setTargetValue] = useState<string>(PERSONAL_TARGET_VALUE)
   const [period, setPeriod] = useState(getCurrentPeriod())
   const [totalLimitInput, setTotalLimitInput] = useState('')
-  const [currencyCode, setCurrencyCode] = useState('VND')
-  const [categoryLimitInputs, setCategoryLimitInputs] =
-    useState<CategoryLimitInputMap>({})
   const [feedback, setFeedback] = useState<BudgetFeedback | null>(null)
 
   const adminHouseholds = useMemo(
@@ -76,36 +51,67 @@ export const CreateBudgetPage = () => {
       ),
     [householdsQuery.data?.items],
   )
-  const expenseCategories = getExpenseBudgetCategories(
-    categoriesQuery.data?.items ?? [],
-  )
+
+  useEffect(() => {
+    if (targetValue === PERSONAL_TARGET_VALUE) {
+      return
+    }
+
+    const stillValid = adminHouseholds.some(
+      (household) => household.id === targetValue,
+    )
+
+    if (!stillValid) {
+      setTargetValue(PERSONAL_TARGET_VALUE)
+    }
+  }, [adminHouseholds, targetValue])
+
+  useEffect(() => {
+    if (targetValue !== PERSONAL_TARGET_VALUE) {
+      return
+    }
+
+    const first = adminHouseholds[0]
+
+    if (first) {
+      setTargetValue(first.id)
+    }
+  }, [adminHouseholds, targetValue])
+
+  const isPersonal = targetValue === PERSONAL_TARGET_VALUE
   const isBusy = createBudgetMutation.isPending
-
-  useEffect(() => {
-    if (adminHouseholds.length === 0 && scope === 'household') {
-      setScope('personal')
-    }
-  }, [adminHouseholds.length, scope])
-
-  useEffect(() => {
-    if (!householdId && adminHouseholds[0]) {
-      setHouseholdId(adminHouseholds[0].id)
-    }
-  }, [adminHouseholds, householdId])
+  const isHouseholdMissing = !isPersonal && !targetValue
+  const targetOptions = useMemo(
+    () => [
+      { label: 'Cá nhân', value: PERSONAL_TARGET_VALUE },
+      ...adminHouseholds.map((household) => ({
+        label: household.name,
+        value: household.id,
+      })),
+    ],
+    [adminHouseholds],
+  )
+  const selectedHousehold = useMemo(
+    () =>
+      isPersonal
+        ? undefined
+        : adminHouseholds.find((household) => household.id === targetValue),
+    [adminHouseholds, isPersonal, targetValue],
+  )
+  const heroTitle = isPersonal
+    ? 'Ngân sách cá nhân'
+    : `Ngân sách ${selectedHousehold?.name ?? ''}`.trim()
+  const heroDescription = isPersonal
+    ? 'Budget cá nhân dùng VND làm mã tiền tệ mặc định và quản lý theo tháng.'
+    : 'Budget household lấy mã tiền tệ từ household và quản lý theo tháng. Chỉ admin mới tạo được.'
+  const helperCopy = isPersonal
+    ? 'Ngân sách cá nhân dùng VND. Chỉ đặt tổng ngân sách tháng.'
+    : 'Chỉ household admin mới tạo hoặc sửa ngân sách. Chỉ đặt tổng ngân sách tháng.'
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const totalLimitMinor = parseBudgetAmountInputToMinor(totalLimitInput)
-
-    if (scope === 'household' && !householdId) {
-      setFeedback({
-        message: 'Bạn cần quyền admin trong household để tạo ngân sách.',
-        tone: 'error',
-      })
-
-      return
-    }
 
     if (!isValidBudgetPeriod(period)) {
       setFeedback({
@@ -128,24 +134,9 @@ export const CreateBudgetPage = () => {
       return
     }
 
-    if (scope === 'personal' && !/^[A-Z]{3}$/.test(currencyCode)) {
+    if (!isPersonal && isHouseholdMissing) {
       setFeedback({
-        message: 'Mã tiền tệ phải là 3 ký tự in hoa (ví dụ: VND).',
-        tone: 'error',
-      })
-
-      return
-    }
-
-    const categoryLimits = toCategoryLimits(categoryLimitInputs)
-    const categoryLimitTotal = categoryLimits.reduce(
-      (sum, limit) => sum + limit.limitMinor,
-      0,
-    )
-
-    if (categoryLimitTotal > totalLimitMinor) {
-      setFeedback({
-        message: 'Tổng hạn mức danh mục không nên vượt tổng ngân sách.',
+        message: 'Bạn cần chọn household hợp lệ để tạo ngân sách.',
         tone: 'error',
       })
 
@@ -155,12 +146,12 @@ export const CreateBudgetPage = () => {
     try {
       const created = await createBudgetMutation.mutateAsync(
         buildBudgetMutationRequest({
-          categoryLimits,
-          currencyCode: scope === 'personal' ? currencyCode : undefined,
-          householdId,
+          categoryLimits: [],
+          currencyCode: DEFAULT_CURRENCY_CODE,
+          householdId: isPersonal ? undefined : targetValue,
           mode: 'create',
           period,
-          scope,
+          scope: isPersonal ? 'personal' : 'household',
           totalLimitMinor,
         }) as CreateBudgetRequest,
       )
@@ -190,12 +181,9 @@ export const CreateBudgetPage = () => {
       <Card className='grid gap-2 p-5'>
         <Eyebrow>Monthly budget</Eyebrow>
         <strong className='text-2xl font-extrabold text-tma-text-strong'>
-          {scope === 'personal' ? 'Ngân sách cá nhân' : 'Ngân sách household'}
+          {heroTitle}
         </strong>
-        <CardDescription>
-          Budget API hiện quản lý theo household hoặc cá nhân và theo tháng.
-          Group budget nằm trong tính năng Group.
-        </CardDescription>
+        <CardDescription>{heroDescription}</CardDescription>
       </Card>
 
       {feedback ? (
@@ -222,71 +210,43 @@ export const CreateBudgetPage = () => {
 
         <Card>
           <form className='grid gap-3.5' onSubmit={handleSubmit}>
-            <SegmentedControl
-              options={SCOPE_OPTIONS}
-              value={scope}
-              onChange={(value) => {
-                setScope(value)
-                setFeedback(null)
-              }}
-            />
-
-            {scope === 'household' ? (
-              <Field>
-                <FieldLabel>Household</FieldLabel>
-                <select
-                  className={cn(
-                    'min-h-14 w-full rounded-[18px] border border-tma-line bg-black/[0.04] px-4 text-base text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
-                  )}
-                  disabled={isBusy || householdsQuery.isLoading}
-                  value={householdId}
-                  onChange={(event) => {
-                    setHouseholdId(event.target.value)
-                    setFeedback(null)
-                  }}>
-                  {adminHouseholds.length === 0 ? (
-                    <option value=''>Không có household admin</option>
-                  ) : null}
-                  {adminHouseholds.map((household) => (
-                    <option key={household.id} value={household.id}>
-                      {household.name}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-            ) : null}
-
-            {scope === 'personal' ? (
-              <Field>
-                <FieldLabel>Mã tiền tệ</FieldLabel>
-                <Input
-                  disabled={isBusy}
-                  maxLength={3}
-                  placeholder='VND'
-                  value={currencyCode}
-                  onChange={(event) => {
-                    setCurrencyCode(event.target.value.toUpperCase())
-                    setFeedback(null)
-                  }}
-                />
-              </Field>
-            ) : null}
+            <Field>
+              <FieldLabel>Phạm vi ngân sách</FieldLabel>
+              <select
+                className={cn(
+                  'min-h-14 w-full rounded-[18px] border border-tma-line bg-black/[0.04] px-4 text-base text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
+                )}
+                disabled={isBusy || householdsQuery.isLoading}
+                value={targetValue}
+                onChange={(event) => {
+                  setTargetValue(event.target.value)
+                  setFeedback(null)
+                }}>
+                {targetOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
 
             <Field>
               <FieldLabel>Tháng ngân sách</FieldLabel>
-              <Input
+              <DatePicker
+                aria-label='Chọn tháng ngân sách'
                 disabled={isBusy}
-                type='month'
+                fullWidth
+                mode='month'
                 value={period}
-                onChange={(event) => {
-                  setPeriod(event.target.value)
+                onChange={(next) => {
+                  setPeriod(next)
                   setFeedback(null)
                 }}
               />
             </Field>
 
             <Field>
-              <FieldLabel>Tổng ngân sách</FieldLabel>
+              <FieldLabel>Tổng ngân sách (VND)</FieldLabel>
               <Input
                 disabled={isBusy}
                 inputMode='numeric'
@@ -299,21 +259,7 @@ export const CreateBudgetPage = () => {
               />
             </Field>
 
-            <BudgetCategoryLimitFields
-              disabled={isBusy || categoriesQuery.isLoading}
-              inputs={categoryLimitInputs}
-              referenceCategories={expenseCategories}
-              onChange={(next) => {
-                setCategoryLimitInputs(next)
-                setFeedback(null)
-              }}
-            />
-
-            <CardDescription>
-              {scope === 'household'
-                ? 'Chỉ household admin mới tạo hoặc sửa ngân sách. Hạn mức danh mục dùng catalog expense hiện có.'
-                : 'Ngân sách cá nhân dùng mã tiền tệ riêng. Hạn mức danh mục dùng catalog expense hiện có.'}
-            </CardDescription>
+            <CardDescription>{helperCopy}</CardDescription>
 
             <div className='flex flex-wrap justify-end gap-2.5'>
               <Button
@@ -333,3 +279,5 @@ export const CreateBudgetPage = () => {
     </TmaPageShell>
   )
 }
+
+export { CreateBudgetPage }

@@ -16,6 +16,18 @@ const formatDateDisplay = (value: string): string => {
   return `${match[3]}/${match[2]}/${match[1]}`
 }
 
+const formatMonthDisplay = (value: string): string => {
+  const match = /^(\d{4})-(\d{2})$/.exec(value)
+
+  if (!match) {
+    return value
+  }
+
+  return `tháng ${Number(match[2])} năm ${match[1]}`
+}
+
+export type DatePickerMode = 'date' | 'month'
+
 export interface DatePickerProps {
   'aria-label'?: string
   className?: string
@@ -24,6 +36,7 @@ export interface DatePickerProps {
   id?: string
   max?: string
   min?: string
+  mode?: DatePickerMode
   name?: string
   onChange: (value: string) => void
   placeholder?: string
@@ -43,6 +56,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       id,
       max,
       min,
+      mode = 'date',
       name,
       onChange,
       placeholder = 'Chọn ngày',
@@ -65,26 +79,16 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       }
     }
 
-    const openPicker = () => {
+    const handleClick = () => {
       impact('light')
-
-      const input = internalRef.current
-
-      if (!input) {
-        return
-      }
-
-      if (typeof input.showPicker === 'function') {
-        input.showPicker()
-      } else {
-        input.click()
-      }
-
-      input.focus()
     }
 
     const hasValue = value.length > 0
-    const display = hasValue ? formatDateDisplay(value) : placeholder
+    const display = hasValue
+      ? mode === 'month'
+        ? formatMonthDisplay(value)
+        : formatDateDisplay(value)
+      : placeholder
     const textSizeClass = size === 'sm' ? 'text-xs' : 'text-sm'
 
     return (
@@ -94,17 +98,33 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           fullWidth && 'w-full',
           className,
         )}>
-        <Button
+        <input
+          ref={setInputRef}
           aria-label={ariaLabel}
+          className='absolute inset-0 z-10 size-full cursor-pointer appearance-none border-0 bg-transparent p-0 opacity-0'
+          disabled={disabled}
+          id={id}
+          max={max}
+          min={min}
+          name={name}
+          readOnly
+          type={mode === 'month' ? 'month' : 'date'}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          onClick={handleClick}
+        />
+        <Button
+          aria-hidden='true'
           className={cn(
+            'pointer-events-none',
             fullWidth && 'w-full',
             !hasValue && 'font-normal text-tma-text-muted',
           )}
           disabled={disabled}
           size={size}
+          tabIndex={-1}
           type='button'
-          variant={variant}
-          onClick={openPicker}>
+          variant={variant}>
           {showIcon ? (
             <CalendarIcon aria-hidden='true' className='size-4 shrink-0' />
           ) : null}
@@ -116,21 +136,6 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             {display}
           </span>
         </Button>
-        <input
-          ref={setInputRef}
-          readOnly
-          aria-hidden='true'
-          className='pointer-events-none absolute inset-0 h-full w-full cursor-pointer opacity-0'
-          disabled={disabled}
-          id={id}
-          max={max}
-          min={min}
-          name={name}
-          tabIndex={-1}
-          type='date'
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-        />
       </div>
     )
   },
