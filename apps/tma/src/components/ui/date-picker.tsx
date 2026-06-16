@@ -100,6 +100,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         )}>
         <input
           ref={setInputRef}
+          readOnly
           aria-label={ariaLabel}
           className='absolute inset-0 z-10 size-full cursor-pointer appearance-none border-0 bg-transparent p-0 opacity-0'
           disabled={disabled}
@@ -107,7 +108,6 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           max={max}
           min={min}
           name={name}
-          readOnly
           type={mode === 'month' ? 'month' : 'date'}
           value={value}
           onChange={(event) => onChange(event.target.value)}

@@ -1,8 +1,6 @@
-import type { CategoryKey } from '@/features/home/types'
 import type { HouseholdDTO } from '@/features/home/types'
 
 import type {
-  BudgetCategoryLimitDTO,
   BudgetDTO,
   BudgetScope,
   BudgetThresholdStatus,
@@ -84,7 +82,6 @@ export const getBudgetScopeLabel = (
 }
 
 export type BudgetMutationFormValues = {
-  categoryLimits: BudgetCategoryLimitDTO[]
   currencyCode?: string
   householdId?: string
   mode: 'create' | 'edit'
@@ -94,7 +91,6 @@ export type BudgetMutationFormValues = {
 }
 
 export const buildBudgetMutationRequest = ({
-  categoryLimits,
   currencyCode,
   householdId,
   mode,
@@ -102,10 +98,6 @@ export const buildBudgetMutationRequest = ({
   scope,
   totalLimitMinor,
 }: BudgetMutationFormValues): CreateBudgetRequest | UpdateBudgetRequest => {
-  const activeCategoryLimits = categoryLimits.filter(
-    (limit) => limit.limitMinor > 0,
-  )
-
   if (mode === 'create') {
     if (scope === 'category') {
       throw new Error('Ngân sách danh mục chưa được hỗ trợ.')
@@ -123,9 +115,6 @@ export const buildBudgetMutationRequest = ({
         period,
         totalLimit: totalLimitMinor,
         currencyCode,
-        ...(activeCategoryLimits.length > 0
-          ? { categoryLimits: activeCategoryLimits }
-          : {}),
       }
     }
 
@@ -138,21 +127,10 @@ export const buildBudgetMutationRequest = ({
       householdId,
       period,
       totalLimit: totalLimitMinor,
-      ...(activeCategoryLimits.length > 0
-        ? { categoryLimits: activeCategoryLimits }
-        : {}),
     }
   }
 
   return {
     totalLimit: totalLimitMinor,
-    categoryLimits: activeCategoryLimits,
   }
 }
-
-export const buildCategoryLimitMap = (
-  limits: BudgetCategoryLimitDTO[],
-): Partial<Record<CategoryKey, number>> =>
-  Object.fromEntries(
-    limits.map((limit) => [limit.categoryKey, limit.limitMinor]),
-  ) as Partial<Record<CategoryKey, number>>

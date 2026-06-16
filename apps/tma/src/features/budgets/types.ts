@@ -61,19 +61,16 @@ export type CreateBudgetRequest =
       householdId: string
       period: string
       totalLimit: number
-      categoryLimits?: BudgetCategoryLimitDTO[]
     }
   | {
       scope: 'personal'
       period: string
       totalLimit: number
       currencyCode: string
-      categoryLimits?: BudgetCategoryLimitDTO[]
     }
 
 export type UpdateBudgetRequest = {
   totalLimit?: number
-  categoryLimits?: BudgetCategoryLimitDTO[]
 }
 
 export type UpdateBudgetMutationInput = {

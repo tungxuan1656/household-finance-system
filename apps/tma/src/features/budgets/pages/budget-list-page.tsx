@@ -122,25 +122,15 @@ const BudgetListCard = ({
           : (household?.name ?? 'Household')}
       </CardTitle>
       <CardDescription className='mt-1'>
-        {budget.categoryLimits.length > 0
-          ? `${budget.categoryLimits.length} danh mục có hạn mức riêng`
-          : 'Chỉ đặt tổng ngân sách tháng'}
+        Ngân sách tháng theo tổng hạn mức.
       </CardDescription>
     </div>
 
-    <div className='grid grid-cols-2 gap-2.5'>
-      <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
-        <Eyebrow>Tổng limit</Eyebrow>
-        <MoneyLabel className='text-sm font-bold'>
-          {formatCurrencyMinor(budget.totalLimitMinor, budget.currencyCode)}
-        </MoneyLabel>
-      </div>
-      <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
-        <Eyebrow>Danh mục</Eyebrow>
-        <strong className='text-sm text-tma-text-strong'>
-          {budget.categoryLimits.length}
-        </strong>
-      </div>
+    <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+      <Eyebrow>Tổng limit</Eyebrow>
+      <MoneyLabel className='text-sm font-bold'>
+        {formatCurrencyMinor(budget.totalLimitMinor, budget.currencyCode)}
+      </MoneyLabel>
     </div>
   </Link>
 )

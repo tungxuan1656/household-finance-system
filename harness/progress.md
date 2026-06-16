@@ -8,6 +8,42 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-16 — Minimalist redesign of TMA budget detail page
+
+- Who: Codex
+- Summary: Redesigned `apps/tma/src/features/budgets/pages/budget-detail-page.tsx` for minimalism and consistency with other TMA pages. Removed duplicate data: the hero card now owns the total-limit number with a `Tổng hạn mức` eyebrow, the progress section no longer repeats the total, and the redundant `Sử dụng` percentage stat tile was removed in favor of the progress-bar label. The hero card uses `Chip` badges for period and scope plus the budget `IconBadge`, matching the budget list card pattern. Progress is shown as a single `Tiến độ` section with only `Đã chi` and `Còn lại` stat tiles plus a clean progress bar. Management follows the household-detail inline form pattern with a single total-limit field and edit/delete actions. Fixed the amount input to apply `formatAmountInput` on change and cleaned up the mixed-language delete confirmation copy.
+- Files changed: `apps/tma/src/features/budgets/pages/budget-detail-page.tsx`.
+- Verification: `pnpm --filter tma exec eslint src/features/budgets/pages/budget-detail-page.tsx` returned 0 problems. `pnpm --filter tma typecheck` passed with 0 errors. `pnpm --filter tma exec vitest run src/test/budget-detail-page.test.tsx` passed (1 test). Full `./init.sh lint` and `./init.sh typecheck` returned `OK`. Full `./init.sh test` reports 92/93 tests pass; the single failure is the pre-existing `src/test/statistics-page.test.tsx` (expects legacy `Biểu đồ danh mục` while the page renders `Phân bổ danh mục`), unchanged by this work.
+- Blockers: None. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA budget detail in Telegram and confirm the minimalist hero card, the de-duplicated progress section, and the inline management form feel consistent with the rest of the app.
+
+## 2026-06-16 — Aligned TMA budget detail to group/household detail style
+
+- Who: Codex
+- Summary: Rewrote `apps/tma/src/features/budgets/pages/budget-detail-page.tsx` to match the style pattern used by `group-detail-page.tsx` and `household-detail-page.tsx`. The page now uses a `TmaPageShell` + `DataState` wrapper for loading/empty/error, a hero card with `IconBadge` + budget glyph + scope `Eyebrow` + period h1 (text-2xl font-extrabold) + big budget amount, a "Tiến độ" `Section` with `SectionHeader` and a `Card` containing a 2-col stat-tile grid (`Tổng ngân sách`, `Đã chi`, `Còn lại`, `Sử dụng`) plus an inline `h-2 overflow-hidden rounded-full bg-black/[0.06]` progress bar, and a "Quản lý ngân sách" `Section` for edit/delete. Stat tiles use the shared `rounded-[18px] bg-black/[0.04] p-3` pattern; negative `Còn lại` switches to red. Removed the custom `ProgressBar` component, the in-page `Section` wrapper, and the manual loading/error `Card` blocks. Feedback flows in from `location.state` on mount and is set locally for mutation results, matching the household/group pattern.
+- Files changed: `apps/tma/src/features/budgets/pages/budget-detail-page.tsx`.
+- Verification: `pnpm --filter tma typecheck` passed with 0 errors. `npx eslint` on the page returns 0 problems. `npx vitest run` reports 92/93 pass; the single failure is the pre-existing `src/test/statistics-page.test.tsx` (unchanged from `main`). `src/test/budget-detail-page.test.tsx` (1) and `src/test/budget-presentation.test.ts` (4) all pass.
+- Blockers: None. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA budget detail in Telegram and confirm the hero card matches the group/household hero pattern, the "Tiến độ" section renders the 2-col stat grid with the inline progress bar, and the "Quản lý ngân sách" section's edit form / delete button row is consistent with the rest of the app.
+
+## 2026-06-16 — Restyled TMA budget detail summary and progress card
+
+- Who: Codex
+- Summary: TMA-only visual cleanup on `apps/tma/src/features/budgets/pages/budget-detail-page.tsx`. Summary card now shows only the scope eyebrow, period title, and a single large budget total (3xl extrabold) — removed the "Đang an toàn"/"Sắp chạm ngưỡng" status chip, the "Đã chi X / Y" line, and the in-summary progress bar so the budget amount is the sole visual focus. The "So sánh dự kiến với thực tế" card was renamed to "Tiến độ", its description was dropped, and the body was restyled: percent label moved to the SectionHeader action slot, progress bar moved to the top of the body, big "đã chi" amount with "trên tổng" muted below, and a single "Còn lại" line at the bottom (red text when over budget). Removed unused `getBudgetStatusCopy` and `MoneyLabel` imports. No behavior change — same data, just a cleaner visual hierarchy.
+- Files changed: `apps/tma/src/features/budgets/pages/budget-detail-page.tsx`.
+- Verification: `pnpm --filter tma typecheck` passed with 0 errors. `npx eslint src/features/budgets/pages/budget-detail-page.tsx` returns 0 problems. `npx vitest run` reports 92/93 pass; the single failure is the pre-existing `src/test/statistics-page.test.tsx` (unchanged from `main`).
+- Blockers: None. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA budget detail in Telegram and confirm the summary now reads as a single hero number with scope/period above it, and that the "Tiến độ" card shows progress bar first, big actual amount, planned muted, and remaining at the bottom.
+
+## 2026-06-16 — Removed per-category budget feature from TMA only
+
+- Who: Codex
+- Summary: TMA only — dropped the per-category budget limit feature. Deleted `apps/tma/src/features/budgets/components/budget-category-limit-fields.tsx`. Removed the "Theo danh mục" section, the per-category edit fields, the per-category-limit validation, the `useReferenceCategoriesQuery`/`getCategoryPresentation`/`isReferenceCategoryDTO` usage, the category-count tile, and the "X danh mục có hạn mức riêng" description from the TMA budget detail and list pages. Simplified `buildBudgetMutationRequest` and `BudgetMutationFormValues` to drop `categoryLimits` and the `buildCategoryLimitMap` helper. Removed `categoryLimits` from TMA's `CreateBudgetRequest` and `UpdateBudgetRequest` (the `BudgetDTO` shape is unchanged so the worker response is still typed). Updated `test/budget-presentation.test.ts` to match the simplified builder. Worker (`apps/worker/**`) and web (`apps/web/**`) untouched — they still send and render per-category limits via the existing `/api/v1/budgets` contract. Harness `feat-098` updated to record the new scope.
+- Files changed: `apps/tma/src/features/budgets/components/budget-category-limit-fields.tsx` (deleted), `apps/tma/src/features/budgets/pages/budget-detail-page.tsx` (rewritten), `apps/tma/src/features/budgets/pages/budget-list-page.tsx` (cleaned), `apps/tma/src/features/budgets/pages/create-budget-page.tsx` (cleaned), `apps/tma/src/features/budgets/presentation.ts` (simplified), `apps/tma/src/features/budgets/types.ts` (cleaned), `apps/tma/src/test/budget-presentation.test.ts` (updated), `harness/features/feat-098.json` (scope note).
+- Verification: `pnpm --filter tma typecheck` passed with 0 errors. `pnpm --filter tma lint` returns 0 errors (11 pre-existing warnings in unrelated test files, none in the modified files). `npx vitest run` reports 92/93 tests pass; the single failure is the pre-existing `src/test/statistics-page.test.tsx` (asserts legacy `Biểu đồ danh mục` text that was changed to `Phân bổ danh mục` on `main`), confirmed pre-existing by `git stash` + re-run. Budget tests `src/test/budget-presentation.test.ts` (4) and `src/test/budget-detail-page.test.tsx` (1) all pass.
+- Blockers: None. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA budget detail, list, and create flows in Telegram and confirm the detail page now shows only overview + planned-vs-actual + management (edit total / delete), the list card shows only the total-limit tile, and the create form sends `{ totalLimit }` only.
+
 ## 2026-06-16 — Replaced raw selects and date inputs with TMA picker primitives
 
 - Who: Codex

@@ -63,9 +63,9 @@ describe('NativePicker', () => {
       root.render(
         <NativePicker
           aria-label='Chọn phạm vi'
-          onChange={() => {}}
           options={SAMPLE_OPTIONS}
           value='h-1'
+          onChange={() => {}}
         />,
       )
     })
@@ -90,10 +90,10 @@ describe('NativePicker', () => {
       root.render(
         <NativePicker
           aria-label='Chọn phạm vi'
-          onChange={() => {}}
           options={SAMPLE_OPTIONS}
           placeholder='Chưa chọn'
           value=''
+          onChange={() => {}}
         />,
       )
     })
@@ -109,9 +109,9 @@ describe('NativePicker', () => {
         <NativePicker
           ref={selectRef}
           aria-label='Chọn phạm vi'
-          onChange={() => {}}
           options={SAMPLE_OPTIONS}
           value='personal'
+          onChange={() => {}}
         />,
       )
     })
@@ -135,9 +135,9 @@ describe('NativePicker', () => {
       root.render(
         <NativePicker
           aria-label='Chọn phạm vi'
-          onChange={onChange}
           options={SAMPLE_OPTIONS}
           value='personal'
+          onChange={onChange}
         />,
       )
     })
@@ -160,10 +160,10 @@ describe('NativePicker', () => {
       root.render(
         <NativePicker
           aria-label='Chọn phạm vi'
-          onChange={() => {}}
           options={SAMPLE_OPTIONS}
           showIcon={false}
           value='personal'
+          onChange={() => {}}
         />,
       )
     })
@@ -181,9 +181,9 @@ describe('NativePicker', () => {
           <NativePicker
             fullWidth
             aria-label='Chọn phạm vi'
-            onChange={() => {}}
             options={SAMPLE_OPTIONS}
             value='personal'
+            onChange={() => {}}
           />
         </div>,
       )
@@ -200,9 +200,9 @@ describe('NativePicker', () => {
       root.render(
         <NativePicker
           aria-label='Chọn phạm vi'
-          onChange={() => {}}
           options={SAMPLE_OPTIONS}
           value='personal'
+          onChange={() => {}}
         />,
       )
     })

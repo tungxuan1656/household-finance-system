@@ -37,10 +37,6 @@ describe('budget presentation helpers', () => {
   it('normalizes create and update requests from form values', () => {
     expect(
       buildBudgetMutationRequest({
-        categoryLimits: [
-          { categoryKey: 'food', limitMinor: 500_000 },
-          { categoryKey: 'transport', limitMinor: 0 },
-        ],
         currencyCode: 'VND',
         householdId: 'household-1',
         mode: 'create',
@@ -53,12 +49,10 @@ describe('budget presentation helpers', () => {
       householdId: 'household-1',
       period: '2026-06',
       totalLimit: 2_000_000,
-      categoryLimits: [{ categoryKey: 'food', limitMinor: 500_000 }],
     })
 
     expect(
       buildBudgetMutationRequest({
-        categoryLimits: [],
         currencyCode: 'VND',
         householdId: 'household-1',
         mode: 'edit',
@@ -68,12 +62,10 @@ describe('budget presentation helpers', () => {
       }),
     ).toEqual({
       totalLimit: 2_000_000,
-      categoryLimits: [],
     })
 
     expect(
       buildBudgetMutationRequest({
-        categoryLimits: [],
         currencyCode: 'VND',
         mode: 'create',
         period: '2026-06',
@@ -91,7 +83,6 @@ describe('budget presentation helpers', () => {
   it('throws for invalid personal budget currency code', () => {
     expect(() =>
       buildBudgetMutationRequest({
-        categoryLimits: [],
         mode: 'create',
         period: '2026-06',
         scope: 'personal',
@@ -101,7 +92,6 @@ describe('budget presentation helpers', () => {
 
     expect(() =>
       buildBudgetMutationRequest({
-        categoryLimits: [],
         currencyCode: 'vn',
         mode: 'create',
         period: '2026-06',

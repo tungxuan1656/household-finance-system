@@ -117,7 +117,6 @@ const CreateBudgetPage = () => {
     try {
       const created = await createBudgetMutation.mutateAsync(
         buildBudgetMutationRequest({
-          categoryLimits: [],
           currencyCode: DEFAULT_CURRENCY_CODE,
           householdId: isPersonal ? undefined : targetValue,
           mode: 'create',
