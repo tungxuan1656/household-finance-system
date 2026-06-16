@@ -12,12 +12,12 @@ import {
   Field,
   FieldLabel,
   Input,
+  NativePicker,
 } from '@/components/ui'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { getBudgetDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatAmountInput } from '@/lib/formatters'
 import { getCurrentPeriod } from '@/lib/period'
-import { cn } from '@/lib/utils'
 
 import { useCreateBudgetMutation } from '../api'
 import {
@@ -63,18 +63,6 @@ const CreateBudgetPage = () => {
 
     if (!stillValid) {
       setTargetValue(PERSONAL_TARGET_VALUE)
-    }
-  }, [adminHouseholds, targetValue])
-
-  useEffect(() => {
-    if (targetValue !== PERSONAL_TARGET_VALUE) {
-      return
-    }
-
-    const first = adminHouseholds[0]
-
-    if (first) {
-      setTargetValue(first.id)
     }
   }, [adminHouseholds, targetValue])
 
@@ -212,22 +200,17 @@ const CreateBudgetPage = () => {
           <form className='grid gap-3.5' onSubmit={handleSubmit}>
             <Field>
               <FieldLabel>Phạm vi ngân sách</FieldLabel>
-              <select
-                className={cn(
-                  'min-h-14 w-full rounded-[18px] border border-tma-line bg-black/[0.04] px-4 text-base text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
-                )}
+              <NativePicker
+                aria-label='Chọn phạm vi ngân sách'
                 disabled={isBusy || householdsQuery.isLoading}
-                value={targetValue}
-                onChange={(event) => {
-                  setTargetValue(event.target.value)
+                fullWidth
+                onChange={(next) => {
+                  setTargetValue(next)
                   setFeedback(null)
-                }}>
-                {targetOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                }}
+                options={targetOptions}
+                value={targetValue}
+              />
             </Field>
 
             <Field>

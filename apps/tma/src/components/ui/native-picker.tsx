@@ -1,44 +1,25 @@
 import { forwardRef, useRef } from 'react'
 
-import { CalendarIcon } from '@/components/shared/tma-icons'
+import { ChevronDownIcon } from '@/components/shared/tma-icons'
 import { impact } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 import { Button, type ButtonSize, type ButtonVariant } from './button'
 
-const formatDateDisplay = (value: string): string => {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
-
-  if (!match) {
-    return value
-  }
-
-  return `${match[3]}/${match[2]}/${match[1]}`
+export type NativePickerOption = {
+  label: string
+  value: string
 }
 
-const formatMonthDisplay = (value: string): string => {
-  const match = /^(\d{4})-(\d{2})$/.exec(value)
-
-  if (!match) {
-    return value
-  }
-
-  return `tháng ${Number(match[2])} năm ${match[1]}`
-}
-
-export type DatePickerMode = 'date' | 'month'
-
-export interface DatePickerProps {
+export interface NativePickerProps {
   'aria-label'?: string
   className?: string
   disabled?: boolean
   fullWidth?: boolean
   id?: string
-  max?: string
-  min?: string
-  mode?: DatePickerMode
   name?: string
   onChange: (value: string) => void
+  options: NativePickerOption[]
   placeholder?: string
   showIcon?: boolean
   size?: ButtonSize
@@ -46,20 +27,18 @@ export interface DatePickerProps {
   variant?: ButtonVariant
 }
 
-export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
+export const NativePicker = forwardRef<HTMLSelectElement, NativePickerProps>(
   (
     {
-      'aria-label': ariaLabel = 'Chọn ngày',
+      'aria-label': ariaLabel = 'Chọn',
       className,
       disabled = false,
       fullWidth = false,
       id,
-      max,
-      min,
-      mode = 'date',
       name,
       onChange,
-      placeholder = 'Chọn ngày',
+      options,
+      placeholder,
       showIcon = true,
       size = 'md',
       value,
@@ -67,9 +46,9 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
     },
     forwardedRef,
   ) => {
-    const internalRef = useRef<HTMLInputElement>(null)
+    const internalRef = useRef<HTMLSelectElement>(null)
 
-    const setInputRef = (node: HTMLInputElement | null) => {
+    const setSelectRef = (node: HTMLSelectElement | null) => {
       internalRef.current = node
 
       if (typeof forwardedRef === 'function') {
@@ -83,12 +62,9 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       impact('light')
     }
 
-    const hasValue = value.length > 0
-    const display = hasValue
-      ? mode === 'month'
-        ? formatMonthDisplay(value)
-        : formatDateDisplay(value)
-      : placeholder
+    const selected = options.find((option) => option.value === value)
+    const hasValue = Boolean(selected)
+    const display = selected?.label ?? placeholder ?? ''
     const textSizeClass = size === 'sm' ? 'text-xs' : 'text-sm'
 
     return (
@@ -98,21 +74,22 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           fullWidth && 'w-full',
           className,
         )}>
-        <input
-          ref={setInputRef}
+        <select
+          ref={setSelectRef}
           aria-label={ariaLabel}
           className='absolute inset-0 z-10 size-full cursor-pointer appearance-none border-0 bg-transparent p-0 opacity-0'
           disabled={disabled}
           id={id}
-          max={max}
-          min={min}
           name={name}
-          readOnly
-          type={mode === 'month' ? 'month' : 'date'}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          onClick={handleClick}
-        />
+          onClick={handleClick}>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
         <Button
           aria-hidden='true'
           className={cn(
@@ -127,14 +104,14 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           variant={variant}>
           <span
             className={cn(
-              'min-w-0 truncate text-left font-mono font-bold [font-variant-numeric:tabular-nums]',
+              'min-w-0 truncate text-left font-bold',
               fullWidth && 'flex-1',
               textSizeClass,
             )}>
             {display}
           </span>
           {showIcon ? (
-            <CalendarIcon
+            <ChevronDownIcon
               aria-hidden='true'
               className='ml-auto size-4 shrink-0'
             />
@@ -145,4 +122,4 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
   },
 )
 
-DatePicker.displayName = 'DatePicker'
+NativePicker.displayName = 'NativePicker'

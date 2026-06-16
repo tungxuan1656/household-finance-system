@@ -73,6 +73,12 @@ export const ChevronRightIcon = (props: IconProps) => (
   </IconBase>
 )
 
+export const ChevronDownIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d='m6.5 9.5 5.5 5.5 5.5-5.5' />
+  </IconBase>
+)
+
 export const SparkIcon = (props: IconProps) => (
   <IconBase {...props}>
     <path d='m12 3 1.4 4.1L17.5 8.5l-4.1 1.4L12 14l-1.4-4.1L6.5 8.5l4.1-1.4L12 3Z' />
