@@ -15,11 +15,15 @@ import {
   Button,
   Card,
   CardDescription,
+  ChipButton,
+  DataState,
   Eyebrow,
   Field,
   FieldLabel,
   Input,
   NativePicker,
+  Section,
+  SectionHeader,
 } from '@/components/ui'
 import { DatePicker } from '@/components/ui/date-picker'
 import {
@@ -27,18 +31,22 @@ import {
   useUpdateExpenseMutation,
 } from '@/features/expenses/api'
 import { createEditExpenseDraft } from '@/features/expenses/draft'
-import { getSourceLabel } from '@/features/expenses/presentation'
+import { getSourceOptions } from '@/features/expenses/presentation'
 import { useEditExpenseStore } from '@/features/expenses/store'
+import {
+  useHouseholdExpenseGroupQueries,
+  usePersonalExpenseGroupListQuery,
+} from '@/features/groups/api'
+import type { GroupListItem } from '@/features/groups/types'
 import {
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
-import { SOURCE_KEYS } from '@/features/home/types'
+import type { SourceKey } from '@/features/home/types'
 import {
   getExpenseDetailPath,
   getExpenseEditCategoryPath,
-  getExpenseEditSourcePath,
   TMA_PATHS,
 } from '@/lib/constants/routes'
 import { formatAmountInput, parseAmountInput } from '@/lib/formatters'
@@ -91,6 +99,7 @@ export const ExpenseEditPage = () => {
   })
   const categoriesQuery = useReferenceCategoriesQuery()
   const householdsQuery = useHouseholdsQuery()
+  const personalGroupsQuery = usePersonalExpenseGroupListQuery()
   const expense = expenseQuery.data
   const referenceCategories = categoriesQuery.data?.items ?? []
   const households = householdsQuery.data?.items ?? []
@@ -105,14 +114,17 @@ export const ExpenseEditPage = () => {
       const editDraft = createEditExpenseDraft(expense)
 
       setDraft(editDraft)
-      setAmountInput(formatAmountInput(String(Math.round(editDraft.amount))))
+
+      setAmountInput(
+        formatAmountInput(String(Math.round(editDraft.amount / 1000))),
+      )
     }
   }, [expense, draft, setDraft])
 
   const handleAmountChange = (value: string) => {
     const formatted = formatAmountInput(value)
     setAmountInput(formatted)
-    updateDraft({ amount: parseAmountInput(formatted) })
+    updateDraft({ amount: parseAmountInput(formatted) * 1000 })
   }
 
   const activeCategory = getCategoryPresentation(
@@ -124,12 +136,44 @@ export const ExpenseEditPage = () => {
     draft && draft.title.trim().length > 0 && draft.amount > 0,
   )
 
+  const householdGroupQueries = useHouseholdExpenseGroupQueries(households)
+
+  const groupItems = useMemo<GroupListItem[]>(() => {
+    const personalGroups = personalGroupsQuery.data?.items ?? []
+
+    return [
+      ...personalGroups.map((group) => ({ group, household: null })),
+      ...households.flatMap((household, index) => {
+        const query = householdGroupQueries[index]
+        const groups = query?.data?.items ?? []
+
+        return groups.map((group) => ({ group, household }))
+      }),
+    ].sort((left, right) => right.group.createdAt - left.group.createdAt)
+  }, [householdGroupQueries, households, personalGroupsQuery.data?.items])
+
   const householdPickerOptions = useMemo(
     () => [
       { value: '', label: 'Cá nhân (Không gắn)' },
       ...households.map((h) => ({ value: h.id, label: h.name })),
     ],
     [households],
+  )
+
+  const sourcePickerOptions = useMemo(
+    () => getSourceOptions().map((s) => ({ value: s.id, label: s.label })),
+    [],
+  )
+
+  const groupPickerOptions = useMemo(
+    () => [
+      { value: '', label: 'Không gắn nhóm' },
+      ...groupItems.map((item) => ({
+        value: item.group.id,
+        label: item.group.name,
+      })),
+    ],
+    [groupItems],
   )
 
   const handleSave = useEffectEvent(async () => {
@@ -147,6 +191,7 @@ export const ExpenseEditPage = () => {
           sourceKey: draft.sourceKey,
           occurredAt: draft.occurredAt,
           householdId: draft.householdId,
+          ...(draft.groupId ? { groupIds: [draft.groupId] } : {}),
         },
       })
 
@@ -176,7 +221,7 @@ export const ExpenseEditPage = () => {
 
   if (expenseQuery.isLoading || !draft) {
     return (
-      <TmaPageShell title='Sửa chi tiêu'>
+      <TmaPageShell title='chi tiêu'>
         <Card>
           <CardDescription>Đang tải biểu mẫu...</CardDescription>
         </Card>
@@ -185,7 +230,32 @@ export const ExpenseEditPage = () => {
   }
 
   return (
-    <TmaPageShell reserveBottomButton title='Sửa chi tiêu'>
+    <TmaPageShell reserveBottomButton title='chi tiêu'>
+      {/* Money input */}
+      <Card className='mt-3 grid gap-3'>
+        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
+          <CoinIcon height='16' width='16' />
+          <span>Số tiền</span>
+        </div>
+        <label className='flex items-end justify-between gap-2 rounded-3xl bg-white p-4'>
+          <input
+            className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-tma-text-strong outline-none'
+            inputMode='numeric'
+            placeholder='0'
+            type='text'
+            value={amountInput}
+            onChange={(event) => handleAmountChange(event.target.value)}
+          />
+          <span className='font-mono text-3xl font-semibold text-tma-text-strong/80'>
+            .000
+          </span>
+          <span className='text-xs font-semibold text-tma-text-muted'>
+            {expense?.currencyCode ?? 'VND'}
+          </span>
+        </label>
+      </Card>
+
+      {/* Title */}
       <Card className='mt-3 grid gap-3'>
         <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
           <NoteIcon height='16' width='16' />
@@ -199,26 +269,7 @@ export const ExpenseEditPage = () => {
         />
       </Card>
 
-      <Card className='mt-3 grid gap-3'>
-        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
-          <CoinIcon height='16' width='16' />
-          <span>Số tiền</span>
-        </div>
-        <label className='flex items-end justify-between gap-2 rounded-[20px] bg-black/[0.04] p-4'>
-          <input
-            className='w-full bg-transparent font-mono text-[34px] leading-none font-extrabold text-tma-text-strong outline-none'
-            inputMode='numeric'
-            placeholder='0'
-            type='text'
-            value={amountInput}
-            onChange={(event) => handleAmountChange(event.target.value)}
-          />
-          <span className='text-xs font-semibold text-tma-text-muted'>
-            {expense?.currencyCode ?? 'VND'}
-          </span>
-        </label>
-      </Card>
-
+      {/* Date */}
       <Card className='mt-3 overflow-hidden p-0'>
         <DatePicker
           fullWidth
@@ -233,6 +284,7 @@ export const ExpenseEditPage = () => {
         />
       </Card>
 
+      {/* Category */}
       <Card className='mt-3 grid gap-0 px-4'>
         <EditSelectRow
           label='Danh mục'
@@ -248,16 +300,26 @@ export const ExpenseEditPage = () => {
             symbol={activeCategory.symbol}
           />
         </EditSelectRow>
-        <EditSelectRow
-          label='Nguồn thanh toán'
-          value={getSourceLabel(draft.sourceKey)}
-          onClick={() => {
-            selection()
-            navigate(getExpenseEditSourcePath(expenseId))
-          }}
-        />
       </Card>
 
+      {/* Source */}
+      <Card className='mt-3 grid gap-3'>
+        <Field>
+          <FieldLabel>Nguồn thanh toán</FieldLabel>
+          <NativePicker
+            fullWidth
+            aria-label='Chọn nguồn thanh toán'
+            options={sourcePickerOptions}
+            value={draft.sourceKey}
+            onChange={(next) => {
+              selection()
+              updateDraft({ sourceKey: next as SourceKey })
+            }}
+          />
+        </Field>
+      </Card>
+
+      {/* Household */}
       <Card className='mt-3 grid gap-3'>
         <Field>
           <FieldLabel>Không gian gia đình</FieldLabel>
@@ -275,6 +337,25 @@ export const ExpenseEditPage = () => {
         </Field>
       </Card>
 
+      {/* Group */}
+      <Card className='mt-3 grid gap-3'>
+        <Field>
+          <FieldLabel>Nhóm chi tiêu</FieldLabel>
+          <NativePicker
+            fullWidth
+            aria-label='Chọn nhóm chi tiêu'
+            disabled={personalGroupsQuery.isLoading}
+            options={groupPickerOptions}
+            value={draft.groupId ?? ''}
+            onChange={(next) => {
+              selection()
+              updateDraft({ groupId: next || null })
+            }}
+          />
+        </Field>
+      </Card>
+
+      {/* Cancel */}
       <div className='mt-5 grid'>
         <Button
           variant='ghost'
@@ -297,6 +378,13 @@ export const ExpenseEditCategoryPage = () => {
   const draft = useEditExpenseStore((state) => state.draft)
   const updateDraft = useEditExpenseStore((state) => state.updateDraft)
 
+  const categoryOptions = referenceCategories
+    .filter((category) => category.kind === 'expense')
+    .map((category) => ({
+      id: category.key,
+      ...getCategoryPresentation(category.key, referenceCategories),
+    }))
+
   useEffect(() => {
     if (!draft) navigate(TMA_PATHS.expenses)
   }, [draft, navigate])
@@ -305,84 +393,54 @@ export const ExpenseEditCategoryPage = () => {
 
   return (
     <TmaPageShell title='Chọn danh mục'>
-      <div className='grid grid-cols-2 gap-2.5'>
-        {referenceCategories
-          .filter((category) => category.kind === 'expense')
-          .map((category) => {
-            const presentation = getCategoryPresentation(
-              category.key,
-              referenceCategories,
-            )
-            const isActive = draft.categoryKey === category.key
+      <Section>
+        <SectionHeader title='Danh mục' />
+        <DataState
+          emptyDescription='Reference categories chưa có danh mục chi tiêu khả dụng.'
+          emptyTitle='Chưa có danh mục'
+          errorDescription='Không tải được danh mục từ API. Kiểm tra kết nối rồi thử lại.'
+          errorTitle='Không tải được danh mục'
+          isEmpty={
+            !categoriesQuery.isLoading &&
+            !categoriesQuery.isError &&
+            categoryOptions.length === 0
+          }
+          isError={categoriesQuery.isError && categoryOptions.length === 0}
+          isLoading={categoriesQuery.isLoading && categoryOptions.length === 0}
+          loadingDescription='Danh mục chi tiêu sẽ hiện ngay khi API trả về.'
+          loadingTitle='Đang tải danh mục'
+          retryAction={categoriesQuery.refetch}>
+          <div className='grid grid-cols-3 gap-2'>
+            {categoryOptions.map((category) => {
+              const isActive = draft.categoryKey === category.id
 
-            return (
-              <button
-                key={category.key}
-                className={cn(
-                  'grid min-h-28 content-start gap-3 rounded-[20px] border border-black/[0.04] bg-white p-3.5 text-left shadow-tma-soft transition active:scale-[0.98]',
-                  isActive && 'border-tma-primary bg-tma-primary/10',
-                )}
-                type='button'
-                onClick={() => {
-                  selection()
-                  updateDraft({ categoryKey: category.key })
-                  navigate(-1)
-                }}>
-                <TmaCategoryIconBadge
-                  accent={presentation.accent}
-                  iconUrl={presentation.iconUrl}
-                  symbol={presentation.symbol}
-                />
-                <span className='text-[15px] font-semibold text-tma-text-strong'>
-                  {presentation.label}
-                </span>
-              </button>
-            )
-          })}
-      </div>
-    </TmaPageShell>
-  )
-}
-
-export const ExpenseEditSourcePage = () => {
-  const navigate = useNavigate()
-  const draft = useEditExpenseStore((state) => state.draft)
-  const updateDraft = useEditExpenseStore((state) => state.updateDraft)
-
-  useEffect(() => {
-    if (!draft) navigate(TMA_PATHS.expenses)
-  }, [draft, navigate])
-
-  if (!draft) return null
-
-  return (
-    <TmaPageShell title='Chọn nguồn tiền'>
-      <Card className='grid gap-0 px-4'>
-        {SOURCE_KEYS.map((key, index) => {
-          const isActive = draft.sourceKey === key
-
-          return (
-            <div
-              key={key}
-              className={cn(
-                'flex cursor-pointer items-center justify-between gap-3 py-4',
-                index < SOURCE_KEYS.length - 1 && 'border-b border-tma-line',
-                isActive
-                  ? 'font-bold text-tma-primary'
-                  : 'font-medium text-tma-text-strong',
-              )}
-              role='button'
-              tabIndex={0}
-              onClick={() => {
-                selection()
-                updateDraft({ sourceKey: key })
-                navigate(-1)
-              }}>
-              <span>{getSourceLabel(key)}</span>
-            </div>
-          )
-        })}
-      </Card>
+              return (
+                <ChipButton
+                  key={category.id}
+                  aria-pressed={isActive}
+                  className={cn(
+                    'grid min-h-20 content-start',
+                    isActive && 'ring-2 ring-tma-primary',
+                  )}
+                  onClick={() => {
+                    selection()
+                    updateDraft({ categoryKey: category.id })
+                    navigate(-1)
+                  }}>
+                  <TmaCategoryIconBadge
+                    accent={category.accent}
+                    iconUrl={category.iconUrl}
+                    symbol={category.symbol}
+                  />
+                  <span className='text-xs font-semibold text-tma-text-strong'>
+                    {category.label}
+                  </span>
+                </ChipButton>
+              )
+            })}
+          </div>
+        </DataState>
+      </Section>
     </TmaPageShell>
   )
 }

@@ -23,6 +23,7 @@ describe('createEditExpenseDraft', () => {
     ).toEqual({
       amount: 123.45,
       categoryKey: 'food',
+      groupId: 'group-1',
       householdId: 'household-1',
       id: 'expense-1',
       occurredAt: 1_717_584_000_000,

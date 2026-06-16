@@ -27,6 +27,7 @@ export interface UpdateExpenseRequest {
   categoryKey?: CategoryKey
   sourceKey?: SourceKey
   householdId?: string | null
+  groupIds?: string[]
 }
 
 const getExpense = (id: string) => get<ExpenseDTO>(`/expenses/${id}`)

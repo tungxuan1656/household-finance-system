@@ -63,6 +63,7 @@ export interface EditExpenseDraft {
   categoryKey: CategoryKey
   sourceKey: SourceKey
   householdId: string | null
+  groupId: string | null
 }
 
 interface EditExpenseFlowState {

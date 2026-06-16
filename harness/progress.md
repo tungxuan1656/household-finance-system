@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-16 — Minimalist redesign of TMA expense edit flow (source picker, group picker, .000 suffix, category page)
+
+- Who: Codex
+- Summary: Redesigned the TMA expense edit flow for minimalism and faster data entry. **Title:** Changed from `Sửa chi tiêu` to `chi tiêu`. **Money input:** Moved to the top of the page and added a `.000` suffix (like add-expense step 2), so users type `3` instead of `3000`. The input now divides by 1000 on load and multiplies by 1000 on save. **Source selection:** Replaced the `EditSelectRow` that navigated to a separate sub-page with an inline `NativePicker` inside a `Field` + `FieldLabel` card. **Group selection:** Added a new inline `NativePicker` for group selection, using the same `useHouseholdExpenseGroupQueries` + `usePersonalExpenseGroupListQuery` pattern as add-expense-context. Added `groupId` to `EditExpenseDraft` and `groupIds` to `UpdateExpenseRequest`. **Category page redesign:** `ExpenseEditCategoryPage` now uses the same 3-column `ChipButton` grid with `TmaCategoryIconBadge` + label as `add-expense-category.tsx`, wrapped in `Section` + `SectionHeader` + `DataState`. **Dead code removal:** Removed the `ExpenseEditSourcePage` component, its router route, and the `getExpenseEditSourcePath` route helper.
+- Files changed: `apps/tma/src/routes/expense-edit.tsx`, `apps/tma/src/features/expenses/store.ts`, `apps/tma/src/features/expenses/draft.ts`, `apps/tma/src/features/expenses/api.ts`, `apps/tma/src/app/router/app-router.tsx`, `apps/tma/src/lib/constants/routes.ts`, `apps/tma/src/test/expense-draft.test.ts`.
+- Verification: `npx eslint --ext .ts,.tsx` on all 6 modified files returned 0 problems. `npx tsc --noEmit` passed. `npx vitest run src/test/` reports 92/93 tests pass; the single failure is the pre-existing `src/test/statistics-page.test.tsx` (expects legacy `Biểu đồ danh mục` while page renders `Phân bổ danh mục`), unchanged by this work.
+- Blockers: None. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA expense edit flow in Telegram and confirm the inline source/group pickers, the `.000` money input, and the ChipButton category grid all feel fast and consistent.
+
 ## 2026-06-16 — Minimalist redesign of TMA expense pages (add step 3, detail, edit)
 
 - Who: Codex

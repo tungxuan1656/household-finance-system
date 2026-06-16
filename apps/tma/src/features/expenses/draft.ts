@@ -12,4 +12,5 @@ export const createEditExpenseDraft = (
   categoryKey: expense.categoryKey,
   sourceKey: expense.sourceKey,
   householdId: expense.householdId,
+  groupId: expense.groupIds?.[0] ?? null,
 })
