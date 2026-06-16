@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-16 — Minimalist redesign of TMA budget list page
+
+- Who: Codex
+- Summary: Redesigned `apps/tma/src/features/budgets/pages/budget-list-page.tsx` for minimalism and consistency with the recently redesigned budget-detail-page.tsx. Removed the hero count card (showing `filteredBudgets.length`) and the "Budget mới nhất" highlighted card because both duplicated information already visible in the sorted list. Simplified list rows from heavy nested cards (IconBadge + chips + title + description + stat box) to clean inline `Link` rows: period label on the left, scope `Chip` below it, and total-limit `MoneyLabel` on the right. The entire list now lives inside a single `Section` with `SectionHeader` titled "Ngân sách" and the "Tạo mới" action button. Scope filter chips and the household picker (when scope=household) sit cleanly inside the same section. Preserved all functionality: filters, household selector, admin warning, DataState loading/error/empty states, sort by period descending, haptics, and navigation. Reduced from 344 lines to 257 lines (~25% reduction).
+- Files changed: `apps/tma/src/features/budgets/pages/budget-list-page.tsx`.
+- Verification: `pnpm --filter tma exec eslint src/features/budgets/pages/budget-list-page.tsx` returned 0 problems. `pnpm --filter tma typecheck` passed with 0 errors. `pnpm --filter tma exec vitest run src/test/budget-presentation.test.ts src/test/budget-detail-page.test.tsx` passed (5 tests). Full `./init.sh lint` and `./init.sh typecheck` returned `OK`. Full `./init.sh test` reports 92/93 tests pass; the single failure is the pre-existing `src/test/statistics-page.test.tsx`, unchanged by this work.
+- Blockers: None. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA budget list in Telegram and confirm the clean row layout, filter chips, and household selector feel consistent with the rest of the app.
+
 ## 2026-06-16 — Minimalist redesign of TMA budget detail page
 
 - Who: Codex

@@ -6,13 +6,10 @@ import {
   buttonVariants,
   Card,
   CardDescription,
-  CardTitle,
   Chip,
   DataState,
-  Eyebrow,
   Field,
   FieldLabel,
-  IconBadge,
   MoneyLabel,
   Section,
   SectionHeader,
@@ -23,38 +20,12 @@ import {
 } from '@/components/ui/native-picker'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
-import type { HouseholdDTO } from '@/features/home/types'
 import { getBudgetDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 import { useBudgetListQuery } from '../api'
-import {
-  formatBudgetPeriodLabel,
-  getBudgetScopeLabel,
-  getLatestBudget,
-} from '../presentation'
-import type { BudgetDTO } from '../types'
-
-const budgetAccent = { background: '#fff6d9', foreground: '#b48800' }
-
-const BudgetGlyph = () => (
-  <svg
-    fill='none'
-    height='20'
-    stroke='currentColor'
-    strokeLinecap='round'
-    strokeLinejoin='round'
-    strokeWidth='2'
-    viewBox='0 0 24 24'
-    width='20'>
-    <path d='M5 8.5c0-2.5 3.1-4.5 7-4.5 2.5 0 4.7.8 6 2.1' />
-    <path d='M4.5 12c0-1.8 1.7-3.3 4.1-3.9' />
-    <path d='M6 18c1.2 1.3 3.4 2 6 2 4.1 0 7-1.8 7-4.5 0-2.5-2.4-4.2-5.8-4.5' />
-    <path d='M12 10v6' />
-    <path d='M9.5 12.5c.4-.9 1.3-1.5 2.5-1.5 1.4 0 2.5.8 2.5 1.8S13.4 14.6 12 15c-1.4.3-2.5 1-2.5 2 0 1 .9 1.8 2.5 1.8 1.3 0 2.2-.5 2.6-1.4' />
-  </svg>
-)
+import { formatBudgetPeriodLabel, getBudgetScopeLabel } from '../presentation'
 
 type ScopeFilter = 'all' | 'household' | 'personal'
 
@@ -84,55 +55,6 @@ const ScopeFilterChip = ({
     onClick={onClick}>
     {label}
   </button>
-)
-
-const BudgetListCard = ({
-  budget,
-  household,
-}: {
-  budget: BudgetDTO
-  household?: HouseholdDTO
-}) => (
-  <Link
-    className='grid gap-3 rounded-3xl bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
-    to={getBudgetDetailPath(budget.id)}
-    onClick={() => selection()}>
-    <div className='flex items-start justify-between gap-3'>
-      <IconBadge accent={budgetAccent}>
-        <BudgetGlyph />
-      </IconBadge>
-      <div className='flex flex-wrap gap-1.5'>
-        <Chip tone='primary'>{formatBudgetPeriodLabel(budget.period)}</Chip>
-        <Chip
-          className={
-            budget.scope === 'personal'
-              ? 'bg-tma-warning/20 text-[#8a6800]'
-              : undefined
-          }
-          tone={budget.scope === 'personal' ? 'warning' : 'muted'}>
-          {getBudgetScopeLabel(budget.scope, household)}
-        </Chip>
-      </div>
-    </div>
-
-    <div className='min-w-0'>
-      <CardTitle className='truncate'>
-        {budget.scope === 'personal'
-          ? 'Ngân sách cá nhân'
-          : (household?.name ?? 'Household')}
-      </CardTitle>
-      <CardDescription className='mt-1'>
-        Ngân sách tháng theo tổng hạn mức.
-      </CardDescription>
-    </div>
-
-    <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
-      <Eyebrow>Tổng limit</Eyebrow>
-      <MoneyLabel className='text-sm font-bold'>
-        {formatCurrencyMinor(budget.totalLimitMinor, budget.currencyCode)}
-      </MoneyLabel>
-    </div>
-  </Link>
 )
 
 export const BudgetListPage = () => {
@@ -184,8 +106,6 @@ export const BudgetListPage = () => {
     return budgets.filter((budget) => budget.scope === scopeFilter)
   }, [budgets, scopeFilter])
 
-  const latestBudget = getLatestBudget(filteredBudgets)
-
   useEffect(() => {
     if (!selectedHouseholdId && adminHouseholds[0]) {
       setSelectedHouseholdId(adminHouseholds[0].id)
@@ -220,19 +140,6 @@ export const BudgetListPage = () => {
 
   return (
     <TmaPageShell title='Ngân sách'>
-      <Card className='grid gap-3 p-5'>
-        <div className='flex items-start justify-between gap-3'>
-          <div>
-            <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
-              {filteredBudgets.length}
-            </strong>
-          </div>
-          <IconBadge accent={budgetAccent}>
-            <BudgetGlyph />
-          </IconBadge>
-        </div>
-      </Card>
-
       <Section>
         <SectionHeader
           action={
@@ -281,25 +188,6 @@ export const BudgetListPage = () => {
           </Card>
         ) : null}
 
-        {latestBudget ? (
-          <Card className='mb-3 grid gap-2 border-tma-warning/30 bg-[#fff9e6]'>
-            <Eyebrow>Budget mới nhất</Eyebrow>
-            <div className='flex items-end justify-between gap-3'>
-              <div>
-                <CardTitle>
-                  {formatBudgetPeriodLabel(latestBudget.period)}
-                </CardTitle>
-              </div>
-              <MoneyLabel className='text-lg font-extrabold'>
-                {formatCurrencyMinor(
-                  latestBudget.totalLimitMinor,
-                  latestBudget.currencyCode,
-                )}
-              </MoneyLabel>
-            </div>
-          </Card>
-        ) : null}
-
         <DataState
           customAction={
             budgets.length === 0 && !isInitialLoading && canCreateBudget ? (
@@ -327,15 +215,40 @@ export const BudgetListPage = () => {
             ])
           }}>
           <div className='grid gap-3'>
-            {filteredBudgets.map((budget) => (
-              <BudgetListCard
-                key={budget.id}
-                budget={budget}
-                household={households.find(
-                  (household) => household.id === budget.householdId,
-                )}
-              />
-            ))}
+            {filteredBudgets.map((budget) => {
+              const household = households.find(
+                (h) => h.id === budget.householdId,
+              )
+
+              return (
+                <Link
+                  key={budget.id}
+                  className='flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
+                  to={getBudgetDetailPath(budget.id)}
+                  onClick={() => selection()}>
+                  <div className='grid min-w-0 gap-1'>
+                    <span className='text-base font-semibold text-tma-text-strong'>
+                      {formatBudgetPeriodLabel(budget.period)}
+                    </span>
+                    <Chip
+                      className={
+                        budget.scope === 'personal'
+                          ? 'bg-tma-warning/20 text-[#8a6800]'
+                          : undefined
+                      }
+                      tone={budget.scope === 'personal' ? 'warning' : 'muted'}>
+                      {getBudgetScopeLabel(budget.scope, household)}
+                    </Chip>
+                  </div>
+                  <MoneyLabel className='shrink-0 text-base font-extrabold'>
+                    {formatCurrencyMinor(
+                      budget.totalLimitMinor,
+                      budget.currencyCode,
+                    )}
+                  </MoneyLabel>
+                </Link>
+              )
+            })}
           </div>
         </DataState>
       </Section>

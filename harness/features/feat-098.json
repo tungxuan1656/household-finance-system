@@ -33,7 +33,8 @@
       "`git diff --check` returned no output.",
       "`./scripts/check_harness_size.sh` returned `Harness size checks passed`.",
       "Final `./init.sh` completed with `Done!`.",
-      "2026-06-16 redesign: `pnpm --filter tma exec eslint src/features/budgets/pages/budget-detail-page.tsx` returned 0 problems; `pnpm --filter tma typecheck` passed; `pnpm --filter tma exec vitest run src/test/budget-detail-page.test.tsx` passed; `./init.sh lint` and `./init.sh typecheck` returned `OK`.",
+      "2026-06-16 detail redesign: `pnpm --filter tma exec eslint src/features/budgets/pages/budget-detail-page.tsx` returned 0 problems; `pnpm --filter tma typecheck` passed; `pnpm --filter tma exec vitest run src/test/budget-detail-page.test.tsx` passed; `./init.sh lint` and `./init.sh typecheck` returned `OK`.",
+      "2026-06-16 list redesign: `pnpm --filter tma exec eslint src/features/budgets/pages/budget-list-page.tsx` returned 0 problems; `pnpm --filter tma typecheck` passed; `pnpm --filter tma exec vitest run src/test/budget-presentation.test.ts src/test/budget-detail-page.test.tsx` passed (5 tests); `./init.sh lint` and `./init.sh typecheck` returned `OK`.",
       "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `medium` risk with 47 changed symbols, 5 affected processes, and 10 indexed changed files. The affected processes reported are pre-existing TMA period picker and expense filter work already present in the dirty worktree; new budget files are not yet indexed as affected processes."
     ]
   },
