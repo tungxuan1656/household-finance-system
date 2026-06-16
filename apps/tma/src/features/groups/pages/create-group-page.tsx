@@ -12,10 +12,14 @@ import {
   Input,
   Textarea,
 } from '@/components/ui'
+import { DatePicker } from '@/components/ui/date-picker'
+import {
+  NativePicker,
+  type NativePickerOption,
+} from '@/components/ui/native-picker'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { getGroupDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatAmountInput } from '@/lib/formatters'
-import { cn } from '@/lib/utils'
 
 import { useCreateExpenseGroupMutation } from '../api'
 import {
@@ -48,6 +52,13 @@ export const CreateGroupPage = () => {
         (household) => household.role === 'admin',
       ),
     [householdsQuery.data?.items],
+  )
+  const contextOptions: NativePickerOption[] = useMemo(
+    () => [
+      { value: PERSONAL_CONTEXT_VALUE, label: 'Cá nhân' },
+      ...adminHouseholds.map((h) => ({ value: h.id, label: h.name })),
+    ],
+    [adminHouseholds],
   )
   const isBusy = createGroupMutation.isPending
   const normalizedName = name.trim()
@@ -179,23 +190,17 @@ export const CreateGroupPage = () => {
 
             <Field>
               <FieldLabel>Context</FieldLabel>
-              <select
-                className={cn(
-                  'min-h-14 w-full rounded-[18px] border border-tma-line bg-black/[0.04] px-4 text-base text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
-                )}
+              <NativePicker
+                fullWidth
+                aria-label='Chọn context'
                 disabled={isBusy || householdsQuery.isLoading}
+                options={contextOptions}
                 value={contextValue}
-                onChange={(event) => {
-                  setContextValue(event.target.value)
+                onChange={(next) => {
+                  setContextValue(next)
                   setFeedback(null)
-                }}>
-                <option value={PERSONAL_CONTEXT_VALUE}>Cá nhân</option>
-                {adminHouseholds.map((household) => (
-                  <option key={household.id} value={household.id}>
-                    {household.name}
-                  </option>
-                ))}
-              </select>
+                }}
+              />
             </Field>
 
             <Field>
@@ -215,12 +220,13 @@ export const CreateGroupPage = () => {
             <div className='grid gap-3.5'>
               <Field>
                 <FieldLabel>Bắt đầu</FieldLabel>
-                <Input
+                <DatePicker
+                  fullWidth
+                  aria-label='Chọn ngày bắt đầu'
                   disabled={isBusy}
-                  type='date'
                   value={startDate}
-                  onChange={(event) => {
-                    setStartDate(event.target.value)
+                  onChange={(next) => {
+                    setStartDate(next)
                     setFeedback(null)
                   }}
                 />
@@ -228,12 +234,13 @@ export const CreateGroupPage = () => {
 
               <Field>
                 <FieldLabel>Kết thúc</FieldLabel>
-                <Input
+                <DatePicker
+                  fullWidth
+                  aria-label='Chọn ngày kết thúc'
                   disabled={isBusy}
-                  type='date'
                   value={endDate}
-                  onChange={(event) => {
-                    setEndDate(event.target.value)
+                  onChange={(next) => {
+                    setEndDate(next)
                     setFeedback(null)
                   }}
                 />

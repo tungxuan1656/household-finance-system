@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-16 — Replaced raw selects and date inputs with TMA picker primitives
+
+- Who: Codex
+- Summary: Replaced remaining raw `<select>` and inline `<input type="date">` elements across the TMA with the shared `NativePicker` and `DatePicker` UI primitives. Two `<select>` sites (household filter in budget list, context selector in create group) now use `NativePicker` with `NativePickerOption` arrays built via `useMemo`; five inline date inputs (start/end in create group, expense date in edit + add-expense category, and the timeline date button in the period picker) now use `DatePicker`. The custom `PeriodTimelineDateButton` ref-hack in the period picker is gone. No behavior change — only input control swap.
+- Files changed: `apps/tma/src/features/budgets/pages/budget-list-page.tsx`, `apps/tma/src/features/groups/pages/create-group-page.tsx`, `apps/tma/src/features/period/pages/period-picker-page.tsx`, `apps/tma/src/routes/add-expense-category.tsx`, `apps/tma/src/routes/expense-edit.tsx`.
+- Verification: `pnpm --filter tma typecheck` passed with 0 errors. `pnpm --filter tma lint` passed with 0 errors (19 pre-existing warnings in `src/test/*.test.tsx`, none in the 5 modified files). A repo-wide grep for `type="date"` / `type="month"` inside `apps/tma/src` returns no matches.
+- Blockers: None. Real Telegram WebView visual smoke remains pending because authenticated TMA launch context is required.
+- Next steps: Open the TMA budget list, create group, period picker, and add-expense/edit flows in Telegram and confirm the native pickers open with the same look-and-feel as the existing `create-budget-page` reference site.
+
 ## 2026-06-15 — Personal budgets end-to-end (slices 100a-100i)
 
 - Who: Codex

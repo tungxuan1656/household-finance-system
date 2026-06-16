@@ -1,22 +1,15 @@
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { CalendarIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  Card,
-  Chip,
-  Eyebrow,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
+import { Card, Chip, Section, SectionHeader } from '@/components/ui'
+import { DatePicker } from '@/components/ui/date-picker'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {
   createCustomPeriodSelection,
   createReportingPeriodPresetSelection,
   formatPeriodDateInputValue,
-  formatPeriodSelectionDate,
   formatPeriodSelectionLabel,
   getMatchingReportingPeriodPreset,
   getReportingPeriodPresetLabel,
@@ -30,7 +23,7 @@ import {
   setBottomButton,
   updateBottomButton,
 } from '@/lib/telegram/bottom-button'
-import { impact, selection } from '@/lib/telegram/haptics'
+import { selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 import { usePeriodStore } from '../store'
@@ -65,62 +58,24 @@ const PeriodPresetButton = ({
 )
 
 const PeriodTimelineDateButton = ({
-  displayValue,
   inputLabel,
   label,
   onChange,
   inputValue,
 }: {
-  displayValue: string
   inputLabel: string
   label: string
   onChange: (value: string) => void
   inputValue: string
-}) => {
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  const openDatePicker = () => {
-    impact('light')
-
-    const input = inputRef.current
-
-    if (!input) {
-      return
-    }
-
-    if (input.showPicker) {
-      input.showPicker()
-    } else {
-      input.click()
-    }
-
-    input.focus()
-  }
-
-  return (
-    <div className='relative overflow-hidden rounded-[18px]'>
-      <Button
-        aria-label={inputLabel}
-        className='grid h-full w-full justify-start gap-1 rounded-[18px] border-0 bg-white/80 p-3 text-left text-tma-text-strong shadow-none ring-1 ring-tma-line active:scale-[0.98]'
-        variant='outline'
-        onClick={openDatePicker}>
-        <Eyebrow>{label}</Eyebrow>
-        <span className='font-mono text-sm font-bold [font-variant-numeric:tabular-nums]'>
-          {displayValue}
-        </span>
-      </Button>
-      <input
-        ref={inputRef}
-        aria-label={inputLabel}
-        className='pointer-events-none absolute inset-0 h-full w-full opacity-0'
-        tabIndex={-1}
-        type='date'
-        value={inputValue}
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </div>
-  )
-}
+}) => (
+  <DatePicker
+    fullWidth
+    aria-label={inputLabel}
+    placeholder={label}
+    value={inputValue}
+    onChange={onChange}
+  />
+)
 
 const PeriodRangeTimeline = ({
   candidate,
@@ -133,7 +88,6 @@ const PeriodRangeTimeline = ({
 }) => (
   <div className='grid grid-cols-[1fr_auto_1fr] items-stretch gap-2.5'>
     <PeriodTimelineDateButton
-      displayValue={formatPeriodSelectionDate(candidate.dateFrom)}
       inputLabel='Chọn từ ngày'
       inputValue={formatPeriodDateInputValue(candidate.dateFrom)}
       label='Từ ngày'
@@ -156,7 +110,6 @@ const PeriodRangeTimeline = ({
       </svg>
     </div>
     <PeriodTimelineDateButton
-      displayValue={formatPeriodSelectionDate(candidate.dateTo - 1)}
       inputLabel='Chọn đến ngày'
       inputValue={formatPeriodDateInputValue(candidate.dateTo - 1)}
       label='Đến ngày'

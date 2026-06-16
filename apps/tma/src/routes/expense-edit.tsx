@@ -3,7 +3,6 @@ import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import {
-  CalendarIcon,
   ChevronRightIcon,
   CoinIcon,
   NoteIcon,
@@ -20,6 +19,7 @@ import {
   Eyebrow,
   Input,
 } from '@/components/ui'
+import { DatePicker } from '@/components/ui/date-picker'
 import {
   useExpenseDetailQuery,
   useUpdateExpenseMutation,
@@ -43,11 +43,7 @@ import {
   getExpenseEditSourcePath,
   TMA_PATHS,
 } from '@/lib/constants/routes'
-import {
-  formatAmountInput,
-  formatDateLabel,
-  parseAmountInput,
-} from '@/lib/formatters'
+import { formatAmountInput, parseAmountInput } from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
@@ -224,33 +220,18 @@ export const ExpenseEditPage = () => {
         </label>
       </Card>
 
-      <Card className='mt-3'>
-        <label className='relative flex items-center gap-3 overflow-hidden rounded-[18px] bg-black/[0.04] p-3.5'>
-          <CalendarIcon
-            className='text-tma-text-muted'
-            height='18'
-            width='18'
-          />
-          <div className='grid gap-1'>
-            <span className='text-xs text-tma-text-muted'>Ngày chi tiêu</span>
-            <strong className='text-tma-text-strong'>
-              {formatDateLabel(new Date(draft.occurredAt).toISOString())}
-            </strong>
-          </div>
-          <input
-            className='absolute inset-0 opacity-0'
-            type='date'
-            value={new Date(draft.occurredAt).toISOString().slice(0, 10)}
-            onChange={(event) => {
-              selection()
+      <Card className='mt-3 overflow-hidden p-0'>
+        <DatePicker
+          fullWidth
+          aria-label='Ngày chi tiêu'
+          value={new Date(draft.occurredAt).toISOString().slice(0, 10)}
+          onChange={(value) => {
+            selection()
 
-              const nextDate = new Date(
-                `${event.target.value}T12:00:00+07:00`,
-              ).toISOString()
-              updateDraft({ occurredAt: new Date(nextDate).getTime() })
-            }}
-          />
-        </label>
+            const nextDate = new Date(`${value}T12:00:00+07:00`).toISOString()
+            updateDraft({ occurredAt: new Date(nextDate).getTime() })
+          }}
+        />
       </Card>
 
       <Card className='mt-3 grid gap-0 px-4'>

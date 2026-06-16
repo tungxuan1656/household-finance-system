@@ -1,16 +1,15 @@
 import { useNavigate } from 'react-router-dom'
 
-import { CalendarIcon } from '@/components/shared/tma-icons'
 import {
   TmaCategoryIconBadge,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import { ChipButton, DataState, Section, SectionHeader } from '@/components/ui'
+import { DatePicker } from '@/components/ui/date-picker'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import { useReferenceCategoriesQuery } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { formatDateLabel } from '@/lib/formatters'
 import { selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseCategoryPage = () => {
@@ -29,30 +28,18 @@ export const AddExpenseCategoryPage = () => {
 
   return (
     <TmaPageShell title='Thêm chi tiêu'>
-      <label className='relative mt-4 flex items-center overflow-hidden rounded-[18px] bg-white p-3.5'>
-        <CalendarIcon className='text-tma-text-muted' height='24' width='24' />
-        <div className='ml-2 flex flex-1 items-center justify-between'>
-          <span className='text-base font-medium text-tma-text-strong'>
-            Ngày chi tiêu
-          </span>
-          <strong className='text-tma-text-strong'>
-            {formatDateLabel(date)}
-          </strong>
-        </div>
-        <input
-          className='absolute inset-0 opacity-0'
-          type='date'
-          value={date.slice(0, 10)}
-          onChange={(event) => {
-            selection()
+      <DatePicker
+        fullWidth
+        aria-label='Ngày chi tiêu'
+        className='mt-4'
+        value={date.slice(0, 10)}
+        onChange={(value) => {
+          selection()
 
-            const nextDate = new Date(
-              `${event.target.value}T12:00:00+07:00`,
-            ).toISOString()
-            setDate(nextDate)
-          }}
-        />
-      </label>
+          const nextDate = new Date(`${value}T12:00:00+07:00`).toISOString()
+          setDate(nextDate)
+        }}
+      />
 
       <Section>
         <SectionHeader title='Danh mục' />

@@ -10,11 +10,17 @@ import {
   Chip,
   DataState,
   Eyebrow,
+  Field,
+  FieldLabel,
   IconBadge,
   MoneyLabel,
   Section,
   SectionHeader,
 } from '@/components/ui'
+import {
+  NativePicker,
+  type NativePickerOption,
+} from '@/components/ui/native-picker'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import type { HouseholdDTO } from '@/features/home/types'
@@ -151,6 +157,14 @@ export const BudgetListPage = () => {
     (household) => household.id === selectedHouseholdId,
   )
 
+  const householdOptions: NativePickerOption[] = useMemo(() => {
+    if (households.length === 0) {
+      return [{ value: '', label: 'Chưa có household' }]
+    }
+
+    return households.map((h) => ({ value: h.id, label: h.name }))
+  }, [households])
+
   const listParams = useMemo(() => {
     if (scopeFilter === 'personal') {
       return { scope: 'personal' as const }
@@ -257,29 +271,17 @@ export const BudgetListPage = () => {
 
         {scopeFilter === 'household' ? (
           <Card className='mb-3 grid gap-2'>
-            <label className='grid gap-2'>
-              <span className='text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'>
-                Household
-              </span>
-              <select
-                className={cn(
-                  'min-h-14 w-full rounded-[18px] border border-tma-line bg-black/[0.04] px-4 text-base text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
-                )}
+            <Field>
+              <FieldLabel>Household</FieldLabel>
+              <NativePicker
+                fullWidth
+                aria-label='Chọn household'
                 disabled={householdsQuery.isLoading || households.length === 0}
+                options={householdOptions}
                 value={selectedHouseholdId}
-                onChange={(event) =>
-                  setSelectedHouseholdId(event.target.value)
-                }>
-                {households.length === 0 ? (
-                  <option value=''>Chưa có household</option>
-                ) : null}
-                {households.map((household) => (
-                  <option key={household.id} value={household.id}>
-                    {household.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+                onChange={(next) => setSelectedHouseholdId(next)}
+              />
+            </Field>
             {selectedHousehold?.role !== 'admin' ? (
               <CardDescription>
                 Bạn có thể xem ngân sách household này. Tạo, sửa, xóa cần quyền
