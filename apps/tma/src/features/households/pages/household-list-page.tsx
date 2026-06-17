@@ -6,17 +6,16 @@ import {
   buttonVariants,
   Card,
   DataState,
+  Eyebrow,
   Section,
   SectionHeader,
 } from '@/components/ui'
 import { HouseholdItem } from '@/features/finance/components'
 import { getHouseholdBudgetLabel } from '@/features/home/presentation'
-import { PeriodChipLink } from '@/features/period/components/period-chip-link'
-import { usePeriodStore } from '@/features/period/store'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {
+  createCurrentMonthPeriodSelection,
   getMonthBudgetPeriod,
-  isMonthPeriodSelection,
   toAnalyticsRangeParams,
 } from '@/lib/period'
 import { impact } from '@/lib/telegram/haptics'
@@ -29,18 +28,22 @@ import {
 } from '../api'
 import { getHouseholdRoleLabel } from '../presentation'
 
+const currentMonthPeriod = createCurrentMonthPeriodSelection()
+const currentMonthAnalyticsParams = toAnalyticsRangeParams(currentMonthPeriod)
+const currentMonthBudgetPeriod = getMonthBudgetPeriod(currentMonthPeriod)
+
 export const HouseholdListPage = () => {
-  const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
-  const analyticsParams = toAnalyticsRangeParams(selectedPeriod)
-  const budgetPeriod = getMonthBudgetPeriod(selectedPeriod)
   const householdsQuery = useHouseholdListQuery()
   const households = householdsQuery.data?.items ?? []
   const memberQueries = useHouseholdMemberQueries(households)
   const overviewQueries = useHouseholdOverviewQueries(
     households,
-    analyticsParams,
+    currentMonthAnalyticsParams,
   )
-  const budgetQueries = useHouseholdBudgetQueries(households, budgetPeriod)
+  const budgetQueries = useHouseholdBudgetQueries(
+    households,
+    currentMonthBudgetPeriod,
+  )
 
   const householdCards = useMemo(
     () =>
@@ -52,12 +55,10 @@ export const HouseholdListPage = () => {
         return {
           household,
           budget: budgetQuery?.data?.items[0] ?? null,
-          budgetLabel: isMonthPeriodSelection(selectedPeriod)
-            ? getHouseholdBudgetLabel(
-                overviewQuery?.data?.totalSpendMinor,
-                budgetQuery?.data?.items[0] ?? null,
-              )
-            : 'Ngân sách chỉ có theo tháng',
+          budgetLabel: getHouseholdBudgetLabel(
+            overviewQuery?.data?.totalSpendMinor,
+            budgetQuery?.data?.items[0] ?? null,
+          ),
           currencyCode: overviewQuery?.data?.currencyCode,
           isLoading: Boolean(
             memberQuery?.isLoading ||
@@ -68,7 +69,7 @@ export const HouseholdListPage = () => {
           totalSpendMinor: overviewQuery?.data?.totalSpendMinor,
         }
       }),
-    [budgetQueries, households, memberQueries, overviewQueries, selectedPeriod],
+    [budgetQueries, households, memberQueries, overviewQueries],
   )
 
   return (
@@ -76,11 +77,11 @@ export const HouseholdListPage = () => {
       <Card className='grid gap-3 p-5'>
         <div className='flex items-start justify-between gap-3'>
           <div>
+            <Eyebrow>Tháng này</Eyebrow>
             <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
               {householdCards.length}
             </strong>
           </div>
-          <PeriodChipLink />
         </div>
       </Card>
 

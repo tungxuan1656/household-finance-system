@@ -8,6 +8,8 @@ type HomeRecentExpensesSectionProps = {
   showHouseholdLabel?: boolean
   title?: string
   viewAllHref?: string
+  dateFrom?: number
+  dateTo?: number
 }
 
 export const HomeRecentExpensesSection = ({
@@ -17,8 +19,12 @@ export const HomeRecentExpensesSection = ({
   showHouseholdLabel = true,
   title = 'Lịch sử gần đây',
   viewAllHref = TMA_PATHS.expenses,
+  dateFrom,
+  dateTo,
 }: HomeRecentExpensesSectionProps) => (
   <RecentExpenses
+    dateFrom={dateFrom}
+    dateTo={dateTo}
     groupId={groupId}
     householdId={householdId}
     limit={limit}

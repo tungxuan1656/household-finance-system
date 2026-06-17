@@ -99,7 +99,7 @@ export const FinanceSummaryCard = ({
           <div className='grid gap-2'>
             <div className='h-3 overflow-hidden rounded-full bg-black/[0.07]'>
               <span
-                className='block h-full rounded-full bg-gradient-to-r from-tma-primary to-[#7ca8ff] shadow-[0_6px_14px_rgba(63,124,255,0.22)]'
+                className='block h-full rounded-full bg-linear-to-r from-tma-primary to-[#7ca8ff] shadow-[0_6px_14px_rgba(63,124,255,0.22)]'
                 style={{
                   width: `${Math.min(budgetProgress.percentUsed, 100)}%`,
                 }}

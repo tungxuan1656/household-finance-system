@@ -104,6 +104,8 @@ export const RecentExpenses = ({
   showHouseholdLabel = true,
   title = 'Lịch sử gần đây',
   viewAllHref = TMA_PATHS.expenses,
+  dateFrom,
+  dateTo,
 }: {
   groupId?: string
   householdId?: string
@@ -111,12 +113,16 @@ export const RecentExpenses = ({
   showHouseholdLabel?: boolean
   title?: string
   viewAllHref?: string
+  dateFrom?: number
+  dateTo?: number
 }) => {
   const recentExpensesQuery = useExpenseListQuery({
     group_id: groupId,
     household_id: householdId,
     limit,
     sort: 'occurred_at_desc',
+    ...(dateFrom != null ? { date_from: dateFrom } : {}),
+    ...(dateTo != null ? { date_to: dateTo } : {}),
   })
   const householdsQuery = useHouseholdsQuery()
   const referenceCategoriesQuery = useReferenceCategoriesQuery()

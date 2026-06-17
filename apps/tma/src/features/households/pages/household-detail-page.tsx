@@ -17,10 +17,12 @@ import {
 } from '@/components/ui'
 import { useAuth } from '@/features/auth/auth-provider'
 import { HomeRecentExpensesSection } from '@/features/home/components/home-recent-expenses-section'
+import { usePeriodStore } from '@/features/period/store'
 
 import {
   useHouseholdDetailQuery,
   useHouseholdMembersQuery,
+  useRemoveHouseholdMemberMutation,
   useUpdateHouseholdMutation,
 } from '../api'
 import { HouseholdAvatarSection } from '../components/household-avatar-section'
@@ -31,6 +33,23 @@ import {
   getHouseholdRoleLabel,
 } from '../presentation'
 
+const TrashIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    fill='none'
+    height={18}
+    stroke='currentColor'
+    strokeLinecap='round'
+    strokeLinejoin='round'
+    strokeWidth={1.8}
+    viewBox='0 0 24 24'
+    width={18}
+    {...props}>
+    <path d='M3 6h18' />
+    <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6' />
+    <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2' />
+  </svg>
+)
+
 type HouseholdPageFeedback = {
   message: string
   tone: 'error' | 'success'
@@ -40,9 +59,11 @@ export const HouseholdDetailPage = () => {
   const { user } = useAuth()
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
+  const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
   const householdQuery = useHouseholdDetailQuery(id)
   const membersQuery = useHouseholdMembersQuery(id)
   const updateHouseholdMutation = useUpdateHouseholdMutation()
+  const removeMemberMutation = useRemoveHouseholdMemberMutation()
   const [draftName, setDraftName] = useState('')
   const [feedback, setFeedback] = useState<HouseholdPageFeedback | null>(
     () =>
@@ -123,6 +144,36 @@ export const HouseholdDetailPage = () => {
         tone: 'error',
       })
     }
+  }
+
+  const handleRemoveMember = (memberUserId: string, memberName: string) => {
+    if (!id) return
+
+    const confirmed = window.confirm(
+      `Xoá ${memberName || 'thành viên'} khỏi household?`,
+    )
+    if (!confirmed) return
+
+    removeMemberMutation.mutate(
+      { householdId: id, userId: memberUserId },
+      {
+        onSuccess: () => {
+          setFeedback({
+            message: 'Đã xoá thành viên thành công.',
+            tone: 'success',
+          })
+        },
+        onError: (error) => {
+          setFeedback({
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Không thể xoá thành viên lúc này.',
+            tone: 'error',
+          })
+        },
+      },
+    )
   }
 
   if (!id) {
@@ -210,6 +261,8 @@ export const HouseholdDetailPage = () => {
             </Card>
 
             <HomeRecentExpensesSection
+              dateFrom={selectedPeriod.dateFrom}
+              dateTo={selectedPeriod.dateTo}
               householdId={id}
               showHouseholdLabel={false}
               title='Chi tiêu gần đây'
@@ -232,7 +285,7 @@ export const HouseholdDetailPage = () => {
                 loadingDescription='Danh sách thành viên sẽ hiện khi truy vấn hoàn tất.'
                 loadingTitle='Đang tải thành viên'
                 retryAction={membersQuery.refetch}>
-                <Card className='grid gap-3'>
+                <Card className='grid gap-2'>
                   {members.map((member) => (
                     <article
                       key={member.userId}
@@ -247,15 +300,26 @@ export const HouseholdDetailPage = () => {
                         <h3
                           className={
                             member.role === 'admin'
-                              ? 'm-0 font-semibold text-[#d3a10c]'
-                              : 'm-0 font-semibold text-tma-text-strong'
+                              ? 'm-0 text-sm font-semibold text-[#d3a10c]'
+                              : 'm-0 text-sm font-semibold text-tma-text-strong'
                           }>
                           {member.name || user?.displayName || 'Thành viên'}
                         </h3>
-                        <CardDescription>
+                        <CardDescription className='text-xs'>
                           {getHouseholdRoleLabel(member.role)}
                         </CardDescription>
                       </div>
+                      {isAdmin && member.userId !== user?.id ? (
+                        <button
+                          className='shrink-0 rounded-full p-2 text-tma-text-muted transition active:scale-90 active:text-[#d93838]'
+                          disabled={removeMemberMutation.isPending}
+                          type='button'
+                          onClick={() =>
+                            handleRemoveMember(member.userId, member.name)
+                          }>
+                          <TrashIcon className='size-[18px]' />
+                        </button>
+                      ) : null}
                     </article>
                   ))}
                 </Card>

@@ -133,7 +133,7 @@ describe('StatisticsPage', () => {
     })
 
     expect(host.textContent).toContain('Tuần trước')
-    expect(host.textContent).toContain('Biểu đồ danh mục')
+    expect(host.textContent).toContain('Phân bổ danh mục')
     expect(host.textContent).toContain('Ăn uống')
     expect(host.textContent).toContain('60%')
     expect(host.textContent).toContain('Di chuyển')

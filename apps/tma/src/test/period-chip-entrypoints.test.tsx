@@ -98,7 +98,7 @@ describe('period chip entrypoints', () => {
     expect(periodLink?.textContent).toBe('Tháng này')
   })
 
-  it('renders a shared period chip link on the household list page', async () => {
+  it('does not render a period chip link on the household list page', async () => {
     await act(async () => {
       root.render(
         <MemoryRouter>
@@ -109,6 +109,6 @@ describe('period chip entrypoints', () => {
 
     const periodLink = host.querySelector('a[href="/period"]')
 
-    expect(periodLink?.textContent).toBe('Tháng này')
+    expect(periodLink).toBeNull()
   })
 })

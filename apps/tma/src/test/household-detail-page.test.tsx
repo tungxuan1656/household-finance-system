@@ -28,6 +28,10 @@ vi.mock('@/features/households/api', () => ({
     isPending: false,
     mutateAsync: vi.fn(),
   }),
+  useRemoveHouseholdMemberMutation: () => ({
+    isPending: false,
+    mutate: vi.fn(),
+  }),
 }))
 
 vi.mock('@/features/home/components/home-recent-expenses-section', () => ({
