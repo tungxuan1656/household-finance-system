@@ -3,16 +3,13 @@ import { newId } from '@/utils/id'
 import { computeDateRange } from './budget-period'
 import {
   BUDGET_COLUMNS,
-  BUDGET_LIMIT_COLUMNS,
-  type BudgetLimitRow,
   type BudgetRow,
   type BudgetScope,
-  mapBudgetLimitRow,
   mapBudgetRow,
   type StoredBudget,
-  type StoredBudgetLimit,
 } from './budget-row-mapper'
 
+export { findBudgetLimits } from './budget-limit-repository'
 export {
   BUDGET_COLUMNS,
   BUDGET_LIMIT_COLUMNS,
@@ -274,23 +271,6 @@ export const listAccessibleBudgets = async (
   return result.results.map(mapBudgetRow)
 }
 
-export const findBudgetLimits = async (
-  db: D1Database,
-  budgetId: string,
-): Promise<StoredBudgetLimit[]> => {
-  const result = await db
-    .prepare(
-      `SELECT ${BUDGET_LIMIT_COLUMNS}
-         FROM budget_limits bl
-        WHERE bl.budget_id = ?
-        ORDER BY bl.category_key`,
-    )
-    .bind(budgetId)
-    .all<BudgetLimitRow>()
-
-  return result.results.map(mapBudgetLimitRow)
-}
-
 export const updateBudget = async (
   db: D1Database,
   budgetId: string,
@@ -400,14 +380,4 @@ export const restoreBudget = async (
     .run()
 
   return (result.meta.changes ?? 0) > 0
-}
-
-export const deleteBudgetLimits = async (
-  db: D1Database,
-  budgetId: string,
-): Promise<void> => {
-  await db
-    .prepare(`DELETE FROM budget_limits WHERE budget_id = ?`)
-    .bind(budgetId)
-    .run()
 }
