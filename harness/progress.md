@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-06-17 — TMA version display label on home, not-found, and fatal-launch screens
+
+- Who: Codex
+- Summary: Added a faint, centered app-version label (`v1.0.1`) to three TMA surfaces: Home (bottom of scrollable content), Not Found (below centered message), and Fatal Launch Screen (below action buttons). Bumped `apps/tma/package.json` version from `0.0.1` to `1.0.1`. Created a reusable `AppVersionLabel` component that reads the version via Vite JSON import from `package.json`. No new i18n keys added; visible text is universal `v{version}` with a Vietnamese `aria-label` for screen readers.
+- Files changed: `apps/tma/package.json`; new `apps/tma/src/components/shared/app-version-label.tsx`; `apps/tma/src/routes/home.tsx`; `apps/tma/src/routes/not-found.tsx`; `apps/tma/src/features/auth/fatal-launch-screen.tsx`.
+- Verification: Full `./init.sh` returned `Done!` (install/harness/lint/typecheck/test).
+- Blockers: None.
+- Next steps: Commit, push, open PR.
+
 ## Template for future entries
 - Date: YYYY-MM-DD
 - Who: <name>

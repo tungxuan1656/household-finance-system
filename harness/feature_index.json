@@ -559,6 +559,11 @@
       "id": "feat-102",
       "name": "TMA file-length and icon-centralization refactor",
       "status": "done"
+    },
+    {
+      "id": "feat-103",
+      "name": "TMA app version label on home, 404, and fatal-launch screens (1.0.1 release marker)",
+      "status": "done"
     }
   ]
 }

@@ -4,6 +4,7 @@ import {
   FinanceSummaryCard,
   HouseholdPreviewCarousel,
 } from '@/components/finance'
+import { AppVersionLabel } from '@/components/shared/app-version-label'
 import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
 import { useAuth } from '@/features/auth/auth-provider'
 import { HomeRecentExpensesSection } from '@/features/home/components/home-recent-expenses-section'
@@ -28,6 +29,9 @@ export const HomePage = () => {
       <HomeShortcutsSection />
       <HouseholdPreviewCarousel />
       <HomeRecentExpensesSection />
+      <div className='mt-8'>
+        <AppVersionLabel />
+      </div>
     </TmaPageShell>
   )
 }
