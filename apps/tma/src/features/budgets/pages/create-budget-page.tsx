@@ -27,11 +27,7 @@ import {
   parseBudgetAmountInputToMinor,
 } from '../presentation'
 import type { CreateBudgetRequest } from '../types'
-
-type BudgetFeedback = {
-  message: string
-  tone: 'error' | 'success'
-}
+import type { BudgetFeedback } from '../types/feedback'
 
 const DEFAULT_CURRENCY_CODE = 'VND'
 const PERSONAL_TARGET_VALUE = 'personal'

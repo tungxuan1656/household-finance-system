@@ -1,7 +1,8 @@
-import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 
+import { SummaryRow } from '@/components/shared/summary-row'
 import {
   TmaCategoryIconBadge,
   TmaPageHeader,
@@ -19,6 +20,7 @@ import {
   NativePicker,
 } from '@/components/ui'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
+import { useAddExpenseContextActions } from '@/features/expenses/hooks/use-add-expense-context-actions'
 import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import {
@@ -35,16 +37,7 @@ import {
   setBottomButton,
   updateBottomButton,
 } from '@/lib/telegram/bottom-button'
-import { notification, selection } from '@/lib/telegram/haptics'
-
-const SummaryRow = ({ label, value }: { label: string; value: string }) => (
-  <div className='grid gap-1'>
-    <span className='text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'>
-      {label}
-    </span>
-    <strong className='text-sm text-tma-text-strong'>{value}</strong>
-  </div>
-)
+import { selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseContextPage = () => {
   const navigate = useNavigate()
@@ -108,37 +101,19 @@ export const AddExpenseContextPage = () => {
     [groupItems, t],
   )
 
-  const handleSave = useEffectEvent(async () => {
-    if (!category || amount <= 0 || !sourceId) {
-      return
-    }
-
-    try {
-      setFeedback(null)
-
-      await createExpenseMutation.mutateAsync({
-        amount,
-        categoryKey: category.id,
-        sourceKey: sourceId,
-        title: title.trim(),
-        occurredAt: new Date(date).getTime(),
-        ...(householdId ? { householdId } : {}),
-        ...(groupId ? { groupIds: [groupId] } : {}),
-      })
-
-      notification('success')
-      reset()
-      // Pop the 3 add-flow steps from history, then replace the origin with
-      // home so back from the landing screen does not reopen the form.
-      navigate(-3)
-      navigate(TMA_PATHS.root, { replace: true })
-    } catch (error) {
-      notification('error')
-
-      setFeedback(
-        error instanceof Error ? error.message : t('expenses.add.saveError'),
-      )
-    }
+  const { handleSave } = useAddExpenseContextActions({
+    t,
+    navigate,
+    amount,
+    category,
+    title,
+    date,
+    sourceId,
+    householdId,
+    groupId,
+    createExpenseMutation,
+    setFeedback,
+    reset,
   })
 
   useEffect(() => {

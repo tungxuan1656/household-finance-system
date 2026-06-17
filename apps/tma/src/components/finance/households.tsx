@@ -2,6 +2,7 @@ import { useQueries } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { UserIcon } from '@/components/shared/tma-icons'
 import {
   Avatar,
   CardDescription,
@@ -47,22 +48,6 @@ interface HouseholdCardViewModel {
   totalSpendMinor?: number
   budgetLabel: string
 }
-
-const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    fill='none'
-    height={20}
-    stroke='currentColor'
-    strokeLinecap='round'
-    strokeLinejoin='round'
-    strokeWidth={1.9}
-    viewBox='0 0 24 24'
-    width={20}
-    {...props}>
-    <path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2' />
-    <circle cx='12' cy='7' r='4' />
-  </svg>
-)
 
 export const HouseholdPreviewItem = ({
   card,

@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { LoadingPicker } from '@/components/shared/loading-picker'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   Button,
@@ -18,8 +19,6 @@ import {
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
-import { getCategoryLabel } from '@/features/home/presentation'
-import type { CategoryKey } from '@/features/home/types'
 import { PeriodPickerSection } from '@/features/period/components/period-picker-section'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { type PeriodSelection } from '@/lib/period'
@@ -28,19 +27,9 @@ import {
   setBottomButton,
   updateBottomButton,
 } from '@/lib/telegram/bottom-button'
-import { impact, selection } from '@/lib/telegram/haptics'
 
-import {
-  type ExpenseListSort,
-  useExpenseListFilterStore,
-} from '../filter-store'
-
-const makeSortOptions = (
-  t: (key: string) => string,
-): Array<{ label: string; value: ExpenseListSort }> => [
-  { label: t('expenses.filter.sortNewest'), value: 'occurred_at_desc' },
-  { label: t('expenses.filter.sortAmount'), value: 'amount_desc' },
-]
+import { useExpenseListFilterStore } from '../filter-store'
+import { useExpenseFilterOptions } from '../hooks/use-expense-filter-options'
 
 const ALL_VALUE = '__all__'
 
@@ -54,7 +43,6 @@ export const ExpenseFilterPage = () => {
   const { t } = useTranslation()
   const filter = useExpenseListFilterStore((state) => state.filter)
   const setFilter = useExpenseListFilterStore((state) => state.setFilter)
-  const reset = useExpenseListFilterStore((state) => state.reset)
 
   const householdsQuery = useHouseholdsQuery()
   const referenceCategoriesQuery = useReferenceCategoriesQuery()
@@ -62,14 +50,6 @@ export const ExpenseFilterPage = () => {
   const households = useMemo(
     () => householdsQuery.data?.items ?? [],
     [householdsQuery.data?.items],
-  )
-  const referenceCategories = referenceCategoriesQuery.data?.items ?? []
-  const categoryOptions = useMemo(
-    () =>
-      referenceCategories
-        .filter((category) => category.kind === 'expense')
-        .map((category) => category.key),
-    [referenceCategories],
   )
 
   // Group queries
@@ -87,15 +67,6 @@ export const ExpenseFilterPage = () => {
 
     return groups
   }, [personalGroupsQuery.data, householdGroupQueries])
-
-  // Filter groups by selected household
-  const filteredGroups = useMemo(() => {
-    if (filter.householdId == null) return allGroups
-
-    return allGroups.filter(
-      (g) => g.householdId === filter.householdId || g.householdId == null,
-    )
-  }, [allGroups, filter.householdId])
 
   useEffect(() => {
     const state = location.state as FilterReturnState | null
@@ -157,84 +128,23 @@ export const ExpenseFilterPage = () => {
     })
   }, [filter])
 
-  const handleReset = () => {
-    impact('light')
-    reset()
-  }
-
-  const handleSortChange = (next: ExpenseListSort) => {
-    selection()
-    setFilter({ sort: next })
-  }
-
-  const householdPickerOptions = useMemo(
-    () => [
-      { label: t('expenses.filter.householdAll'), value: ALL_VALUE },
-      ...households.map((h) => ({ label: h.name, value: h.id })),
-    ],
-    [households, t],
+  const {
+    makeSortOptions,
+    householdPickerOptions,
+    groupPickerOptions,
+    categoryPickerOptions,
+    handleHouseholdChange,
+    handleGroupChange,
+    handleCategoryChange,
+    handleReset,
+    handleSortChange,
+  } = useExpenseFilterOptions(
+    filter,
+    allGroups,
+    households,
+    referenceCategoriesQuery.data?.items ?? [],
+    t,
   )
-
-  const groupPickerOptions = useMemo(
-    () => [
-      { label: t('expenses.filter.groupAll'), value: ALL_VALUE },
-      ...filteredGroups.map((g) => ({
-        label: g.name,
-        value: g.id,
-      })),
-    ],
-    [filteredGroups, t],
-  )
-
-  const categoryPickerOptions = useMemo(
-    () => [
-      { label: t('expenses.filter.categoryAll'), value: ALL_VALUE },
-      ...categoryOptions.map((key) => ({
-        label: getCategoryLabel(key, t),
-        value: key,
-      })),
-    ],
-    [categoryOptions, t],
-  )
-
-  const handleHouseholdChange = (value: string) => {
-    selection()
-    if (value === ALL_VALUE) {
-      setFilter({ householdId: undefined })
-    } else {
-      // Clear group if it doesn't belong to new household
-      const newGroupBelongs =
-        filter.groupId == null ||
-        allGroups.some(
-          (g) =>
-            g.id === filter.groupId &&
-            (g.householdId === value || g.householdId == null),
-        )
-
-      setFilter({
-        householdId: value,
-        ...(newGroupBelongs ? {} : { groupId: undefined }),
-      })
-    }
-  }
-
-  const handleGroupChange = (value: string) => {
-    selection()
-    if (value === ALL_VALUE) {
-      setFilter({ groupId: undefined })
-    } else {
-      setFilter({ groupId: value })
-    }
-  }
-
-  const handleCategoryChange = (value: string) => {
-    selection()
-    if (value === ALL_VALUE) {
-      setFilter({ categoryKey: undefined })
-    } else {
-      setFilter({ categoryKey: value as CategoryKey })
-    }
-  }
 
   const periodValue: PeriodSelection | null = useMemo(() => {
     if (filter.dateFrom != null && filter.dateTo != null) {
@@ -282,15 +192,7 @@ export const ExpenseFilterPage = () => {
       <Section>
         <SectionHeader title={t('expenses.filter.householdTitle')} />
         {householdsQuery.isLoading ? (
-          <NativePicker
-            disabled
-            fullWidth
-            options={[
-              { label: t('expenses.filter.householdLoading'), value: '' },
-            ]}
-            value=''
-            onChange={() => {}}
-          />
+          <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
         ) : (
           <NativePicker
             fullWidth
@@ -306,15 +208,7 @@ export const ExpenseFilterPage = () => {
         <SectionHeader title={t('expenses.filter.groupTitle')} />
         {personalGroupsQuery.isLoading ||
         householdGroupQueries.some((q) => q.isLoading) ? (
-          <NativePicker
-            disabled
-            fullWidth
-            options={[
-              { label: t('expenses.filter.householdLoading'), value: '' },
-            ]}
-            value=''
-            onChange={() => {}}
-          />
+          <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
         ) : (
           <NativePicker
             fullWidth
@@ -329,15 +223,7 @@ export const ExpenseFilterPage = () => {
       <Section>
         <SectionHeader title={t('expenses.filter.categoryAll')} />
         {referenceCategoriesQuery.isLoading ? (
-          <NativePicker
-            disabled
-            fullWidth
-            options={[
-              { label: t('expenses.filter.householdLoading'), value: '' },
-            ]}
-            value=''
-            onChange={() => {}}
-          />
+          <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
         ) : (
           <NativePicker
             fullWidth

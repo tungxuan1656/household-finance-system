@@ -44,7 +44,7 @@ const ExpenseEditPage = lazy(async () => {
 })
 
 const ExpenseEditCategoryPage = lazy(async () => {
-  const module = await import('@/routes/expense-edit')
+  const module = await import('@/routes/expense-edit-category')
 
   return { default: module.ExpenseEditCategoryPage }
 })

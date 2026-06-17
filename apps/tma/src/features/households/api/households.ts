@@ -9,42 +9,24 @@ import {
 import { deleteRequest, get, patch, post } from '@/lib/api/client'
 
 import type {
-  AnalyticsOverviewDTO,
-  AnalyticsOverviewParams,
   CreateHouseholdRequest,
   DeleteHouseholdResponse,
-  ExpenseListParams,
-  ExpenseListResponse,
   HouseholdDTO,
   LeaveHouseholdResponse,
-  ListBudgetsResponse,
   ListHouseholdMembersResponse,
   ListHouseholdsResponse,
-  ListReferenceCategoriesResponse,
   RemoveMemberResponse,
   UpdateHouseholdMemberRoleRequest,
   UpdateHouseholdMemberRoleResponse,
   UpdateHouseholdRequest,
-} from './types'
+} from '../types'
+import { ANALYTICS_KEYS } from './analytics'
+import { BUDGET_KEYS } from './budgets'
+import { EXPENSE_KEYS } from './expenses'
 
-type AnalyticsOverviewScopeParams =
-  | { period: string }
-  | {
-      date_from: number
-      date_to: number
-    }
-
-const withHouseholdAnalyticsParams = (
-  householdId: string,
-  params: AnalyticsOverviewScopeParams,
-): AnalyticsOverviewParams =>
-  'period' in params
-    ? { household_id: householdId, period: params.period }
-    : {
-        household_id: householdId,
-        date_from: params.date_from,
-        date_to: params.date_to,
-      }
+// ---------------------------------------------------------------------------
+// Fetchers
+// ---------------------------------------------------------------------------
 
 const getHousehold = (householdId: string) =>
   get<HouseholdDTO>(`/households/${householdId}`)
@@ -83,21 +65,9 @@ const updateHouseholdMemberRole = (
     payload,
   )
 
-const getAnalyticsOverview = (params: AnalyticsOverviewParams) =>
-  get<AnalyticsOverviewDTO>('/analytics/overview', { params })
-
-const listBudgets = (householdId: string, period: string) =>
-  get<ListBudgetsResponse>('/budgets', {
-    params: { household_id: householdId, period },
-  })
-
-const listExpenses = (params?: ExpenseListParams) =>
-  get<ExpenseListResponse>('/expenses', { params })
-
-const getReferenceCategories = () =>
-  get<ListReferenceCategoriesResponse>('/categories', {
-    authenticated: false,
-  })
+// ---------------------------------------------------------------------------
+// Query keys
+// ---------------------------------------------------------------------------
 
 export const HOUSEHOLD_KEYS = {
   all: ['households'] as const,
@@ -108,28 +78,9 @@ export const HOUSEHOLD_KEYS = {
     [...HOUSEHOLD_KEYS.all, 'members', householdId] as const,
 }
 
-export const ANALYTICS_KEYS = {
-  all: ['analytics'] as const,
-  overview: (params: AnalyticsOverviewParams) =>
-    [...ANALYTICS_KEYS.all, 'overview', params] as const,
-}
-
-export const BUDGET_KEYS = {
-  all: ['budgets'] as const,
-  list: (householdId: string, period: string) =>
-    [...BUDGET_KEYS.all, 'list', householdId, period] as const,
-}
-
-export const EXPENSE_KEYS = {
-  all: ['expenses'] as const,
-  list: (params?: ExpenseListParams) =>
-    [...EXPENSE_KEYS.all, 'list', params] as const,
-}
-
-export const REFERENCE_DATA_KEYS = {
-  all: ['reference-data'] as const,
-  categories: () => [...REFERENCE_DATA_KEYS.all, 'categories'] as const,
-}
+// ---------------------------------------------------------------------------
+// Query options
+// ---------------------------------------------------------------------------
 
 export const householdListQueryOptions = () =>
   queryOptions({
@@ -149,31 +100,9 @@ export const householdMembersQueryOptions = (householdId: string) =>
     queryFn: () => getHouseholdMembers(householdId),
   })
 
-export const analyticsOverviewQueryOptions = (
-  params: AnalyticsOverviewParams,
-) =>
-  queryOptions({
-    queryKey: ANALYTICS_KEYS.overview(params),
-    queryFn: () => getAnalyticsOverview(params),
-  })
-
-export const budgetListQueryOptions = (householdId: string, period: string) =>
-  queryOptions({
-    queryKey: BUDGET_KEYS.list(householdId, period),
-    queryFn: () => listBudgets(householdId, period),
-  })
-
-export const expenseListQueryOptions = (params?: ExpenseListParams) =>
-  queryOptions({
-    queryKey: EXPENSE_KEYS.list(params),
-    queryFn: () => listExpenses(params),
-  })
-
-export const referenceCategoriesQueryOptions = () =>
-  queryOptions({
-    queryKey: REFERENCE_DATA_KEYS.categories(),
-    queryFn: getReferenceCategories,
-  })
+// ---------------------------------------------------------------------------
+// Query hooks (single)
+// ---------------------------------------------------------------------------
 
 export const useHouseholdListQuery = () => useQuery(householdListQueryOptions())
 
@@ -189,44 +118,9 @@ export const useHouseholdMembersQuery = (householdId: string | undefined) =>
     enabled: Boolean(householdId),
   })
 
-export const useHouseholdOverviewQuery = (
-  householdId: string | undefined,
-  params: AnalyticsOverviewScopeParams,
-) =>
-  useQuery({
-    ...analyticsOverviewQueryOptions(
-      householdId ? withHouseholdAnalyticsParams(householdId, params) : params,
-    ),
-    enabled: Boolean(householdId),
-  })
-
-export const useHouseholdBudgetListQuery = (
-  householdId: string | undefined,
-  period: string | null,
-) =>
-  useQuery({
-    ...budgetListQueryOptions(householdId ?? 'unknown', period ?? 'unknown'),
-    enabled: Boolean(householdId && period),
-  })
-
-export const useHouseholdRecentExpensesQuery = (
-  householdId: string | undefined,
-) =>
-  useQuery({
-    ...expenseListQueryOptions(
-      householdId
-        ? {
-            household_id: householdId,
-            limit: 5,
-            sort: 'occurred_at_desc',
-          }
-        : undefined,
-    ),
-    enabled: Boolean(householdId),
-  })
-
-export const useReferenceCategoriesQuery = () =>
-  useQuery(referenceCategoriesQueryOptions())
+// ---------------------------------------------------------------------------
+// Mutation helpers & hooks
+// ---------------------------------------------------------------------------
 
 const invalidateHouseholdSurfaceQueries = async (
   queryClient: ReturnType<typeof useQueryClient>,
@@ -325,27 +219,9 @@ export const useUpdateHouseholdMemberRoleMutation = () => {
   })
 }
 
-export const useHouseholdOverviewQueries = (
-  households: HouseholdDTO[],
-  params: AnalyticsOverviewScopeParams,
-) =>
-  useQueries({
-    queries: households.map((household) =>
-      analyticsOverviewQueryOptions(
-        withHouseholdAnalyticsParams(household.id, params),
-      ),
-    ),
-  })
-
-export const useHouseholdBudgetQueries = (
-  households: HouseholdDTO[],
-  period: string,
-) =>
-  useQueries({
-    queries: households.map((household) =>
-      budgetListQueryOptions(household.id, period),
-    ),
-  })
+// ---------------------------------------------------------------------------
+// Combined query hooks (parallel queries)
+// ---------------------------------------------------------------------------
 
 export const useHouseholdMemberQueries = (households: HouseholdDTO[]) =>
   useQueries({

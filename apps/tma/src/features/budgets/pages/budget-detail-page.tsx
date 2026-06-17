@@ -8,20 +8,15 @@ import {
   Card,
   CardDescription,
   CardTitle,
-  Chip,
   DataState,
-  Eyebrow,
   Field,
   FieldLabel,
-  IconBadge,
   Input,
-  MoneyLabel,
   Section,
   SectionHeader,
 } from '@/components/ui'
 import { useAuthStore } from '@/features/auth/store'
 import { useHouseholdsQuery } from '@/features/home/api'
-import { formatCurrencyMinor } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatAmountInput } from '@/lib/formatters'
 import { impact } from '@/lib/telegram/haptics'
@@ -33,60 +28,15 @@ import {
   useDeleteBudgetMutation,
   useUpdateBudgetMutation,
 } from '../api'
+import { BudgetHeroCard } from '../components/budget-hero-card'
+import { BudgetProgressSection } from '../components/budget-progress-section'
 import {
   type BudgetMutationFormValues,
   buildBudgetMutationRequest,
-  formatBudgetPeriodLabel,
   getBudgetProgress,
-  getBudgetScopeLabel,
   parseBudgetAmountInputToMinor,
 } from '../presentation'
-
-type BudgetFeedback = {
-  message: string
-  tone: 'error' | 'success'
-}
-
-const budgetAccent = { background: '#fff6d9', foreground: '#b48800' }
-
-const BudgetGlyph = () => (
-  <svg
-    fill='none'
-    height='20'
-    stroke='currentColor'
-    strokeLinecap='round'
-    strokeLinejoin='round'
-    strokeWidth='2'
-    viewBox='0 0 24 24'
-    width='20'>
-    <path d='M5 8.5c0-2.5 3.1-4.5 7-4.5 2.5 0 4.7.8 6 2.1' />
-    <path d='M4.5 12c0-1.8 1.7-3.3 4.1-3.9' />
-    <path d='M6 18c1.2 1.3 3.4 2 6 2 4.1 0 7-1.8 7-4.5 0-2.5-2.4-4.2-5.8-4.5' />
-    <path d='M12 10v6' />
-    <path d='M9.5 12.5c.4-.9 1.3-1.5 2.5-1.5 1.4 0 2.5.8 2.5 1.8S13.4 14.6 12 15c-1.4.3-2.5 1-2.5 2 0 1 .9 1.8 2.5 1.8 1.3 0 2.2-.5 2.6-1.4' />
-  </svg>
-)
-
-const StatTile = ({
-  label,
-  tone = 'default',
-  value,
-}: {
-  label: string
-  tone?: 'default' | 'warning'
-  value: string
-}) => (
-  <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-    <Eyebrow>{label}</Eyebrow>
-    <strong
-      className={cn(
-        'text-base font-extrabold',
-        tone === 'warning' ? 'text-[#d93838]' : 'text-tma-text-strong',
-      )}>
-      {value}
-    </strong>
-  </div>
-)
+import type { BudgetFeedback } from '../types/feedback'
 
 export const BudgetDetailPage = () => {
   const { id } = useParams<{ id: string }>()
@@ -116,14 +66,12 @@ export const BudgetDetailPage = () => {
   )
 
   const [isEditing, setIsEditing] = useState(false)
-
   const [totalLimitInput, setTotalLimitInput] = useState(
     formatAmountInput(String(budget?.totalLimitMinor ?? 0)),
   )
 
   useEffect(() => {
     if (isEditing) return
-
     setTotalLimitInput(formatAmountInput(String(budget?.totalLimitMinor ?? 0)))
   }, [budget?.totalLimitMinor, isEditing])
 
@@ -151,21 +99,16 @@ export const BudgetDetailPage = () => {
       setIsEditing(false)
       await statusQuery.refetch()
     } catch {
-      setFeedback({
-        message: t('budgets.detail.updateError'),
-        tone: 'error',
-      })
+      setFeedback({ message: t('budgets.detail.updateError'), tone: 'error' })
     }
   }
 
   const handleDelete = async () => {
     const confirmed = window.confirm(t('budgets.detail.deleteConfirm'))
-
     if (!confirmed) return
 
     try {
       await deleteMutation.mutateAsync(budget!.id)
-
       impact('medium')
 
       navigate(TMA_PATHS.budgets, {
@@ -175,10 +118,7 @@ export const BudgetDetailPage = () => {
         },
       })
     } catch {
-      setFeedback({
-        message: t('budgets.detail.deleteError'),
-        tone: 'error',
-      })
+      setFeedback({ message: t('budgets.detail.deleteError'), tone: 'error' })
     }
   }
 
@@ -186,7 +126,6 @@ export const BudgetDetailPage = () => {
     event.preventDefault()
 
     const totalLimitMinor = parseBudgetAmountInputToMinor(totalLimitInput)
-
     if (!totalLimitMinor || totalLimitMinor <= 0) return
 
     handleUpdate({
@@ -248,85 +187,22 @@ export const BudgetDetailPage = () => {
         retryAction={detailQuery.refetch}>
         {budget ? (
           <>
-            {/* Hero */}
-            <Card className='grid gap-4 p-5'>
-              <div className='flex items-start justify-between gap-3'>
-                <div className='flex flex-wrap gap-1.5'>
-                  <Chip tone='primary'>
-                    {formatBudgetPeriodLabel(budget.period, t)}
-                  </Chip>
-                  <Chip
-                    className={
-                      budget.scope === 'personal'
-                        ? 'bg-tma-warning/20 text-[#8a6800]'
-                        : undefined
-                    }
-                    tone={budget.scope === 'personal' ? 'warning' : 'muted'}>
-                    {getBudgetScopeLabel(
-                      budget.scope,
-                      household ?? undefined,
-                      t,
-                    )}
-                  </Chip>
-                </div>
-                <IconBadge accent={budgetAccent}>
-                  <BudgetGlyph />
-                </IconBadge>
-              </div>
-              <div>
-                <Eyebrow>{t('budgets.detail.statLimit')}</Eyebrow>
-                <MoneyLabel className='text-[28px] leading-tight font-extrabold'>
-                  {formatCurrencyMinor(
-                    status?.totalPlannedMinor ?? budget.totalLimitMinor,
-                    budget.currencyCode,
-                  )}
-                </MoneyLabel>
-              </div>
-            </Card>
+            <BudgetHeroCard
+              budget={budget}
+              household={household ?? undefined}
+              status={status ?? undefined}
+              t={t}
+            />
 
-            {/* Progress */}
             {status && progress ? (
-              <Section>
-                <SectionHeader title={t('budgets.detail.statProgress')} />
-                <Card className='grid gap-4'>
-                  <div className='grid grid-cols-2 gap-2.5'>
-                    <StatTile
-                      label={t('budgets.detail.statSpent')}
-                      value={formatCurrencyMinor(
-                        status.totalActualMinor,
-                        status.currencyCode,
-                      )}
-                    />
-                    <StatTile
-                      label={t('budgets.detail.statRemaining')}
-                      tone={isOver ? 'warning' : 'default'}
-                      value={formatCurrencyMinor(
-                        status.totalRemainingMinor,
-                        status.currencyCode,
-                      )}
-                    />
-                  </div>
-
-                  <div className='grid gap-1.5'>
-                    <div className='flex items-center justify-between text-sm text-tma-text-muted'>
-                      <span>{t('budgets.detail.statProgress')}</span>
-                      <span>{progress.percentUsed}%</span>
-                    </div>
-                    <div className='h-2 overflow-hidden rounded-full bg-black/6'>
-                      <div
-                        className={cn(
-                          'h-full rounded-full',
-                          isOver ? 'bg-[#d93838]' : 'bg-tma-primary',
-                        )}
-                        style={{ width: `${progress.widthPercent}%` }}
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </Section>
+              <BudgetProgressSection
+                isOver={isOver}
+                progress={progress}
+                status={status}
+                t={t}
+              />
             ) : null}
 
-            {/* Management */}
             {canEdit ? (
               <Section>
                 <SectionHeader title={t('budgets.detail.sectionManage')} />

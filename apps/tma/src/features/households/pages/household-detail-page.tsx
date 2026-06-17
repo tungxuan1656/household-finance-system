@@ -1,7 +1,8 @@
-import { type FormEvent, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useParams } from 'react-router-dom'
 
+import { TrashIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   Avatar,
@@ -20,36 +21,15 @@ import { useAuth } from '@/features/auth/auth-provider'
 import { HomeRecentExpensesSection } from '@/features/home/components/home-recent-expenses-section'
 import { usePeriodStore } from '@/features/period/store'
 
-import {
-  useHouseholdDetailQuery,
-  useHouseholdMembersQuery,
-  useRemoveHouseholdMemberMutation,
-  useUpdateHouseholdMutation,
-} from '../api'
+import { useHouseholdDetailQuery, useHouseholdMembersQuery } from '../api'
 import { HouseholdAvatarSection } from '../components/household-avatar-section'
 import { HouseholdOverviewSection } from '../components/household-overview-section'
+import { useHouseholdDetailActions } from '../hooks/use-household-detail-actions'
 import {
   formatMemberCountLabel,
   getHouseholdAvatarFallback,
   getHouseholdRoleLabel,
 } from '../presentation'
-
-const TrashIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    fill='none'
-    height={18}
-    stroke='currentColor'
-    strokeLinecap='round'
-    strokeLinejoin='round'
-    strokeWidth={1.8}
-    viewBox='0 0 24 24'
-    width={18}
-    {...props}>
-    <path d='M3 6h18' />
-    <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6' />
-    <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2' />
-  </svg>
-)
 
 type HouseholdPageFeedback = {
   message: string
@@ -64,8 +44,6 @@ export const HouseholdDetailPage = () => {
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
   const householdQuery = useHouseholdDetailQuery(id)
   const membersQuery = useHouseholdMembersQuery(id)
-  const updateHouseholdMutation = useUpdateHouseholdMutation()
-  const removeMemberMutation = useRemoveHouseholdMemberMutation()
   const [draftName, setDraftName] = useState('')
   const [feedback, setFeedback] = useState<HouseholdPageFeedback | null>(
     () =>
@@ -76,9 +54,23 @@ export const HouseholdDetailPage = () => {
   const household = householdQuery.data
   const members = membersQuery.data?.items ?? []
   const isAdmin = household?.role === 'admin'
-  const isBusy = updateHouseholdMutation.isPending
   const isHouseholdMissing =
     !householdQuery.isLoading && !householdQuery.isError && !household
+
+  const {
+    handleAvatarUploaded,
+    handleSave,
+    handleRemoveMember,
+    isBusy,
+    isRemoving,
+  } = useHouseholdDetailActions({
+    draftName,
+    household,
+    id,
+    isAdmin,
+    onFeedback: setFeedback,
+    t,
+  })
 
   useEffect(() => {
     if (household) setDraftName(household.name)
@@ -88,97 +80,6 @@ export const HouseholdDetailPage = () => {
     () => formatMemberCountLabel(members.length, t),
     [members.length, t],
   )
-
-  const handleAvatarUploaded = async (avatarUrl: string) => {
-    if (!id) return
-
-    await updateHouseholdMutation.mutateAsync({
-      householdId: id,
-      payload: { avatarUrl },
-    })
-
-    setFeedback({
-      message: t('households.detail.avatarUpdated'),
-      tone: 'success',
-    })
-  }
-
-  const handleSave = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    if (!id || !household || !isAdmin) return
-
-    const normalizedName = draftName.trim()
-    if (!normalizedName) {
-      setFeedback({
-        message: t('households.createPage.validation.nameRequired'),
-        tone: 'error',
-      })
-
-      return
-    }
-
-    try {
-      if (normalizedName === household.name) {
-        setFeedback({
-          message: t('households.detail.noChanges'),
-          tone: 'success',
-        })
-
-        return
-      }
-
-      await updateHouseholdMutation.mutateAsync({
-        householdId: id,
-        payload: { name: normalizedName },
-      })
-
-      setFeedback({
-        message: t('households.detail.updated'),
-        tone: 'success',
-      })
-    } catch (error) {
-      setFeedback({
-        message:
-          error instanceof Error
-            ? error.message
-            : t('households.detail.updateError'),
-        tone: 'error',
-      })
-    }
-  }
-
-  const handleRemoveMember = (memberUserId: string, memberName: string) => {
-    if (!id) return
-
-    const confirmed = window.confirm(
-      t('households.detail.removeMemberConfirm', {
-        name: memberName || t('groups.detail.memberFallback'),
-      }),
-    )
-    if (!confirmed) return
-
-    removeMemberMutation.mutate(
-      { householdId: id, userId: memberUserId },
-      {
-        onSuccess: () => {
-          setFeedback({
-            message: t('households.detail.memberRemoved'),
-            tone: 'success',
-          })
-        },
-        onError: (error) => {
-          setFeedback({
-            message:
-              error instanceof Error
-                ? error.message
-                : t('households.detail.removeMemberError'),
-            tone: 'error',
-          })
-        },
-      },
-    )
-  }
 
   if (!id) {
     return (
@@ -320,12 +221,17 @@ export const HouseholdDetailPage = () => {
                       {isAdmin && member.userId !== user?.id ? (
                         <button
                           className='shrink-0 rounded-full p-2 text-tma-text-muted transition active:scale-90 active:text-[#d93838]'
-                          disabled={removeMemberMutation.isPending}
+                          disabled={isRemoving}
                           type='button'
                           onClick={() =>
                             handleRemoveMember(member.userId, member.name)
                           }>
-                          <TrashIcon className='size-4.5' />
+                          <TrashIcon
+                            className='size-4.5'
+                            height={18}
+                            strokeWidth={1.8}
+                            width={18}
+                          />
                         </button>
                       ) : null}
                     </article>
