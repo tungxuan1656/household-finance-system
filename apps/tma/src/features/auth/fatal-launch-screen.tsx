@@ -2,6 +2,7 @@ import { miniApp } from '@tma.js/sdk'
 import { useTranslation } from 'react-i18next'
 
 import { AppShell } from '@/components/shared/app-shell'
+import { AppVersionLabel } from '@/components/shared/app-version-label'
 import { Button, CardDescription, CardTitle } from '@/components/ui'
 import { closeMiniApp } from '@/lib/telegram/back-button'
 import {
@@ -37,7 +38,7 @@ export const FatalLaunchScreen = ({ error }: FatalLaunchScreenProps) => {
   return (
     <AppShell>
       <main
-        className='grid min-h-0 flex-1 place-items-center p-6 text-center'
+        className='flex min-h-0 flex-1 flex-col items-center justify-center p-6 text-center'
         style={{
           paddingInlineStart: `${insets.left}px`,
           paddingInlineEnd: `${insets.right}px`,
@@ -60,6 +61,9 @@ export const FatalLaunchScreen = ({ error }: FatalLaunchScreenProps) => {
               {t('dataState.retry')}
             </Button>
           </div>
+        </div>
+        <div className='mt-8'>
+          <AppVersionLabel />
         </div>
       </main>
     </AppShell>
