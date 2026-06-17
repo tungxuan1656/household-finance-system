@@ -108,6 +108,13 @@ const HouseholdDetailRoute = lazy(async () => {
   return { default: module.HouseholdDetailPage }
 })
 
+const AcceptInvitationRoute = lazy(async () => {
+  const module =
+    await import('@/features/invitations/pages/accept-invitation-page')
+
+  return { default: module.AcceptInvitationPage }
+})
+
 const CreateGroupRoute = lazy(async () => {
   const module = await import('@/features/groups/pages/create-group-page')
 
@@ -207,6 +214,10 @@ const router = createBrowserRouter([
       {
         path: `${TMA_PATHS.households}/:id`,
         element: renderLazyRoute(HouseholdDetailRoute),
+      },
+      {
+        path: `${TMA_PATHS.invitations}/:token`,
+        element: renderLazyRoute(AcceptInvitationRoute),
       },
       {
         path: TMA_PATHS.groups,

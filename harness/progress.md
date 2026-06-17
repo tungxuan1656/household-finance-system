@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-06-17 — TMA household invitation via Telegram Mini App deep links
+
+- Who: MiniMax-M3 (orchestrator) + 7 parallel fixers
+- Summary: Built the household invitation flow in the TMA. Chosen mechanism: Mini App deep links `https://t.me/<bot>?startapp=<token>` because they open the TMA directly with zero bot interaction and deliver the token through `initData.start_param`. The dialog offers two share affordances — `shareURL` (Telegram native chat picker) and clipboard copy as fallback. Recipients are routed to `/invitations/:token` on cold open via a `useInvitationDeepLinkRedirect` hook wired into RootLayout. Backend invitations were already complete; this feature is TMA-only.
+- Files changed: New `apps/tma/src/features/invitations/` folder (types, API, hooks, components/invite-household-dialog.tsx, pages/accept-invitation-page.tsx, index barrel); `apps/tma/src/lib/constants/routes.ts` (`invitations` path + `getInvitationAcceptPath`); `apps/tma/src/app/router/app-router.tsx` (lazy route); `apps/tma/src/app/router/root-layout.tsx` (deep-link redirect); `apps/tma/src/features/households/pages/household-detail-page.tsx` (admin invite section); `apps/tma/src/lib/i18n/locales/vi.json` (invitations section).
+- Verification: `./init.sh lint` OK; `./init.sh typecheck` OK (fixed shareURL `.catch()` error by wrapping in `Promise.resolve()`); `./init.sh test` OK; `pnpm --filter tma build` OK; full `./init.sh` returned `Done!`. New feature recorded as `feat-104`.
+- Blockers: None. Requires `VITE_TELEGRAM_BOT_USERNAME` env var; dialog falls back to plain invite path when missing.
+- Next steps: Set `VITE_TELEGRAM_BOT_USERNAME` in `apps/tma/.env.local` to enable deep-link sharing; optional follow-up: bot-side `/start <token>` fallback for users without the Mini App installed.
+
 ## 2026-06-17 — TMA version display label on home, not-found, and fatal-launch screens
 
 - Who: Codex
