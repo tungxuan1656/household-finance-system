@@ -60,7 +60,7 @@ export const Chip = ({
   <span
     className={cn(
       'inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold',
-      tone === 'muted' && 'bg-black/[0.06] text-tma-text-strong',
+      tone === 'muted' && 'bg-black/6 text-tma-text-strong',
       tone === 'primary' && 'bg-tma-primary/12 text-tma-primary',
       tone === 'success' && 'bg-tma-positive/15 text-[#2f9b44]',
       tone === 'warning' && 'bg-tma-warning/35 text-[#8a6800]',
@@ -85,7 +85,7 @@ export const Avatar = ({
 }) => (
   <span
     className={cn(
-      'grid shrink-0 place-items-center overflow-hidden bg-gradient-to-br from-tma-primary/20 to-tma-positive/30 font-bold text-tma-text-strong shadow-[inset_0_0_0_1px_rgba(255,255,255,0.54)]',
+      'grid shrink-0 place-items-center overflow-hidden bg-linear-to-br from-tma-primary/20 to-tma-positive/30 font-bold text-tma-text-strong shadow-[inset_0_0_0_1px_rgba(255,255,255,0.54)]',
       size === 'sm' && 'size-10 rounded-2xl text-xs',
       size === 'md' && 'size-11 rounded-[18px] text-sm',
       size === 'lg' && 'size-14 rounded-[20px] text-sm',

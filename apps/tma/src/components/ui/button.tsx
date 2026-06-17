@@ -31,7 +31,7 @@ export const buttonVariants = ({
       'bg-tma-warning text-[#5b4100] shadow-[0_10px_18px_rgba(247,196,0,0.22)]',
     variant === 'outline' &&
       'border border-tma-line bg-white/70 text-tma-text-strong shadow-tma-soft',
-    variant === 'ghost' && 'bg-black/[0.05] text-tma-text-strong',
+    variant === 'ghost' && 'bg-black/5 text-tma-text-strong',
     variant === 'danger' && 'bg-[#d93838] text-white',
     className,
   )

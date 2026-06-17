@@ -49,7 +49,7 @@ const ScopeFilterChip = ({
       'inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition active:scale-95',
       isSelected
         ? 'bg-tma-primary/12 text-tma-primary'
-        : 'bg-black/[0.06] text-tma-text-strong',
+        : 'bg-black/6 text-tma-text-strong',
     )}
     type='button'
     onClick={onClick}>

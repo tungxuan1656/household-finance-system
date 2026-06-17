@@ -167,7 +167,7 @@ export const GroupDetailPage = () => {
                 retryAction={summaryQuery.refetch}>
                 <Card className='grid gap-4'>
                   <div className='grid grid-cols-2 gap-2.5'>
-                    <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+                    <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
                       <Eyebrow>Tổng chi</Eyebrow>
                       <MoneyLabel className='text-base font-extrabold'>
                         {totalSpendMinor != null
@@ -175,19 +175,19 @@ export const GroupDetailPage = () => {
                           : '-'}
                       </MoneyLabel>
                     </div>
-                    <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+                    <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
                       <Eyebrow>Số khoản</Eyebrow>
                       <strong className='text-base text-tma-text-strong'>
                         {summary?.expenseCount ?? 0}
                       </strong>
                     </div>
-                    <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+                    <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
                       <Eyebrow>Ngân sách</Eyebrow>
                       <strong className='text-sm text-tma-text-strong'>
                         {getGroupBudgetLabel(group)}
                       </strong>
                     </div>
-                    <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+                    <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
                       <Eyebrow>Còn lại</Eyebrow>
                       <MoneyLabel
                         className={
@@ -209,7 +209,7 @@ export const GroupDetailPage = () => {
                         <span>Tiến độ ngân sách</span>
                         <span>{progress.percentUsed}%</span>
                       </div>
-                      <div className='h-2 overflow-hidden rounded-full bg-black/[0.06]'>
+                      <div className='h-2 overflow-hidden rounded-full bg-black/6'>
                         <div
                           className={
                             progress.isOverBudget
@@ -232,7 +232,7 @@ export const GroupDetailPage = () => {
                   {summary.memberContributions.map((member) => (
                     <article
                       key={member.userId}
-                      className='flex items-center justify-between gap-3 rounded-[18px] bg-black/[0.04] p-3'>
+                      className='flex items-center justify-between gap-3 rounded-[18px] bg-black/4 p-3'>
                       <div className='min-w-0'>
                         <h3 className='m-0 truncate text-sm font-bold text-tma-text-strong'>
                           {member.displayName ?? 'Thành viên'}

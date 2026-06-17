@@ -94,13 +94,13 @@ const GroupListCard = ({ item }: { item: GroupListItem }) => {
       </div>
 
       <div className='grid grid-cols-2 gap-2.5'>
-        <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+        <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
           <Eyebrow>Đã chi</Eyebrow>
           <MoneyLabel className='text-sm font-bold'>
             {formatCurrencyMinor(item.group.totalSpendMinor, 'VND')}
           </MoneyLabel>
         </div>
-        <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+        <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
           <Eyebrow>Ngân sách</Eyebrow>
           <strong className='text-sm text-tma-text-strong'>
             {getGroupBudgetLabel(item.group)}
@@ -110,7 +110,7 @@ const GroupListCard = ({ item }: { item: GroupListItem }) => {
 
       {progress ? (
         <div className='grid gap-1.5'>
-          <div className='h-2 overflow-hidden rounded-full bg-black/[0.06]'>
+          <div className='h-2 overflow-hidden rounded-full bg-black/6'>
             <div
               className={
                 progress.isOverBudget

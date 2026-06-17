@@ -128,7 +128,7 @@ export const HouseholdItem = ({
       </CardDescription>
     </div>
     <div className='grid grid-cols-2 gap-2.5'>
-      <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+      <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
         <MoneyLabel className='text-sm font-bold'>
           {card.totalSpendMinor != null && card.currencyCode
             ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
@@ -137,13 +137,13 @@ export const HouseholdItem = ({
               : '-'}
         </MoneyLabel>
       </div>
-      <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+      <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
         {card.budget ? (
           <>
             <strong className='text-sm text-tma-text-strong'>
               {card.budgetLabel}
             </strong>
-            <div className='mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/[0.08]'>
+            <div className='mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/8'>
               <div
                 className='h-full rounded-full bg-tma-positive transition-all'
                 style={{

@@ -152,7 +152,7 @@ export const StatisticsPage = () => {
                     return (
                       <article
                         key={category.categoryKey}
-                        className='flex items-center justify-between gap-3 rounded-2xl bg-black/[0.04] px-3.5 py-3'>
+                        className='flex items-center justify-between gap-3 rounded-2xl bg-black/4 px-3.5 py-3'>
                         <div className='flex min-w-0 items-center gap-3'>
                           <span
                             className='size-3 shrink-0 rounded-full'

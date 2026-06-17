@@ -75,7 +75,7 @@ const StatTile = ({
   tone?: 'default' | 'warning'
   value: string
 }) => (
-  <div className='grid gap-1 rounded-[18px] bg-black/[0.04] p-3'>
+  <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
     <Eyebrow>{label}</Eyebrow>
     <strong
       className={cn(
@@ -310,7 +310,7 @@ export const BudgetDetailPage = () => {
                       <span>Tiến độ ngân sách</span>
                       <span>{progress.percentUsed}%</span>
                     </div>
-                    <div className='h-2 overflow-hidden rounded-full bg-black/[0.06]'>
+                    <div className='h-2 overflow-hidden rounded-full bg-black/6'>
                       <div
                         className={cn(
                           'h-full rounded-full',

@@ -317,7 +317,7 @@ export const HouseholdDetailPage = () => {
                           onClick={() =>
                             handleRemoveMember(member.userId, member.name)
                           }>
-                          <TrashIcon className='size-[18px]' />
+                          <TrashIcon className='size-4.5' />
                         </button>
                       ) : null}
                     </article>

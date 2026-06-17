@@ -7,7 +7,7 @@ export const LoadingFallback = ({
 }: LoadingFallbackProps) => (
   <div
     aria-live='polite'
-    className='grid min-h-[100dvh] place-items-center p-6 text-tma-text-muted'
+    className='grid min-h-dvh place-items-center p-6 text-tma-text-muted'
     data-loading='auth-bootstrap'
     data-phase={phase}
     role='status'>
