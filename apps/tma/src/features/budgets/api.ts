@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query'
 
 import { deleteRequest, get, patch, post } from '@/lib/api/client'
+import { notification } from '@/lib/telegram/haptics'
 
 import type {
   BudgetDTO,
@@ -127,6 +128,10 @@ export const useDeleteBudgetMutation = () => {
     mutationFn: deleteBudget,
     onSuccess: async () => {
       await invalidateBudgetDependents(queryClient)
+    },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
     },
   })
 }

@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { AppProviders } from '@/app/bootstrap/app-providers'
 import { AppRouter } from '@/app/router/app-router'
+import { AuthInterceptorInit } from '@/features/auth/auth-interceptor-init'
 import { AuthBootstrap } from '@/features/auth/bootstrap'
 import { createAuthApiBootstrapDeps } from '@/features/auth/bootstrap-deps'
 import { FatalLaunchScreen } from '@/features/auth/fatal-launch-screen'
@@ -66,7 +67,9 @@ export const App = ({ startupError = null }: AppProps) => {
   return (
     <AppProviders>
       <AuthBootstrap deps={bootstrapDeps}>
-        <AppRouter />
+        <AuthInterceptorInit api={authClient.api} storage={authClient.storage}>
+          <AppRouter />
+        </AuthInterceptorInit>
       </AuthBootstrap>
     </AppProviders>
   )

@@ -1,9 +1,12 @@
+import { getActiveRefreshInterceptor } from '@/features/auth/refresh-interceptor'
 import { useAuthStore } from '@/features/auth/store'
 
 const API_BASE_PATH = (import.meta.env.VITE_WORKER_URL ?? '/api/v1').replace(
   /\/$/,
   '',
 )
+
+const DEFAULT_TIMEOUT_MS = 20_000
 
 type ApiEnvelope<T> =
   | {
@@ -123,26 +126,50 @@ export const request = async <TResponse>(
     headers.set('content-type', 'application/json')
   }
 
+  const interceptor = getActiveRefreshInterceptor()
+  const shouldUseInterceptor =
+    interceptor !== null && (options.authenticated ?? true)
+
   if (options.authenticated ?? true) {
     const accessToken = useAuthStore.getState().accessToken
 
-    if (accessToken) {
+    if (accessToken && !shouldUseInterceptor) {
+      // Only add auth header ourselves when no interceptor is available.
+      // The interceptor handles auth headers + 401 retry transparently.
       headers.set('authorization', `Bearer ${accessToken}`)
     }
   }
 
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS)
+
   let response: Response
 
   try {
-    response = await fetch(buildUrl(path, options.params), {
+    const execFetch = shouldUseInterceptor
+      ? (url: string, init: RequestInit) => interceptor!.fetch(url, init)
+      : (url: string, init: RequestInit) => fetch(url, init)
+
+    response = await execFetch(buildUrl(path, options.params), {
       body:
         options.body !== undefined ? JSON.stringify(options.body) : undefined,
       headers,
       method: options.method ?? 'GET',
+      signal: controller.signal,
     })
-  } catch {
+  } catch (error) {
+    clearTimeout(timeoutId)
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new ApiClientError({
+        code: 'TIMEOUT',
+        message: 'Request timed out.',
+        status: 0,
+      })
+    }
     throw toApiClientError(0, null, 'Network request failed.')
   }
+
+  clearTimeout(timeoutId)
 
   let payload: ApiEnvelope<TResponse> | null = null
 

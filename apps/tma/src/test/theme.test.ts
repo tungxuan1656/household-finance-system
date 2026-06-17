@@ -56,7 +56,7 @@ describe('theme binding', () => {
 
     expect(
       document.documentElement.style.getPropertyValue('--tma-base-bg'),
-    ).toBe(theme.DEFAULT_TMA_BG)
+    ).toBe('#123456')
 
     viewportMounted = true
     theme.syncViewportInsets()

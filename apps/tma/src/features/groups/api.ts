@@ -8,6 +8,7 @@ import {
 
 import type { HouseholdDTO } from '@/features/home/types'
 import { get, post } from '@/lib/api/client'
+import { notification } from '@/lib/telegram/haptics'
 
 import type {
   CreateExpenseGroupRequest,
@@ -92,6 +93,10 @@ export const useCreateExpenseGroupMutation = () => {
         queryClient.invalidateQueries({ queryKey: ['expenses'] }),
         queryClient.invalidateQueries({ queryKey: ['analytics'] }),
       ])
+    },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
     },
   })
 }

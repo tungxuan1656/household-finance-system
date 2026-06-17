@@ -118,7 +118,7 @@ export const ExpenseFilterPage = () => {
       cleanup()
       hideBottomButton()
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     updateBottomButton({

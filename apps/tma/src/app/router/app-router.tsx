@@ -2,8 +2,11 @@ import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import { LoadingFallback } from '@/components/shared/loading-fallback'
+import {
+  RootErrorElement,
+  RouteErrorBoundary,
+} from '@/components/shared/route-error-boundary'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { NotFoundPage } from '@/routes/not-found'
 
 import RootLayout from './root-layout'
 
@@ -136,15 +139,17 @@ const FatalLaunchPage = lazy(async () => {
 })
 
 const renderLazyRoute = (Component: React.ComponentType) => (
-  <Suspense fallback={<LoadingFallback />}>
-    <Component />
-  </Suspense>
+  <RouteErrorBoundary>
+    <Suspense fallback={<LoadingFallback />}>
+      <Component />
+    </Suspense>
+  </RouteErrorBoundary>
 )
 
 const router = createBrowserRouter([
   {
     path: TMA_PATHS.root,
-    errorElement: <NotFoundPage />,
+    errorElement: <RootErrorElement />,
     element: <RootLayout />,
     children: [
       {

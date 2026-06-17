@@ -7,6 +7,7 @@ import {
 
 import type { CategoryKey, ExpenseDTO, SourceKey } from '@/features/home/types'
 import { deleteRequest, get, patch, post } from '@/lib/api/client'
+import { notification } from '@/lib/telegram/haptics'
 
 export interface CreateExpenseRequest {
   amount: number
@@ -113,6 +114,10 @@ export const useDeleteExpenseMutation = () => {
     mutationFn: (id: string) => deleteExpense(id),
     onSuccess: async () => {
       await invalidateExpenseSurfaces(queryClient)
+    },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
     },
   })
 }

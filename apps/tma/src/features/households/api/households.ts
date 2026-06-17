@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 
 import { deleteRequest, get, patch, post } from '@/lib/api/client'
+import { notification } from '@/lib/telegram/haptics'
 
 import type {
   CreateHouseholdRequest,
@@ -141,6 +142,10 @@ export const useCreateHouseholdMutation = () => {
     onSuccess: async () => {
       await invalidateHouseholdSurfaceQueries(queryClient)
     },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
+    },
   })
 }
 
@@ -158,6 +163,10 @@ export const useUpdateHouseholdMutation = () => {
     onSuccess: async () => {
       await invalidateHouseholdSurfaceQueries(queryClient)
     },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
+    },
   })
 }
 
@@ -169,6 +178,10 @@ export const useArchiveHouseholdMutation = () => {
     onSuccess: async () => {
       await invalidateHouseholdSurfaceQueries(queryClient)
     },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
+    },
   })
 }
 
@@ -179,6 +192,10 @@ export const useLeaveHouseholdMutation = () => {
     mutationFn: leaveHousehold,
     onSuccess: async () => {
       await invalidateHouseholdSurfaceQueries(queryClient)
+    },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
     },
   })
 }
@@ -196,6 +213,10 @@ export const useRemoveHouseholdMemberMutation = () => {
     }) => removeHouseholdMember(householdId, userId),
     onSuccess: async () => {
       await invalidateHouseholdSurfaceQueries(queryClient)
+    },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
     },
   })
 }
@@ -215,6 +236,10 @@ export const useUpdateHouseholdMemberRoleMutation = () => {
     }) => updateHouseholdMemberRole(householdId, userId, payload),
     onSuccess: async () => {
       await invalidateHouseholdSurfaceQueries(queryClient)
+    },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
     },
   })
 }

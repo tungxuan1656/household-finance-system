@@ -7,6 +7,8 @@ import {
   type SupportedLocale,
 } from '@/lib/i18n'
 
+const MAX_BODY_BYTES = 1_048_576
+
 export const readJsonBody = async <T>(
   request: Request,
   schema: ZodSchema<T>,
@@ -14,10 +16,30 @@ export const readJsonBody = async <T>(
 ): Promise<T> => {
   let rawBody: unknown
 
-  try {
-    rawBody = await request.json()
-  } catch {
-    throw invalidInput(locale, 'errors.invalidJsonBody')
+  const contentLength = request.headers.get('content-length')
+
+  if (contentLength !== null && Number(contentLength) > MAX_BODY_BYTES) {
+    throw invalidInput(locale, 'errors.invalidRequestBody')
+  }
+
+  if (contentLength === null) {
+    const text = await request.text()
+
+    if (text.length > MAX_BODY_BYTES) {
+      throw invalidInput(locale, 'errors.invalidRequestBody')
+    }
+
+    try {
+      rawBody = JSON.parse(text)
+    } catch {
+      throw invalidInput(locale, 'errors.invalidJsonBody')
+    }
+  } else {
+    try {
+      rawBody = await request.json()
+    } catch {
+      throw invalidInput(locale, 'errors.invalidJsonBody')
+    }
   }
 
   const parsed = schema.safeParse(rawBody)

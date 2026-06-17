@@ -99,7 +99,18 @@ export const assertDatabaseBinding = (env: Env): D1Database => {
 export const readConfig = (env: Env): AppConfig => {
   assertDatabaseBinding(env)
 
+  const appEnvironment: string =
+    readOptional(env, 'APP_ENV')?.trim() || DEFAULT_APP_ENVIRONMENT
+  const allowInsecureTestTokens: boolean = toBoolean(
+    readOptional(env, 'AUTH_ALLOW_INSECURE_TEST_TOKENS'),
+  )
+
+  if (appEnvironment === 'production' && allowInsecureTestTokens) {
+    throw envConfigError()
+  }
+
   return {
+    appEnvironment,
     authIssuer: readRequired(env, 'AUTH_ISSUER'),
     authAudience: readRequired(env, 'AUTH_AUDIENCE'),
     accessTokenTtlSeconds: toPositiveInteger(
@@ -110,12 +121,11 @@ export const readConfig = (env: Env): AppConfig => {
     ),
     authJwtSecret: readRequired(env, 'AUTH_JWT_SECRET'),
     refreshTokenPepper: readRequired(env, 'AUTH_REFRESH_TOKEN_PEPPER'),
+    invitationTokenPepper: readRequired(env, 'INVITATION_TOKEN_PEPPER'),
     firebaseProjectId: readRequired(env, 'FIREBASE_PROJECT_ID'),
     firebaseJwksUrl:
       readOptional(env, 'FIREBASE_JWKS_URL') ?? DEFAULT_FIREBASE_JWKS_URL,
-    allowInsecureTestTokens: toBoolean(
-      readOptional(env, 'AUTH_ALLOW_INSECURE_TEST_TOKENS'),
-    ),
+    allowInsecureTestTokens,
     telegramBotToken: readRequired(env, 'TELEGRAM_BOT_TOKEN'),
     telegramFreshnessWindowSeconds: readOptionalPositiveInteger(
       env,

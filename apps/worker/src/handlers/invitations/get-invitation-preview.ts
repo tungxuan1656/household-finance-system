@@ -1,6 +1,7 @@
 import type { InvitationPreviewResponse } from '@/contracts'
 import { findInvitationPreviewByTokenHash } from '@/db/repositories/household-invitation-repository'
 import { sha256Hex } from '@/lib/auth/security'
+import { readConfig } from '@/lib/env'
 import { conflict, notFound } from '@/lib/errors'
 import type { SupportedLocale } from '@/lib/i18n'
 import type { AppBindings } from '@/types'
@@ -10,7 +11,8 @@ export const getInvitationPreview = async (
   token: string,
   locale: SupportedLocale,
 ): Promise<InvitationPreviewResponse> => {
-  const tokenHash = await sha256Hex(token)
+  const config = readConfig(env)
+  const tokenHash = await sha256Hex(`${token}.${config.invitationTokenPepper}`)
   const invitation = await findInvitationPreviewByTokenHash(env.DB, tokenHash)
 
   if (!invitation) {

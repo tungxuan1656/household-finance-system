@@ -1,3 +1,4 @@
+import { miniApp } from '@tma.js/sdk'
 import { useTranslation } from 'react-i18next'
 
 import { AppShell } from '@/components/shared/app-shell'
@@ -31,6 +32,8 @@ export const FatalLaunchScreen = ({ error }: FatalLaunchScreenProps) => {
       ? 'tma.auth.networkError'
       : 'tma.auth.reopenGuidance'
 
+  const isCloseAvailable = miniApp.close.isAvailable()
+
   return (
     <AppShell>
       <main
@@ -44,9 +47,19 @@ export const FatalLaunchScreen = ({ error }: FatalLaunchScreenProps) => {
         <div className='grid max-w-sm gap-3'>
           <CardTitle>{t(titleKey)}</CardTitle>
           <CardDescription>{t(bodyKey)}</CardDescription>
-          <Button className='justify-self-center' onClick={closeMiniApp}>
-            {t('fatal.close')}
-          </Button>
+          <div className='flex justify-center gap-3'>
+            {isCloseAvailable && (
+              <Button className='justify-self-center' onClick={closeMiniApp}>
+                {t('fatal.close')}
+              </Button>
+            )}
+            <Button
+              className='justify-self-center'
+              variant={isCloseAvailable ? 'outline' : 'primary'}
+              onClick={() => window.location.reload()}>
+              {t('dataState.retry')}
+            </Button>
+          </div>
         </div>
       </main>
     </AppShell>

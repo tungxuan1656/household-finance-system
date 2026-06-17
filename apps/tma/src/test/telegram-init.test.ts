@@ -41,6 +41,7 @@ vi.mock('@tma.js/sdk', () => ({
   },
   themeParams: {
     mount: vi.fn(),
+    bgColor: vi.fn(() => '#f5f7fb'),
   },
   viewport: {
     mount: viewportMount,
@@ -90,13 +91,12 @@ describe('initTelegramSafely', () => {
     )
 
     const { initTelegramSafely } = await import('@/app/bootstrap/telegram-init')
-    const { DEFAULT_TMA_BG } = await import('@/lib/telegram/theme')
     const result = initTelegramSafely()
 
     await Promise.resolve()
 
     expect(result.error).toBeNull()
-    expect(bindTheme).toHaveBeenCalledWith(DEFAULT_TMA_BG)
+    expect(bindTheme).toHaveBeenCalledWith()
     expect(miniAppReady).not.toHaveBeenCalled()
 
     if (!viewportMountResolver.current) {

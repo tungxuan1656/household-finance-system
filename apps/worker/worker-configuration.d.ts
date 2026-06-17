@@ -17,6 +17,7 @@ declare namespace Cloudflare {
 		TELEGRAM_BOT_TOKEN: string;
 		AUTH_JWT_SECRET: string;
 		AUTH_REFRESH_TOKEN_PEPPER: string;
+		INVITATION_TOKEN_PEPPER: string;
 		APP_ENV: string;
 		CLOUDINARY_CLOUD_NAME: string;
 		CLOUDINARY_API_KEY: string;
@@ -28,7 +29,7 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };
 declare namespace NodeJS {
-	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "AUTH_ISSUER" | "AUTH_AUDIENCE" | "ACCESS_TOKEN_TTL_SECONDS" | "REFRESH_TOKEN_TTL_SECONDS" | "FIREBASE_PROJECT_ID" | "FIREBASE_JWKS_URL" | "AUTH_ALLOW_INSECURE_TEST_TOKENS" | "TELEGRAM_BOT_TOKEN" | "AUTH_JWT_SECRET" | "AUTH_REFRESH_TOKEN_PEPPER" | "APP_ENV" | "CLOUDINARY_CLOUD_NAME" | "CLOUDINARY_API_KEY" | "CLOUDINARY_API_SECRET">> {}
+	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "AUTH_ISSUER" | "AUTH_AUDIENCE" | "ACCESS_TOKEN_TTL_SECONDS" | "REFRESH_TOKEN_TTL_SECONDS" | "FIREBASE_PROJECT_ID" | "FIREBASE_JWKS_URL" | "AUTH_ALLOW_INSECURE_TEST_TOKENS" | "TELEGRAM_BOT_TOKEN" | "AUTH_JWT_SECRET" | "AUTH_REFRESH_TOKEN_PEPPER" | "INVITATION_TOKEN_PEPPER" | "APP_ENV" | "CLOUDINARY_CLOUD_NAME" | "CLOUDINARY_API_KEY" | "CLOUDINARY_API_SECRET">> {}
 }
 
 // Begin runtime types

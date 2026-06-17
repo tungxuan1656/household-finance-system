@@ -5,6 +5,7 @@ import { resolveCorsOrigin } from '@/lib/cors'
 import { notFound } from '@/lib/errors'
 import { fromUnknownError } from '@/lib/response'
 import { requestContextMiddleware } from '@/middlewares/request-context'
+import { securityHeadersMiddleware } from '@/middlewares/security-headers'
 import { analyticsRoutes } from '@/routes/analytics'
 import { authRoutes } from '@/routes/auth'
 import { budgetsRoutes } from '@/routes/budgets'
@@ -22,6 +23,7 @@ import type { AppBindings } from '@/types'
 const app = new Hono<AppBindings>()
 
 app.use('*', requestContextMiddleware)
+app.use('*', securityHeadersMiddleware)
 
 app.use(
   '/*',

@@ -171,6 +171,7 @@ export interface UpdateExpenseInput {
   spentByUserId: string
   categoryKey: string
   sourceKey: string
+  categoryId?: string | null
   amountMinor: number
   currencyCode: string
   occurredAt: number
@@ -183,36 +184,47 @@ export const updateExpense = async (
   input: UpdateExpenseInput,
 ): Promise<StoredExpense | null> => {
   const now = Date.now()
+
+  const setClauses: string[] = []
+  const params: unknown[] = []
+
+  setClauses.push('household_id = ?')
+  params.push(input.householdId)
+  setClauses.push('spent_by_user_id = ?')
+  params.push(input.spentByUserId)
+  setClauses.push('category_key = ?')
+  params.push(input.categoryKey)
+  setClauses.push('source_key = ?')
+  params.push(input.sourceKey)
+
+  if (input.categoryId !== undefined) {
+    setClauses.push('category_id = ?')
+    params.push(input.categoryId)
+  }
+
+  setClauses.push('amount_minor = ?')
+  params.push(input.amountMinor)
+  setClauses.push('currency_code = ?')
+  params.push(input.currencyCode)
+  setClauses.push('occurred_at = ?')
+  params.push(input.occurredAt)
+  setClauses.push('title = ?')
+  params.push(input.title)
+  setClauses.push('note = ?')
+  params.push(input.note)
+  setClauses.push('updated_at = ?')
+  params.push(now)
+
+  params.push(input.expenseId)
+
   const result = await db
     .prepare(
       `UPDATE expenses
-           SET household_id = ?,
-               spent_by_user_id = ?,
-               category_key = ?,
-               source_key = ?,
-               category_id = NULL,
-               amount_minor = ?,
-               currency_code = ?,
-               occurred_at = ?,
-               title = ?,
-               note = ?,
-               updated_at = ?
-         WHERE id = ?
-           AND deleted_at IS NULL`,
+          SET ${setClauses.join(', ')}
+        WHERE id = ?
+          AND deleted_at IS NULL`,
     )
-    .bind(
-      input.householdId,
-      input.spentByUserId,
-      input.categoryKey,
-      input.sourceKey,
-      input.amountMinor,
-      input.currencyCode,
-      input.occurredAt,
-      input.title,
-      input.note,
-      now,
-      input.expenseId,
-    )
+    .bind(...params)
     .run()
 
   if (Number(result.meta.changes ?? 0) !== 1) {
