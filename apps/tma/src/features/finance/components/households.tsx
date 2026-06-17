@@ -47,33 +47,48 @@ interface HouseholdCardViewModel {
   budgetLabel: string
 }
 
+const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    fill='none'
+    height={20}
+    stroke='currentColor'
+    strokeLinecap='round'
+    strokeLinejoin='round'
+    strokeWidth={1.9}
+    viewBox='0 0 24 24'
+    width={20}
+    {...props}>
+    <path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2' />
+    <circle cx='12' cy='7' r='4' />
+  </svg>
+)
+
 export const HouseholdPreviewItem = ({
   card,
 }: {
   card: HouseholdCardViewModel
 }) => (
   <Link
-    className='grid min-w-[220px] gap-3 rounded-[22px] bg-white p-3.5 shadow-tma-soft transition active:scale-[0.98]'
+    className='grid min-w-55 gap-3 rounded-[22px] bg-white p-3.5 shadow-tma-soft transition active:scale-[0.98]'
     to={getHouseholdDetailPath(card.household.id)}
     onClick={() => impact('light')}>
-    <div className='flex items-center justify-between gap-3'>
+    <div className='flex items-start justify-between gap-3'>
       <Avatar
         alt={card.household.name}
         fallback={resolveInitials(card.household.name)}
         size='sm'
         src={card.household.avatarUrl}
       />
-      <Chip>
-        {card.memberCount != null
-          ? `${card.memberCount} thành viên`
-          : 'Đang tải'}
+      <Chip className='min-h-6 px-2.5 py-1.5'>
+        {card.memberCount != null ? `${card.memberCount}` : 'Đang tải'}
+        <UserIcon className='inline-block size-3' />
       </Chip>
     </div>
     <div>
       <h3 className='m-0 text-[15px] font-semibold text-tma-text-strong'>
         {card.household.name}
       </h3>
-      <MoneyLabel className='mt-1 block text-sm font-bold'>
+      <MoneyLabel className='mt-1 block text-sm font-medium'>
         {card.totalSpendMinor != null && card.currencyCode
           ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
           : card.isLoading

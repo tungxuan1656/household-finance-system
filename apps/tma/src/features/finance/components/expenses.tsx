@@ -67,14 +67,14 @@ export const ExpenseItem = ({
       <div className='min-w-0 flex-1'>
         <div className='flex items-start justify-between gap-3'>
           <div className='min-w-0 flex-1'>
-            <h3 className='m-0 truncate text-[15px] leading-tight font-bold text-tma-text-strong'>
+            <h3 className='m-0 truncate text-[15px] leading-tight font-semibold text-tma-text-strong'>
               {category.label}
             </h3>
             <p className='m-0 mt-1 truncate text-sm leading-normal font-medium text-tma-text-muted'>
               {expense.title.trim() || category.label}
             </p>
           </div>
-          <MoneyLabel className='shrink-0 pt-0.5 text-[15px] leading-tight font-extrabold'>
+          <MoneyLabel className='shrink-0 pt-0.5 text-base leading-tight font-bold'>
             {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
           </MoneyLabel>
         </div>

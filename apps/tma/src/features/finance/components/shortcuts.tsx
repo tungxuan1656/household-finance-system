@@ -35,7 +35,7 @@ export const ShortcutItem = ({
   )
 
   const className =
-    'grid min-h-28 content-start gap-3 rounded-[20px] border border-black/[0.04] bg-white p-3.5 shadow-tma-soft transition active:scale-[0.98]'
+    'flex items-center content-start gap-3 rounded-3xl border border-black/4 bg-white p-3.5 shadow-tma-soft transition active:scale-[0.98]'
 
   if (disabled) {
     return (
