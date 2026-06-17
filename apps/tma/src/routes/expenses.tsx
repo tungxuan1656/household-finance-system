@@ -66,7 +66,7 @@ export const ExpensesPage = () => {
 
   return (
     <TmaPageShell title='Chi tiêu'>
-      <div className='px-1 py-2'>
+      <div className='flex justify-end px-1 py-2'>
         <Button
           aria-label='Mở bộ lọc'
           size='sm'
