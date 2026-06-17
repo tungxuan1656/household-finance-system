@@ -8,6 +8,15 @@
 - Blockers: <list or none>
 - Next steps: <next actions>
 
+## 2026-06-17 — Consolidate worker D1 migrations into single canonical schema
+
+- Who: Codex
+- Summary: Folded the two additive worker migrations (`0002_household_avatar.sql`, `0003_personal_budgets.sql`) into `0001_init.sql` as a single canonical schema. Rationale: project is pre-release and has no deployed instance, so there is no migration history to preserve. `households.avatar_url` is now part of the initial `households` definition (no ALTER step); `budgets` and `budget_limits` use their final shapes from the start (`budgets` has `owner_user_id` + `'personal'` scope + scope-driven CHECK; `budget_limits` has nullable `household_id`); the two new indexes (`idx_budgets_owner_scope_month`, `idx_budgets_owner_user_id`) are included. Test helper `applyMigrations.ts` already glob-reads `migrations/*.sql` and orders by numeric prefix, so the single file applies unchanged. Worker README updated to record that pre-release additive changes fold into `0001_init.sql` until the first deploy/release, then split into ordered follow-up migrations.
+- Files changed: `apps/worker/migrations/0001_init.sql` (rewrite); deleted `apps/worker/migrations/0002_household_avatar.sql` and `apps/worker/migrations/0003_personal_budgets.sql`; `apps/worker/README.md` (D1 migrations section).
+- Verification: `./init.sh lint` OK; `pnpm --filter worker typecheck` OK (no errors); `pnpm --filter worker test` OK (416 tests across 80 files, including `test/integration/budgets-personal.spec.ts` 8/8 and `test/integration/households-read-update.spec.ts` 8/8 which exercise the folded-in `avatar_url` and personal-budget shapes); full `./init.sh` returned `Done!`.
+- Blockers: None. Historical references to the old migration filenames in `harness/progress.md`, `harness/features/feat-082.json`, `harness/features/feat-100.json`, `harness/features/feat-100a.json`, and the completed ExecPlans directory are left as-is — they are historical records of when the original migrations shipped, not live schema references.
+- Next steps: Keep `0001_init.sql` as the single source of truth until the first deploy/release; from that point on, additive changes must become new numbered migrations so deployed D1 databases can replay them in order.
+
 ## 2026-06-17 — TMA file-length and icon-centralization refactor
 
 - Who: Codex
