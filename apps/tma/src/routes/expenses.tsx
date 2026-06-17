@@ -80,7 +80,7 @@ export const ExpensesPage = () => {
           <span>
             {activeFilterCount > 0
               ? t('expenses.filterCount', { count: activeFilterCount })
-              : t('expenses.filter')}
+              : t('expenses.filterLabel')}
           </span>
         </Button>
       </div>
