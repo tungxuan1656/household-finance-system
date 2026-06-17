@@ -569,6 +569,11 @@
       "id": "feat-104",
       "name": "TMA household invitation via Telegram Mini App deep links",
       "status": "done"
+    },
+    {
+      "id": "feat-105",
+      "name": "TMA back/close action on invitation accept deep-link entry (1.0.2)",
+      "status": "done"
     }
   ]
 }

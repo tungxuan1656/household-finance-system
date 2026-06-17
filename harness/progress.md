@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-06-17 — TMA back/close action fix on invitation accept deep-link entry (1.0.2)
+
+- Who: MiniMax-M3 (orchestrator, inline execution)
+- Summary: Fixed TMA bug where Telegram BackButton / system back on the AcceptInvitationPage was a no-op. Root cause: the page is reached only via a `?startapp=<token>` deep link, so React Router history contains only the root-layout redirect entry; RootLayout's `navigate(-1)` had nothing to navigate to and the user stayed stuck. Per `native-ui-and-navigation-pattern.md` (page owns BackButton when there is no meaningful in-app back target), `RootLayout` now skips BackButton binding on the invitation accept route and `AcceptInvitationPage` mounts its own BackButton that calls `miniApp.close()` on click. Also bumped TMA version 1.0.1 → 1.0.2.
+- Files changed: `apps/tma/src/app/router/root-layout.tsx`, `apps/tma/src/features/invitations/pages/accept-invitation-page.tsx`, `apps/tma/package.json`, `harness/feature_index.json`, `harness/features/feat-105.json` (new), `harness/progress.md`.
+- Verification: `./init.sh lint` OK; `./init.sh typecheck` OK; `./init.sh test` OK.
+- Blockers: None.
+- Next steps: Push branch `fix/tma-invitation-back-close` and open PR.
+
 ## 2026-06-17 — TMA household invitation: post-review fixes
 
 - Who: MiniMax-M3 (orchestrator, inline execution)

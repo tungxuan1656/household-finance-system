@@ -1,3 +1,4 @@
+import { backButton, miniApp } from '@tma.js/sdk'
 import { useEffect, useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -21,7 +22,7 @@ import {
   setBottomButton,
   updateBottomButton,
 } from '@/lib/telegram/bottom-button'
-import { notification } from '@/lib/telegram/haptics'
+import { impact, notification } from '@/lib/telegram/haptics'
 
 export const AcceptInvitationPage = () => {
   const { token } = useParams<{ token: string }>()
@@ -100,6 +101,28 @@ export const AcceptInvitationPage = () => {
       showProgress: acceptMutation.isPending,
     })
   }, [canShowAcceptCta, acceptMutation.isPending, acceptMutation.variables, t])
+
+  // Own the Telegram BackButton on this route. AcceptInvitationPage is a
+  // deep-link entry point (?startapp=<token>), so there is no in-app
+  // history to navigate back to. Pressing the system/Telegram back action
+  // must close the mini app, matching the deep-link "go back to Telegram"
+  // expectation. RootLayout skips its own BackButton binding on this path.
+  useEffect(() => {
+    if (!backButton.isSupported()) {
+      return
+    }
+
+    const offClick = backButton.onClick(() => {
+      impact('light')
+      miniApp.close.ifAvailable()
+    })
+    backButton.show()
+
+    return () => {
+      offClick()
+      backButton.hide()
+    }
+  }, [])
 
   const toRoleLabel = (role: 'admin' | 'member'): string =>
     role === 'admin' ? t('invitations.roleAdmin') : t('invitations.roleMember')

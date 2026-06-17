@@ -1,0 +1,27 @@
+{
+  "id": "feat-105",
+  "name": "TMA back/close action on invitation accept deep-link entry",
+  "status": "done",
+  "description": "Fix a TMA bug where the Telegram BackButton (and any system back action wired to it) on the AcceptInvitationPage was a no-op. The page is reached exclusively via a `?startapp=<token>` deep link, so the React Router history contains only the redirect entry. RootLayout's `navigate(-1)` had nothing to navigate to and the user remained stuck on the page. Move BackButton ownership to the page itself so the back/close action calls `miniApp.close()` and exits the mini app, matching the deep-link 'go back to Telegram' expectation. Bumps TMA to 1.0.2.",
+  "dependencies": ["feat-104"],
+  "evidence": {
+    "planned": [
+      "Detect the invitation accept route in RootLayout and skip the central BackButton binding on that path.",
+      "Have AcceptInvitationPage mount its own BackButton that closes the mini app on click, with the standard light-impact haptic.",
+      "Bump apps/tma/package.json to 1.0.2 so the on-screen app version label reflects the fix."
+    ],
+    "artifacts": [
+      "`apps/tma/src/app/router/root-layout.tsx` — added `isInvitationAcceptRoute` memo (matches `TMA_PATHS.invitations` and `${TMA_PATHS.invitations}/...`); the BackButton effect returns early on that path so the page can own the click binding.",
+      "`apps/tma/src/features/invitations/pages/accept-invitation-page.tsx` — new effect that mounts `backButton.onClick(() => { impact('light'); miniApp.close.ifAvailable() })` with `backButton.show()` on mount and `backButton.hide()` on cleanup, gated on `backButton.isSupported()`. Imports `backButton` and `miniApp` from `@tma.js/sdk` and adds `impact` to the existing haptics import.",
+      "`apps/tma/package.json` — version bumped 1.0.1 → 1.0.2 (consumed by `VITE_APP_VERSION` via Vite `define`)."
+    ],
+    "verification": [
+      "`./init.sh lint` returned `OK`.",
+      "`./init.sh typecheck` returned `OK`.",
+      "`./init.sh test` returned `OK`.",
+      "`pnpm --filter tma build` succeeded (manual confirmation of `AcceptInvitationPage` chunk still resolves; new import of `backButton`/`miniApp` is already tree-shaken into the page bundle).",
+      "Full `./init.sh` returned `Done!`."
+    ]
+  },
+  "notes": "Per `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`, root routes with no meaningful back target should hide or own the BackButton. The acceptance page is a deep-link entry with no in-app history, so the page now owns BackButton and the back action closes the mini app. TMA vertical-swipe close is intentionally disabled in `telegram-init.ts` for scrollable surfaces; that is unaffected by this fix and the user-facing close path is the BackButton / Android system back mapped to it. The on-screen app version label (rendered from `VITE_APP_VERSION`) will now show 1.0.2 on the home, 404, and fatal-launch screens."
+}
