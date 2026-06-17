@@ -30,6 +30,20 @@ const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME as
   | string
   | undefined
 
+const INVITATION_TTL_VALUES: readonly InvitationTtlHours[] = [24, 72, 168]
+
+const isInvitationRole = (value: string): value is InvitationRoleDTO =>
+  value === 'admin' || value === 'member'
+
+const parseInvitationTtlHours = (value: string): InvitationTtlHours => {
+  const parsed = Number(value)
+  if (INVITATION_TTL_VALUES.includes(parsed as InvitationTtlHours)) {
+    return parsed as InvitationTtlHours
+  }
+
+  return 72
+}
+
 export const InviteHouseholdDialog = ({
   householdId,
   householdName,
@@ -70,23 +84,13 @@ export const InviteHouseholdDialog = ({
     }
   }
 
+  // shareURL from @tma.js/sdk is fire-and-forget (returns void synchronously).
+  // Cancellation or unavailability is not observable, so the explicit "Copy link"
+  // button is the user-visible fallback for sharing.
   const handleShareViaTelegram = () => {
     if (!inviteLink) return
     impact('light')
-    try {
-      // shareURL from @tma.js/sdk returns void, not a Promise.
-      // Wrap in Promise.resolve to keep the call site uniform with handleCopyLink.
-      Promise.resolve(
-        shareURL(inviteLink, t('invitations.shareText', { householdName })),
-      ).catch(() => {
-        // Fallback: copy to clipboard if share fails
-        void navigator.clipboard.writeText(inviteLink)
-        notification('success')
-      })
-    } catch {
-      void navigator.clipboard.writeText(inviteLink)
-      notification('success')
-    }
+    shareURL(inviteLink, t('invitations.shareText', { householdName }))
   }
 
   const handleCopyLink = async () => {
@@ -121,8 +125,15 @@ export const InviteHouseholdDialog = ({
                 aria-label={t('invitations.roleLabel')}
                 options={roleOptions}
                 value={role}
-                onChange={(v) => setRole(v as InvitationRoleDTO)}
+                onChange={(v) => {
+                  if (isInvitationRole(v)) setRole(v)
+                }}
               />
+              {role === 'admin' ? (
+                <p className='mt-1 text-xs font-semibold text-tma-warning'>
+                  {t('invitations.adminRoleWarning')}
+                </p>
+              ) : null}
             </Field>
 
             <Field className='mt-3'>
@@ -131,7 +142,7 @@ export const InviteHouseholdDialog = ({
                 aria-label={t('invitations.ttlLabel')}
                 options={ttlOptions}
                 value={String(ttlHours)}
-                onChange={(v) => setTtlHours(Number(v) as InvitationTtlHours)}
+                onChange={(v) => setTtlHours(parseInvitationTtlHours(v))}
               />
             </Field>
 
@@ -156,8 +167,8 @@ export const InviteHouseholdDialog = ({
               {t('invitations.linkReady')}
             </p>
 
-            <div className='mt-2 rounded-2xl border border-tma-line bg-black/4 p-3'>
-              <p className='m-0 font-mono text-xs break-all text-tma-text-muted'>
+            <div className='mt-2 rounded-2xl border border-tma-line bg-tma-line p-3'>
+              <p className='m-0 line-clamp-1 font-mono text-xs break-all text-tma-text-muted'>
                 {inviteLink}
               </p>
             </div>

@@ -444,7 +444,9 @@
       "expenseLoadError": "Không tải được chi tiêu gần đây",
       "expenseLoadErrorDesc": "Vui lòng thử lại sau.",
       "expenseLoading": "Đang tải chi tiêu gần đây",
-      "expenseLoadingDesc": "Danh sách sẽ hiện ngay khi API trả về."
+      "expenseLoadingDesc": "Danh sách sẽ hiện ngay khi API trả về.",
+      "sectionInvite": "Mời thành viên",
+      "inviteAction": "Tạo lời mời"
     }
   },
   "period": {
@@ -555,6 +557,7 @@
     "roleLabel": "Vai trò",
     "roleAdmin": "Quản trị",
     "roleMember": "Thành viên",
+    "adminRoleWarning": "Quản trị viên có toàn quyền quản lý household.",
     "ttlLabel": "Thời hạn",
     "ttl24h": "24 giờ",
     "ttl72h": "72 giờ",

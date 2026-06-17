@@ -5,7 +5,10 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
-import { HOUSEHOLD_KEYS } from '@/features/households/api/households'
+import {
+  HOUSEHOLD_KEYS,
+  invalidateHouseholdSurfaceQueries,
+} from '@/features/households/api/households'
 import { get, post } from '@/lib/api/client'
 import { notification } from '@/lib/telegram/haptics'
 
@@ -20,7 +23,7 @@ import type {
 // Fetchers
 // ---------------------------------------------------------------------------
 
-const createInvitation = (
+export const createInvitation = (
   householdId: string,
   payload: CreateInvitationRequest,
 ) =>
@@ -29,12 +32,12 @@ const createInvitation = (
     payload,
   )
 
-const getInvitationPreview = (token: string) =>
+export const getInvitationPreview = (token: string) =>
   get<InvitationPreviewResponse>(`/invitations/${token}`, {
     authenticated: false,
   })
 
-const acceptInvitation = (token: string) =>
+export const acceptInvitation = (token: string) =>
   post<AcceptInvitationResponse>(`/invitations/${token}/accept`)
 
 // ---------------------------------------------------------------------------
@@ -97,7 +100,7 @@ export const useAcceptInvitationMutation = () => {
   return useMutation({
     mutationFn: acceptInvitation,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: HOUSEHOLD_KEYS.all })
+      await invalidateHouseholdSurfaceQueries(queryClient)
     },
     onError: () => {
       notification('error')

@@ -123,7 +123,7 @@ export const useHouseholdMembersQuery = (householdId: string | undefined) =>
 // Mutation helpers & hooks
 // ---------------------------------------------------------------------------
 
-const invalidateHouseholdSurfaceQueries = async (
+export const invalidateHouseholdSurfaceQueries = async (
   queryClient: ReturnType<typeof useQueryClient>,
 ) => {
   await Promise.all([

@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -17,6 +16,11 @@ import {
   useInvitationPreviewQuery,
 } from '@/features/invitations/api/invitation'
 import { getHouseholdDetailPath } from '@/lib/constants/routes'
+import {
+  hideBottomButton,
+  setBottomButton,
+  updateBottomButton,
+} from '@/lib/telegram/bottom-button'
 import { notification } from '@/lib/telegram/haptics'
 
 export const AcceptInvitationPage = () => {
@@ -44,7 +48,7 @@ export const AcceptInvitationPage = () => {
     }
   }, [acceptedHouseholdId, navigate])
 
-  const handleAccept = async () => {
+  const handleAccept = useEffectEvent(async () => {
     if (!token) return
 
     try {
@@ -54,7 +58,48 @@ export const AcceptInvitationPage = () => {
     } catch {
       notification('error')
     }
-  }
+  })
+
+  // Wire the Telegram MainButton (native BottomButton) as the primary CTA.
+  // Per native-ui-and-navigation-pattern.md, primary actions on full pages
+  // must use BottomButton instead of inline buttons.
+  const canShowAcceptCta = Boolean(token) && isAuthenticated && Boolean(preview)
+
+  useEffect(() => {
+    if (!canShowAcceptCta) {
+      hideBottomButton()
+
+      return
+    }
+
+    const cleanup = setBottomButton({
+      text: acceptMutation.isPending
+        ? t('invitations.accepting')
+        : t('invitations.acceptAction'),
+      enabled: !acceptMutation.isPending,
+      showProgress: acceptMutation.isPending,
+      onClick: () => {
+        void handleAccept()
+      },
+    })
+
+    return () => {
+      cleanup()
+      hideBottomButton()
+    }
+  }, [canShowAcceptCta, acceptMutation.isPending, t, handleAccept])
+
+  useEffect(() => {
+    if (!canShowAcceptCta) return
+
+    updateBottomButton({
+      text: acceptMutation.isPending
+        ? t('invitations.accepting')
+        : t('invitations.acceptAction'),
+      enabled: !acceptMutation.isPending,
+      showProgress: acceptMutation.isPending,
+    })
+  }, [canShowAcceptCta, acceptMutation.isPending, acceptMutation.variables, t])
 
   const toRoleLabel = (role: 'admin' | 'member'): string =>
     role === 'admin' ? t('invitations.roleAdmin') : t('invitations.roleMember')
@@ -62,10 +107,10 @@ export const AcceptInvitationPage = () => {
   const formatDate = (timestamp: number): string => {
     const date = new Date(timestamp)
 
-    return date.toLocaleDateString(undefined, {
-      day: '2-digit',
-      month: '2-digit',
+    return date.toLocaleString(undefined, {
       year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
     })
@@ -134,19 +179,7 @@ export const AcceptInvitationPage = () => {
                     {t('invitations.requiresAuth')}
                   </p>
                 </div>
-              ) : (
-                <div className='mt-4'>
-                  <Button
-                    disabled={acceptMutation.isPending}
-                    size='md'
-                    variant='primary'
-                    onClick={handleAccept}>
-                    {acceptMutation.isPending
-                      ? t('invitations.accepting')
-                      : t('invitations.acceptAction')}
-                  </Button>
-                </div>
-              )}
+              ) : null}
             </CardContent>
           </Card>
         ) : null}
