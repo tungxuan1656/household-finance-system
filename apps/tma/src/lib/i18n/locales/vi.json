@@ -106,7 +106,7 @@
     "emptyTitle": "Chưa có chi tiêu nào",
     "emptyDesc": "Ghi nhận chi tiêu đầu tiên để bắt đầu theo dõi.",
     "openFilterAria": "Mở bộ lọc",
-    "filter": "Lọc",
+    "filterLabel": "Lọc",
     "filterCount": "Lọc {{count}}",
     "filter": {
       "title": "Lọc chi tiêu",
