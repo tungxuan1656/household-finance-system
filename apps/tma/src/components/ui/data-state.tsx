@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils'
 
@@ -21,36 +22,44 @@ export interface DataStateProps {
   retryAction?: () => unknown | Promise<unknown>
 }
 
-const DEFAULT_LOADING_TITLE = 'Đang tải dữ liệu'
-const DEFAULT_LOADING_DESCRIPTION =
-  'Nội dung sẽ xuất hiện ngay khi truy vấn hoàn tất.'
-const DEFAULT_EMPTY_TITLE = 'Không có dữ liệu'
-const DEFAULT_EMPTY_DESCRIPTION = 'Hiện chưa có dữ liệu để hiển thị ở mục này.'
-const DEFAULT_ERROR_TITLE = 'Không thể tải dữ liệu'
-const DEFAULT_ERROR_DESCRIPTION = 'Đã có lỗi xảy ra, vui lòng thử lại sau.'
-
 export const DataState = ({
   children,
   className,
   customAction,
-  emptyDescription = DEFAULT_EMPTY_DESCRIPTION,
-  emptyTitle = DEFAULT_EMPTY_TITLE,
-  errorDescription = DEFAULT_ERROR_DESCRIPTION,
-  errorTitle = DEFAULT_ERROR_TITLE,
+  emptyDescription,
+  emptyTitle,
+  errorDescription,
+  errorTitle,
   isEmpty,
   isError,
   isLoading,
-  loadingDescription = DEFAULT_LOADING_DESCRIPTION,
-  loadingTitle = DEFAULT_LOADING_TITLE,
+  loadingDescription,
+  loadingTitle,
   retryAction,
 }: DataStateProps) => {
+  const { t } = useTranslation()
+
+  const resolvedLoadingTitle = loadingTitle ?? t('dataState.loadingTitle')
+  const resolvedLoadingDescription =
+    loadingDescription ?? t('dataState.loadingDescription')
+  const resolvedEmptyTitle = emptyTitle ?? t('dataState.emptyTitle')
+  const resolvedEmptyDescription =
+    emptyDescription ?? t('dataState.emptyDescription')
+  const resolvedErrorTitle = errorTitle ?? t('dataState.errorTitle')
+  const resolvedErrorDescription =
+    errorDescription ?? t('dataState.errorDescription')
+
   if (isLoading || isError || isEmpty) {
-    const title = isLoading ? loadingTitle : isError ? errorTitle : emptyTitle
-    const description = isLoading
-      ? loadingDescription
+    const title = isLoading
+      ? resolvedLoadingTitle
       : isError
-        ? errorDescription
-        : emptyDescription
+        ? resolvedErrorTitle
+        : resolvedEmptyTitle
+    const description = isLoading
+      ? resolvedLoadingDescription
+      : isError
+        ? resolvedErrorDescription
+        : resolvedEmptyDescription
     const action =
       customAction ??
       (isError && retryAction ? (
@@ -59,7 +68,7 @@ export const DataState = ({
           onClick={() => {
             void retryAction()
           }}>
-          Thử lại
+          {t('dataState.retry')}
         </Button>
       ) : null)
 

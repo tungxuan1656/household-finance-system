@@ -1,4 +1,5 @@
 import { type ChangeEvent, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { CameraIcon } from '@/components/shared/tma-icons'
 import {
@@ -41,10 +42,14 @@ export const HouseholdAvatarSection = ({
   householdName,
   isBusy,
   onAvatarUploaded,
-  readOnlyMessage = 'Chỉ quản trị viên mới có thể chỉnh tên và avatar của household.',
+  readOnlyMessage: externalReadOnlyMessage,
   summaryText,
-  title = 'Cài đặt ảnh đại diện household',
+  title: externalTitle,
 }: HouseholdAvatarSectionProps) => {
+  const { t } = useTranslation()
+  const readOnlyMessage =
+    externalReadOnlyMessage ?? t('households.avatarSection.readOnly')
+  const title = externalTitle ?? t('households.avatarSection.title')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false)
   const [avatarError, setAvatarError] = useState<string | null>(null)
@@ -82,13 +87,13 @@ export const HouseholdAvatarSection = ({
     }
 
     if (!isAvatarImageFile(file)) {
-      setAvatarError('Chọn ảnh hợp lệ dạng JPEG, PNG, WEBP hoặc HEIC.')
+      setAvatarError(t('households.avatarSection.invalidFormat'))
 
       return
     }
 
     if (file.size > MAX_AVATAR_SIZE_BYTES) {
-      setAvatarError('Ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 8MB.')
+      setAvatarError(t('households.avatarSection.tooLarge'))
 
       return
     }
@@ -131,14 +136,15 @@ export const HouseholdAvatarSection = ({
       setAvatarError(
         error instanceof ApiClientError
           ? error.message
-          : 'Không thể tải ảnh đại diện lên. Vui lòng thử lại.',
+          : t('households.avatarSection.uploadError'),
       )
     } finally {
       setIsUploadingAvatar(false)
     }
   }
 
-  const displayName = householdName.trim() || 'Household mới'
+  const displayName =
+    householdName.trim() || t('households.createPage.newHousehold')
 
   return (
     <>
@@ -176,7 +182,11 @@ export const HouseholdAvatarSection = ({
               fileInputRef.current?.click()
             }}>
             <CameraIcon height='14' width='14' />
-            <span>{avatarUrl ? 'Đổi ảnh' : 'Thêm ảnh'}</span>
+            <span>
+              {avatarUrl
+                ? t('households.avatarSection.changeImage')
+                : t('households.avatarSection.addImage')}
+            </span>
           </Button>
 
           <input

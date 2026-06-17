@@ -1,37 +1,33 @@
-import {
-  type HouseholdDTO,
-  SOURCE_KEYS,
-  type SourceKey,
-} from '@/features/home/types'
+import { type HouseholdDTO, SOURCE_KEYS } from '@/features/home/types'
 
-const SOURCE_LABELS: Record<SourceKey, string> = {
-  cash: 'Tiền mặt',
-  'bank-transfer': 'Chuyển khoản',
-  card: 'Thẻ tín dụng',
-  momo: 'MoMo',
-  'zalo-pay': 'ZaloPay',
-  'shopee-pay': 'ShopeePay',
-  other: 'Khác',
+const sourceKeyToI18n = (key: string): string =>
+  key.replace(/-([a-z])/g, (_, c) => c.toUpperCase())
+
+const validSourceI18nKeys = new Set(SOURCE_KEYS.map(sourceKeyToI18n))
+
+const sourceI18nKey = (key: string): string => {
+  const camel = sourceKeyToI18n(key)
+
+  return validSourceI18nKeys.has(camel) ? camel : 'other'
 }
 
-const SOURCE_DETAILS: Record<SourceKey, string> = {
-  cash: 'Ví cá nhân',
-  'bank-transfer': 'Tài khoản ngân hàng',
-  card: 'Thẻ thanh toán',
-  momo: 'Ví điện tử',
-  'zalo-pay': 'Ví điện tử',
-  'shopee-pay': 'Ví điện tử',
-  other: 'Nguồn tiền khác',
-}
+export const getSourceLabel = (
+  key: string,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string => t(`expenseSource.${sourceI18nKey(key)}`)
 
-export const getSourceLabel = (key: string): string =>
-  SOURCE_LABELS[key as SourceKey] ?? SOURCE_LABELS.other
+export const getSourceDetail = (
+  key: string,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string => t(`expenseSourceDetail.${sourceI18nKey(key)}`)
 
-export const getSourceOptions = () =>
+export const getSourceOptions = (
+  t: (key: string, options?: Record<string, unknown>) => string,
+) =>
   SOURCE_KEYS.map((key) => ({
     id: key,
-    label: getSourceLabel(key),
-    detail: SOURCE_DETAILS[key],
+    label: getSourceLabel(key, t),
+    detail: getSourceDetail(key, t),
   }))
 
 export const buildHouseholdNameMap = (

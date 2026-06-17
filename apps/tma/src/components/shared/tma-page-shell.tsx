@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 
 import { useContainerScrollRestoration } from '@/app/router/use-container-scroll-restoration'
@@ -25,20 +26,21 @@ const PullToRefreshSpinner = ({ label }: { label?: string }) => (
 
 const HOME_FALLBACK_ROUTE = TMA_PATHS.root
 
-const tabItems = [
-  {
-    href: HOME_FALLBACK_ROUTE,
-    label: 'Trang chủ',
-    icon: HomeIcon,
-    match: (path: string) => path === TMA_PATHS.root,
-  },
-  {
-    href: TMA_PATHS.statistics,
-    label: 'Thống kê',
-    icon: StatisticsIcon,
-    match: (path: string) => path === TMA_PATHS.statistics,
-  },
-] as const
+const makeTabItems = (t: (key: string) => string) =>
+  [
+    {
+      href: HOME_FALLBACK_ROUTE,
+      label: t('shell.tabHome'),
+      icon: HomeIcon,
+      match: (path: string) => path === TMA_PATHS.root,
+    },
+    {
+      href: TMA_PATHS.statistics,
+      label: t('shell.tabStats'),
+      icon: StatisticsIcon,
+      match: (path: string) => path === TMA_PATHS.statistics,
+    },
+  ] as const
 
 const TmaBottomTabs = ({
   bubbleHref = TMA_PATHS.expensesNewCategory,
@@ -46,10 +48,12 @@ const TmaBottomTabs = ({
   bubbleHref?: string
 }) => {
   const location = useLocation()
+  const { t } = useTranslation()
+  const tabItems = useMemo(() => makeTabItems(t), [t])
 
   return (
     <div
-      aria-label='Điều hướng chính'
+      aria-label={t('shell.navAria')}
       className='pointer-events-none fixed right-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] left-0 z-30 flex justify-center px-4'>
       <nav className='pointer-events-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 rounded-[28px] border border-white/50 bg-white/55 p-1 shadow-[0_6px_20px_rgba(17,24,39,0.05),0_1px_2px_rgba(17,24,39,0.04),inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.04)] backdrop-blur-md md:min-w-90'>
         <div className='flex justify-start'>
@@ -83,7 +87,7 @@ const TmaBottomTabs = ({
         </div>
 
         <Link
-          aria-label='Tạo chi tiêu mới'
+          aria-label={t('shell.addExpenseAria')}
           className='pointer-events-auto mx-1 -my-4 grid size-13.5 place-items-center rounded-full bg-linear-to-br from-[#2a3a5c] to-tma-text-strong text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
           to={bubbleHref}
           onClick={() => {
@@ -196,6 +200,7 @@ export const TmaPageShell = ({
   reserveBottomButton = false,
   title,
 }: TmaPageShellProps) => {
+  const { t } = useTranslation()
   const contentRef = useRef<HTMLElement | null>(null)
 
   useContainerScrollRestoration(contentRef)
@@ -238,7 +243,7 @@ export const TmaPageShell = ({
               pullDownThreshold={80}
               pullingContent={<PullToRefreshSpinner />}
               refreshingContent={
-                <PullToRefreshSpinner label='Đang làm mới...' />
+                <PullToRefreshSpinner label={t('shell.refreshing')} />
               }
               resistance={2.5}
               onRefresh={onRefresh}>

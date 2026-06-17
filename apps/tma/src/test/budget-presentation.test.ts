@@ -10,6 +10,22 @@ import {
 } from '@/features/budgets/presentation'
 import type { BudgetDTO } from '@/features/budgets/types'
 
+const t = (key: string, options?: Record<string, unknown>): string => {
+  const map: Record<string, string> = {
+    'budgets.statusExceeded': 'Đã vượt ngân sách',
+    'budgets.statusWarning': 'Sắp chạm ngưỡng',
+    'budgets.statusSafe': 'Đang an toàn',
+  }
+  let result = map[key] ?? key
+  if (options) {
+    for (const [k, v] of Object.entries(options)) {
+      result = result.replace(`{{${k}}}`, String(v))
+    }
+  }
+
+  return result
+}
+
 const makeBudget = (overrides: Partial<BudgetDTO>): BudgetDTO => ({
   categoryLimits: [],
   createdAt: 0,
@@ -80,7 +96,7 @@ describe('budget presentation helpers', () => {
     })
   })
 
-  it('throws for invalid personal budget currency code', () => {
+  it('throws BudgetMutationError for invalid personal budget currency code', () => {
     expect(() =>
       buildBudgetMutationRequest({
         mode: 'create',
@@ -88,7 +104,7 @@ describe('budget presentation helpers', () => {
         scope: 'personal',
         totalLimitMinor: 1_000_000,
       }),
-    ).toThrow('Mã tiền tệ không hợp lệ')
+    ).toThrow('invalidCurrency')
 
     expect(() =>
       buildBudgetMutationRequest({
@@ -98,11 +114,11 @@ describe('budget presentation helpers', () => {
         scope: 'personal',
         totalLimitMinor: 1_000_000,
       }),
-    ).toThrow('Mã tiền tệ không hợp lệ')
+    ).toThrow('invalidCurrency')
   })
 
   it('derives status copy, latest budget, and clamped progress', () => {
-    expect(getBudgetStatusCopy('warning')).toEqual({
+    expect(getBudgetStatusCopy('warning', t)).toEqual({
       label: 'Sắp chạm ngưỡng',
       tone: 'warning',
     })

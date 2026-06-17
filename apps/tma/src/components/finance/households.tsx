@@ -1,4 +1,5 @@
 import { useQueries } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import {
@@ -65,8 +66,10 @@ const UserIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export const HouseholdPreviewItem = ({
   card,
+  t,
 }: {
   card: HouseholdCardViewModel
+  t: (key: string, options?: Record<string, unknown>) => string
 }) => (
   <Link
     className='grid min-w-55 gap-3 rounded-[22px] bg-white p-3.5 shadow-tma-soft transition active:scale-[0.98]'
@@ -80,7 +83,9 @@ export const HouseholdPreviewItem = ({
         src={card.household.avatarUrl}
       />
       <Chip className='min-h-6 px-2.5 py-1.5'>
-        {card.memberCount != null ? `${card.memberCount}` : 'Đang tải'}
+        {card.memberCount != null
+          ? `${card.memberCount}`
+          : t('householdsList.loading')}
         <UserIcon className='inline-block size-3' />
       </Chip>
     </div>
@@ -92,7 +97,7 @@ export const HouseholdPreviewItem = ({
         {card.totalSpendMinor != null && card.currencyCode
           ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
           : card.isLoading
-            ? 'Đang tải...'
+            ? t('householdsList.loadingDots')
             : '-'}
       </MoneyLabel>
     </div>
@@ -102,9 +107,11 @@ export const HouseholdPreviewItem = ({
 export const HouseholdItem = ({
   card,
   roleLabel,
+  t,
 }: {
   card: HouseholdCardViewModel
   roleLabel: string
+  t: (key: string, options?: Record<string, unknown>) => string
 }) => (
   <Link
     className='grid gap-3 rounded-3xl bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
@@ -123,8 +130,8 @@ export const HouseholdItem = ({
       <CardTitle>{card.household.name}</CardTitle>
       <CardDescription>
         {card.memberCount != null
-          ? `${card.memberCount} thành viên`
-          : 'Đang tải thành viên'}
+          ? t('households.memberCountMany', { count: card.memberCount })
+          : t('householdsList.membersLoading')}
       </CardDescription>
     </div>
     <div className='grid grid-cols-2 gap-2.5'>
@@ -133,7 +140,7 @@ export const HouseholdItem = ({
           {card.totalSpendMinor != null && card.currencyCode
             ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
             : card.isLoading
-              ? 'Đang tải...'
+              ? t('householdsList.loadingDots')
               : '-'}
         </MoneyLabel>
       </div>
@@ -166,6 +173,7 @@ export const HouseholdItem = ({
 )
 
 export const HouseholdPreviewCarousel = () => {
+  const { t } = useTranslation()
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
   const budgetPeriod = getMonthBudgetPeriod(selectedPeriod)
   const householdsQuery = useHouseholdsQuery()
@@ -197,8 +205,9 @@ export const HouseholdPreviewCarousel = () => {
         ? getHouseholdBudgetLabel(
             overviewQueries[index]?.data?.totalSpendMinor,
             budgetQueries[index]?.data?.items[0] ?? null,
+            t,
           )
-        : 'Ngân sách chỉ có theo tháng',
+        : t('summary.monthlyOnly'),
       currencyCode: overviewQueries[index]?.data?.currencyCode,
       isError: Boolean(
         memberQueries[index]?.error ||
@@ -223,10 +232,10 @@ export const HouseholdPreviewCarousel = () => {
   return (
     <Section>
       <DataState
-        emptyDescription='Home vẫn hiển thị chi tiêu cá nhân, còn thẻ gia đình sẽ xuất hiện khi có membership.'
-        emptyTitle='Chưa tham gia gia đình nào'
-        errorDescription='Kiểm tra phiên đăng nhập hoặc dữ liệu seed local rồi mở lại Mini App.'
-        errorTitle='Không tải được danh sách gia đình'
+        emptyDescription={t('householdsList.emptyDesc')}
+        emptyTitle={t('householdsList.emptyTitle')}
+        errorDescription={t('householdsList.loadErrorDesc')}
+        errorTitle={t('householdsList.loadError')}
         isEmpty={
           !householdsQuery.isLoading &&
           !householdsQuery.isError &&
@@ -234,12 +243,12 @@ export const HouseholdPreviewCarousel = () => {
         }
         isError={householdsQuery.isError}
         isLoading={householdsQuery.isLoading && cards.length === 0}
-        loadingDescription='Thẻ household sẽ xuất hiện ngay khi các truy vấn đầu tiên hoàn tất.'
-        loadingTitle='Đang tải danh sách gia đình'
+        loadingDescription={t('householdsList.loadingDesc')}
+        loadingTitle={t('householdsList.loadingTitle')}
         retryAction={householdsQuery.refetch}>
         <div className='-mr-1 grid auto-cols-[minmax(220px,78%)] grid-flow-col gap-2.5 overflow-x-auto px-0.5 py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
           {cards.map((card) => (
-            <HouseholdPreviewItem key={card.household.id} card={card} />
+            <HouseholdPreviewItem key={card.household.id} card={card} t={t} />
           ))}
         </div>
       </DataState>

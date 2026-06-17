@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -21,6 +22,7 @@ interface PeriodPickerLocationState {
 export const PeriodPickerPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { t } = useTranslation()
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
   const setSelectedPeriod = usePeriodStore((state) => state.setSelectedPeriod)
 
@@ -71,7 +73,7 @@ export const PeriodPickerPage = () => {
 
   useEffect(() => {
     const cleanup = setBottomButton({
-      text: 'Chọn',
+      text: t('period.pickerConfirm'),
       enabled: true,
       showProgress: false,
       onClick: () => {
@@ -87,14 +89,14 @@ export const PeriodPickerPage = () => {
 
   useEffect(() => {
     updateBottomButton({
-      text: 'Chọn',
+      text: t('period.pickerConfirm'),
       enabled: true,
       showProgress: false,
     })
   }, [candidate])
 
   return (
-    <TmaPageShell reserveBottomButton title='Chọn kỳ'>
+    <TmaPageShell reserveBottomButton title={t('period.pickerTitle')}>
       <PeriodPickerSection
         value={candidate}
         onChange={(next) => {

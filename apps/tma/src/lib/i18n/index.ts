@@ -1,31 +1,16 @@
-import { initData } from '@tma.js/sdk'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
-import en from '@/lib/i18n/locales/en.json'
 import vi from '@/lib/i18n/locales/vi.json'
 
-const SUPPORTED_LOCALES = ['vi', 'en'] as const
-export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
-
-export const DEFAULT_LOCALE: SupportedLocale = 'vi'
-
-const isSupportedLocale = (value: unknown): value is SupportedLocale =>
-  typeof value === 'string' &&
-  (SUPPORTED_LOCALES as readonly string[]).includes(value)
-
-export const detectTelegramLocale = (): SupportedLocale | null => {
-  const languageCode = initData.user()?.language_code
-
-  return isSupportedLocale(languageCode) ? languageCode : null
-}
+export const DEFAULT_LOCALE = 'vi' as const
+export type SupportedLocale = typeof DEFAULT_LOCALE
 
 i18n
   .use(initReactI18next)
   .init({
     resources: {
       vi: { translation: vi },
-      en: { translation: en },
     },
     lng: DEFAULT_LOCALE,
     fallbackLng: DEFAULT_LOCALE,

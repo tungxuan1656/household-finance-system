@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import {
@@ -93,6 +94,7 @@ const EditSelectRow = ({
 export const ExpenseEditPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const expenseId = id ?? 'unknown'
   const expenseQuery = useExpenseDetailQuery(expenseId, {
     enabled: expenseId !== 'unknown',
@@ -129,6 +131,7 @@ export const ExpenseEditPage = () => {
 
   const activeCategory = getCategoryPresentation(
     draft?.categoryKey ?? expense?.categoryKey,
+    t,
     referenceCategories,
   )
   const updateMutation = useUpdateExpenseMutation()
@@ -154,26 +157,26 @@ export const ExpenseEditPage = () => {
 
   const householdPickerOptions = useMemo(
     () => [
-      { value: '', label: 'Cá nhân (Không gắn)' },
+      { value: '', label: t('expenses.edit.optionPersonal') },
       ...households.map((h) => ({ value: h.id, label: h.name })),
     ],
-    [households],
+    [households, t],
   )
 
   const sourcePickerOptions = useMemo(
-    () => getSourceOptions().map((s) => ({ value: s.id, label: s.label })),
-    [],
+    () => getSourceOptions(t).map((s) => ({ value: s.id, label: s.label })),
+    [t],
   )
 
   const groupPickerOptions = useMemo(
     () => [
-      { value: '', label: 'Không gắn nhóm' },
+      { value: '', label: t('expenses.edit.optionUngrouped') },
       ...groupItems.map((item) => ({
         value: item.group.id,
         label: item.group.name,
       })),
     ],
-    [groupItems],
+    [groupItems, t],
   )
 
   const handleSave = useEffectEvent(async () => {
@@ -205,7 +208,7 @@ export const ExpenseEditPage = () => {
 
   useEffect(() => {
     const cleanup = setBottomButton({
-      text: 'Lưu thay đổi',
+      text: t('expenses.edit.save'),
       enabled: isValid && !updateMutation.isPending,
       showProgress: updateMutation.isPending,
       onClick: () => {
@@ -221,21 +224,21 @@ export const ExpenseEditPage = () => {
 
   if (expenseQuery.isLoading || !draft) {
     return (
-      <TmaPageShell title='chi tiêu'>
+      <TmaPageShell title={t('expenses.edit.title')}>
         <Card>
-          <CardDescription>Đang tải biểu mẫu...</CardDescription>
+          <CardDescription>{t('expenses.edit.loading')}</CardDescription>
         </Card>
       </TmaPageShell>
     )
   }
 
   return (
-    <TmaPageShell reserveBottomButton title='chi tiêu'>
+    <TmaPageShell reserveBottomButton title={t('expenses.edit.title')}>
       {/* Money input */}
       <Card className='mt-3 grid gap-3'>
         <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
           <CoinIcon height='16' width='16' />
-          <span>Số tiền</span>
+          <span>{t('expenses.edit.fieldAmount')}</span>
         </div>
         <label className='flex items-end justify-between gap-2 rounded-3xl bg-white p-4'>
           <input
@@ -259,11 +262,11 @@ export const ExpenseEditPage = () => {
       <Card className='mt-3 grid gap-3'>
         <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
           <NoteIcon height='16' width='16' />
-          <span>Tên *</span>
+          <span>{t('expenses.edit.fieldName')}</span>
         </div>
         <Input
           className='border-0 bg-transparent px-0 text-base font-semibold'
-          placeholder='Nhập tên khoản chi tiêu...'
+          placeholder={t('expenses.edit.fieldNamePlaceholder')}
           value={draft.title}
           onChange={(event) => updateDraft({ title: event.target.value })}
         />
@@ -273,7 +276,7 @@ export const ExpenseEditPage = () => {
       <Card className='mt-3 overflow-hidden p-0'>
         <DatePicker
           fullWidth
-          aria-label='Ngày chi tiêu'
+          aria-label={t('expenses.edit.fieldDate')}
           value={new Date(draft.occurredAt).toISOString().slice(0, 10)}
           onChange={(value) => {
             selection()
@@ -287,7 +290,7 @@ export const ExpenseEditPage = () => {
       {/* Category */}
       <Card className='mt-3 grid gap-0 px-4'>
         <EditSelectRow
-          label='Danh mục'
+          label={t('expenses.edit.fieldCategory')}
           value={activeCategory.label}
           onClick={() => {
             selection()
@@ -305,10 +308,10 @@ export const ExpenseEditPage = () => {
       {/* Source */}
       <Card className='mt-3 grid gap-3'>
         <Field>
-          <FieldLabel>Nguồn thanh toán</FieldLabel>
+          <FieldLabel>{t('expenses.edit.fieldSource')}</FieldLabel>
           <NativePicker
             fullWidth
-            aria-label='Chọn nguồn thanh toán'
+            aria-label={t('expenses.edit.fieldSourcePlaceholder')}
             options={sourcePickerOptions}
             value={draft.sourceKey}
             onChange={(next) => {
@@ -322,10 +325,10 @@ export const ExpenseEditPage = () => {
       {/* Household */}
       <Card className='mt-3 grid gap-3'>
         <Field>
-          <FieldLabel>Không gian gia đình</FieldLabel>
+          <FieldLabel>{t('expenses.edit.fieldHousehold')}</FieldLabel>
           <NativePicker
             fullWidth
-            aria-label='Chọn không gian gia đình'
+            aria-label={t('expenses.edit.fieldHouseholdPlaceholder')}
             disabled={householdsQuery.isLoading}
             options={householdPickerOptions}
             value={draft.householdId ?? ''}
@@ -340,10 +343,10 @@ export const ExpenseEditPage = () => {
       {/* Group */}
       <Card className='mt-3 grid gap-3'>
         <Field>
-          <FieldLabel>Nhóm chi tiêu</FieldLabel>
+          <FieldLabel>{t('expenses.edit.fieldGroup')}</FieldLabel>
           <NativePicker
             fullWidth
-            aria-label='Chọn nhóm chi tiêu'
+            aria-label={t('expenses.edit.fieldGroupPlaceholder')}
             disabled={personalGroupsQuery.isLoading}
             options={groupPickerOptions}
             value={draft.groupId ?? ''}
@@ -364,7 +367,7 @@ export const ExpenseEditPage = () => {
             resetStore()
             navigate(-1)
           }}>
-          Hủy bỏ
+          {t('common.cancel')}
         </Button>
       </div>
     </TmaPageShell>
@@ -373,6 +376,7 @@ export const ExpenseEditPage = () => {
 
 export const ExpenseEditCategoryPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const categoriesQuery = useReferenceCategoriesQuery()
   const referenceCategories = categoriesQuery.data?.items ?? []
   const draft = useEditExpenseStore((state) => state.draft)
@@ -382,7 +386,7 @@ export const ExpenseEditCategoryPage = () => {
     .filter((category) => category.kind === 'expense')
     .map((category) => ({
       id: category.key,
-      ...getCategoryPresentation(category.key, referenceCategories),
+      ...getCategoryPresentation(category.key, t, referenceCategories),
     }))
 
   useEffect(() => {
@@ -392,14 +396,14 @@ export const ExpenseEditCategoryPage = () => {
   if (!draft) return null
 
   return (
-    <TmaPageShell title='Chọn danh mục'>
+    <TmaPageShell title={t('expenses.edit.categoryPicker')}>
       <Section>
-        <SectionHeader title='Danh mục' />
+        <SectionHeader title={t('expenses.edit.sectionCategory')} />
         <DataState
-          emptyDescription='Reference categories chưa có danh mục chi tiêu khả dụng.'
-          emptyTitle='Chưa có danh mục'
-          errorDescription='Không tải được danh mục từ API. Kiểm tra kết nối rồi thử lại.'
-          errorTitle='Không tải được danh mục'
+          emptyDescription={t('expenses.edit.emptyDescription')}
+          emptyTitle={t('expenses.edit.emptyTitle')}
+          errorDescription={t('expenses.edit.loadErrorDesc')}
+          errorTitle={t('expenses.edit.loadError')}
           isEmpty={
             !categoriesQuery.isLoading &&
             !categoriesQuery.isError &&
@@ -407,8 +411,8 @@ export const ExpenseEditCategoryPage = () => {
           }
           isError={categoriesQuery.isError && categoryOptions.length === 0}
           isLoading={categoriesQuery.isLoading && categoryOptions.length === 0}
-          loadingDescription='Danh mục chi tiêu sẽ hiện ngay khi API trả về.'
-          loadingTitle='Đang tải danh mục'
+          loadingDescription={t('expenses.edit.loadErrorDesc')}
+          loadingTitle={t('expenses.edit.loadingCategory')}
           retryAction={categoriesQuery.refetch}>
           <div className='grid grid-cols-3 gap-2'>
             {categoryOptions.map((category) => {

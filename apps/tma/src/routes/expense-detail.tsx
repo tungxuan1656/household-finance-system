@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import {
@@ -37,6 +38,7 @@ import { impact, notification, selection } from '@/lib/telegram/haptics'
 export const ExpenseDetailPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const expenseId = id ?? 'unknown'
   const expenseQuery = useExpenseDetailQuery(expenseId, {
     enabled: expenseId !== 'unknown',
@@ -53,6 +55,7 @@ export const ExpenseDetailPage = () => {
   )
   const category = getCategoryPresentation(
     expense?.categoryKey,
+    t,
     categoriesQuery.data?.items ?? [],
   )
 
@@ -72,9 +75,9 @@ export const ExpenseDetailPage = () => {
 
   if (expenseQuery.isLoading || categoriesQuery.isLoading) {
     return (
-      <TmaPageShell title='Chi tiết'>
+      <TmaPageShell title={t('expenses.detail.title')}>
         <Card>
-          <CardDescription>Đang tải thông tin chi tiêu...</CardDescription>
+          <CardDescription>{t('expenses.detail.loading')}</CardDescription>
         </Card>
       </TmaPageShell>
     )
@@ -82,11 +85,9 @@ export const ExpenseDetailPage = () => {
 
   if (expenseQuery.isError || !expense) {
     return (
-      <TmaPageShell title='Chi tiết'>
+      <TmaPageShell title={t('expenses.detail.title')}>
         <Card>
-          <CardDescription>
-            Không tìm thấy khoản chi này hoặc bạn không có quyền truy cập.
-          </CardDescription>
+          <CardDescription>{t('expenses.detail.notFound')}</CardDescription>
         </Card>
       </TmaPageShell>
     )
@@ -95,11 +96,12 @@ export const ExpenseDetailPage = () => {
   const dateLabel = formatDateLabel(new Date(expense.occurredAt).toISOString())
   const timeLabel = formatTimeLabel(new Date(expense.occurredAt).toISOString())
   const spaceLabel = expense.householdId
-    ? householdNameMap.get(expense.householdId) || 'Gia đình'
-    : 'Cá nhân'
+    ? householdNameMap.get(expense.householdId) ||
+      t('expenses.detail.household')
+    : t('expenses.detail.personal')
 
   return (
-    <TmaPageShell title='Chi tiết'>
+    <TmaPageShell title={t('expenses.detail.title')}>
       {/* Hero */}
       <Card className='mb-3 flex items-center gap-4 p-5'>
         <TmaCategoryIconBadge
@@ -108,7 +110,7 @@ export const ExpenseDetailPage = () => {
           symbol={category.symbol}
         />
         <div className='min-w-0 flex-1'>
-          <Eyebrow>Số tiền đã chi</Eyebrow>
+          <Eyebrow>{t('expenses.detail.amountSpent')}</Eyebrow>
           <MoneyLabel className='mt-1 block text-[32px] leading-none font-extrabold'>
             {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
           </MoneyLabel>
@@ -117,7 +119,7 @@ export const ExpenseDetailPage = () => {
 
       {/* Info */}
       <Section>
-        <SectionHeader title='Thông tin' />
+        <SectionHeader title={t('expenses.detail.sectionInfo')} />
         <Card className='grid gap-3'>
           <div className='flex items-center gap-3'>
             <TmaCategoryIconBadge
@@ -127,7 +129,7 @@ export const ExpenseDetailPage = () => {
               symbol={category.symbol}
             />
             <div>
-              <Eyebrow>Danh mục</Eyebrow>
+              <Eyebrow>{t('expenses.detail.eyebrowCategory')}</Eyebrow>
               <strong className='text-sm font-semibold text-tma-text-strong'>
                 {category.label}
               </strong>
@@ -135,13 +137,13 @@ export const ExpenseDetailPage = () => {
           </div>
           <div className='grid grid-cols-2 gap-3'>
             <div className='grid gap-1'>
-              <Eyebrow>Nguồn tiền</Eyebrow>
+              <Eyebrow>{t('expenses.detail.eyebrowSource')}</Eyebrow>
               <strong className='text-sm font-semibold text-tma-text-strong'>
-                {getSourceLabel(expense.sourceKey)}
+                {getSourceLabel(expense.sourceKey, t)}
               </strong>
             </div>
             <div className='grid gap-1'>
-              <Eyebrow>Không gian</Eyebrow>
+              <Eyebrow>{t('expenses.detail.eyebrowSpace')}</Eyebrow>
               <strong className='text-sm font-semibold text-tma-text-strong'>
                 {spaceLabel}
               </strong>
@@ -152,9 +154,9 @@ export const ExpenseDetailPage = () => {
 
       {/* Date & Time */}
       <Section>
-        <SectionHeader title='Thời gian' />
+        <SectionHeader title={t('expenses.detail.sectionTime')} />
         <Card className='grid gap-1'>
-          <Eyebrow>Ngày & giờ</Eyebrow>
+          <Eyebrow>{t('expenses.detail.eyebrowDateTime')}</Eyebrow>
           <strong className='text-base font-semibold text-tma-text-strong'>
             {dateLabel}, {timeLabel}
           </strong>
@@ -165,10 +167,11 @@ export const ExpenseDetailPage = () => {
       {showDeleteConfirm ? (
         <Card className='mt-3 grid gap-3 border-[#d93838]/20 bg-[#ffeded]/90'>
           <div>
-            <Eyebrow className='text-[#d93838]'>Xác nhận xóa</Eyebrow>
+            <Eyebrow className='text-[#d93838]'>
+              {t('expenses.detail.deleteConfirmTitle')}
+            </Eyebrow>
             <strong className='text-sm font-semibold text-tma-text-strong'>
-              Bạn có chắc chắn muốn xóa khoản chi này? Thao tác này không thể
-              hoàn tác.
+              {t('expenses.detail.deleteConfirmBody')}
             </strong>
           </div>
           <div className='grid grid-cols-2 gap-2'>
@@ -176,7 +179,7 @@ export const ExpenseDetailPage = () => {
               disabled={deleteMutation.isPending}
               variant='danger'
               onClick={handleDelete}>
-              Xóa vĩnh viễn
+              {t('expenses.detail.deleteForever')}
             </Button>
             <Button
               variant='ghost'
@@ -184,7 +187,7 @@ export const ExpenseDetailPage = () => {
                 selection()
                 setShowDeleteConfirm(false)
               }}>
-              Hủy
+              {t('common.cancel')}
             </Button>
           </div>
         </Card>
@@ -196,7 +199,7 @@ export const ExpenseDetailPage = () => {
               selection()
               navigate(getExpenseEditPath(expense.id))
             }}>
-            Sửa chi tiêu
+            {t('expenses.detail.editAction')}
           </Button>
           <Button
             className='bg-[#d93838]/10 text-[#d93838]'
@@ -205,7 +208,7 @@ export const ExpenseDetailPage = () => {
               selection()
               setShowDeleteConfirm(true)
             }}>
-            Xóa chi tiêu
+            {t('expenses.detail.deleteAction')}
           </Button>
         </div>
       )}

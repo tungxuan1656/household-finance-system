@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import {
@@ -14,6 +15,7 @@ import { selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseCategoryPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const date = useAddExpenseFlowStore((state) => state.date)
   const setDate = useAddExpenseFlowStore((state) => state.setDate)
   const selectCategory = useAddExpenseFlowStore((state) => state.selectCategory)
@@ -23,14 +25,14 @@ export const AddExpenseCategoryPage = () => {
     .filter((category) => category.kind === 'expense')
     .map((category) => ({
       id: category.key,
-      ...getCategoryPresentation(category.key, referenceCategories),
+      ...getCategoryPresentation(category.key, t, referenceCategories),
     }))
 
   return (
-    <TmaPageShell title='Thêm chi tiêu'>
+    <TmaPageShell title={t('expenses.add.title')}>
       <DatePicker
         fullWidth
-        aria-label='Ngày chi tiêu'
+        aria-label={t('expenses.add.dateLabel')}
         className='mt-4'
         value={date.slice(0, 10)}
         onChange={(value) => {
@@ -42,12 +44,12 @@ export const AddExpenseCategoryPage = () => {
       />
 
       <Section>
-        <SectionHeader title='Danh mục' />
+        <SectionHeader title={t('expenses.add.sectionCategory')} />
         <DataState
-          emptyDescription='Reference categories chưa có danh mục chi tiêu khả dụng.'
-          emptyTitle='Chưa có danh mục'
-          errorDescription='Không tải được danh mục từ API. Kiểm tra kết nối rồi thử lại.'
-          errorTitle='Không tải được danh mục'
+          emptyDescription={t('expenses.add.emptyDesc')}
+          emptyTitle={t('expenses.add.emptyTitle')}
+          errorDescription={t('expenses.add.loadErrorDesc')}
+          errorTitle={t('expenses.add.loadError')}
           isEmpty={
             !categoriesQuery.isLoading &&
             !categoriesQuery.isError &&
@@ -55,8 +57,8 @@ export const AddExpenseCategoryPage = () => {
           }
           isError={categoriesQuery.isError && categoryOptions.length === 0}
           isLoading={categoriesQuery.isLoading && categoryOptions.length === 0}
-          loadingDescription='Danh mục chi tiêu sẽ hiện ngay khi API trả về.'
-          loadingTitle='Đang tải danh mục'
+          loadingDescription={t('expenses.add.loadingCategory')}
+          loadingTitle={t('expenses.add.loadingCategory')}
           retryAction={categoriesQuery.refetch}>
           <div className='grid grid-cols-3 gap-2'>
             {categoryOptions.map((category) => (

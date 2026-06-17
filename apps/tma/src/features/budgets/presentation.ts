@@ -8,6 +8,18 @@ import type {
   UpdateBudgetRequest,
 } from './types'
 
+export class BudgetMutationError extends Error {
+  constructor(
+    public code:
+      | 'categoryNotSupported'
+      | 'invalidCurrency'
+      | 'householdRequired',
+  ) {
+    super(code)
+    this.name = 'BudgetMutationError'
+  }
+}
+
 const PERIOD_PATTERN = /^\d{4}-(?:0[1-9]|1[0-2])$/
 
 export const isValidBudgetPeriod = (value: string): boolean =>
@@ -21,12 +33,15 @@ export const parseBudgetAmountInputToMinor = (
   return digits.length > 0 ? Number(digits) : undefined
 }
 
-export const formatBudgetPeriodLabel = (period: string): string => {
+export const formatBudgetPeriodLabel = (
+  period: string,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string => {
   const match = /^(\d{4})-(\d{2})$/.exec(period)
 
   if (!match) return period
 
-  return `Tháng ${match[2]}/${match[1]}`
+  return t('period.monthPeriod', { month: match[2], year: match[1] })
 }
 
 export const getBudgetProgress = (
@@ -43,23 +58,26 @@ export const getBudgetProgress = (
   }
 }
 
-export const getBudgetStatusCopy = (status: BudgetThresholdStatus) => {
+export const getBudgetStatusCopy = (
+  status: BudgetThresholdStatus,
+  t: (key: string, options?: Record<string, unknown>) => string,
+) => {
   if (status === 'exceeded') {
     return {
-      label: 'Đã vượt ngân sách',
+      label: t('budgets.statusExceeded'),
       tone: 'warning' as const,
     }
   }
 
   if (status === 'warning') {
     return {
-      label: 'Sắp chạm ngưỡng',
+      label: t('budgets.statusWarning'),
       tone: 'warning' as const,
     }
   }
 
   return {
-    label: 'Đang an toàn',
+    label: t('budgets.statusSafe'),
     tone: 'success' as const,
   }
 }
@@ -73,12 +91,14 @@ export const getLatestBudget = (budgets: BudgetDTO[]): BudgetDTO | null =>
 
 export const getBudgetScopeLabel = (
   scope: BudgetScope,
-  household?: HouseholdDTO,
+  household: HouseholdDTO | undefined,
+  t: (key: string, options?: Record<string, unknown>) => string,
 ): string => {
-  if (scope === 'personal') return 'Cá nhân'
-  if (scope === 'household') return household?.name ?? 'Household'
+  if (scope === 'personal') return t('budgets.scopePersonal')
+  if (scope === 'household')
+    return household?.name ?? t('budgets.scopeHouseholdFallback')
 
-  return 'Danh mục'
+  return t('budgets.scopeCategory')
 }
 
 export type BudgetMutationFormValues = {
@@ -100,14 +120,12 @@ export const buildBudgetMutationRequest = ({
 }: BudgetMutationFormValues): CreateBudgetRequest | UpdateBudgetRequest => {
   if (mode === 'create') {
     if (scope === 'category') {
-      throw new Error('Ngân sách danh mục chưa được hỗ trợ.')
+      throw new BudgetMutationError('categoryNotSupported')
     }
 
     if (scope === 'personal') {
       if (!currencyCode || !/^[A-Z]{3}$/.test(currencyCode)) {
-        throw new Error(
-          'Mã tiền tệ không hợp lệ. Vui lòng nhập 3 ký tự in hoa (ví dụ: VND).',
-        )
+        throw new BudgetMutationError('invalidCurrency')
       }
 
       return {
@@ -119,7 +137,7 @@ export const buildBudgetMutationRequest = ({
     }
 
     if (!householdId) {
-      throw new Error('Household ID là bắt buộc cho ngân sách household.')
+      throw new BudgetMutationError('householdRequired')
     }
 
     return {

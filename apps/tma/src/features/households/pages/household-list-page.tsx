@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { HouseholdItem } from '@/components/finance'
@@ -33,6 +34,7 @@ const currentMonthAnalyticsParams = toAnalyticsRangeParams(currentMonthPeriod)
 const currentMonthBudgetPeriod = getMonthBudgetPeriod(currentMonthPeriod)
 
 export const HouseholdListPage = () => {
+  const { t } = useTranslation()
   const householdsQuery = useHouseholdListQuery()
   const households = householdsQuery.data?.items ?? []
   const memberQueries = useHouseholdMemberQueries(households)
@@ -58,6 +60,7 @@ export const HouseholdListPage = () => {
           budgetLabel: getHouseholdBudgetLabel(
             overviewQuery?.data?.totalSpendMinor,
             budgetQuery?.data?.items[0] ?? null,
+            t,
           ),
           currencyCode: overviewQuery?.data?.currencyCode,
           isLoading: Boolean(
@@ -73,11 +76,11 @@ export const HouseholdListPage = () => {
   )
 
   return (
-    <TmaPageShell title='Gia đình'>
+    <TmaPageShell title={t('households.title')}>
       <Card className='grid gap-3 p-5'>
         <div className='flex items-start justify-between gap-3'>
           <div>
-            <Eyebrow>Tháng này</Eyebrow>
+            <Eyebrow>{t('households.thisMonth')}</Eyebrow>
             <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
               {householdCards.length}
             </strong>
@@ -93,11 +96,11 @@ export const HouseholdListPage = () => {
                 className={buttonVariants({ size: 'sm', variant: 'outline' })}
                 to={TMA_PATHS.householdsNew}
                 onClick={() => impact('light')}>
-                Tạo mới
+                {t('households.create')}
               </Link>
             ) : null
           }
-          title='Household của bạn'
+          title={t('households.header')}
         />
 
         <DataState
@@ -107,14 +110,14 @@ export const HouseholdListPage = () => {
                 className={buttonVariants({ variant: 'secondary' })}
                 to={TMA_PATHS.householdsNew}
                 onClick={() => impact('light')}>
-                Tạo household
+                {t('households.createTitle')}
               </Link>
             ) : null
           }
-          emptyDescription='Tạo household đầu tiên để bắt đầu theo dõi chi tiêu chia sẻ trong TMA.'
-          emptyTitle='Chưa có household nào'
-          errorDescription='Kiểm tra phiên đăng nhập hoặc dữ liệu local rồi thử mở lại trang.'
-          errorTitle='Không tải được household'
+          emptyDescription={t('households.emptyDesc')}
+          emptyTitle={t('households.emptyTitle')}
+          errorDescription={t('households.loadErrorDesc')}
+          errorTitle={t('households.loadError')}
           isEmpty={
             !householdsQuery.isLoading &&
             !householdsQuery.isError &&
@@ -122,15 +125,16 @@ export const HouseholdListPage = () => {
           }
           isError={householdsQuery.isError && householdCards.length === 0}
           isLoading={householdsQuery.isLoading && householdCards.length === 0}
-          loadingDescription='Danh sách sẽ hiện ngay khi các truy vấn hoàn tất.'
-          loadingTitle='Đang tải household'
+          loadingDescription={t('households.loadingDesc')}
+          loadingTitle={t('households.loadingTitle')}
           retryAction={householdsQuery.refetch}>
           <div className='grid gap-3'>
             {householdCards.map((card) => (
               <HouseholdItem
                 key={card.household.id}
                 card={card}
-                roleLabel={getHouseholdRoleLabel(card.household.role)}
+                roleLabel={getHouseholdRoleLabel(card.household.role, t)}
+                t={t}
               />
             ))}
           </div>

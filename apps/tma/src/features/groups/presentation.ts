@@ -1,8 +1,7 @@
 import { formatCurrencyMinor } from '@/features/home/presentation'
+import { capitalize } from '@/lib/period'
 
 import type { ExpenseGroupDTO, GroupListItem } from './types'
-
-export const GROUP_CONTEXT_PERSONAL_LABEL = 'Cá nhân'
 
 const DATE_FORMATTER = new Intl.DateTimeFormat('vi-VN', {
   day: '2-digit',
@@ -13,32 +12,37 @@ const DATE_FORMATTER = new Intl.DateTimeFormat('vi-VN', {
 export const formatGroupDate = (value: number | null | undefined): string =>
   typeof value === 'number' ? DATE_FORMATTER.format(new Date(value)) : ''
 
-export const getGroupStatusLabel = (status: ExpenseGroupDTO['status']) =>
-  status === 'active' ? 'Đang theo dõi' : 'Đã lưu trữ'
+export const getGroupStatusLabel = (
+  status: ExpenseGroupDTO['status'],
+  t: (key: string, options?: Record<string, unknown>) => string,
+) => t(`groups.status${capitalize(status)}`)
 
 export const getGroupContextLabel = (
   item: Pick<GroupListItem, 'group' | 'household'>,
-): string => item.household?.name ?? GROUP_CONTEXT_PERSONAL_LABEL
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string => item.household?.name ?? t('groups.contextPersonal')
 
 export const getGroupDateRangeLabel = (
   group: Pick<ExpenseGroupDTO, 'endDate' | 'startDate'>,
+  t: (key: string, options?: Record<string, unknown>) => string,
 ): string => {
   const start = formatGroupDate(group.startDate)
   const end = formatGroupDate(group.endDate)
 
-  if (start && end) return `${start} - ${end}`
-  if (start) return `Từ ${start}`
-  if (end) return `Đến ${end}`
+  if (start && end) return t('groups.dateRange', { start, end })
+  if (start) return t('groups.dateFrom', { date: start })
+  if (end) return t('groups.dateTo', { date: end })
 
-  return 'Không giới hạn thời gian'
+  return t('groups.dateUnbounded')
 }
 
 export const getGroupBudgetLabel = (
   group: Pick<ExpenseGroupDTO, 'eventBudgetMinor'>,
+  t: (key: string, options?: Record<string, unknown>) => string,
 ): string =>
   group.eventBudgetMinor != null && group.eventBudgetMinor > 0
     ? formatCurrencyMinor(group.eventBudgetMinor, 'VND')
-    : 'Chưa đặt ngân sách'
+    : t('groups.budgetUnset')
 
 export const getGroupProgress = (
   totalSpendMinor: number,

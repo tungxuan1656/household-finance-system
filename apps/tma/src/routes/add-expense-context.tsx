@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 
 import {
@@ -47,6 +48,7 @@ const SummaryRow = ({ label, value }: { label: string; value: string }) => (
 
 export const AddExpenseContextPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const date = useAddExpenseFlowStore((state) => state.date)
   const category = useAddExpenseFlowStore((state) => state.category)
   const amount = useAddExpenseFlowStore((state) => state.amount)
@@ -79,7 +81,7 @@ export const AddExpenseContextPage = () => {
   }, [householdGroupQueries, households, personalGroupsQuery.data?.items])
 
   const selectedSource =
-    getSourceOptions().find((source) => source.id === sourceId) ?? null
+    getSourceOptions(t).find((source) => source.id === sourceId) ?? null
   const selectedHousehold = households.find(
     (household) => household.id === householdId,
   )
@@ -89,21 +91,21 @@ export const AddExpenseContextPage = () => {
 
   const householdPickerOptions = useMemo(
     () => [
-      { value: '', label: 'Cá nhân' },
+      { value: '', label: t('expenses.add.contextPersonal') },
       ...households.map((h) => ({ value: h.id, label: h.name })),
     ],
-    [households],
+    [households, t],
   )
 
   const groupPickerOptions = useMemo(
     () => [
-      { value: '', label: 'Không gắn nhóm' },
+      { value: '', label: t('expenses.edit.optionUngrouped') },
       ...groupItems.map((item) => ({
         value: item.group.id,
         label: item.group.name,
       })),
     ],
-    [groupItems],
+    [groupItems, t],
   )
 
   const handleSave = useEffectEvent(async () => {
@@ -134,9 +136,7 @@ export const AddExpenseContextPage = () => {
       notification('error')
 
       setFeedback(
-        error instanceof Error
-          ? error.message
-          : 'Không thể lưu chi tiêu lúc này.',
+        error instanceof Error ? error.message : t('expenses.add.saveError'),
       )
     }
   })
@@ -147,7 +147,7 @@ export const AddExpenseContextPage = () => {
     }
 
     const cleanup = setBottomButton({
-      text: 'Lưu chi tiêu',
+      text: t('expenses.add.saveAction'),
       enabled: false,
       showProgress: false,
       onClick: () => {
@@ -156,7 +156,7 @@ export const AddExpenseContextPage = () => {
     })
 
     return cleanup
-  }, [isReady])
+  }, [isReady, t])
 
   useEffect(() => {
     if (!isReady) {
@@ -165,8 +165,8 @@ export const AddExpenseContextPage = () => {
 
     updateBottomButton({
       text: createExpenseMutation.isPending
-        ? 'Đang lưu...'
-        : `Lưu ${formatVnd(amount)}`,
+        ? t('expenses.add.saving')
+        : t('expenses.add.saveWithAmount', { amount: formatVnd(amount) }),
       enabled: !createExpenseMutation.isPending,
       showProgress: createExpenseMutation.isPending,
     })
@@ -181,18 +181,20 @@ export const AddExpenseContextPage = () => {
 
   if (!isReady || !category) {
     return (
-      <TmaPageShell title='Thêm chi tiêu'>
-        <TmaPageHeader eyebrow='Bước 3/3' title='Quay lại để hoàn tất bước 2' />
+      <TmaPageShell title={t('expenses.add.title')}>
+        <TmaPageHeader
+          eyebrow={t('expenses.add.step', { current: '3', total: '3' })}
+          title={t('expenses.add.backToStep2')}
+        />
         <Card className='grid gap-3'>
-          <CardTitle>Chưa có dữ liệu preview</CardTitle>
+          <CardTitle>{t('expenses.add.previewMissingTitle')}</CardTitle>
           <CardDescription>
-            Hoàn tất số tiền và nguồn tiền ở bước 2 rồi quay lại đây để chọn bối
-            cảnh.
+            {t('expenses.add.previewMissingDesc')}
           </CardDescription>
           <Link
             className={buttonVariants({ className: 'justify-self-start' })}
             to={TMA_PATHS.expensesNewDetails}>
-            Quay lại bước 2
+            {t('expenses.add.backToStep2Action')}
           </Link>
         </Card>
       </TmaPageShell>
@@ -200,7 +202,7 @@ export const AddExpenseContextPage = () => {
   }
 
   return (
-    <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
+    <TmaPageShell reserveBottomButton title={t('expenses.add.title')}>
       {feedback ? (
         <Card className='mb-3 border-[#d93838]/20 bg-[#ffeded]/90'>
           <CardDescription className='text-[#d93838]'>
@@ -227,34 +229,36 @@ export const AddExpenseContextPage = () => {
 
         <div className='grid gap-2.5 border-t border-tma-line pt-3'>
           <div className='grid gap-1'>
-            <Eyebrow>Tên khoản chi</Eyebrow>
+            <Eyebrow>{t('expenses.add.expenseName')}</Eyebrow>
             <strong className='truncate text-base font-semibold text-tma-text-strong'>
-              {title.trim() || 'Chưa đặt tên'}
+              {title.trim() || t('expenses.add.nameUnset')}
             </strong>
           </div>
           <div className='grid grid-cols-2 gap-3'>
             <SummaryRow
-              label='Nguồn tiền'
-              value={selectedSource?.label ?? 'Chưa chọn'}
+              label={t('expenses.add.source')}
+              value={selectedSource?.label ?? t('expenses.add.sourceUnset')}
             />
             <SummaryRow
-              label='Gia đình'
-              value={selectedHousehold?.name ?? 'Cá nhân'}
-            />
-            <SummaryRow
-              label='Nhóm'
+              label={t('expenses.add.contextHousehold')}
               value={
-                selectedGroupItem
-                  ? selectedGroupItem.group.name
-                  : 'Không gắn nhóm'
+                selectedHousehold?.name ?? t('expenses.add.contextPersonal')
               }
             />
             <SummaryRow
-              label='Ngữ cảnh nhóm'
+              label={t('expenses.add.contextGroup')}
               value={
                 selectedGroupItem
-                  ? getGroupContextLabel(selectedGroupItem)
-                  : 'Cá nhân'
+                  ? selectedGroupItem.group.name
+                  : t('expenses.edit.optionUngrouped')
+              }
+            />
+            <SummaryRow
+              label={t('expenses.add.contextGroupLabel')}
+              value={
+                selectedGroupItem
+                  ? getGroupContextLabel(selectedGroupItem, t)
+                  : t('expenses.add.contextPersonal')
               }
             />
           </div>
@@ -263,10 +267,10 @@ export const AddExpenseContextPage = () => {
 
       <Card className='grid gap-3'>
         <Field>
-          <FieldLabel>Gia đình</FieldLabel>
+          <FieldLabel>{t('expenses.add.contextHousehold')}</FieldLabel>
           <NativePicker
             fullWidth
-            aria-label='Chọn gia đình'
+            aria-label={t('expenses.add.chooseHousehold')}
             disabled={householdsQuery.isLoading}
             options={householdPickerOptions}
             value={householdId ?? ''}
@@ -281,10 +285,10 @@ export const AddExpenseContextPage = () => {
           />
         </Field>
         <Field>
-          <FieldLabel>Nhóm</FieldLabel>
+          <FieldLabel>{t('expenses.add.contextGroup')}</FieldLabel>
           <NativePicker
             fullWidth
-            aria-label='Chọn nhóm'
+            aria-label={t('expenses.add.chooseGroup')}
             disabled={personalGroupsQuery.isLoading}
             options={groupPickerOptions}
             value={groupId ?? ''}

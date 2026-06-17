@@ -1,4 +1,5 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -91,6 +92,7 @@ export const BudgetDetailPage = () => {
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const currentUserId = useAuthStore((state) => state.user?.id ?? null)
 
   const detailQuery = useBudgetDetailQuery(id ?? '')
@@ -145,21 +147,19 @@ export const BudgetDetailPage = () => {
       })
 
       impact('light')
-      setFeedback({ message: 'Đã cập nhật ngân sách.', tone: 'success' })
+      setFeedback({ message: t('budgets.detail.updated'), tone: 'success' })
       setIsEditing(false)
       await statusQuery.refetch()
     } catch {
       setFeedback({
-        message: 'Không thể cập nhật ngân sách lúc này.',
+        message: t('budgets.detail.updateError'),
         tone: 'error',
       })
     }
   }
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(
-      'Xóa ngân sách này? Ngân sách sẽ biến mất khỏi danh sách đang hoạt động.',
-    )
+    const confirmed = window.confirm(t('budgets.detail.deleteConfirm'))
 
     if (!confirmed) return
 
@@ -171,12 +171,12 @@ export const BudgetDetailPage = () => {
       navigate(TMA_PATHS.budgets, {
         replace: true,
         state: {
-          feedback: { message: 'Đã xóa ngân sách.', tone: 'success' },
+          feedback: { message: t('budgets.detail.deleted'), tone: 'success' },
         },
       })
     } catch {
       setFeedback({
-        message: 'Không thể xóa ngân sách lúc này.',
+        message: t('budgets.detail.deleteError'),
         tone: 'error',
       })
     }
@@ -199,12 +199,10 @@ export const BudgetDetailPage = () => {
 
   if (!id) {
     return (
-      <TmaPageShell title='Chi tiết ngân sách'>
+      <TmaPageShell title={t('budgets.detail.title')}>
         <Card>
-          <CardTitle>Ngân sách không hợp lệ</CardTitle>
-          <CardDescription>
-            Đường dẫn hiện tại thiếu mã budget để tải chi tiết.
-          </CardDescription>
+          <CardTitle>{t('budgets.detail.invalidIdTitle')}</CardTitle>
+          <CardDescription>{t('budgets.detail.invalidIdDesc')}</CardDescription>
         </Card>
       </TmaPageShell>
     )
@@ -219,7 +217,7 @@ export const BudgetDetailPage = () => {
   const isOver = status ? status.totalRemainingMinor < 0 : false
 
   return (
-    <TmaPageShell title='Chi tiết ngân sách'>
+    <TmaPageShell title={t('budgets.detail.title')}>
       {feedback ? (
         <Card
           className={cn(
@@ -238,15 +236,15 @@ export const BudgetDetailPage = () => {
       ) : null}
 
       <DataState
-        emptyDescription='Ngân sách này không còn tồn tại hoặc bạn không có quyền truy cập.'
-        emptyTitle='Không tìm thấy ngân sách'
-        errorDescription='Ngân sách này có thể không còn truy cập được, hoặc phiên đăng nhập hiện tại đã hết hạn.'
-        errorTitle='Không tải được ngân sách'
+        emptyDescription={t('budgets.detail.notFoundDesc')}
+        emptyTitle={t('budgets.detail.notFoundTitle')}
+        errorDescription={t('budgets.detail.loadErrorDesc')}
+        errorTitle={t('budgets.detail.loadError')}
         isEmpty={isBudgetMissing}
         isError={detailQuery.isError && !budget}
         isLoading={detailQuery.isLoading && !budget}
-        loadingDescription='Thông tin ngân sách và tiến độ sẽ hiện ngay sau khi đồng bộ xong.'
-        loadingTitle='Đang tải ngân sách'
+        loadingDescription={t('budgets.detail.loadingDesc')}
+        loadingTitle={t('budgets.detail.loading')}
         retryAction={detailQuery.refetch}>
         {budget ? (
           <>
@@ -255,7 +253,7 @@ export const BudgetDetailPage = () => {
               <div className='flex items-start justify-between gap-3'>
                 <div className='flex flex-wrap gap-1.5'>
                   <Chip tone='primary'>
-                    {formatBudgetPeriodLabel(budget.period)}
+                    {formatBudgetPeriodLabel(budget.period, t)}
                   </Chip>
                   <Chip
                     className={
@@ -264,7 +262,11 @@ export const BudgetDetailPage = () => {
                         : undefined
                     }
                     tone={budget.scope === 'personal' ? 'warning' : 'muted'}>
-                    {getBudgetScopeLabel(budget.scope, household ?? undefined)}
+                    {getBudgetScopeLabel(
+                      budget.scope,
+                      household ?? undefined,
+                      t,
+                    )}
                   </Chip>
                 </div>
                 <IconBadge accent={budgetAccent}>
@@ -272,7 +274,7 @@ export const BudgetDetailPage = () => {
                 </IconBadge>
               </div>
               <div>
-                <Eyebrow>Tổng hạn mức</Eyebrow>
+                <Eyebrow>{t('budgets.detail.statLimit')}</Eyebrow>
                 <MoneyLabel className='text-[28px] leading-tight font-extrabold'>
                   {formatCurrencyMinor(
                     status?.totalPlannedMinor ?? budget.totalLimitMinor,
@@ -285,18 +287,18 @@ export const BudgetDetailPage = () => {
             {/* Progress */}
             {status && progress ? (
               <Section>
-                <SectionHeader title='Tiến độ' />
+                <SectionHeader title={t('budgets.detail.statProgress')} />
                 <Card className='grid gap-4'>
                   <div className='grid grid-cols-2 gap-2.5'>
                     <StatTile
-                      label='Đã chi'
+                      label={t('budgets.detail.statSpent')}
                       value={formatCurrencyMinor(
                         status.totalActualMinor,
                         status.currencyCode,
                       )}
                     />
                     <StatTile
-                      label='Còn lại'
+                      label={t('budgets.detail.statRemaining')}
                       tone={isOver ? 'warning' : 'default'}
                       value={formatCurrencyMinor(
                         status.totalRemainingMinor,
@@ -307,7 +309,7 @@ export const BudgetDetailPage = () => {
 
                   <div className='grid gap-1.5'>
                     <div className='flex items-center justify-between text-sm text-tma-text-muted'>
-                      <span>Tiến độ ngân sách</span>
+                      <span>{t('budgets.detail.statProgress')}</span>
                       <span>{progress.percentUsed}%</span>
                     </div>
                     <div className='h-2 overflow-hidden rounded-full bg-black/6'>
@@ -327,11 +329,11 @@ export const BudgetDetailPage = () => {
             {/* Management */}
             {canEdit ? (
               <Section>
-                <SectionHeader title='Quản lý' />
+                <SectionHeader title={t('budgets.detail.sectionManage')} />
                 <Card>
                   <form className='grid gap-3.5' onSubmit={handleSubmit}>
                     <Field>
-                      <FieldLabel>Tổng hạn mức</FieldLabel>
+                      <FieldLabel>{t('budgets.detail.manageLimit')}</FieldLabel>
                       <Input
                         disabled={!isEditing || updateMutation.isPending}
                         inputMode='numeric'
@@ -357,15 +359,15 @@ export const BudgetDetailPage = () => {
                               formatAmountInput(String(budget.totalLimitMinor)),
                             )
                           }}>
-                          Huỷ
+                          {t('common.cancel')}
                         </Button>
                         <Button
                           disabled={updateMutation.isPending}
                           type='submit'
                           variant='secondary'>
                           {updateMutation.isPending
-                            ? 'Đang lưu...'
-                            : 'Lưu thay đổi'}
+                            ? t('budgets.detail.editing')
+                            : t('budgets.detail.save')}
                         </Button>
                       </div>
                     ) : (
@@ -374,14 +376,16 @@ export const BudgetDetailPage = () => {
                           type='button'
                           variant='secondary'
                           onClick={() => setIsEditing(true)}>
-                          Chỉnh sửa
+                          {t('budgets.detail.editAction')}
                         </Button>
                         <Button
                           disabled={deleteMutation.isPending}
                           type='button'
                           variant='danger'
                           onClick={handleDelete}>
-                          {deleteMutation.isPending ? 'Đang xoá...' : 'Xoá'}
+                          {deleteMutation.isPending
+                            ? t('budgets.detail.deleting')
+                            : t('budgets.detail.deleteAction')}
                         </Button>
                       </div>
                     )}

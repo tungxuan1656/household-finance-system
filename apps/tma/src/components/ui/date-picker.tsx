@@ -1,4 +1,5 @@
 import { forwardRef, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { CalendarIcon } from '@/components/shared/tma-icons'
 import { impact } from '@/lib/telegram/haptics'
@@ -14,16 +15,6 @@ const formatDateDisplay = (value: string): string => {
   }
 
   return `${match[3]}/${match[2]}/${match[1]}`
-}
-
-const formatMonthDisplay = (value: string): string => {
-  const match = /^(\d{4})-(\d{2})$/.exec(value)
-
-  if (!match) {
-    return value
-  }
-
-  return `tháng ${Number(match[2])} năm ${match[1]}`
 }
 
 export type DatePickerMode = 'date' | 'month'
@@ -49,7 +40,7 @@ export interface DatePickerProps {
 export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
   (
     {
-      'aria-label': ariaLabel = 'Chọn ngày',
+      'aria-label': ariaLabel,
       className,
       disabled = false,
       fullWidth = false,
@@ -59,7 +50,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       mode = 'date',
       name,
       onChange,
-      placeholder = 'Chọn ngày',
+      placeholder,
       showIcon = true,
       size = 'md',
       value,
@@ -67,6 +58,11 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
     },
     forwardedRef,
   ) => {
+    const { t } = useTranslation()
+
+    const resolvedAriaLabel = ariaLabel ?? t('datePicker.ariaLabel')
+    const resolvedPlaceholder = placeholder ?? t('datePicker.placeholder')
+
     const internalRef = useRef<HTMLInputElement>(null)
 
     const setInputRef = (node: HTMLInputElement | null) => {
@@ -84,11 +80,25 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
     }
 
     const hasValue = value.length > 0
+
+    const monthDisplay = (raw: string): string => {
+      const match = /^(\d{4})-(\d{2})$/.exec(raw)
+
+      if (!match) {
+        return raw
+      }
+
+      return t('datePicker.monthDisplay', {
+        month: Number(match[2]),
+        year: Number(match[1]),
+      })
+    }
+
     const display = hasValue
       ? mode === 'month'
-        ? formatMonthDisplay(value)
+        ? monthDisplay(value)
         : formatDateDisplay(value)
-      : placeholder
+      : resolvedPlaceholder
     const textSizeClass = size === 'sm' ? 'text-xs' : 'text-sm'
 
     return (
@@ -101,7 +111,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         <input
           ref={setInputRef}
           readOnly
-          aria-label={ariaLabel}
+          aria-label={resolvedAriaLabel}
           className='absolute inset-0 z-10 size-full cursor-pointer appearance-none border-0 bg-transparent p-0 opacity-0'
           disabled={disabled}
           id={id}

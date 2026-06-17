@@ -8,10 +8,30 @@ import {
   getHouseholdBudgetLabel,
 } from '@/features/home/presentation'
 
+const t = (key: string, options?: Record<string, unknown>): string => {
+  const map: Record<string, string> = {
+    'categories.food': 'Ăn uống',
+    'home.householdBudgetNone': 'Chưa có ngân sách',
+    'home.householdBudgetRemaining': 'Còn {{percent}}%',
+    'home.householdBudgetOver': 'Vượt {{percent}}%',
+    'home.expenseCount': '{{count}} khoản',
+    'home.comparisonDelta': '{{delta}}% so với {{period}}',
+    'period.granularityMonth': 'tháng trước',
+  }
+  let result = map[key] ?? key
+  if (options) {
+    for (const [k, v] of Object.entries(options)) {
+      result = result.replace(`{{${k}}}`, String(v))
+    }
+  }
+
+  return result
+}
+
 describe('home presentation helpers', () => {
   it('builds category accents from reference colors when available', () => {
     expect(
-      getCategoryPresentation('food', [
+      getCategoryPresentation('food', t, [
         {
           color: '#3f7cff',
           iconUrl: 'https://example.com/food.svg',
@@ -50,13 +70,13 @@ describe('home presentation helpers', () => {
       remainingMinor: 1_500,
     })
 
-    expect(getHouseholdBudgetLabel(8_500, budget)).toBe('Còn 15%')
+    expect(getHouseholdBudgetLabel(8_500, budget, t)).toBe('Còn 15%')
 
-    expect(getHouseholdBudgetLabel(12_000, budget)).toBe('Vượt 20%')
+    expect(getHouseholdBudgetLabel(12_000, budget, t)).toBe('Vượt 20%')
   })
 
   it('formats comparison labels with clear fallbacks', () => {
-    expect(getComparisonLabel(undefined, 3)).toBe('3 khoản')
+    expect(getComparisonLabel(undefined, 3, 'month', t)).toBe('3 khoản')
 
     expect(
       getComparisonLabel(
@@ -78,12 +98,14 @@ describe('home presentation helpers', () => {
           totalDeltaSpendMinor: 4_000,
         },
         4,
+        'month',
+        t,
       ),
     ).toBe('+50% so với tháng trước')
   })
 
   it('formats minor currency units consistently across repeated calls', () => {
-    expect(formatCurrencyMinor(12_345, 'USD')).toBe('123,45 US$')
-    expect(formatCurrencyMinor(12_345, 'USD')).toBe('123,45 US$')
+    expect(formatCurrencyMinor(12_345, 'USD')).toBe('123,45\u00a0US$')
+    expect(formatCurrencyMinor(12_345, 'USD')).toBe('123,45\u00a0US$')
   })
 })

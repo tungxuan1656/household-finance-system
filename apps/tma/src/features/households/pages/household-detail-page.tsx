@@ -1,4 +1,5 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -59,6 +60,7 @@ export const HouseholdDetailPage = () => {
   const { user } = useAuth()
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
+  const { t } = useTranslation()
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
   const householdQuery = useHouseholdDetailQuery(id)
   const membersQuery = useHouseholdMembersQuery(id)
@@ -83,8 +85,8 @@ export const HouseholdDetailPage = () => {
   }, [household])
 
   const memberSummary = useMemo(
-    () => formatMemberCountLabel(members.length),
-    [members.length],
+    () => formatMemberCountLabel(members.length, t),
+    [members.length, t],
   )
 
   const handleAvatarUploaded = async (avatarUrl: string) => {
@@ -96,7 +98,7 @@ export const HouseholdDetailPage = () => {
     })
 
     setFeedback({
-      message: 'Đã cập nhật ảnh household thành công.',
+      message: t('households.detail.avatarUpdated'),
       tone: 'success',
     })
   }
@@ -109,7 +111,7 @@ export const HouseholdDetailPage = () => {
     const normalizedName = draftName.trim()
     if (!normalizedName) {
       setFeedback({
-        message: 'Tên household không được để trống.',
+        message: t('households.createPage.validation.nameRequired'),
         tone: 'error',
       })
 
@@ -119,7 +121,7 @@ export const HouseholdDetailPage = () => {
     try {
       if (normalizedName === household.name) {
         setFeedback({
-          message: 'Không có thay đổi mới để lưu.',
+          message: t('households.detail.noChanges'),
           tone: 'success',
         })
 
@@ -132,7 +134,7 @@ export const HouseholdDetailPage = () => {
       })
 
       setFeedback({
-        message: 'Đã cập nhật household thành công.',
+        message: t('households.detail.updated'),
         tone: 'success',
       })
     } catch (error) {
@@ -140,7 +142,7 @@ export const HouseholdDetailPage = () => {
         message:
           error instanceof Error
             ? error.message
-            : 'Không thể cập nhật household lúc này.',
+            : t('households.detail.updateError'),
         tone: 'error',
       })
     }
@@ -150,7 +152,9 @@ export const HouseholdDetailPage = () => {
     if (!id) return
 
     const confirmed = window.confirm(
-      `Xoá ${memberName || 'thành viên'} khỏi household?`,
+      t('households.detail.removeMemberConfirm', {
+        name: memberName || t('groups.detail.memberFallback'),
+      }),
     )
     if (!confirmed) return
 
@@ -159,7 +163,7 @@ export const HouseholdDetailPage = () => {
       {
         onSuccess: () => {
           setFeedback({
-            message: 'Đã xoá thành viên thành công.',
+            message: t('households.detail.memberRemoved'),
             tone: 'success',
           })
         },
@@ -168,7 +172,7 @@ export const HouseholdDetailPage = () => {
             message:
               error instanceof Error
                 ? error.message
-                : 'Không thể xoá thành viên lúc này.',
+                : t('households.detail.removeMemberError'),
             tone: 'error',
           })
         },
@@ -178,11 +182,11 @@ export const HouseholdDetailPage = () => {
 
   if (!id) {
     return (
-      <TmaPageShell title='Chi tiết gia đình'>
+      <TmaPageShell title={t('households.detail.title')}>
         <Card>
-          <CardTitle>Household không hợp lệ</CardTitle>
+          <CardTitle>{t('households.detail.invalidIdTitle')}</CardTitle>
           <CardDescription>
-            Đường dẫn hiện tại thiếu mã household để tải chi tiết.
+            {t('households.detail.invalidIdDesc')}
           </CardDescription>
         </Card>
       </TmaPageShell>
@@ -190,7 +194,7 @@ export const HouseholdDetailPage = () => {
   }
 
   return (
-    <TmaPageShell title='Chi tiết gia đình'>
+    <TmaPageShell title={t('households.detail.title')}>
       {feedback ? (
         <Card
           className={
@@ -208,15 +212,15 @@ export const HouseholdDetailPage = () => {
       ) : null}
 
       <DataState
-        emptyDescription='Household này không còn tồn tại hoặc bạn không có quyền truy cập.'
-        emptyTitle='Không tìm thấy household'
-        errorDescription='Household này có thể không còn truy cập được, hoặc phiên đăng nhập hiện tại đã hết hạn.'
-        errorTitle='Không tải được household'
+        emptyDescription={t('households.detail.notFoundDesc')}
+        emptyTitle={t('households.detail.notFoundTitle')}
+        errorDescription={t('households.detail.loadErrorDesc')}
+        errorTitle={t('households.detail.loadError')}
         isEmpty={isHouseholdMissing}
         isError={householdQuery.isError && !household}
         isLoading={householdQuery.isLoading && !household}
-        loadingDescription='Dữ liệu thành viên và chi tiêu sẽ hiện ngay sau khi đồng bộ xong.'
-        loadingTitle='Đang tải chi tiết household'
+        loadingDescription={t('households.detail.loadingDesc')}
+        loadingTitle={t('households.detail.loading')}
         retryAction={householdQuery.refetch}>
         {household ? (
           <>
@@ -226,21 +230,21 @@ export const HouseholdDetailPage = () => {
               <HouseholdAvatarSection
                 avatarUrl={household.avatarUrl}
                 canEdit={isAdmin}
-                helperText='Hỗ trợ ảnh vuông JPEG hoặc PNG, tối đa 8MB. Hệ thống sẽ tự căn giữa ảnh trước khi lưu.'
+                helperText={t('households.detail.imageHelp')}
                 householdName={household.name}
                 isBusy={isBusy}
-                readOnlyMessage='Chỉ quản trị viên mới có thể chỉnh tên và avatar của household.'
-                summaryText={`${memberSummary} · ${getHouseholdRoleLabel(household.role)}`}
-                title='Cài đặt household'
+                readOnlyMessage={t('households.detail.adminOnly')}
+                summaryText={`${memberSummary} · ${getHouseholdRoleLabel(household.role, t)}`}
+                title={t('households.detail.sectionSettings')}
                 onAvatarUploaded={handleAvatarUploaded}
               />
 
               <form className='grid gap-3.5' onSubmit={handleSave}>
                 <Field>
-                  <FieldLabel>Tên household</FieldLabel>
+                  <FieldLabel>{t('households.detail.fieldName')}</FieldLabel>
                   <Input
                     disabled={!isAdmin || isBusy}
-                    placeholder='Nhập tên household'
+                    placeholder={t('households.detail.namePlaceholder')}
                     type='text'
                     value={draftName}
                     onChange={(event) => {
@@ -253,7 +257,9 @@ export const HouseholdDetailPage = () => {
                 {isAdmin ? (
                   <div className='flex justify-end'>
                     <Button disabled={isBusy} type='submit' variant='secondary'>
-                      {isBusy ? 'Đang lưu...' : 'Lưu thay đổi'}
+                      {isBusy
+                        ? t('households.detail.saving')
+                        : t('households.detail.save')}
                     </Button>
                   </div>
                 ) : null}
@@ -265,16 +271,16 @@ export const HouseholdDetailPage = () => {
               dateTo={selectedPeriod.dateTo}
               householdId={id}
               showHouseholdLabel={false}
-              title='Chi tiêu gần đây'
+              title={t('households.detail.sectionRecent')}
             />
 
             <Section>
-              <SectionHeader title='Thành viên' />
+              <SectionHeader title={t('households.detail.sectionMembers')} />
               <DataState
-                emptyDescription='Household này hiện chưa có thành viên nào khả dụng để hiển thị.'
-                emptyTitle='Chưa có thành viên'
-                errorDescription='Thử mở lại trang hoặc kiểm tra quyền truy cập household.'
-                errorTitle='Không tải được thành viên'
+                emptyDescription={t('households.detail.emptyMembersDesc')}
+                emptyTitle={t('households.detail.emptyMembersTitle')}
+                errorDescription={t('households.detail.membersLoadErrorDesc')}
+                errorTitle={t('households.detail.membersLoadError')}
                 isEmpty={
                   !membersQuery.isLoading &&
                   !membersQuery.isError &&
@@ -282,8 +288,8 @@ export const HouseholdDetailPage = () => {
                 }
                 isError={membersQuery.isError && members.length === 0}
                 isLoading={membersQuery.isLoading && members.length === 0}
-                loadingDescription='Danh sách thành viên sẽ hiện khi truy vấn hoàn tất.'
-                loadingTitle='Đang tải thành viên'
+                loadingDescription={t('households.detail.membersLoadingDesc')}
+                loadingTitle={t('households.detail.membersLoading')}
                 retryAction={membersQuery.refetch}>
                 <Card className='grid gap-2'>
                   {members.map((member) => (
@@ -303,10 +309,12 @@ export const HouseholdDetailPage = () => {
                               ? 'm-0 text-sm font-semibold text-[#d3a10c]'
                               : 'm-0 text-sm font-semibold text-tma-text-strong'
                           }>
-                          {member.name || user?.displayName || 'Thành viên'}
+                          {member.name ||
+                            user?.displayName ||
+                            t('households.detail.memberFallback')}
                         </h3>
                         <CardDescription className='text-xs'>
-                          {getHouseholdRoleLabel(member.role)}
+                          {getHouseholdRoleLabel(member.role, t)}
                         </CardDescription>
                       </div>
                       {isAdmin && member.userId !== user?.id ? (

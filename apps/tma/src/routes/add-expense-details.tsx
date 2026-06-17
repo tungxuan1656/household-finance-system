@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { CoinIcon, NoteIcon, SunIcon } from '@/components/shared/tma-icons'
@@ -29,6 +30,7 @@ import { notification, selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseDetailsPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const amountInputRef = useRef<HTMLInputElement | null>(null)
   const category = useAddExpenseFlowStore((state) => state.category)
   const draftAmount = useAddExpenseFlowStore((state) => state.amount)
@@ -64,7 +66,7 @@ export const AddExpenseDetailsPage = () => {
     }
 
     const cleanup = setBottomButton({
-      text: 'Tiếp tục',
+      text: t('expenses.add.continue'),
       enabled: false,
       showProgress: false,
       onClick: () => {
@@ -73,7 +75,7 @@ export const AddExpenseDetailsPage = () => {
     })
 
     return cleanup
-  }, [hasCategory])
+  }, [hasCategory, t])
 
   useEffect(() => {
     if (!hasCategory) {
@@ -81,7 +83,7 @@ export const AddExpenseDetailsPage = () => {
     }
 
     updateBottomButton({
-      text: 'Tiếp tục',
+      text: t('expenses.add.continue'),
       enabled: isValid,
       showProgress: false,
     })
@@ -97,17 +99,20 @@ export const AddExpenseDetailsPage = () => {
 
   if (!category) {
     return (
-      <TmaPageShell title='Thêm chi tiêu'>
-        <TmaPageHeader eyebrow='Bước 2/3' title='Thiếu dữ liệu bước trước' />
+      <TmaPageShell title={t('expenses.add.title')}>
+        <TmaPageHeader
+          eyebrow={t('expenses.add.step', { current: '2', total: '3' })}
+          title={t('expenses.add.previousStepMissing')}
+        />
         <Card className='grid gap-3'>
-          <CardTitle>Chưa có danh mục</CardTitle>
+          <CardTitle>{t('expenses.add.emptyTitle')}</CardTitle>
           <CardDescription>
-            Bắt đầu lại từ bước chọn ngày và danh mục để tiếp tục luồng này.
+            {t('expenses.add.previousStepMissingDesc')}
           </CardDescription>
           <Link
             className={buttonVariants({ className: 'justify-self-start' })}
             to={TMA_PATHS.expensesNewCategory}>
-            Quay lại bước 1
+            {t('expenses.add.backToStep1')}
           </Link>
         </Card>
       </TmaPageShell>
@@ -115,7 +120,7 @@ export const AddExpenseDetailsPage = () => {
   }
 
   return (
-    <TmaPageShell reserveBottomButton title='Thêm chi tiêu'>
+    <TmaPageShell reserveBottomButton title={t('expenses.add.title')}>
       <Card className='mt-2 mb-3 flex items-center gap-3 p-2.5'>
         <TmaCategoryIconBadge
           accent={category.accent}
@@ -130,7 +135,7 @@ export const AddExpenseDetailsPage = () => {
       <Section className='grid gap-1'>
         <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
           <CoinIcon className='mt-1 size-6' />
-          <span>Số tiền</span>
+          <span>{t('expenses.edit.fieldAmount')}</span>
         </div>
         <label className='flex items-end justify-between gap-2 rounded-3xl bg-white p-4'>
           <input
@@ -155,12 +160,12 @@ export const AddExpenseDetailsPage = () => {
       <Section className='grid gap-1'>
         <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
           <NoteIcon className='size-6' />
-          <span>Khoản chi</span>
+          <span>{t('expenses.add.nameLabel')}</span>
         </div>
         <div className='rounded-3xl bg-white p-5'>
           <input
             className='w-full border-0 bg-transparent px-0 text-base font-medium text-tma-text-strong outline-none'
-            placeholder='Nhập tên khoản chi tiêu...'
+            placeholder={t('expenses.add.namePlaceholder')}
             value={title}
             onChange={(event) => setTitle(event.target.value)}
           />
@@ -170,10 +175,10 @@ export const AddExpenseDetailsPage = () => {
       <Section>
         <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
           <SunIcon className='size-6' />
-          <span>Khoản chi</span>
+          <span>{t('expenses.add.source')}</span>
         </div>
         <div className='grid grid-cols-3 gap-2.5'>
-          {getSourceOptions().map((source) => (
+          {getSourceOptions(t).map((source) => (
             <ChipButton
               key={source.id}
               className={sourceId === source.id ? 'ring-2 ring-blue-300' : ''}

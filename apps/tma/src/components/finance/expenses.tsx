@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import {
@@ -39,11 +40,13 @@ export const ExpenseItem = ({
   showHouseholdLabel?: boolean
 }) => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const category = getCategoryPresentation(
     expense.categoryKey,
+    t,
     referenceCategories,
   )
-  const groupLabel = getExpenseGroupLabel(expense.groupIds)
+  const groupLabel = getExpenseGroupLabel(expense.groupIds, t)
 
   const openDetail = () => {
     selection()
@@ -102,7 +105,7 @@ export const RecentExpenses = ({
   householdId,
   limit = 10,
   showHouseholdLabel = true,
-  title = 'Lịch sử gần đây',
+  title: externalTitle,
   viewAllHref = TMA_PATHS.expenses,
   dateFrom,
   dateTo,
@@ -116,6 +119,8 @@ export const RecentExpenses = ({
   dateFrom?: number
   dateTo?: number
 }) => {
+  const { t } = useTranslation()
+  const title = externalTitle ?? t('expensesList.defaultTitle')
   const recentExpensesQuery = useExpenseListQuery({
     group_id: groupId,
     household_id: householdId,
@@ -135,15 +140,17 @@ export const RecentExpenses = ({
     <Section>
       <SectionHeader
         action={
-          <TmaInlineAction href={viewAllHref}>Xem tất cả</TmaInlineAction>
+          <TmaInlineAction href={viewAllHref}>
+            {t('expensesList.viewAll')}
+          </TmaInlineAction>
         }
         title={title}
       />
       <DataState
-        emptyDescription='Tạo giao dịch mới để danh sách này hiện dữ liệu thật.'
-        emptyTitle='Chưa có chi tiêu gần đây'
-        errorDescription='API chi tiêu đang lỗi hoặc phiên hiện tại chưa thấy dữ liệu.'
-        errorTitle='Không tải được lịch sử chi tiêu'
+        emptyDescription={t('expensesList.emptyDesc')}
+        emptyTitle={t('expensesList.emptyTitle')}
+        errorDescription={t('expensesList.loadErrorDesc')}
+        errorTitle={t('expensesList.loadError')}
         isEmpty={
           !recentExpensesQuery.isLoading &&
           recentExpenses.length === 0 &&
@@ -151,8 +158,8 @@ export const RecentExpenses = ({
         }
         isError={recentExpensesQuery.isError && recentExpenses.length === 0}
         isLoading={recentExpensesQuery.isLoading && recentExpenses.length === 0}
-        loadingDescription='Danh sách sẽ xuất hiện ngay khi truy vấn đầu tiên hoàn tất.'
-        loadingTitle='Đang tải lịch sử chi tiêu'
+        loadingDescription={t('expensesList.loadingDesc')}
+        loadingTitle={t('expensesList.loading')}
         retryAction={recentExpensesQuery.refetch}>
         <div className='grid gap-2'>
           {recentExpenses.map((expense) => (

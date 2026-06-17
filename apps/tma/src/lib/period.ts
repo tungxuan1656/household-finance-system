@@ -26,15 +26,6 @@ export const REPORTING_PERIOD_PRESETS: ReportingPeriodPreset[] = [
   'lastYear',
 ]
 
-const REPORTING_PERIOD_PRESET_LABELS: Record<ReportingPeriodPreset, string> = {
-  lastMonth: 'Tháng trước',
-  lastWeek: 'Tuần trước',
-  lastYear: 'Năm ngoái',
-  thisMonth: 'Tháng này',
-  thisWeek: 'Tuần này',
-  thisYear: 'Năm nay',
-}
-
 const formatTwoDigits = (value: number): string =>
   String(value).padStart(2, '0')
 
@@ -198,9 +189,13 @@ export const createReportingPeriodPresetSelection = (
   return createYearPeriodSelection(year - 1)
 }
 
+export const capitalize = (s: string): string =>
+  s.length > 0 ? s.charAt(0).toUpperCase() + s.slice(1) : s
+
 export const getReportingPeriodPresetLabel = (
   preset: ReportingPeriodPreset,
-): string => REPORTING_PERIOD_PRESET_LABELS[preset]
+  t: (key: string) => string,
+): string => t(`period.${preset}`)
 
 export const getMatchingReportingPeriodPreset = (
   selection: PeriodSelection,
@@ -212,11 +207,12 @@ export const getMatchingReportingPeriodPreset = (
 
 export const formatPeriodSelectionLabel = (
   selection: PeriodSelection,
+  t: (key: string) => string,
 ): string => {
   const matchingPreset = getMatchingReportingPeriodPreset(selection)
 
   if (matchingPreset) {
-    return getReportingPeriodPresetLabel(matchingPreset)
+    return getReportingPeriodPresetLabel(matchingPreset, t)
   }
 
   if (selection.granularity === 'custom') {
@@ -288,13 +284,8 @@ export const isMonthPeriodSelection = (selection: PeriodSelection): boolean =>
 
 export const getComparisonGranularityLabel = (
   granularity: PeriodGranularity,
-): string => {
-  if (granularity === 'week') return 'tuần trước'
-  if (granularity === 'year') return 'năm trước'
-  if (granularity === 'custom') return 'kỳ trước'
-
-  return 'tháng trước'
-}
+  t: (key: string) => string,
+): string => t(`period.granularity${capitalize(granularity)}`)
 
 export const toAnalyticsRangeParams = (
   selection: PeriodSelection,

@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -66,7 +67,13 @@ const buildGroupListItems = (
   ),
 ]
 
-const GroupListCard = ({ item }: { item: GroupListItem }) => {
+const GroupListCard = ({
+  item,
+  t,
+}: {
+  item: GroupListItem
+  t: (key: string, options?: Record<string, unknown>) => string
+}) => {
   const progress = getGroupProgress(
     item.group.totalSpendMinor,
     item.group.eventBudgetMinor,
@@ -82,28 +89,28 @@ const GroupListCard = ({ item }: { item: GroupListItem }) => {
           <GroupGlyph />
         </IconBadge>
         <Chip tone={item.group.status === 'active' ? 'success' : 'warning'}>
-          {getGroupStatusLabel(item.group.status)}
+          {getGroupStatusLabel(item.group.status, t)}
         </Chip>
       </div>
 
       <div className='min-w-0'>
         <CardTitle className='truncate'>{item.group.name}</CardTitle>
         <CardDescription className='mt-1 line-clamp-2'>
-          {item.group.description || getGroupContextLabel(item)}
+          {item.group.description || getGroupContextLabel(item, t)}
         </CardDescription>
       </div>
 
       <div className='grid grid-cols-2 gap-2.5'>
         <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-          <Eyebrow>Đã chi</Eyebrow>
+          <Eyebrow>{t('groups.statSpent')}</Eyebrow>
           <MoneyLabel className='text-sm font-bold'>
             {formatCurrencyMinor(item.group.totalSpendMinor, 'VND')}
           </MoneyLabel>
         </div>
         <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-          <Eyebrow>Ngân sách</Eyebrow>
+          <Eyebrow>{t('groups.statBudget')}</Eyebrow>
           <strong className='text-sm text-tma-text-strong'>
-            {getGroupBudgetLabel(item.group)}
+            {getGroupBudgetLabel(item.group, t)}
           </strong>
         </div>
       </div>
@@ -121,20 +128,23 @@ const GroupListCard = ({ item }: { item: GroupListItem }) => {
             />
           </div>
           <CardDescription>
-            {progress.percentUsed}% ngân sách đã dùng
+            {t('groups.statBudgetUsedPct', { percent: progress.percentUsed })}
           </CardDescription>
         </div>
       ) : null}
 
       <div className='flex items-center justify-between gap-3 text-sm text-tma-text-muted'>
-        <span className='truncate'>{getGroupContextLabel(item)}</span>
-        <span className='shrink-0'>{getGroupDateRangeLabel(item.group)}</span>
+        <span className='truncate'>{getGroupContextLabel(item, t)}</span>
+        <span className='shrink-0'>
+          {getGroupDateRangeLabel(item.group, t)}
+        </span>
       </div>
     </Link>
   )
 }
 
 export const GroupListPage = () => {
+  const { t } = useTranslation()
   const householdsQuery = useHouseholdsQuery()
   const households = householdsQuery.data?.items ?? []
   const personalGroupsQuery = usePersonalExpenseGroupListQuery()
@@ -164,7 +174,7 @@ export const GroupListPage = () => {
       householdGroupQueries.some((query) => query.isError))
 
   return (
-    <TmaPageShell title='Nhóm'>
+    <TmaPageShell title={t('groups.title')}>
       <Card className='grid gap-3 p-5'>
         <div className='flex items-start justify-between gap-3'>
           <div>
@@ -186,11 +196,11 @@ export const GroupListPage = () => {
                 className={buttonVariants({ size: 'sm', variant: 'outline' })}
                 to={TMA_PATHS.groupsNew}
                 onClick={() => impact('light')}>
-                Tạo mới
+                {t('groups.create')}
               </Link>
             ) : null
           }
-          title='Group của bạn'
+          title={t('groups.header')}
         />
 
         <DataState
@@ -200,21 +210,21 @@ export const GroupListPage = () => {
                 className={buttonVariants({ variant: 'secondary' })}
                 to={TMA_PATHS.groupsNew}
                 onClick={() => impact('light')}>
-                Tạo group
+                {t('groups.createTitle')}
               </Link>
             ) : null
           }
-          emptyDescription='Tạo group đầu tiên để gom chi tiêu theo chuyến đi, sự kiện hoặc mục tiêu riêng.'
-          emptyTitle='Chưa có group nào'
-          errorDescription='API group hoặc household đang lỗi. Thử mở lại trang sau khi phiên đăng nhập ổn định.'
-          errorTitle='Không tải được group'
+          emptyDescription={t('groups.emptyDesc')}
+          emptyTitle={t('groups.emptyTitle')}
+          errorDescription={t('groups.loadErrorDesc')}
+          errorTitle={t('groups.loadError')}
           isEmpty={
             !isInitialLoading && !isInitialError && groupItems.length === 0
           }
           isError={isInitialError}
           isLoading={isInitialLoading}
-          loadingDescription='Danh sách group cá nhân và household sẽ hiện sau khi các truy vấn hoàn tất.'
-          loadingTitle='Đang tải group'
+          loadingDescription={t('groups.loadingDesc')}
+          loadingTitle={t('groups.loadingTitle')}
           retryAction={async () => {
             await Promise.all([
               householdsQuery.refetch(),
@@ -224,7 +234,7 @@ export const GroupListPage = () => {
           }}>
           <div className='grid gap-3'>
             {groupItems.map((item) => (
-              <GroupListCard key={item.group.id} item={item} />
+              <GroupListCard key={item.group.id} item={item} t={t} />
             ))}
           </div>
         </DataState>

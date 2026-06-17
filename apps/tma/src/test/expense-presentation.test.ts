@@ -5,11 +5,21 @@ import {
   getSourceLabel,
 } from '@/features/expenses/presentation'
 
+const t = (key: string): string => {
+  const map: Record<string, string> = {
+    'expenseSource.cash': 'Tiền mặt',
+    'expenseSource.bankTransfer': 'Chuyển khoản',
+    'expenseSource.other': 'Khác',
+  }
+
+  return map[key] ?? key
+}
+
 describe('expense presentation helpers', () => {
   it('maps source keys to localized labels with a safe fallback', () => {
-    expect(getSourceLabel('cash')).toBe('Tiền mặt')
-    expect(getSourceLabel('bank-transfer')).toBe('Chuyển khoản')
-    expect(getSourceLabel('unknown')).toBe('Khác')
+    expect(getSourceLabel('cash', t)).toBe('Tiền mặt')
+    expect(getSourceLabel('bank-transfer', t)).toBe('Chuyển khoản')
+    expect(getSourceLabel('unknown', t)).toBe('Khác')
   })
 
   it('builds a stable household name lookup map', () => {

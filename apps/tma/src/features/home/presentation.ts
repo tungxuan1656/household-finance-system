@@ -22,32 +22,8 @@ export interface CategoryPresentation {
   accent: AccentToken
 }
 
-const CATEGORY_LABELS: Record<CategoryKey, string> = {
-  food: 'Ăn uống',
-  transport: 'Di chuyển',
-  dating: 'Hẹn hò',
-  'living-costs': 'Sinh hoạt phí',
-  family: 'Gia đình',
-  children: 'Con cái',
-  relatives: 'Người thân',
-  shopping: 'Mua sắm',
-  beauty: 'Làm đẹp',
-  health: 'Sức khỏe',
-  social: 'Xã giao',
-  repairs: 'Sửa chữa',
-  work: 'Công việc',
-  education: 'Giáo dục',
-  investment: 'Đầu tư',
-  'self-development': 'Phát triển bản thân',
-  sports: 'Thể thao',
-  travel: 'Du lịch',
-  hobbies: 'Sở thích',
-  pets: 'Thú cưng',
-  'money-in': 'Tiền vào',
-  lending: 'Cho vay',
-  charity: 'Từ thiện',
-  other: 'Khác',
-}
+const kebabToCamel = (key: string): string =>
+  key.replace(/-([a-z])/g, (_, c) => c.toUpperCase())
 
 const FALLBACK_ACCENTS: Partial<Record<CategoryKey, AccentToken>> = {
   food: { background: '#edf4ff', foreground: '#3f7cff' },
@@ -131,6 +107,7 @@ const withAlpha = (hexColor: string, alpha: number): string | null => {
 }
 
 export const resolveUserName = (
+  t: (key: string, options?: Record<string, unknown>) => string,
   displayName: string | null,
   email: string | null,
 ): string => {
@@ -142,7 +119,7 @@ export const resolveUserName = (
     return email.split('@')[0]
   }
 
-  return 'Bạn'
+  return t('home.userFallback')
 }
 
 export const resolveInitials = (value: string): string =>
@@ -171,15 +148,17 @@ export const formatCurrencyMinor = (
 
 export const getCategoryLabel = (
   categoryKey: CategoryKey | undefined,
+  t: (key: string, options?: Record<string, unknown>) => string,
 ): string =>
-  categoryKey ? CATEGORY_LABELS[categoryKey] : CATEGORY_LABELS.other
+  t(`categories.${categoryKey ? kebabToCamel(categoryKey) : 'other'}`)
 
 export const getCategoryPresentation = (
   categoryKey: CategoryKey | undefined,
+  t: (key: string, options?: Record<string, unknown>) => string,
   referenceCategories?: ReferenceCategoryDTO[],
 ): CategoryPresentation => {
   const key = categoryKey ?? 'other'
-  const label = getCategoryLabel(key)
+  const label = getCategoryLabel(key, t)
   const match = referenceCategories?.find((item) => item.key === key)
   const accentBackground = match?.color ? withAlpha(match.color, 0.1) : null
   const accent =
@@ -223,30 +202,42 @@ export const getComparisonLabel = (
   comparison: AnalyticsComparisonDTO | undefined,
   fallbackExpenseCount: number,
   granularity: PeriodGranularity = 'month',
+  t: (key: string, options?: Record<string, unknown>) => string,
 ): string => {
   if (!comparison) {
-    return `${fallbackExpenseCount} khoản`
+    return t('home.expenseCount', { count: fallbackExpenseCount })
   }
 
   if (comparison.totalDeltaPercent == null) {
-    return `${comparison.currentPeriod.expenseCount} khoản`
+    return t('home.expenseCount', {
+      count: comparison.currentPeriod.expenseCount,
+    })
   }
 
   if (comparison.totalDeltaPercent === 0) {
-    return `Không đổi so với ${getComparisonGranularityLabel(granularity)}`
+    return t('home.comparisonNoChange', {
+      period: getComparisonGranularityLabel(granularity, t),
+    })
   }
 
-  const prefix = comparison.totalDeltaPercent > 0 ? '+' : ''
+  const delta =
+    comparison.totalDeltaPercent > 0
+      ? `+${comparison.totalDeltaPercent}`
+      : `${comparison.totalDeltaPercent}`
 
-  return `${prefix}${comparison.totalDeltaPercent}% so với ${getComparisonGranularityLabel(granularity)}`
+  return t('home.comparisonDelta', {
+    delta,
+    period: getComparisonGranularityLabel(granularity, t),
+  })
 }
 
 export const getHouseholdBudgetLabel = (
   totalSpendMinor: number | undefined,
   budget: BudgetDTO | null | undefined,
+  t: (key: string, options?: Record<string, unknown>) => string,
 ): string => {
   if (!budget || totalSpendMinor == null) {
-    return 'Chưa có ngân sách'
+    return t('home.householdBudgetNone')
   }
 
   const remainingPercent = Math.round(
@@ -262,10 +253,10 @@ export const getHouseholdBudgetLabel = (
         100,
     )
 
-    return `Vượt ${overPercent}%`
+    return t('home.householdBudgetOver', { percent: overPercent })
   }
 
-  return `Còn ${remainingPercent}%`
+  return t('home.householdBudgetRemaining', { percent: remainingPercent })
 }
 
 export const getExpenseSecondaryText = (
@@ -279,10 +270,13 @@ export const getExpenseSecondaryText = (
 
 export const getExpenseGroupLabel = (
   groupIds: string[] | undefined,
+  t: (key: string, options?: Record<string, unknown>) => string,
 ): string | null => {
   if (!groupIds || groupIds.length === 0) {
     return null
   }
 
-  return groupIds.length === 1 ? '1 nhóm' : `${groupIds.length} nhóm`
+  return groupIds.length === 1
+    ? t('home.expenseGroupOne')
+    : t('home.expenseGroupMany', { count: groupIds.length })
 }

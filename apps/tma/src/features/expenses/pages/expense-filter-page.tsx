@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -34,9 +35,11 @@ import {
   useExpenseListFilterStore,
 } from '../filter-store'
 
-const SORT_OPTIONS: Array<{ label: string; value: ExpenseListSort }> = [
-  { label: 'Mới nhất', value: 'occurred_at_desc' },
-  { label: 'Số tiền', value: 'amount_desc' },
+const makeSortOptions = (
+  t: (key: string) => string,
+): Array<{ label: string; value: ExpenseListSort }> => [
+  { label: t('expenses.filter.sortNewest'), value: 'occurred_at_desc' },
+  { label: t('expenses.filter.sortAmount'), value: 'amount_desc' },
 ]
 
 const ALL_VALUE = '__all__'
@@ -48,6 +51,7 @@ interface FilterReturnState {
 export const ExpenseFilterPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { t } = useTranslation()
   const filter = useExpenseListFilterStore((state) => state.filter)
   const setFilter = useExpenseListFilterStore((state) => state.setFilter)
   const reset = useExpenseListFilterStore((state) => state.reset)
@@ -131,7 +135,7 @@ export const ExpenseFilterPage = () => {
 
   useEffect(() => {
     const cleanup = setBottomButton({
-      text: 'Áp dụng bộ lọc',
+      text: t('expenses.filter.apply'),
       enabled: true,
       showProgress: false,
       onClick: () => {
@@ -147,7 +151,7 @@ export const ExpenseFilterPage = () => {
 
   useEffect(() => {
     updateBottomButton({
-      text: 'Áp dụng bộ lọc',
+      text: t('expenses.filter.apply'),
       enabled: true,
       showProgress: false,
     })
@@ -165,32 +169,32 @@ export const ExpenseFilterPage = () => {
 
   const householdPickerOptions = useMemo(
     () => [
-      { label: 'Tất cả hộ gia đình', value: ALL_VALUE },
+      { label: t('expenses.filter.householdAll'), value: ALL_VALUE },
       ...households.map((h) => ({ label: h.name, value: h.id })),
     ],
-    [households],
+    [households, t],
   )
 
   const groupPickerOptions = useMemo(
     () => [
-      { label: 'Tất cả nhóm', value: ALL_VALUE },
+      { label: t('expenses.filter.groupAll'), value: ALL_VALUE },
       ...filteredGroups.map((g) => ({
         label: g.name,
         value: g.id,
       })),
     ],
-    [filteredGroups],
+    [filteredGroups, t],
   )
 
   const categoryPickerOptions = useMemo(
     () => [
-      { label: 'Tất cả danh mục', value: ALL_VALUE },
+      { label: t('expenses.filter.categoryAll'), value: ALL_VALUE },
       ...categoryOptions.map((key) => ({
-        label: getCategoryLabel(key),
+        label: getCategoryLabel(key, t),
         value: key,
       })),
     ],
-    [categoryOptions],
+    [categoryOptions, t],
   )
 
   const handleHouseholdChange = (value: string) => {
@@ -252,7 +256,7 @@ export const ExpenseFilterPage = () => {
     filter.categoryKey != null
 
   return (
-    <TmaPageShell reserveBottomButton title='Lọc chi tiêu'>
+    <TmaPageShell reserveBottomButton title={t('expenses.filter.title')}>
       {/* Reset at top */}
       <div className='flex justify-end px-1 pt-1 pb-2'>
         <Button
@@ -260,14 +264,14 @@ export const ExpenseFilterPage = () => {
           size='sm'
           variant='ghost'
           onClick={handleReset}>
-          Đặt lại tất cả
+          {t('expenses.filter.reset')}
         </Button>
       </div>
 
       <Section className='mt-0'>
-        <SectionHeader title='Sắp xếp' />
+        <SectionHeader title={t('expenses.filter.sortTitle')} />
         <SegmentedControl
-          options={SORT_OPTIONS}
+          options={makeSortOptions(t)}
           value={filter.sort}
           onChange={handleSortChange}
         />
@@ -276,12 +280,14 @@ export const ExpenseFilterPage = () => {
       <PeriodPickerSection value={periodValue} onChange={handlePeriodChange} />
 
       <Section>
-        <SectionHeader title='Hộ gia đình' />
+        <SectionHeader title={t('expenses.filter.householdTitle')} />
         {householdsQuery.isLoading ? (
           <NativePicker
             disabled
             fullWidth
-            options={[{ label: 'Đang tải...', value: '' }]}
+            options={[
+              { label: t('expenses.filter.householdLoading'), value: '' },
+            ]}
             value=''
             onChange={() => {}}
           />
@@ -289,7 +295,7 @@ export const ExpenseFilterPage = () => {
           <NativePicker
             fullWidth
             options={householdPickerOptions}
-            placeholder='Chọn hộ gia đình'
+            placeholder={t('expenses.filter.householdPlaceholder')}
             value={filter.householdId ?? ALL_VALUE}
             onChange={handleHouseholdChange}
           />
@@ -297,13 +303,15 @@ export const ExpenseFilterPage = () => {
       </Section>
 
       <Section>
-        <SectionHeader title='Nhóm chi tiêu' />
+        <SectionHeader title={t('expenses.filter.groupTitle')} />
         {personalGroupsQuery.isLoading ||
         householdGroupQueries.some((q) => q.isLoading) ? (
           <NativePicker
             disabled
             fullWidth
-            options={[{ label: 'Đang tải...', value: '' }]}
+            options={[
+              { label: t('expenses.filter.householdLoading'), value: '' },
+            ]}
             value=''
             onChange={() => {}}
           />
@@ -311,7 +319,7 @@ export const ExpenseFilterPage = () => {
           <NativePicker
             fullWidth
             options={groupPickerOptions}
-            placeholder='Chọn nhóm'
+            placeholder={t('expenses.filter.groupTitle')}
             value={filter.groupId ?? ALL_VALUE}
             onChange={handleGroupChange}
           />
@@ -319,12 +327,14 @@ export const ExpenseFilterPage = () => {
       </Section>
 
       <Section>
-        <SectionHeader title='Danh mục chi tiêu' />
+        <SectionHeader title={t('expenses.filter.categoryAll')} />
         {referenceCategoriesQuery.isLoading ? (
           <NativePicker
             disabled
             fullWidth
-            options={[{ label: 'Đang tải...', value: '' }]}
+            options={[
+              { label: t('expenses.filter.householdLoading'), value: '' },
+            ]}
             value=''
             onChange={() => {}}
           />
@@ -332,7 +342,7 @@ export const ExpenseFilterPage = () => {
           <NativePicker
             fullWidth
             options={categoryPickerOptions}
-            placeholder='Chọn danh mục'
+            placeholder={t('expenses.filter.categoryAll')}
             value={filter.categoryKey ?? ALL_VALUE}
             onChange={handleCategoryChange}
           />

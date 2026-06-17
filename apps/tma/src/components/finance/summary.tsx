@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 
 import { Card, DataState, Eyebrow, MoneyLabel } from '@/components/ui'
 import {
@@ -24,13 +25,15 @@ export const FinanceSummaryCard = ({
   householdId,
   showBudgetPeriodContext = false,
   showPeriodChip = true,
-  title = 'Tổng chi kỳ này',
+  title: externalTitle,
 }: {
   householdId?: string
   showBudgetPeriodContext?: boolean
   showPeriodChip?: boolean
   title?: string
 }) => {
+  const { t } = useTranslation()
+  const title = externalTitle ?? t('summary.defaultTitle')
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
   const overviewParams = toAnalyticsRangeParams(selectedPeriod, householdId)
   const budgetPeriod = getMonthBudgetPeriod(selectedPeriod)
@@ -42,7 +45,7 @@ export const FinanceSummaryCard = ({
   })
   const overview = overviewQuery.data
   const budget = budgetQuery.data?.items[0] ?? null
-  const budgetPeriodContext = formatBudgetPeriodContext(budgetPeriod)
+  const budgetPeriodContext = formatBudgetPeriodContext(budgetPeriod, t)
   const budgetProgress = overview
     ? getBudgetProgress(overview.totalSpendMinor, budget)
     : null
@@ -56,12 +59,12 @@ export const FinanceSummaryCard = ({
 
   return (
     <DataState
-      errorDescription='Không tải được tổng quan kỳ này. Kiểm tra kết nối rồi thử lại.'
-      errorTitle='Không tải được tổng quan'
+      errorDescription={t('summary.loadErrorDesc')}
+      errorTitle={t('summary.loadError')}
       isError={isError}
       isLoading={isLoading}
-      loadingDescription='Đang đồng bộ số liệu chi tiêu theo kỳ đã chọn.'
-      loadingTitle='Đang tải tổng quan'
+      loadingDescription={t('summary.loadingDesc')}
+      loadingTitle={t('summary.loading')}
       retryAction={async () => {
         await Promise.all([
           overviewQuery.refetch(),
@@ -87,11 +90,12 @@ export const FinanceSummaryCard = ({
 
         <div className='text-xs font-semibold text-tma-text-muted'>
           {overviewQuery.isFetching || comparisonQuery.isFetching
-            ? 'Đang cập nhật'
+            ? t('summary.updating')
             : getComparisonLabel(
                 comparisonQuery.data,
                 overview?.expenseCount ?? 0,
                 selectedPeriod.granularity,
+                t,
               )}
         </div>
 
@@ -106,9 +110,13 @@ export const FinanceSummaryCard = ({
               />
             </div>
             <div className='flex items-center justify-between gap-3 text-xs font-semibold text-tma-text-muted'>
-              <span>Đã dùng {budgetProgress.percentUsed}% ngân sách</span>
+              {t('summary.budgetUsedPct', {
+                percent: budgetProgress.percentUsed,
+              })}
               <span>
-                {budgetProgress.isOverBudget ? 'Vượt ' : 'Còn '}
+                {budgetProgress.isOverBudget
+                  ? t('summary.overPrefix')
+                  : t('summary.remainingPrefix')}
                 <MoneyLabel>
                   {formatCurrencyMinor(
                     Math.abs(budgetProgress.remainingMinor),
@@ -121,10 +129,10 @@ export const FinanceSummaryCard = ({
         ) : (
           <div className='text-xs font-semibold text-tma-text-muted'>
             {budget && isMonthPeriodSelection(selectedPeriod)
-              ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget)
+              ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget, t)
               : showBudgetPeriodContext
                 ? budgetPeriodContext
-                : 'Ngân sách chỉ có theo tháng'}
+                : t('summary.monthlyOnly')}
           </div>
         )}
       </Card>
@@ -132,8 +140,13 @@ export const FinanceSummaryCard = ({
   )
 }
 
-const formatBudgetPeriodContext = (period: string): string => {
+const formatBudgetPeriodContext = (
+  period: string,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string => {
   const [year, month] = period.split('-')
 
-  return year && month ? `Ngân sách tháng ${month}/${year}` : 'Ngân sách tháng'
+  return year && month
+    ? t('summary.monthlyBudget', { month, year })
+    : t('summary.monthlyBudgetShort')
 }

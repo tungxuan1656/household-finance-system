@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   Card,
@@ -63,6 +65,7 @@ const getLegendPercent = (
 }
 
 export const StatisticsPage = () => {
+  const { t } = useTranslation()
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
   const overviewParams = toAnalyticsRangeParams(selectedPeriod)
   const overviewQuery = useAnalyticsOverviewQuery(overviewParams)
@@ -77,25 +80,25 @@ export const StatisticsPage = () => {
     overview?.expenseCount === 0
 
   return (
-    <TmaPageShell title='Thống kê'>
+    <TmaPageShell title={t('statistics.title')}>
       <DataState
         customAction={isOverviewEmpty ? <PeriodChipLink tone='muted' /> : null}
-        emptyDescription='Kỳ đang xem chưa có khoản chi nào để tổng hợp.'
-        emptyTitle='Chưa có dữ liệu thống kê'
-        errorDescription='Không tải được analytics thật từ API. Kiểm tra kết nối rồi thử lại.'
-        errorTitle='Không tải được thống kê'
+        emptyDescription={t('statistics.emptyDesc')}
+        emptyTitle={t('statistics.emptyTitle')}
+        errorDescription={t('statistics.loadErrorDesc')}
+        errorTitle={t('statistics.loadError')}
         isEmpty={isOverviewEmpty}
         isError={overviewQuery.isError && !overview}
         isLoading={overviewQuery.isLoading && !overview}
-        loadingDescription='Đang đọc analytics theo kỳ đang chọn.'
-        loadingTitle='Đang tải thống kê'
+        loadingDescription={t('statistics.loadingDesc')}
+        loadingTitle={t('statistics.loadingTitle')}
         retryAction={overviewQuery.refetch}>
         {overview ? (
           <>
             <Card className='mb-3 grid gap-4 p-5'>
               <div className='flex items-start justify-between gap-3'>
                 <div>
-                  <Eyebrow>Tổng chi</Eyebrow>
+                  <Eyebrow>{t('statistics.eyebrowTotalSpent')}</Eyebrow>
                   <MoneyLabel className='mt-1 block text-[30px] leading-none font-extrabold'>
                     {formatCurrencyMinor(
                       overview.totalSpendMinor,
@@ -107,6 +110,7 @@ export const StatisticsPage = () => {
                       comparisonQuery.data,
                       overview.expenseCount,
                       selectedPeriod.granularity,
+                      t,
                     )}
                   </CardDescription>
                 </div>
@@ -115,17 +119,17 @@ export const StatisticsPage = () => {
             </Card>
 
             <Card className='grid gap-5 p-5'>
-              <CardTitle>Phân bổ danh mục</CardTitle>
+              <CardTitle>{t('statistics.eyebrowCategoryBreakdown')}</CardTitle>
 
               <div className='grid justify-items-center gap-4'>
                 <div
-                  aria-label='Biểu đồ danh mục'
+                  aria-label={t('statistics.chartAria')}
                   className='relative grid size-44 place-items-center rounded-full shadow-[inset_0_0_0_1px_rgba(255,255,255,0.7),0_18px_34px_rgba(17,24,39,0.08)]'
                   role='img'
                   style={{ background: getPieBackground(topCategories) }}>
                   <div className='grid size-24 place-items-center rounded-full bg-white/95 text-center shadow-tma-soft'>
                     <div>
-                      <Eyebrow>Tổng</Eyebrow>
+                      <Eyebrow>{t('statistics.total')}</Eyebrow>
                       <MoneyLabel className='block text-sm font-extrabold'>
                         {formatCurrencyMinor(
                           overview.totalSpendMinor,
@@ -142,6 +146,7 @@ export const StatisticsPage = () => {
                   topCategories.map((category, index) => {
                     const presentation = getCategoryPresentation(
                       category.categoryKey,
+                      t,
                       categoriesQuery.data?.items,
                     )
                     const percent = getLegendPercent(
@@ -166,7 +171,9 @@ export const StatisticsPage = () => {
                               {presentation.label}
                             </h3>
                             <CardDescription>
-                              {category.expenseCount} khoản
+                              {t('statistics.expenseCount', {
+                                count: category.expenseCount,
+                              })}
                             </CardDescription>
                           </div>
                         </div>
@@ -186,7 +193,7 @@ export const StatisticsPage = () => {
                   })
                 ) : (
                   <CardDescription>
-                    Chưa có category đủ lớn để xếp hạng.
+                    {t('statistics.categoryRankingEmpty')}
                   </CardDescription>
                 )}
               </div>
@@ -197,7 +204,7 @@ export const StatisticsPage = () => {
                 <div className='grid grid-cols-2 gap-2.5'>
                   <div className='rounded-2xl border border-black/6 bg-white/80 px-3.5 py-3 shadow-tma-soft'>
                     <span className='block text-xs font-semibold text-tma-text-muted'>
-                      Số khoản
+                      {t('statistics.statExpenseCount')}
                     </span>
                     <strong className='mt-1 block font-mono text-base font-extrabold text-tma-text-strong [font-variant-numeric:tabular-nums]'>
                       {overview.expenseCount}
@@ -205,7 +212,7 @@ export const StatisticsPage = () => {
                   </div>
                   <div className='rounded-2xl border border-black/6 bg-white/80 px-3.5 py-3 shadow-tma-soft'>
                     <span className='block text-xs font-semibold text-tma-text-muted'>
-                      Khoảng ngày
+                      {t('statistics.dateRange')}
                     </span>
                     <strong className='mt-1 block font-mono text-sm font-extrabold text-tma-text-strong [font-variant-numeric:tabular-nums]'>
                       {formatPeriodSelectionRangeLabel(selectedPeriod)}

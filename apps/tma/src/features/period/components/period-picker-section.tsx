@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { CalendarIcon } from '@/components/shared/tma-icons'
 import { Card, Chip, DatePicker, Section, SectionHeader } from '@/components/ui'
@@ -20,11 +21,11 @@ import { cn } from '@/lib/utils'
 const PeriodPresetButton = ({
   isActive,
   onClick,
-  preset,
+  label,
 }: {
   isActive: boolean
   onClick: () => void
-  preset: ReportingPeriodPreset
+  label: string
 }) => (
   <button
     aria-pressed={isActive}
@@ -37,7 +38,7 @@ const PeriodPresetButton = ({
     type='button'
     onClick={onClick}>
     <CalendarIcon aria-hidden='true' className='size-4 text-neutral-700' />
-    {getReportingPeriodPresetLabel(preset)}
+    {label}
   </button>
 )
 
@@ -65,16 +66,18 @@ const PeriodRangeTimeline = ({
   candidate,
   onFromChange,
   onToChange,
+  t,
 }: {
   candidate: PeriodSelection
   onFromChange: (value: string) => void
   onToChange: (value: string) => void
+  t: (key: string) => string
 }) => (
   <div className='grid grid-cols-[1fr_auto_1fr] items-stretch gap-2.5'>
     <PeriodTimelineDateButton
-      inputLabel='Chọn từ ngày'
+      inputLabel={t('period.fieldFromPlaceholder')}
       inputValue={formatPeriodDateInputValue(candidate.dateFrom)}
-      label='Từ ngày'
+      label={t('period.fieldFrom')}
       onChange={onFromChange}
     />
     <div
@@ -94,9 +97,9 @@ const PeriodRangeTimeline = ({
       </svg>
     </div>
     <PeriodTimelineDateButton
-      inputLabel='Chọn đến ngày'
+      inputLabel={t('period.fieldToPlaceholder')}
       inputValue={formatPeriodDateInputValue(candidate.dateTo - 1)}
-      label='Đến ngày'
+      label={t('period.fieldTo')}
       onChange={onToChange}
     />
   </div>
@@ -111,6 +114,7 @@ export const PeriodPickerSection = ({
   value,
   onChange,
 }: PeriodPickerSectionProps) => {
+  const { t } = useTranslation()
   const [candidate, setCandidate] = useState<PeriodSelection>(
     value ?? {
       granularity: 'custom',
@@ -159,13 +163,13 @@ export const PeriodPickerSection = ({
 
   return (
     <Section>
-      <SectionHeader title='Thởi gian' />
+      <SectionHeader title={t('period.sectionTime')} />
       <div className='flex flex-wrap gap-2'>
         {REPORTING_PERIOD_PRESETS.map((preset) => (
           <PeriodPresetButton
             key={preset}
             isActive={activePreset === preset}
-            preset={preset}
+            label={getReportingPeriodPresetLabel(preset, t)}
             onClick={() => handlePresetClick(preset)}
           />
         ))}
@@ -181,8 +185,8 @@ export const PeriodPickerSection = ({
         <div className='flex flex-wrap items-center gap-2'>
           <Chip tone={activePreset ? 'primary' : 'warning'}>
             {activePreset
-              ? getReportingPeriodPresetLabel(activePreset)
-              : 'Tùy chỉnh'}
+              ? getReportingPeriodPresetLabel(activePreset, t)
+              : t('period.sectionCustom')}
           </Chip>
           {!activePreset && candidate.dateFrom > 0 && candidate.dateTo > 0 && (
             <span className='text-xs text-tma-text-muted'>
@@ -192,6 +196,7 @@ export const PeriodPickerSection = ({
         </div>
         <PeriodRangeTimeline
           candidate={candidate}
+          t={t}
           onFromChange={handleFromChange}
           onToChange={handleToChange}
         />

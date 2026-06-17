@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -29,12 +30,6 @@ import { formatBudgetPeriodLabel, getBudgetScopeLabel } from '../presentation'
 
 type ScopeFilter = 'all' | 'household' | 'personal'
 
-const SCOPE_FILTER_OPTIONS: { label: string; value: ScopeFilter }[] = [
-  { label: 'Tất cả', value: 'all' },
-  { label: 'Household', value: 'household' },
-  { label: 'Cá nhân', value: 'personal' },
-]
-
 const ScopeFilterChip = ({
   isSelected,
   label,
@@ -58,12 +53,19 @@ const ScopeFilterChip = ({
 )
 
 export const BudgetListPage = () => {
+  const { t } = useTranslation()
   const householdsQuery = useHouseholdsQuery()
   const households = householdsQuery.data?.items ?? []
   const adminHouseholds = households.filter(
     (household) => household.role === 'admin',
   )
   const [scopeFilter, setScopeFilter] = useState<ScopeFilter>('all')
+
+  const SCOPE_FILTER_OPTIONS: { label: string; value: ScopeFilter }[] = [
+    { label: t('budgets.filterAll'), value: 'all' },
+    { label: t('budgets.householdLabel'), value: 'household' },
+    { label: t('budgets.filterPersonal'), value: 'personal' },
+  ]
   const [selectedHouseholdId, setSelectedHouseholdId] = useState('')
   const selectedHousehold = households.find(
     (household) => household.id === selectedHouseholdId,
@@ -71,11 +73,11 @@ export const BudgetListPage = () => {
 
   const householdOptions: NativePickerOption[] = useMemo(() => {
     if (households.length === 0) {
-      return [{ value: '', label: 'Chưa có household' }]
+      return [{ value: '', label: t('budgets.householdEmptyOption') }]
     }
 
     return households.map((h) => ({ value: h.id, label: h.name }))
-  }, [households])
+  }, [households, t])
 
   const listParams = useMemo(() => {
     if (scopeFilter === 'personal') {
@@ -126,20 +128,20 @@ export const BudgetListPage = () => {
 
   const emptyTitle =
     scopeFilter === 'personal'
-      ? 'Chưa có ngân sách cá nhân'
+      ? t('budgets.emptyPersonal')
       : scopeFilter === 'household'
-        ? 'Chưa có ngân sách household'
-        : 'Chưa có ngân sách'
+        ? t('budgets.emptyHousehold')
+        : t('budgets.emptyGeneric')
 
   const emptyDescription =
     scopeFilter === 'personal'
-      ? 'Tạo ngân sách cá nhân để theo dõi chi tiêu của bạn theo tháng.'
+      ? t('budgets.emptyPersonalDesc')
       : scopeFilter === 'household'
-        ? 'Tạo ngân sách tháng đầu tiên cho household để xem planned vs actual.'
-        : 'Tạo ngân sách để theo dõi chi tiêu theo tháng.'
+        ? t('budgets.emptyHouseholdDesc')
+        : t('budgets.emptyGenericDesc')
 
   return (
-    <TmaPageShell title='Ngân sách'>
+    <TmaPageShell title={t('budgets.title')}>
       <Section>
         <SectionHeader
           action={
@@ -148,11 +150,11 @@ export const BudgetListPage = () => {
                 className={buttonVariants({ size: 'sm', variant: 'outline' })}
                 to={TMA_PATHS.budgetsNew}
                 onClick={() => selection()}>
-                Tạo mới
+                {t('budgets.create')}
               </Link>
             ) : null
           }
-          title='Ngân sách'
+          title={t('budgets.title')}
         />
 
         <div className='mb-3 flex flex-wrap gap-2'>
@@ -169,10 +171,10 @@ export const BudgetListPage = () => {
         {scopeFilter === 'household' ? (
           <Card className='mb-3 grid gap-2'>
             <Field>
-              <FieldLabel>Household</FieldLabel>
+              <FieldLabel>{t('budgets.householdLabel')}</FieldLabel>
               <NativePicker
                 fullWidth
-                aria-label='Chọn household'
+                aria-label={t('budgets.chooseHousehold')}
                 disabled={householdsQuery.isLoading || households.length === 0}
                 options={householdOptions}
                 value={selectedHouseholdId}
@@ -181,8 +183,7 @@ export const BudgetListPage = () => {
             </Field>
             {selectedHousehold?.role !== 'admin' ? (
               <CardDescription>
-                Bạn có thể xem ngân sách household này. Tạo, sửa, xóa cần quyền
-                admin.
+                {t('budgets.householdViewOnly')}
               </CardDescription>
             ) : null}
           </Card>
@@ -195,19 +196,19 @@ export const BudgetListPage = () => {
                 className={buttonVariants({ variant: 'secondary' })}
                 to={TMA_PATHS.budgetsNew}
                 onClick={() => selection()}>
-                Tạo ngân sách
+                {t('budgets.create')}
               </Link>
             ) : null
           }
           emptyDescription={emptyDescription}
           emptyTitle={emptyTitle}
-          errorDescription='API budget hoặc household đang lỗi. Thử tải lại sau khi phiên đăng nhập ổn định.'
-          errorTitle='Không tải được ngân sách'
+          errorDescription={t('budgets.loadErrorDesc')}
+          errorTitle={t('budgets.loadError')}
           isEmpty={!isInitialLoading && !isInitialError && budgets.length === 0}
           isError={isInitialError}
           isLoading={isInitialLoading}
-          loadingDescription='Danh sách budget sẽ hiện sau khi truy vấn household và budget hoàn tất.'
-          loadingTitle='Đang tải ngân sách'
+          loadingDescription={t('budgets.loadingDesc')}
+          loadingTitle={t('budgets.loadingTitle')}
           retryAction={async () => {
             await Promise.all([
               householdsQuery.refetch(),
@@ -228,7 +229,7 @@ export const BudgetListPage = () => {
                   onClick={() => selection()}>
                   <div className='grid min-w-0 gap-1'>
                     <span className='text-base font-semibold text-tma-text-strong'>
-                      {formatBudgetPeriodLabel(budget.period)}
+                      {formatBudgetPeriodLabel(budget.period, t)}
                     </span>
                     <Chip
                       className={
@@ -237,7 +238,7 @@ export const BudgetListPage = () => {
                           : undefined
                       }
                       tone={budget.scope === 'personal' ? 'warning' : 'muted'}>
-                      {getBudgetScopeLabel(budget.scope, household)}
+                      {getBudgetScopeLabel(budget.scope, household, t)}
                     </Chip>
                   </div>
                   <MoneyLabel className='shrink-0 text-base font-extrabold'>

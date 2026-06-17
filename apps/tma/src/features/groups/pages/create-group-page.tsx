@@ -1,4 +1,5 @@
 import { type FormEvent, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -36,6 +37,7 @@ const PERSONAL_CONTEXT_VALUE = 'personal'
 
 export const CreateGroupPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const householdsQuery = useHouseholdsQuery()
   const createGroupMutation = useCreateExpenseGroupMutation()
   const [name, setName] = useState('')
@@ -55,10 +57,10 @@ export const CreateGroupPage = () => {
   )
   const contextOptions: NativePickerOption[] = useMemo(
     () => [
-      { value: PERSONAL_CONTEXT_VALUE, label: 'Cá nhân' },
+      { value: PERSONAL_CONTEXT_VALUE, label: t('groups.contextPersonal') },
       ...adminHouseholds.map((h) => ({ value: h.id, label: h.name })),
     ],
-    [adminHouseholds],
+    [adminHouseholds, t],
   )
   const isBusy = createGroupMutation.isPending
   const normalizedName = name.trim()
@@ -72,19 +74,28 @@ export const CreateGroupPage = () => {
     const parsedBudget = parseBudgetInputToMinor(budgetInput)
 
     if (!normalizedName) {
-      setFeedback({ message: 'Tên group không được để trống.', tone: 'error' })
+      setFeedback({
+        message: t('groups.createPage.validation.nameRequired'),
+        tone: 'error',
+      })
 
       return
     }
 
     if (normalizedName.length > 200) {
-      setFeedback({ message: 'Tên group tối đa 200 ký tự.', tone: 'error' })
+      setFeedback({
+        message: t('groups.createPage.validation.nameMaxLength'),
+        tone: 'error',
+      })
 
       return
     }
 
     if (normalizedDescription.length > 1000) {
-      setFeedback({ message: 'Mô tả tối đa 1000 ký tự.', tone: 'error' })
+      setFeedback({
+        message: t('groups.createPage.validation.descriptionMaxLength'),
+        tone: 'error',
+      })
 
       return
     }
@@ -95,7 +106,7 @@ export const CreateGroupPage = () => {
       parsedEndDate < parsedStartDate
     ) {
       setFeedback({
-        message: 'Ngày kết thúc không được trước ngày bắt đầu.',
+        message: t('groups.createPage.validation.endBeforeStart'),
         tone: 'error',
       })
 
@@ -103,13 +114,19 @@ export const CreateGroupPage = () => {
     }
 
     if (parsedBudget !== undefined && parsedBudget <= 0) {
-      setFeedback({ message: 'Ngân sách phải lớn hơn 0.', tone: 'error' })
+      setFeedback({
+        message: t('groups.createPage.validation.budgetPositive'),
+        tone: 'error',
+      })
 
       return
     }
 
     if (parsedBudget !== undefined && parsedBudget > 999_999_999_999) {
-      setFeedback({ message: 'Ngân sách quá lớn.', tone: 'error' })
+      setFeedback({
+        message: t('groups.createPage.validation.budgetTooLarge'),
+        tone: 'error',
+      })
 
       return
     }
@@ -134,7 +151,7 @@ export const CreateGroupPage = () => {
         replace: true,
         state: {
           feedback: {
-            message: 'Đã tạo group thành công.',
+            message: t('groups.createPage.created'),
             tone: 'success',
           },
         },
@@ -144,14 +161,14 @@ export const CreateGroupPage = () => {
         message:
           error instanceof Error
             ? error.message
-            : 'Không thể tạo group lúc này.',
+            : t('groups.createPage.createError'),
         tone: 'error',
       })
     }
   }
 
   return (
-    <TmaPageShell title='Tạo group'>
+    <TmaPageShell title={t('groups.createPage.title')}>
       {feedback ? (
         <Card
           className={
@@ -169,16 +186,16 @@ export const CreateGroupPage = () => {
       ) : null}
 
       <section className='mt-6'>
-        <CardTitle className='mb-3'>Group mới</CardTitle>
+        <CardTitle className='mb-3'>{t('groups.createPage.header')}</CardTitle>
 
         <Card>
           <form className='grid gap-3.5' onSubmit={handleSubmit}>
             <Field>
-              <FieldLabel>Tên group</FieldLabel>
+              <FieldLabel>{t('groups.createPage.fieldName')}</FieldLabel>
               <Input
                 disabled={isBusy}
                 maxLength={200}
-                placeholder='Ví dụ: Đà Lạt cuối tuần'
+                placeholder={t('groups.createPage.namePlaceholder')}
                 type='text'
                 value={name}
                 onChange={(event) => {
@@ -189,10 +206,10 @@ export const CreateGroupPage = () => {
             </Field>
 
             <Field>
-              <FieldLabel>Context</FieldLabel>
+              <FieldLabel>{t('groups.createPage.fieldContext')}</FieldLabel>
               <NativePicker
                 fullWidth
-                aria-label='Chọn context'
+                aria-label={t('groups.createPage.contextPlaceholder')}
                 disabled={isBusy || householdsQuery.isLoading}
                 options={contextOptions}
                 value={contextValue}
@@ -204,11 +221,11 @@ export const CreateGroupPage = () => {
             </Field>
 
             <Field>
-              <FieldLabel>Mô tả</FieldLabel>
+              <FieldLabel>{t('groups.createPage.fieldDescription')}</FieldLabel>
               <Textarea
                 disabled={isBusy}
                 maxLength={1000}
-                placeholder='Ghi chú ngắn để nhớ group này dùng cho việc gì.'
+                placeholder={t('groups.createPage.descriptionHelp')}
                 value={description}
                 onChange={(event) => {
                   setDescription(event.target.value)
@@ -219,10 +236,10 @@ export const CreateGroupPage = () => {
 
             <div className='grid gap-3.5'>
               <Field>
-                <FieldLabel>Bắt đầu</FieldLabel>
+                <FieldLabel>{t('groups.createPage.fieldStartDate')}</FieldLabel>
                 <DatePicker
                   fullWidth
-                  aria-label='Chọn ngày bắt đầu'
+                  aria-label={t('groups.createPage.startDatePlaceholder')}
                   disabled={isBusy}
                   value={startDate}
                   onChange={(next) => {
@@ -233,10 +250,10 @@ export const CreateGroupPage = () => {
               </Field>
 
               <Field>
-                <FieldLabel>Kết thúc</FieldLabel>
+                <FieldLabel>{t('groups.createPage.fieldEndDate')}</FieldLabel>
                 <DatePicker
                   fullWidth
-                  aria-label='Chọn ngày kết thúc'
+                  aria-label={t('groups.createPage.endDatePlaceholder')}
                   disabled={isBusy}
                   value={endDate}
                   onChange={(next) => {
@@ -248,11 +265,11 @@ export const CreateGroupPage = () => {
             </div>
 
             <Field>
-              <FieldLabel>Ngân sách sự kiện</FieldLabel>
+              <FieldLabel>{t('groups.createPage.fieldBudget')}</FieldLabel>
               <Input
                 disabled={isBusy}
                 inputMode='numeric'
-                placeholder='Ví dụ: 3.000.000'
+                placeholder={t('groups.createPage.budgetPlaceholder')}
                 value={budgetInput}
                 onChange={(event) => {
                   setBudgetInput(formatAmountInput(event.target.value))
@@ -262,7 +279,7 @@ export const CreateGroupPage = () => {
             </Field>
 
             <CardDescription>
-              Admin mới tạo group gắn household. Không chọn = cá nhân.
+              {t('groups.createPage.householdNote')}
             </CardDescription>
 
             <div className='flex flex-wrap justify-end gap-2.5'>
@@ -271,11 +288,13 @@ export const CreateGroupPage = () => {
                 type='button'
                 variant='ghost'
                 onClick={() => navigate(TMA_PATHS.groups)}>
-                Hủy
+                {t('common.cancel')}
               </Button>
 
               <Button disabled={isBusy} type='submit' variant='secondary'>
-                {isBusy ? 'Đang tạo...' : 'Tạo group'}
+                {isBusy
+                  ? t('groups.createPage.submitting')
+                  : t('groups.createPage.title')}
               </Button>
             </div>
           </form>

@@ -17,6 +17,19 @@ import {
   REPORTING_PERIOD_PRESETS,
 } from '@/lib/period'
 
+const t = (key: string): string => {
+  const map: Record<string, string> = {
+    'period.thisMonth': 'Tháng này',
+    'period.lastMonth': 'Tháng trước',
+    'period.thisWeek': 'Tuần này',
+    'period.lastWeek': 'Tuần trước',
+    'period.thisYear': 'Năm nay',
+    'period.lastYear': 'Năm ngoái',
+  }
+
+  return map[key] ?? key
+}
+
 const vietnamTimestamp = (
   year: number,
   monthIndex: number,
@@ -57,7 +70,7 @@ describe('getCurrentPeriod', () => {
     })
 
     expect(
-      formatPeriodSelectionLabel(createCurrentMonthPeriodSelection()),
+      formatPeriodSelectionLabel(createCurrentMonthPeriodSelection(), t),
     ).toBe('Tháng này')
   })
 
@@ -98,7 +111,7 @@ describe('getCurrentPeriod', () => {
   it('exposes requested reporting preset labels in display order', () => {
     expect(
       REPORTING_PERIOD_PRESETS.map((preset) =>
-        getReportingPeriodPresetLabel(preset),
+        getReportingPeriodPresetLabel(preset, t),
       ),
     ).toEqual([
       'Tháng này',
@@ -122,7 +135,7 @@ describe('getCurrentPeriod', () => {
       dateTo: vietnamTimestamp(2026, 5, 12),
     })
 
-    expect(formatPeriodSelectionLabel(selection)).toBe('03/06 → 11/06')
+    expect(formatPeriodSelectionLabel(selection, t)).toBe('03/06 → 11/06')
 
     expect(formatPeriodSelectionRangeLabel(selection)).toBe(
       '03/06/26 → 11/06/26',
@@ -136,19 +149,19 @@ describe('getCurrentPeriod', () => {
   })
 
   it('formats a week selection as dd/MM-dd/MM', () => {
-    expect(formatPeriodSelectionLabel(createWeekPeriodSelection(2026, 1))).toBe(
-      '29/12 → 04/01',
-    )
+    expect(
+      formatPeriodSelectionLabel(createWeekPeriodSelection(2026, 1), t),
+    ).toBe('29/12 → 04/01')
   })
 
   it('formats a month selection as MM/yy', () => {
     expect(
-      formatPeriodSelectionLabel(createMonthPeriodSelection(2026, 1)),
+      formatPeriodSelectionLabel(createMonthPeriodSelection(2026, 1), t),
     ).toBe('01/26')
   })
 
   it('formats a current year selection as the relative preset label', () => {
-    expect(formatPeriodSelectionLabel(createYearPeriodSelection(2026))).toBe(
+    expect(formatPeriodSelectionLabel(createYearPeriodSelection(2026), t)).toBe(
       'Năm nay',
     )
   })

@@ -1,4 +1,5 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -20,6 +21,7 @@ import { getCurrentPeriod } from '@/lib/period'
 
 import { useCreateBudgetMutation } from '../api'
 import {
+  BudgetMutationError,
   buildBudgetMutationRequest,
   isValidBudgetPeriod,
   parseBudgetAmountInputToMinor,
@@ -36,6 +38,7 @@ const PERSONAL_TARGET_VALUE = 'personal'
 
 const CreateBudgetPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const householdsQuery = useHouseholdsQuery()
   const createBudgetMutation = useCreateBudgetMutation()
   const [targetValue, setTargetValue] = useState<string>(PERSONAL_TARGET_VALUE)
@@ -70,13 +73,13 @@ const CreateBudgetPage = () => {
   const isHouseholdMissing = !isPersonal && !targetValue
   const targetOptions = useMemo(
     () => [
-      { label: 'Cá nhân', value: PERSONAL_TARGET_VALUE },
+      { label: t('budgets.filterPersonal'), value: PERSONAL_TARGET_VALUE },
       ...adminHouseholds.map((household) => ({
         label: household.name,
         value: household.id,
       })),
     ],
-    [adminHouseholds],
+    [adminHouseholds, t],
   )
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -86,7 +89,7 @@ const CreateBudgetPage = () => {
 
     if (!isValidBudgetPeriod(period)) {
       setFeedback({
-        message: 'Kỳ ngân sách phải có dạng YYYY-MM.',
+        message: t('budgets.validation.invalidPeriod'),
         tone: 'error',
       })
 
@@ -94,20 +97,26 @@ const CreateBudgetPage = () => {
     }
 
     if (!totalLimitMinor || totalLimitMinor <= 0) {
-      setFeedback({ message: 'Tổng ngân sách phải lớn hơn 0.', tone: 'error' })
+      setFeedback({
+        message: t('budgets.validation.amountPositive'),
+        tone: 'error',
+      })
 
       return
     }
 
     if (totalLimitMinor > 999_999_999_999) {
-      setFeedback({ message: 'Tổng ngân sách quá lớn.', tone: 'error' })
+      setFeedback({
+        message: t('budgets.validation.amountTooLarge'),
+        tone: 'error',
+      })
 
       return
     }
 
     if (!isPersonal && isHouseholdMissing) {
       setFeedback({
-        message: 'Bạn cần chọn household hợp lệ để tạo ngân sách.',
+        message: t('budgets.validation.householdRequired'),
         tone: 'error',
       })
 
@@ -130,24 +139,28 @@ const CreateBudgetPage = () => {
         replace: true,
         state: {
           feedback: {
-            message: 'Đã tạo ngân sách thành công.',
+            message: t('budgets.createPage.created'),
             tone: 'success',
           },
         },
       })
     } catch (error) {
-      setFeedback({
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Không thể tạo ngân sách lúc này.',
-        tone: 'error',
-      })
+      if (error instanceof BudgetMutationError) {
+        setFeedback({
+          message: t(`budgets.errors.${error.code}`),
+          tone: 'error',
+        })
+      } else {
+        setFeedback({
+          message: t('budgets.createPage.createError'),
+          tone: 'error',
+        })
+      }
     }
   }
 
   return (
-    <TmaPageShell title='Tạo ngân sách'>
+    <TmaPageShell title={t('budgets.createPage.title')}>
       {feedback ? (
         <Card
           className={
@@ -165,15 +178,15 @@ const CreateBudgetPage = () => {
       ) : null}
 
       <section className='mt-6'>
-        <CardTitle className='mb-3'>Ngân sách mới</CardTitle>
+        <CardTitle className='mb-3'>{t('budgets.createPage.header')}</CardTitle>
 
         <Card>
           <form className='grid gap-3.5' onSubmit={handleSubmit}>
             <Field>
-              <FieldLabel>Phạm vi ngân sách</FieldLabel>
+              <FieldLabel>{t('budgets.createPage.fieldScope')}</FieldLabel>
               <NativePicker
                 fullWidth
-                aria-label='Chọn phạm vi ngân sách'
+                aria-label={t('budgets.createPage.scopePlaceholder')}
                 disabled={isBusy || householdsQuery.isLoading}
                 options={targetOptions}
                 value={targetValue}
@@ -185,10 +198,10 @@ const CreateBudgetPage = () => {
             </Field>
 
             <Field>
-              <FieldLabel>Tháng ngân sách</FieldLabel>
+              <FieldLabel>{t('budgets.createPage.fieldPeriod')}</FieldLabel>
               <DatePicker
                 fullWidth
-                aria-label='Chọn tháng ngân sách'
+                aria-label={t('budgets.createPage.periodPlaceholder')}
                 disabled={isBusy}
                 mode='month'
                 value={period}
@@ -200,11 +213,11 @@ const CreateBudgetPage = () => {
             </Field>
 
             <Field>
-              <FieldLabel>Tổng ngân sách (VND)</FieldLabel>
+              <FieldLabel>{t('budgets.createPage.fieldAmount')}</FieldLabel>
               <Input
                 disabled={isBusy}
                 inputMode='numeric'
-                placeholder='Ví dụ: 12.000.000'
+                placeholder={t('budgets.createPage.amountPlaceholder')}
                 value={totalLimitInput}
                 onChange={(event) => {
                   setTotalLimitInput(formatAmountInput(event.target.value))
@@ -219,10 +232,12 @@ const CreateBudgetPage = () => {
                 type='button'
                 variant='ghost'
                 onClick={() => navigate(TMA_PATHS.budgets)}>
-                Hủy
+                {t('common.cancel')}
               </Button>
               <Button disabled={isBusy} type='submit' variant='secondary'>
-                {isBusy ? 'Đang tạo...' : 'Tạo ngân sách'}
+                {isBusy
+                  ? t('budgets.createPage.submitting')
+                  : t('budgets.createPage.title')}
               </Button>
             </div>
           </form>

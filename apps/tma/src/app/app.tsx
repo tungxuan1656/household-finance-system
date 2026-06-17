@@ -7,12 +7,7 @@ import { createAuthApiBootstrapDeps } from '@/features/auth/bootstrap-deps'
 import { FatalLaunchScreen } from '@/features/auth/fatal-launch-screen'
 import { useAuthStore } from '@/features/auth/store'
 import { createTmaAuthClient } from '@/lib/auth/client'
-import {
-  DEFAULT_LOCALE,
-  detectTelegramLocale,
-  i18n,
-  type SupportedLocale,
-} from '@/lib/i18n'
+import { DEFAULT_LOCALE, i18n } from '@/lib/i18n'
 import { readRawInitData } from '@/lib/telegram/launch-params'
 
 const workerBaseUrl = import.meta.env.VITE_WORKER_URL ?? '/api/v1'
@@ -30,10 +25,8 @@ export const App = ({ startupError = null }: AppProps) => {
       return
     }
 
-    const locale: SupportedLocale = detectTelegramLocale() ?? DEFAULT_LOCALE
-
-    void i18n.changeLanguage(locale).then(() => {
-      document.documentElement.lang = locale
+    void i18n.changeLanguage(DEFAULT_LOCALE).then(() => {
+      document.documentElement.lang = DEFAULT_LOCALE
     })
   }, [startupError])
 

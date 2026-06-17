@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { ExpenseTimeline } from '@/components/finance'
@@ -20,6 +21,7 @@ import { selection } from '@/lib/telegram/haptics'
 
 export const ExpensesPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const filter = useExpenseListFilterStore((state) => state.filter)
   const activeFilterCount = countActiveExpenseListFilters(filter)
 
@@ -54,22 +56,20 @@ export const ExpensesPage = () => {
 
   if (expensesQuery.isLoading || referenceCategoriesQuery.isLoading) {
     return (
-      <TmaPageShell title='Chi tiêu'>
+      <TmaPageShell title={t('expenses.title')}>
         <Card>
-          <CardTitle>Đang tải danh sách chi tiêu</CardTitle>
-          <CardDescription>
-            Danh sách sẽ xuất hiện ngay khi truy vấn hoàn tất.
-          </CardDescription>
+          <CardTitle>{t('expenses.loadingTitle')}</CardTitle>
+          <CardDescription>{t('expenses.loadingDesc')}</CardDescription>
         </Card>
       </TmaPageShell>
     )
   }
 
   return (
-    <TmaPageShell title='Chi tiêu'>
+    <TmaPageShell title={t('expenses.title')}>
       <div className='flex justify-end px-1 py-2'>
         <Button
-          aria-label='Mở bộ lọc'
+          aria-label={t('expenses.openFilterAria')}
           size='sm'
           variant={activeFilterCount > 0 ? 'primary' : 'outline'}
           onClick={() => {
@@ -78,17 +78,17 @@ export const ExpensesPage = () => {
           }}>
           <FilterIcon height='16' width='16' />
           <span>
-            Lọc{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+            {activeFilterCount > 0
+              ? t('expenses.filterCount', { count: activeFilterCount })
+              : t('expenses.filter')}
           </span>
         </Button>
       </div>
 
       {expenses.length === 0 ? (
         <Card>
-          <CardTitle>Chưa có chi tiêu nào</CardTitle>
-          <CardDescription>
-            Ghi nhận chi tiêu đầu tiên để bắt đầu theo dõi.
-          </CardDescription>
+          <CardTitle>{t('expenses.emptyTitle')}</CardTitle>
+          <CardDescription>{t('expenses.emptyDesc')}</CardDescription>
         </Card>
       ) : (
         <ExpenseTimeline

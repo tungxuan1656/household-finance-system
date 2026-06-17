@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 
 import { Chip } from '@/components/ui'
@@ -12,6 +13,7 @@ export const PeriodChipLink = ({
 }: {
   tone?: 'primary' | 'muted'
 }) => {
+  const { t } = useTranslation()
   const location = useLocation()
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
 
@@ -22,7 +24,7 @@ export const PeriodChipLink = ({
       onClick={() => {
         selection()
       }}>
-      <Chip tone={tone}>{formatPeriodSelectionLabel(selectedPeriod)}</Chip>
+      <Chip tone={tone}>{formatPeriodSelectionLabel(selectedPeriod, t)}</Chip>
     </Link>
   )
 }

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { FinanceSummaryCard } from '@/components/finance'
 
 type HouseholdOverviewSectionProps = {
@@ -6,6 +8,13 @@ type HouseholdOverviewSectionProps = {
 
 export const HouseholdOverviewSection = ({
   householdId,
-}: HouseholdOverviewSectionProps) => (
-  <FinanceSummaryCard householdId={householdId} title='Tổng quan kỳ này' />
-)
+}: HouseholdOverviewSectionProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <FinanceSummaryCard
+      householdId={householdId}
+      title={t('summary.overviewTitle')}
+    />
+  )
+}

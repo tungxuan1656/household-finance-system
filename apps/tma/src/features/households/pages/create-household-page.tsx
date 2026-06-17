@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -22,6 +23,7 @@ type HouseholdPageFeedback = {
 
 export const CreateHouseholdPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const createHouseholdMutation = useCreateHouseholdMutation()
   const updateHouseholdMutation = useUpdateHouseholdMutation()
   const [draftName, setDraftName] = useState('')
@@ -35,7 +37,7 @@ export const CreateHouseholdPage = () => {
     setAvatarUrl(uploadedAvatarUrl)
 
     setFeedback({
-      message: 'Ảnh đã sẵn sàng. Household mới sẽ dùng avatar này sau khi tạo.',
+      message: t('households.createPage.imageReady'),
       tone: 'success',
     })
   }
@@ -45,7 +47,7 @@ export const CreateHouseholdPage = () => {
 
     if (!normalizedName) {
       setFeedback({
-        message: 'Tên household không được để trống.',
+        message: t('households.createPage.validation.nameRequired'),
         tone: 'error',
       })
 
@@ -54,7 +56,7 @@ export const CreateHouseholdPage = () => {
 
     if (normalizedName.length > 120) {
       setFeedback({
-        message: 'Tên household tối đa 120 ký tự.',
+        message: t('households.createPage.validation.nameMaxLength'),
         tone: 'error',
       })
 
@@ -79,14 +81,14 @@ export const CreateHouseholdPage = () => {
         message:
           error instanceof Error
             ? error.message
-            : 'Không thể tạo household lúc này.',
+            : t('households.createPage.createError'),
         tone: 'error',
       })
     }
   }
 
   return (
-    <TmaPageShell title='Tạo household'>
+    <TmaPageShell title={t('households.createPage.title')}>
       {feedback ? (
         <Card
           className={
@@ -107,10 +109,12 @@ export const CreateHouseholdPage = () => {
         <HouseholdAvatarSection
           canEdit
           avatarUrl={avatarUrl}
-          helperText='Chọn ảnh, xem trước, áp dụng để upload.'
-          householdName={normalizedName || 'Household mới'}
+          helperText={t('households.createPage.imageHelp')}
+          householdName={
+            normalizedName || t('households.createPage.newHousehold')
+          }
           isBusy={isBusy}
-          title='Avatar household'
+          title={t('households.createPage.fieldAvatar')}
           onAvatarUploaded={handleAvatarUploaded}
         />
       </Card>
@@ -119,11 +123,11 @@ export const CreateHouseholdPage = () => {
         <Card>
           <form className='grid gap-3.5' onSubmit={handleCreateHousehold}>
             <Field>
-              <FieldLabel>Tên household</FieldLabel>
+              <FieldLabel>{t('households.createPage.fieldName')}</FieldLabel>
               <Input
                 disabled={isBusy}
                 maxLength={120}
-                placeholder='Ví dụ: Nhà Phùng Thịnh'
+                placeholder={t('households.createPage.namePlaceholder')}
                 type='text'
                 value={draftName}
                 onChange={(event) => {
@@ -139,11 +143,13 @@ export const CreateHouseholdPage = () => {
                 type='button'
                 variant='ghost'
                 onClick={() => navigate(TMA_PATHS.households)}>
-                Hủy
+                {t('common.cancel')}
               </Button>
 
               <Button disabled={isBusy} type='submit' variant='secondary'>
-                {isBusy ? 'Đang tạo...' : 'Tạo household'}
+                {isBusy
+                  ? t('households.createPage.submitting')
+                  : t('households.create')}
               </Button>
             </div>
           </form>

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import {
   FinanceSummaryCard,
   HouseholdPreviewCarousel,
@@ -11,13 +13,15 @@ import { PeriodChipLink } from '@/features/period/components/period-chip-link'
 
 export const HomePage = () => {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const userName = resolveUserName(
+    t,
     user?.displayName ?? null,
     user?.email ?? null,
   )
 
   return (
-    <TmaPageShell title='Trang chủ'>
+    <TmaPageShell title={t('homePage.title')}>
       <TmaPageHeader title={userName} trailing={<PeriodChipLink />} />
 
       <FinanceSummaryCard showBudgetPeriodContext showPeriodChip={false} />

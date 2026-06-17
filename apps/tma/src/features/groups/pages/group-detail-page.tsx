@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { RecentExpenses } from '@/components/finance'
@@ -26,7 +27,6 @@ import {
   getGroupDateRangeLabel,
   getGroupProgress,
   getGroupStatusLabel,
-  GROUP_CONTEXT_PERSONAL_LABEL,
 } from '../presentation'
 
 type GroupPageFeedback = {
@@ -56,6 +56,7 @@ const GroupGlyph = () => (
 export const GroupDetailPage = () => {
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
+  const { t } = useTranslation()
   const groupQuery = useExpenseGroupDetailQuery(id)
   const summaryQuery = useGroupSummaryQuery(id)
   const householdsQuery = useHouseholdsQuery()
@@ -78,8 +79,8 @@ export const GroupDetailPage = () => {
     [householdsQuery.data?.items],
   )
   const contextLabel = group?.householdId
-    ? (householdNameById.get(group.householdId) ?? 'Household')
-    : GROUP_CONTEXT_PERSONAL_LABEL
+    ? (householdNameById.get(group.householdId) ?? t('groups.contextHousehold'))
+    : t('groups.contextPersonal')
   const totalSpendMinor =
     summary?.totalSpendMinor ?? group?.totalSpendMinor ?? null
   const progress = group
@@ -89,19 +90,17 @@ export const GroupDetailPage = () => {
 
   if (!id) {
     return (
-      <TmaPageShell title='Chi tiết group'>
+      <TmaPageShell title={t('groups.detail.title')}>
         <Card>
-          <CardTitle>Group không hợp lệ</CardTitle>
-          <CardDescription>
-            Đường dẫn hiện tại thiếu mã group để tải chi tiết.
-          </CardDescription>
+          <CardTitle>{t('groups.detail.invalidIdTitle')}</CardTitle>
+          <CardDescription>{t('groups.detail.invalidIdDesc')}</CardDescription>
         </Card>
       </TmaPageShell>
     )
   }
 
   return (
-    <TmaPageShell title='Chi tiết group'>
+    <TmaPageShell title={t('groups.detail.title')}>
       {feedback ? (
         <Card
           className={
@@ -119,15 +118,15 @@ export const GroupDetailPage = () => {
       ) : null}
 
       <DataState
-        emptyDescription='Group này không còn tồn tại hoặc bạn không có quyền truy cập.'
-        emptyTitle='Không tìm thấy group'
-        errorDescription='Group này có thể không còn truy cập được, hoặc phiên đăng nhập hiện tại đã hết hạn.'
-        errorTitle='Không tải được group'
+        emptyDescription={t('groups.detail.notFoundDesc')}
+        emptyTitle={t('groups.detail.notFoundTitle')}
+        errorDescription={t('groups.detail.loadErrorDesc')}
+        errorTitle={t('groups.detail.loadError')}
         isEmpty={isGroupMissing}
         isError={groupQuery.isError && !group}
         isLoading={groupQuery.isLoading && !group}
-        loadingDescription='Thông tin group và summary sẽ hiện ngay sau khi đồng bộ xong.'
-        loadingTitle='Đang tải chi tiết group'
+        loadingDescription={t('groups.detail.loadingDesc')}
+        loadingTitle={t('groups.detail.loading')}
         retryAction={groupQuery.refetch}>
         {group ? (
           <>
@@ -150,25 +149,27 @@ export const GroupDetailPage = () => {
               </div>
 
               <div className='flex flex-wrap gap-2'>
-                <Chip tone='success'>{getGroupStatusLabel(group.status)}</Chip>
-                <Chip>{getGroupDateRangeLabel(group)}</Chip>
+                <Chip tone='success'>
+                  {getGroupStatusLabel(group.status, t)}
+                </Chip>
+                <Chip>{getGroupDateRangeLabel(group, t)}</Chip>
               </div>
             </Card>
 
             <Section>
-              <SectionHeader title='Tổng quan' />
+              <SectionHeader title={t('groups.detail.sectionOverview')} />
               <DataState
-                errorDescription='Không tải được tổng hợp chi tiêu của group này.'
-                errorTitle='Summary đang lỗi'
+                errorDescription={t('groups.detail.overviewErrorDesc')}
+                errorTitle={t('groups.detail.overviewErrorTitle')}
                 isError={summaryQuery.isError && !summary}
                 isLoading={summaryQuery.isLoading && !summary}
-                loadingDescription='Tổng chi, số khoản và đóng góp sẽ hiện sau khi API trả dữ liệu.'
-                loadingTitle='Đang tải summary'
+                loadingDescription={t('groups.detail.overviewLoadingDesc')}
+                loadingTitle={t('groups.detail.overviewLoadingTitle')}
                 retryAction={summaryQuery.refetch}>
                 <Card className='grid gap-4'>
                   <div className='grid grid-cols-2 gap-2.5'>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <Eyebrow>Tổng chi</Eyebrow>
+                      <Eyebrow>{t('groups.detail.statTotalSpent')}</Eyebrow>
                       <MoneyLabel className='text-base font-extrabold'>
                         {totalSpendMinor != null
                           ? formatCurrencyMinor(totalSpendMinor, 'VND')
@@ -176,19 +177,19 @@ export const GroupDetailPage = () => {
                       </MoneyLabel>
                     </div>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <Eyebrow>Số khoản</Eyebrow>
+                      <Eyebrow>{t('groups.detail.statExpenseCount')}</Eyebrow>
                       <strong className='text-base text-tma-text-strong'>
                         {summary?.expenseCount ?? 0}
                       </strong>
                     </div>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <Eyebrow>Ngân sách</Eyebrow>
+                      <Eyebrow>{t('groups.detail.statBudget')}</Eyebrow>
                       <strong className='text-sm text-tma-text-strong'>
-                        {getGroupBudgetLabel(group)}
+                        {getGroupBudgetLabel(group, t)}
                       </strong>
                     </div>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <Eyebrow>Còn lại</Eyebrow>
+                      <Eyebrow>{t('groups.detail.statRemaining')}</Eyebrow>
                       <MoneyLabel
                         className={
                           summary?.budgetRemainingMinor != null &&
@@ -206,7 +207,7 @@ export const GroupDetailPage = () => {
                   {progress ? (
                     <div className='grid gap-1.5'>
                       <div className='flex items-center justify-between text-sm text-tma-text-muted'>
-                        <span>Tiến độ ngân sách</span>
+                        <span>{t('groups.detail.statProgress')}</span>
                         <span>{progress.percentUsed}%</span>
                       </div>
                       <div className='h-2 overflow-hidden rounded-full bg-black/6'>
@@ -227,7 +228,7 @@ export const GroupDetailPage = () => {
 
             {summary?.memberContributions.length ? (
               <Section>
-                <SectionHeader title='Thành viên' />
+                <SectionHeader title={t('groups.detail.sectionMembers')} />
                 <Card className='grid gap-2'>
                   {summary.memberContributions.map((member) => (
                     <article
@@ -235,10 +236,13 @@ export const GroupDetailPage = () => {
                       className='flex items-center justify-between gap-3 rounded-[18px] bg-black/4 p-3'>
                       <div className='min-w-0'>
                         <h3 className='m-0 truncate text-sm font-bold text-tma-text-strong'>
-                          {member.displayName ?? 'Thành viên'}
+                          {member.displayName ??
+                            t('groups.detail.memberFallback')}
                         </h3>
                         <CardDescription>
-                          {member.expenseCount} khoản
+                          {t('statistics.expenseCount', {
+                            count: member.expenseCount,
+                          })}
                         </CardDescription>
                       </div>
                       <MoneyLabel className='shrink-0 text-sm font-bold'>
@@ -254,7 +258,7 @@ export const GroupDetailPage = () => {
               groupId={group.id}
               householdId={group.householdId ?? undefined}
               showHouseholdLabel={group.householdId == null}
-              title='Chi tiêu trong group'
+              title={t('groups.detail.sectionExpenses')}
               viewAllHref={TMA_PATHS.expenses}
             />
           </>

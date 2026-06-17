@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { RecentExpenses } from '@/components/finance'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
@@ -17,19 +19,24 @@ export const HomeRecentExpensesSection = ({
   householdId,
   limit = 10,
   showHouseholdLabel = true,
-  title = 'Lịch sử gần đây',
+  title: externalTitle,
   viewAllHref = TMA_PATHS.expenses,
   dateFrom,
   dateTo,
-}: HomeRecentExpensesSectionProps) => (
-  <RecentExpenses
-    dateFrom={dateFrom}
-    dateTo={dateTo}
-    groupId={groupId}
-    householdId={householdId}
-    limit={limit}
-    showHouseholdLabel={showHouseholdLabel}
-    title={title}
-    viewAllHref={viewAllHref}
-  />
-)
+}: HomeRecentExpensesSectionProps) => {
+  const { t } = useTranslation()
+  const title = externalTitle ?? t('expensesList.defaultTitle')
+
+  return (
+    <RecentExpenses
+      dateFrom={dateFrom}
+      dateTo={dateTo}
+      groupId={groupId}
+      householdId={householdId}
+      limit={limit}
+      showHouseholdLabel={showHouseholdLabel}
+      title={title}
+      viewAllHref={viewAllHref}
+    />
+  )
+}

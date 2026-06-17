@@ -1,4 +1,5 @@
 import type { ReactElement, SVGProps } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { Chip, IconBadge } from '@/components/ui'
@@ -18,13 +19,16 @@ export const ShortcutItem = ({
   icon: (props: SVGProps<SVGSVGElement>) => ReactElement
   title: string
 }) => {
+  const { t } = useTranslation()
   const content = (
     <>
       <div className='flex items-start justify-between gap-3'>
         <IconBadge accent={accent}>
           <Icon height={20} strokeWidth={2.1} width={20} />
         </IconBadge>
-        {disabled ? <Chip tone='warning'>Sớm có</Chip> : null}
+        {disabled ? (
+          <Chip tone='warning'>{t('shortcuts.comingSoon')}</Chip>
+        ) : null}
       </div>
       <div>
         <h3 className='m-0 text-[15px] leading-tight font-semibold text-tma-text-strong'>
