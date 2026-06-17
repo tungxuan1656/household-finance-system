@@ -1,7 +1,7 @@
 import type { ReactElement, SVGProps } from 'react'
 
+import { ShortcutItem } from '@/components/finance'
 import { Section } from '@/components/ui'
-import { ShortcutItem } from '@/features/finance/components'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
 const iconProps = {

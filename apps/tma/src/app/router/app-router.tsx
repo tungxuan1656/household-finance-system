@@ -32,9 +32,9 @@ const ExpenseDetailPage = lazy(async () => {
 })
 
 const ExpenseFilterPage = lazy(async () => {
-  const module = await import('@/routes/expense-filter')
+  const module = await import('@/features/expenses/pages/expense-filter-page')
 
-  return { default: module.ExpenseFilterRoute }
+  return { default: module.ExpenseFilterPage }
 })
 
 const ExpenseEditPage = lazy(async () => {
@@ -68,63 +68,65 @@ const AddExpenseContextPage = lazy(async () => {
 })
 
 const HouseholdsPage = lazy(async () => {
-  const module = await import('@/routes/households')
+  const module = await import('@/features/households/pages/household-list-page')
 
-  return { default: module.HouseholdsPage }
+  return { default: module.HouseholdListPage }
 })
 
 const GroupsPage = lazy(async () => {
-  const module = await import('@/routes/groups')
+  const module = await import('@/features/groups/pages/group-list-page')
 
-  return { default: module.GroupsPage }
+  return { default: module.GroupListPage }
 })
 
 const BudgetsPage = lazy(async () => {
-  const module = await import('@/routes/budgets')
+  const module = await import('@/features/budgets/pages/budget-list-page')
 
-  return { default: module.BudgetsPage }
+  return { default: module.BudgetListPage }
 })
 
 const PeriodRoute = lazy(async () => {
-  const module = await import('@/routes/period')
+  const module = await import('@/features/period/pages/period-picker-page')
 
-  return { default: module.PeriodRoute }
+  return { default: module.PeriodPickerPage }
 })
 
 const CreateHouseholdRoute = lazy(async () => {
-  const module = await import('@/routes/create-household')
+  const module =
+    await import('@/features/households/pages/create-household-page')
 
-  return { default: module.CreateHouseholdRoute }
+  return { default: module.CreateHouseholdPage }
 })
 
 const HouseholdDetailRoute = lazy(async () => {
-  const module = await import('@/routes/household-detail')
+  const module =
+    await import('@/features/households/pages/household-detail-page')
 
-  return { default: module.HouseholdDetailRoute }
+  return { default: module.HouseholdDetailPage }
 })
 
 const CreateGroupRoute = lazy(async () => {
-  const module = await import('@/routes/create-group')
+  const module = await import('@/features/groups/pages/create-group-page')
 
-  return { default: module.CreateGroupRoute }
+  return { default: module.CreateGroupPage }
 })
 
 const GroupDetailRoute = lazy(async () => {
-  const module = await import('@/routes/group-detail')
+  const module = await import('@/features/groups/pages/group-detail-page')
 
-  return { default: module.GroupDetailRoute }
+  return { default: module.GroupDetailPage }
 })
 
 const CreateBudgetRoute = lazy(async () => {
-  const module = await import('@/routes/create-budget')
+  const module = await import('@/features/budgets/pages/create-budget-page')
 
-  return { default: module.CreateBudgetRoute }
+  return { default: module.CreateBudgetPage }
 })
 
 const BudgetDetailRoute = lazy(async () => {
-  const module = await import('@/routes/budget-detail')
+  const module = await import('@/features/budgets/pages/budget-detail-page')
 
-  return { default: module.BudgetDetailRoute }
+  return { default: module.BudgetDetailPage }
 })
 
 const FatalLaunchPage = lazy(async () => {

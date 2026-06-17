@@ -1,4 +1,4 @@
-import { RecentExpenses } from '@/features/finance/components'
+import { RecentExpenses } from '@/components/finance'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
 type HomeRecentExpensesSectionProps = {

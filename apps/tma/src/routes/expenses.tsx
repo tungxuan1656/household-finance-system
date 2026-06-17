@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { ExpenseTimeline } from '@/components/finance'
 import { FilterIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
@@ -9,7 +10,6 @@ import {
   useExpenseListFilterStore,
 } from '@/features/expenses/filter-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
-import { ExpenseTimeline } from '@/features/finance/components'
 import {
   useExpenseListQuery,
   useHouseholdsQuery,

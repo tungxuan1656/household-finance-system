@@ -1,4 +1,4 @@
-import { FinanceSummaryCard } from '@/features/finance/components'
+import { FinanceSummaryCard } from '@/components/finance'
 
 type HouseholdOverviewSectionProps = {
   householdId: string

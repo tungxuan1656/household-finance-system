@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
+import { RecentExpenses } from '@/components/finance'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   Card,
@@ -14,7 +15,6 @@ import {
   Section,
   SectionHeader,
 } from '@/components/ui'
-import { RecentExpenses } from '@/features/finance/components'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'

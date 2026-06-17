@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
+import { HouseholdItem } from '@/components/finance'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   buttonVariants,
@@ -10,7 +11,6 @@ import {
   Section,
   SectionHeader,
 } from '@/components/ui'
-import { HouseholdItem } from '@/features/finance/components'
 import { getHouseholdBudgetLabel } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {

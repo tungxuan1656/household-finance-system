@@ -549,6 +549,11 @@
       "id": "feat-100i",
       "name": "Spec + harness closeout + final verify",
       "status": "done"
+    },
+    {
+      "id": "feat-101",
+      "name": "TMA architecture cleanup: kill route wrappers, dead code, and misclassified feature",
+      "status": "done"
     }
   ]
 }

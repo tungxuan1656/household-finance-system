@@ -1,0 +1,33 @@
+{
+  "id": "feat-101",
+  "name": "TMA architecture cleanup: kill route wrappers, dead code, and misclassified feature",
+  "status": "done",
+  "description": "Apply the highest-priority findings from the TMA architecture review: eliminate 11 zero-logic route wrapper files, delete two confirmed dead-code files, inline two zero-logic home section wrappers, and rename the misclassified `features/finance/` shared component library to `components/finance/`.",
+  "dependencies": ["feat-095", "feat-098", "feat-099", "feat-100"],
+  "evidence": {
+    "planned": [
+      "Drop the 11 ~3-line route wrapper files (households, household-detail, create-household, groups, group-detail, create-group, budgets, budget-detail, create-budget, period, expense-filter) and rewrite the router's 11 lazy-import blocks to point directly at the feature pages.",
+      "Delete the dead `apps/tma/src/components/shared/tma-data-state.tsx` and `apps/tma/src/features/finance/components/link-button.tsx` (zero usages outside their own files) and remove `link-button` from the finance barrel.",
+      "Inline `home-households-section.tsx` (3 lines) and `home-overview-section.tsx` (5 lines) into `routes/home.tsx` so Home no longer routes through zero-logic wrappers.",
+      "Move `apps/tma/src/features/finance/components/` to `apps/tma/src/components/finance/` (flat, no inner `components/` subdir) and update all 6 consumer import paths."
+    ],
+    "artifacts": [
+      "Deleted 11 route wrappers: `households.tsx`, `household-detail.tsx`, `create-household.tsx`, `groups.tsx`, `group-detail.tsx`, `create-group.tsx`, `budgets.tsx`, `budget-detail.tsx`, `create-budget.tsx`, `period.tsx`, `expense-filter.tsx`.",
+      "Rewrote `apps/tma/src/app/router/app-router.tsx` so all 11 lazy-import blocks lazy-import directly from `@/features/<domain>/pages/<page>` and use the feature page's own export (`HouseholdListPage`, `HouseholdDetailPage`, `CreateHouseholdPage`, `GroupListPage`, `GroupDetailPage`, `CreateGroupPage`, `BudgetListPage`, `BudgetDetailPage`, `CreateBudgetPage`, `PeriodPickerPage`, `ExpenseFilterPage`).",
+      "Deleted `apps/tma/src/components/shared/tma-data-state.tsx` and `apps/tma/src/features/finance/components/link-button.tsx`. Updated the finance barrel to drop the `link-button` export.",
+      "Inlined the two zero-logic home wrappers: `routes/home.tsx` now imports `FinanceSummaryCard` and `HouseholdPreviewCarousel` from `@/components/finance` and renders them directly; deleted `features/home/components/home-households-section.tsx` and `features/home/components/home-overview-section.tsx`.",
+      "Moved `features/finance/components/*` (expenses, households, link-button [then deleted], shortcuts, summary, index) into `components/finance/`, removed the empty `features/finance/` directory, and updated import paths in `routes/expenses.tsx`, `features/home/components/home-recent-expenses-section.tsx`, `features/home/components/home-shortcuts-section.tsx`, `features/households/components/household-overview-section.tsx`, `features/households/pages/household-list-page.tsx`, and `features/groups/pages/group-detail-page.tsx`."
+    ],
+    "verification": [
+      "`./init.sh typecheck` returned `OK`.",
+      "`./init.sh lint` returned `OK`.",
+      "`./init.sh test` returned `OK`.",
+      "Repo-wide grep for `@/features/finance` returns no matches.",
+      "Repo-wide grep for `LinkButton`, `link-button`, `tma-data-state`, `TmaDataState` returns no matches.",
+      "`ls apps/tma/src/routes/` shows 10 real-page files; the 11 wrappers are gone.",
+      "`ls apps/tma/src/features/home/components/` shows only `home-recent-expenses-section.tsx` and `home-shortcuts-section.tsx`; the two zero-logic wrappers are gone.",
+      "`ls apps/tma/src/components/finance/` shows the 5 surviving files (expenses, households, index, shortcuts, summary); `link-button.tsx` and the old `features/finance/` directory are gone."
+    ]
+  },
+  "notes": "Mechanical refactor driven by the TMA architecture review findings. Race between fix-2 (dead-code deletion) and fix-3 (finance rename) was caught at the cancel-task checkpoint: fix-3 had already moved the finance path, so fix-2 was cancelled after the `tma-data-state.tsx` deletion had already landed, and the leftover `link-button.tsx` was removed directly from its new location. No new TMA product behavior was changed."
+}
