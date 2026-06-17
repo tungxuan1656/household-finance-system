@@ -5,6 +5,7 @@ import type {
   CreateBudgetRequest,
   DeleteBudgetResponse,
   GetBudgetStatusResponse,
+  ListBudgetsParams,
   ListBudgetsResponse,
   UpdateBudgetMutationInput,
 } from '@/features/budgets/types/budget'
@@ -18,15 +19,21 @@ export const createBudget = async (payload: CreateBudgetRequest) => {
   return response.data
 }
 
-export const listBudgets = async (householdId: string, period?: string) => {
-  const params: Record<string, string> = { household_id: householdId }
-  if (period) {
-    params.period = period
+export const listBudgets = async (params: ListBudgetsParams = {}) => {
+  const query: Record<string, string> = {}
+  if (params.householdId) {
+    query.household_id = params.householdId
+  }
+  if (params.scope) {
+    query.scope = params.scope
+  }
+  if (params.period) {
+    query.period = params.period
   }
 
   const response = await client.get<ListBudgetsResponse>(
     API_ENDPOINTS.budgets.list,
-    { params },
+    { params: query },
   )
 
   return response.data

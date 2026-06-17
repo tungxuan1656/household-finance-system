@@ -8,7 +8,7 @@ import { forbidden, invalidInput } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
 import type { AppBindings } from '@/types'
 
-import { toPeriodRange } from './period'
+import { toAnalyticsRange } from './period'
 
 type GetAnalyticsOverviewHandlerCtx = Context<AppBindings>
 
@@ -44,13 +44,13 @@ export const getAnalyticsOverviewHandler = async (
     }
   }
 
-  const periodRange = toPeriodRange(query.period)
+  const range = toAnalyticsRange(query)
 
   return getAnalyticsOverview(ctx.env.DB, {
     userId: currentUser.id,
     householdId: query.household_id,
-    period: query.period,
-    periodStart: periodRange.start,
-    periodEnd: periodRange.end,
+    period: range.period,
+    periodStart: range.start,
+    periodEnd: range.end,
   })
 }

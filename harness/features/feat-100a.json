@@ -1,0 +1,13 @@
+{
+  "id": "feat-100a",
+  "name": "Personal-budget DB foundation",
+  "status": "todo",
+  "description": "D1 migration `apps/worker/migrations/0003_personal_budgets.sql` widens `budgets.scope` CHECK to include `'personal'`, makes `household_id` nullable with a scope-driven CHECK mirroring the expenses pattern at `apps/worker/migrations/0001_init.sql:145-148`, adds `owner_user_id` with FK to users, and adds a partial unique index `idx_budgets_personal_owner_month` on `(owner_user_id, budget_month) WHERE scope='personal' AND archived_at IS NULL`. Row mapper and `StoredBudget` expose `scope` and `ownerUserId`. `createBudget()` writes a personal row.",
+  "dependencies": ["feat-100"],
+  "evidence": {
+    "planned": [
+      "Migration file is additive; existing `idx_budgets_household_scope_month` stays intact.",
+      "Row mapper: add `owner_user_id` to `BUDGET_COLUMNS`; widen `StoredBudget.scope` to `'household' | 'category' | 'personal'`."
+    ]
+  }
+}

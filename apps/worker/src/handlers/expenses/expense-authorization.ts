@@ -34,12 +34,28 @@ export const authorizeExpenseAccess = async (
     throw notFound(locale, 'expenses.expenseNotFound')
   }
 
-  if (!expense.householdId || expense.spentByUserId === currentUserId) {
+  // Personal expense: only the spender may access.
+  if (!expense.householdId) {
     if (expense.spentByUserId !== currentUserId) {
       throw forbidden(locale, 'expenses.expenseForbidden')
     }
 
     return expense
+  }
+
+  // Household expense: spender may access OR caller must be an active member.
+  if (expense.spentByUserId === currentUserId) {
+    return expense
+  }
+
+  const membership = await findActiveHouseholdMembership(
+    db,
+    currentUserId,
+    expense.householdId,
+  )
+
+  if (!membership) {
+    throw forbidden(locale, 'expenses.expenseForbidden')
   }
 
   return expense

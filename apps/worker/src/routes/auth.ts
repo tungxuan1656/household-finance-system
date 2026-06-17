@@ -10,9 +10,12 @@ import { refreshSession } from '@/handlers/auth/refresh-session'
 import { success } from '@/lib/response'
 import { readJsonBody } from '@/lib/validation'
 import { authMiddleware } from '@/middlewares/auth'
+import { rateLimitMiddleware } from '@/middlewares/rate-limit'
 import type { AppBindings } from '@/types'
 
 export const authRoutes = new Hono<AppBindings>()
+
+authRoutes.use('*', rateLimitMiddleware)
 
 authRoutes.post('/auth/provider/exchange', async (ctx) => {
   const locale = ctx.get('locale')

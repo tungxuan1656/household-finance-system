@@ -413,17 +413,17 @@
     {
       "id": "feat-082",
       "name": "Telegram Mini App household and invite flows",
-      "status": "todo"
+      "status": "in_progress"
     },
     {
       "id": "feat-083",
       "name": "Telegram Mini App read surfaces for budgets, groups, and insights",
-      "status": "todo"
+      "status": "in_progress"
     },
     {
       "id": "feat-084",
       "name": "Telegram Mini App device hardening and performance QA",
-      "status": "todo"
+      "status": "in_progress"
     },
     {
       "id": "feat-085",
@@ -448,6 +448,116 @@
     {
       "id": "feat-089",
       "name": "Frontend surface docs architecture refactor",
+      "status": "done"
+    },
+    {
+      "id": "feat-090",
+      "name": "Telegram Mini App shell and starter screen scaffolds",
+      "status": "done"
+    },
+    {
+      "id": "feat-091",
+      "name": "TMA navigation-state and header polish",
+      "status": "done"
+    },
+    {
+      "id": "feat-092",
+      "name": "TMA home screen minimalism and visual polish",
+      "status": "done"
+    },
+    {
+      "id": "feat-093",
+      "name": "TMA expense detail view with edit and delete capabilities",
+      "status": "done"
+    },
+    {
+      "id": "feat-094",
+      "name": "Telegram Mini App runtime hardening and bundle reduction",
+      "status": "in_progress"
+    },
+    {
+      "id": "feat-095",
+      "name": "Telegram Mini App Tailwind component rewrite",
+      "status": "done"
+    },
+    {
+      "id": "feat-096",
+      "name": "TMA shared period selection and multi-range analytics",
+      "status": "done"
+    },
+    {
+      "id": "feat-097",
+      "name": "TMA group list create and detail surfaces",
+      "status": "done"
+    },
+    {
+      "id": "feat-098",
+      "name": "TMA budget CRUD surfaces",
+      "status": "done"
+    },
+    {
+      "id": "feat-099",
+      "name": "TMA reporting period and statistics pie",
+      "status": "done"
+    },
+    {
+      "id": "feat-100",
+      "name": "Personal budgets end-to-end",
+      "status": "in_progress"
+    },
+    {
+      "id": "feat-100a",
+      "name": "Worker: DB foundation (migration, partial unique indexes, CHECK widen)",
+      "status": "done"
+    },
+    {
+      "id": "feat-100b",
+      "name": "Worker: contracts/types accept personal scope + ownerUserId",
+      "status": "done"
+    },
+    {
+      "id": "feat-100c",
+      "name": "Worker: repository/service personal CRUD + union list query",
+      "status": "done"
+    },
+    {
+      "id": "feat-100d",
+      "name": "Worker: routes POST/PATCH/DELETE personal + GET list widens to default union",
+      "status": "done"
+    },
+    {
+      "id": "feat-100e",
+      "name": "Web: types/hooks/copy accept personal budget",
+      "status": "done"
+    },
+    {
+      "id": "feat-100f",
+      "name": "Web: list union + create/edit forms accept personal",
+      "status": "done"
+    },
+    {
+      "id": "feat-100g",
+      "name": "TMA: types/queries accept personal scope",
+      "status": "done"
+    },
+    {
+      "id": "feat-100h",
+      "name": "TMA: union list + create forms accept personal",
+      "status": "done"
+    },
+    {
+      "id": "feat-100i",
+      "name": "Spec + harness closeout + final verify",
+      "status": "done"
+    },
+    {
+      "id": "feat-101",
+      "name": "TMA architecture cleanup: kill route wrappers, dead code, and misclassified feature",
+      "status": "done"
+    },
+    {
+      "id": "feat-102",
+      "name": "TMA file-length and icon-centralization refactor",
       "status": "done"
     }
   ]

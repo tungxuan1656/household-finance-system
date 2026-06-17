@@ -20,6 +20,7 @@ TELEGRAM_BOT_TOKEN="replace-with-telegram-bot-token"
 # Secrets
 AUTH_JWT_SECRET="replace-with-local-secret"
 AUTH_REFRESH_TOKEN_PEPPER="replace-with-local-pepper"
+INVITATION_TOKEN_PEPPER="replace-with-invitation-pepper"
 
 # Cloudinary upload signing
 APP_ENV="local"

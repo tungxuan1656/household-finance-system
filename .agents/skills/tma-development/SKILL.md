@@ -39,6 +39,175 @@ Use this skill for repo-specific Telegram Mini App work. It keeps terminology, p
 
 Read `references/locked-defaults.md` when package, session, or bot decisions matter.
 
+## @tma.js/sdk — cách sử dụng đúng
+
+> Đây là kiến thức rút ra từ thực tế trong repo này. Đọc phần này trước khi chạm bất kỳ file nào trong `apps/tma/src/lib/telegram/` hoặc `apps/tma/src/app/bootstrap/`.
+
+### Nguyên tắc bắt buộc
+
+1. **Import trực tiếp từ package, không dùng `window.Telegram.WebApp`**
+
+   ```ts
+   // ❌ SAI — không bao giờ dùng
+   window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light')
+   window.Telegram?.WebApp?.BackButton?.show()
+   window.Telegram?.WebApp?.MainButton?.show()
+
+   // ✅ ĐÚNG
+   import { hapticFeedback, backButton, mainButton } from '@tma.js/sdk'
+   hapticFeedback.impactOccurred.ifAvailable('light')
+   backButton.show.ifAvailable()
+   mainButton.setParams({ isVisible: true })
+   ```
+
+2. **Gọi `init()` trước tất cả mọi thứ — ở module level, trước `render()`**
+
+   SDK không có side effect khi import. Phải gọi `init()` tường minh. Phải gọi ở `main.tsx` trước `createRoot().render()`, không phải bên trong `useEffect`.
+
+   ```ts
+   // main.tsx
+   import { initTelegram } from './app/bootstrap/telegram-init'
+
+   // ✅ Gọi trước render — SDK available ngay khi component đầu tiên mount
+   const telegramCleanup = initTelegram()
+
+   createRoot(rootElement).render(<App telegramCleanup={telegramCleanup} />)
+   ```
+
+   ```ts
+   // ❌ SAI — gọi trong useEffect: chạy SAU render đầu tiên → auth bootstrap đọc initData sẽ thấy null
+   useEffect(() => {
+     cleanup = initTelegram()
+   }, [])
+   ```
+
+3. **Thứ tự mount bắt buộc trong `initTelegram()`**
+
+   ```ts
+   // 1. init() — phải đầu tiên
+   const cleanup = init({ acceptCustomStyles: true })
+
+   // 2. themeParams — phải trước miniApp và mainButton
+   themeParams.mount()
+
+   // 3. miniApp — phải sau themeParams
+   miniApp.mount()
+
+   // 4. bindTheme() — phải SAU khi themeParams và miniApp đã mount
+   bindTheme()
+
+   // 5. miniApp.ready — báo Telegram ẩn loading screen
+   miniApp.ready.ifAvailable()
+
+   // 6. viewport — async
+   viewport.mount().then(() => {
+     viewport.expand()
+     viewport.requestFullscreen.ifAvailable()
+   })
+
+   // 7. swipeBehavior
+   swipeBehavior.mount()
+   swipeBehavior.disableVertical.ifAvailable()
+
+   // 8. initData — restore từ launch params
+   initData.restore()
+   ```
+
+4. **Dùng `.ifAvailable()` thay vì gọi trực tiếp**
+
+   Phương thức này tự kiểm tra: TMA environment + SDK initialized + method supported + component mounted. Không cần thêm guard thủ công.
+
+   ```ts
+   // ✅ An toàn
+   backButton.show.ifAvailable()
+   hapticFeedback.impactOccurred.ifAvailable('medium')
+   miniApp.ready.ifAvailable()
+
+   // Khi cần biết kết quả quan trọng thì kiểm tra trước
+   if (backButton.show.isAvailable()) {
+     backButton.show()
+   }
+   ```
+
+5. **Guard `mount()` bằng `isMounted()` để tránh double-mount**
+
+   ```ts
+   // ✅ Khi mount trong helper function (không phải initTelegram)
+   if (!backButton.isMounted()) backButton.mount()
+   if (!themeParams.isMounted()) themeParams.mount()
+   if (!mainButton.isMounted()) mainButton.mount()
+   ```
+
+6. **`mainButton` cần `themeParams` mount trước**
+
+   ```ts
+   // ✅ ĐÚNG — themeParams trước
+   themeParams.mount()
+   mainButton.mount()
+   mainButton.setParams({ text: 'OK', isVisible: true })
+   ```
+
+7. **`initData` dùng signal, không phải object thông thường**
+
+   ```ts
+   import { initData } from '@tma.js/sdk'
+
+   // Gọi initData.restore() ở module level sau init()
+   initData.restore()
+
+   // Đọc user info qua signal (gọi như function)
+   const user = initData.user()           // User | undefined
+   const lang = initData.user()?.language_code  // chú ý: snake_case
+   const raw  = initData.raw()            // string | undefined
+   ```
+
+8. **Đọc raw init data cho auth exchange**
+
+   ```ts
+   import { retrieveRawInitData } from '@tma.js/sdk'
+
+   // Chỉ hoạt động sau khi init() đã được gọi
+   const raw = retrieveRawInitData() // string | undefined
+   ```
+
+### Mapping cũ → mới
+
+| `window.Telegram.WebApp.*` (cũ, sai) | `@tma.js/sdk` (mới, đúng) |
+|---|---|
+| `.HapticFeedback.impactOccurred(s)` | `hapticFeedback.impactOccurred.ifAvailable(s)` |
+| `.HapticFeedback.notificationOccurred(t)` | `hapticFeedback.notificationOccurred.ifAvailable(t)` |
+| `.HapticFeedback.selectionChanged()` | `hapticFeedback.selectionChanged.ifAvailable()` |
+| `.BackButton.show()` / `.hide()` | `backButton.show.ifAvailable()` / `backButton.hide.ifAvailable()` |
+| `.BackButton.onClick(fn)` | `backButton.onClick(fn)` → returns `offClick` fn |
+| `.MainButton.show()` / `.hide()` | `mainButton.setParams({ isVisible: true/false })` |
+| `.MainButton.setText(t)` | `mainButton.setParams({ text: t })` |
+| `.MainButton.onClick(fn)` | `mainButton.onClick(fn)` → returns `offClick` fn |
+| `.ready()` | `miniApp.ready.ifAvailable()` |
+| `.expand()` | `viewport.expand()` (sau `viewport.mount()`) |
+| `.requestFullscreen()` | `viewport.requestFullscreen.ifAvailable()` |
+| `.disableVerticalSwipes()` | `swipeBehavior.disableVertical.ifAvailable()` |
+| `.close()` | `miniApp.close.ifAvailable()` |
+| `.safeAreaInset` | `viewport.safeAreaInsets()` |
+| `.contentSafeAreaInset` | `viewport.contentSafeAreaInsets()` |
+| `.themeParams` | `themeParams.bindCssVars()` hoặc `themeParams.bgColor()` v.v. |
+| `.initData` (raw string) | `retrieveRawInitData()` |
+| `.initDataUnsafe.user.language_code` | `initData.user()?.language_code` |
+
+### Tham khảo local docs
+
+Repo đã fetch docs của SDK về `docs/library/tma-js-sdk/`. Đọc ở đây trước khi ra ngoài:
+
+- `docs/library/tma-js-sdk/initializing.md` — `init()` options
+- `docs/library/tma-js-sdk/usage-tips.md` — mount flow, ifAvailable pattern
+- `docs/library/tma-js-sdk/features/back-button.md`
+- `docs/library/tma-js-sdk/features/haptic-feedback.md`
+- `docs/library/tma-js-sdk/features/main-button.md`
+- `docs/library/tma-js-sdk/features/mini-app.md`
+- `docs/library/tma-js-sdk/features/swipe-behavior.md`
+- `docs/library/tma-js-sdk/features/viewport.md`
+- `docs/library/tma-js-sdk/features/init-data.md`
+- `docs/library/tma-js-sdk/features/theme-params.md`
+
 ## Task map
 
 - Scaffold/bootstrap: read `references/task-map.md` section `feat-079`.

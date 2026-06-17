@@ -1,8 +1,8 @@
 {
   "id": "feat-082",
   "name": "Telegram Mini App household and invite flows",
-  "status": "planned",
-  "description": "Bring household list/detail, invite preview/accept, and `startapp`-driven household deep-link behavior to TMA without changing membership, role, or invitation rules.",
+  "status": "in_progress",
+  "description": "Bring dedicated household list/detail surfaces to TMA first, including household avatar setup/editing and home-screen entry points, while preserving worker-owned membership and role rules. Invite preview/accept and `startapp` deep-link behavior stay in the broader feature but are not part of this execution pass.",
   "dependencies": [
     "feat-011",
     "feat-013",
@@ -16,10 +16,33 @@
   ],
   "evidence": {
     "planned": [
-      "Map Telegram deep-link payload handling onto the current invite-token preview and accept model.",
-      "Preserve household role and membership rules already enforced by the worker.",
-      "Keep invite UX resilient for auth-first redirect and expired-token cases inside Telegram."
+      "Add additive `household.avatarUrl` persistence + API support in the worker without changing existing household semantics.",
+      "Build `/households` and `/households/:id` TMA routes with Telegram-native list/detail layout and direct links from the home surface.",
+      "Preserve worker-owned household role and membership rules; admin-only actions stay enforced server-side and reflected in TMA affordances."
+    ],
+    "artifacts": [
+      "Added worker migration `0002_household_avatar.sql` plus household contract/repository/handler updates so `HouseholdDTO` now returns `avatarUrl` on create/list/detail/update and `PATCH /api/v1/households/:id` accepts additive `avatarUrl` updates.",
+      "Added TMA route constants in `apps/tma/src/lib/constants/routes.ts`, a shared authenticated API client in `apps/tma/src/lib/api/client.ts`, and local media helpers in `apps/tma/src/lib/media/*` so household pages can reuse typed requests and signed Cloudinary uploads without importing `apps/web` code.",
+      "Built `apps/tma/src/features/households/*` plus new `/households` and `/households/:id` routes with live worker-backed list/detail UI, admin avatar/name editing, current-month summary, recent household expenses, member list, and create-household entry from the list page.",
+      "Follow-up TMA state cleanup reused the shared `TmaDataState` pattern across the household list/detail surfaces, replacing repeated `tma-empty-card` loading/error/empty branches with consistent placeholder cards and per-section retry actions for the list, detail shell, recent-expenses, and members queries.",
+      "Refined the TMA household avatar interaction to mirror the existing web profile-avatar flow from `apps/web/src/features/settings/components/profile-avatar-card.tsx`: selecting a file now opens a preview dialog, applying that dialog uploads immediately through the signed Cloudinary helper and patches only `avatarUrl`, while the household-name form keeps its own separate save action.",
+      "Added a dedicated `/households/new` TMA route with a full create-household page for `name + avatar`. The create page reuses the same shared household avatar-flow component as detail, uploads avatar via the web-aligned preview/apply flow, then creates the household and patches the uploaded `avatarUrl` onto the new record.",
+      "Updated the TMA home route and shell to use centralized path constants, enabled the `Gia đình` shortcut, and turned home household cards into direct links to the new detail route.",
+      "Expanded local seed data so the Telegram test user's two demo households now carry seeded `avatar_url` values for immediate visual verification on home/list/detail screens."
+    ],
+    "verification": [
+      "Focused worker verification passed: `pnpm --filter worker exec vitest run test/unit/dto-household.spec.ts test/integration/households-read-update.spec.ts` succeeded with 18 tests after the avatar contract/persistence change.",
+      "Focused TMA verification passed: `pnpm --filter tma typecheck` succeeded and `pnpm --filter tma exec vitest run src/test/home-presentation.test.ts src/test/household-presentation.test.ts` passed with 6 tests.",
+      "Focused TMA build verification passed: `pnpm --filter tma build` succeeded. Vite emitted a >500kB chunk-size warning only; the production build still completed successfully.",
+      "Follow-up TMA avatar-flow verification passed: `pnpm --filter tma typecheck` succeeded again after the web-aligned avatar-dialog refactor, `pnpm --filter tma build` succeeded again, and `pnpm --filter tma lint` finished with only the two known pre-existing `no-console` warnings in `src/lib/i18n/index.ts` and `src/lib/storage/adapter.ts`.",
+      "Create-household-page follow-up verification passed: `pnpm --filter tma typecheck` succeeded, `pnpm --filter tma build` succeeded again, and `pnpm --filter tma lint` still completed with only the same two pre-existing `no-console` warnings after moving create-household into `/households/new` and reusing the shared avatar-flow component.",
+      "2026-06-05 household-state follow-up verification passed with `./init.sh typecheck` and focused lint `pnpm --filter tma exec eslint src/features/households/pages/household-list-page.tsx src/features/households/pages/household-detail-page.tsx src/components/shared/tma-data-state.tsx` after the list/detail state refactor.",
+      "Local data verification passed: `pnpm --filter worker db:migrate:local` applied `0002_household_avatar.sql`, `pnpm --filter worker db:seed:local` succeeded, and a follow-up local D1 query confirmed the Telegram test account `01KT3YMJ8GHFQD6K0RM4FJEJT4` now sees `Demo Household` and `City Loft` with non-null `avatar_url` values.",
+      "A final repo-level `./init.sh` attempt after this follow-up did not complete because of out-of-scope worktree issues in other TMA files: `apps/tma/src/routes/expense-edit.tsx` currently has a type mismatch and `git diff --check` reports an unrelated trailing blank-line issue in `apps/tma/src/features/expenses/store.ts`.",
+      "Repo-level verification passed after removing one stale unused dependency line from `apps/tma/package.json`: touched harness JSON parse checks printed `OK`, `./scripts/check_harness_size.sh` printed `Harness size checks passed`, `git diff --check` was clean, `./init.sh build` printed `OK`, and final `./init.sh` completed with `Done!`.",
+      "Final `gitnexus_detect_changes(scope: all, repo: household-finance-system)` returned `critical` with 25 changed files and 20 affected processes because the active worktree also contains other TMA route/shell edits outside the strict household slice. The result should be read as whole-worktree blast radius, not as an isolated household-avatar risk signal.",
+      "A later focused GitNexus pass on 2026-06-05 reported `medium` whole-worktree risk with touched `HouseholdListPage` and `HouseholdDetailPage` symbols plus 5 affected processes (`List`, `Members`, `Overview`, `Detail`) after applying the shared TMA data-state pattern to household surfaces."
     ]
   },
-  "notes": "This feature is the main TMA onboarding and sharing slice."
+  "notes": "This feature is the main TMA household/onboarding slice. The current pass is intentionally narrowed to list/detail + avatar so it can land cleanly without mixing invite deep-link work into the same verification batch."
 }

@@ -17,7 +17,9 @@ type BudgetThresholdStatus = 'ok' | 'warning' | 'exceeded'
 
 type BudgetStatusDTO = {
   budgetId: string
-  householdId: string
+  scope: 'household' | 'personal' | 'category'
+  householdId: string | null
+  ownerUserId: string | null
   period: string
   currencyCode: string
   totalPlannedMinor: number
@@ -59,6 +61,7 @@ describe('GET /api/v1/budgets/:id/status', () => {
           'content-type': 'application/json',
         },
         body: JSON.stringify({
+          scope: 'household',
           householdId,
           period: '2026-04',
           totalLimit: 100000,
@@ -142,6 +145,7 @@ describe('GET /api/v1/budgets/:id/status', () => {
           'content-type': 'application/json',
         },
         body: JSON.stringify({
+          scope: 'household',
           householdId,
           period: '2026-04',
           totalLimit: 100000,
@@ -206,6 +210,7 @@ describe('GET /api/v1/budgets/:id/status', () => {
           'content-type': 'application/json',
         },
         body: JSON.stringify({
+          scope: 'household',
           householdId,
           period: '2026-04',
           totalLimit: 100000,
@@ -325,6 +330,7 @@ describe('GET /api/v1/budgets/:id/status', () => {
           'content-type': 'application/json',
         },
         body: JSON.stringify({
+          scope: 'household',
           householdId,
           period: '2026-04',
           totalLimit: 100000,

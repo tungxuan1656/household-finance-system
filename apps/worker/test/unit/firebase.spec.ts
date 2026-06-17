@@ -4,6 +4,7 @@ import { AppError } from '@/lib/errors'
 import { verifyFirebaseIdToken } from '@/lib/auth/firebase'
 
 const baseConfig = {
+  appEnvironment: 'test',
   authIssuer: 'https://household-finance.local',
   authAudience: 'household-finance-api',
   accessTokenTtlSeconds: 3600,

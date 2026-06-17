@@ -62,6 +62,33 @@ export interface CreateAuthApiClientOptions {
   baseUrl: string
   fetchImpl?: typeof fetch
   accessTokenProvider?: () => string | null
+  timeoutMs?: number
+}
+
+const DEFAULT_AUTH_API_TIMEOUT_MS = 10_000
+
+const withTimeout = async <T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  onTimeout?: () => void,
+): Promise<T> => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          onTimeout?.()
+          reject(new AuthApiError(504, 'NETWORK_TIMEOUT'))
+        }, timeoutMs)
+      }),
+    ])
+  } finally {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId)
+    }
+  }
 }
 
 const joinUrl = (baseUrl: string, path: string): string =>
@@ -69,9 +96,13 @@ const joinUrl = (baseUrl: string, path: string): string =>
 
 const parseErrorPayload = async (
   response: Response,
+  timeoutMs: number,
 ): Promise<ApiErrorPayload> => {
   try {
-    const data = (await response.json()) as { error?: ApiErrorPayload }
+    const data = (await withTimeout(
+      response.json() as Promise<{ error?: ApiErrorPayload }>,
+      timeoutMs,
+    )) as { error?: ApiErrorPayload }
 
     return data.error ?? { code: 'UNKNOWN_ERROR' }
   } catch {
@@ -95,6 +126,7 @@ export const createAuthApiClient = (
   options: CreateAuthApiClientOptions,
 ): AuthApiClient => {
   const fetchImpl = options.fetchImpl ?? fetch
+  const timeoutMs = options.timeoutMs ?? DEFAULT_AUTH_API_TIMEOUT_MS
 
   const request = async <TResponse>(
     path: string,
@@ -105,14 +137,23 @@ export const createAuthApiClient = (
         ? options.accessTokenProvider()
         : null
 
-    const response = await fetchImpl(joinUrl(options.baseUrl, path), {
-      method: init.method,
-      headers: buildHeaders(accessToken),
-      body: init.body ? JSON.stringify(init.body) : undefined,
-    })
+    const controller = new AbortController()
+
+    const response = await withTimeout(
+      fetchImpl(joinUrl(options.baseUrl, path), {
+        method: init.method,
+        headers: buildHeaders(accessToken),
+        body: init.body ? JSON.stringify(init.body) : undefined,
+        signal: controller.signal,
+      }),
+      timeoutMs,
+      () => {
+        controller.abort()
+      },
+    )
 
     if (!response.ok) {
-      const errorPayload = await parseErrorPayload(response)
+      const errorPayload = await parseErrorPayload(response, timeoutMs)
       throw new AuthApiError(
         response.status,
         errorPayload.code,
@@ -120,7 +161,10 @@ export const createAuthApiClient = (
       )
     }
 
-    const data = (await response.json()) as { data: TResponse }
+    const data = (await withTimeout(
+      response.json() as Promise<{ data: TResponse }>,
+      timeoutMs,
+    )) as { data: TResponse }
 
     return data.data
   }

@@ -1,0 +1,15 @@
+{
+  "id": "feat-100c",
+  "name": "Unified list endpoint",
+  "status": "todo",
+  "description": "Worker `listBudgetsHandler` calls new `listBudgetsForUser(db, { userId, scope?, period? })` returning the union of active household budgets (joined to active `household_memberships`) and personal budgets owned by the current user, sorted by `budget_month DESC`. `?scope=household|personal|all` and `?household_id=...` and `?owner_user_id=...` narrow the result. `household_id` and `owner_user_id` are mutually exclusive.",
+  "dependencies": ["feat-100a"],
+  "evidence": {
+    "planned": [
+      "Integration test asserts unioned list shape with `scope` on every item.",
+      "Per-scope filter test asserts `?scope=personal` returns only personal rows.",
+      "Cross-user 404 test asserts `?owner_user_id=other` returns 404.",
+      "Extend `apps/worker/test/integration/budgets-create-list.spec.ts` to assert `scope` field on list items."
+    ]
+  }
+}

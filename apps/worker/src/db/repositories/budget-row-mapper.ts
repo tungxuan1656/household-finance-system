@@ -1,7 +1,10 @@
+export type BudgetScope = 'household' | 'personal'
+
 export interface StoredBudget {
   id: string
-  householdId: string
-  scope: 'household'
+  scope: BudgetScope
+  householdId: string | null
+  ownerUserId: string | null
   budgetMonth: string
   startDate: string | null
   endDate: string | null
@@ -17,7 +20,7 @@ export interface StoredBudget {
 export interface StoredBudgetLimit {
   id: string
   budgetId: string
-  householdId: string
+  householdId: string | null
   categoryId: string | null
   categoryKey: string | null
   limitMinor: number
@@ -27,8 +30,9 @@ export interface StoredBudgetLimit {
 
 export type BudgetRow = {
   id: string
-  household_id: string
-  scope: 'household'
+  household_id: string | null
+  owner_user_id: string | null
+  scope: BudgetScope
   budget_month: string
   start_date: string | null
   end_date: string | null
@@ -44,7 +48,7 @@ export type BudgetRow = {
 export type BudgetLimitRow = {
   id: string
   budget_id: string
-  household_id: string
+  household_id: string | null
   category_id: string | null
   category_key: string | null
   limit_minor: number
@@ -54,8 +58,9 @@ export type BudgetLimitRow = {
 
 export const mapBudgetRow = (r: BudgetRow): StoredBudget => ({
   id: r.id,
-  householdId: r.household_id,
   scope: r.scope,
+  householdId: r.household_id,
+  ownerUserId: r.owner_user_id,
   budgetMonth: r.budget_month,
   startDate: r.start_date,
   endDate: r.end_date,
@@ -82,6 +87,7 @@ export const mapBudgetLimitRow = (r: BudgetLimitRow): StoredBudgetLimit => ({
 export const BUDGET_COLUMNS = `
   b.id,
   b.household_id,
+  b.owner_user_id,
   b.scope,
   b.budget_month,
   b.start_date,

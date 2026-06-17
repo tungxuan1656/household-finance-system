@@ -263,6 +263,7 @@ describe('Worker integration: budgets read and update', () => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
+        scope: 'household',
         householdId: 'h1',
         period: '2026-05',
         totalLimit: 100000,

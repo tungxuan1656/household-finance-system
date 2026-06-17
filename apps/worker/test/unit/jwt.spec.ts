@@ -12,6 +12,7 @@ import {
 const encoder = new TextEncoder()
 
 const config = {
+  appEnvironment: 'test',
   authIssuer: 'https://household-finance.local',
   authAudience: 'household-finance-api',
   accessTokenTtlSeconds: 3600,

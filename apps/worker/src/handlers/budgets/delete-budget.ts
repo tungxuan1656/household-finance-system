@@ -39,17 +39,27 @@ export const deleteBudgetHandler = async (
     throw notFound(locale, 'errors.resourceNotFound')
   }
 
-  const membership = await findActiveHouseholdMembership(
-    db,
-    currentUser.id,
-    budget.householdId,
-  )
-  if (!membership) {
-    throw notFound(locale, 'errors.resourceNotFound')
-  }
+  if (budget.scope === 'personal') {
+    if (budget.ownerUserId !== currentUser.id) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
+  } else {
+    if (!budget.householdId) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
 
-  if (!canManageBudgets(membership.role)) {
-    throw forbidden(locale, 'errors.forbidden')
+    const membership = await findActiveHouseholdMembership(
+      db,
+      currentUser.id,
+      budget.householdId,
+    )
+    if (!membership) {
+      throw notFound(locale, 'errors.resourceNotFound')
+    }
+
+    if (!canManageBudgets(membership.role)) {
+      throw forbidden(locale, 'errors.forbidden')
+    }
   }
 
   const deleted = await softDeleteBudget(db, budget.id)
@@ -65,6 +75,7 @@ export const deleteBudgetHandler = async (
       targetType: 'budget',
       targetId: budget.id,
       payloadJson: JSON.stringify({
+        scope: budget.scope,
         period: budget.budgetMonth,
         totalLimitMinor: budget.totalLimitMinor,
       }),

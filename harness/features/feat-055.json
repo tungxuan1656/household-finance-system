@@ -8,6 +8,7 @@
     "Keep no-argument init.sh as full verification: install, harness check, parallel lint/typecheck/test jobs, sync, Done output",
     "Run web and worker lint/typecheck/test jobs in the default full flow with quiet output by default",
     "Run web Tailwind lint autofix as part of the web lint job for both lint and full flows",
+    "Use local package cache for install, ESLint cache for repeated lint runs, and Vitest cache for repeated test runs",
     "Keep build out of the default full flow temporarily; run build only through the explicit build command",
     "Print only failing job output on errors; print OK for successful single-command runs",
     "Support --verbose to print captured execution logs"
@@ -24,6 +25,7 @@
       "Chained web Tailwind lint autofix after web lint autofix inside the web lint job",
       "Added worker build check through wrangler deploy dry-run output",
       "Added --verbose log printing and successful single-command OK output",
+      "Added pnpm install --prefer-offline, per-app ESLint cache files, and Vitest --cache flags for faster repeat verification",
       "Temporarily removed build from the no-argument full flow while keeping ./init.sh build available"
     ],
     "pending": []
@@ -41,9 +43,15 @@
       "./init.sh test passed and printed OK",
       "./init.sh build passed and printed OK after build became explicit-only",
       "./init.sh full flow passed and printed Done! after build was removed from the no-argument flow",
+      "Follow-up bash -n init.sh passed after adding prefer-offline install and ESLint cache args",
+      "Follow-up ./init.sh lint passed and printed OK with ESLint cache enabled",
+      "Follow-up bash -n init.sh passed after adding Vitest --cache to test jobs",
+      "Follow-up ./init.sh test passed and printed OK with Vitest cache enabled",
+      "Follow-up jq empty harness/features/feat-055.json passed after harness evidence update",
+      "Follow-up final ./init.sh passed and printed Done! after install, lint, and test cache changes",
       "python3 -m json.tool validated harness/feature_index.json and harness/features/feat-055.json",
       "gitnexus_detect_changes(scope: all) reported low risk with 3 changed files and 0 affected processes"
     ]
   },
-  "updated_at": "2026-05-14"
+  "updated_at": "2026-06-12"
 }

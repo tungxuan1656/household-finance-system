@@ -311,8 +311,8 @@ describe('Worker integration: invitations', () => {
     const secondAcceptPayload =
       await parseJson<ApiErrorEnvelope>(secondAcceptResponse)
 
-    expect(secondAcceptResponse.status).toBe(409)
-    expect(secondAcceptPayload.error.code).toBe('CONFLICT')
+    expect(secondAcceptResponse.status).toBe(404)
+    expect(secondAcceptPayload.error.code).toBe('NOT_FOUND')
   })
 
   it('rejects accepting invitation when user is already an active member', async () => {

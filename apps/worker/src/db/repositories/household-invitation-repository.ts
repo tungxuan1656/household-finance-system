@@ -98,6 +98,8 @@ export const findInvitationPreviewByTokenHash = async (
   db: D1Database,
   tokenHash: string,
 ): Promise<InvitationPreviewRow | null> => {
+  const nowEpoch = Date.now()
+
   const row = await db
     .prepare(
       `SELECT hi.id AS invitation_id,
@@ -111,9 +113,11 @@ export const findInvitationPreviewByTokenHash = async (
          INNER JOIN households h ON h.id = hi.household_id
         WHERE hi.token_hash = ?
           AND h.archived_at IS NULL
+          AND hi.used_at IS NULL
+          AND hi.expires_at > ?
         LIMIT 1`,
     )
-    .bind(tokenHash)
+    .bind(tokenHash, nowEpoch)
     .first<{
       invitation_id: string
       household_id: string

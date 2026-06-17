@@ -1,0 +1,58 @@
+{
+  "id": "feat-094",
+  "name": "Telegram Mini App runtime hardening and bundle reduction",
+  "status": "in_progress",
+  "description": "Harden the TMA startup/runtime path, auth-storage fallback behavior, safe-area reactivity, and route loading so the Mini App launches reliably and loads less code on cold start.",
+  "dependencies": [
+    "feat-079",
+    "feat-080",
+    "feat-082",
+    "feat-090",
+    "feat-091",
+    "feat-093"
+  ],
+  "plan": "docs/exec-plans/plans/2026-06-04-telegram-mini-app-runtime-hardening-and-bundle-reduction.md",
+  "evidence": {
+    "planned": [
+      "Catch Telegram SDK launch failures before React render and route them into a renderable fatal state.",
+      "Make TMA safe-area CSS vars reactive after viewport/fullscreen changes instead of sync-once behavior.",
+      "Trip auth storage permanently into memory-only mode after secure read/delete failures and simplify bootstrap dead branches.",
+      "Lazy-load route modules to reduce the current eager TMA startup bundle.",
+      "Collapse duplicated lightweight helpers only after runtime/auth correctness fixes land."
+    ],
+    "artifacts": [
+      "Added `initTelegramSafely()` and threaded startup failure handling through `apps/tma/src/main.tsx` and `apps/tma/src/app/app.tsx` so missing Telegram launch params now render the existing fatal launch UI instead of crashing before React mounts.",
+      "Reworked `apps/tma/src/lib/telegram/theme.ts` to bind `miniApp`, `themeParams`, and `viewport` CSS vars once, keep safe-area vars reactive via `viewport.bindCssVars()`, and clean them up on teardown.",
+      "Hardened `apps/tma/src/lib/storage/adapter.ts` so secure read/delete failures now trip the adapter into explicit memory-only mode instead of silently retrying broken SecureStorage calls forever.",
+      "Removed currently unreachable bootstrap branches in `apps/tma/src/features/auth/bootstrap.tsx`, `apps/tma/src/features/auth/bootstrap-deps.ts`, and `apps/tma/src/features/auth/store.ts` without changing the existing authenticated/fatal outcomes.",
+      "Lazy-loaded the TMA route modules in `apps/tma/src/app/router/app-router.tsx`, removed the duplicate explicit `/home` route, and preserved the same page components behind `Suspense` + `LoadingFallback`.",
+      "Tightened shared shell back-navigation in `apps/tma/src/components/shared/tma-page-shell.tsx` so SPA back now depends only on React Router's own `history.state.idx` and never on browser-history length outside the Mini App stack.",
+      "Added a focused shell navigation regression test covering SPA back and cold-detail fallback, preserved create-household partial-failure feedback across navigation, cached TMA currency formatters, removed the dead `AuthBootstrap.loadingFallback` prop, and reused shared `closeMiniApp` in both fatal screens.",
+      "Extracted `apps/tma/src/features/expenses/presentation.ts` so `getSourceLabel()` and `buildHouseholdNameMap()` are shared across `ExpensesPage`, `ExpenseDetailPage`, and `ExpenseEditPage` instead of being repeated in each route.",
+      "Moved the TMA-only `getCurrentPeriod()` helper into `apps/tma/src/lib/period.ts`, moved `MAX_AVATAR_SIZE_BYTES` into `apps/tma/src/lib/media/constants.ts`, and updated the TMA household/home call sites to use those dedicated modules instead of burying small shared values in presentation files.",
+      "Removed the remaining `as any` casts from `apps/tma/src/routes/expense-edit.tsx` by introducing a typed `createEditExpenseDraft()` helper and aligning `EditExpenseDraft` / `UpdateExpenseRequest` with `CategoryKey` / `SourceKey`.",
+      "Fixed the fullscreen regression by moving Telegram teardown out of `App`'s React effect cleanup and into module/HMR disposal in `main.tsx`, so StrictMode dev cleanup no longer cancels the deferred fullscreen request before it runs.",
+      "Re-aligned `telegram-init.ts` and `theme.ts` to the local `tma-js-sdk` docs: removed the custom `requestAnimationFrame + setTimeout` fullscreen choreography, simplified the flow to `viewport.mount() -> expand() -> requestFullscreen()`, and made `DEFAULT_TMA_BG` the explicit app-owned base background instead of deriving it from `themeParams.bgColor()`."
+    ],
+    "verification": [
+      "Focused TMA verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/home-presentation.test.ts src/test/storage-adapter.test.ts src/test/theme.test.ts src/test/telegram-init.test.ts src/test/auth-bootstrap.test.ts src/test/safe-area.test.ts` passed with 24 tests across 6 files.",
+      "Focused TMA build verification passed on 2026-06-04: `pnpm --filter tma build` succeeded after lazy routes and formatter caching, emitting split route chunks and reducing the eager entry bundle to `436.00 kB` minified / `139.30 kB` gzip.",
+      "Repo canonical verification passed on 2026-06-04: `./init.sh lint` returned `OK`, `./init.sh build` returned `OK`, and final `./init.sh` completed with `Done!`.",
+      "Repo hygiene checks passed on 2026-06-04: `git diff --check` returned clean.",
+      "Focused shell/navigation verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/tma-page-shell-navigation.test.tsx src/test/scroll-restoration.test.tsx src/test/theme.test.ts src/test/telegram-init.test.ts src/test/storage-adapter.test.ts src/test/auth-bootstrap.test.ts src/test/home-presentation.test.ts` passed with 27 tests across 7 files.",
+      "Repo-wide follow-up verification passed on 2026-06-04 after the continued refactor: `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, `./init.sh build`, and final `./init.sh` all completed successfully (`OK` / `Done!`).",
+      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 5 changed files / 12 changed symbols / 49 affected processes for the isolated shell/auth cleanup follow-up, concentrated in `TmaPageShell`, `AuthBootstrap`, and the router.",
+      "Focused helper-extraction verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/expense-presentation.test.ts src/test/tma-page-shell-navigation.test.tsx src/test/home-presentation.test.ts` passed with 9 tests across 3 files, `pnpm --filter tma typecheck` passed, `./init.sh lint` returned `OK`, `./init.sh test` returned `OK`, and final `./init.sh` again completed with `Done!`.",
+      "Final GitNexus check for the helper-extraction slice reported `high` risk with 3 changed files / 12 changed symbols / 14 affected processes, limited to the expected expense routes (`ExpensesPage`, `ExpenseDetailPage`, `ExpenseEditPage`).",
+      "Focused period/media-helper verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/period.test.ts src/test/home-presentation.test.ts src/test/household-presentation.test.ts src/test/expense-presentation.test.ts` passed with 10 tests across 4 files, `pnpm --filter tma typecheck` passed, `./init.sh lint` returned `OK`, `./init.sh test` returned `OK`, and final `./init.sh` completed with `Done!`.",
+      "Final GitNexus check for the period/media-helper slice reported `low` risk with 6 changed files and no changed symbols/affected processes surfaced, matching a move-only helper extraction that stayed inside the TMA surface.",
+      "Focused expense-edit type-safety verification passed on 2026-06-04: `pnpm --filter tma exec vitest run src/test/expense-draft.test.ts src/test/expense-presentation.test.ts src/test/home-presentation.test.ts` passed with 7 tests across 3 files; focused startup/auth checks `pnpm --filter tma exec vitest run src/test/telegram-init.test.ts src/test/theme.test.ts src/test/auth-bootstrap.test.ts` passed with 11 tests across 3 files after the timer-cleanup fix; `./init.sh lint` returned `OK`, `./init.sh test` returned `OK`, and final `./init.sh` completed with `Done!`.",
+      "Final GitNexus check for the expense-edit + timer-cleanup slice reported `medium` risk with 4 changed files / 15 changed symbols / 5 affected processes, concentrated in `expense-edit.tsx` and `telegram-init.ts`.",
+      "Fullscreen regression verification passed on 2026-06-04: focused startup/auth checks `pnpm --filter tma exec vitest run src/test/telegram-init.test.ts src/test/theme.test.ts src/test/auth-bootstrap.test.ts` passed with 11 tests across 3 files, `pnpm --filter tma typecheck` passed, `./init.sh lint` returned `OK`, `./init.sh test` returned `OK`, and final `./init.sh` completed with `Done!` after moving teardown out of the React effect cleanup path.",
+      "Final GitNexus check for the fullscreen regression fix reported `high` risk with 2 changed files / 2 changed symbols / 7 affected processes, centered on `App` lifecycle wiring in `app.tsx` and `main.tsx`.",
+      "Docs-aligned init/theme verification passed on 2026-06-04: focused startup/theme tests `pnpm --filter tma exec vitest run src/test/telegram-init.test.ts src/test/theme.test.ts src/test/auth-bootstrap.test.ts` passed with 11 tests across 3 files, `pnpm --filter tma typecheck` passed, `pnpm --filter tma build` passed, `./init.sh test` returned `OK`, and final `./init.sh` completed with `Done!` after removing the custom fullscreen timing chain and stabilizing `DEFAULT_TMA_BG`.",
+      "Final GitNexus check for the docs-aligned init/theme slice reported `high` risk with 9 changed files / 11 changed symbols / 7 affected processes, concentrated in `telegram-init.ts`, `theme.ts`, and `App` lifecycle wiring."
+    ]
+  },
+  "notes": "This feature is a hardening and architecture pass over the active TMA worktree. It intentionally prioritizes runtime correctness and cold-start behavior over new product scope."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "feat-092",
+  "name": "TMA home screen minimalism and visual polish",
+  "status": "done",
+  "description": "Refine visual elements on the TMA Home screen to achieve a cleaner, more minimalist iOS-like aesthetic. Soften typography weights from heavy 800/700 to premium 700/600, reduce shadow opacity for a lighter card appearance, clean up spacing/margins, optimize status pill proportions, and replace cluttered double section headings with a single elegant title.",
+  "dependencies": ["feat-079", "feat-080", "feat-090", "feat-091"],
+  "evidence": {
+    "planned": [
+      "Used `using-skills` first, then stated an explicit inline plan for Level 1 visual layout and style improvements.",
+      "Read `apps/tma/DESIGN.md`, `apps/tma/src/index.css`, and `apps/tma/src/routes/home.tsx` to align styles with visual specs.",
+      "Ran GitNexus impact analysis on `HomePage` symbol, and later on `TmaPageShell` function symbol showing critical risk, keeping modifications highly localized."
+    ],
+    "artifacts": [
+      "Soften card shadows in `index.css` by reducing opacity to `rgba(17, 24, 39, 0.03)` for `--tma-shadow` and `rgba(17, 24, 39, 0.02)` for `--tma-shadow-soft`.",
+      "Reduced visual weight of typography: clamps body amount weight from 800 to 700, insight title weight from 800 to 600, monogram text from 800 to 600, and shortcut/household header tags from 700 to 600.",
+      "Resized and optimized status badges (`.tma-status-pill`) to be more compact: padding `4px 8px`, font size `11px`, and weight `500`.",
+      "Increased breathing space between sections by updating `.tma-section` margin-top from `20px` to `26px`.",
+      "Reduced shortcut card layout min-height to `112px` and inner gap to `10px` for a much sleeker grid alignment.",
+      "Removed visually redundant double-header structures on the home screen, replacing them with a single clean section header ('Lối tắt', 'Gia đình', 'Lịch sử gần đây') at `font-size: 16px` and `font-weight: 600`.",
+      "Avoided repeating month names in the header by cleaning up the profile card subtitle.",
+      "Replaced the Home shortcut monogram text badges with lightweight inline SVG icons scoped to `apps/tma/src/features/home/components/home-shortcuts-section.tsx`, preserving the existing accent colors and card layout without adding a new runtime dependency.",
+      "Resolved a critical back navigation loop bug in `TmaPageShell` by utilizing `window.history.state.idx` to determine if we can trigger natural history back (`navigate(-1)`) rather than pushing new redundant pages onto the stack."
+    ],
+    "verification": [
+      "Ran `./init.sh lint` and `./init.sh typecheck` to confirm zero script, style, or typing regressions.",
+      "Executed `./init.sh` to run the full parallel verification pipeline successfully.",
+      "Verified `harness/feature_index.json` and `harness/features/feat-092.json` parse correctly.",
+      "2026-06-05 follow-up verification passed with `./init.sh typecheck` and a focused `pnpm --filter tma exec eslint src/features/home/components/home-shortcuts-section.tsx` run after switching the shortcut badges from symbols to inline SVG icons.",
+      "Executed final `gitnexus_detect_changes(scope: 'all')` to track modified files and styles."
+    ]
+  },
+  "notes": "All changes are purely CSS styling tweaks and Home page template cleanup. The mock data schemas and routing structures remain untouched."
+}

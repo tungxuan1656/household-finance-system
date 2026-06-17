@@ -50,6 +50,14 @@ export class RefreshInterceptor {
     this.inFlightRefresh = null
   }
 
+  /**
+   * Expose the refresh flow for proactive (pre-expiry) refresh.
+   * Returns the new access token on success, or null if refresh failed.
+   */
+  public triggerRefresh(): Promise<string | null> {
+    return this.runRefresh()
+  }
+
   public onUnauthorized(listener: UnauthorizedListener): () => void {
     this.listeners.add(listener)
 

@@ -1,0 +1,18 @@
+{
+  "id": "feat-100h",
+  "name": "Web parity (merged list + scope toggle)",
+  "status": "done",
+  "description": "Web `BudgetDTO`/`useBudgetListQuery` mirror TMA. `budgets-page.tsx` renders the unioned list with a scope badge per card. `create-budget-dialog.tsx` gains the scope toggle; `edit-budget-dialog.tsx` shows scope + currency + owner; both flows build the scope-aware payload.",
+  "dependencies": ["feat-100c", "feat-100e"],
+  "evidence": {
+    "done": [
+      "TMA budget types (`types.ts`) now match web parity: `BudgetScope`, nullable `householdId`/`ownerUserId`, discriminated `CreateBudgetRequest`, `ListBudgetsParams`.",
+      "TMA budget API (`api.ts`) now builds query strings from `ListBudgetsParams` and uses stable tuple query keys.",
+      "TMA budget list page (`budget-list-page.tsx`) now renders a merged unioned list with scope filter chips and scope-tagged cards.",
+      "TMA create budget page (`create-budget-page.tsx`) now has scope toggle with conditional household/currency fields.",
+      "TMA budget detail page (`budget-detail-page.tsx`) now shows scope label and ownership-based edit permissions.",
+      "TMA presentation helpers (`presentation.ts`) now include `getBudgetScopeLabel` and scope-aware `buildBudgetMutationRequest`.",
+      "TMA typecheck + lint + test + build OK via `./init.sh`."
+    ]
+  }
+}

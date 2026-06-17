@@ -40,12 +40,15 @@ describe('Worker integration: households read and update', () => {
       { headers: { authorization: `Bearer ${owner.accessToken}` } },
     )
     const getPayload =
-      await parseJson<ApiEnvelope<{ id: string; name: string }>>(getResponse)
+      await parseJson<
+        ApiEnvelope<{ id: string; name: string; avatarUrl: string | null }>
+      >(getResponse)
 
     expect(getResponse.status).toBe(200)
     expect(getPayload.data).toMatchObject({
       id: createdPayload.data.id,
       name: 'Family Bravo',
+      avatarUrl: null,
     })
   })
 
@@ -120,17 +123,83 @@ describe('Worker integration: households read and update', () => {
         }),
       },
     )
-    const updatePayload =
-      await parseJson<
-        ApiEnvelope<{ id: string; name: string; defaultCurrencyCode: string }>
-      >(updateResponse)
+    const updatePayload = await parseJson<
+      ApiEnvelope<{
+        id: string
+        name: string
+        defaultCurrencyCode: string
+        avatarUrl: string | null
+      }>
+    >(updateResponse)
 
     expect(updateResponse.status).toBe(200)
     expect(updatePayload.data).toMatchObject({
       id: createdPayload.data.id,
       name: 'Family Delta Updated',
       defaultCurrencyCode: 'VND',
+      avatarUrl: null,
     })
+  })
+
+  it('updates and clears household avatar for an admin member', async () => {
+    const owner = await exchangeAccessToken(
+      'test:firebase-user-household-avatar-update:avatar-update@example.com',
+    )
+
+    const createResponse = await SELF.fetch(
+      'https://example.com/api/v1/households',
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Family Avatar',
+        }),
+      },
+    )
+    const createdPayload =
+      await parseJson<ApiEnvelope<{ id: string }>>(createResponse)
+
+    const avatarUrl = 'https://cdn.example.com/household-avatar.png'
+    const setAvatarResponse = await SELF.fetch(
+      `https://example.com/api/v1/households/${createdPayload.data.id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ avatarUrl }),
+      },
+    )
+    const setAvatarPayload =
+      await parseJson<ApiEnvelope<{ avatarUrl: string | null }>>(
+        setAvatarResponse,
+      )
+
+    expect(setAvatarResponse.status).toBe(200)
+    expect(setAvatarPayload.data.avatarUrl).toBe(avatarUrl)
+
+    const clearAvatarResponse = await SELF.fetch(
+      `https://example.com/api/v1/households/${createdPayload.data.id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          authorization: `Bearer ${owner.accessToken}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ avatarUrl: null }),
+      },
+    )
+    const clearAvatarPayload =
+      await parseJson<ApiEnvelope<{ avatarUrl: string | null }>>(
+        clearAvatarResponse,
+      )
+
+    expect(clearAvatarResponse.status).toBe(200)
+    expect(clearAvatarPayload.data.avatarUrl).toBeNull()
   })
 
   it('rejects household update when request body is invalid', async () => {

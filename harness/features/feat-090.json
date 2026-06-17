@@ -1,0 +1,28 @@
+{
+  "id": "feat-090",
+  "name": "Telegram Mini App shell and starter screen scaffolds",
+  "status": "done",
+  "description": "Implement the first real TMA UI slice from the package-local design spec: shared top header, liquid-glass bottom tabs with add bubble, root tab pages, expense history page, and the three-step add-expense flow scaffold wired with Telegram back/bottom-button ownership but still backed by local mock data instead of worker queries.",
+  "dependencies": ["feat-079", "feat-080", "feat-087", "feat-088"],
+  "evidence": {
+    "planned": [
+      "Used `using-skills` first, then applied the repo-owned `tma-development` skill plus `frontend-design` because this slice changes the TMA runtime shell and multiple user-facing screens in `apps/tma`.",
+      "Read only the exact TMA leaves needed for this UI slice: `docs/TMA.md`, `docs/references/frontend/tma/app-structure-and-client-rules.md`, `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`, `docs/references/frontend/tma/runtime-readiness-and-slice-map.md`, `docs/references/frontend/tma/state-and-storage-pattern.md`, `docs/product-specs/tma/expense-capture.md`, and `apps/tma/DESIGN.md`.",
+      "Kept the scope at UI scaffold level: real shell/navigation/flow ownership and realistic mock state, but no new worker query integration yet."
+    ],
+    "artifacts": [
+      "Expanded the TMA router from a single scaffold route into real screen routes for `home`, `statistics`, `settings`, `expenses`, and the three add-expense steps.",
+      "Added project-owned shared shell primitives (`tma-page-shell`, header, bottom tabs, icon set, formatters) plus a resettable Zustand store for the short-lived add-expense flow draft.",
+      "Built the requested root pages and expense pages against local finance mock data, including the liquid-glass rail, detached add bubble, recent expenses, grouped expense history, and Telegram `BottomButton` ownership for the later add-expense steps.",
+      "Added a follow-up runtime hardening fix after a real Telegram blank-screen report: auth bootstrap now renders the existing loading spinner while bootstrapping, and SecureStorage reads/writes/deletes now time out back to the repo-approved memory-only fallback instead of hanging the first authenticated render forever."
+    ],
+    "verification": [
+      "Ran `./init.sh typecheck`, `./init.sh lint`, `./init.sh test`, and `./init.sh build`; all returned `OK` after the shell screens, add-expense flow store test, and SecureStorage-timeout fix landed. Final repo verification with `./init.sh` completed and printed `Done!`.",
+      "Used a browser-only preview harness that rendered `Home`, `Statistics`, `Settings`, `Expenses`, and `Add expense step 1/2` through `MemoryRouter` + seeded auth state because the real TMA bootstrap cannot render directly in a plain desktop browser without Telegram launch params. The resulting screenshots looked correct for layout, bottom rail, and screen composition.",
+      "Validated `harness/feature_index.json` and `harness/features/feat-090.json` with `python3 -m json.tool`; both parsed successfully. `./scripts/check_harness_size.sh` returned `Harness size checks passed`.",
+      "Ran final `gitnexus_detect_changes(scope: 'all')`, which reported `HIGH` risk with 42 changed symbols across 10 files and 10 affected processes, concentrated in the expected TMA shell, storage, and route surfaces.",
+      "`git diff --check` is not fully clean because the worktree already contains unrelated EOF-blank-line diffs in `AGENTS.md` and `CLAUDE.md`. Real Telegram smoke verification is still pending user retry because this environment cannot open the live Telegram Mini App and observe the post-exchange runtime directly."
+    ]
+  },
+  "notes": "This feature intentionally stops at screen scaffold and local flow-state quality. The planned TMA feature records for expense capture, read surfaces, and household/group integrations still remain for real worker-backed data wiring and deeper device hardening."
+}

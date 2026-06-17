@@ -1,0 +1,13 @@
+{
+  "id": "feat-100e",
+  "name": "TMA contracts and presentation helpers",
+  "status": "todo",
+  "description": "TMA `BudgetDTO` and `BudgetStatusDTO` carry `scope: 'household' | 'personal'` and `ownerUserId: string | null`. `useBudgetListQuery({ scope?, period?, householdId? })` defaults to `scope: 'all'` and is callable with no required args. New `getBudgetScopeLabel` and `getBudgetScopeTone` presentation helpers. `getLatestBudget` is verified across mixed scopes.",
+  "dependencies": ["feat-100c"],
+  "evidence": {
+    "planned": [
+      "Extend `apps/tma/src/test/budget-presentation.test.ts` with scope label/tone cases and a multi-scope `getLatestBudget` case.",
+      "TMA typecheck and focused vitest pass."
+    ]
+  }
+}

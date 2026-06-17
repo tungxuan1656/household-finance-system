@@ -6,6 +6,7 @@ const toHouseholdDto = (input: {
   id: string
   name: string
   slug: string
+  avatarUrl: string | null
   defaultCurrencyCode: string
   timezone: string
   role: 'admin' | 'member'
@@ -14,6 +15,7 @@ const toHouseholdDto = (input: {
   id: input.id,
   name: input.name,
   slug: input.slug,
+  avatarUrl: input.avatarUrl,
   defaultCurrencyCode: input.defaultCurrencyCode,
   timezone: input.timezone,
   role: input.role,

@@ -1,0 +1,42 @@
+{
+  "id": "feat-095",
+  "name": "Telegram Mini App Tailwind component rewrite",
+  "status": "done",
+  "description": "Rewrite the existing TMA route surfaces around Tailwind utility styling, shared UI primitives, and smart components while removing component classes from apps/tma/src/index.css and wiring add-expense save to the real worker API.",
+  "dependencies": [
+    "feat-017",
+    "feat-018",
+    "feat-019",
+    "feat-021",
+    "feat-028",
+    "feat-079",
+    "feat-080",
+    "feat-082",
+    "feat-083",
+    "feat-087"
+  ],
+  "plan": "docs/exec-plans/plans/2026-06-05-tma-tailwind-component-rewrite.md",
+  "evidence": {
+    "planned": [
+      "Create reusable TMA UI primitives for cards, buttons, inputs, date input, avatar, chips, money labels, dialogs, segmented controls, and section headers.",
+      "Create reusable smart components for summary, recent expenses, expense rows/timelines, shortcuts, household previews/list items, household summary, and expense review/save with internal query or mutation ownership where appropriate.",
+      "Replace existing TMA pages with Tailwind utility composition and reduce apps/tma/src/index.css to tokens/base/keyframes only.",
+      "Wire add-expense save to the existing POST /expenses worker contract and invalidate affected read surfaces."
+    ],
+    "verification": [
+      "./init.sh typecheck returned OK.",
+      "./init.sh lint returned OK.",
+      "./init.sh test returned OK.",
+      "./init.sh build returned OK.",
+      "./init.sh completed with Done!.",
+      "git diff --check returned no output.",
+      "CSS/custom-class scan found no old BEM-style component class usage in apps/tma/src and no @layer components in apps/tma/src/index.css.",
+      "gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system') reported critical risk with 145 changed symbols, 78 affected symbols, and 37 changed files; the blast radius is expected for the requested TMA shell/page rewrite and is concentrated around TmaPageShell, route scroll/list flows, household surfaces, and add-expense creation.",
+      "Follow-up bugfix: household detail no longer renders router not-found while the detail query is loading; added a focused loading-state regression test. Focused vitest, typecheck, lint, test, build, and final ./init.sh passed.",
+      "Follow-up review: TMA components/pages were re-audited after the rewrite. ./init.sh typecheck, ./init.sh lint, ./init.sh test, and ./init.sh build returned OK. Review found no blocking correctness issue, but noted remaining product/architecture gaps around mock statistics/add-expense reference data, hardcoded route strings, and large smart-component module size.",
+      "Follow-up fixes: Statistics now reads live analytics/reference-category queries instead of mock slices, add-expense category/source selection no longer imports finance mock data, expense navigation paths use route helpers, and finance smart components are split into summary/expenses/households/shortcuts/link-button modules with a small barrel export. ./init.sh typecheck, lint, test, and build returned OK; final ./init.sh completed with Done!. Final gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system') reported critical risk with 94 changed symbols, 41 affected symbols, and 13 changed files across the expected Statistics/add-expense/expense detail-edit flows.",
+      "Follow-up expense-list styling: all shared TMA ExpenseItem usages now render the API category icon with the category color at 10% alpha, show category label on the first line and expense title on the second line, and omit expense note/time. Added a focused ExpenseItem regression test and updated the category-presentation helper test. ./init.sh typecheck, ./init.sh lint, ./init.sh test, and ./init.sh build returned OK; final ./init.sh completed with Done!. Final gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system') reported low risk with 10 changed symbols, 0 affected symbols/processes, and 5 changed files."
+    ]
+  },
+  "notes": "Completed for existing TMA routes. A Settings route remains out of scope for this pass."
+}

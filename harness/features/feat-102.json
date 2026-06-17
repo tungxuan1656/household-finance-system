@@ -1,0 +1,41 @@
+{
+  "id": "feat-102",
+  "name": "TMA file-length and icon-centralization refactor",
+  "status": "done",
+  "description": "Drive the TMA codebase back under the per-file length thresholds from `scripts/check_ts_length.sh` and centralize the inline SVG icon definitions that were duplicated across feature pages and shared components. Keep all behavior, copy, and visual output identical; use barrel re-exports so consumer files do not need to change.",
+  "dependencies": ["feat-101"],
+  "evidence": {
+    "planned": [
+      "Centralize 7 inline SVG icons (Receipt, Household, Group, Budget, User, Trash, ArrowRight) into `apps/tma/src/components/shared/tma-icons.tsx` and migrate the call sites.",
+      "Refactor `tma-page-shell.tsx` (311) by splitting TmaBottomTabs/PullToRefreshSpinner into `tma-bottom-tabs.tsx`, TmaPageHeader/TmaPageTitleBar into `tma-page-header.tsx`, TmaCategoryIconBadge into `tma-category-icon-badge.tsx`, TmaInlineAction into `tma-inline-action.tsx`; keep `tma-page-shell.tsx` as a barrel re-export so all consumers stay unchanged.",
+      "Refactor `budget-detail-page.tsx` (401) by replacing the local BudgetGlyph with the central BudgetIcon and extracting StatTile, the hero card, the progress section, and the BudgetFeedback type into feature-local submodules.",
+      "Refactor `expense-filter-page.tsx` (353) by extracting the picker option builders and handlers into `use-expense-filter-options.ts` and the duplicate `NativePicker` loading state into a shared `LoadingPicker` component.",
+      "Refactor `create-group-page.tsx` (305) by extracting the validation rules into `create-group-validation.ts` and the form JSX into `create-group-form.tsx`.",
+      "Refactor `household-detail-page.tsx` (341) by removing the inline TrashIcon, switching to the central TrashIcon, and extracting the avatar/save/remove-member handlers into `use-household-detail-actions.ts` (options-bag signature to satisfy the max-params lint rule).",
+      "Refactor `add-expense-context.tsx` (308) by extracting the SummaryRow presenter and the `useEffectEvent` save body into `use-add-expense-context-actions.ts`.",
+      "Refactor `expense-edit.tsx` (450) by splitting out `expense-edit-category.tsx`, `expense-edit-select-row.tsx`, and `expense-edit-form.tsx`; update the router's `ExpenseEditCategoryPage` lazy import.",
+      "Refactor `features/households/api.ts` (355) by splitting the monolith into a folder `api/` with `households.ts`, `analytics.ts`, `budgets.ts`, `expenses.ts`, `categories.ts`, and a barrel `index.ts`; delete the old file.",
+      "Refactor `lib/period.ts` (313) by splitting into `period/types.ts`, `period/vietnam-time.ts`, `period/selectors.ts`, `period/format.ts`; keep `lib/period.ts` as a barrel re-export."
+    ],
+    "artifacts": [
+      "Added 7 icon components to `apps/tma/src/components/shared/tma-icons.tsx` (ReceiptIcon, HouseholdIcon, GroupIcon, BudgetIcon, UserIcon, TrashIcon, ArrowRightIcon). File grew from 168 to 226 lines.",
+      "`apps/tma/src/components/shared/tma-page-shell.tsx` shrank from 311 to 112 lines; new siblings: `tma-bottom-tabs.tsx` (122), `tma-page-header.tsx` (52), `tma-category-icon-badge.tsx` (33), `tma-inline-action.tsx` (21).",
+      "`apps/tma/src/features/budgets/pages/budget-detail-page.tsx` shrank from 401 to 272 lines; new modules: `features/budgets/types/feedback.ts` (4), `features/budgets/components/stat-tile.tsx` (23), `features/budgets/components/budget-hero-card.tsx` (63), `features/budgets/components/budget-progress-section.tsx` (63). `create-budget-page.tsx` now imports BudgetFeedback from the shared types file.",
+      "`apps/tma/src/features/expenses/pages/expense-filter-page.tsx` shrank from 353 to 227 lines; new modules: `features/expenses/hooks/use-expense-filter-options.ts` (145) and `components/shared/loading-picker.tsx` (13). Removed the unused `reset` store destructuring.",
+      "`apps/tma/src/features/groups/pages/create-group-page.tsx` shrank from 305 to 163 lines; new modules: `features/groups/create-group-validation.ts` (70) and `features/groups/components/create-group-form.tsx` (177).",
+      "`apps/tma/src/features/households/pages/household-detail-page.tsx` shrank from 341 to 238 lines; new module: `features/households/hooks/use-household-detail-actions.ts` (123) using an options-bag signature.",
+      "`apps/tma/src/routes/add-expense-context.tsx` shrank from 308 to 283 lines; new modules: `components/shared/summary-row.tsx` (14) and `features/expenses/hooks/use-add-expense-context-actions.ts` (73).",
+      "`apps/tma/src/routes/expense-edit.tsx` shrank from 450 to 189 lines; new siblings: `expense-edit-category.tsx` (97), `expense-edit-select-row.tsx` (41), `expense-edit-form.tsx` (202). `app-router.tsx` now lazy-imports `ExpenseEditCategoryPage` from `@/routes/expense-edit-category`.",
+      "`apps/tma/src/features/households/api.ts` (355) replaced by `features/households/api/` folder: `households.ts` (228), `analytics.ts` (86), `budgets.ts` (57), `expenses.ts` (52), `categories.ts` (40), `index.ts` barrel.",
+      "`apps/tma/src/lib/period.ts` (313) replaced by `apps/tma/src/lib/period/` folder: `types.ts` (24), `vietnam-time.ts` (57), `selectors.ts` (148), `format.ts` (117); original `period.ts` now a 3-line barrel re-export.",
+      "Migrated `apps/tma/src/features/home/components/home-shortcuts-section.tsx` (111 -> 66 lines) and `apps/tma/src/components/finance/households.tsx` (257 -> 242 lines) to use the central icons."
+    ],
+    "verification": [
+      "`./scripts/check_ts_length.sh` now reports zero errors across the whole repo (the last remaining violation, `apps/worker/src/db/repositories/budget-repository.ts` 413 lines, was fixed in a follow-up by extracting `findBudgetLimits` and `deleteBudgetLimits` to a new `budget-limit-repository.ts` and re-exporting `findBudgetLimits` from the main barrel so the 5 handler imports stay unchanged).",
+      "`./init.sh typecheck` returned `OK`.",
+      "`./init.sh lint` returned `OK`. (The two introduced lint errors were caught at verification and fixed: removed the unused `reset` selector from `expense-filter-page.tsx`, and switched `useHouseholdDetailActions` to an options-bag signature to satisfy the max-params rule.)",
+      "`./init.sh test` returned `OK` (12/12 period tests still pass after the `lib/period/` split)."
+    ]
+  },
+  "notes": "Mechanical refactor: zero behavior, copy, or visual changes. All consumer files were preserved by using barrel re-exports at every split (`tma-page-shell.tsx`, `lib/period.ts`, `features/households/api/index.ts`, `budget-repository.ts` re-exports `findBudgetLimits` from the new `budget-limit-repository.ts`). The 7 inline SVGs were the only ones flagged for centralization; the local `GroupGlyph` and `BudgetGlyph` in groups/budgets feature pages were removed in favor of the central icons. Wave 1 (icon centralization) and Wave 2 (11 file refactors across 12 parallel fixers + the direct budget-limit-repository split) all finished cleanly. No commit performed — the user did not request one."
+}

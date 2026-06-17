@@ -6,11 +6,11 @@ Define where tests live, when to split them, and how to name them so developers 
 
 ## Where to place tests
 
-### `apps/web` — colocated logic-only tests
+### `apps/web` and `apps/tma` — colocated logic-only tests
 
 Place tests beside the module they cover: hooks, stores, formatters, API clients, feature-local helpers, and other pure or near-pure logic.
 
-Do not add component render tests, page render tests, DOM interaction tests, or React Testing Library suites under `apps/web`. For frontend changes, verify UI behavior through higher-level manual/browser validation recorded in the relevant plan or progress evidence instead of colocated render tests.
+Do not add component render tests, page render tests, DOM interaction tests, or React Testing Library suites under `apps/web` or `apps/tma`. For frontend changes, verify UI behavior through higher-level manual/browser validation recorded in the relevant plan or progress evidence instead of colocated render tests.
 
 Use `src/test/` or a focused local `testing/` folder only when a helper is reused across multiple logic-oriented test files, or when local setup files create noise around runtime files.
 

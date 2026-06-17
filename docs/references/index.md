@@ -8,6 +8,12 @@ Canonical leaf standards map. Use this index to choose exact rule doc. Do not re
 |------|-----|
 | DTO / Request / Response names | `shared/type-naming-pattern.md` |
 
+## Architecture
+
+| Need | Doc |
+|------|-----|
+| Mono-repo layout, shared packages, tooling, CI, convention drift | `architecture/mono-repo-issues.md` |
+
 ## Frontend
 
 | Need | Doc |
@@ -29,6 +35,12 @@ Canonical leaf standards map. Use this index to choose exact rule doc. Do not re
 | Security/auth/ownership | `backend/security-and-auth-pattern.md` |
 | Backend tests | `backend/testing-pattern.md` |
 | Workers/D1/Wrangler | `backend/cloudflare-workers.md` |
+
+## Operations
+
+| Need | Doc |
+|------|-----|
+| Deploy worker + TMA flow | `../operations/index.md` |
 
 ## Rules
 

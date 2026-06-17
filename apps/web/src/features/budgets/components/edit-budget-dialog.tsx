@@ -42,6 +42,7 @@ function EditBudgetDialog({
               period: budget.period,
               totalLimit: budget.totalLimitMinor,
               categoryLimits: budget.categoryLimits,
+              currencyCode: budget.currencyCode,
             }}
             isSubmitting={isSubmitting}
             mode='edit'

@@ -15,8 +15,13 @@ import type {
 import { t } from '@/lib/i18n/t'
 
 import { CategoryLimitsSection } from './fields/category-limits-section'
+import { CurrencyCodeField } from './fields/currency-code-field'
 import { PeriodField } from './fields/period-field'
-import { budgetFormSchema, type BudgetFormValues } from './fields/schema'
+import {
+  budgetFormSchema,
+  type BudgetFormValues,
+  createBudgetFormSchema,
+} from './fields/schema'
 import { TotalLimitField } from './fields/total-limit-field'
 
 type BudgetFormProps = {
@@ -25,8 +30,9 @@ type BudgetFormProps = {
     period: string
     totalLimit: number
     categoryLimits: BudgetCategoryLimitDTO[]
+    currencyCode?: string
   }>
-  householdId: string
+  householdId: string | null
   onSubmit: (values: CreateBudgetRequest | UpdateBudgetRequest) => void
   onCancel: () => void
   isSubmitting: boolean
@@ -43,12 +49,17 @@ function BudgetForm({
   const [categoryLimits, setCategoryLimits] = useState<
     BudgetCategoryLimitDTO[]
   >(initialValues?.categoryLimits ?? [])
+  const schema =
+    mode === 'create'
+      ? createBudgetFormSchema(mode, householdId)
+      : budgetFormSchema
   const form = useForm<BudgetFormValues>({
     defaultValues: {
       period: initialValues?.period ?? '',
       totalLimit: initialValues?.totalLimit ?? undefined,
+      currencyCode: initialValues?.currencyCode ?? '',
     },
-    resolver: zodResolver(budgetFormSchema),
+    resolver: zodResolver(schema),
   })
   const handleSubmit = (values: BudgetFormValues) => {
     const activeCategoryLimits = categoryLimits.filter(
@@ -56,9 +67,11 @@ function BudgetForm({
     )
     if (mode === 'create')
       onSubmit({
-        householdId,
+        scope: householdId ? 'household' : 'personal',
+        householdId: householdId ?? undefined,
         period: values.period,
         totalLimit: values.totalLimit,
+        currencyCode: householdId === null ? values.currencyCode : undefined,
         categoryLimits:
           activeCategoryLimits.length > 0 ? activeCategoryLimits : undefined,
       })
@@ -76,6 +89,12 @@ function BudgetForm({
       <FieldGroup>
         {mode === 'create' && (
           <PeriodField control={form.control} isSubmitting={isSubmitting} />
+        )}
+        {mode === 'create' && householdId === null && (
+          <CurrencyCodeField
+            control={form.control}
+            isSubmitting={isSubmitting}
+          />
         )}
         <TotalLimitField control={form.control} isSubmitting={isSubmitting} />
       </FieldGroup>

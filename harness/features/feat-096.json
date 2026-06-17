@@ -1,0 +1,38 @@
+{
+  "id": "feat-096",
+  "name": "TMA shared period selection and multi-range analytics",
+  "status": "done",
+  "description": "Add one shared week/month/year period picker flow for the Telegram Mini App so Home, household list, and household detail stay synchronized on the same selected range while worker analytics adds `date_from` / `date_to` support without breaking existing month callers.",
+  "dependencies": [
+    "feat-028",
+    "feat-029",
+    "feat-079",
+    "feat-080",
+    "feat-082",
+    "feat-083",
+    "feat-094",
+    "feat-095"
+  ],
+  "plan": "docs/exec-plans/plans/2026-06-05-tma-shared-period-selection.md",
+  "evidence": {
+    "planned": [
+      "Broaden worker analytics overview/comparison handling with additive `date_from` / `date_to` ranges without breaking auth, existing month callers, or response-envelope rules.",
+      "Add one shared TMA period store, formatter set, chip component, and picker route with Telegram BottomButton confirmation while storing `{ granularity, dateFrom, dateTo }`.",
+      "Rewire Home, household list, household detail, and shared summary/household smart components to read the selected range from Zustand and refresh together.",
+      "Keep budget UI truthful by rendering budget progress only for month selections."
+    ],
+    "verification": [
+      "Focused worker tests passed for `test/unit/dto-analytics.spec.ts`, `test/integration/analytics-overview-read.spec.ts`, and `test/integration/analytics-comparison.spec.ts`.",
+      "Focused TMA tests passed for `src/test/period.test.ts`, `src/test/period-chip-entrypoints.test.tsx`, and `src/test/period-store-and-picker.test.tsx`.",
+      "`./init.sh typecheck` returned `OK`.",
+      "`./init.sh lint` returned `OK`.",
+      "`./init.sh test` returned `OK`.",
+      "`./init.sh build` returned `OK`.",
+      "Final `./init.sh` completed with `Done!`.",
+      "`git diff --check` returned no output.",
+      "Final `gitnexus_detect_changes(scope: 'all', repo: 'household-finance-system')` reported `critical` risk with 132 changed symbols, 24 affected symbols, and 23 changed files; the blast radius is expected because the slice touches shared TMA period helpers, shared finance summary cards, household list/detail read paths, and worker analytics query contracts.",
+      "Follow-up correction pass passed focused TMA tests for `src/test/period.test.ts` and `src/test/period-store-and-picker.test.tsx`, then reran `./init.sh build` with `OK` and final `./init.sh` with `Done!` after switching week logic to real Monday-Sunday ISO weeks, separating year/value scroll containers, formatting picker dates as `dd/MM/yy`, and keeping `PeriodPickerPage` BottomButton mount/unmount in a dependency-free effect."
+    ]
+  },
+  "notes": "The current repo truth only supports monthly budgets; week/year selections must not invent budget semantics."
+}

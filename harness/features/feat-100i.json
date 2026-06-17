@@ -1,0 +1,36 @@
+{
+  "id": "feat-100i",
+  "name": "Spec + harness closeout + final verify",
+  "status": "done",
+  "description": "Tighten `docs/product-specs/shared/budget-management.md` with explicit acceptance criteria for personal scope (currency rule, list-merge behaviour, status aggregate rule, ownership gate). Fill `harness/features/feat-100.json` evidence with verification commands. Append the closing `progress.md` entry. Final `./init.sh` must print `Done!`.",
+  "dependencies": [
+    "feat-100a",
+    "feat-100b",
+    "feat-100c",
+    "feat-100d",
+    "feat-100e",
+    "feat-100f",
+    "feat-100g",
+    "feat-100h"
+  ],
+  "evidence": {
+    "commands": [
+      {
+        "name": "Final init verify",
+        "command": "./init.sh",
+        "result": "Done!"
+      },
+      {
+        "name": "Worker integration suite",
+        "command": "cd apps/worker && pnpm vitest run --reporter=basic",
+        "result": "416 tests pass across 80 files (includes 8 new personal-budget tests)"
+      },
+      {
+        "name": "JSON validation",
+        "command": "jq empty harness/feature_index.json harness/features/feat-100.json harness/features/feat-100a.json harness/features/feat-100b.json harness/features/feat-100c.json harness/features/feat-100d.json harness/features/feat-100e.json harness/features/feat-100f.json harness/features/feat-100g.json harness/features/feat-100h.json harness/features/feat-100i.json",
+        "result": "no output = all JSON parses"
+      }
+    ],
+    "notes": "Spec updated at `docs/product-specs/shared/budget-management.md` with the 'Personal scope specifics (MVP)' subsection. Progress entry appended. Real Telegram WebView visual smoke for the new TMA scope chips and create toggle remains pending because an authenticated TMA launch context is required."
+  }
+}

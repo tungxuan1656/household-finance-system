@@ -1,5 +1,11 @@
+-- 0001_init.sql
+-- Consolidated canonical schema for the Household Finance System.
+-- Project is pre-release: this migration is the single source of truth.
+-- All earlier additive migrations (avatar_url, personal budgets) are folded in here.
+
 PRAGMA foreign_keys = ON;
 
+-- Users and authentication/session tables.
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   display_name TEXT,
@@ -36,11 +42,13 @@ CREATE TABLE IF NOT EXISTS refresh_sessions (
   FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Households (avatar_url is part of the initial shape).
 CREATE TABLE IF NOT EXISTS households (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
   description TEXT,
+  avatar_url TEXT,
   default_currency_code TEXT NOT NULL,
   timezone TEXT NOT NULL,
   created_by_user_id TEXT NOT NULL,
@@ -166,9 +174,14 @@ CREATE TABLE IF NOT EXISTS expense_group_items (
   FOREIGN KEY(assigned_by_user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
+-- Budgets support three scopes:
+--   household: household_id NOT NULL, owner_user_id NULL
+--   personal:  owner_user_id NOT NULL, household_id NULL
+--   category:  legacy (not exposed in API yet)
 CREATE TABLE IF NOT EXISTS budgets (
   id TEXT PRIMARY KEY,
-  household_id TEXT NOT NULL,
+  household_id TEXT,
+  owner_user_id TEXT,
   scope TEXT NOT NULL,
   budget_month TEXT NOT NULL,
   start_date TEXT NOT NULL,
@@ -180,18 +193,25 @@ CREATE TABLE IF NOT EXISTS budgets (
   archived_at INTEGER,
   created_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
   updated_at INTEGER NOT NULL DEFAULT ((unixepoch() * 1000)),
-  CHECK (scope IN ('household', 'category')),
+  CHECK (scope IN ('household', 'category', 'personal')),
   CHECK (total_limit_minor > 0),
+  CHECK (
+    (scope = 'household' AND household_id IS NOT NULL AND owner_user_id IS NULL)
+    OR (scope = 'personal' AND owner_user_id IS NOT NULL AND household_id IS NULL)
+    OR (scope = 'category')
+  ),
   UNIQUE(household_id, id),
   FOREIGN KEY(household_id) REFERENCES households(id) ON DELETE CASCADE,
+  FOREIGN KEY(owner_user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY(household_id, category_id) REFERENCES expense_categories(household_id, id) ON DELETE CASCADE,
   FOREIGN KEY(created_by_user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
+-- Budget limits are nullable on household_id (personal budgets have no household).
 CREATE TABLE IF NOT EXISTS budget_limits (
   id TEXT PRIMARY KEY,
   budget_id TEXT NOT NULL,
-  household_id TEXT NOT NULL,
+  household_id TEXT,
   category_id TEXT,
   category_key TEXT,
   limit_minor INTEGER NOT NULL,
@@ -296,11 +316,18 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_budgets_household_scope_month
   ON budgets(household_id, budget_month)
   WHERE scope = 'household' AND archived_at IS NULL;
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_budgets_owner_scope_month
+  ON budgets(owner_user_id, budget_month)
+  WHERE scope = 'personal' AND archived_at IS NULL;
+
 CREATE INDEX IF NOT EXISTS idx_budgets_created_by_user_id
   ON budgets(created_by_user_id);
 
 CREATE INDEX IF NOT EXISTS idx_budgets_household_category
   ON budgets(household_id, category_id);
+
+CREATE INDEX IF NOT EXISTS idx_budgets_owner_user_id
+  ON budgets(owner_user_id);
 
 CREATE INDEX IF NOT EXISTS idx_budget_limits_budget_id
   ON budget_limits(budget_id);

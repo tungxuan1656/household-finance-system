@@ -76,7 +76,9 @@ function OverviewPage() {
     period,
     household_id: householdId,
   })
-  const budgetListQuery = useBudgetListQuery(householdId)
+  const budgetListQuery = useBudgetListQuery(
+    householdId ? { householdId } : undefined,
+  )
   const expenseSummaryQuery = useExpenseSummaryQuery(
     householdId ? { household_id: householdId } : undefined,
   )

@@ -16,7 +16,7 @@ Command behavior:
   typecheck  run web, worker, and tma typecheck in parallel
   test       run web, worker, and tma tests in parallel
   build      run web, worker dry-run deploy, and tma build in parallel
-  sync       sync GitNexus index
+  sync       (removed)
 EOF
 }
 
@@ -47,18 +47,14 @@ run_quiet() {
 
 run_install() {
   if [ -t 1 ]; then
-    run_quiet "install" pnpm install
+    run_quiet "install" pnpm install --prefer-offline
   else
-    run_quiet "install" env CI=true pnpm install
+    run_quiet "install" env CI=true pnpm install --prefer-offline
   fi
 }
 
 run_harness_check() {
   run_quiet "harness" ./scripts/check_harness_size.sh
-}
-
-run_sync() {
-  run_quiet "sync" ./scripts/sync_gitnexus.sh
 }
 
 run_worker_build() {
@@ -70,7 +66,7 @@ run_worker_build() {
 }
 
 run_web_lint() {
-  pnpm --filter web lint --fix
+  pnpm --filter web lint --fix --cache --cache-location .eslintcache
   pnpm --filter web twlint --fix
 }
 
@@ -128,14 +124,14 @@ run_parallel_checks() {
 
     case "$label" in
       "web lint") start_background_job "$label" "$log_file" "$status_file" run_web_lint ;;
-      "worker lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker lint --fix ;;
-      "tma lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma lint --fix ;;
+      "worker lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker lint --fix --cache --cache-location .eslintcache ;;
+      "tma lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma lint --fix --cache --cache-location .eslintcache ;;
       "web typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web typecheck ;;
       "worker typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker typecheck ;;
       "tma typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma typecheck ;;
-      "web test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web exec vitest run ;;
-      "worker test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker exec vitest run ;;
-      "tma test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma exec vitest run --passWithNoTests ;;
+      "web test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web exec vitest run --cache ;;
+      "worker test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker exec vitest run --cache ;;
+      "tma test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma exec vitest run --cache --passWithNoTests ;;
       "web build") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web build ;;
       "worker build") start_background_job "$label" "$log_file" "$status_file" run_worker_build ;;
       "tma build") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma build ;;
@@ -235,7 +231,6 @@ run_full() {
     "worker test" \
     "tma test"
   local status=$?
-  run_sync || true
   if [ $status -eq 0 ]; then
     echo "Done!"
   fi
@@ -248,7 +243,7 @@ command_set=false
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --verbose) VERBOSE=true ;;
-    install|lint|typecheck|test|build|sync|full|help|--help|-h)
+    install|lint|typecheck|test|build|full|help|--help|-h)
       if [ "$command_set" = "true" ]; then
         usage
         exit 2
@@ -271,7 +266,6 @@ case "$command" in
   typecheck) run_typecheck && echo "OK" ;;
   test) run_test && echo "OK" ;;
   build) run_build && echo "OK" ;;
-  sync) run_sync && echo "OK" ;;
   help|--help|-h) usage ;;
   *)
     usage

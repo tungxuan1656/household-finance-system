@@ -13,7 +13,9 @@ registerWorkerIntegrationSetup()
 
 type BudgetDTO = {
   id: string
-  householdId: string
+  scope: 'household' | 'personal' | 'category'
+  householdId: string | null
+  ownerUserId: string | null
   period: string
   totalLimitMinor: number
   currencyCode: string
@@ -56,6 +58,7 @@ describe('Worker integration: budgets create and list', () => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
+        scope: 'household',
         householdId,
         period: '2026-05',
         totalLimit: 125000,
@@ -65,6 +68,7 @@ describe('Worker integration: budgets create and list', () => {
 
     expect(response.status).toBe(201)
     expect(payload.data).toMatchObject({
+      scope: 'household',
       householdId,
       period: '2026-05',
       totalLimitMinor: 125000,
@@ -88,6 +92,7 @@ describe('Worker integration: budgets create and list', () => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
+        scope: 'household',
         householdId,
         period: '2026-06',
         totalLimit: 200000,
@@ -124,7 +129,12 @@ describe('Worker integration: budgets create and list', () => {
             authorization: `Bearer ${auth.accessToken}`,
             'content-type': 'application/json',
           },
-          body: JSON.stringify({ householdId, period, totalLimit }),
+          body: JSON.stringify({
+            scope: 'household',
+            householdId,
+            period,
+            totalLimit,
+          }),
         },
       )
       expect(createResponse.status).toBe(201)
@@ -164,7 +174,12 @@ describe('Worker integration: budgets create and list', () => {
             authorization: `Bearer ${auth.accessToken}`,
             'content-type': 'application/json',
           },
-          body: JSON.stringify({ householdId, period, totalLimit }),
+          body: JSON.stringify({
+            scope: 'household',
+            householdId,
+            period,
+            totalLimit,
+          }),
         },
       )
       expect(createResponse.status).toBe(201)
@@ -195,6 +210,7 @@ describe('Worker integration: budgets create and list', () => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
+        scope: 'household',
         householdId,
         period: '2026-4',
         totalLimit: 100000,
@@ -218,7 +234,12 @@ describe('Worker integration: budgets create and list', () => {
         authorization: `Bearer ${auth.accessToken}`,
         'content-type': 'application/json',
       },
-      body: JSON.stringify({ householdId, period: '2026-05', totalLimit: 0 }),
+      body: JSON.stringify({
+        scope: 'household',
+        householdId,
+        period: '2026-05',
+        totalLimit: 0,
+      }),
     })
     const payload = await parseJson<ApiErrorEnvelope>(response)
 
@@ -239,6 +260,7 @@ describe('Worker integration: budgets create and list', () => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
+        scope: 'household',
         householdId,
         period: '2026-05',
         totalLimit: 100000,
@@ -264,6 +286,7 @@ describe('Worker integration: budgets create and list', () => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
+        scope: 'household',
         householdId,
         period: '2026-05',
         totalLimit: 100000,
@@ -290,7 +313,11 @@ describe('Worker integration: budgets create and list', () => {
         authorization: `Bearer ${auth.accessToken}`,
         'content-type': 'application/json',
       },
-      body: JSON.stringify({ period: '2026-05', totalLimit: 100000 }),
+      body: JSON.stringify({
+        scope: 'household',
+        period: '2026-05',
+        totalLimit: 100000,
+      }),
     })
     const payload = await parseJson<ApiErrorEnvelope>(response)
 
@@ -313,6 +340,7 @@ describe('Worker integration: budgets create and list', () => {
           'content-type': 'application/json',
         },
         body: JSON.stringify({
+          scope: 'household',
           householdId,
           period: '2026-05',
           totalLimit: 100000,
@@ -328,6 +356,7 @@ describe('Worker integration: budgets create and list', () => {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
+        scope: 'household',
         householdId,
         period: '2026-05',
         totalLimit: 150000,

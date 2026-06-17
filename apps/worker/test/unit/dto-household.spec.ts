@@ -48,11 +48,15 @@ describe('household contract schema', () => {
     const parsed = updateHouseholdRequestSchema().safeParse({
       defaultCurrencyCode: 'eur',
       name: 'Family Hub Updated',
+      avatarUrl: 'https://cdn.example.com/household-avatar.jpg',
     })
 
     expect(parsed.success).toBe(true)
     if (parsed.success) {
       expect(parsed.data.defaultCurrencyCode).toBe('EUR')
+      expect(parsed.data.avatarUrl).toBe(
+        'https://cdn.example.com/household-avatar.jpg',
+      )
     }
   })
 
@@ -86,12 +90,22 @@ describe('household contract schema', () => {
       name: 'Family Hub v2',
       defaultCurrencyCode: 'usd',
       timezone: 'UTC',
+      avatarUrl: null,
     })
 
     expect(parsed.success).toBe(true)
     if (parsed.success) {
       expect(parsed.data.defaultCurrencyCode).toBe('USD')
       expect(parsed.data.timezone).toBe('UTC')
+      expect(parsed.data.avatarUrl).toBeNull()
     }
+  })
+
+  it('rejects update payload with invalid avatar URL', () => {
+    const parsed = updateHouseholdRequestSchema().safeParse({
+      avatarUrl: 'not-a-valid-url',
+    })
+
+    expect(parsed.success).toBe(false)
   })
 })

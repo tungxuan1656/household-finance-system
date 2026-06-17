@@ -1,0 +1,13 @@
+{
+  "id": "feat-100b",
+  "name": "Personal budget create + duplicate-period guard",
+  "status": "todo",
+  "description": "Worker create-handler accepts a discriminated `CreateBudgetRequest` union by `scope`. Personal create requires `scope='personal'`, `ownerUserId === currentUser.id`, and `currencyCode`; conflict check uses the new `findPersonalBudgetByPeriod`. Household create path is preserved. Audit log stores `household_id = null` for personal events.",
+  "dependencies": ["feat-100a"],
+  "evidence": {
+    "planned": [
+      "Zod refine rule: exactly one of `householdId` (scope household) or `ownerUserId` (scope personal).",
+      "Integration test in `apps/worker/test/integration/budgets-personal-scope.spec.ts` covers personal create happy path + 409 on duplicate period + cross-user owner rejection."
+    ]
+  }
+}

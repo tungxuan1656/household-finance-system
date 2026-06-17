@@ -40,6 +40,62 @@ describe('GET /api/v1/analytics/overview', () => {
     expect(response.status).toBe(401)
   })
 
+  it('returns analytics for an explicit date range', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-analytics-overview-range:analytics-overview-range@example.com',
+    )
+
+    await createExpense(auth.accessToken, {
+      amount: 12000,
+      categoryKey: 'food',
+      sourceKey: 'cash',
+      visibility: 'private',
+      title: 'May breakfast',
+      occurredAt: Date.UTC(2026, 4, 2, 8),
+    })
+
+    await createExpense(auth.accessToken, {
+      amount: 38000,
+      categoryKey: 'transport',
+      sourceKey: 'cash',
+      visibility: 'private',
+      title: 'May commute',
+      occurredAt: Date.UTC(2026, 4, 10, 8),
+    })
+
+    await createExpense(auth.accessToken, {
+      amount: 7000,
+      categoryKey: 'shopping',
+      sourceKey: 'cash',
+      visibility: 'private',
+      title: 'June item',
+      occurredAt: Date.UTC(2026, 5, 2, 8),
+    })
+
+    const dateFrom = Date.UTC(2026, 4, 1)
+    const dateTo = Date.UTC(2026, 5, 1)
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/analytics/overview?date_from=${dateFrom}&date_to=${dateTo}`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(200)
+
+    const payload = await parseJson<ApiEnvelope<AnalyticsOverviewDTO>>(response)
+
+    expect(payload.data.totalSpendMinor).toBe(50000)
+    expect(payload.data.expenseCount).toBe(2)
+    expect(payload.data.dailySpend).toEqual([
+      { date: '2026-05-02', totalSpendMinor: 12000 },
+      { date: '2026-05-10', totalSpendMinor: 38000 },
+    ])
+  })
+
   it('returns household analytics and excludes private expenses from household totals', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-analytics-overview-happy:analytics-overview-happy@example.com',
@@ -214,6 +270,23 @@ describe('GET /api/v1/analytics/overview', () => {
 
     const payload = await parseJson<ApiErrorEnvelope>(response)
     expect(payload.error.code).toBe('INVALID_INPUT')
+  })
+
+  it('returns 400 for incomplete date range', async () => {
+    const auth = await exchangeAccessToken(
+      'test:firebase-user-analytics-overview-incomplete-range:analytics-overview-incomplete-range@example.com',
+    )
+
+    const response = await SELF.fetch(
+      `https://example.com/api/v1/analytics/overview?date_from=${Date.UTC(2026, 4, 1)}`,
+      {
+        headers: {
+          authorization: `Bearer ${auth.accessToken}`,
+        },
+      },
+    )
+
+    expect(response.status).toBe(400)
   })
 
   it('returns 403 for non-member household analytics', async () => {

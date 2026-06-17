@@ -1,49 +1,35 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { AppProviders } from '@/app/bootstrap/app-providers'
-import { initTelegram, teardownTelegram } from '@/app/bootstrap/telegram-init'
 import { AppRouter } from '@/app/router/app-router'
+import { AuthInterceptorInit } from '@/features/auth/auth-interceptor-init'
 import { AuthBootstrap } from '@/features/auth/bootstrap'
 import { createAuthApiBootstrapDeps } from '@/features/auth/bootstrap-deps'
+import { FatalLaunchScreen } from '@/features/auth/fatal-launch-screen'
 import { useAuthStore } from '@/features/auth/store'
 import { createTmaAuthClient } from '@/lib/auth/client'
-import {
-  DEFAULT_LOCALE,
-  detectTelegramLocale,
-  i18n,
-  type SupportedLocale,
-} from '@/lib/i18n'
+import { DEFAULT_LOCALE, i18n } from '@/lib/i18n'
 import { readRawInitData } from '@/lib/telegram/launch-params'
-import { FatalLaunchPage } from '@/routes/fatal-launch'
 
 const workerBaseUrl = import.meta.env.VITE_WORKER_URL ?? '/api/v1'
 
-export const App = () => {
-  const [initError, setInitError] = useState<unknown>(null)
+export interface AppProps {
+  startupError?: Error | null
+}
 
+export const App = ({ startupError = null }: AppProps) => {
+  // Apply locale once on mount (SDK already initialized in main.tsx).
+  // Do not teardown Telegram from this effect cleanup: React StrictMode replays
+  // mount/cleanup in dev, which would cancel the deferred fullscreen request.
   useEffect(() => {
-    let cleanup: (() => void) | null = null
-
-    try {
-      cleanup = initTelegram()
-    } catch (error) {
-      setInitError(error)
-
+    if (startupError) {
       return
     }
 
-    const locale: SupportedLocale = detectTelegramLocale() ?? DEFAULT_LOCALE
-
-    void i18n.changeLanguage(locale).then(() => {
-      document.documentElement.lang = locale
+    void i18n.changeLanguage(DEFAULT_LOCALE).then(() => {
+      document.documentElement.lang = DEFAULT_LOCALE
     })
-
-    return () => {
-      if (cleanup) {
-        teardownTelegram(cleanup)
-      }
-    }
-  }, [])
+  }, [startupError])
 
   const authClient = useMemo(
     () =>
@@ -53,6 +39,7 @@ export const App = () => {
       }),
     [],
   )
+
   const bootstrapDeps = useMemo(
     () =>
       createAuthApiBootstrapDeps({
@@ -67,14 +54,22 @@ export const App = () => {
     [authClient],
   )
 
-  if (initError) {
-    return <FatalLaunchPage />
+  if (startupError) {
+    return (
+      <AppProviders>
+        <FatalLaunchScreen
+          error={{ code: 'launchInvalid', message: startupError.message }}
+        />
+      </AppProviders>
+    )
   }
 
   return (
     <AppProviders>
       <AuthBootstrap deps={bootstrapDeps}>
-        <AppRouter />
+        <AuthInterceptorInit api={authClient.api} storage={authClient.storage}>
+          <AppRouter />
+        </AuthInterceptorInit>
       </AuthBootstrap>
     </AppProviders>
   )

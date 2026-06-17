@@ -40,6 +40,25 @@ export const findActiveHouseholdMembership = async (
   }
 }
 
+export const listActiveHouseholdIdsForUser = async (
+  db: D1Database,
+  userId: string,
+): Promise<string[]> => {
+  const results = await db
+    .prepare(
+      `SELECT hm.household_id AS householdId
+         FROM household_memberships hm
+         INNER JOIN households h ON h.id = hm.household_id
+        WHERE hm.user_id = ?
+          AND hm.state = 'active'
+          AND h.archived_at IS NULL`,
+    )
+    .bind(userId)
+    .all<{ householdId: string }>()
+
+  return results.results.map((row) => row.householdId)
+}
+
 export const countActiveHouseholdMembers = async (
   db: D1Database,
   householdId: string,

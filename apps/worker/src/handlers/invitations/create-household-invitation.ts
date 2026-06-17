@@ -5,6 +5,7 @@ import type {
 import { createAuditLogEntry } from '@/db/repositories/audit-log-repository'
 import { createHouseholdInvitation } from '@/db/repositories/household-invitation-repository'
 import { sha256Hex } from '@/lib/auth/security'
+import { readConfig } from '@/lib/env'
 import type { AppBindings } from '@/types'
 
 const millisecondsPerHour = 60 * 60 * 1000
@@ -30,8 +31,10 @@ export const createInvitation = async (
     payload: CreateInvitationRequest
   },
 ): Promise<InvitationCreateResponse> => {
+  const config = readConfig(env)
+
   const token = generateInvitationToken()
-  const tokenHash = await sha256Hex(token)
+  const tokenHash = await sha256Hex(`${token}.${config.invitationTokenPepper}`)
   const expiresAt = Date.now() + input.payload.ttlHours * millisecondsPerHour
 
   const created = await createHouseholdInvitation(env.DB, {

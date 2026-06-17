@@ -31,12 +31,14 @@ export type AppBindings = {
 }
 
 export interface AppConfig {
+  appEnvironment: string
   authIssuer: string
   authAudience: string
   accessTokenTtlSeconds: number
   refreshTokenTtlSeconds: number
   authJwtSecret: string
   refreshTokenPepper: string
+  invitationTokenPepper: string
   firebaseProjectId: string
   firebaseJwksUrl: string
   allowInsecureTestTokens: boolean

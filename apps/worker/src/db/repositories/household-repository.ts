@@ -27,6 +27,7 @@ export interface UpdateHouseholdInput {
   name?: string
   defaultCurrencyCode?: string
   timezone?: string
+  avatarUrl?: string | null
 }
 
 const isSlugConflictError = (error: unknown): boolean => {
@@ -46,6 +47,7 @@ export const listUserHouseholds = async (
       `SELECT h.id,
               h.name,
               h.slug,
+              h.avatar_url,
               h.default_currency_code,
               h.timezone,
               hm.role,
@@ -62,6 +64,7 @@ export const listUserHouseholds = async (
       id: string
       name: string
       slug: string
+      avatar_url: string | null
       default_currency_code: string
       timezone: string
       role: 'admin' | 'member'
@@ -81,6 +84,7 @@ export const findUserHouseholdById = async (
       `SELECT h.id,
               h.name,
               h.slug,
+              h.avatar_url,
               h.default_currency_code,
               h.timezone,
               hm.role,
@@ -98,6 +102,7 @@ export const findUserHouseholdById = async (
       id: string
       name: string
       slug: string
+      avatar_url: string | null
       default_currency_code: string
       timezone: string
       role: 'admin' | 'member'
@@ -209,6 +214,7 @@ export const findHouseholdById = async (
       `SELECT h.id,
               h.name,
               h.slug,
+              h.avatar_url,
               h.default_currency_code,
               h.timezone,
               h.created_at
@@ -222,6 +228,7 @@ export const findHouseholdById = async (
       id: string
       name: string
       slug: string
+      avatar_url: string | null
       default_currency_code: string
       timezone: string
       created_at: number
@@ -255,8 +262,12 @@ export const updateHouseholdById = async (
              WHEN ?5 THEN ?6
              ELSE timezone
            END,
-           updated_at = ?7
-       WHERE id = ?8
+           avatar_url = CASE
+             WHEN ?7 THEN ?8
+             ELSE avatar_url
+           END,
+           updated_at = ?9
+       WHERE id = ?10
          AND archived_at IS NULL`,
     )
     .bind(
@@ -266,6 +277,8 @@ export const updateHouseholdById = async (
       input.defaultCurrencyCode ?? null,
       input.timezone !== undefined ? 1 : 0,
       input.timezone ?? null,
+      input.avatarUrl !== undefined ? 1 : 0,
+      input.avatarUrl ?? null,
       nowEpoch,
       householdId,
     )

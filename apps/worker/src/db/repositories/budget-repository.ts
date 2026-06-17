@@ -3,20 +3,19 @@ import { newId } from '@/utils/id'
 import { computeDateRange } from './budget-period'
 import {
   BUDGET_COLUMNS,
-  BUDGET_LIMIT_COLUMNS,
-  type BudgetLimitRow,
   type BudgetRow,
-  mapBudgetLimitRow,
+  type BudgetScope,
   mapBudgetRow,
   type StoredBudget,
-  type StoredBudgetLimit,
 } from './budget-row-mapper'
 
+export { findBudgetLimits } from './budget-limit-repository'
 export {
   BUDGET_COLUMNS,
   BUDGET_LIMIT_COLUMNS,
   type BudgetLimitRow,
   type BudgetRow,
+  type BudgetScope,
   mapBudgetLimitRow,
   mapBudgetRow,
   type StoredBudget,
@@ -27,8 +26,8 @@ export {
   type StoredBudgetSpendSummary,
 } from './budget-spend-summary-repository'
 
-export interface CreateBudgetInput {
-  householdId: string
+interface CreateBudgetBase {
+  scope: BudgetScope
   period: string // YYYY-MM
   totalLimitMinor: number
   currencyCode: string
@@ -36,10 +35,26 @@ export interface CreateBudgetInput {
   categoryLimits?: Array<{ categoryKey: string; limitMinor: number }>
 }
 
+export type CreateBudgetInput = CreateBudgetBase &
+  (
+    | { scope: 'household'; householdId: string; ownerUserId?: never }
+    | { scope: 'personal'; ownerUserId: string; householdId?: never }
+  )
+
 export interface UpdateBudgetInput {
   totalLimitMinor?: number
   categoryLimits?: Array<{ categoryKey: string; limitMinor: number }>
 }
+
+const isPersonalInput = (
+  input: CreateBudgetInput,
+): input is Extract<CreateBudgetInput, { scope: 'personal' }> =>
+  input.scope === 'personal'
+
+const isHouseholdInput = (
+  input: CreateBudgetInput,
+): input is Extract<CreateBudgetInput, { scope: 'household' }> =>
+  input.scope === 'household'
 
 export const createBudget = async (
   db: D1Database,
@@ -49,6 +64,9 @@ export const createBudget = async (
   const now = Date.now()
   const { startDate, endDate } = computeDateRange(input.period)
 
+  const householdId = isHouseholdInput(input) ? input.householdId : null
+  const ownerUserId = isPersonalInput(input) ? input.ownerUserId : null
+
   const statements: D1PreparedStatement[] = []
 
   // Insert budget
@@ -56,14 +74,16 @@ export const createBudget = async (
     db
       .prepare(
         `INSERT INTO budgets (
-          id, household_id, scope, budget_month, start_date, end_date,
+          id, household_id, owner_user_id, scope, budget_month, start_date, end_date,
           currency_code, total_limit_minor, category_id, created_by_user_id,
           archived_at, created_at, updated_at
-        ) VALUES (?, ?, 'household', ?, ?, ?, ?, ?, NULL, ?, NULL, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, NULL, ?, ?)`,
       )
       .bind(
         id,
-        input.householdId,
+        householdId,
+        ownerUserId,
+        input.scope,
         input.period,
         startDate,
         endDate,
@@ -90,7 +110,7 @@ export const createBudget = async (
           .bind(
             limitId,
             id,
-            input.householdId,
+            householdId,
             cl.categoryKey,
             cl.limitMinor,
             now,
@@ -104,8 +124,9 @@ export const createBudget = async (
 
   return mapBudgetRow({
     id,
-    household_id: input.householdId,
-    scope: 'household' as const,
+    household_id: householdId,
+    owner_user_id: ownerUserId,
+    scope: input.scope,
     budget_month: input.period,
     start_date: startDate,
     end_date: endDate,
@@ -139,7 +160,7 @@ export const findBudgetById = async (
   return mapBudgetRow(row)
 }
 
-export const findBudgetByPeriod = async (
+export const findHouseholdBudgetByPeriod = async (
   db: D1Database,
   householdId: string,
   period: string,
@@ -155,6 +176,29 @@ export const findBudgetByPeriod = async (
         LIMIT 1`,
     )
     .bind(householdId, period)
+    .first<BudgetRow>()
+
+  if (!row) return null
+
+  return mapBudgetRow(row)
+}
+
+export const findPersonalBudgetByPeriod = async (
+  db: D1Database,
+  ownerUserId: string,
+  period: string,
+): Promise<StoredBudget | null> => {
+  const row = await db
+    .prepare(
+      `SELECT ${BUDGET_COLUMNS}
+         FROM budgets b
+        WHERE b.owner_user_id = ?
+          AND b.budget_month = ?
+          AND b.scope = 'personal'
+          AND b.archived_at IS NULL
+        LIMIT 1`,
+    )
+    .bind(ownerUserId, period)
     .first<BudgetRow>()
 
   if (!row) return null
@@ -180,21 +224,51 @@ export const listBudgetsByHousehold = async (
   return result.results.map(mapBudgetRow)
 }
 
-export const findBudgetLimits = async (
+export const listBudgetsByOwner = async (
   db: D1Database,
-  budgetId: string,
-): Promise<StoredBudgetLimit[]> => {
+  ownerUserId: string,
+): Promise<StoredBudget[]> => {
   const result = await db
     .prepare(
-      `SELECT ${BUDGET_LIMIT_COLUMNS}
-         FROM budget_limits bl
-        WHERE bl.budget_id = ?
-        ORDER BY bl.category_key`,
+      `SELECT ${BUDGET_COLUMNS}
+         FROM budgets b
+        WHERE b.owner_user_id = ?
+          AND b.archived_at IS NULL
+        ORDER BY b.budget_month DESC`,
     )
-    .bind(budgetId)
-    .all<BudgetLimitRow>()
+    .bind(ownerUserId)
+    .all<BudgetRow>()
 
-  return result.results.map(mapBudgetLimitRow)
+  return result.results.map(mapBudgetRow)
+}
+
+export const listAccessibleBudgets = async (
+  db: D1Database,
+  ownerUserId: string,
+  householdIds: string[],
+): Promise<StoredBudget[]> => {
+  const placeholders = householdIds.map(() => '?').join(',')
+  const binds: string[] = [ownerUserId, ...householdIds]
+
+  const result = await db
+    .prepare(
+      `SELECT ${BUDGET_COLUMNS}
+         FROM budgets b
+        WHERE b.archived_at IS NULL
+          AND (
+            (b.scope = 'personal' AND b.owner_user_id = ?)
+            ${
+              householdIds.length > 0
+                ? `OR (b.scope = 'household' AND b.household_id IN (${placeholders}))`
+                : ''
+            }
+          )
+        ORDER BY b.budget_month DESC`,
+    )
+    .bind(...binds)
+    .all<BudgetRow>()
+
+  return result.results.map(mapBudgetRow)
 }
 
 export const updateBudget = async (
@@ -238,11 +312,10 @@ export const updateBudget = async (
         .bind(budgetId),
     )
 
-    // Insert new limits
+    // Insert new limits - household_id comes from the parent budget (NULL for personal)
     for (const cl of input.categoryLimits) {
       const limitId = newId()
 
-      // We need household_id for the insert - fetch from budget
       statements.push(
         db
           .prepare(
@@ -307,14 +380,4 @@ export const restoreBudget = async (
     .run()
 
   return (result.meta.changes ?? 0) > 0
-}
-
-export const deleteBudgetLimits = async (
-  db: D1Database,
-  budgetId: string,
-): Promise<void> => {
-  await db
-    .prepare(`DELETE FROM budget_limits WHERE budget_id = ?`)
-    .bind(budgetId)
-    .run()
 }

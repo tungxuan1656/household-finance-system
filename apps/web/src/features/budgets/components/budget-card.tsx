@@ -1,8 +1,9 @@
 'use client'
 
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit, House, Trash2, User } from 'lucide-react'
 
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -40,9 +41,23 @@ function BudgetCard({
       <CardHeader className='pb-3'>
         <div className='flex items-start justify-between gap-3'>
           <div className='flex min-w-0 flex-col gap-1'>
-            <CardTitle className='text-base'>
-              {t('budgets.card.periodLabel')}: {budget.period}
-            </CardTitle>
+            <div className='flex items-center gap-2'>
+              <CardTitle className='text-base'>
+                {t('budgets.card.periodLabel')}: {budget.period}
+              </CardTitle>
+              {budget.scope === 'personal' && (
+                <Badge variant='outline'>
+                  <User className='size-3' data-icon='inline-start' />
+                  {t('budgets.badge.personal')}
+                </Badge>
+              )}
+              {budget.scope === 'household' && (
+                <Badge variant='secondary'>
+                  <House className='size-3' data-icon='inline-start' />
+                  {t('budgets.badge.household')}
+                </Badge>
+              )}
+            </div>
             <CardDescription>
               {t('budgets.card.totalLabel')}:{' '}
               {formatCurrency(budget.totalLimitMinor, budget.currencyCode)}

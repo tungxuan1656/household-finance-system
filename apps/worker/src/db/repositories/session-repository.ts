@@ -134,6 +134,17 @@ export const findSessionById = async (
   return toRefreshSession(row)
 }
 
+/**
+ * Rotate a refresh session atomically using a single UPDATE statement.
+ *
+ * Instead of a revoke + insert batch (which has a race window where the
+ * revoke succeeds but the insert fails), this replaces the row in place.
+ * The WHERE clause acts as an optimistic lock — if the session is already
+ * revoked or expired, `changes` will be 0 and the function returns false.
+ *
+ * Because the row keeps the same underlying storage but gets a new `id`,
+ * downstream `findSessionById(newSid)` lookups continue to work.
+ */
 export const rotateRefreshSession = async (
   db: D1Database,
   input: RotateRefreshSessionInput,
@@ -141,42 +152,34 @@ export const rotateRefreshSession = async (
   const nowEpoch = Date.now()
   const nextSessionId = input.newSessionId ?? newId()
 
-  const revokeStatement = db
+  const result = await db
     .prepare(
       `UPDATE refresh_sessions
-       SET revoked_at = ?, updated_at = ?
+       SET id = ?,
+           token_hash = ?,
+           expires_at = ?,
+           user_agent = ?,
+           ip_address = ?,
+           updated_at = ?
        WHERE id = ?
          AND user_id = ?
          AND revoked_at IS NULL
          AND expires_at > ?`,
     )
-    .bind(nowEpoch, nowEpoch, input.previousSessionId, input.userId, nowEpoch)
-
-  const conditionalInsertStatement = db
-    .prepare(
-      `INSERT INTO refresh_sessions (id, user_id, token_hash, expires_at, user_agent, ip_address)
-       SELECT ?, ?, ?, ?, ?, ?
-       WHERE changes() = 1`,
-    )
     .bind(
       nextSessionId,
-      input.userId,
       input.tokenHash,
       input.expiresAt,
       input.userAgent,
       input.ipAddress,
+      nowEpoch,
+      input.previousSessionId,
+      input.userId,
+      nowEpoch,
     )
+    .run()
 
-  const [revokeResult] = await db.batch([
-    revokeStatement,
-    conditionalInsertStatement,
-  ])
-
-  if (Number(revokeResult.meta.changes ?? 0) !== 1) {
-    return false
-  }
-
-  return true
+  return Number(result.meta.changes ?? 0) === 1
 }
 
 export const revokeSessionIfActive = async (

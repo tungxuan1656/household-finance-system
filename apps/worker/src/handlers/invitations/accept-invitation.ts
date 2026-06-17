@@ -7,6 +7,7 @@ import {
 } from '@/db/repositories/household-invitation-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { sha256Hex } from '@/lib/auth/security'
+import { readConfig } from '@/lib/env'
 import { conflict, notFound } from '@/lib/errors'
 import type { SupportedLocale } from '@/lib/i18n'
 import type { AppBindings } from '@/types'
@@ -19,7 +20,10 @@ export const acceptInvitation = async (
     locale: SupportedLocale
   },
 ): Promise<AcceptInvitationResponse> => {
-  const tokenHash = await sha256Hex(input.token)
+  const config = readConfig(env)
+  const tokenHash = await sha256Hex(
+    `${input.token}.${config.invitationTokenPepper}`,
+  )
   const invitation = await findInvitationPreviewByTokenHash(env.DB, tokenHash)
 
   if (!invitation) {

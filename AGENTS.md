@@ -46,12 +46,10 @@ Do not read broad folders by default. Use indexes to choose exact leaf docs.
 - Use `using-skills` first. Load task skill if applies.
 - Before execution, state the planning mode for the task: tiny direct-task note for one-shot mechanical work, explicit inline plan for normal multi-step Level 1 work, ExecPlan for Level 2/3.
 - One feature/plan per session. Do not mix scopes.
-- Before code edits, run required GitNexus impact checks for touched symbols.
 - Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
-- Params: `install`, `lint`, `typecheck`, `test`, `build`, `sync`.
+- Params: `install`, `lint`, `typecheck`, `test`, `build`.
 - Manual one-file lint/test OK for focused debug.
 - Run full `./init.sh` only at final verification.
-- Before commit-ready summary, run `gitnexus_detect_changes(scope: "all")`.
 - Before any done/ready claim, explicitly apply `verification-before-completion` discipline and report command/result/evidence, or say what was not verified and what risk remains.
 - Update harness feature state + `harness/progress.md` before end session.
 - Commit only when user explicitly asks.
@@ -90,24 +88,7 @@ Done means:
 - Typecheck: `./init.sh typecheck`
 - Test: `./init.sh test`
 - Build: `./init.sh build`
-- Sync GitNexus: `./init.sh sync`
 - Final full verify: `./init.sh`
 
-Full `./init.sh`: install, harness, lint, typecheck, test, sync. No build.
+Full `./init.sh`: install, harness, lint, typecheck, test. No build.
 
-## GitNexus
-
-Use GitNexus for unfamiliar/high-risk changes. If index stale, run `./init.sh sync`.
-
-Required:
-- Before editing function/class/method: `gitnexus_impact({ target: "symbolName", direction: "upstream" })`.
-- Report blast radius and risk.
-- Warn before proceeding on HIGH/CRITICAL risk.
-- Before commit-ready summary: `gitnexus_detect_changes({ scope: "all" })`.
-- Explore flows with `gitnexus_query`; inspect symbols with `gitnexus_context`.
-
-Useful resources:
-- `gitnexus://repo/household-finance-system/context`
-- `gitnexus://repo/household-finance-system/clusters`
-- `gitnexus://repo/household-finance-system/processes`
-- `gitnexus://repo/household-finance-system/process/{name}`
