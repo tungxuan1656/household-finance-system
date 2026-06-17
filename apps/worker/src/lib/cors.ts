@@ -1,4 +1,6 @@
-const EXACT_ALLOWED_CORS_ORIGINS: Set<string> = new Set([])
+const EXACT_ALLOWED_CORS_ORIGINS: Set<string> = new Set([
+  'https://phofis-tma.pages.dev',
+])
 const LOOPBACK_HOSTNAMES: Set<string> = new Set([
   '127.0.0.1',
   '::1',
@@ -14,7 +16,7 @@ export const isAllowedCorsOrigin = (origin: string): boolean => {
   try {
     const url = new URL(origin)
 
-    if (url.protocol !== 'http:') {
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
       return false
     }
 
