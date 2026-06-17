@@ -1,6 +1,4 @@
-import packageJson from '../../../package.json'
-
-const APP_VERSION = packageJson.version
+const APP_VERSION = import.meta.env.VITE_APP_VERSION
 
 export const AppVersionLabel = () => (
   <div
