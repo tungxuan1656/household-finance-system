@@ -38,7 +38,14 @@
    * Note: Use secrets to store sensitive data.
    * https://developers.cloudflare.com/workers/configuration/secrets/
    */
-  // "vars": {  "MY_VARIABLE": "production_value" }
+  "vars": {
+    "ACCESS_TOKEN_TTL_SECONDS": "86400",
+    "APP_ENV": "prod",
+    "AUTH_ALLOW_INSECURE_TEST_TOKENS": "false",
+    "AUTH_AUDIENCE": "household-finance-api",
+    "AUTH_ISSUER": "https://household-finance.local",
+    "REFRESH_TOKEN_TTL_SECONDS": "2592000",
+  },
   /**
    * Static Assets
    * https://developers.cloudflare.com/workers/static-assets/binding/
