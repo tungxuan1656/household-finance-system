@@ -9,6 +9,7 @@ import type {
   AnalyticsOverviewParams,
   ExpenseListParams,
   ExpenseListResponse,
+  ListBudgetsParams,
   ListBudgetsResponse,
   ListHouseholdMembersResponse,
   ListHouseholdsResponse,
@@ -29,9 +30,13 @@ const listHouseholds = () => get<ListHouseholdsResponse>('/households')
 const getHouseholdMembers = (householdId: string) =>
   get<ListHouseholdMembersResponse>(`/households/${householdId}/members`)
 
-const listBudgets = (householdId: string, period: string) =>
+const listBudgets = (params: ListBudgetsParams) =>
   get<ListBudgetsResponse>('/budgets', {
-    params: { household_id: householdId, period },
+    params: {
+      household_id: params.householdId,
+      scope: params.scope,
+      period: params.period,
+    },
   })
 
 const getReferenceCategories = () =>
@@ -62,8 +67,8 @@ export const HOUSEHOLD_KEYS = {
 
 export const BUDGET_KEYS = {
   all: ['budgets'] as const,
-  list: (householdId: string, period: string) =>
-    [...BUDGET_KEYS.all, 'list', householdId, period] as const,
+  list: (params: ListBudgetsParams) =>
+    [...BUDGET_KEYS.all, 'list', params] as const,
 }
 
 export const REFERENCE_DATA_KEYS = {
@@ -105,10 +110,10 @@ export const householdMembersQueryOptions = (householdId: string) =>
     queryFn: () => getHouseholdMembers(householdId),
   })
 
-export const budgetListQueryOptions = (householdId: string, period: string) =>
+export const budgetListQueryOptions = (params: ListBudgetsParams) =>
   queryOptions({
-    queryKey: BUDGET_KEYS.list(householdId, period),
-    queryFn: () => listBudgets(householdId, period),
+    queryKey: BUDGET_KEYS.list(params),
+    queryFn: () => listBudgets(params),
   })
 
 export const referenceCategoriesQueryOptions = () =>

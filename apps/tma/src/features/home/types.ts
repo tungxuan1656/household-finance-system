@@ -112,9 +112,13 @@ export type ExpenseListResponse = {
   nextCursor: string | null
 }
 
+export type BudgetScope = 'household' | 'personal'
+
 export type BudgetDTO = {
   id: string
-  householdId: string
+  scope: BudgetScope
+  householdId: string | null
+  ownerUserId: string | null
   period: string
   totalLimitMinor: number
   currencyCode: string
@@ -125,6 +129,12 @@ export type BudgetDTO = {
   createdByUserId: string
   createdAt: number
   updatedAt: number
+}
+
+export type ListBudgetsParams = {
+  householdId?: string
+  scope?: BudgetScope
+  period?: string
 }
 
 export type ListBudgetsResponse = {

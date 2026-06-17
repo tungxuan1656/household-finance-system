@@ -39,9 +39,11 @@ export const FinanceSummaryCard = ({
   const budgetPeriod = getMonthBudgetPeriod(selectedPeriod)
   const overviewQuery = useAnalyticsOverviewQuery(overviewParams)
   const comparisonQuery = useAnalyticsComparisonQuery(overviewParams)
+  const budgetParams = householdId
+    ? { householdId, period: budgetPeriod }
+    : { scope: 'personal' as const, period: budgetPeriod }
   const budgetQuery = useQuery({
-    ...budgetListQueryOptions(householdId ?? 'unknown', budgetPeriod),
-    enabled: Boolean(householdId),
+    ...budgetListQueryOptions(budgetParams),
   })
   const overview = overviewQuery.data
   const budget = budgetQuery.data?.items[0] ?? null

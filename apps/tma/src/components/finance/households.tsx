@@ -178,7 +178,10 @@ export const HouseholdPreviewCarousel = () => {
   })
   const budgetQueries = useQueries({
     queries: households.map((household) =>
-      budgetListQueryOptions(household.id, budgetPeriod),
+      budgetListQueryOptions({
+        householdId: household.id,
+        period: budgetPeriod,
+      }),
     ),
   })
 

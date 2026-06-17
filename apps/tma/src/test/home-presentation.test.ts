@@ -58,7 +58,9 @@ describe('home presentation helpers', () => {
       currencyCode: 'USD',
       householdId: 'household-1',
       id: 'budget-1',
+      ownerUserId: null,
       period: '2026-06',
+      scope: 'household' as const,
       totalLimitMinor: 10_000,
       updatedAt: 0,
     }
