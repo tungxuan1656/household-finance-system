@@ -1,0 +1,41 @@
+{
+  "id": "feat-104",
+  "name": "TMA household invitation via Telegram Mini App deep links",
+  "status": "done",
+  "description": "Add a household invitation flow to the TMA so admins can generate an invite, share it via Telegram, and the recipient lands on an accept-invitation page that joins the household. The chosen mechanism is the Telegram Mini App `?startapp=<token>` deep link — it opens the TMA directly (zero bot interaction) and delivers the token through `initData.start_param`. The UI gives two share affordances: the native `shareURL` SDK call that opens Telegram's chat picker, and a clipboard copy fallback.",
+  "dependencies": ["feat-007", "feat-006"],
+  "evidence": {
+    "planned": [
+      "Create `apps/tma/src/features/invitations/` feature folder with types, API, hooks, components, and pages.",
+      "Reuse the existing worker invitation endpoints (POST `/households/:id/invitations`, GET `/invitations/:token` public, POST `/invitations/:token/accept` authenticated). No backend changes needed.",
+      "Build a Mini App deep link `https://t.me/<VITE_TELEGRAM_BOT_USERNAME>?startapp=<token>` using the token returned by the create-invitation endpoint.",
+      "At app startup, read `retrieveLaunchParams().tgWebAppData.start_param` and `replace` navigate to `/invitations/:token` when a token is present.",
+      "Add a `/invitations/:token` route wired through the lazy-loaded React Router.",
+      "Add an admin-only invite section to the household detail page that opens the dialog.",
+      "Add Vietnamese translations for the invite dialog and accept page surfaces."
+    ],
+    "artifacts": [
+      "`apps/tma/src/features/invitations/types/invitation.ts` — InvitationRoleDTO, InvitationTtlHours, CreateInvitationRequest, InvitationCreateResponse, InvitationPreviewResponse, AcceptInvitationResponse.",
+      "`apps/tma/src/features/invitations/types/index.ts` — barrel re-export (so the `../types` deep import resolves).",
+      "`apps/tma/src/features/invitations/api/invitation.ts` — fetchers (`createInvitation`, `getInvitationPreview` with `authenticated: false`, `acceptInvitation`), `INVITATION_KEYS`, `invitationPreviewQueryOptions`, `useInvitationPreviewQuery`, `useCreateInvitationMutation`, `useAcceptInvitationMutation`. Accept mutation invalidates `HOUSEHOLD_KEYS.all` so household list/detail/members refresh after joining.",
+      "`apps/tma/src/features/invitations/hooks/use-invitation-deep-link.ts` — reads `retrieveLaunchParams().tgWebAppData?.start_param` for components that want the raw token.",
+      "`apps/tma/src/features/invitations/hooks/use-invitation-deep-link-redirect.ts` — `useEffect` with a `useRef` guard that calls `navigate(getInvitationAcceptPath(token), { replace: true })` exactly once on cold open.",
+      "`apps/tma/src/features/invitations/components/invite-household-dialog.tsx` — admin-only dialog with role picker (admin/member), TTL picker (24h/72h/7d), and a create-and-share flow. Uses `useCreateInvitationMutation`, calls `shareURL(deepLink, shareText)` from `@tma.js/sdk`, and falls back to `navigator.clipboard.writeText` if sharing is unavailable. Haptic feedback (`impact`, `notification`) on every interaction.",
+      "`apps/tma/src/features/invitations/pages/accept-invitation-page.tsx` — TmaPageShell + DataState. Fetches preview via `useInvitationPreviewQuery(token)`. For authenticated users shows the household name, role, and expiry; CTA calls `useAcceptInvitationMutation().mutateAsync(token)` and navigates to the household detail page. Loading and error states reuse the shared DataState pattern.",
+      "`apps/tma/src/features/invitations/index.ts` — feature barrel.",
+      "`apps/tma/src/lib/constants/routes.ts` — added `invitations: '/invitations'` to TMA_PATHS and `getInvitationAcceptPath(token)` helper.",
+      "`apps/tma/src/app/router/app-router.tsx` — added lazy import of `AcceptInvitationPage` and route `{ path: '/invitations/:token' }`.",
+      "`apps/tma/src/app/router/root-layout.tsx` — calls `useInvitationDeepLinkRedirect()` at the top of the layout so cold-opens with a `start_param` immediately land on the accept page.",
+      "`apps/tma/src/features/households/pages/household-detail-page.tsx` — admin-only invite Section with SectionHeader action button that toggles `InviteHouseholdDialog`.",
+      "`apps/tma/src/lib/i18n/locales/vi.json` — added `invitations` section (30 keys: inviteTitle, inviteDesc, createInvite, creating, linkReady, shareViaTelegram, copyLink, shareText, roleLabel, roleAdmin, roleMember, ttlLabel, ttl24h, ttl72h, ttl7d, acceptTitle, acceptDesc, acceptAction, accepting, accepted, invalidTokenTitle, invalidTokenDesc, notFoundTitle, notFoundDesc, loadError, loadErrorDesc, loading, loadingDesc, householdName, expiresAt, requiresAuth, acceptSuccess). Added `households.detail.sectionInvite` and `households.detail.inviteAction` keys."
+    ],
+    "verification": [
+      "`./init.sh lint` returned `OK`.",
+      "`./init.sh typecheck` returned `OK` (fixed the shareURL `.catch()` typecheck error by wrapping in `Promise.resolve()` — `shareURL` from `@tma.js/sdk` returns `void`).",
+      "`./init.sh test` returned `OK`.",
+      "`pnpm --filter tma build` succeeded; the new pages are emitted as separate chunks (household-detail-page grew to 8.77 kB / 3.09 kB gzip reflecting the added invite section).",
+      "`./init.sh` full verification returned `Done!`."
+    ]
+  },
+  "notes": "Backend invitation flow was already complete (worker handlers + repository + contracts in feat-007/feat-006 lineage). This feature is TMA-only: a UI surface + a deep-link bootstrap. The chosen mechanism — `https://t.me/<bot>?startapp=<token>` + `shareURL` — is the most convenient Telegram-native invite path because it opens the Mini App directly (no `/start` bot interaction) and uses Telegram's native chat picker. Recipients who already use the TMA land on the accept page automatically via the root-layout redirect; recipients without the TMA see the bot and are funneled through `startapp`. Requires `VITE_TELEGRAM_BOT_USERNAME` env var; if missing, the dialog falls back to the plain `/invitations/<token>` invite path so admins can still copy a shareable link manually. No commit performed — the user did not request one."
+}

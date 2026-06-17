@@ -1,5 +1,23 @@
 # Progress Log
 
+## 2026-06-17 — TMA household invitation: post-review fixes
+
+- Who: MiniMax-M3 (orchestrator, inline execution)
+- Summary: Applied review fixes to feat-104 (TMA household invitation). Critical: added missing `households.detail.sectionInvite` + `invitations.adminRoleWarning` i18n keys (UI was rendering raw keys); stripped dead `Promise.resolve().catch()` fallback in `handleShareViaTelegram` since `shareURL()` returns void synchronously. High: wired Telegram `BottomButton` on `AcceptInvitationPage` for primary CTA per `native-ui-and-navigation-pattern.md`; added admin-role warning text in invite dialog; deleted dead `use-invitation-deep-link.ts` hook and removed barrel re-export. Medium: replaced `as` casts in `NativePicker` onChange handlers with `isInvitationRole`/`parseInvitationTtlHours` predicates; fixed `formatDate` to use `toLocaleString` instead of `toLocaleDateString` with hour/minute options; `acceptInvitation` mutation now uses `invalidateHouseholdSurfaceQueries` (also invalidates ANALYTICS/BUDGET/EXPENSE keys) instead of just HOUSEHOLD_KEYS.all; exported `invalidateHouseholdSurfaceQueries` from `households.ts`; added `apps/tma/src/test/invitation-api.test.ts` (5 tests covering preview-without-auth, queryOptions shape, accept/create fetchers); exported fetchers (`createInvitation`, `getInvitationPreview`, `acceptInvitation`) for testability. Low: replaced `bg-black/4` with `bg-tma-line`; added `line-clamp-1` on invite link; clipboard error now surfaces via `notification('error')` (was silent `void`).
+- Files changed: `apps/tma/src/features/invitations/components/invite-household-dialog.tsx`, `apps/tma/src/features/invitations/pages/accept-invitation-page.tsx`, `apps/tma/src/features/invitations/api/invitation.ts`, `apps/tma/src/features/invitations/index.ts`, `apps/tma/src/features/invitations/hooks/use-invitation-deep-link.ts` (deleted), `apps/tma/src/features/households/api/households.ts`, `apps/tma/src/lib/i18n/locales/vi.json`, `apps/tma/src/test/invitation-api.test.ts` (new).
+- Verification: `pnpm --filter tma typecheck` OK; `pnpm --filter tma test` OK (67/67, including 5 new); `pnpm --filter tma lint` OK (0 errors, 13 pre-existing console warnings in untouched code).
+- Blockers: None. `BottomButton` integration follows the same pattern as `expense-filter-page` (relies on `TmaPageShell` mount-effect ordering).
+- Next steps: Re-push the PR branch; commit fixes when user requests.
+
+## 2026-06-17 — TMA household invitation via Telegram Mini App deep links
+
+- Who: MiniMax-M3 (orchestrator) + 7 parallel fixers
+- Summary: Built the household invitation flow in the TMA. Chosen mechanism: Mini App deep links `https://t.me/<bot>?startapp=<token>` because they open the TMA directly with zero bot interaction and deliver the token through `initData.start_param`. The dialog offers two share affordances — `shareURL` (Telegram native chat picker) and clipboard copy as fallback. Recipients are routed to `/invitations/:token` on cold open via a `useInvitationDeepLinkRedirect` hook wired into RootLayout. Backend invitations were already complete; this feature is TMA-only.
+- Files changed: New `apps/tma/src/features/invitations/` folder (types, API, hooks, components/invite-household-dialog.tsx, pages/accept-invitation-page.tsx, index barrel); `apps/tma/src/lib/constants/routes.ts` (`invitations` path + `getInvitationAcceptPath`); `apps/tma/src/app/router/app-router.tsx` (lazy route); `apps/tma/src/app/router/root-layout.tsx` (deep-link redirect); `apps/tma/src/features/households/pages/household-detail-page.tsx` (admin invite section); `apps/tma/src/lib/i18n/locales/vi.json` (invitations section).
+- Verification: `./init.sh lint` OK; `./init.sh typecheck` OK (fixed shareURL `.catch()` error by wrapping in `Promise.resolve()`); `./init.sh test` OK; `pnpm --filter tma build` OK; full `./init.sh` returned `Done!`. New feature recorded as `feat-104`.
+- Blockers: None. Requires `VITE_TELEGRAM_BOT_USERNAME` env var; dialog falls back to plain invite path when missing.
+- Next steps: Set `VITE_TELEGRAM_BOT_USERNAME` in `apps/tma/.env.local` to enable deep-link sharing; optional follow-up: bot-side `/start <token>` fallback for users without the Mini App installed.
+
 ## 2026-06-17 — TMA version display label on home, not-found, and fatal-launch screens
 
 - Who: Codex

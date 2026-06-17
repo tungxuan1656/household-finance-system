@@ -2,10 +2,13 @@ import { backButton, miniApp } from '@tma.js/sdk'
 import { useEffect, useMemo } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
+import { useInvitationDeepLinkRedirect } from '@/features/invitations/hooks/use-invitation-deep-link-redirect'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { impact } from '@/lib/telegram/haptics'
 
 export default function RootLayout() {
+  useInvitationDeepLinkRedirect()
+
   const navigate = useNavigate()
   const location = useLocation()
   const isHome = useMemo(

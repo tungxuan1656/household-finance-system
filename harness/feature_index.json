@@ -564,6 +564,11 @@
       "id": "feat-103",
       "name": "TMA app version label on home, 404, and fatal-launch screens (1.0.1 release marker)",
       "status": "done"
+    },
+    {
+      "id": "feat-104",
+      "name": "TMA household invitation via Telegram Mini App deep links",
+      "status": "done"
     }
   ]
 }

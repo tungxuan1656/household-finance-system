@@ -19,6 +19,7 @@ import {
 } from '@/components/ui'
 import { useAuth } from '@/features/auth/auth-provider'
 import { HomeRecentExpensesSection } from '@/features/home/components/home-recent-expenses-section'
+import { InviteHouseholdDialog } from '@/features/invitations/components/invite-household-dialog'
 import { usePeriodStore } from '@/features/period/store'
 
 import { useHouseholdDetailQuery, useHouseholdMembersQuery } from '../api'
@@ -50,6 +51,7 @@ export const HouseholdDetailPage = () => {
       (location.state as { feedback?: HouseholdPageFeedback } | null)
         ?.feedback ?? null,
   )
+  const [showInviteDialog, setShowInviteDialog] = useState(false)
 
   const household = householdQuery.data
   const members = membersQuery.data?.items ?? []
@@ -239,6 +241,35 @@ export const HouseholdDetailPage = () => {
                 </Card>
               </DataState>
             </Section>
+
+            {isAdmin ? (
+              <Section>
+                <SectionHeader
+                  action={
+                    <Button
+                      size='sm'
+                      variant='primary'
+                      onClick={() => {
+                        setShowInviteDialog((prev) => !prev)
+                      }}>
+                      {showInviteDialog
+                        ? t('common.close')
+                        : t('households.detail.inviteAction')}
+                    </Button>
+                  }
+                  title={t('households.detail.sectionInvite')}
+                />
+                {showInviteDialog ? (
+                  <InviteHouseholdDialog
+                    householdId={id}
+                    householdName={household.name}
+                    onClose={() => {
+                      setShowInviteDialog(false)
+                    }}
+                  />
+                ) : null}
+              </Section>
+            ) : null}
           </>
         ) : null}
       </DataState>

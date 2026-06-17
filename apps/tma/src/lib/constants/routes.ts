@@ -14,6 +14,7 @@ export const TMA_PATHS = {
   groupsNew: '/groups/new',
   budgets: '/budgets',
   budgetsNew: '/budgets/new',
+  invitations: '/invitations',
   fatal: '/fatal',
 } as const
 
@@ -34,3 +35,6 @@ export const getGroupDetailPath = (groupId: string): string =>
 
 export const getBudgetDetailPath = (budgetId: string): string =>
   `${TMA_PATHS.budgets}/${budgetId}`
+
+export const getInvitationAcceptPath = (token: string): string =>
+  `${TMA_PATHS.invitations}/${token}`
