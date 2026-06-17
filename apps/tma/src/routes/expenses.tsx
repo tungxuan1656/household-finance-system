@@ -31,6 +31,7 @@ export const ExpensesPage = () => {
       ...(filter.householdId != null
         ? { household_id: filter.householdId }
         : {}),
+      ...(filter.groupId != null ? { group_ids: [filter.groupId] } : {}),
       ...(filter.categoryKey != null
         ? { category_key: filter.categoryKey }
         : {}),

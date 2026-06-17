@@ -49,9 +49,10 @@ describe('useExpenseListFilterStore', () => {
   it('counts every independent filter dimension', () => {
     getState().setFilter({ dateFrom: 1, dateTo: 2 })
     getState().setFilter({ householdId: 'hh-1' })
+    getState().setFilter({ groupId: 'group-1' })
     getState().setFilter({ categoryKey: 'food' })
 
-    expect(countActiveExpenseListFilters(getState().filter)).toBe(3)
+    expect(countActiveExpenseListFilters(getState().filter)).toBe(4)
   })
 
   it('reset returns the filter to the default state', () => {

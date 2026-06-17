@@ -8,6 +8,7 @@ export interface ExpenseListFilter {
   dateFrom?: number
   dateTo?: number
   householdId?: string
+  groupId?: string
   categoryKey?: CategoryKey
   sort: ExpenseListSort
 }
@@ -40,6 +41,7 @@ export const countActiveExpenseListFilters = (
   let count = 0
   if (filter.dateFrom != null || filter.dateTo != null) count += 1
   if (filter.householdId != null) count += 1
+  if (filter.groupId != null) count += 1
   if (filter.categoryKey != null) count += 1
 
   return count
