@@ -7,6 +7,10 @@ AUTH_AUDIENCE="household-finance-api"
 ACCESS_TOKEN_TTL_SECONDS="86400"
 REFRESH_TOKEN_TTL_SECONDS="2592000"
 
+# Rate limit (auth endpoints). Set RATE_LIMIT_ENABLED="true" to re-enable.
+# RATE_LIMIT_ENABLED="false"
+# RATE_LIMIT_MAX_REQUESTS="10"
+
 # Firebase identity provider settings
 FIREBASE_PROJECT_ID="household-finance-local"
 FIREBASE_JWKS_URL="https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"

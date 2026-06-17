@@ -27,6 +27,8 @@ export const viMessages = {
   'errors.resourceNotFound': 'Không tìm thấy tài nguyên.',
   'errors.conflict': 'Dữ liệu đã tồn tại.',
   'errors.rollbackFailed': 'Không thể khôi phục dữ liệu sau lỗi.',
+  'errors.tooManyRequests':
+    'Bạn đã gửi quá nhiều yêu cầu, vui lòng thử lại sau ít phút.',
   'validation.invalidType': 'Kiểu dữ liệu không hợp lệ.',
   'validation.invalidValue': 'Giá trị không hợp lệ.',
   'validation.invalidFormat': 'Định dạng không hợp lệ.',

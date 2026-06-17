@@ -44,6 +44,8 @@
     "AUTH_ALLOW_INSECURE_TEST_TOKENS": "false",
     "AUTH_AUDIENCE": "household-finance-api",
     "AUTH_ISSUER": "https://household-finance.local",
+    "RATE_LIMIT_ENABLED": "false",
+    "RATE_LIMIT_MAX_REQUESTS": "10",
     "REFRESH_TOKEN_TTL_SECONDS": "2592000",
   },
   /**
