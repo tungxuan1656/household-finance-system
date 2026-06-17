@@ -36,6 +36,12 @@ Canonical leaf standards map. Use this index to choose exact rule doc. Do not re
 | Backend tests | `backend/testing-pattern.md` |
 | Workers/D1/Wrangler | `backend/cloudflare-workers.md` |
 
+## Operations
+
+| Need | Doc |
+|------|-----|
+| Deploy worker + TMA flow | `../operations/index.md` |
+
 ## Rules
 
 - One rule area = one canonical doc.

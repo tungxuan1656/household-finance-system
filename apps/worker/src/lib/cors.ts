@@ -3,6 +3,7 @@ const LOOPBACK_HOSTNAMES: Set<string> = new Set([
   '127.0.0.1',
   '::1',
   'localhost',
+  '100.116.7.43',
 ])
 
 // normalizeHostname strips IPv6 bracket notation so '::1' matches the loopback hostname '::1'.

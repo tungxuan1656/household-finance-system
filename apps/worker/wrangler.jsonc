@@ -15,8 +15,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "household-finance-main",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_name": "household-finance-system",
+      "database_id": "dc2c230e-ba29-4fac-b300-5356a22d9d4b",
     },
   ],
   /**
