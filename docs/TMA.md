@@ -30,4 +30,5 @@ TMA router. Read this for `apps/tma` work, then read only exact TMA leaf docs ne
 
 - Verify TMA docs/harness changes directly when the work is docs-only.
 - Use `./init.sh <param>` instead of `pnpm <cmd>` for repo verification.
+- For `apps/tma`, never add component/page render tests. Prefer util/api/store/helper unit tests plus browser/manual evidence for UI behavior.
 - Run full `./init.sh` only at final verification.
