@@ -10,7 +10,7 @@
   "observability": {
     "enabled": true,
   },
-  "workers_dev": false,
+  "workers_dev": true,
   "preview_urls": false,
   "upload_source_maps": true,
   "compatibility_flags": ["nodejs_compat"],
