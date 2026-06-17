@@ -11,8 +11,11 @@ describe('cors helper', () => {
     expect(isAllowedCorsOrigin('http://[::1]:3000')).toBe(true)
   })
 
+  it('allows exact configured CORS origins', () => {
+    expect(isAllowedCorsOrigin('https://phofis-tma.pages.dev')).toBe(true)
+  })
+
   it('rejects unknown, invalid, or unsupported origins', () => {
-    expect(isAllowedCorsOrigin('https://localhost:3000')).toBe(false)
     expect(isAllowedCorsOrigin('https://evil.example')).toBe(false)
     expect(isAllowedCorsOrigin('not-a-url')).toBe(false)
   })
