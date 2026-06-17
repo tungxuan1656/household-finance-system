@@ -73,7 +73,7 @@ const applyBaseBackground = (backgroundColor: string): void => {
   ROOT.style.setProperty('--tma-base-bg', backgroundColor)
 }
 
-export const bindTheme = (fallbackBg: string = DEFAULT_TMA_BG): void => {
+export const bindTheme = (backgroundColor: string = DEFAULT_TMA_BG): void => {
   // themeParams and miniApp should already be mounted by initTelegram
   if (!unsubscribeMiniApp && miniApp.bindCssVars.isAvailable()) {
     unsubscribeMiniApp = miniApp.bindCssVars()
@@ -83,9 +83,7 @@ export const bindTheme = (fallbackBg: string = DEFAULT_TMA_BG): void => {
     unsubscribeTheme = themeParams.bindCssVars()
   }
 
-  // Use Telegram theme bg color if available, otherwise fallback
-  const themeBg = themeParams.isMounted() ? themeParams.bgColor() : undefined
-  applyBaseBackground(themeBg ?? fallbackBg)
+  applyBaseBackground(backgroundColor)
   syncViewportInsets()
 }
 

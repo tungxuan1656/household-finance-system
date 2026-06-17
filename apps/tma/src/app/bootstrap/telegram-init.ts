@@ -54,17 +54,14 @@ export const initTelegram = (): (() => void) => {
     mainButton.mount()
   }
 
-  // 4. Bind Telegram theme to CSS variables (must come AFTER mount).
-  // Uses actual Telegram theme bg color if available, falling back to DEFAULT_TMA_BG.
-  bindTheme()
+  // 4. Bind Telegram theme to CSS variables (must come AFTER mount)
+  bindTheme(DEFAULT_TMA_BG)
 
   // 4b. Set the native background so route transitions never flash black.
   // Must run after miniApp.mount() and after themeParams are bound.
-  // Use the actual theme bg color to match the app background.
-  const bgColor = themeParams.bgColor() ?? DEFAULT_TMA_BG
-  miniApp.setBgColor.ifAvailable(bgColor)
-  miniApp.setHeaderColor.ifAvailable(bgColor)
-  miniApp.setBottomBarColor.ifAvailable(bgColor)
+  miniApp.setBgColor.ifAvailable(DEFAULT_TMA_BG)
+  miniApp.setHeaderColor.ifAvailable(DEFAULT_TMA_BG)
+  miniApp.setBottomBarColor.ifAvailable(DEFAULT_TMA_BG)
 
   // 5. Mount viewport, expand, try fullscreen, then signal ready.
   // This keeps Telegram's placeholder visible until the app has attempted
