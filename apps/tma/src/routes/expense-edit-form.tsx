@@ -16,6 +16,7 @@ import type { EditExpenseDraft } from '@/features/expenses/store'
 import { useEditExpenseStore } from '@/features/expenses/store'
 import type { SourceKey } from '@/features/home/types'
 import { getExpenseEditCategoryPath } from '@/lib/constants/routes'
+import { currencyDisplaySymbol } from '@/lib/formatters'
 import { selection } from '@/lib/telegram/haptics'
 import { EditSelectRow } from '@/routes/expense-edit-select-row'
 
@@ -77,7 +78,7 @@ export const ExpenseEditForm = ({
             .000
           </span>
           <span className='text-xs font-semibold text-tma-text-muted'>
-            {currencyCode}
+            {currencyDisplaySymbol(currencyCode)}
           </span>
         </label>
       </Card>

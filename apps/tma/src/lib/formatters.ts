@@ -51,3 +51,22 @@ export const parseAmountInput = (value: string): number => {
 
   return digits.length > 0 ? Number(digits) : 0
 }
+
+export const MINOR_MULTIPLIER = 1000
+
+export const minorFromRaw = (raw: number): number => raw * MINOR_MULTIPLIER
+
+export const rawFromMinor = (minor: number): number => {
+  if (!Number.isFinite(minor) || minor <= 0) return 0
+
+  return Math.floor(minor / MINOR_MULTIPLIER)
+}
+
+export const minorFromInput = (value: string): number | null => {
+  const raw = parseAmountInput(value)
+
+  return raw > 0 ? minorFromRaw(raw) : null
+}
+
+export const currencyDisplaySymbol = (code: string): string =>
+  code === 'VND' ? '₫' : code
