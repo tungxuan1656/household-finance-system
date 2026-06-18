@@ -1,3 +1,4 @@
+export * from './expense-summary-card'
 export * from './expenses'
 export * from './households'
 export * from './shortcuts'

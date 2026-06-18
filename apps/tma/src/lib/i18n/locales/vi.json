@@ -109,6 +109,10 @@
     "openFilterAria": "Mở bộ lọc",
     "filterLabel": "Lọc",
     "filterCount": "Lọc {{count}}",
+    "summary": {
+      "title": "Tổng chi theo bộ lọc",
+      "count": "{{count}} khoản"
+    },
     "filter": {
       "title": "Lọc chi tiêu",
       "reset": "Đặt lại tất cả",
