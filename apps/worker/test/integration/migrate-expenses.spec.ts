@@ -410,4 +410,49 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     expect(created).toBeDefined()
     expect(created!.title).toHaveLength(200)
   })
+
+  it('Batch create 60 entries (exceeds old per-call subrequest budget)', async () => {
+    const auth = await getAuth(TEST_TOKEN)
+
+    // Build 60 distinct entries across 3 date keys
+    const transactions: Record<string, Record<string, unknown>> = {}
+    for (let i = 0; i < 60; i++) {
+      const dateKey = `2025-11-${String(Math.floor(i / 20) + 1).padStart(2, '0')}`
+      if (!transactions[dateKey]) {
+        transactions[dateKey] = {}
+      }
+      const txId = `tx-batch-${i}`
+      transactions[dateKey][txId] = {
+        categoryId: 0,
+        date: dateKey.replace(/-/g, ''),
+        money: -(i + 1) * 1000,
+        note: `Batch entry ${i}`,
+      }
+    }
+
+    const { response, payload } = await postMigrateAndParse(
+      {
+        dryRun: false,
+        transactions,
+      },
+      auth.accessToken,
+    )
+
+    expect(response.status).toBe(200)
+    expect(payload.data.created).toBe(60)
+    expect(payload.data.errors).toHaveLength(0)
+    expect(payload.data.skipped).toBe(0)
+    expect(payload.data.dryRun).toBe(false)
+
+    // Verify entries were persisted via the list endpoint (limit=100 to cover all batch entries)
+    const { payload: listPayload } = await getExpensesList<{
+      items: Array<{ title: string }>
+    }>(auth.accessToken, 'limit=100')
+
+    const entry0 = findExpenseByTitle(listPayload.data.items, 'Batch entry 0')
+    expect(entry0).toBeDefined()
+
+    const entry59 = findExpenseByTitle(listPayload.data.items, 'Batch entry 59')
+    expect(entry59).toBeDefined()
+  })
 })

@@ -98,6 +98,58 @@ export const createExpense = async (
   return mapRow(row)
 }
 
+/**
+ * Batch-insert multiple expenses in a single D1 batch call.
+ * This counts as 1 subrequest regardless of statement count.
+ * Returns D1Result[] aligned with the input array order.
+ */
+export const createExpensesBatch = async (
+  db: D1Database,
+  inputs: ReadonlyArray<CreateExpenseInput>,
+): Promise<D1Result[]> => {
+  if (inputs.length === 0) return []
+
+  const now = Date.now()
+
+  const stmts = inputs.map((input) =>
+    db
+      .prepare(
+        `INSERT INTO expenses (
+          id,
+          household_id,
+          spent_by_user_id,
+          category_key,
+          source_key,
+          category_id,
+          amount_minor,
+          currency_code,
+          occurred_at,
+          title,
+          note,
+          created_at,
+          updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .bind(
+        input.id,
+        input.householdId,
+        input.spentByUserId,
+        input.categoryKey,
+        input.sourceKey,
+        input.categoryId ?? null,
+        input.amountMinor,
+        input.currencyCode,
+        input.occurredAt,
+        input.title,
+        input.note ?? null,
+        now,
+        now,
+      ),
+  )
+
+  return db.batch(stmts)
+}
+
 // Fetch expense by ID without access check.
 // The handler is responsible for checking access rights.
 export const findExpenseByIdRaw = async (

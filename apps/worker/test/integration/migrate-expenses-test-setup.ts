@@ -43,8 +43,11 @@ export async function postMigrateAndParse(
 // GET /api/v1/expenses list
 export async function getExpensesList<
   T = { items: Array<Record<string, unknown>> },
->(accessToken: string) {
-  const response = await SELF.fetch('https://example.com/api/v1/expenses', {
+>(accessToken: string, queryString?: string) {
+  const url = queryString
+    ? `https://example.com/api/v1/expenses?${queryString}`
+    : 'https://example.com/api/v1/expenses'
+  const response = await SELF.fetch(url, {
     method: 'GET',
     headers: { authorization: `Bearer ${accessToken}` },
   })
