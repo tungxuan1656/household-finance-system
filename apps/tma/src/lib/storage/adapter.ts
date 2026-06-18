@@ -1,3 +1,5 @@
+import type { AuthenticatedUser } from '@/lib/auth/api'
+
 import { STORAGE_KEYS } from './keys'
 
 export interface SecureStorageLike {
@@ -13,10 +15,34 @@ interface WithIsSupported {
   isSupported?: () => boolean
 }
 
+/**
+ * Full session blob persisted in SecureStorage.
+ *
+ * Security note: this overrides the locked default "access token memory-only"
+ * (docs/references/frontend/tma/state-and-storage-pattern.md:43 permits an
+ * explicit security-review override). The access token is persisted in
+ * encrypted device storage (Telegram SecureStorage, Mini Apps v9.0+) — never
+ * in localStorage or DeviceStorage. Revocation is detected when the access
+ * token expires or a 401 is received, not instantly on cold open.
+ *
+ * `telegramUserId` is a cache-invalidation key (Telegram account id), NOT an
+ * authenticated identity. It prevents cross-user session reuse on shared
+ * devices. The server remains the source of truth for identity via JWT
+ * signature verification and refresh-token ownership.
+ */
+export interface StoredSession {
+  telegramUserId: number
+  user: AuthenticatedUser
+  accessToken: string
+  refreshToken: string
+  accessTokenExpiresAt: number
+  refreshTokenExpiresAt: number
+}
+
 export interface AuthStorage {
-  getRefreshToken: () => Promise<string | null>
-  setRefreshToken: (token: string) => Promise<void>
-  clearRefreshToken: () => Promise<void>
+  getSession: () => Promise<StoredSession | null>
+  setSession: (session: StoredSession) => Promise<void>
+  clearSession: () => Promise<void>
   isPersistent: () => boolean
 }
 
@@ -50,6 +76,11 @@ const withTimeout = async <T>(
   }
 }
 
+/**
+ * Probes isSupported across multiple SDK shapes (legacy per-method, pre-v9,
+ * v9+ top-level). Defaults to true optimistically — failures surface via
+ * read/write timeouts instead of a false negative during boot.
+ */
 const checkIsSupported = (
   storage: SecureStorageLike | null | undefined,
 ): boolean => {
@@ -133,6 +164,14 @@ const deleteSecure = async (
   }
 }
 
+const parseSession = (raw: string): StoredSession | null => {
+  try {
+    return JSON.parse(raw) as StoredSession
+  } catch {
+    return null
+  }
+}
+
 export const createAuthStorage = (
   options: CreateAuthStorageOptions = {},
 ): AuthStorage => {
@@ -157,30 +196,29 @@ export const createAuthStorage = (
     )
   }
 
-  const getRefreshToken = async (): Promise<string | null> => {
+  const getSession = async (): Promise<StoredSession | null> => {
     const hadSecureStorage = storageRef !== null
-    const secure = await readSecure(
-      storageRef,
-      STORAGE_KEYS.refreshToken,
-      timeoutMs,
-    )
+    const secure = await readSecure(storageRef, STORAGE_KEYS.session, timeoutMs)
 
     if (secure === undefined && hadSecureStorage) {
       noteFallback()
     }
 
-    if (secure !== undefined && secure !== null) {
-      return secure
+    if (secure != null) {
+      return parseSession(secure)
     }
 
-    return memoryStore.get(STORAGE_KEYS.refreshToken) ?? null
+    const memory = memoryStore.get(STORAGE_KEYS.session)
+
+    return memory ? parseSession(memory) : null
   }
 
-  const setRefreshToken = async (token: string): Promise<void> => {
+  const setSession = async (session: StoredSession): Promise<void> => {
+    const json = JSON.stringify(session)
     const ok = await writeSecure(
       storageRef,
-      STORAGE_KEYS.refreshToken,
-      token,
+      STORAGE_KEYS.session,
+      json,
       timeoutMs,
     )
 
@@ -188,17 +226,13 @@ export const createAuthStorage = (
       noteFallback()
     }
 
-    memoryStore.set(STORAGE_KEYS.refreshToken, token)
+    memoryStore.set(STORAGE_KEYS.session, json)
   }
 
-  const clearRefreshToken = async (): Promise<void> => {
-    memoryStore.delete(STORAGE_KEYS.refreshToken)
+  const clearSession = async (): Promise<void> => {
+    memoryStore.delete(STORAGE_KEYS.session)
 
-    const ok = await deleteSecure(
-      storageRef,
-      STORAGE_KEYS.refreshToken,
-      timeoutMs,
-    )
+    const ok = await deleteSecure(storageRef, STORAGE_KEYS.session, timeoutMs)
 
     if (!ok && storageRef !== null) {
       noteFallback()
@@ -206,9 +240,9 @@ export const createAuthStorage = (
   }
 
   return {
-    getRefreshToken,
-    setRefreshToken,
-    clearRefreshToken,
+    getSession,
+    setSession,
+    clearSession,
     isPersistent: () => persistent,
   }
 }

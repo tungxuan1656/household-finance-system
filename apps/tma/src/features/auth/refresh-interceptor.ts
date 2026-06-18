@@ -1,6 +1,5 @@
 import type { AuthApiClient, AuthenticatedUser } from '@/lib/auth/api'
-import { AuthApiError } from '@/lib/auth/api'
-import type { AuthStorage } from '@/lib/storage/adapter'
+import type { AuthStorage, StoredSession } from '@/lib/storage/adapter'
 
 import { useAuthStore } from './store'
 
@@ -20,16 +19,17 @@ let currentInterceptor: RefreshInterceptor | null = null
 const REFRESH_PATH = '/api/v1/auth/refresh'
 const PROVIDER_EXCHANGE_PATH = '/api/v1/auth/provider/exchange'
 
+const extractPath = (input: string): string => {
+  if (!input.startsWith('http')) return input
+  try {
+    return new URL(input).pathname
+  } catch {
+    return input
+  }
+}
+
 const isRefreshOrExchange = (input: string): boolean => {
-  const path = input.startsWith('http')
-    ? (() => {
-        try {
-          return new URL(input).pathname
-        } catch {
-          return input
-        }
-      })()
-    : input
+  const path = extractPath(input)
 
   return path.endsWith(REFRESH_PATH) || path.endsWith(PROVIDER_EXCHANGE_PATH)
 }
@@ -111,11 +111,15 @@ export class RefreshInterceptor {
       return this.inFlightRefresh
     }
 
-    const refreshToken = useAuthStore.getState().refreshToken
+    const auth = useAuthStore.getState()
 
-    if (!refreshToken) {
+    if (!auth.refreshToken) {
       return null
     }
+
+    const refreshToken = auth.refreshToken
+    const telegramUserId = auth.telegramUserId
+    const user = auth.user
 
     this.inFlightRefresh = (async () => {
       try {
@@ -125,16 +129,26 @@ export class RefreshInterceptor {
           accessToken: refreshed.accessToken,
           accessTokenExpiresIn: refreshed.accessTokenExpiresIn,
           refreshToken: refreshed.refreshToken,
+          refreshTokenExpiresIn: refreshed.refreshTokenExpiresIn,
         })
 
-        await this.options.storage.setRefreshToken(refreshed.refreshToken)
+        if (telegramUserId !== null && user) {
+          const updatedSession: StoredSession = {
+            telegramUserId,
+            user,
+            accessToken: refreshed.accessToken,
+            refreshToken: refreshed.refreshToken,
+            accessTokenExpiresAt:
+              Date.now() + refreshed.accessTokenExpiresIn * 1000,
+            refreshTokenExpiresAt:
+              Date.now() + refreshed.refreshTokenExpiresIn * 1000,
+          }
 
-        return refreshed.accessToken
-      } catch (error) {
-        if (error instanceof AuthApiError) {
-          return null
+          await this.options.storage.setSession(updatedSession)
         }
 
+        return refreshed.accessToken
+      } catch {
         return null
       } finally {
         this.inFlightRefresh = null

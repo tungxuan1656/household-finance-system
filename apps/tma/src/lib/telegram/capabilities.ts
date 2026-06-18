@@ -2,6 +2,7 @@ import {
   backButton,
   hapticFeedback,
   mainButton,
+  secureStorage,
   themeParams,
 } from '@tma.js/sdk'
 
@@ -13,9 +14,10 @@ type Capability =
   | 'backButton'
   | 'mainButton'
 
-const detect = (capability: Capability): boolean => {
+export const isSupported = (capability: Capability): boolean => {
   switch (capability) {
     case 'secureStorage':
+      return secureStorage.setItem.isAvailable()
     case 'deviceStorage':
       return false
     case 'hapticFeedback':
@@ -28,6 +30,3 @@ const detect = (capability: Capability): boolean => {
       return mainButton.isMounted()
   }
 }
-
-export const isSupported = (capability: Capability): boolean =>
-  detect(capability)
