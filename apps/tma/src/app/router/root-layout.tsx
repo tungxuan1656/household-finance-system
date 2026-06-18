@@ -15,9 +15,25 @@ export default function RootLayout() {
     () => location.pathname === TMA_PATHS.root,
     [location.pathname],
   )
+  // The invitation accept route is a deep-link entry point with no
+  // in-app history. Per native-ui-and-navigation-pattern.md, root
+  // routes with no meaningful back target must own their BackButton
+  // (the page closes the mini app instead of navigating back).
+  const isInvitationAcceptRoute = useMemo(
+    () =>
+      location.pathname === TMA_PATHS.invitations ||
+      location.pathname.startsWith(`${TMA_PATHS.invitations}/`),
+    [location.pathname],
+  )
 
   useEffect(() => {
     if (!backButton.isSupported()) {
+      return
+    }
+
+    if (isInvitationAcceptRoute) {
+      // AcceptInvitationPage mounts its own BackButton that closes the
+      // mini app. Do not bind a navigate(-1) handler at the root.
       return
     }
 
@@ -37,7 +53,7 @@ export default function RootLayout() {
       offClick()
       backButton.hide()
     }
-  }, [navigate, isHome])
+  }, [navigate, isHome, isInvitationAcceptRoute])
 
   return <Outlet />
 }
