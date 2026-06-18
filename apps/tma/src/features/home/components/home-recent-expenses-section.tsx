@@ -17,7 +17,7 @@ type HomeRecentExpensesSectionProps = {
 export const HomeRecentExpensesSection = ({
   groupId,
   householdId,
-  limit = 10,
+  limit = 6,
   showHouseholdLabel = true,
   title: externalTitle,
   viewAllHref = TMA_PATHS.expenses,

@@ -1,7 +1,12 @@
 import { vi } from 'vitest'
-import type { AuthApiClient, ExchangeProviderResponse, RefreshSessionResponse } from '@/lib/auth/api'
-import { useAuthStore } from '@/features/auth/store'
+
 import type { AuthBootstrapDeps } from '@/features/auth/bootstrap-deps'
+import { useAuthStore } from '@/features/auth/store'
+import type {
+  AuthApiClient,
+  ExchangeProviderResponse,
+  RefreshSessionResponse,
+} from '@/lib/auth/api'
 import type { StoredSession } from '@/lib/storage/adapter'
 
 export const resetStore = () => {

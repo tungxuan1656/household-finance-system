@@ -91,7 +91,8 @@
       "household": "Gia đình",
       "group": "Nhóm",
       "budget": "Ngân sách"
-    }
+    },
+    "recentExpensesTitle": "Chi tiêu"
   },
   "homePage": {
     "title": "Trang chủ"

@@ -11,10 +11,12 @@ import { HomeRecentExpensesSection } from '@/features/home/components/home-recen
 import { HomeShortcutsSection } from '@/features/home/components/home-shortcuts-section'
 import { resolveUserName } from '@/features/home/presentation'
 import { PeriodChipLink } from '@/features/period/components/period-chip-link'
+import { usePeriodStore } from '@/features/period/store'
 
 export const HomePage = () => {
   const { user } = useAuth()
   const { t } = useTranslation()
+  const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
   const userName = resolveUserName(
     t,
     user?.displayName ?? null,
@@ -28,7 +30,11 @@ export const HomePage = () => {
       <FinanceSummaryCard showBudgetPeriodContext showPeriodChip={false} />
       <HomeShortcutsSection />
       <HouseholdPreviewCarousel />
-      <HomeRecentExpensesSection />
+      <HomeRecentExpensesSection
+        dateFrom={selectedPeriod.dateFrom}
+        dateTo={selectedPeriod.dateTo}
+        title={t('home.recentExpensesTitle')}
+      />
       <div className='mt-8'>
         <AppVersionLabel />
       </div>
