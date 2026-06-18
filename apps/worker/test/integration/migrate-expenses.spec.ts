@@ -143,7 +143,7 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     )
   })
 
-  it('Skip blank note', async () => {
+  it('Imports blank note as empty title (no longer skipped)', async () => {
     const auth = await getAuth(TEST_TOKEN)
     const { response, payload } = await postMigrateAndParse(
       {
@@ -163,8 +163,9 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     )
 
     expect(response.status).toBe(200)
-    expect(payload.data.created).toBe(0)
-    expect(payload.data.skippedBreakdown.blankNote).toBe(1)
+    expect(payload.data.created).toBe(1)
+    expect(payload.data.skipped).toBe(0)
+    expect(payload.data.skippedBreakdown.blankNote).toBeUndefined()
   })
 
   it('Invalid date', async () => {

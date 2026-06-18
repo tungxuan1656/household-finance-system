@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-06-18 — Worker migrate-expenses: import blank-note entries as empty-title expenses
+
+- Who: MiniMax-M3 (orchestrator, inline execution)
+- Summary: Removed the `blank note` skip branch from the migrate-expenses handler so entries with blank/whitespace-only notes are imported with an empty title (DB column is `title TEXT NOT NULL`; null cannot be passed, empty string is allowed). Dropped the now-unused `blankNote` counter from `skippedBreakdown` to keep the result contract honest. Other skip reasons (income, zero, invalid date, unknown category, non-expense category) and the 200-char title cap are unchanged. Rewrote the matching integration test to assert the new behavior. Net effect on the 2069-entry `resources/transactions-peronal.json` dry-run: `skipped` should drop from 56 to 45, with 11 more entries created under the `bank-transfer` sourceKey.
+- Files changed: `apps/worker/src/handlers/migrate/migrate-expenses.ts` (removed blank-note skip + counter init); `apps/worker/test/integration/migrate-expenses.spec.ts` (updated test); `harness/feature_index.json`, `harness/features/feat-107.json` (new), `harness/progress.md`.
+- Verification: `./init.sh typecheck` OK; `./init.sh lint` OK; `./init.sh test` OK (81 files / 428 tests); full `./init.sh` returned `Done!`.
+- Blockers: None.
+- Next steps: Re-run the dry-run against the remote worker to confirm the new breakdown, then re-run the actual migration (drop `--dry-run`) to import the 11 additional blank-note entries as empty-title expenses. Commit when user requests.
+
 ## 2026-06-18 — Backend migrate-expenses endpoint for external transaction import
 
 - Who: GLM-5.2 (orchestrator) + fixer lane

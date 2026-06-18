@@ -133,7 +133,6 @@ export const migrateExpensesHandler = async (
     income: 0,
     zero: 0,
     nonExpenseCategory: 0,
-    blankNote: 0,
     invalidDate: 0,
     unknownCategory: 0,
     error: 0,
@@ -210,15 +209,11 @@ export const migrateExpensesHandler = async (
         continue
       }
 
-      // Validate note as title
-      const title = tx.note.trim()
-      if (title.length === 0) {
-        skipped++
-        skippedBreakdown.blankNote++
-        continue
-      }
-
-      const finalTitle = title.length > 200 ? title.slice(0, 200) : title
+      // Use trimmed note as title. Empty/blank is allowed (DB requires
+      // non-null, so we coerce to '' when blank).
+      const trimmedNote = tx.note.trim()
+      const finalTitle =
+        trimmedNote.length > 200 ? trimmedNote.slice(0, 200) : trimmedNote
 
       // Convert to minor units
       const amount = Math.abs(tx.money)
