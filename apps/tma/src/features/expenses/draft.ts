@@ -1,4 +1,5 @@
 import type { ExpenseDTO } from '@/features/home/types'
+import { rawFromMinor } from '@/lib/formatters'
 
 import type { EditExpenseDraft } from './store'
 
@@ -7,7 +8,7 @@ export const createEditExpenseDraft = (
 ): EditExpenseDraft => ({
   id: expense.id,
   title: expense.title,
-  amount: expense.amountMinor / 100,
+  amount: rawFromMinor(expense.amountMinor),
   occurredAt: expense.occurredAt,
   categoryKey: expense.categoryKey,
   sourceKey: expense.sourceKey,

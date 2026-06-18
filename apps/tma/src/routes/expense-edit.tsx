@@ -22,7 +22,11 @@ import {
 } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { getExpenseDetailPath } from '@/lib/constants/routes'
-import { formatAmountInput, parseAmountInput } from '@/lib/formatters'
+import {
+  formatAmountInput,
+  minorFromRaw,
+  parseAmountInput,
+} from '@/lib/formatters'
 import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
 import { impact, notification } from '@/lib/telegram/haptics'
 import { ExpenseEditForm } from '@/routes/expense-edit-form'
@@ -53,16 +57,22 @@ export const ExpenseEditPage = () => {
 
       setDraft(editDraft)
 
-      setAmountInput(
-        formatAmountInput(String(Math.round(editDraft.amount / 1000))),
-      )
+      setAmountInput(formatAmountInput(String(editDraft.amount)))
     }
   }, [expense, draft, setDraft])
+
+  // Reset edit draft store when leaving the page so a fresh visit hydrates
+  // the amount input from the expense instead of reusing a stale draft.
+  useEffect(() => {
+    return () => {
+      resetStore()
+    }
+  }, [resetStore])
 
   const handleAmountChange = (value: string) => {
     const formatted = formatAmountInput(value)
     setAmountInput(formatted)
-    updateDraft({ amount: parseAmountInput(formatted) * 1000 })
+    updateDraft({ amount: parseAmountInput(formatted) })
   }
 
   const activeCategory = getCategoryPresentation(
@@ -125,7 +135,7 @@ export const ExpenseEditPage = () => {
         id: draft.id,
         payload: {
           title: draft.title.trim(),
-          amount: draft.amount,
+          amount: minorFromRaw(draft.amount),
           categoryKey: draft.categoryKey,
           sourceKey: draft.sourceKey,
           occurredAt: draft.occurredAt,

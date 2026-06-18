@@ -91,7 +91,8 @@
       "household": "Gia đình",
       "group": "Nhóm",
       "budget": "Ngân sách"
-    }
+    },
+    "recentExpensesTitle": "Chi tiêu"
   },
   "homePage": {
     "title": "Trang chủ"
@@ -108,6 +109,10 @@
     "openFilterAria": "Mở bộ lọc",
     "filterLabel": "Lọc",
     "filterCount": "Lọc {{count}}",
+    "summary": {
+      "title": "Tổng chi theo bộ lọc",
+      "count": "{{count}} khoản"
+    },
     "filter": {
       "title": "Lọc chi tiêu",
       "reset": "Đặt lại tất cả",
@@ -135,7 +140,7 @@
       "eyebrowCategory": "Danh mục",
       "eyebrowSource": "Nguồn tiền",
       "eyebrowSpace": "Không gian",
-      "eyebrowDateTime": "Ngày & giờ",
+      "eyebrowDate": "Ngày",
       "deleteConfirmTitle": "Xác nhận xóa",
       "deleteConfirmBody": "Bạn có chắc chắn muốn xóa khoản chi này? Thao tác này không thể hoàn tác.",
       "deleteForever": "Xóa vĩnh viễn",
@@ -143,7 +148,7 @@
       "deleteAction": "Xóa chi tiêu"
     },
     "edit": {
-      "title": "chi tiêu",
+      "title": "Sửa chi tiêu",
       "loading": "Đang tải biểu mẫu...",
       "save": "Lưu thay đổi",
       "fieldAmount": "Số tiền",
@@ -319,9 +324,8 @@
       "startDatePlaceholder": "Chọn ngày bắt đầu",
       "fieldEndDate": "Kết thúc",
       "endDatePlaceholder": "Chọn ngày kết thúc",
-      "fieldBudget": "Ngân sách sự kiện",
+      "fieldBudget": "Ngân sách",
       "budgetPlaceholder": "Ví dụ: 3.000.000",
-      "householdNote": "Admin mới tạo group gắn household. Không chọn = cá nhân.",
       "submitting": "Đang tạo...",
       "created": "Đã tạo group thành công.",
       "createError": "Không thể tạo group lúc này.",

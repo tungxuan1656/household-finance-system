@@ -584,6 +584,11 @@
       "id": "feat-107",
       "name": "Worker migrate-expenses: import blank-note entries as empty-title expenses",
       "status": "done"
+    },
+    {
+      "id": "feat-108",
+      "name": "TMA amount helper consolidation and currency display unify",
+      "status": "done"
     }
   ]
 }

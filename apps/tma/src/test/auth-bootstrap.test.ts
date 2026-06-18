@@ -4,6 +4,7 @@ import { runAuthBootstrap } from '@/features/auth/bootstrap-deps'
 import { useAuthStore } from '@/features/auth/store'
 import { AuthApiError } from '@/lib/auth/api'
 import type { StoredSession } from '@/lib/storage/adapter'
+
 import {
   buildApiClient,
   buildDeps,

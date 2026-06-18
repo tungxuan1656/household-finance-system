@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { ExpenseTimeline } from '@/components/finance'
+import { ExpenseSummaryCard, ExpenseTimeline } from '@/components/finance'
 import { FilterIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
@@ -67,6 +67,7 @@ export const ExpensesPage = () => {
 
   return (
     <TmaPageShell title={t('expenses.title')}>
+      <ExpenseSummaryCard expenses={expenses} />
       <div className='flex justify-end px-1 py-2'>
         <Button
           aria-label={t('expenses.openFilterAria')}

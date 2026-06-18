@@ -20,7 +20,13 @@ import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import type { SourceKey } from '@/features/home/types'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { formatAmountInput, parseAmountInput } from '@/lib/formatters'
+import {
+  currencyDisplaySymbol,
+  formatAmountInput,
+  minorFromRaw,
+  parseAmountInput,
+  rawFromMinor,
+} from '@/lib/formatters'
 import {
   hideBottomButton,
   setBottomButton,
@@ -41,7 +47,7 @@ export const AddExpenseDetailsPage = () => {
   const setDetails = useAddExpenseFlowStore((state) => state.setDetails)
 
   const [amountInput, setAmountInput] = useState(
-    draftAmount > 0 ? formatAmountInput(String(draftAmount / 1000)) : '',
+    draftAmount > 0 ? formatAmountInput(String(rawFromMinor(draftAmount))) : '',
   )
   const [sourceId, setSourceId] = useState<SourceKey | null>(draftSourceId)
   const [title, setTitle] = useState(draftTitle)
@@ -56,7 +62,7 @@ export const AddExpenseDetailsPage = () => {
     }
 
     notification('success')
-    setDetails({ amount: amount * 1000, sourceId, title: title.trim() })
+    setDetails({ amount: minorFromRaw(amount), sourceId, title: title.trim() })
     navigate(TMA_PATHS.expensesNewContext)
   })
 
@@ -153,7 +159,9 @@ export const AddExpenseDetailsPage = () => {
           <span className='font-mono text-3xl font-semibold text-tma-text-strong/80'>
             .000
           </span>
-          <span className='text-xs font-semibold text-tma-text-muted'>VND</span>
+          <span className='text-xs font-semibold text-tma-text-muted'>
+            {currencyDisplaySymbol('VND')}
+          </span>
         </label>
       </Section>
 

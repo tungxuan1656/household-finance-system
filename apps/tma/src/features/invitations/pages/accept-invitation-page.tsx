@@ -17,6 +17,7 @@ import {
   useInvitationPreviewQuery,
 } from '@/features/invitations/api/invitation'
 import { getHouseholdDetailPath } from '@/lib/constants/routes'
+import { formatDateLabel } from '@/lib/formatters'
 import {
   hideBottomButton,
   setBottomButton,
@@ -127,18 +128,6 @@ export const AcceptInvitationPage = () => {
   const toRoleLabel = (role: 'admin' | 'member'): string =>
     role === 'admin' ? t('invitations.roleAdmin') : t('invitations.roleMember')
 
-  const formatDate = (timestamp: number): string => {
-    const date = new Date(timestamp)
-
-    return date.toLocaleString(undefined, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
-
   if (!token) {
     return (
       <TmaPageShell title={t('invitations.acceptTitle')}>
@@ -191,7 +180,7 @@ export const AcceptInvitationPage = () => {
                     {t('invitations.expiresAt')}
                   </dt>
                   <dd className='m-0 text-sm font-semibold text-tma-text-strong'>
-                    {formatDate(preview.expiresAt)}
+                    {formatDateLabel(new Date(preview.expiresAt).toISOString())}
                   </dd>
                 </div>
               </dl>

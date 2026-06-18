@@ -1,0 +1,27 @@
+{
+  "id": "feat-108",
+  "name": "TMA amount helper consolidation and currency display unify",
+  "status": "done",
+  "description": "Consolidated the scattered VND thousand-shortcut logic in the TMA expense edit/add surfaces into a single shared helper module mirroring the web app's `dialog-amount-helper.ts`, and unified the currency display so the TMA shows the `₫` symbol instead of the raw `VND` text. Previously the `*1000` / `/1000` conversions and the `VND` literal were hardcoded across 4 files (`draft.ts`, `expense-edit.tsx`, `add-expense-details.tsx`, `expense-edit-form.tsx`), duplicating the web's pre-refactor pattern. Added 5 pure exports to `apps/tma/src/lib/formatters.ts` (`MINOR_MULTIPLIER`, `minorFromRaw`, `rawFromMinor`, `minorFromInput`, `currencyDisplaySymbol`) and rewired all 4 consumers. The `.000` suffix label stays hardcoded as a VND-only visual hint (out of scope to make currency-aware). No behavior change for the current VND-only app; the helper is the single place to update for future multi-currency support.",
+  "dependencies": ["feat-093", "feat-061"],
+  "evidence": {
+    "planned": [
+      "Unit 1 (core): Extend `apps/tma/src/lib/formatters.ts` with 5 exports mirroring web's `dialog-amount-helper.ts` — `MINOR_MULTIPLIER`, `minorFromRaw`, `rawFromMinor`, `minorFromInput`, `currencyDisplaySymbol`.",
+      "Unit 2 (consumers): Rewire 4 files — `draft.ts` (`/1000`→`rawFromMinor`), `expense-edit.tsx` (`*1000`→`minorFromRaw`), `add-expense-details.tsx` (`/1000`→`rawFromMinor`, `*1000`→`minorFromRaw`, `VND` literal→`currencyDisplaySymbol('VND')`), `expense-edit-form.tsx` (`{currencyCode}`→`{currencyDisplaySymbol(currencyCode)}`).",
+      "Final: `./init.sh typecheck` + `pnpm --filter tma lint` verification."
+    ],
+    "artifacts": [
+      "`apps/tma/src/lib/formatters.ts` — added 5 exports at end of file (lines 55-70): `MINOR_MULTIPLIER=1000`, `minorFromRaw(raw)=raw*MINOR_MULTIPLIER`, `rawFromMinor(minor)=Math.floor(minor/MINOR_MULTIPLIER)` with non-finite/non-positive guard returning 0, `minorFromInput(value)` composing `parseAmountInput` + `minorFromRaw` (returns null for empty/non-positive), `currencyDisplaySymbol(code)` returning `₫` for VND else the code. Added blank lines before return statements to satisfy `padding-line-between-statements` lint rule.",
+      "`apps/tma/src/features/expenses/draft.ts` — import `rawFromMinor`; `amount: expense.amountMinor / 1000` → `amount: rawFromMinor(expense.amountMinor)`.",
+      "`apps/tma/src/routes/expense-edit.tsx` — added `minorFromRaw` to `@/lib/formatters` import; `amount: draft.amount * 1000` → `amount: minorFromRaw(draft.amount)` in the update mutation payload.",
+      "`apps/tma/src/routes/add-expense-details.tsx` — consolidated import to add `currencyDisplaySymbol`, `minorFromRaw`, `rawFromMinor`; `draftAmount / 1000` → `rawFromMinor(draftAmount)`, `amount * 1000` → `minorFromRaw(amount)`, hardcoded `VND` text → `{currencyDisplaySymbol('VND')}`.",
+      "`apps/tma/src/routes/expense-edit-form.tsx` — import `currencyDisplaySymbol`; `{currencyCode}` → `{currencyDisplaySymbol(currencyCode)}` in the amount label."
+    ],
+    "verification": [
+      "`./init.sh typecheck` returned OK (exit 0).",
+      "`pnpm --filter tma lint` returned 0 errors, 13 problems — all 13 are pre-existing `no-console` warnings in unrelated files (groups/api.ts, households/api/households.ts, lib/i18n/index.ts, lib/storage/adapter.ts). The 2 `padding-line-between-statements` warnings initially introduced in `formatters.ts` were fixed inline (added blank lines before return statements) and the re-run returned to the 13-problem baseline.",
+      "Grep confirmed zero amount-related `*1000` / `/1000` remain in the 4 consumer files; all remaining `1000` matches in the TMA app are unrelated ms/time conversions in auth, query, and period files."
+    ]
+  },
+  "notes": "Scope was explicitly limited to TMA consistency + helper consolidation (user chose 'Both: unify + consolidate'). NOT full multi-currency future-proofing. The `.000` suffix label remains hardcoded as a VND-only visual hint (type 35 = 35.000đ); making it currency-aware would require deriving the suffix and multiplier from `fractionDigits` + locale, which is deferred. The add-expense flow has no `currencyCode` concept (the `AddExpenseFlowStore` has no currencyCode field), so `add-expense-details.tsx` calls `currencyDisplaySymbol('VND')` with a literal rather than a prop. This session also included a prior bug fix (TMA edit expense input empty on back-then-reenter, fixed by adding a store `reset()` cleanup useEffect on unmount in `expense-edit.tsx`) and a `amountMinor` semantics research pass; both are documented in the session progress log entry but are not part of feat-108's scope. No commit was made (user did not request)."
+}
