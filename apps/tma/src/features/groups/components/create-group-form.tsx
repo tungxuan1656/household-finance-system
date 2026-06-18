@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   Card,
-  CardDescription,
   CardTitle,
   Field,
   FieldLabel,
@@ -150,11 +149,6 @@ export const CreateGroupForm = ({
               }}
             />
           </Field>
-
-          <CardDescription>
-            {t('groups.createPage.householdNote')}
-          </CardDescription>
-
           <div className='flex flex-wrap justify-end gap-2.5'>
             <Button
               disabled={isBusy}
