@@ -14,21 +14,34 @@ export interface AuthError {
 export interface AuthState {
   status: AuthStatus
   user: AuthenticatedUser | null
+  telegramUserId: number | null
   accessToken: string | null
   accessTokenExpiresAt: number | null
   refreshToken: string | null
+  refreshTokenExpiresAt: number | null
   error: AuthError | null
   setBootstrapping: () => void
   setSession: (input: {
     user: AuthenticatedUser
+    telegramUserId: number | null
     accessToken: string
     accessTokenExpiresIn: number
     refreshToken: string
+    refreshTokenExpiresIn: number
+  }) => void
+  restoreSession: (input: {
+    user: AuthenticatedUser
+    telegramUserId: number
+    accessToken: string
+    accessTokenExpiresAt: number
+    refreshToken: string
+    refreshTokenExpiresAt: number
   }) => void
   refresh: (input: {
     accessToken: string
     accessTokenExpiresIn: number
     refreshToken: string
+    refreshTokenExpiresIn: number
   }) => void
   setError: (error: AuthError) => void
   reset: () => void
@@ -41,16 +54,20 @@ const initialState = (): Pick<
   AuthState,
   | 'status'
   | 'user'
+  | 'telegramUserId'
   | 'accessToken'
   | 'accessTokenExpiresAt'
   | 'refreshToken'
+  | 'refreshTokenExpiresAt'
   | 'error'
 > => ({
   status: 'idle',
   user: null,
+  telegramUserId: null,
   accessToken: null,
   accessTokenExpiresAt: null,
   refreshToken: null,
+  refreshTokenExpiresAt: null,
   error: null,
 })
 
@@ -61,22 +78,56 @@ export const useAuthStore = create<AuthState>((set) => ({
       status: 'bootstrapping',
       error: null,
     }),
-  setSession: ({ user, accessToken, accessTokenExpiresIn, refreshToken }) =>
+  setSession: ({
+    user,
+    telegramUserId,
+    accessToken,
+    accessTokenExpiresIn,
+    refreshToken,
+    refreshTokenExpiresIn,
+  }) =>
     set({
       status: 'authenticated',
       user,
+      telegramUserId,
       accessToken,
       accessTokenExpiresAt: computeExpiry(accessTokenExpiresIn),
       refreshToken,
+      refreshTokenExpiresAt: computeExpiry(refreshTokenExpiresIn),
       error: null,
     }),
-  refresh: ({ accessToken, accessTokenExpiresIn, refreshToken }) =>
+  restoreSession: ({
+    user,
+    telegramUserId,
+    accessToken,
+    accessTokenExpiresAt,
+    refreshToken,
+    refreshTokenExpiresAt,
+  }) =>
+    set({
+      status: 'authenticated',
+      user,
+      telegramUserId,
+      accessToken,
+      accessTokenExpiresAt,
+      refreshToken,
+      refreshTokenExpiresAt,
+      error: null,
+    }),
+  refresh: ({
+    accessToken,
+    accessTokenExpiresIn,
+    refreshToken,
+    refreshTokenExpiresIn,
+  }) =>
     set((state) => ({
       status: 'authenticated',
       user: state.user,
+      telegramUserId: state.telegramUserId,
       accessToken,
       accessTokenExpiresAt: computeExpiry(accessTokenExpiresIn),
       refreshToken,
+      refreshTokenExpiresAt: computeExpiry(refreshTokenExpiresIn),
       error: null,
     })),
   setError: (error) =>

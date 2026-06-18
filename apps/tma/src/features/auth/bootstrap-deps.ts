@@ -1,17 +1,22 @@
 import type {
   AuthApiClient,
+  AuthenticatedUser,
   ExchangeProviderResponse,
   RefreshSessionResponse,
 } from '@/lib/auth/api'
 import { AuthApiError } from '@/lib/auth/api'
+import type { StoredSession } from '@/lib/storage/adapter'
 
 import { type AuthErrorCode, useAuthStore } from './store'
 
+const ACCESS_TOKEN_BUFFER_MS = 60_000
+
 export interface AuthBootstrapDeps {
   loadLaunchData: () => string | null
-  loadRefreshToken: () => Promise<string | null>
-  setRefreshToken: (token: string) => Promise<void>
-  clearRefreshToken: () => Promise<void>
+  loadTelegramUserId: () => number | null
+  loadStoredSession: () => Promise<StoredSession | null>
+  persistSession: (session: StoredSession) => Promise<void>
+  clearStoredSession: () => Promise<void>
   exchangeLaunchData: (initData: string) => Promise<ExchangeProviderResponse>
   refreshSession: (refreshToken: string) => Promise<RefreshSessionResponse>
   onFatal?: () => void
@@ -21,11 +26,12 @@ export interface AuthBootstrapDeps {
 export type AuthBootstrapPhase =
   | 'start'
   | 'launch'
+  | 'restore'
+  | 'restore-success'
   | 'exchange'
   | 'exchange-success'
   | 'storage'
   | 'session'
-  | 'refresh-token-load'
   | 'refresh'
   | 'refresh-success'
   | 'fatal-launch'
@@ -35,17 +41,19 @@ export type AuthBootstrapPhase =
 export const createAuthApiBootstrapDeps = (options: {
   api: AuthApiClient
   storage: {
-    getRefreshToken: () => Promise<string | null>
-    setRefreshToken: (token: string) => Promise<void>
-    clearRefreshToken: () => Promise<void>
+    getSession: () => Promise<StoredSession | null>
+    setSession: (session: StoredSession) => Promise<void>
+    clearSession: () => Promise<void>
   }
   readRawInitData: () => string | null
+  readTelegramUserId: () => number | null
   onFatal?: () => void
 }): AuthBootstrapDeps => ({
   loadLaunchData: () => options.readRawInitData(),
-  loadRefreshToken: () => options.storage.getRefreshToken(),
-  setRefreshToken: (token) => options.storage.setRefreshToken(token),
-  clearRefreshToken: () => options.storage.clearRefreshToken(),
+  loadTelegramUserId: () => options.readTelegramUserId(),
+  loadStoredSession: () => options.storage.getSession(),
+  persistSession: (session) => options.storage.setSession(session),
+  clearStoredSession: () => options.storage.clearSession(),
   exchangeLaunchData: (initData) =>
     options.api.exchangeProviderToken({ provider: 'telegram', initData }),
   refreshSession: (refreshToken) => options.api.refreshSession(refreshToken),
@@ -60,6 +68,72 @@ const isLaunchRejected = (error: unknown): boolean =>
 
 const isTransientBootstrapFailure = (error: unknown): boolean =>
   !isAuthApiError(error) || error.status >= 500
+
+const buildSessionFromExchange = (
+  telegramUserId: number | null,
+  session: ExchangeProviderResponse,
+): StoredSession => ({
+  telegramUserId: telegramUserId ?? 0,
+  user: session.user,
+  accessToken: session.accessToken,
+  refreshToken: session.refreshToken,
+  accessTokenExpiresAt: Date.now() + session.accessTokenExpiresIn * 1000,
+  refreshTokenExpiresAt: Date.now() + session.refreshTokenExpiresIn * 1000,
+})
+
+const buildSessionFromRefresh = (
+  previous: StoredSession,
+  refreshed: RefreshSessionResponse,
+): StoredSession => ({
+  telegramUserId: previous.telegramUserId,
+  user: previous.user,
+  accessToken: refreshed.accessToken,
+  refreshToken: refreshed.refreshToken,
+  accessTokenExpiresAt: Date.now() + refreshed.accessTokenExpiresIn * 1000,
+  refreshTokenExpiresAt: Date.now() + refreshed.refreshTokenExpiresIn * 1000,
+})
+
+const applySessionToStore = (session: StoredSession): void => {
+  useAuthStore.getState().setSession({
+    user: session.user,
+    telegramUserId: session.telegramUserId,
+    accessToken: session.accessToken,
+    accessTokenExpiresIn: Math.max(
+      0,
+      Math.round((session.accessTokenExpiresAt - Date.now()) / 1000),
+    ),
+    refreshToken: session.refreshToken,
+    refreshTokenExpiresIn: Math.max(
+      0,
+      Math.round((session.refreshTokenExpiresAt - Date.now()) / 1000),
+    ),
+  })
+}
+
+const applyRefreshedToStore = (
+  previous: StoredSession,
+  refreshed: RefreshSessionResponse,
+): void => {
+  useAuthStore.getState().setSession({
+    user: previous.user,
+    telegramUserId: previous.telegramUserId,
+    accessToken: refreshed.accessToken,
+    accessTokenExpiresIn: refreshed.accessTokenExpiresIn,
+    refreshToken: refreshed.refreshToken,
+    refreshTokenExpiresIn: refreshed.refreshTokenExpiresIn,
+  })
+}
+
+const restoreSessionToStore = (session: StoredSession): void => {
+  useAuthStore.getState().restoreSession({
+    user: session.user,
+    telegramUserId: session.telegramUserId,
+    accessToken: session.accessToken,
+    accessTokenExpiresAt: session.accessTokenExpiresAt,
+    refreshToken: session.refreshToken,
+    refreshTokenExpiresAt: session.refreshTokenExpiresAt,
+  })
+}
 
 export const runAuthBootstrap = async (
   deps: AuthBootstrapDeps,
@@ -81,21 +155,67 @@ export const runAuthBootstrap = async (
       return exit('fatal-launch', 'launchInvalid')
     }
 
-    try {
-      deps.onPhase?.('exchange')
+    const currentTelegramUserId = deps.loadTelegramUserId()
 
+    deps.onPhase?.('restore')
+
+    const storedSession = await deps.loadStoredSession()
+
+    const now = Date.now()
+    const sameUser =
+      currentTelegramUserId !== null &&
+      storedSession !== null &&
+      storedSession.telegramUserId === currentTelegramUserId
+
+    // ── Restore: access token still valid → use directly (0 API calls) ──
+    if (
+      sameUser &&
+      storedSession!.accessTokenExpiresAt - now > ACCESS_TOKEN_BUFFER_MS
+    ) {
+      deps.onPhase?.('restore-success')
+      deps.onPhase?.('session')
+      restoreSessionToStore(storedSession!)
+
+      return 'authenticated'
+    }
+
+    // ── Restore: access expired, refresh valid → try refresh (1 API call) ──
+    if (sameUser && storedSession!.refreshTokenExpiresAt - now > 0) {
+      deps.onPhase?.('refresh')
+
+      try {
+        const refreshed = await deps.refreshSession(storedSession!.refreshToken)
+        deps.onPhase?.('refresh-success')
+
+        const newSession = buildSessionFromRefresh(storedSession!, refreshed)
+
+        deps.onPhase?.('storage')
+        await deps.persistSession(newSession)
+        deps.onPhase?.('session')
+        applyRefreshedToStore(storedSession!, refreshed)
+
+        return 'authenticated'
+      } catch {
+        // Refresh failed — fall through to exchange.
+      }
+    }
+
+    // ── Exchange: fresh session (mismatch, no cache, both expired, or refresh failed) ──
+    deps.onPhase?.('exchange')
+
+    try {
       const session = await deps.exchangeLaunchData(launchData)
       deps.onPhase?.('exchange-success')
-      deps.onPhase?.('storage')
-      await deps.setRefreshToken(session.refreshToken)
-      deps.onPhase?.('session')
 
-      useAuthStore.getState().setSession({
-        user: session.user,
-        accessToken: session.accessToken,
-        accessTokenExpiresIn: session.accessTokenExpiresIn,
-        refreshToken: session.refreshToken,
-      })
+      const newSession = buildSessionFromExchange(
+        currentTelegramUserId,
+        session,
+      )
+
+      deps.onPhase?.('storage')
+      await deps.persistSession(newSession)
+      deps.onPhase?.('session')
+      applySessionToStore(newSession)
 
       return 'authenticated'
     } catch (error) {
@@ -103,41 +223,15 @@ export const runAuthBootstrap = async (
         return exit('fatal-launch', 'launchInvalid')
       }
 
-      deps.onPhase?.('refresh-token-load')
-
-      const refreshToken = await deps.loadRefreshToken()
-      if (!refreshToken) {
+      if (isTransientBootstrapFailure(error)) {
         return exit('fatal-network', 'networkError')
       }
 
-      try {
-        deps.onPhase?.('refresh')
-
-        const refreshed = await deps.refreshSession(refreshToken)
-        deps.onPhase?.('refresh-success')
-        deps.onPhase?.('storage')
-        await deps.setRefreshToken(refreshed.refreshToken)
-        deps.onPhase?.('session')
-
-        useAuthStore.getState().refresh({
-          accessToken: refreshed.accessToken,
-          accessTokenExpiresIn: refreshed.accessTokenExpiresIn,
-          refreshToken: refreshed.refreshToken,
-        })
-
-        return 'authenticated'
-      } catch (refreshError) {
-        if (isTransientBootstrapFailure(refreshError)) {
-          return exit('fatal-network', 'networkError')
-        }
-
-        deps.onPhase?.('fatal-session')
-        await deps.clearRefreshToken()
-
-        return exit('fatal-session', 'sessionExpired')
-      }
+      return exit('fatal-session', 'sessionExpired')
     }
   } catch {
     return exit('fatal-network', 'networkError')
   }
 }
+
+export type { AuthenticatedUser }

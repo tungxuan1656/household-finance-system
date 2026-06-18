@@ -3,8 +3,27 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   createAuthStorage,
   type SecureStorageLike,
+  type StoredSession,
 } from '@/lib/storage/adapter'
 import { STORAGE_KEYS } from '@/lib/storage/keys'
+
+const buildStoredSession = (
+  overrides: Partial<StoredSession> = {},
+): StoredSession => ({
+  telegramUserId: 111,
+  user: {
+    id: 'user-1',
+    email: null,
+    displayName: 'Tung',
+    avatarUrl: null,
+    provider: 'telegram',
+  },
+  accessToken: 'access-1',
+  refreshToken: 'refresh-1',
+  accessTokenExpiresAt: Date.now() + 3600_000,
+  refreshTokenExpiresAt: Date.now() + 86400_000,
+  ...overrides,
+})
 
 const createFakeSecureStorage = (
   options: {
@@ -73,21 +92,28 @@ const createFakeSecureStorage = (
 }
 
 describe('auth storage adapter', () => {
-  it('persists refresh token to SecureStorage when supported', async () => {
+  it('persists session blob to SecureStorage when supported', async () => {
     const secure = createFakeSecureStorage()
     const storage = createAuthStorage({ secureStorage: secure })
 
     expect(storage.isPersistent()).toBe(true)
 
-    await storage.setRefreshToken('refresh-1')
-    expect(secure.store.get(STORAGE_KEYS.refreshToken)).toBe('refresh-1')
+    const session = buildStoredSession({ refreshToken: 'refresh-1' })
+    await storage.setSession(session)
 
-    const value = await storage.getRefreshToken()
-    expect(value).toBe('refresh-1')
+    const raw = secure.store.get(STORAGE_KEYS.session)
+    expect(raw).toBeDefined()
+    expect(JSON.parse(raw as string).refreshToken).toBe('refresh-1')
 
-    await storage.clearRefreshToken()
-    expect(secure.store.get(STORAGE_KEYS.refreshToken)).toBeUndefined()
-    expect(await storage.getRefreshToken()).toBeNull()
+    const restored = await storage.getSession()
+    expect(restored).not.toBeNull()
+    expect(restored?.refreshToken).toBe('refresh-1')
+    expect(restored?.accessToken).toBe('access-1')
+    expect(restored?.telegramUserId).toBe(111)
+
+    await storage.clearSession()
+    expect(secure.store.get(STORAGE_KEYS.session)).toBeUndefined()
+    expect(await storage.getSession()).toBeNull()
   })
 
   it('falls back to memory when SecureStorage is unsupported', async () => {
@@ -99,14 +125,15 @@ describe('auth storage adapter', () => {
 
     expect(storage.isPersistent()).toBe(false)
 
-    await storage.setRefreshToken('memory-1')
+    const session = buildStoredSession({ refreshToken: 'memory-1' })
+    await storage.setSession(session)
     expect(warn).toHaveBeenCalledTimes(1)
 
-    const value = await storage.getRefreshToken()
-    expect(value).toBe('memory-1')
+    const restored = await storage.getSession()
+    expect(restored?.refreshToken).toBe('memory-1')
 
-    await storage.clearRefreshToken()
-    expect(await storage.getRefreshToken()).toBeNull()
+    await storage.clearSession()
+    expect(await storage.getSession()).toBeNull()
   })
 
   it('falls back to memory when SecureStorage throws on write', async () => {
@@ -116,9 +143,10 @@ describe('auth storage adapter', () => {
       warn,
     })
 
-    await storage.setRefreshToken('corrupt-1')
+    const session = buildStoredSession({ refreshToken: 'corrupt-1' })
+    await storage.setSession(session)
     expect(warn).toHaveBeenCalledTimes(1)
-    expect(await storage.getRefreshToken()).toBe('corrupt-1')
+    expect((await storage.getSession())?.refreshToken).toBe('corrupt-1')
   })
 
   it('falls back to memory when SecureStorage hangs on write', async () => {
@@ -129,10 +157,11 @@ describe('auth storage adapter', () => {
       warn,
     })
 
-    await storage.setRefreshToken('hang-1')
+    const session = buildStoredSession({ refreshToken: 'hang-1' })
+    await storage.setSession(session)
 
     expect(warn).toHaveBeenCalledTimes(1)
-    expect(await storage.getRefreshToken()).toBe('hang-1')
+    expect((await storage.getSession())?.refreshToken).toBe('hang-1')
   })
 
   it('does not warn on subsequent memory fallback writes', async () => {
@@ -142,9 +171,9 @@ describe('auth storage adapter', () => {
       warn,
     })
 
-    await storage.setRefreshToken('a')
-    await storage.setRefreshToken('b')
-    await storage.setRefreshToken('c')
+    await storage.setSession(buildStoredSession({ accessToken: 'a' }))
+    await storage.setSession(buildStoredSession({ accessToken: 'b' }))
+    await storage.setSession(buildStoredSession({ accessToken: 'c' }))
     expect(warn).toHaveBeenCalledTimes(1)
   })
 
@@ -154,19 +183,30 @@ describe('auth storage adapter', () => {
 
     expect(storage.isPersistent()).toBe(false)
 
-    await storage.setRefreshToken('no-storage')
+    const session = buildStoredSession({ refreshToken: 'no-storage' })
+    await storage.setSession(session)
     expect(warn).toHaveBeenCalledTimes(1)
-    expect(await storage.getRefreshToken()).toBe('no-storage')
+    expect((await storage.getSession())?.refreshToken).toBe('no-storage')
   })
 
-  it('recovers from a corrupt secure read and returns null', async () => {
+  it('recovers from a failed secure read and returns null', async () => {
     const warn = vi.fn()
     const secure = createFakeSecureStorage({ failOn: 'get' })
     const storage = createAuthStorage({ secureStorage: secure, warn })
 
-    expect(await storage.getRefreshToken()).toBeNull()
+    expect(await storage.getSession()).toBeNull()
     expect(storage.isPersistent()).toBe(false)
     expect(warn).toHaveBeenCalledTimes(1)
+  })
+
+  it('returns null when the stored blob is corrupt JSON', async () => {
+    const secure = createFakeSecureStorage()
+    // Inject corrupt JSON directly into the underlying store.
+    secure.store.set(STORAGE_KEYS.session, '{not valid json')
+
+    const storage = createAuthStorage({ secureStorage: secure })
+
+    expect(await storage.getSession()).toBeNull()
   })
 
   it('falls back to memory when SecureStorage fails on delete', async () => {
@@ -174,11 +214,11 @@ describe('auth storage adapter', () => {
     const secure = createFakeSecureStorage({ failOn: 'delete' })
     const storage = createAuthStorage({ secureStorage: secure, warn })
 
-    await storage.setRefreshToken('refresh-1')
-    await storage.clearRefreshToken()
+    await storage.setSession(buildStoredSession({ refreshToken: 'refresh-1' }))
+    await storage.clearSession()
 
     expect(storage.isPersistent()).toBe(false)
     expect(warn).toHaveBeenCalledTimes(1)
-    expect(await storage.getRefreshToken()).toBeNull()
+    expect(await storage.getSession()).toBeNull()
   })
 })

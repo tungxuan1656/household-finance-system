@@ -9,7 +9,10 @@ import { FatalLaunchScreen } from '@/features/auth/fatal-launch-screen'
 import { useAuthStore } from '@/features/auth/store'
 import { createTmaAuthClient } from '@/lib/auth/client'
 import { DEFAULT_LOCALE, i18n } from '@/lib/i18n'
-import { readRawInitData } from '@/lib/telegram/launch-params'
+import {
+  readRawInitData,
+  readTelegramUserId,
+} from '@/lib/telegram/launch-params'
 
 const workerBaseUrl = import.meta.env.VITE_WORKER_URL ?? '/api/v1'
 
@@ -45,11 +48,12 @@ export const App = ({ startupError = null }: AppProps) => {
       createAuthApiBootstrapDeps({
         api: authClient.api,
         storage: {
-          getRefreshToken: () => authClient.storage.getRefreshToken(),
-          setRefreshToken: (token) => authClient.storage.setRefreshToken(token),
-          clearRefreshToken: () => authClient.storage.clearRefreshToken(),
+          getSession: () => authClient.storage.getSession(),
+          setSession: (session) => authClient.storage.setSession(session),
+          clearSession: () => authClient.storage.clearSession(),
         },
         readRawInitData,
+        readTelegramUserId,
       }),
     [authClient],
   )
