@@ -10,6 +10,7 @@ import type { StoredSession } from '@/lib/storage/adapter'
 import { type AuthErrorCode, useAuthStore } from './store'
 
 const ACCESS_TOKEN_BUFFER_MS = 60_000
+const UNKNOWN_TELEGRAM_USER_ID = 0
 
 export interface AuthBootstrapDeps {
   loadLaunchData: () => string | null
@@ -73,7 +74,7 @@ const buildSessionFromExchange = (
   telegramUserId: number | null,
   session: ExchangeProviderResponse,
 ): StoredSession => ({
-  telegramUserId: telegramUserId ?? 0,
+  telegramUserId: telegramUserId ?? UNKNOWN_TELEGRAM_USER_ID,
   user: session.user,
   accessToken: session.accessToken,
   refreshToken: session.refreshToken,
@@ -92,37 +93,6 @@ const buildSessionFromRefresh = (
   accessTokenExpiresAt: Date.now() + refreshed.accessTokenExpiresIn * 1000,
   refreshTokenExpiresAt: Date.now() + refreshed.refreshTokenExpiresIn * 1000,
 })
-
-const applySessionToStore = (session: StoredSession): void => {
-  useAuthStore.getState().setSession({
-    user: session.user,
-    telegramUserId: session.telegramUserId,
-    accessToken: session.accessToken,
-    accessTokenExpiresIn: Math.max(
-      0,
-      Math.round((session.accessTokenExpiresAt - Date.now()) / 1000),
-    ),
-    refreshToken: session.refreshToken,
-    refreshTokenExpiresIn: Math.max(
-      0,
-      Math.round((session.refreshTokenExpiresAt - Date.now()) / 1000),
-    ),
-  })
-}
-
-const applyRefreshedToStore = (
-  previous: StoredSession,
-  refreshed: RefreshSessionResponse,
-): void => {
-  useAuthStore.getState().setSession({
-    user: previous.user,
-    telegramUserId: previous.telegramUserId,
-    accessToken: refreshed.accessToken,
-    accessTokenExpiresIn: refreshed.accessTokenExpiresIn,
-    refreshToken: refreshed.refreshToken,
-    refreshTokenExpiresIn: refreshed.refreshTokenExpiresIn,
-  })
-}
 
 const restoreSessionToStore = (session: StoredSession): void => {
   useAuthStore.getState().restoreSession({
@@ -192,7 +162,7 @@ export const runAuthBootstrap = async (
         deps.onPhase?.('storage')
         await deps.persistSession(newSession)
         deps.onPhase?.('session')
-        applyRefreshedToStore(storedSession!, refreshed)
+        restoreSessionToStore(newSession)
 
         return 'authenticated'
       } catch {
@@ -215,7 +185,7 @@ export const runAuthBootstrap = async (
       deps.onPhase?.('storage')
       await deps.persistSession(newSession)
       deps.onPhase?.('session')
-      applySessionToStore(newSession)
+      restoreSessionToStore(newSession)
 
       return 'authenticated'
     } catch (error) {

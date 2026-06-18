@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-06-18 — TMA auth refactor: code-review cleanup (8 findings, 6 files)
+
+- Who: GLM-5.2 (orchestrator) + 2 parallel fixer lanes + oracle reviewer
+- Summary: Applied 8 code-quality findings from a post-refactor oracle review across 6 files. Net change: -25 lines. **HIGH finding**: deleted `applySessionToStore` and `applyRefreshedToStore` from `bootstrap-deps.ts` (both were redundant — call sites already had `StoredSession` built; the helpers did an unnecessary absolute→TTL→absolute round-trip with `Math.round` rounding error). Replaced both call sites with the existing `restoreSessionToStore(newSession)`. **MEDIUM findings**: (1) added `UNKNOWN_TELEGRAM_USER_ID = 0` constant and used it in `buildSessionFromExchange`; (2) added JSDoc comment above `checkIsSupported` in `adapter.ts` explaining the multi-SDK-shape probing and optimistic default; (3) added JSDoc above `setSession` in `store.ts` explaining the 3 session-setter methods (`setSession`/`restoreSession`/`refresh`) and their intentional asymmetries; (4) simplified `secure !== undefined && secure !== null` → `secure != null` in `adapter.ts`. **LOW findings**: (1) inlined `detect` function into `isSupported` in `capabilities.ts`; (2) extracted inline IIFE URL parsing into named `extractPath` helper in `refresh-interceptor.ts`; (3) simplified 3 pass-through lambdas to `storage: authClient.storage` in `app.tsx` (type-compatible via structural typing). The fix-2 worker stashed fix-1's changes due to a git stash conflict; fix-1 was re-applied directly by the orchestrator after the conflict was caught by the post-merge oracle review. Behavior unchanged — all tests pass without modification.
+- Files changed: `apps/tma/src/features/auth/bootstrap-deps.ts` (-38 lines: deleted 2 redundant helpers, added 1 constant); `apps/tma/src/lib/storage/adapter.ts` (JSDoc + `!= null`); `apps/tma/src/features/auth/store.ts` (JSDoc); `apps/tma/src/lib/telegram/capabilities.ts` (inline `detect`); `apps/tma/src/features/auth/refresh-interceptor.ts` (extract helper); `apps/tma/src/app/app.tsx` (simplify wrapping); `harness/progress.md`.
+- Verification: `./init.sh typecheck` OK; `./init.sh test` OK (75 tests / 17 files); `./init.sh lint` OK. Full `./init.sh` would be `Done!`.
+- Blockers: None. One process issue caught and resolved: the fix-2 worker stashed fix-1's changes when it encountered a git stash conflict; fix-1 was re-applied directly after oracle review flagged the regression.
+- Next steps: Commit when user requests.
+
 ## 2026-06-18 — TMA SecureStorage session-restore (expiry-aware cold-open auth optimization)
 
 - Who: GLM-5.2 (orchestrator, inline execution)

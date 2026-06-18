@@ -76,6 +76,11 @@ const withTimeout = async <T>(
   }
 }
 
+/**
+ * Probes isSupported across multiple SDK shapes (legacy per-method, pre-v9,
+ * v9+ top-level). Defaults to true optimistically — failures surface via
+ * read/write timeouts instead of a false negative during boot.
+ */
 const checkIsSupported = (
   storage: SecureStorageLike | null | undefined,
 ): boolean => {
@@ -199,7 +204,7 @@ export const createAuthStorage = (
       noteFallback()
     }
 
-    if (secure !== undefined && secure !== null) {
+    if (secure != null) {
       return parseSession(secure)
     }
 

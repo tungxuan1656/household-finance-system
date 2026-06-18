@@ -78,6 +78,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       status: 'bootstrapping',
       error: null,
     }),
+  /**
+   * Three session-setters for different call sites:
+   * - setSession:     from exchange API response (expiresIn = TTL seconds)
+   * - restoreSession: from cold-open cache (expiresAt = absolute ms)
+   * - refresh:        in-session rotation (TTL; preserves user identity)
+   */
   setSession: ({
     user,
     telegramUserId,

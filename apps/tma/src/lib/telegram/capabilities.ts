@@ -14,7 +14,7 @@ type Capability =
   | 'backButton'
   | 'mainButton'
 
-const detect = (capability: Capability): boolean => {
+export const isSupported = (capability: Capability): boolean => {
   switch (capability) {
     case 'secureStorage':
       return secureStorage.setItem.isAvailable()
@@ -30,6 +30,3 @@ const detect = (capability: Capability): boolean => {
       return mainButton.isMounted()
   }
 }
-
-export const isSupported = (capability: Capability): boolean =>
-  detect(capability)

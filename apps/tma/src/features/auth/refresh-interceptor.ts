@@ -19,16 +19,17 @@ let currentInterceptor: RefreshInterceptor | null = null
 const REFRESH_PATH = '/api/v1/auth/refresh'
 const PROVIDER_EXCHANGE_PATH = '/api/v1/auth/provider/exchange'
 
+const extractPath = (input: string): string => {
+  if (!input.startsWith('http')) return input
+  try {
+    return new URL(input).pathname
+  } catch {
+    return input
+  }
+}
+
 const isRefreshOrExchange = (input: string): boolean => {
-  const path = input.startsWith('http')
-    ? (() => {
-        try {
-          return new URL(input).pathname
-        } catch {
-          return input
-        }
-      })()
-    : input
+  const path = extractPath(input)
 
   return path.endsWith(REFRESH_PATH) || path.endsWith(PROVIDER_EXCHANGE_PATH)
 }

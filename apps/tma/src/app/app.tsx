@@ -47,11 +47,7 @@ export const App = ({ startupError = null }: AppProps) => {
     () =>
       createAuthApiBootstrapDeps({
         api: authClient.api,
-        storage: {
-          getSession: () => authClient.storage.getSession(),
-          setSession: (session) => authClient.storage.setSession(session),
-          clearSession: () => authClient.storage.clearSession(),
-        },
+        storage: authClient.storage,
         readRawInitData,
         readTelegramUserId,
       }),
