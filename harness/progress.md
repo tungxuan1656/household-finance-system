@@ -1,5 +1,14 @@
 # Progress Log
 
+## 2026-06-18 — Backend migrate-expenses endpoint for external transaction import
+
+- Who: GLM-5.2 (orchestrator) + fixer lane
+- Summary: Built a new reusable, authenticated backend endpoint `POST /api/v1/migrate/expenses` that imports external personal-finance transactions (nested `{ dateKey: { txId: { categoryId, date, money, note } } }`) into the system's expenses. Authenticated via the caller's access token (authMiddleware) so it works for any user local and remote; the token determines `spentByUserId`. Optional `householdId` scopes to a household (membership + `canCreateExpense` role check + household default currency), omit for personal (VND). Skips income (money>0) and zero (money=0) since no income endpoint exists. Maps external numeric categoryId → system categoryKey via a baked-in 23-id default mapping (overridable per-request via `categoryMapping`), and skips mapped categories that are not expense-kind (9→money-in, 10→lending). Converts `YYYYMMDD` → Unix-ms occurredAt (UTC start-of-day), amount = `abs(money)`, `sourceKey` defaults to `bank-transfer` (overridable). Supports `dryRun` (count without persisting). Returns `{ created, skipped, skippedBreakdown, errors, dryRun }` with per-entry error collection; each `createExpense` call is wrapped in try/catch so one entry's failure does not abort the batch. Reuses the existing `createExpense` repository per entry (no new SQL). Mirrors the expenses feature folder structure exactly.
+- Files changed: new `apps/worker/src/contracts/migrate-schemas.ts`, `migrate-types.ts`, `migrate.ts`; new `apps/worker/src/handlers/migrate/migrate-expenses.ts`; new `apps/worker/src/routes/migrate.ts`; new `apps/worker/test/integration/migrate-expenses.spec.ts`; modified `apps/worker/src/index.ts` (mount), `apps/worker/src/contracts/expense-schemas.ts` (exported `categoryKindMap`), `apps/worker/src/contracts/index.ts` (migrate re-export); `harness/feature_index.json`, `harness/features/feat-106.json` (new), `harness/progress.md`.
+- Verification: `./init.sh typecheck` OK; `npx vitest run test/integration/migrate-expenses.spec.ts` 11/11 passed; `npx vitest run` full suite 81 files / 427 tests all passed (no regressions).
+- Blockers: None.
+- Next steps: Run the actual migration against a real database by calling this endpoint with the user's access token and the `resources/transactions-peronal.json` payload (dryRun first to preview, then real run). Commit when user requests.
+
 ## 2026-06-17 — TMA back/close action fix on invitation accept deep-link entry (1.0.2)
 
 - Who: MiniMax-M3 (orchestrator, inline execution)

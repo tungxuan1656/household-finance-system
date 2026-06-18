@@ -1,0 +1,33 @@
+{
+  "id": "feat-106",
+  "name": "Backend migrate-expenses endpoint for external personal-finance transaction import",
+  "status": "done",
+  "description": "New reusable, authenticated backend endpoint `POST /api/v1/migrate/expenses` that imports external personal-finance transactions (nested `{ dateKey: { txId: { categoryId, date, money, note } } }` payload) into the system's expenses. Authenticated via the caller's own access token (existing authMiddleware) so it works for any user, local and remote; the token determines `spentByUserId`. Optional `householdId` scopes to a household (with membership+role validation), omit for personal. Skips income (money>0) and zero (money=0) entries since no income endpoint exists. Maps external numeric categoryId → system categoryKey via a baked-in default mapping (overridable per-request via `categoryMapping`), and rejects mapped categories that are not expense-kind (money-in/lending). Converts `YYYYMMDD` dates to Unix-ms occurredAt (UTC start-of-day), uses `abs(money)` as amount, VND for personal or household default currency, `sourceKey` defaults to `bank-transfer` (overridable). Supports `dryRun` to validate+count without persisting. Returns a summary `{ created, skipped, skippedBreakdown, errors, dryRun }` with per-entry error collection; one entry's failure does not abort the whole batch. Reuses the existing `createExpense` repository per entry rather than writing new SQL.",
+  "dependencies": ["feat-006", "feat-007", "feat-008", "feat-033"],
+  "evidence": {
+    "planned": [
+      "Mirror the expenses feature folder structure: contracts (migrate-schemas/types/barrel), handler (handlers/migrate/migrate-expenses.ts), route (routes/migrate.ts), mount under /api/v1 in index.ts.",
+      "Bake a default external categoryId → categoryKey mapping (23 ids) into the handler, overridable via request categoryMapping; skip non-expense-kind mapped categories (9→money-in, 10→lending).",
+      "Loop entries with per-entry skip/error tracking: skip income (money>0), zero (money=0), invalid date, unknown categoryId, non-expense category, blank note; truncate notes >200 chars; wrap each createExpense in try/catch so one failure does not abort the batch.",
+      "Support dryRun (count without persisting) and household scope (membership + canCreateExpense role check + household default currency).",
+      "Add integration tests covering dryRun, real create + persistence verification, all skip reasons, categoryMapping/sourceKey overrides, auth-required 401, household scope, long-note truncation."
+    ],
+    "artifacts": [
+      "`apps/worker/src/contracts/migrate-schemas.ts` — Zod factory `migrateExpensesRequestSchema` with `.strict()`, `messages` object; transactions as nested `Record<string, Record<string, {categoryId, date, money, note}>>`, optional householdId/sourceKey/categoryMapping/dryRun.",
+      "`apps/worker/src/contracts/migrate-types.ts` — `MigrateExpensesRequest` (z.output type), `MigrateExpensesErrorEntry`, `MigrateExpensesResultDTO` interfaces.",
+      "`apps/worker/src/contracts/migrate.ts` — re-export barrel.",
+      "`apps/worker/src/handlers/migrate/migrate-expenses.ts` — handler with exported `DEFAULT_CATEGORY_MAPPING` (23 external ids), `isValidDate` YYYYMMDD validator, expense-kind check via `categoryKindMap`, per-entry try/catch around `createExpense`, currency resolution (VND personal / household default), household membership+role validation mirroring create-expense.ts.",
+      "`apps/worker/src/routes/migrate.ts` — Hono route group with `authMiddleware` on `/migrate/*`, `POST /migrate/expenses` returning 200 + `success()` envelope.",
+      "`apps/worker/src/index.ts` — added `migrateRoutes` import and `app.route('/api/v1', migrateRoutes)` mount (line 55).",
+      "`apps/worker/src/contracts/expense-schemas.ts` — exported `categoryKindMap` (added `export` keyword) for reuse by migrate handler.",
+      "`apps/worker/src/contracts/index.ts` — added `export * from './migrate'`.",
+      "`apps/worker/test/integration/migrate-expenses.spec.ts` — 11 integration tests (dryRun, real create + GET persistence check, income/zero skip, non-expense category skip, blank-note skip, invalid-date skip, unknown-category skip, categoryMapping override, sourceKey override, auth-required 401, household scope)."
+    ],
+    "verification": [
+      "`./init.sh typecheck` returned `OK` (zero errors).",
+      "`npx vitest run test/integration/migrate-expenses.spec.ts` — 11/11 migrate tests passed (346ms).",
+      "`npx vitest run` full suite — 81 test files, 427 tests, all passed (20.88s); no regressions from the additive `export categoryKindMap` + contracts/index re-export + route mount changes."
+    ]
+  },
+  "notes": "Endpoint pioneers batch creation in this codebase (no prior bulk/batch precedent); chose non-atomic per-entry loop with error collection over `db.batch()` to match the `errors:[{date,txId,reason}]` return shape and allow partial success. Personal expenses use `categoryId: null` per the D1 CHECK constraint (reference categoryKey only). Income is intentionally not migrated — no income endpoint/contract exists in the system, and the create-expense `.refine` rejects non-expense category kinds. The default mapping includes 9→money-in and 10→lending so callers see an explicit 'mapped category is not expense-kind' skip reason rather than a silent unknown-category skip. Source data (`resources/transactions-peronal.json`) has 2025 expense / 43 income / 1 zero across 20 distinct external categoryIds. Not yet used to perform the actual migration against a real database — that is a follow-up run via this endpoint with the user's access token."
+}
