@@ -579,6 +579,11 @@
       "id": "feat-106",
       "name": "Backend migrate-expenses endpoint for external personal-finance transaction import",
       "status": "done"
+    },
+    {
+      "id": "feat-107",
+      "name": "Worker migrate-expenses: import blank-note entries as empty-title expenses",
+      "status": "done"
     }
   ]
 }

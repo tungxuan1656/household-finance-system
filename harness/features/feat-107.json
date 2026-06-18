@@ -1,0 +1,25 @@
+{
+  "id": "feat-107",
+  "name": "Worker migrate-expenses: import blank-note entries as empty-title expenses",
+  "status": "done",
+  "description": "Removed the 'blank note' skip branch from the migrate-expenses handler so entries with blank/whitespace-only notes are imported with an empty title (the DB column is `title TEXT NOT NULL` so empty string satisfies the constraint; null cannot be passed). Also dropped the now-unused `blankNote` counter from `skippedBreakdown` to keep the contract honest. Other skip reasons (income, zero, invalid date, unknown category, non-expense category) are unchanged. The 200-char title cap still applies. Updated the existing 'Skip blank note' integration test to assert the new behavior (created=1, skipped=0, `skippedBreakdown.blankNote` undefined).",
+  "dependencies": ["feat-106"],
+  "evidence": {
+    "planned": [
+      "Locate the blank-note skip block in apps/worker/src/handlers/migrate/migrate-expenses.ts (was lines 213-219 in feat-106).",
+      "Delete the skip branch and the `blankNote: 0` initializer from `skippedBreakdown`; trim + cap the note to 200 chars as before but allow empty result.",
+      "Update the matching integration test in apps/worker/test/integration/migrate-expenses.spec.ts to assert the new behavior."
+    ],
+    "artifacts": [
+      "`apps/worker/src/handlers/migrate/migrate-expenses.ts` — removed `if (title.length === 0) { skipped++; skippedBreakdown.blankNote++; continue }` and the `blankNote: 0` entry in the breakdown; title is now `tx.note.trim()` (capped at 200), and the migration will persist blank notes as `title = ''`.",
+      "`apps/worker/test/integration/migrate-expenses.spec.ts` — replaced the old 'Skip blank note' test with 'Imports blank note as empty title (no longer skipped)', asserting `created=1`, `skipped=0`, and `skippedBreakdown.blankNote` is undefined."
+    ],
+    "verification": [
+      "`./init.sh typecheck` returned `OK`.",
+      "`./init.sh lint` returned `OK`.",
+      "`./init.sh test` returned `OK` (81 test files, 428 tests, including the updated blank-note test).",
+      "Full `./init.sh` returned `Done!` (install/harness/lint/typecheck/test)."
+    ]
+  },
+  "notes": "Migration of the user's 2069-entry `resources/transactions-peronal.json` dry-run previously reported `skipped: 56` with `blank note: 11`. After this change, the same input will report `skipped: 45` (income 43 + zero 1 + non-expense category 1) and 11 more entries will be created with empty titles, joining the 2013 already created. Re-run dry-run against the remote endpoint to confirm, then run the real migration. The 200-char title cap still applies; blank `note` is preserved as `null` on the expense (the original blank/whitespace text is still stored in the `note` column via `tx.note || null`)."
+}
