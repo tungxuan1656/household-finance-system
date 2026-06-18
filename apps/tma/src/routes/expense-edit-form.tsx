@@ -97,7 +97,7 @@ export const ExpenseEditForm = ({
       </Card>
 
       {/* Date */}
-      <Card className='mt-3 overflow-hidden p-0'>
+      <Card className='mt-3 overflow-hidden'>
         <DatePicker
           fullWidth
           aria-label={t('expenses.edit.fieldDate')}

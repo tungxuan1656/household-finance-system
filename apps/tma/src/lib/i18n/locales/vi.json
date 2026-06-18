@@ -148,7 +148,7 @@
       "deleteAction": "Xóa chi tiêu"
     },
     "edit": {
-      "title": "chi tiêu",
+      "title": "Sửa chi tiêu",
       "loading": "Đang tải biểu mẫu...",
       "save": "Lưu thay đổi",
       "fieldAmount": "Số tiền",
