@@ -8,8 +8,8 @@ import { categoryKindMap } from '@/contracts/expense-schemas'
 import { migrateExpensesRequestSchema } from '@/contracts/migrate-schemas'
 import type { REFERENCE_CATEGORY_KEYS } from '@/contracts/reference-data'
 import {
-  createExpense,
   type CreateExpenseInput,
+  createExpensesBatch,
 } from '@/db/repositories/expense-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
@@ -142,7 +142,15 @@ export const migrateExpensesHandler = async (
   const decimals = getCurrencyFractionDigits(currencyCode)
   const factor = 10 ** decimals
 
-  // Iterate over all transactions
+  // ── First pass: validate entries in pure JS, skip invalid ones ──
+  type ValidEntry = {
+    input: CreateExpenseInput
+    date: string
+    txId: string
+  }
+
+  const validEntries: ValidEntry[] = []
+
   for (const [_dateKey, txMap] of Object.entries(body.transactions)) {
     for (const [txId, tx] of Object.entries(txMap)) {
       // Skip income (money > 0)
@@ -216,13 +224,7 @@ export const migrateExpensesHandler = async (
       const amount = Math.abs(tx.money)
       const amountMinor = Math.round(amount * factor)
 
-      // Dry run — count but don't persist
-      if (body.dryRun === true) {
-        created++
-        continue
-      }
-
-      // Persist
+      // Build the input (no DB call yet)
       const input: CreateExpenseInput = {
         id: newId(),
         householdId,
@@ -236,19 +238,38 @@ export const migrateExpensesHandler = async (
         title: finalTitle,
         note: tx.note || null,
       }
+      validEntries.push({ input, date: tx.date, txId })
+    }
+  }
 
-      try {
-        await createExpense(db, input)
-        created++
-      } catch (error: unknown) {
-        skipped++
-        skippedBreakdown.error++
+  // ── Second pass: dry-run counts or batch-persist ──
+  if (body.dryRun === true) {
+    created = validEntries.length
+  } else if (validEntries.length > 0) {
+    const CHUNK_SIZE = 1000
+    for (let i = 0; i < validEntries.length; i += CHUNK_SIZE) {
+      const chunk = validEntries.slice(i, i + CHUNK_SIZE)
+      const results = await createExpensesBatch(
+        db,
+        chunk.map((e) => e.input),
+      )
 
-        errors.push({
-          date: tx.date,
-          txId,
-          reason: error instanceof Error ? error.message : 'create failed',
-        })
+      // D1Result array is aligned with the input order of this chunk.
+      for (let j = 0; j < chunk.length; j++) {
+        const result = results[j]
+        const entry = chunk[j]!
+        if (result && result.success) {
+          created++
+        } else {
+          skipped++
+          skippedBreakdown.error++
+
+          const reason =
+            result && 'error' in result && result.error
+              ? String(result.error)
+              : 'create failed'
+          errors.push({ date: entry.date, txId: entry.txId, reason })
+        }
       }
     }
   }
