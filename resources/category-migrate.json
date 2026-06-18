@@ -1,0 +1,124 @@
+{
+  "categories": [
+    {
+      "id": 0,
+      "name": "Ăn uống",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_antiem.png"
+    },
+    {
+      "id": 1,
+      "name": "Xe cộ",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_xeco.png"
+    },
+    {
+      "id": 3,
+      "name": "Tình yêu",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_tinhyeu.png"
+    },
+    {
+      "id": 2,
+      "name": "Sinh hoạt phí",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_sinhhoatphi.png"
+    },
+    {
+      "id": 4,
+      "name": "Gia đình",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_giadinh.png"
+    },
+    {
+      "id": 16,
+      "name": "Con cái",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_concai.png"
+    },
+    {
+      "id": 20,
+      "name": "Họ hàng",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_hohang.png"
+    },
+    {
+      "id": 5,
+      "name": "Mua sắm",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_muasam.png"
+    },
+    {
+      "id": 23,
+      "name": "Làm đẹp",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_mypham.png"
+    },
+    {
+      "id": 6,
+      "name": "Sức khoẻ",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_suckhoe.png"
+    },
+    {
+      "id": 8,
+      "name": "Xã giao",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_xagiao.png"
+    },
+    {
+      "id": 7,
+      "name": "Sửa chữa",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_suachua.png"
+    },
+    {
+      "id": 17,
+      "name": "Công việc",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_congviec.png"
+    },
+    {
+      "id": 19,
+      "name": "Học tập",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_hoctap.png"
+    },
+    {
+      "id": 12,
+      "name": "Đầu tư",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_dautu.png"
+    },
+    {
+      "id": 21,
+      "name": "Phát triển",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_phattrien.png"
+    },
+    {
+      "id": 22,
+      "name": "Thể thao",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_thethao.png"
+    },
+    {
+      "id": 18,
+      "name": "Du lịch",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_dulich.png"
+    },
+    {
+      "id": 11,
+      "name": "Sở thích",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_sothich.png"
+    },
+    {
+      "id": 14,
+      "name": "Vật nuôi",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_pet.png"
+    },
+    {
+      "id": 9,
+      "name": "Nhận tiền",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_nhantien.png"
+    },
+    {
+      "id": 10,
+      "name": "Cho vay",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_chovaytrano.png"
+    },
+    {
+      "id": 13,
+      "name": "Từ thiện",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_tuthien.png"
+    },
+    {
+      "id": 15,
+      "name": "Khác",
+      "icon": "https://gitlab.com/tungxuan1656/file-storages/-/raw/main/expense/ico_khac.png"
+    }
+  ]
+}

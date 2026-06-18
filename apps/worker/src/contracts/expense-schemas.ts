@@ -18,7 +18,7 @@ const messages = {
 }
 
 // maps category key -> kind, mirroring the static catalog
-const categoryKindMap: {
+export const categoryKindMap: {
   [K in (typeof REFERENCE_CATEGORY_KEYS)[number]]: string
 } = {
   food: 'expense',

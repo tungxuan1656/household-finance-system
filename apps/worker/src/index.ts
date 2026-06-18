@@ -15,6 +15,7 @@ import { healthRoutes } from '@/routes/health'
 import { householdRoutes } from '@/routes/households'
 import { invitationRoutes } from '@/routes/invitations'
 import { mediaRoutes } from '@/routes/media'
+import { migrateRoutes } from '@/routes/migrate'
 import { profileRoutes } from '@/routes/profile'
 import { protectedRoutes } from '@/routes/protected'
 import { referenceDataRoutes } from '@/routes/reference-data'
@@ -51,6 +52,7 @@ app.route('/api/v1', mediaRoutes)
 app.route('/api/v1', protectedRoutes)
 app.route('/api/v1', analyticsRoutes)
 app.route('/api/v1', expensesRoutes)
+app.route('/api/v1', migrateRoutes)
 app.route('/api/v1', groupsRoutes)
 app.route('/api/v1', budgetsRoutes)
 
