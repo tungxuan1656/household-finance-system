@@ -15,11 +15,6 @@ const DATE_FORMATTER = new Intl.DateTimeFormat('vi-VN', {
   year: 'numeric',
 })
 
-const TIME_FORMATTER = new Intl.DateTimeFormat('vi-VN', {
-  hour: '2-digit',
-  minute: '2-digit',
-})
-
 export const formatVnd = (value: number): string => VND_FORMATTER.format(value)
 
 export const formatMonthLabel = (value: Date): string => {
@@ -40,9 +35,6 @@ export const formatPeriodLabel = (period: string): string => {
 
 export const formatDateLabel = (value: string): string =>
   DATE_FORMATTER.format(new Date(value))
-
-export const formatTimeLabel = (value: string): string =>
-  TIME_FORMATTER.format(new Date(value))
 
 export const formatAmountInput = (value: string): string => {
   const digits = value.replaceAll(/\D/g, '')

@@ -32,7 +32,7 @@ import {
   getCategoryPresentation,
 } from '@/features/home/presentation'
 import { getExpenseEditPath, TMA_PATHS } from '@/lib/constants/routes'
-import { formatDateLabel, formatTimeLabel } from '@/lib/formatters'
+import { formatDateLabel } from '@/lib/formatters'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
 
 export const ExpenseDetailPage = () => {
@@ -94,7 +94,6 @@ export const ExpenseDetailPage = () => {
   }
 
   const dateLabel = formatDateLabel(new Date(expense.occurredAt).toISOString())
-  const timeLabel = formatTimeLabel(new Date(expense.occurredAt).toISOString())
   const spaceLabel = expense.householdId
     ? householdNameMap.get(expense.householdId) ||
       t('expenses.detail.household')
@@ -156,9 +155,9 @@ export const ExpenseDetailPage = () => {
       <Section>
         <SectionHeader title={t('expenses.detail.sectionTime')} />
         <Card className='grid gap-1'>
-          <Eyebrow>{t('expenses.detail.eyebrowDateTime')}</Eyebrow>
+          <Eyebrow>{t('expenses.detail.eyebrowDate')}</Eyebrow>
           <strong className='text-base font-semibold text-tma-text-strong'>
-            {dateLabel}, {timeLabel}
+            {dateLabel}
           </strong>
         </Card>
       </Section>
