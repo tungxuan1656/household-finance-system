@@ -1,15 +1,14 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { SummaryRow } from '@/components/shared/summary-row'
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import {
+  TmaCategoryIconBadge,
+  TmaPageShell,
+} from '@/components/shared/tma-page-shell'
 import {
   Card,
   CardDescription,
-  CardTitle,
-  Field,
-  FieldLabel,
   MoneyLabel,
   NativePicker,
 } from '@/components/ui'
@@ -28,6 +27,7 @@ import {
 } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
+import { formatVnd } from '@/lib/formatters'
 import {
   hideBottomButton,
   setBottomButton,
@@ -35,6 +35,12 @@ import {
 } from '@/lib/telegram/bottom-button'
 import { notification } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
+
+const ROW_LABEL_CLASS =
+  'text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'
+const ROW_VALUE_CLASS = 'text-sm text-tma-text-strong'
+const PICKER_LABEL_CLASS =
+  'w-16 shrink-0 text-xs font-semibold text-tma-text-muted'
 
 export const AddExpenseImportPreviewPage = () => {
   const navigate = useNavigate()
@@ -94,10 +100,10 @@ export const AddExpenseImportPreviewPage = () => {
   const selectedCount = items.filter(
     (i) => i.include && i.status !== 'success',
   ).length
-  const hasSelection = selectedCount > 0
+  const hasItems = items.length > 0
 
-  const handleSave = async () => {
-    if (!hasSelection || isSaving) return
+  const handleSave = useEffectEvent(async () => {
+    if (!hasItems || isSaving) return
 
     setFeedback(null)
     setIsSaving(true)
@@ -107,12 +113,10 @@ export const AddExpenseImportPreviewPage = () => {
         createExpenseMutation.mutateAsync(payload),
       )
 
-      // Mark succeeded items
       for (const id of result.succeeded) {
         setItemStatus(id, 'success')
       }
 
-      // Mark failed items
       for (const { id, error } of result.failed) {
         setItemStatus(id, 'error', error)
       }
@@ -140,26 +144,27 @@ export const AddExpenseImportPreviewPage = () => {
     } finally {
       setIsSaving(false)
     }
-  }
+  })
 
-  // BottomButton lifecycle
+  // Mount BottomButton once per page lifetime; re-mount only on items-length boundary
   useEffect(() => {
-    if (!hasSelection || items.length === 0) return
+    if (!hasItems) return
 
     const cleanup = setBottomButton({
       text: t('expenses.add.importAction', { count: selectedCount }),
-      enabled: !isSaving,
-      showProgress: isSaving,
+      enabled: false,
+      showProgress: false,
       onClick: () => {
         void handleSave()
       },
     })
 
     return cleanup
-  }, [hasSelection, items.length, selectedCount, isSaving, t])
+  }, [hasItems, t])
 
+  // Update visual props (title/enabled/progress) without re-binding the handler
   useEffect(() => {
-    if (items.length === 0 || !hasSelection) return
+    if (!hasItems) return
 
     updateBottomButton({
       text: isSaving
@@ -168,20 +173,15 @@ export const AddExpenseImportPreviewPage = () => {
       enabled: !isSaving,
       showProgress: isSaving,
     })
-  }, [selectedCount, isSaving, hasSelection, items.length, t])
+  }, [hasItems, selectedCount, isSaving, t])
 
-  useEffect(() => {
-    return () => {
-      hideBottomButton()
-    }
-  }, [])
+  // Hide BottomButton on unmount
+  useEffect(() => () => hideBottomButton(), [])
 
-  // If no items, show empty state with back link
-  if (items.length === 0) {
+  if (!hasItems) {
     return (
       <TmaPageShell title={t('expenses.add.importPreviewTitle')}>
         <Card>
-          <CardTitle>{t('expenses.add.importEmptyTitle')}</CardTitle>
           <CardDescription>{t('expenses.add.importEmptyDesc')}</CardDescription>
         </Card>
       </TmaPageShell>
@@ -217,102 +217,121 @@ export const AddExpenseImportPreviewPage = () => {
             <Card
               key={item.id}
               className={cn(
-                'grid animate-tma-card-enter gap-3',
+                'grid animate-tma-card-enter gap-2.5 p-3',
                 !item.include && 'opacity-50',
                 item.status === 'success' && 'border-tma-positive/30',
                 item.status === 'error' &&
                   'border-tma-error/20 bg-tma-error-bg/60',
               )}
               style={{ animationDelay: `${index * 40}ms` }}>
-              {/* Include toggle + category + title + money */}
+              {/* Row 1: checkbox | category+title | money */}
               <div className='flex items-start gap-3'>
-                <label className='flex cursor-pointer items-center gap-2'>
+                <label className='mt-2 flex shrink-0 cursor-pointer items-center'>
                   <input
                     aria-label={t('expenses.add.includeItem')}
                     checked={item.include}
-                    className='size-5 accent-tma-primary'
+                    className='size-5.5 accent-tma-primary'
                     disabled={item.status === 'success' || isSaving}
                     type='checkbox'
                     onChange={() => toggleInclude(item.id)}
                   />
                 </label>
 
+                <TmaCategoryIconBadge
+                  accent={presentation.accent}
+                  iconUrl={presentation.iconUrl}
+                  size='sm'
+                  symbol={presentation.symbol}
+                />
+
                 <div className='min-w-0 flex-1'>
-                  <div className='flex items-center gap-2'>
-                    <CardTitle className='text-sm'>
-                      {presentation.label}
-                    </CardTitle>
+                  <div
+                    className={cn(
+                      ROW_LABEL_CLASS,
+                      'text-sm text-tma-text-strong/80',
+                    )}>
+                    {presentation.label}
                   </div>
-                  <CardDescription className='truncate'>
+                  <div className='truncate text-sm font-semibold text-tma-text-strong'>
                     {item.parsed.title}
-                  </CardDescription>
+                  </div>
                 </div>
 
-                <div className='shrink-0 text-right'>
-                  <MoneyLabel>
-                    {item.parsed.amount.toLocaleString('vi-VN')}₫
-                  </MoneyLabel>
+                <div className='shrink-0 text-right text-lg font-semibold'>
+                  <MoneyLabel>{formatVnd(item.parsed.amount)}</MoneyLabel>
                 </div>
               </div>
 
-              {/* Metadata row */}
-              <div className='grid grid-cols-2 gap-2 border-t border-tma-line pt-2.5'>
-                <SummaryRow
-                  label={t('expenses.add.source')}
-                  value={sourceLabel}
-                />
-                <SummaryRow
-                  label={t('expenses.add.dateLabel')}
-                  value={item.parsed.occurredAt}
-                />
+              {/* Row 2: 2-column meta (date, source) */}
+              <div className='grid grid-cols-2 gap-3 pl-8'>
+                <div className='grid gap-0.5'>
+                  <span className={ROW_LABEL_CLASS}>
+                    {t('expenses.add.dateLabel')}
+                  </span>
+                  <span className={ROW_VALUE_CLASS}>
+                    {item.parsed.occurredAt}
+                  </span>
+                </div>
+                <div className='grid gap-0.5'>
+                  <span className={ROW_LABEL_CLASS}>
+                    {t('expenses.add.source')}
+                  </span>
+                  <span className={ROW_VALUE_CLASS}>{sourceLabel}</span>
+                </div>
               </div>
 
-              {/* Context selectors */}
+              {/* Row 3: context pickers (label left, picker right) */}
               {item.status !== 'success' ? (
-                <div className='grid gap-3 border-t border-tma-line pt-2.5'>
-                  <Field>
-                    <FieldLabel>
+                <div className='grid gap-2 border-t border-tma-line pt-2.5 pl-2'>
+                  <div className='flex items-center gap-3'>
+                    <span className={PICKER_LABEL_CLASS}>
                       {t('expenses.add.contextHousehold')}
-                    </FieldLabel>
-                    <NativePicker
-                      fullWidth
-                      aria-label={t('expenses.add.chooseHousehold')}
-                      disabled={householdsQuery.isLoading || isSaving}
-                      options={householdPickerOptions}
-                      value={item.householdId ?? ''}
-                      onChange={(next) =>
-                        setItemContext(item.id, {
-                          householdId: next || undefined,
-                        })
-                      }
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel>{t('expenses.add.contextGroup')}</FieldLabel>
-                    <NativePicker
-                      fullWidth
-                      aria-label={t('expenses.add.chooseGroup')}
-                      disabled={personalGroupsQuery.isLoading || isSaving}
-                      options={groupPickerOptions}
-                      value={item.groupId ?? ''}
-                      onChange={(next) =>
-                        setItemContext(item.id, {
-                          groupId: next || undefined,
-                        })
-                      }
-                    />
-                  </Field>
+                    </span>
+                    <div className='min-w-0 flex-1'>
+                      <NativePicker
+                        fullWidth
+                        aria-label={t('expenses.add.chooseHousehold')}
+                        disabled={householdsQuery.isLoading || isSaving}
+                        options={householdPickerOptions}
+                        value={item.householdId ?? ''}
+                        onChange={(next) =>
+                          setItemContext(item.id, {
+                            householdId: next || undefined,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className='flex items-center gap-3'>
+                    <span className={PICKER_LABEL_CLASS}>
+                      {t('expenses.add.contextGroup')}
+                    </span>
+                    <div className='min-w-0 flex-1'>
+                      <NativePicker
+                        fullWidth
+                        aria-label={t('expenses.add.chooseGroup')}
+                        disabled={personalGroupsQuery.isLoading || isSaving}
+                        options={groupPickerOptions}
+                        value={item.groupId ?? ''}
+                        onChange={(next) =>
+                          setItemContext(item.id, {
+                            groupId: next || undefined,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
               ) : null}
 
               {/* Status indicator */}
               {item.status === 'success' ? (
-                <div className='text-xs font-semibold text-tma-positive'>
+                <div className='pl-7 text-xs font-semibold text-tma-positive'>
                   {t('expenses.add.importSuccess')}
                 </div>
               ) : null}
               {item.status === 'error' && item.error ? (
-                <div className='text-xs font-semibold text-tma-error'>
+                <div className='pl-7 text-xs font-semibold text-tma-error'>
                   {item.error}
                 </div>
               ) : null}
