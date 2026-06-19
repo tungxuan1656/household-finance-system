@@ -260,7 +260,7 @@ describe('parseExpensesWithAi — prompt date context', () => {
     vi.restoreAllMocks()
   })
 
-  it('sends current date, relative date, and explicit format rules to the AI prompt', async () => {
+  it('sends date, amount, category, and valid-output rules to the AI prompt', async () => {
     const fetchSpy = vi
       .spyOn(globalThis, 'fetch')
       .mockResolvedValue(mockAiResponse('{"expenses": []}'))
@@ -280,14 +280,29 @@ describe('parseExpensesWithAi — prompt date context', () => {
     expect(systemPrompt).toContain('2026-06-19')
     expect(systemPrompt).toContain('Treat this as today/current time')
     expect(systemPrompt).toContain('hôm qua')
+    expect(systemPrompt).toContain('cách đây X ngày')
     expect(systemPrompt).toContain('ngày này tháng trước')
+    expect(systemPrompt).toContain('năm ngoái')
     expect(systemPrompt).toContain('DD/MM')
     expect(systemPrompt).toContain('YYYY/MM/DD')
     expect(systemPrompt).toContain('YYYY-MM-DD')
     expect(systemPrompt).toContain(
       'set occurredAt to the current client-local date',
     )
+    expect(systemPrompt).toContain('145k = 145000')
+    expect(systemPrompt).toContain('1tr5 = 1500000')
+    expect(systemPrompt).toContain('Only extract expenses (money spent)')
+    expect(systemPrompt).toContain('salary')
+    expect(systemPrompt).toContain('sourceKey (string')
+    expect(systemPrompt).toContain('Extract at most 50 expenses')
+    expect(systemPrompt).toContain('Category mapping hints')
+    expect(systemPrompt).toContain('food: ăn uống')
+    expect(systemPrompt).toContain('transport: xăng')
+    expect(systemPrompt).toContain('education: học tập')
     expect(systemPrompt).toContain('"11/6: đèn học 145k"')
+    expect(systemPrompt).toContain('"amount":145000')
+    expect(systemPrompt).toContain('"categoryKey":"education"')
+    expect(systemPrompt).toContain('"sourceKey":"bank-transfer"')
     expect(systemPrompt).toContain('"2026-06-11"')
   })
 })
