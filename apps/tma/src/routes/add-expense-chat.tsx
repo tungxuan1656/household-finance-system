@@ -13,7 +13,11 @@ import {
 import { useParseExpensesMutation } from '@/features/expenses/import-api'
 import { useImportFlowStore } from '@/features/expenses/import-store'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
+import {
+  hideBottomButton,
+  setBottomButton,
+  updateBottomButton,
+} from '@/lib/telegram/bottom-button'
 import { notification } from '@/lib/telegram/haptics'
 
 export const AddExpenseChatPage = () => {
@@ -46,19 +50,27 @@ export const AddExpenseChatPage = () => {
     }
   }
 
-  // BottomButton lifecycle — visible on this screen only
   useEffect(() => {
     const cleanup = setBottomButton({
       text: t('expenses.add.parseAction'),
-      enabled: rawText.trim().length > 0 && !parseMutation.isPending,
-      showProgress: parseMutation.isPending,
+      enabled: false,
+      showProgress: false,
       onClick: () => {
         void handleParse()
       },
     })
 
     return cleanup
-  }, [rawText, parseMutation.isPending, t])
+  }, [t])
+
+  // BottomButton lifecycle — visible on this screen only
+  useEffect(() => {
+    updateBottomButton({
+      text: t('expenses.add.parseAction'),
+      enabled: rawText.trim().length > 0 && !parseMutation.isPending,
+      showProgress: parseMutation.isPending,
+    })
+  }, [!!rawText, parseMutation.isPending, t])
 
   // Clean up BottomButton on unmount
   useEffect(() => {
@@ -76,7 +88,7 @@ export const AddExpenseChatPage = () => {
 
       <Textarea
         aria-label={t('expenses.add.aiInputLabel')}
-        className='min-h-[180px]'
+        className='min-h-45'
         disabled={parseMutation.isPending}
         placeholder={t('expenses.add.aiInputPlaceholder')}
         value={rawText}

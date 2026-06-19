@@ -52,7 +52,7 @@ export const Textarea = ({
 }: TextareaHTMLAttributes<HTMLTextAreaElement>) => (
   <textarea
     className={cn(
-      'min-h-26 w-full resize-none rounded-[18px] border border-tma-line bg-black/4 p-4 text-sm leading-relaxed text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
+      'min-h-26 w-full resize-none rounded-2xl border border-tma-line bg-white p-4 text-sm leading-relaxed text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
       className,
     )}
     {...props}

@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 
+import { generateId } from '@/lib/utils'
+
 import type { ParsedExpenseItem } from './import-api'
 
 export interface ImportItemDraft {
@@ -29,8 +31,6 @@ interface ImportFlowState {
   ) => void
   reset: () => void
 }
-
-const generateId = (): string => crypto.randomUUID()
 
 export const useImportFlowStore = create<ImportFlowState>((set) => ({
   rawText: '',
