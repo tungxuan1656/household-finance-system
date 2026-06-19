@@ -176,6 +176,12 @@ export type AnalyticsOverviewDTO = {
   }>
 }
 
+export type ExpenseSummaryDTO = {
+  totalSpendMinor: number
+  expenseCount: number
+  currencyCode: string
+}
+
 export type AnalyticsComparisonDTO = {
   householdId: string | null
   currencyCode: string

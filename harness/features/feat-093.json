@@ -15,7 +15,8 @@
       "Created apps/tma/src/routes/expense-detail.tsx with View and Edit modes, support for custom inputs, haptics, and Telegram BottomButton.",
       "Registered route /expenses/:id in apps/tma/src/app/router/app-router.tsx.",
       "Linked recent expense clicks in apps/tma/src/routes/home.tsx to details view.",
-      "Migrated apps/tma/src/routes/expenses.tsx to fetch live API data and link clicks to details view."
+      "Migrated apps/tma/src/routes/expenses.tsx to fetch live API data and link clicks to details view.",
+      "2026-06-19 bugfix: replaced auto-fetch-all (useFullExpenseListQuery/listAllExpenses) with React Query infinite pagination (useExpenseListInfiniteQuery) and true summary from /expenses/summary (useExpenseSummaryQuery)."
     ],
     "verification": [
       "Ran `./init.sh lint` to verify zero styling and Prettier errors.",
@@ -23,8 +24,9 @@
       "Ran `./init.sh test` to execute the vitest suite successfully.",
       "Ran `./init.sh build` to check production compilation outputs.",
       "Ran final GitNexus changes detection to track affected symbols.",
-      "2026-06-16 edit redesign: `npx eslint --ext .ts,.tsx` on 6 modified files returned 0 problems. `npx tsc --noEmit` passed. `npx vitest run src/test/` reports 92/93 pass (1 pre-existing statistics-page failure)."
+      "2026-06-16 edit redesign: `npx eslint --ext .ts,.tsx` on 6 modified files returned 0 problems. `npx tsc --noEmit` passed. `npx vitest run src/test/` reports 92/93 pass (1 pre-existing statistics-page failure).",
+      "2026-06-19 infinite pagination rewrite: `./init.sh typecheck`, `./init.sh lint`, and `./init.sh test` passed."
     ]
   },
-  "notes": "Ensured full integration with the live Cloudflare/Hono backend and verified that local/harness checks pass cleanly."
+  "notes": "Ensured full integration with the live Cloudflare/Hono backend and verified that local/harness checks pass cleanly. Replaced auto-fetch-all experiment with persistent cursor-based infinite pagination via useInfiniteQuery."
 }

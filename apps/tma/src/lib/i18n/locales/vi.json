@@ -111,6 +111,8 @@
     "filterLabel": "Lọc",
     "filterCount": "Lọc {{count}}",
     "aiImport": "Nhập tự động",
+    "loadMore": "Tải thêm",
+    "loadingMore": "Đang tải...",
     "summary": {
       "title": "Tổng chi theo bộ lọc",
       "count": "{{count}} khoản"

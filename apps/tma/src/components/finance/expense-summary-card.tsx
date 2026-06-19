@@ -2,29 +2,25 @@ import { useTranslation } from 'react-i18next'
 
 import { Card, Eyebrow, MoneyLabel } from '@/components/ui'
 import { formatCurrencyMinor } from '@/features/home/presentation'
-import type { ExpenseDTO } from '@/features/home/types'
+import type { ExpenseSummaryDTO } from '@/features/home/types'
 
 type ExpenseSummaryCardProps = {
-  expenses: ExpenseDTO[]
+  summary?: ExpenseSummaryDTO
 }
 
-export const ExpenseSummaryCard = ({ expenses }: ExpenseSummaryCardProps) => {
+export const ExpenseSummaryCard = ({ summary }: ExpenseSummaryCardProps) => {
   const { t } = useTranslation()
 
-  if (expenses.length === 0) return null
-
-  const currencyCode = expenses[0]?.currencyCode ?? 'VND'
-  const totalMinor = expenses.reduce((sum, e) => sum + e.amountMinor, 0)
-  const count = expenses.length
+  if (!summary || summary.expenseCount === 0) return null
 
   return (
     <Card className='grid gap-1 p-5'>
       <Eyebrow>{t('expenses.summary.title')}</Eyebrow>
       <MoneyLabel className='block text-[28px] leading-none font-extrabold tracking-normal'>
-        {formatCurrencyMinor(totalMinor, currencyCode)}
+        {formatCurrencyMinor(summary.totalSpendMinor, summary.currencyCode)}
       </MoneyLabel>
       <p className='m-0 text-xs font-semibold text-tma-text-muted'>
-        {t('expenses.summary.count', { count })}
+        {t('expenses.summary.count', { count: summary.expenseCount })}
       </p>
     </Card>
   )

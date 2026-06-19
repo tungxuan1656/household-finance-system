@@ -13,10 +13,12 @@ import {
 import { useImportFlowStore } from '@/features/expenses/import-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import {
-  useExpenseListQuery,
+  useExpenseListInfiniteQuery,
+  useExpenseSummaryQuery,
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
+import type { ExpenseListParams } from '@/features/home/types'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { selection } from '@/lib/telegram/haptics'
 
@@ -26,15 +28,16 @@ export const ExpensesPage = () => {
   const filter = useExpenseListFilterStore((state) => state.filter)
   const activeFilterCount = countActiveExpenseListFilters(filter)
 
-  const queryParams = useMemo(
+  const queryParams = useMemo<ExpenseListParams>(
     () => ({
       sort: filter.sort,
+      limit: 50,
       ...(filter.dateFrom != null ? { date_from: filter.dateFrom } : {}),
       ...(filter.dateTo != null ? { date_to: filter.dateTo } : {}),
       ...(filter.householdId != null
         ? { household_id: filter.householdId }
         : {}),
-      ...(filter.groupId != null ? { group_ids: [filter.groupId] } : {}),
+      ...(filter.groupId != null ? { group_id: filter.groupId } : {}),
       ...(filter.categoryKey != null
         ? { category_key: filter.categoryKey }
         : {}),
@@ -42,14 +45,31 @@ export const ExpensesPage = () => {
     [filter],
   )
 
-  const expensesQuery = useExpenseListQuery({
-    ...queryParams,
-    limit: 50,
-  })
+  const summaryParams = useMemo<ExpenseListParams>(
+    () => ({
+      ...(filter.dateFrom != null ? { date_from: filter.dateFrom } : {}),
+      ...(filter.dateTo != null ? { date_to: filter.dateTo } : {}),
+      ...(filter.householdId != null
+        ? { household_id: filter.householdId }
+        : {}),
+      ...(filter.groupId != null ? { group_id: filter.groupId } : {}),
+      ...(filter.categoryKey != null
+        ? { category_key: filter.categoryKey }
+        : {}),
+    }),
+    [filter],
+  )
+
+  const expensesQuery = useExpenseListInfiniteQuery(queryParams)
+  const summaryQuery = useExpenseSummaryQuery(summaryParams)
   const referenceCategoriesQuery = useReferenceCategoriesQuery()
   const householdsQuery = useHouseholdsQuery()
 
-  const expenses = expensesQuery.data?.items ?? []
+  const expenses = useMemo(
+    () => expensesQuery.data?.pages.flatMap((page) => page.items) ?? [],
+    [expensesQuery.data?.pages],
+  )
+
   const householdNameMap = useMemo(
     () => buildHouseholdNameMap(householdsQuery.data?.items ?? []),
     [householdsQuery.data?.items],
@@ -68,7 +88,7 @@ export const ExpensesPage = () => {
 
   return (
     <TmaPageShell title={t('expenses.title')}>
-      <ExpenseSummaryCard expenses={expenses} />
+      <ExpenseSummaryCard summary={summaryQuery.data} />
       <div className='mb-2 flex justify-between px-1 py-4'>
         <Button
           size='sm'
@@ -103,10 +123,27 @@ export const ExpensesPage = () => {
           <CardDescription>{t('expenses.emptyDesc')}</CardDescription>
         </Card>
       ) : (
-        <ExpenseTimeline
-          expenses={expenses}
-          householdNameById={householdNameMap}
-        />
+        <>
+          <ExpenseTimeline
+            expenses={expenses}
+            householdNameById={householdNameMap}
+          />
+          {expensesQuery.hasNextPage && (
+            <div className='mt-4 flex justify-center'>
+              <Button
+                disabled={expensesQuery.isFetchingNextPage}
+                size='sm'
+                variant='outline'
+                onClick={() => {
+                  void expensesQuery.fetchNextPage()
+                }}>
+                {expensesQuery.isFetchingNextPage
+                  ? t('expenses.loadingMore')
+                  : t('expenses.loadMore')}
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </TmaPageShell>
   )
