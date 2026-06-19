@@ -109,6 +109,7 @@
     "openFilterAria": "Mở bộ lọc",
     "filterLabel": "Lọc",
     "filterCount": "Lọc {{count}}",
+    "aiImport": "Nhập bằng AI",
     "summary": {
       "title": "Tổng chi theo bộ lọc",
       "count": "{{count}} khoản"
@@ -207,7 +208,23 @@
       "contextPersonal": "Cá nhân",
       "chooseHousehold": "Chọn gia đình",
       "chooseGroup": "Chọn nhóm",
-      "step": "Bước {{current}}/{{total}}"
+      "step": "Bước {{current}}/{{total}}",
+      "aiImportTitle": "Nhập chi tiêu bằng AI",
+      "aiImportDesc": "Dán hoặc nhập nội dung chi tiêu",
+      "aiImportHint": "Ví dụ: ăn sáng 35k, đi xe ôm 50k, cà phê 20k",
+      "aiInputLabel": "Nội dung chi tiêu",
+      "aiInputPlaceholder": "Nhập danh sách chi tiêu...",
+      "parseAction": "Phân tích",
+      "parsing": "Đang phân tích...",
+      "switchToManual": "Chuyển sang nhập thủ công",
+      "importPreviewTitle": "Xem trước chi tiêu",
+      "importEmptyTitle": "Không có chi tiêu nào",
+      "importEmptyDesc": "Quay lại nhập nội dung và thử lại.",
+      "importItemCount": "{{count}} chi tiêu",
+      "includeItem": "Chọn để lưu",
+      "importAction": "Lưu {{count}} chi tiêu",
+      "importPartialFail": "Đã lưu {{succeeded}} chi tiêu, {{failed}} chi tiêu bị lỗi.",
+      "importSuccess": "Đã lưu thành công"
     }
   },
   "budgets": {

@@ -589,6 +589,11 @@
       "id": "feat-108",
       "name": "TMA amount helper consolidation and currency display unify",
       "status": "done"
+    },
+    {
+      "id": "feat-109",
+      "name": "TMA AI expense import via Worker OpenAI-compatible parser",
+      "status": "done"
     }
   ]
 }

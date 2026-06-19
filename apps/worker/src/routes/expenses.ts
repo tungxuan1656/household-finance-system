@@ -7,6 +7,7 @@ import { getExpenseHandler } from '@/handlers/expenses/get-expense'
 import { getExpenseSummaryHandler } from '@/handlers/expenses/get-expense-summary'
 import { listDeletedExpensesHandler } from '@/handlers/expenses/list-deleted-expenses'
 import { listExpensesHandler } from '@/handlers/expenses/list-expenses'
+import { parseExpenseHandler } from '@/handlers/expenses/parse-expense'
 import { restoreExpenseHandler } from '@/handlers/expenses/restore-expense'
 import { updateExpenseHandler } from '@/handlers/expenses/update-expense'
 import { success } from '@/lib/response'
@@ -17,6 +18,7 @@ export const expensesRoutes = new Hono<AppBindings>()
 
 // All expense routes require authentication
 expensesRoutes.use('/expenses', authMiddleware)
+expensesRoutes.use('/expenses/parse', authMiddleware)
 expensesRoutes.use('/expenses/deleted', authMiddleware)
 expensesRoutes.use('/expenses/:id', authMiddleware)
 expensesRoutes.use('/expenses/:id/restore', authMiddleware)
@@ -46,6 +48,13 @@ expensesRoutes.get('/expenses/summary', async (ctx) => {
 // GET /api/v1/expenses/deleted?household_id=...
 expensesRoutes.get('/expenses/deleted', async (ctx) => {
   const result = await listDeletedExpensesHandler(ctx)
+
+  return success<typeof result>(ctx, result)
+})
+
+// POST /api/v1/expenses/parse (before parameterised :id routes)
+expensesRoutes.post('/expenses/parse', async (ctx) => {
+  const result = await parseExpenseHandler(ctx)
 
   return success<typeof result>(ctx, result)
 })
