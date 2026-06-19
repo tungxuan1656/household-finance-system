@@ -21,9 +21,9 @@ describe('useExpenseListFilterStore', () => {
     expect(getState().filter.periodPreset).toBe('thisMonth')
     expect(getState().filter.dateFrom).toBeTypeOf('number')
     expect(getState().filter.dateTo).toBeTypeOf('number')
-    expect(
-      getState().filter.dateFrom! <= getState().filter.dateTo!,
-    ).toBe(true)
+
+    expect(getState().filter.dateFrom! <= getState().filter.dateTo!).toBe(true)
+
     expect(countActiveExpenseListFilters(getState().filter)).toBe(0)
   })
 
@@ -73,6 +73,7 @@ describe('useExpenseListFilterStore', () => {
       dateTo: 2,
       periodPreset: 'custom',
     })
+
     expect(countActiveExpenseListFilters(getState().filter)).toBe(1)
 
     getState().setDefaultPeriod()
@@ -100,6 +101,7 @@ describe('useExpenseListFilterStore', () => {
       dateTo: 2,
       periodPreset: 'custom',
     })
+
     getState().setFilter({ householdId: 'hh-1' })
     getState().setFilter({ groupId: 'group-1' })
     getState().setFilter({ categoryKey: 'food' })

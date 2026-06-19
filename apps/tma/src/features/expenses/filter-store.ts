@@ -48,7 +48,9 @@ export const useExpenseListFilterStore = create<ExpenseListFilterState>(
     setFilter: (partial) =>
       set((state) => ({ filter: { ...state.filter, ...partial } })),
     setDefaultPeriod: () =>
-      set((state) => ({ filter: { ...state.filter, ...buildDefaultPeriodFilter() } })),
+      set((state) => ({
+        filter: { ...state.filter, ...buildDefaultPeriodFilter() },
+      })),
     reset: () => set({ filter: buildInitialExpenseListFilter() }),
   }),
 )
