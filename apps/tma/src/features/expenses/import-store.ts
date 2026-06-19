@@ -24,6 +24,7 @@ interface ImportFlowState {
     id: string,
     context: { householdId?: string; groupId?: string },
   ) => void
+  setItemCategory: (id: string, categoryKey: string) => void
   setItemStatus: (
     id: string,
     status: 'pending' | 'success' | 'error',
@@ -54,6 +55,15 @@ export const useImportFlowStore = create<ImportFlowState>((set) => ({
     set((state) => ({
       items: state.items.map((item) =>
         item.id === id ? { ...item, include: !item.include } : item,
+      ),
+    })),
+
+  setItemCategory: (id, categoryKey) =>
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === id
+          ? { ...item, parsed: { ...item.parsed, categoryKey } }
+          : item,
       ),
     })),
 

@@ -19,11 +19,14 @@ type Props = {
   item: ImportItemDraft
   index: number
   isSaving: boolean
+  categoryPickerOptions: { value: string; label: string }[]
+  categoriesLoading: boolean
   householdPickerOptions: { value: string; label: string }[]
   groupPickerOptions: { value: string; label: string }[]
   householdsLoading: boolean
   groupsLoading: boolean
   onToggleInclude: (id: string) => void
+  onSetItemCategory: (id: string, categoryKey: string) => void
   onSetItemContext: (
     id: string,
     ctx: { householdId?: string; groupId?: string },
@@ -34,11 +37,14 @@ export const ImportPreviewItemCard = ({
   item,
   index,
   isSaving,
+  categoryPickerOptions,
+  categoriesLoading,
   householdPickerOptions,
   groupPickerOptions,
   householdsLoading,
   groupsLoading,
   onToggleInclude,
+  onSetItemCategory,
   onSetItemContext,
 }: Props) => {
   const { t } = useTranslation()
@@ -77,10 +83,18 @@ export const ImportPreviewItemCard = ({
         />
 
         <div className='min-w-0 flex-1'>
-          <div
-            className={cn(ROW_LABEL_CLASS, 'text-sm text-tma-text-strong/80')}>
-            {presentation.label}
-          </div>
+          <NativePicker
+            fullWidth
+            aria-label={t('expenses.add.chooseCategory')}
+            disabled={
+              item.status === 'success' || isSaving || categoriesLoading
+            }
+            options={categoryPickerOptions}
+            showIcon={false}
+            size='sm'
+            value={item.parsed.categoryKey}
+            onChange={(next) => onSetItemCategory(item.id, next)}
+          />
           <div className='text-sm font-semibold wrap-break-word text-tma-text-strong'>
             {item.parsed.title}
           </div>
