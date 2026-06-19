@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 
+import { normalizeCategoryKey } from '@/features/home/category-key'
 import { generateId } from '@/lib/utils'
 
 import type { ParsedExpenseItem } from './import-api'
@@ -22,7 +23,7 @@ interface ImportFlowState {
   toggleInclude: (id: string) => void
   setItemContext: (
     id: string,
-    context: { householdId?: string; groupId?: string },
+    context: { householdId?: string | null; groupId?: string | null },
   ) => void
   setItemCategory: (id: string, categoryKey: string) => void
   setItemStatus: (
@@ -62,7 +63,13 @@ export const useImportFlowStore = create<ImportFlowState>((set) => ({
     set((state) => ({
       items: state.items.map((item) =>
         item.id === id
-          ? { ...item, parsed: { ...item.parsed, categoryKey } }
+          ? {
+              ...item,
+              parsed: {
+                ...item.parsed,
+                categoryKey: normalizeCategoryKey(categoryKey) ?? 'other',
+              },
+            }
           : item,
       ),
     })),

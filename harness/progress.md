@@ -3,6 +3,7 @@
 - last-archived: 2026-06-19
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
 - 2026-06-19 — TMA expenses list: React Query infinite pagination + /expenses/summary (harness/progress/archive/progress-2026-06-19-tma-expenses-period-limit.md)
+- 2026-06-19 — TMA import preview bugfix: blank category fallback + household/group clear (feat-109 evidence)
 - 2026-06-19 — TMA AI import preview: editable category per item via NativePicker (feat-109 evidence)
 - 2026-06-19 — Reference data strongest HTTP cache + TMA icon presentation hook (harness/progress/archive/progress-2026-06-19-reference-data-cache.md)
 - 2026-06-19 — TMA AI expense import end-to-end (harness/progress/archive/progress-2026-06-19.md)

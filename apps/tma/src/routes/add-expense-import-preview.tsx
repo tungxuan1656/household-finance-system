@@ -82,18 +82,23 @@ export const AddExpenseImportPreviewPage = () => {
   )
 
   const referenceCategories = categoriesQuery.data?.items ?? []
-  const categoryPickerOptions = useMemo(
-    () => [
-      { value: '', label: t('categories.other') },
-      ...referenceCategories
-        .filter((cat) => cat.kind === 'expense')
-        .map((cat) => ({
-          value: cat.key,
-          label: getCategoryPresentation(cat.key, t, referenceCategories).label,
-        })),
-    ],
-    [referenceCategories, t],
-  )
+  const categoryPickerOptions = useMemo(() => {
+    const expenseCats = referenceCategories.filter(
+      (cat) => cat.kind === 'expense',
+    )
+    const hasOther = expenseCats.some((cat) => cat.key === 'other')
+    const fallback = hasOther
+      ? []
+      : [{ value: 'other' as const, label: t('categories.other') }]
+
+    return [
+      ...fallback,
+      ...expenseCats.map((cat) => ({
+        value: cat.key,
+        label: getCategoryPresentation(cat.key, t, referenceCategories).label,
+      })),
+    ]
+  }, [referenceCategories, t])
 
   const selectedCount = items.filter(
     (i) => i.include && i.status !== 'success',

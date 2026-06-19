@@ -29,7 +29,7 @@ type Props = {
   onSetItemCategory: (id: string, categoryKey: string) => void
   onSetItemContext: (
     id: string,
-    ctx: { householdId?: string; groupId?: string },
+    ctx: { householdId?: string | null; groupId?: string | null },
   ) => void
 }
 
@@ -133,7 +133,7 @@ export const ImportPreviewItemCard = ({
                 value={item.householdId ?? ''}
                 onChange={(next) =>
                   onSetItemContext(item.id, {
-                    householdId: next || undefined,
+                    householdId: next || null,
                   })
                 }
               />
@@ -152,7 +152,7 @@ export const ImportPreviewItemCard = ({
                 value={item.groupId ?? ''}
                 onChange={(next) =>
                   onSetItemContext(item.id, {
-                    groupId: next || undefined,
+                    groupId: next || null,
                   })
                 }
               />
