@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
@@ -29,7 +29,7 @@ export const AddExpenseChatPage = () => {
   const parseMutation = useParseExpensesMutation()
   const [error, setError] = useState<string | null>(null)
 
-  const handleParse = async () => {
+  const handleParse = useEffectEvent(async () => {
     if (!rawText.trim()) return
 
     setError(null)
@@ -48,7 +48,7 @@ export const AddExpenseChatPage = () => {
 
       setError(err instanceof Error ? err.message : t('expenses.add.saveError'))
     }
-  }
+  })
 
   useEffect(() => {
     const cleanup = setBottomButton({
