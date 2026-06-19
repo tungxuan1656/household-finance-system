@@ -254,3 +254,40 @@ describe('parseExpensesWithAi — amount coercion (N7)', () => {
     expect(result[0]!.amount).toBe(0)
   })
 })
+
+describe('parseExpensesWithAi — prompt date context', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('sends current date, relative date, and explicit format rules to the AI prompt', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(mockAiResponse('{"expenses": []}'))
+
+    await parseExpensesWithAi('11/6: đèn học 145k', testConfig, {
+      defaultOccurredAt: '2026-06-19',
+    })
+
+    const requestBody = JSON.parse(
+      fetchSpy.mock.calls[0]![1]!.body as string,
+    ) as {
+      messages: Array<{ role: string; content: string }>
+    }
+
+    const systemPrompt = requestBody.messages[0]!.content
+
+    expect(systemPrompt).toContain('2026-06-19')
+    expect(systemPrompt).toContain('Treat this as today/current time')
+    expect(systemPrompt).toContain('hôm qua')
+    expect(systemPrompt).toContain('ngày này tháng trước')
+    expect(systemPrompt).toContain('DD/MM')
+    expect(systemPrompt).toContain('YYYY/MM/DD')
+    expect(systemPrompt).toContain('YYYY-MM-DD')
+    expect(systemPrompt).toContain(
+      'set occurredAt to the current client-local date',
+    )
+    expect(systemPrompt).toContain('"11/6: đèn học 145k"')
+    expect(systemPrompt).toContain('"2026-06-11"')
+  })
+})

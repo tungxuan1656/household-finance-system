@@ -20,6 +20,10 @@ export interface RawAiItem {
   occurredAt?: string
 }
 
+export interface ParseExpensesWithAiOptions {
+  defaultOccurredAt?: string
+}
+
 /**
  * Thrown when the upstream AI service returns a non-2xx status,
  * a network error occurs, or the request is aborted (timeout).
@@ -35,7 +39,7 @@ export class AiUpstreamError extends Error {
 // 20s timeout — feature assumes Workers paid-plan 30s wall
 const AI_TIMEOUT_MS = 20_000
 
-const buildSystemPrompt = (): string =>
+const buildSystemPrompt = (defaultOccurredAt?: string): string =>
   [
     'You are an expense parser for a personal finance app. Extract expenses from Vietnamese text.',
     'Respond with a JSON object containing an "expenses" array.',
@@ -44,7 +48,15 @@ const buildSystemPrompt = (): string =>
     '- categoryKey (string — pick the best match from the allowed list below)',
     '- sourceKey (optional string — pick from the allowed list, default bank-transfer)',
     '- title (string, short description of the expense)',
-    '- occurredAt (optional string, YYYY-MM-DD format — infer from context or leave absent)',
+    '- occurredAt (string, YYYY-MM-DD format — infer from text and current date)',
+    '',
+    'Date rules:',
+    `- The current client-local date is ${defaultOccurredAt ?? 'not provided'}. Treat this as today/current time for all date inference.`,
+    '- Infer relative Vietnamese date expressions against the current date: hôm nay, hôm qua, hôm kia, ngày mai, ngày kia, tuần trước, tháng trước, ngày này tháng trước, etc.',
+    '- Supported explicit date formats include DD/MM, D/M, YYYY/MM/DD, YYYY-MM-DD, and DD-MM. Parse day/month formats as day/month, not month/day.',
+    '- When the text gives only day/month, use the year from the current date.',
+    '- If the text has no date information, set occurredAt to the current client-local date.',
+    '- Example: with default date 2026-06-19, "11/6: đèn học 145k" must produce occurredAt "2026-06-11".',
     '',
     'Allowed categoryKey values: food, transport, dating, living-costs, family, children, relatives, shopping, beauty, health, social, repairs, work, education, investment, self-development, sports, travel, hobbies, pets, charity, other',
     'Allowed sourceKey values: cash, bank-transfer, card, momo, zalo-pay, shopee-pay, other',
@@ -52,10 +64,14 @@ const buildSystemPrompt = (): string =>
     'Return ONLY the JSON object, no markdown, no explanation.',
   ].join('\n')
 
-const buildRequestBody = (model: string, text: string): unknown => ({
+const buildRequestBody = (
+  model: string,
+  text: string,
+  options: ParseExpensesWithAiOptions = {},
+): unknown => ({
   model,
   messages: [
-    { role: 'system', content: buildSystemPrompt() },
+    { role: 'system', content: buildSystemPrompt(options.defaultOccurredAt) },
     { role: 'user', content: text },
   ],
   response_format: { type: 'json_object' } as const,
@@ -94,6 +110,7 @@ const coerceAmount = (value: unknown): number | undefined => {
 export const parseExpensesWithAi = async (
   text: string,
   config: AiParserConfig,
+  options: ParseExpensesWithAiOptions = {},
 ): Promise<RawAiItem[]> => {
   const baseUrl = config.baseUrl.replace(/\/+$/, '')
   const url = `${baseUrl}`
@@ -108,7 +125,7 @@ export const parseExpensesWithAi = async (
         'Content-Type': 'application/json',
         Authorization: `Bearer ${config.apiKey}`,
       },
-      body: JSON.stringify(buildRequestBody(config.model, text)),
+      body: JSON.stringify(buildRequestBody(config.model, text, options)),
       signal: controller.signal,
     })
 
