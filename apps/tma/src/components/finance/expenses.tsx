@@ -73,7 +73,7 @@ export const ExpenseItem = ({
             <h3 className='m-0 truncate text-[15px] leading-tight font-semibold text-tma-text-strong'>
               {category.label}
             </h3>
-            <p className='m-0 mt-1 truncate text-sm leading-normal font-medium text-tma-text-muted'>
+            <p className='m-0 mt-1 text-sm leading-normal font-medium break-words text-tma-text-muted'>
               {expense.title.trim() || category.label}
             </p>
           </div>

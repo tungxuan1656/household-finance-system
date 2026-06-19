@@ -120,6 +120,12 @@ export const ExpenseDetailPage = () => {
       <Section>
         <SectionHeader title={t('expenses.detail.sectionInfo')} />
         <Card className='grid gap-3'>
+          <div className='grid gap-1'>
+            <Eyebrow>{t('expenses.detail.eyebrowTitle')}</Eyebrow>
+            <strong className='text-sm font-semibold break-words text-tma-text-strong'>
+              {expense.title.trim()}
+            </strong>
+          </div>
           <div className='flex items-center gap-3'>
             <TmaCategoryIconBadge
               accent={category.accent}
