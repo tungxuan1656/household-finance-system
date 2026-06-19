@@ -88,6 +88,7 @@
     "householdBudgetRemaining": "Còn {{percent}}%",
     "shortcuts": {
       "expense": "Chi tiêu",
+      "aiImport": "Nhập tự động",
       "household": "Gia đình",
       "group": "Nhóm",
       "budget": "Ngân sách"

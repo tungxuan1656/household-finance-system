@@ -11,12 +11,14 @@ export const ShortcutItem = ({
   disabled,
   href,
   icon: Icon,
+  onClick,
   title,
 }: {
   accent: { background: string; foreground: string }
   disabled?: boolean
   href: string
   icon: (props: SVGProps<SVGSVGElement>) => ReactElement
+  onClick?: () => void
   title: string
 }) => {
   const { t } = useTranslation()
@@ -54,6 +56,7 @@ export const ShortcutItem = ({
       className={className}
       to={href}
       onClick={() => {
+        onClick?.()
         impact('light')
       }}>
       {content}

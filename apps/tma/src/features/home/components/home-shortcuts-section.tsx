@@ -7,8 +7,10 @@ import {
   GroupIcon,
   HouseholdIcon,
   ReceiptIcon,
+  SparkIcon,
 } from '@/components/shared/tma-icons'
 import { Section } from '@/components/ui'
+import { useImportFlowStore } from '@/features/expenses/import-store'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
 export const HomeShortcutsSection = () => {
@@ -21,6 +23,16 @@ export const HomeShortcutsSection = () => {
       icon: ReceiptIcon,
       accent: { background: '#edf4ff', foreground: '#3f7cff' },
       enabled: true,
+    },
+    {
+      title: t('home.shortcuts.aiImport'),
+      href: TMA_PATHS.expensesNewChat,
+      icon: SparkIcon,
+      accent: { background: '#f3e9ff', foreground: '#7c3aed' },
+      enabled: true,
+      onClick: () => {
+        useImportFlowStore.getState().reset()
+      },
     },
     {
       title: t('home.shortcuts.household'),
@@ -43,11 +55,12 @@ export const HomeShortcutsSection = () => {
       accent: { background: '#fff6d9', foreground: '#b48800' },
       enabled: true,
     },
-  ] as const satisfies Array<{
+  ] satisfies Array<{
     accent: { background: string; foreground: string }
     enabled: boolean
     href: string
     icon: (props: SVGProps<SVGSVGElement>) => ReactElement
+    onClick?: () => void
     title: string
   }>
 
@@ -62,6 +75,7 @@ export const HomeShortcutsSection = () => {
             href={item.href}
             icon={item.icon}
             title={item.title}
+            onClick={item.onClick}
           />
         ))}
       </div>
