@@ -6,11 +6,11 @@ import {
 } from '@/lib/period'
 
 import { useReferenceCategoriesQuery } from './api'
-import type {
-  AnalyticsComparisonDTO,
-  BudgetDTO,
-  CategoryKey,
-  ReferenceCategoryDTO,
+import {
+  type AnalyticsComparisonDTO,
+  type BudgetDTO,
+  type CategoryKey,
+  type ReferenceCategoryDTO,
 } from './types'
 
 export interface AccentToken {

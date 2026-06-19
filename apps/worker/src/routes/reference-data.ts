@@ -93,7 +93,14 @@ const serveReferenceData = async (
     if (cached) {
       const etag = cached.headers.get('etag')
       if (etag && ctx.req.header('if-none-match') === etag) {
-        return ctx.body(null, 304)
+        return new Response(null, {
+          status: 304,
+          headers: {
+            ETag: etag,
+            'Cache-Control': REFERENCE_DATA_CACHE_CONTROL,
+            Vary: REFERENCE_DATA_VARY,
+          },
+        })
       }
 
       return cached

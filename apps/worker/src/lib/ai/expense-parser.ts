@@ -101,8 +101,6 @@ const buildRequestBody = (
   ],
   response_format: { type: 'json_object' } as const,
   stream: false,
-  thinking: { type: 'disabled' },
-  reasoning: { effort: 'none' },
 })
 
 /**

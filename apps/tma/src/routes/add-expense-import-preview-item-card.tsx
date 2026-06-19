@@ -4,6 +4,7 @@ import { TmaCategoryIconBadge } from '@/components/shared/tma-page-shell'
 import { Card, MoneyLabel, NativePicker } from '@/components/ui'
 import type { ImportItemDraft } from '@/features/expenses/import-store'
 import { getSourceLabel } from '@/features/expenses/presentation'
+import { normalizeCategoryKey } from '@/features/home/category-key'
 import { useCategoryPresentation } from '@/features/home/presentation'
 import { formatVnd } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
@@ -41,7 +42,9 @@ export const ImportPreviewItemCard = ({
   onSetItemContext,
 }: Props) => {
   const { t } = useTranslation()
-  const presentation = useCategoryPresentation(item.parsed.categoryKey as never)
+  const presentation = useCategoryPresentation(
+    normalizeCategoryKey(item.parsed.categoryKey),
+  )
   const sourceLabel = getSourceLabel(item.parsed.sourceKey, t)
 
   return (
@@ -78,7 +81,7 @@ export const ImportPreviewItemCard = ({
             className={cn(ROW_LABEL_CLASS, 'text-sm text-tma-text-strong/80')}>
             {presentation.label}
           </div>
-          <div className='truncate text-sm font-semibold text-tma-text-strong'>
+          <div className='text-sm font-semibold wrap-break-word text-tma-text-strong'>
             {item.parsed.title}
           </div>
         </div>

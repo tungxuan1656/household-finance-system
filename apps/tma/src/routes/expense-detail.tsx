@@ -119,7 +119,7 @@ export const ExpenseDetailPage = () => {
           <div className='grid gap-1'>
             <Eyebrow>{t('expenses.detail.eyebrowTitle')}</Eyebrow>
             <strong className='text-sm font-semibold wrap-break-word text-tma-text-strong'>
-              {expense.title.trim()}
+              {expense.title.trim() || category.label}
             </strong>
           </div>
           <div className='flex items-center gap-3'>
