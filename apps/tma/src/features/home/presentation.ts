@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next'
+
 import {
   getComparisonGranularityLabel,
   type PeriodGranularity,
 } from '@/lib/period'
 
+import { useReferenceCategoriesQuery } from './api'
 import type {
   AnalyticsComparisonDTO,
   BudgetDTO,
@@ -175,6 +178,19 @@ export const getCategoryPresentation = (
     iconUrl: match?.iconUrl,
     accent,
   }
+}
+
+export const useCategoryPresentation = (
+  categoryKey: CategoryKey | undefined,
+): CategoryPresentation => {
+  const { t } = useTranslation()
+  const categoriesQuery = useReferenceCategoriesQuery()
+
+  return getCategoryPresentation(
+    categoryKey,
+    t,
+    categoriesQuery.data?.items ?? [],
+  )
 }
 
 export const getBudgetProgress = (

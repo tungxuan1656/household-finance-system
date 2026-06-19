@@ -16,11 +16,8 @@ import {
   usePersonalExpenseGroupListQuery,
 } from '@/features/groups/api'
 import type { GroupListItem } from '@/features/groups/types'
-import {
-  useHouseholdsQuery,
-  useReferenceCategoriesQuery,
-} from '@/features/home/api'
-import { getCategoryPresentation } from '@/features/home/presentation'
+import { useHouseholdsQuery } from '@/features/home/api'
+import { useCategoryPresentation } from '@/features/home/presentation'
 import { getExpenseDetailPath } from '@/lib/constants/routes'
 import {
   formatAmountInput,
@@ -39,11 +36,9 @@ export const ExpenseEditPage = () => {
   const expenseQuery = useExpenseDetailQuery(expenseId, {
     enabled: expenseId !== 'unknown',
   })
-  const categoriesQuery = useReferenceCategoriesQuery()
   const householdsQuery = useHouseholdsQuery()
   const personalGroupsQuery = usePersonalExpenseGroupListQuery()
   const expense = expenseQuery.data
-  const referenceCategories = categoriesQuery.data?.items ?? []
   const households = householdsQuery.data?.items ?? []
   const draft = useEditExpenseStore((state) => state.draft)
   const setDraft = useEditExpenseStore((state) => state.setDraft)
@@ -75,10 +70,8 @@ export const ExpenseEditPage = () => {
     updateDraft({ amount: parseAmountInput(formatted) })
   }
 
-  const activeCategory = getCategoryPresentation(
+  const activeCategory = useCategoryPresentation(
     draft?.categoryKey ?? expense?.categoryKey,
-    t,
-    referenceCategories,
   )
   const updateMutation = useUpdateExpenseMutation()
   const isValid = Boolean(

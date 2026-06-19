@@ -106,7 +106,6 @@ export const ExpensesPage = () => {
         <ExpenseTimeline
           expenses={expenses}
           householdNameById={householdNameMap}
-          referenceCategories={referenceCategoriesQuery.data?.items}
         />
       )}
     </TmaPageShell>

@@ -30,6 +30,11 @@ export const referenceCategoriesQueryOptions = () =>
   queryOptions({
     queryKey: REFERENCE_DATA_KEYS.categories(),
     queryFn: getReferenceCategories,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
 // ---------------------------------------------------------------------------

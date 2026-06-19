@@ -1,10 +1,10 @@
-import type { TFunction } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 import { TmaCategoryIconBadge } from '@/components/shared/tma-page-shell'
 import { Card, MoneyLabel, NativePicker } from '@/components/ui'
 import type { ImportItemDraft } from '@/features/expenses/import-store'
 import { getSourceLabel } from '@/features/expenses/presentation'
-import { getCategoryPresentation } from '@/features/home/presentation'
+import { useCategoryPresentation } from '@/features/home/presentation'
 import { formatVnd } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 
@@ -22,7 +22,6 @@ type Props = {
   groupPickerOptions: { value: string; label: string }[]
   householdsLoading: boolean
   groupsLoading: boolean
-  t: TFunction
   onToggleInclude: (id: string) => void
   onSetItemContext: (
     id: string,
@@ -38,15 +37,11 @@ export const ImportPreviewItemCard = ({
   groupPickerOptions,
   householdsLoading,
   groupsLoading,
-  t,
   onToggleInclude,
   onSetItemContext,
 }: Props) => {
-  const presentation = getCategoryPresentation(
-    item.parsed.categoryKey as never,
-    t,
-    [],
-  )
+  const { t } = useTranslation()
+  const presentation = useCategoryPresentation(item.parsed.categoryKey as never)
   const sourceLabel = getSourceLabel(item.parsed.sourceKey, t)
 
   return (

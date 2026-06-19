@@ -13,17 +13,13 @@ import {
   SectionHeader,
 } from '@/components/ui'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
-import {
-  useExpenseListQuery,
-  useHouseholdsQuery,
-  useReferenceCategoriesQuery,
-} from '@/features/home/api'
+import { useExpenseListQuery, useHouseholdsQuery } from '@/features/home/api'
 import {
   formatCurrencyMinor,
-  getCategoryPresentation,
   getExpenseGroupLabel,
+  useCategoryPresentation,
 } from '@/features/home/presentation'
-import type { ExpenseDTO, ReferenceCategoryDTO } from '@/features/home/types'
+import type { ExpenseDTO } from '@/features/home/types'
 import { getExpenseDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel } from '@/lib/formatters'
 import { selection } from '@/lib/telegram/haptics'
@@ -31,21 +27,15 @@ import { selection } from '@/lib/telegram/haptics'
 export const ExpenseItem = ({
   expense,
   householdLabel,
-  referenceCategories,
   showHouseholdLabel = true,
 }: {
   expense: ExpenseDTO
   householdLabel?: string | null
-  referenceCategories?: ReferenceCategoryDTO[]
   showHouseholdLabel?: boolean
 }) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const category = getCategoryPresentation(
-    expense.categoryKey,
-    t,
-    referenceCategories,
-  )
+  const category = useCategoryPresentation(expense.categoryKey)
   const groupLabel = getExpenseGroupLabel(expense.groupIds, t)
 
   const openDetail = () => {
@@ -73,7 +63,7 @@ export const ExpenseItem = ({
             <h3 className='m-0 truncate text-[15px] leading-tight font-semibold text-tma-text-strong'>
               {category.label}
             </h3>
-            <p className='m-0 mt-1 text-sm leading-normal font-medium break-words text-tma-text-muted'>
+            <p className='m-0 mt-1 text-sm leading-normal font-medium wrap-break-word text-tma-text-muted'>
               {expense.title.trim() || category.label}
             </p>
           </div>
@@ -130,7 +120,6 @@ export const RecentExpenses = ({
     ...(dateTo != null ? { date_to: dateTo } : {}),
   })
   const householdsQuery = useHouseholdsQuery()
-  const referenceCategoriesQuery = useReferenceCategoriesQuery()
   const householdNameById = buildHouseholdNameMap(
     householdsQuery.data?.items ?? [],
   )
@@ -171,7 +160,6 @@ export const RecentExpenses = ({
                   ? householdNameById.get(expense.householdId)
                   : null
               }
-              referenceCategories={referenceCategoriesQuery.data?.items}
               showHouseholdLabel={showHouseholdLabel}
             />
           ))}
@@ -184,11 +172,9 @@ export const RecentExpenses = ({
 export const ExpenseTimeline = ({
   expenses,
   householdNameById,
-  referenceCategories,
 }: {
   expenses: ExpenseDTO[]
   householdNameById: Map<string, string>
-  referenceCategories?: ReferenceCategoryDTO[]
 }) => {
   const sections = new Map<string, ExpenseDTO[]>()
 
@@ -214,7 +200,6 @@ export const ExpenseTimeline = ({
                     ? householdNameById.get(expense.householdId)
                     : null
                 }
-                referenceCategories={referenceCategories}
               />
             ))}
           </div>

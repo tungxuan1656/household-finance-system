@@ -193,7 +193,6 @@ export const AddExpenseImportPreviewPage = () => {
             index={index}
             isSaving={isSaving}
             item={item}
-            t={t}
             onSetItemContext={setItemContext}
             onToggleInclude={toggleInclude}
           />
