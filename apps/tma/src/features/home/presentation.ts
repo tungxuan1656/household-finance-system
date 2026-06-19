@@ -1,13 +1,16 @@
+import { useTranslation } from 'react-i18next'
+
 import {
   getComparisonGranularityLabel,
   type PeriodGranularity,
 } from '@/lib/period'
 
-import type {
-  AnalyticsComparisonDTO,
-  BudgetDTO,
-  CategoryKey,
-  ReferenceCategoryDTO,
+import { useReferenceCategoriesQuery } from './api'
+import {
+  type AnalyticsComparisonDTO,
+  type BudgetDTO,
+  type CategoryKey,
+  type ReferenceCategoryDTO,
 } from './types'
 
 export interface AccentToken {
@@ -175,6 +178,19 @@ export const getCategoryPresentation = (
     iconUrl: match?.iconUrl,
     accent,
   }
+}
+
+export const useCategoryPresentation = (
+  categoryKey: CategoryKey | undefined,
+): CategoryPresentation => {
+  const { t } = useTranslation()
+  const categoriesQuery = useReferenceCategoriesQuery()
+
+  return getCategoryPresentation(
+    categoryKey,
+    t,
+    categoriesQuery.data?.items ?? [],
+  )
 }
 
 export const getBudgetProgress = (

@@ -8,7 +8,15 @@ import {
 } from '../helpers/test-context'
 
 const EXPECTED_CACHE_CONTROL =
-  'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800'
+  'public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=2592000, immutable'
+// CORS middleware may append `Origin` to Vary; we only need to ensure
+// compression variants are not co-mingled.
+const expectVaryIncludesAcceptEncoding = (response: Response): void => {
+  const vary = (response.headers.get('vary') ?? '').toLowerCase()
+  expect(vary.split(',').map((part) => part.trim())).toContain(
+    'accept-encoding',
+  )
+}
 
 const EXPECTED_CATEGORY_KEYS_IN_ORDER = [
   'food',
@@ -40,7 +48,7 @@ const EXPECTED_CATEGORY_KEYS_IN_ORDER = [
 registerWorkerIntegrationSetup()
 
 describe('Worker integration: reference data', () => {
-  it('returns unauthenticated static categories payload with cache header', async () => {
+  it('returns unauthenticated static categories payload with strong cache + ETag', async () => {
     const response = await SELF.fetch('https://example.com/api/v1/categories')
     const payload = await parseJson<
       ApiEnvelope<{
@@ -55,6 +63,8 @@ describe('Worker integration: reference data', () => {
 
     expect(response.status).toBe(200)
     expect(response.headers.get('cache-control')).toBe(EXPECTED_CACHE_CONTROL)
+    expectVaryIncludesAcceptEncoding(response)
+    expect(response.headers.get('etag')).toMatch(/^"[0-9a-f]{32}"$/)
     expect(payload.success).toBe(true)
     expect(payload.error).toBeNull()
     expect(payload.meta.requestId.length).toBeGreaterThan(0)
@@ -72,7 +82,21 @@ describe('Worker integration: reference data', () => {
     ])
   })
 
-  it('returns unauthenticated static sources payload with cache header', async () => {
+  it('returns 304 when If-None-Match matches the categories ETag', async () => {
+    const first = await SELF.fetch('https://example.com/api/v1/categories')
+    const etag = first.headers.get('etag')
+    expect(etag).not.toBeNull()
+
+    const second = await SELF.fetch('https://example.com/api/v1/categories', {
+      headers: { 'if-none-match': etag as string },
+    })
+
+    expect(second.status).toBe(304)
+    expect(second.headers.get('cache-control')).toBe(EXPECTED_CACHE_CONTROL)
+    expect(second.headers.get('etag')).toBe(etag)
+  })
+
+  it('returns unauthenticated static sources payload with strong cache + ETag', async () => {
     const response = await SELF.fetch('https://example.com/api/v1/sources')
     const payload = await parseJson<
       ApiEnvelope<{
@@ -82,6 +106,8 @@ describe('Worker integration: reference data', () => {
 
     expect(response.status).toBe(200)
     expect(response.headers.get('cache-control')).toBe(EXPECTED_CACHE_CONTROL)
+    expectVaryIncludesAcceptEncoding(response)
+    expect(response.headers.get('etag')).toMatch(/^"[0-9a-f]{32}"$/)
     expect(payload.success).toBe(true)
     expect(payload.error).toBeNull()
 
@@ -94,5 +120,28 @@ describe('Worker integration: reference data', () => {
       { key: 'shopee-pay' },
       { key: 'other' },
     ])
+  })
+
+  it('returns 304 when If-None-Match matches the sources ETag', async () => {
+    const first = await SELF.fetch('https://example.com/api/v1/sources')
+    const etag = first.headers.get('etag')
+    expect(etag).not.toBeNull()
+
+    const second = await SELF.fetch('https://example.com/api/v1/sources', {
+      headers: { 'if-none-match': etag as string },
+    })
+
+    expect(second.status).toBe(304)
+    expect(second.headers.get('cache-control')).toBe(EXPECTED_CACHE_CONTROL)
+    expect(second.headers.get('etag')).toBe(etag)
+  })
+
+  it('categories and sources share the same ETag (derived from combined catalog)', async () => {
+    const [categories, sources] = await Promise.all([
+      SELF.fetch('https://example.com/api/v1/categories'),
+      SELF.fetch('https://example.com/api/v1/sources'),
+    ])
+
+    expect(categories.headers.get('etag')).toBe(sources.headers.get('etag'))
   })
 })

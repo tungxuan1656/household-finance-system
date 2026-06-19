@@ -29,7 +29,7 @@ import {
 } from '@/features/home/api'
 import {
   formatCurrencyMinor,
-  getCategoryPresentation,
+  useCategoryPresentation,
 } from '@/features/home/presentation'
 import { getExpenseEditPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel } from '@/lib/formatters'
@@ -53,11 +53,7 @@ export const ExpenseDetailPage = () => {
     () => buildHouseholdNameMap(householdsQuery.data?.items ?? []),
     [householdsQuery.data?.items],
   )
-  const category = getCategoryPresentation(
-    expense?.categoryKey,
-    t,
-    categoriesQuery.data?.items ?? [],
-  )
+  const category = useCategoryPresentation(expense?.categoryKey)
 
   const handleDelete = async () => {
     if (!expense) return
@@ -120,6 +116,12 @@ export const ExpenseDetailPage = () => {
       <Section>
         <SectionHeader title={t('expenses.detail.sectionInfo')} />
         <Card className='grid gap-3'>
+          <div className='grid gap-1'>
+            <Eyebrow>{t('expenses.detail.eyebrowTitle')}</Eyebrow>
+            <strong className='text-sm font-semibold wrap-break-word text-tma-text-strong'>
+              {expense.title.trim() || category.label}
+            </strong>
+          </div>
           <div className='flex items-center gap-3'>
             <TmaCategoryIconBadge
               accent={category.accent}

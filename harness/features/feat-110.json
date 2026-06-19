@@ -1,0 +1,41 @@
+{
+  "id": "feat-110",
+  "name": "Reference data strongest HTTP cache + TMA icon presentation hook",
+  "status": "done",
+  "description": "Hardcoded /api/v1/categories and /api/v1/sources responses are served with `Cache-Control: public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=2592000, immutable`, a strong SHA-256 ETag derived from the combined catalog payload, `Vary: Accept-Encoding`, 304 on `If-None-Match` revalidation, and write-through to `caches.default` (production only). TMA reference-category React Query is set to `staleTime: Infinity`, `gcTime: Infinity`, no refetch on mount/focus/reconnect, eliminating redundant network calls. A reusable `useCategoryPresentation(categoryKey)` hook was added and adopted by the 5 TMA call sites that previously passed an empty `referenceCategories` array (notably `add-expense-import-preview-item-card.tsx` whose `iconUrl` was always undefined), restoring real category icon URLs in the AI import preview and removing prop-drilling across `ExpenseItem`/`ExpenseTimeline`/`RecentExpenses`.",
+  "dependencies": ["feat-016", "feat-109"],
+  "evidence": {
+    "planned": [
+      "Worker: upgrade Cache-Control on /categories and /sources to immutable 1y, add strong ETag (SHA-256 of catalog), 304 revalidation, optional `caches.default` write-through gated by APP_ENV=prod to avoid corrupting test isolated storage.",
+      "Worker: update integration test for new headers, ETag shape, 304 behavior, and ETag consistency between /categories and /sources.",
+      "TMA: tune `referenceCategoriesQueryOptions` to `staleTime: Infinity`, `gcTime: Infinity`, no refetch on mount/focus/reconnect; mirror the same on the duplicate hook in `households/api/categories.ts`.",
+      "TMA: add `useCategoryPresentation(categoryKey)` hook in `presentation.ts`; migrate 5 call sites where the hook is practical; leave 3 inside `.map()` loops on pure `getCategoryPresentation` for now (statistics, add-expense-category, expense-edit-category).",
+      "Verify: full worker test suite (456 tests), TMA tests (104), worker typecheck, TMA typecheck, TMA build, worker dry-run deploy."
+    ],
+    "artifacts": [
+      "apps/worker/src/routes/reference-data.ts (immutable Cache-Control, ETag, 304, caches.default write-through, Vary Accept-Encoding)",
+      "apps/worker/test/integration/reference-data.spec.ts (5 cases: payload + 304 categories, payload + 304 sources, shared ETag)",
+      "apps/tma/src/features/home/api.ts (staleTime: Infinity, gcTime: Infinity, refetchOn* false on referenceCategoriesQueryOptions)",
+      "apps/tma/src/features/households/api/categories.ts (mirrored strong cache on duplicate query options)",
+      "apps/tma/src/features/home/presentation.ts (useCategoryPresentation hook, pure function unchanged)",
+      "apps/tma/src/routes/add-expense-import-preview-item-card.tsx (uses hook; root cause fix for iconUrl=undefined)",
+      "apps/tma/src/routes/add-expense-import-preview.tsx (drop t passthrough)",
+      "apps/tma/src/routes/expense-edit.tsx (uses hook; removed redundant query + referenceCategories variable)",
+      "apps/tma/src/routes/expense-detail.tsx (uses hook; kept categoriesQuery for loading guard)",
+      "apps/tma/src/components/finance/expenses.tsx (ExpenseItem uses hook; referenceCategories prop removed from ExpenseItem/ExpenseTimeline/RecentExpenses)",
+      "apps/tma/src/routes/expenses.tsx (referenceCategories removed from ExpenseTimeline call)"
+    ],
+    "verification": [
+      "pnpm --filter worker vitest run test/integration/reference-data.spec.ts -> 5/5 passed (33ms total)",
+      "pnpm --filter worker vitest run -> 456/456 passed across 83 files in 25.68s",
+      "pnpm --filter tma vitest run -> 104/104 passed across 21 files in 3.03s",
+      "pnpm --filter tma lint -> 0 errors, 13 pre-existing console warnings (unrelated)",
+      "pnpm --filter tma typecheck -> OK",
+      "pnpm --filter worker lint -> OK",
+      "pnpm --filter worker typecheck -> OK",
+      "pnpm --filter tma build -> OK (built in 1.32s)",
+      "pnpm --filter worker exec wrangler deploy --dry-run -> OK (APP_ENV prod bindings present)"
+    ]
+  },
+  "notes": "`caches.default` write-through is gated on `ctx.env.APP_ENV === 'prod'` to avoid the vitest pool-workers `Isolated storage failed` error; the test environment has APP_ENV=local. The Cache-Control + ETag + 304 path is still exercised in tests and is the primary client/edge cache signal. Strong ETag is derived from the combined categories+sources payload so both endpoints share the same tag and rotate together on catalog changes. Pure `getCategoryPresentation` is left unchanged for non-hook code paths and tests; the new hook delegates to it. Web parity is out of scope here — the Web app uses its own server-driven reference data and was not touched."
+}

@@ -53,11 +53,15 @@ export const parseExpenseHandler = async (
   // 3. Call AI parser (fetch with timeout, no raw-text logging)
   let rawItems: RawAiItem[]
   try {
-    rawItems = await parseExpensesWithAi(body.text, {
-      baseUrl,
-      apiKey,
-      model,
-    })
+    rawItems = await parseExpensesWithAi(
+      body.text,
+      {
+        baseUrl,
+        apiKey,
+        model,
+      },
+      { defaultOccurredAt: body.defaultOccurredAt },
+    )
   } catch (error) {
     if (error instanceof AiUpstreamError) {
       throw badGateway(locale, 'errors.aiUpstreamFailure')

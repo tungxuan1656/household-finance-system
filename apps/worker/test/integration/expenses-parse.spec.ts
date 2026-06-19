@@ -124,6 +124,16 @@ describe('POST /api/v1/expenses/parse', () => {
     expect(second.sourceKey).toBe('bank-transfer')
     expect(second.title).toBe('Đi xe bus')
     expect(second.occurredAt).toBe(defaultOccurredAt)
+
+    expect(parseExpensesWithAi).toHaveBeenLastCalledWith(
+      'ăn sáng 50k, đi xe bus 10k',
+      expect.objectContaining({
+        apiKey: expect.any(String),
+        baseUrl: expect.any(String),
+        model: expect.any(String),
+      }),
+      { defaultOccurredAt },
+    )
   })
 
   it('defaults sourceKey to bank-transfer and occurredAt to defaultOccurredAt when AI omits them', async () => {

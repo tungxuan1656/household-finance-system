@@ -594,6 +594,11 @@
       "id": "feat-109",
       "name": "TMA AI expense import via Worker OpenAI-compatible parser",
       "status": "done"
+    },
+    {
+      "id": "feat-110",
+      "name": "Reference data strongest HTTP cache + TMA icon presentation hook",
+      "status": "done"
     }
   ]
 }
