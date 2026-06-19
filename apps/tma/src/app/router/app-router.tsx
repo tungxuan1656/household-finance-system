@@ -70,6 +70,18 @@ const AddExpenseContextPage = lazy(async () => {
   return { default: module.AddExpenseContextPage }
 })
 
+const AddExpenseChatPage = lazy(async () => {
+  const module = await import('@/routes/add-expense-chat')
+
+  return { default: module.AddExpenseChatPage }
+})
+
+const AddExpenseImportPreviewPage = lazy(async () => {
+  const module = await import('@/routes/add-expense-import-preview')
+
+  return { default: module.AddExpenseImportPreviewPage }
+})
+
 const HouseholdsPage = lazy(async () => {
   const module = await import('@/features/households/pages/household-list-page')
 
@@ -202,6 +214,14 @@ const router = createBrowserRouter([
       {
         path: TMA_PATHS.expensesNewContext,
         element: renderLazyRoute(AddExpenseContextPage),
+      },
+      {
+        path: TMA_PATHS.expensesNewChat,
+        element: renderLazyRoute(AddExpenseChatPage),
+      },
+      {
+        path: TMA_PATHS.expensesNewImport,
+        element: renderLazyRoute(AddExpenseImportPreviewPage),
       },
       {
         path: TMA_PATHS.households,

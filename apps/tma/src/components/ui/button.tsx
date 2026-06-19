@@ -21,7 +21,7 @@ export const buttonVariants = ({
   variant?: ButtonVariant
 } = {}) =>
   cn(
-    'inline-flex shrink-0 items-center justify-center gap-2 rounded-[18px] font-bold transition duration-150 active:scale-95 disabled:pointer-events-none disabled:opacity-60',
+    'inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl font-bold transition duration-150 active:scale-95 disabled:pointer-events-none disabled:opacity-60',
     size === 'sm' && 'min-h-9 px-3 text-xs',
     size === 'md' && 'min-h-11 px-4 text-sm',
     size === 'icon' && 'size-10 rounded-2xl p-0',

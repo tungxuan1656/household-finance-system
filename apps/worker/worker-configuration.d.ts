@@ -24,6 +24,9 @@ declare namespace Cloudflare {
 		CLOUDINARY_CLOUD_NAME: string;
 		CLOUDINARY_API_KEY: string;
 		CLOUDINARY_API_SECRET: string;
+		OPENAI_COMPAT_BASE_URL: string;
+		OPENAI_COMPAT_API_KEY: string;
+		OPENAI_COMPAT_MODEL: string;
 	}
 }
 interface Env extends Cloudflare.Env {}

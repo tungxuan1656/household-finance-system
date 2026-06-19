@@ -43,6 +43,9 @@ export const ExpenseFilterPage = () => {
   const { t } = useTranslation()
   const filter = useExpenseListFilterStore((state) => state.filter)
   const setFilter = useExpenseListFilterStore((state) => state.setFilter)
+  const setDefaultPeriod = useExpenseListFilterStore(
+    (state) => state.setDefaultPeriod,
+  )
 
   const householdsQuery = useHouseholdsQuery()
   const referenceCategoriesQuery = useReferenceCategoriesQuery()
@@ -75,6 +78,7 @@ export const ExpenseFilterPage = () => {
       setFilter({
         dateFrom: state.appliedPeriod.dateFrom,
         dateTo: state.appliedPeriod.dateTo,
+        periodPreset: 'custom',
       })
     }
   }, [location.state, setFilter])
@@ -82,7 +86,7 @@ export const ExpenseFilterPage = () => {
   const handlePeriodChange = useEffectEvent(
     (period: PeriodSelection | null) => {
       if (!period) {
-        setFilter({ dateFrom: undefined, dateTo: undefined })
+        setDefaultPeriod()
 
         return
       }
@@ -90,6 +94,7 @@ export const ExpenseFilterPage = () => {
       setFilter({
         dateFrom: period.dateFrom,
         dateTo: period.dateTo,
+        periodPreset: 'custom',
       })
     },
   )
@@ -160,7 +165,7 @@ export const ExpenseFilterPage = () => {
 
   const isFilterActive =
     filter.sort !== 'occurred_at_desc' ||
-    filter.dateFrom != null ||
+    filter.periodPreset === 'custom' ||
     filter.householdId != null ||
     filter.groupId != null ||
     filter.categoryKey != null

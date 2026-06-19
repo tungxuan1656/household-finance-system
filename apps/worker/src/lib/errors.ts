@@ -6,6 +6,7 @@ import {
 } from '@/lib/i18n'
 
 export const ERROR_CODES = {
+  BAD_GATEWAY: 'BAD_GATEWAY',
   CONFLICT: 'CONFLICT',
   FORBIDDEN: 'FORBIDDEN',
   INTERNAL_ERROR: 'INTERNAL_ERROR',
@@ -71,6 +72,12 @@ export const conflict = (
   messageKey: MessageKey = 'errors.conflict',
 ): AppError =>
   new AppError(409, ERROR_CODES.CONFLICT, translate(locale, messageKey))
+
+export const badGateway = (
+  locale: SupportedLocale = defaultLocale,
+  messageKey: MessageKey = 'errors.aiUpstreamFailure',
+): AppError =>
+  new AppError(502, ERROR_CODES.BAD_GATEWAY, translate(locale, messageKey))
 
 export const internalError = (
   locale: SupportedLocale = defaultLocale,

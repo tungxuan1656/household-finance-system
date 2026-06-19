@@ -10,6 +10,7 @@ import {
   countActiveExpenseListFilters,
   useExpenseListFilterStore,
 } from '@/features/expenses/filter-store'
+import { useImportFlowStore } from '@/features/expenses/import-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import {
   useExpenseListQuery,
@@ -68,7 +69,17 @@ export const ExpensesPage = () => {
   return (
     <TmaPageShell title={t('expenses.title')}>
       <ExpenseSummaryCard expenses={expenses} />
-      <div className='flex justify-end px-1 py-2'>
+      <div className='mb-2 flex justify-between px-1 py-4'>
+        <Button
+          size='sm'
+          onClick={() => {
+            selection()
+            useImportFlowStore.getState().reset()
+            navigate(TMA_PATHS.expensesNewChat)
+          }}>
+          <span className='text-xs'>AI</span>
+          <span>{t('expenses.aiImport')}</span>
+        </Button>
         <Button
           aria-label={t('expenses.openFilterAria')}
           size='sm'

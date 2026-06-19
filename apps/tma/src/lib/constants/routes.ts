@@ -8,6 +8,8 @@ export const TMA_PATHS = {
   expensesNewCategory: '/expenses/new/category',
   expensesNewDetails: '/expenses/new/details',
   expensesNewContext: '/expenses/new/context',
+  expensesNewChat: '/expenses/new/chat',
+  expensesNewImport: '/expenses/new/import',
   households: '/households',
   householdsNew: '/households/new',
   groups: '/groups',
