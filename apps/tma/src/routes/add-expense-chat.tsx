@@ -41,12 +41,23 @@ export const AddExpenseChatPage = () => {
         defaultOccurredAt,
       })
 
+      if (response.expenses.length === 0) {
+        notification('warning')
+        setError(t('expenses.add.parseEmpty'))
+
+        return
+      }
+
       setItems(response.expenses)
       navigate(TMA_PATHS.expensesNewImport)
     } catch (err) {
       notification('error')
 
-      setError(err instanceof Error ? err.message : t('expenses.add.saveError'))
+      setError(
+        err instanceof Error && err.message
+          ? err.message
+          : t('expenses.add.parseError'),
+      )
     }
   })
 

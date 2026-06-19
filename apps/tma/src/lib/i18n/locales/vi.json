@@ -216,6 +216,8 @@
       "aiInputPlaceholder": "Nhập danh sách chi tiêu...",
       "parseAction": "Phân tích",
       "parsing": "Đang phân tích...",
+      "parseEmpty": "Không tìm thấy chi tiêu hợp lệ. Vui lòng nhập lại hoặc thêm thủ công.",
+      "parseError": "Phân tích thất bại. Vui lòng thử lại.",
       "switchToManual": "Chuyển sang nhập thủ công",
       "importPreviewTitle": "Xem trước chi tiêu",
       "importEmptyTitle": "Không có chi tiêu nào",
