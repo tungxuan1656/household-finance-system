@@ -69,10 +69,9 @@ export const ExpensesPage = () => {
   return (
     <TmaPageShell title={t('expenses.title')}>
       <ExpenseSummaryCard expenses={expenses} />
-      <div className='flex justify-between px-1 py-2'>
+      <div className='mb-2 flex justify-between px-1 py-4'>
         <Button
           size='sm'
-          variant='ghost'
           onClick={() => {
             selection()
             useImportFlowStore.getState().reset()

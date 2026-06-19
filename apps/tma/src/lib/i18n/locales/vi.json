@@ -109,7 +109,7 @@
     "openFilterAria": "Mở bộ lọc",
     "filterLabel": "Lọc",
     "filterCount": "Lọc {{count}}",
-    "aiImport": "Nhập bằng AI",
+    "aiImport": "Nhập tự động",
     "summary": {
       "title": "Tổng chi theo bộ lọc",
       "count": "{{count}} khoản"
