@@ -20,6 +20,18 @@ export interface RawAiItem {
   occurredAt?: string
 }
 
+/**
+ * Thrown when the upstream AI service returns a non-2xx status,
+ * a network error occurs, or the request is aborted (timeout).
+ * Distinguishable from "AI returned no parseable expenses".
+ */
+export class AiUpstreamError extends Error {
+  constructor() {
+    super('AI upstream service failure')
+    this.name = 'AiUpstreamError'
+  }
+}
+
 // 20s timeout — feature assumes Workers paid-plan 30s wall
 const AI_TIMEOUT_MS = 20_000
 
@@ -51,10 +63,33 @@ const buildRequestBody = (model: string, text: string): unknown => ({
 })
 
 /**
+ * Safely coerce an AI-provided amount to a number.
+ *
+ * - Numbers pass through.
+ * - Numeric strings ("50000") are converted.
+ * - NaN, Infinity, negative values are returned as undefined
+ *   so the handler schema (positive()) can reject them cleanly.
+ */
+const coerceAmount = (value: unknown): number | undefined => {
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (trimmed.length === 0) return undefined
+
+    const n = Number(trimmed)
+
+    return Number.isFinite(n) && n > 0 ? n : undefined
+  }
+
+  return undefined
+}
+
+/**
  * Calls the OpenAI-compatible chat completions endpoint and returns
  * raw items parsed from the model response.
  *
- * Returns an empty array on any parse failure — never throws for bad AI output.
+ * Throws {@link AiUpstreamError} for upstream non-2xx / network / abort failures.
+ * Returns an empty array when the model responds OK but yields no parseable content.
  */
 export const parseExpensesWithAi = async (
   text: string,
@@ -78,8 +113,8 @@ export const parseExpensesWithAi = async (
     })
 
     if (!response.ok) {
-      // Do not expose the upstream error body to the client
-      return []
+      // Upstream failure — do not expose the upstream error body
+      throw new AiUpstreamError()
     }
 
     const body = (await response.json()) as {
@@ -112,7 +147,7 @@ export const parseExpensesWithAi = async (
       const raw = item as Record<string, unknown>
 
       return {
-        amount: typeof raw.amount === 'number' ? raw.amount : 0,
+        amount: coerceAmount(raw.amount) ?? 0,
         categoryKey:
           typeof raw.categoryKey === 'string' ? raw.categoryKey.trim() : '',
         sourceKey:
@@ -124,9 +159,10 @@ export const parseExpensesWithAi = async (
             : undefined,
       }
     })
-  } catch {
-    // Network errors, aborts, JSON parse failures → empty
-    return []
+  } catch (error) {
+    if (error instanceof AiUpstreamError) throw error
+    // Network errors, aborts → upstream failure
+    throw new AiUpstreamError()
   } finally {
     clearTimeout(timer)
   }

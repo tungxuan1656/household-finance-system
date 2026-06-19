@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Card, CardDescription, CardTitle, Textarea } from '@/components/ui'
 import { useParseExpensesMutation } from '@/features/expenses/import-api'
+import { MAX_PARSE_TEXT_LENGTH } from '@/features/expenses/import-api'
 import { useImportFlowStore } from '@/features/expenses/import-store'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {
@@ -95,6 +96,7 @@ export const AddExpenseChatPage = () => {
         aria-label={t('expenses.add.aiInputLabel')}
         className='min-h-45'
         disabled={parseMutation.isPending}
+        maxLength={MAX_PARSE_TEXT_LENGTH}
         placeholder={t('expenses.add.aiInputPlaceholder')}
         value={rawText}
         onChange={(e) => setRawText(e.target.value)}

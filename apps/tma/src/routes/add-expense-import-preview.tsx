@@ -186,10 +186,10 @@ export const AddExpenseImportPreviewPage = () => {
         {items.map((item, index) => (
           <ImportPreviewItemCard
             key={item.id}
-            householdPickerOptions={householdPickerOptions}
             groupPickerOptions={groupPickerOptions}
-            householdsLoading={householdsQuery.isLoading}
             groupsLoading={personalGroupsQuery.isLoading}
+            householdPickerOptions={householdPickerOptions}
+            householdsLoading={householdsQuery.isLoading}
             index={index}
             isSaving={isSaving}
             item={item}

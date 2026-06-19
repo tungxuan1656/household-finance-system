@@ -105,7 +105,7 @@ describe('confirmImport', () => {
     expect(result.failed).toEqual([])
   })
 
-  it('maps parsed.occurredAt string to numeric timestamp on CreateExpenseRequest', async () => {
+  it('maps parsed.occurredAt string to UTC-midnight timestamp on CreateExpenseRequest', async () => {
     const payMock = vi.fn(pay)
     const items = [
       buildItem({
@@ -123,8 +123,8 @@ describe('confirmImport', () => {
     await confirmImport(items, payMock)
 
     const request: CreateExpenseRequest = payMock.mock.calls[0]![0]
-    // 2026-06-19T00:00:00.000Z in epoch ms
-    expect(request.occurredAt).toBe(new Date('2026-06-19T00:00:00').getTime())
+    // 2026-06-19T00:00:00.000Z in epoch ms using Date.UTC (timezone-independent)
+    expect(request.occurredAt).toBe(Date.UTC(2026, 5, 19))
   })
 
   it('maps context householdId and groupId to the create request', async () => {

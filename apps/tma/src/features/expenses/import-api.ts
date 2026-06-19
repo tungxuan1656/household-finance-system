@@ -2,6 +2,9 @@ import { useMutation } from '@tanstack/react-query'
 
 import { post } from '@/lib/api/client'
 
+// Mirror of worker's MAX_PARSE_TEXT_LENGTH in contracts/expense-parse-schemas
+export const MAX_PARSE_TEXT_LENGTH = 4000
+
 export interface ParsedExpenseItem {
   amount: number
   categoryKey: string
@@ -12,6 +15,7 @@ export interface ParsedExpenseItem {
 
 export interface ParseExpensesResponse {
   expenses: ParsedExpenseItem[]
+  droppedCount?: number
   message?: string
 }
 

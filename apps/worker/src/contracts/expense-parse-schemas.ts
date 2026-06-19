@@ -9,10 +9,18 @@ import {
 // ── Parse request ────────────────────────────────────────────────────────────
 // The client sends text and the client-local "today" date in YYYY-MM-DD format.
 
+export const MAX_PARSE_TEXT_LENGTH = 4000
+
 export const parseExpensesRequestSchema = () =>
   z
     .object({
-      text: z.string().min(1, 'Text must not be empty'),
+      text: z
+        .string()
+        .min(1, 'Text must not be empty')
+        .max(
+          MAX_PARSE_TEXT_LENGTH,
+          `Text must be at most ${MAX_PARSE_TEXT_LENGTH} characters`,
+        ),
       defaultOccurredAt: z
         .string()
         .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format'),
@@ -53,6 +61,7 @@ export const parsedExpenseItemSchema = z
 export const parseExpensesResponseSchema = z
   .object({
     expenses: z.array(parsedExpenseItemSchema),
+    droppedCount: z.number().int().nonnegative().optional(),
     message: z.string().optional(),
   })
   .strict()
@@ -65,7 +74,4 @@ export type ParseExpensesRequest = z.output<
 
 export type ParsedExpenseItem = z.output<typeof parsedExpenseItemSchema>
 
-export interface ParseExpensesResponse {
-  expenses: ParsedExpenseItem[]
-  message?: string
-}
+export type ParseExpensesResponse = z.output<typeof parseExpensesResponseSchema>

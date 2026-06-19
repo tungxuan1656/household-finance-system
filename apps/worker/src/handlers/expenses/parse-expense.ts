@@ -1,13 +1,18 @@
 import type { Context } from 'hono'
 
-import type { ParsedExpenseItem } from '@/contracts/expense-parse-schemas'
+import type {
+  ParsedExpenseItem,
+  ParseExpensesResponse,
+} from '@/contracts/expense-parse-schemas'
 import {
   parsedExpenseItemSchema,
   parseExpensesRequestSchema,
+  parseExpensesResponseSchema,
 } from '@/contracts/expense-parse-schemas'
 import type { RawAiItem } from '@/lib/ai/expense-parser'
+import { AiUpstreamError } from '@/lib/ai/expense-parser'
 import { parseExpensesWithAi } from '@/lib/ai/expense-parser'
-import { internalError } from '@/lib/errors'
+import { badGateway, internalError } from '@/lib/errors'
 import { readJsonBody } from '@/lib/validation'
 import type { AppBindings } from '@/types'
 
@@ -20,10 +25,13 @@ const YYYY_MM_DD_RE = /^\d{4}-\d{2}-\d{2}$/
  * normalises AI output by applying defaults, validates every candidate
  * with {@link parsedExpenseItemSchema.safeParse}, and drops items that
  * fail.  NEVER writes to D1.
+ *
+ * Throws {@link AiUpstreamError} → 502 BAD_GATEWAY on upstream failures;
+ * returns 200 with an (possibly empty) expenses array on success.
  */
 export const parseExpenseHandler = async (
   ctx: Context<AppBindings>,
-): Promise<{ expenses: ParsedExpenseItem[] }> => {
+): Promise<ParseExpensesResponse> => {
   const locale = ctx.get('locale')
 
   // 1. Validate request body (text + defaultOccurredAt)
@@ -43,15 +51,24 @@ export const parseExpenseHandler = async (
   }
 
   // 3. Call AI parser (fetch with timeout, no raw-text logging)
-  const rawItems = await parseExpensesWithAi(body.text, {
-    baseUrl,
-    apiKey,
-    model,
-  })
+  let rawItems: RawAiItem[]
+  try {
+    rawItems = await parseExpensesWithAi(body.text, {
+      baseUrl,
+      apiKey,
+      model,
+    })
+  } catch (error) {
+    if (error instanceof AiUpstreamError) {
+      throw badGateway(locale, 'errors.aiUpstreamFailure')
+    }
+    throw error
+  }
 
   // 4. Normalise defaults and validate each item via the schema.
   //    The schema enforces expense-kind category, source-key enum,
   //    title length, and YYYY-MM-DD occurredAt — any failure drops the item.
+  let droppedCount = 0
   const expenses: ParsedExpenseItem[] = rawItems.reduce<ParsedExpenseItem[]>(
     (acc, item: RawAiItem) => {
       const candidate = {
@@ -70,6 +87,8 @@ export const parseExpenseHandler = async (
 
       if (result.success) {
         acc.push(result.data)
+      } else {
+        droppedCount++
       }
 
       return acc
@@ -77,5 +96,12 @@ export const parseExpenseHandler = async (
     [],
   )
 
-  return { expenses }
+  // 5. Build response and validate against the output schema (N5)
+  const response: ParseExpensesResponse = {
+    expenses,
+    ...(droppedCount > 0 ? { droppedCount } : {}),
+  }
+
+  // Output validation — throws if response shape is ever invalid
+  return parseExpensesResponseSchema.parse(response)
 }

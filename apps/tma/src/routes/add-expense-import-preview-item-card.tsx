@@ -1,11 +1,12 @@
+import type { TFunction } from 'i18next'
+
 import { TmaCategoryIconBadge } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription, MoneyLabel, NativePicker } from '@/components/ui'
+import { Card, MoneyLabel, NativePicker } from '@/components/ui'
 import type { ImportItemDraft } from '@/features/expenses/import-store'
 import { getSourceLabel } from '@/features/expenses/presentation'
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { formatVnd } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
-import type { TFunction } from 'i18next'
 
 const ROW_LABEL_CLASS =
   'text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'
@@ -23,7 +24,10 @@ type Props = {
   groupsLoading: boolean
   t: TFunction
   onToggleInclude: (id: string) => void
-  onSetItemContext: (id: string, ctx: { householdId?: string; groupId?: string }) => void
+  onSetItemContext: (
+    id: string,
+    ctx: { householdId?: string; groupId?: string },
+  ) => void
 }
 
 export const ImportPreviewItemCard = ({
@@ -76,10 +80,7 @@ export const ImportPreviewItemCard = ({
 
         <div className='min-w-0 flex-1'>
           <div
-            className={cn(
-              ROW_LABEL_CLASS,
-              'text-sm text-tma-text-strong/80',
-            )}>
+            className={cn(ROW_LABEL_CLASS, 'text-sm text-tma-text-strong/80')}>
             {presentation.label}
           </div>
           <div className='truncate text-sm font-semibold text-tma-text-strong'>
