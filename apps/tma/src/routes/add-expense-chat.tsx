@@ -3,13 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  Card,
-  CardDescription,
-  CardTitle,
-  Textarea,
-} from '@/components/ui'
+import { Card, CardDescription, CardTitle, Textarea } from '@/components/ui'
 import { useParseExpensesMutation } from '@/features/expenses/import-api'
 import { useImportFlowStore } from '@/features/expenses/import-store'
 import { TMA_PATHS } from '@/lib/constants/routes'
@@ -92,7 +86,7 @@ export const AddExpenseChatPage = () => {
 
   return (
     <TmaPageShell reserveBottomButton title={t('expenses.add.aiImportTitle')}>
-      <Card className='mb-4'>
+      <Card className='mb-4 flex flex-col gap-1'>
         <CardTitle>{t('expenses.add.aiImportDesc')}</CardTitle>
         <CardDescription>{t('expenses.add.aiImportHint')}</CardDescription>
       </Card>
@@ -117,17 +111,6 @@ export const AddExpenseChatPage = () => {
           <CardDescription>{t('expenses.add.parsing')}</CardDescription>
         </Card>
       ) : null}
-
-      <div className='mt-6'>
-        <Button
-          className='w-full'
-          disabled={rawText.trim().length === 0}
-          size='md'
-          variant='outline'
-          onClick={() => navigate(TMA_PATHS.expensesNewCategory)}>
-          {t('expenses.add.switchToManual')}
-        </Button>
-      </div>
     </TmaPageShell>
   )
 }
