@@ -181,6 +181,106 @@ describe('useImportFlowStore', () => {
     expect(state.items).toEqual([])
   })
 
+  it('setItemCategory normalizes empty string to other', () => {
+    useImportFlowStore.getState().setItems(sampleParsed)
+
+    const firstId = useImportFlowStore.getState().items[0]!.id
+
+    // Simulate user picking the manual fallback which sends ''
+    useImportFlowStore.getState().setItemCategory(firstId, '')
+
+    const updated = useImportFlowStore
+      .getState()
+      .items.find((i) => i.id === firstId)!
+    expect(updated.parsed.categoryKey).toBe('other')
+  })
+
+  it('setItemCategory normalizes unknown category key to other', () => {
+    useImportFlowStore.getState().setItems(sampleParsed)
+
+    const firstId = useImportFlowStore.getState().items[0]!.id
+
+    useImportFlowStore.getState().setItemCategory(firstId, 'not-a-category')
+
+    const updated = useImportFlowStore
+      .getState()
+      .items.find((i) => i.id === firstId)!
+    expect(updated.parsed.categoryKey).toBe('other')
+  })
+
+  it('setItemCategory preserves valid category key', () => {
+    useImportFlowStore.getState().setItems(sampleParsed)
+
+    const firstId = useImportFlowStore.getState().items[0]!.id
+
+    useImportFlowStore.getState().setItemCategory(firstId, 'transport')
+
+    const updated = useImportFlowStore
+      .getState()
+      .items.find((i) => i.id === firstId)!
+    expect(updated.parsed.categoryKey).toBe('transport')
+  })
+
+  it('setItemContext with null householdId clears the stored value', () => {
+    useImportFlowStore.getState().setItems(sampleParsed)
+
+    const firstId = useImportFlowStore.getState().items[0]!.id
+
+    // First set a household
+    useImportFlowStore
+      .getState()
+      .setItemContext(firstId, { householdId: 'household-1' })
+
+    // Then clear it with null
+    useImportFlowStore.getState().setItemContext(firstId, { householdId: null })
+
+    const updated = useImportFlowStore
+      .getState()
+      .items.find((i) => i.id === firstId)!
+    expect(updated.householdId).toBeNull()
+  })
+
+  it('setItemContext with null groupId clears the stored value', () => {
+    useImportFlowStore.getState().setItems(sampleParsed)
+
+    const firstId = useImportFlowStore.getState().items[0]!.id
+
+    // First set a group
+    useImportFlowStore
+      .getState()
+      .setItemContext(firstId, { groupId: 'group-da-lat' })
+
+    // Then clear it with null
+    useImportFlowStore.getState().setItemContext(firstId, { groupId: null })
+
+    const updated = useImportFlowStore
+      .getState()
+      .items.find((i) => i.id === firstId)!
+    expect(updated.groupId).toBeNull()
+  })
+
+  it('setItemContext does nothing when groupId is a truthy string', () => {
+    useImportFlowStore.getState().setItems(sampleParsed)
+
+    const firstId = useImportFlowStore.getState().items[0]!.id
+
+    useImportFlowStore
+      .getState()
+      .setItemContext(firstId, { groupId: 'group-da-lat' })
+
+    // Update household but omit groupId (undefined)
+    useImportFlowStore
+      .getState()
+      .setItemContext(firstId, { householdId: 'household-1' })
+
+    const updated = useImportFlowStore
+      .getState()
+      .items.find((i) => i.id === firstId)!
+    // groupId should still be the previously set value
+    expect(updated.groupId).toBe('group-da-lat')
+    expect(updated.householdId).toBe('household-1')
+  })
+
   it('back behavior: reset allows re-entry without stale parsed data', () => {
     // Simulate: user enters text -> parses -> sees preview -> goes back
     useImportFlowStore.getState().setRawText('ăn sáng 35k')

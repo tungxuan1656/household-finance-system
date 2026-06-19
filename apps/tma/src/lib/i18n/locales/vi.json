@@ -111,6 +111,8 @@
     "filterLabel": "Lọc",
     "filterCount": "Lọc {{count}}",
     "aiImport": "Nhập tự động",
+    "loadMore": "Tải thêm",
+    "loadingMore": "Đang tải...",
     "summary": {
       "title": "Tổng chi theo bộ lọc",
       "count": "{{count}} khoản"
@@ -204,6 +206,7 @@
       "nameUnset": "Chưa đặt tên",
       "source": "Nguồn tiền",
       "sourceUnset": "Chưa chọn",
+      "chooseCategory": "Chọn danh mục",
       "contextHousehold": "Gia đình",
       "contextGroup": "Nhóm",
       "contextGroupLabel": "Ngữ cảnh nhóm",

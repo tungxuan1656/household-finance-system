@@ -21,13 +21,16 @@
       "apps/tma/src/features/expenses/import-api.ts",
       "apps/tma/src/features/expenses/import-store.ts",
       "apps/tma/src/features/expenses/import-confirm.ts",
+      "apps/tma/src/features/expenses/import-store.ts (setItemCategory action for editable category on draft)",
       "apps/tma/src/routes/add-expense-chat.tsx",
-      "apps/tma/src/routes/add-expense-import-preview.tsx",
+      "apps/tma/src/routes/add-expense-import-preview.tsx (uses useReferenceCategoriesQuery, builds categoryPickerOptions, wires setItemCategory)",
+      "apps/tma/src/routes/add-expense-import-preview-item-card.tsx (compact NativePicker replaces static label; icon reactive to selected category)",
       "apps/tma/src/routes/expenses.tsx (AI button in header)",
       "apps/tma/src/lib/constants/routes.ts (expensesNewChat/expensesNewImport)",
       "apps/tma/src/app/router/app-router.tsx (lazy routes)",
       "apps/tma/src/lib/i18n/locales/vi.json (15 import keys)",
       "apps/tma/src/index.css (--tma-error tokens, --animate-tma-card-enter)",
+      "apps/tma/src/test/expense-import-store.test.ts (regressions for category fallback normalization and clearing household/group context)",
       "docs/exec-plans/plans/2026-06-19-tma-ai-expense-import.md"
     ],
     "verification": [
@@ -36,7 +39,9 @@
       "./init.sh -> Done! (exit 0)",
       "Oracle Worker review surfaced 4 real issues; all fixed (parsedExpenseItemSchema.safeParse wired, AI occurredAt regex-checked with default fallback, AI_TIMEOUT_MS 30000->20000 with paid-plan comment, explicit use('/expenses/parse', authMiddleware), dead rawAiExpenseItemSchema removed).",
       "Designer TMA review surfaced 4 priority issues; all fixed (mount reset() removed in chat, success status skipped in selectedCount/confirm loop, hardcoded colors replaced with --color-tma-error/--color-tma-error-bg tokens, preview cards animated with --animate-tma-card-enter + prefers-reduced-motion).",
-      "Final lint pass required removing one stale `rawText` selector from add-expense-import-preview.tsx; full ./init.sh then returned Done!."
+      "Final lint pass required removing one stale `rawText` selector from add-expense-import-preview.tsx; full ./init.sh then returned Done!.",
+      "2026-06-19 import-preview bugfix: focused TMA store test red for unknown category -> green after normalizeCategoryKey fallback; `pnpm --filter tma exec vitest run src/test/expense-import-store.test.ts --passWithNoTests` -> 18 passed.",
+      "2026-06-19 import-preview bugfix: full `./init.sh` -> Done!"
     ]
   },
   "notes": "OpenAI-compatible config keys are deploy-time env values the user will provide. AI output is treated as untrusted; parsedExpenseItemSchema.safeParse + categoryKindMap expense-kind refine + REFERENCE_SOURCE_KEYS enum filtering is the trust boundary. Parse endpoint never writes D1. TMA confirm uses existing POST /expenses sequentially; partial success is allowed (no rollback) and retry skips items already marked status=success to prevent duplicates. Rate limit, multi-provider UI, prompt-history, caching, and web parity are explicit out-of-scope MVP gaps. No commit made (user did not request)."

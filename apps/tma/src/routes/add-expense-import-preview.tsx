@@ -12,7 +12,11 @@ import {
   usePersonalExpenseGroupListQuery,
 } from '@/features/groups/api'
 import type { GroupListItem } from '@/features/groups/types'
-import { useHouseholdsQuery } from '@/features/home/api'
+import {
+  useHouseholdsQuery,
+  useReferenceCategoriesQuery,
+} from '@/features/home/api'
+import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {
   hideBottomButton,
@@ -29,6 +33,7 @@ export const AddExpenseImportPreviewPage = () => {
 
   const items = useImportFlowStore((state) => state.items)
   const toggleInclude = useImportFlowStore((state) => state.toggleInclude)
+  const setItemCategory = useImportFlowStore((state) => state.setItemCategory)
   const setItemContext = useImportFlowStore((state) => state.setItemContext)
   const setItemStatus = useImportFlowStore((state) => state.setItemStatus)
   const reset = useImportFlowStore((state) => state.reset)
@@ -36,6 +41,7 @@ export const AddExpenseImportPreviewPage = () => {
   const createExpenseMutation = useCreateExpenseMutation()
   const householdsQuery = useHouseholdsQuery()
   const personalGroupsQuery = usePersonalExpenseGroupListQuery()
+  const categoriesQuery = useReferenceCategoriesQuery()
   const [feedback, setFeedback] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -74,6 +80,25 @@ export const AddExpenseImportPreviewPage = () => {
     ],
     [groupItems, t],
   )
+
+  const referenceCategories = categoriesQuery.data?.items ?? []
+  const categoryPickerOptions = useMemo(() => {
+    const expenseCats = referenceCategories.filter(
+      (cat) => cat.kind === 'expense',
+    )
+    const hasOther = expenseCats.some((cat) => cat.key === 'other')
+    const fallback = hasOther
+      ? []
+      : [{ value: 'other' as const, label: t('categories.other') }]
+
+    return [
+      ...fallback,
+      ...expenseCats.map((cat) => ({
+        value: cat.key,
+        label: getCategoryPresentation(cat.key, t, referenceCategories).label,
+      })),
+    ]
+  }, [referenceCategories, t])
 
   const selectedCount = items.filter(
     (i) => i.include && i.status !== 'success',
@@ -186,6 +211,8 @@ export const AddExpenseImportPreviewPage = () => {
         {items.map((item, index) => (
           <ImportPreviewItemCard
             key={item.id}
+            categoriesLoading={categoriesQuery.isLoading}
+            categoryPickerOptions={categoryPickerOptions}
             groupPickerOptions={groupPickerOptions}
             groupsLoading={personalGroupsQuery.isLoading}
             householdPickerOptions={householdPickerOptions}
@@ -193,6 +220,7 @@ export const AddExpenseImportPreviewPage = () => {
             index={index}
             isSaving={isSaving}
             item={item}
+            onSetItemCategory={setItemCategory}
             onSetItemContext={setItemContext}
             onToggleInclude={toggleInclude}
           />

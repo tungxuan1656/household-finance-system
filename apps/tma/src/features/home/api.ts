@@ -1,4 +1,4 @@
-import { queryOptions, useQuery } from '@tanstack/react-query'
+import { queryOptions, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 
 import { get } from '@/lib/api/client'
 
@@ -9,6 +9,7 @@ import type {
   AnalyticsOverviewParams,
   ExpenseListParams,
   ExpenseListResponse,
+  ExpenseSummaryDTO,
   ListBudgetsParams,
   ListBudgetsResponse,
   ListHouseholdMembersResponse,
@@ -24,6 +25,9 @@ const getAnalyticsComparison = (params: AnalyticsComparisonParams) =>
 
 const listExpenses = (params?: ExpenseListParams) =>
   get<ExpenseListResponse>('/expenses', { params })
+
+const getExpenseSummary = (params?: ExpenseListParams) =>
+  get<ExpenseSummaryDTO>('/expenses/summary', { params })
 
 const listHouseholds = () => get<ListHouseholdsResponse>('/households')
 
@@ -56,6 +60,10 @@ export const EXPENSE_KEYS = {
   all: ['expenses'] as const,
   list: (params?: ExpenseListParams) =>
     [...EXPENSE_KEYS.all, 'list', params] as const,
+  infiniteList: (params?: ExpenseListParams) =>
+    [...EXPENSE_KEYS.all, 'infinite-list', params] as const,
+  summary: (params?: ExpenseListParams) =>
+    [...EXPENSE_KEYS.all, 'summary', params] as const,
 }
 
 export const HOUSEHOLD_KEYS = {
@@ -97,6 +105,23 @@ export const expenseListQueryOptions = (params?: ExpenseListParams) =>
     queryKey: EXPENSE_KEYS.list(params),
     queryFn: () => listExpenses(params),
   })
+
+export const expenseSummaryQueryOptions = (params?: ExpenseListParams) =>
+  queryOptions({
+    queryKey: EXPENSE_KEYS.summary(params),
+    queryFn: () => getExpenseSummary(params),
+  })
+
+export const expenseListInfiniteQueryOptions = (
+  params?: ExpenseListParams,
+) => ({
+  queryKey: EXPENSE_KEYS.infiniteList(params),
+  queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
+    listExpenses({ ...params, cursor: pageParam }),
+  initialPageParam: undefined as string | undefined,
+  getNextPageParam: (lastPage: ExpenseListResponse) =>
+    lastPage.nextCursor ?? undefined,
+})
 
 export const householdListQueryOptions = () =>
   queryOptions({
@@ -149,6 +174,12 @@ export const useAnalyticsComparisonQuery = (
 
 export const useExpenseListQuery = (params?: ExpenseListParams) =>
   useQuery(expenseListQueryOptions(params))
+
+export const useExpenseSummaryQuery = (params?: ExpenseListParams) =>
+  useQuery(expenseSummaryQueryOptions(params))
+
+export const useExpenseListInfiniteQuery = (params?: ExpenseListParams) =>
+  useInfiniteQuery(expenseListInfiniteQueryOptions(params))
 
 export const useHouseholdsQuery = () => useQuery(householdListQueryOptions())
 
