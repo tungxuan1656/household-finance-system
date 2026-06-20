@@ -11,6 +11,21 @@ import { TMA_PATHS } from '@/lib/constants/routes'
 import { impact, selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
+/** Best-effort route chunk preload for bottom-nav targets. */
+const prefetchRoute = (href: string) => {
+  switch (href) {
+    case TMA_PATHS.statistics:
+      void import('@/routes/statistics').catch(() => undefined)
+      break
+    case TMA_PATHS.expenses:
+      void import('@/routes/expenses').catch(() => undefined)
+      break
+    case TMA_PATHS.expensesNewCategory:
+      void import('@/routes/add-expense-category').catch(() => undefined)
+      break
+  }
+}
+
 /** @internal Spinner shown during pull-to-refresh. Exported for use by TmaPageShell. */
 export const PullToRefreshSpinner = ({ label }: { label?: string }) => (
   <div className='grid justify-items-center gap-2 py-2 text-xs font-semibold text-tma-text-muted'>
@@ -66,7 +81,9 @@ export const TmaBottomTabs = ({
                 to={href}
                 onClick={() => {
                   selection()
-                }}>
+                }}
+                onMouseEnter={() => prefetchRoute(href)}
+                onTouchStart={() => prefetchRoute(href)}>
                 <Icon
                   className={cn(
                     'size-5 transition-transform',
@@ -87,7 +104,9 @@ export const TmaBottomTabs = ({
           to={bubbleHref}
           onClick={() => {
             impact('medium')
-          }}>
+          }}
+          onMouseEnter={() => prefetchRoute(bubbleHref)}
+          onTouchStart={() => prefetchRoute(bubbleHref)}>
           <PlusIcon height='24' width='24' />
         </Link>
 
@@ -106,7 +125,9 @@ export const TmaBottomTabs = ({
                 to={href}
                 onClick={() => {
                   selection()
-                }}>
+                }}
+                onMouseEnter={() => prefetchRoute(href)}
+                onTouchStart={() => prefetchRoute(href)}>
                 <Icon
                   className={cn(
                     'size-5 transition-transform',

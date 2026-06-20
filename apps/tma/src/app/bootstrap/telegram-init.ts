@@ -63,10 +63,14 @@ export const initTelegram = (): (() => void) => {
   miniApp.setHeaderColor.ifAvailable(DEFAULT_TMA_BG)
   miniApp.setBottomBarColor.ifAvailable(DEFAULT_TMA_BG)
 
-  // 5. Mount viewport, expand, try fullscreen, then signal ready.
-  // This keeps Telegram's placeholder visible until the app has attempted
-  // to reach its final viewport state, which reduces the visible modal ->
-  // fullscreen transition during open.
+  // 5. Signal ready immediately so Telegram hides its placeholder and the
+  // app shows content ASAP. Do not wait for viewport mount/fullscreen.
+  if (!disposed) {
+    miniApp.ready.ifAvailable()
+  }
+
+  // 6. Mount viewport, expand, try fullscreen. Errors are swallowed since
+  // the app is already interactive.
   void viewport
     .mount()
     .then(async () => {
@@ -75,6 +79,10 @@ export const initTelegram = (): (() => void) => {
       }
 
       syncViewportInsets()
+
+      // `expand()` only asks the host viewport to expand; it does not await a
+      // bridge round-trip.  Keep it fire-and-forget so fullscreen can continue
+      // in the background after Telegram has already hidden its placeholder.
       viewport.expand()
 
       if (!viewport.isFullscreen()) {
@@ -86,17 +94,12 @@ export const initTelegram = (): (() => void) => {
       }
     })
     .catch(() => undefined)
-    .finally(() => {
-      if (!disposed) {
-        miniApp.ready.ifAvailable()
-      }
-    })
 
-  // 6. Disable vertical swipes to prevent accidental close while scrolling
+  // 7. Disable vertical swipes to prevent accidental close while scrolling
   swipeBehavior.mount()
   swipeBehavior.disableVertical.ifAvailable()
 
-  // 7. Restore initData from launch parameters
+  // 8. Restore initData from launch parameters
   initData.restore()
 
   return () => {
