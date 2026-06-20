@@ -15,9 +15,12 @@
     "planned": [
       "Verify keyboard, safe-area, and scroll behavior on real Telegram WebView surfaces, not only normal mobile browsers.",
       "Gate or degrade advanced effects when capability or performance is weak.",
-      "Record explicit QA evidence for iOS, Android, theme changes, and unsupported-feature fallbacks."
+      "Record explicit QA evidence for iOS, Android, theme changes, and unsupported-feature fallbacks.",
+      "2026-06-20: Follow up on TMA native-feel performance audit: earlier shell/ready timing, route skeletons, route chunk/data prefetch, cache persistence policy, and reduced auth/storage gating where safe."
     ],
     "implemented": [
+      "2026-06-20: Version bump for PR packaging: TMA 1.1.1 -> 1.1.2 and worker 0.1.1 -> 0.1.2.",
+      "2026-06-20: TMA native-feel quick wins implemented: Telegram ready signal no longer waits for viewport fullscreen, lazy routes use a layout-shaped skeleton fallback, home and bottom navigation prefetch likely route chunks, and React Query inactive cache retention increased to 10 minutes.",
       "2026-06-11: Add-expense step 2 and step 3 returned to Telegram native BottomButton so the host WebView owns keyboard positioning instead of a custom web sticky action.",
       "2026-06-11: Add-expense BottomButton lifecycle now separates one-time click registration, visual updates, and unmount-only hide cleanup to avoid remounting the native button when form state changes.",
       "2026-06-11: Add-expense step 1 navigates to step 2 with React Router flushSync, and step 2 focuses the amount input immediately from the input ref callback with preventScroll plus autoFocus."
@@ -28,7 +31,12 @@
       "2026-06-11: ./init.sh lint returned OK.",
       "2026-06-11: ./init.sh test returned OK.",
       "2026-06-11: ./init.sh build returned OK.",
-      "2026-06-11: Final ./init.sh completed with Done!."
+      "2026-06-11: Final ./init.sh completed with Done!.",
+      "2026-06-20: No-code TMA performance audit completed from docs/research/code review. Main suspected delay sources: global AuthBootstrap gate, lazy routes without prefetch, spinner-only fallback, miniApp.ready() coupled to viewport settle/fullscreen, SecureStorage 1500ms timeout, home query fan-out, and missing persistent query/chunk cache strategy. No runtime commands were run because no code was changed.",
+      "2026-06-20: Focused TMA telegram-init test passed after updating ready-timing expectations: pnpm --filter tma exec vitest run src/test/telegram-init.test.ts --passWithNoTests.",
+      "2026-06-20: Oracle review found no blockers or high issues for TMA native-feel quick wins; comment clarity notes were addressed.",
+      "2026-06-20: Final ./init.sh completed with Done! after early-ready, route-skeleton, chunk-preload, query-cache, and test updates.",
+      "2026-06-20: PR-prep verification passed: jq empty for changed JSON/harness files, git diff --check, final ./init.sh (Done!), and ./init.sh build (OK)."
     ]
   },
   "notes": "This feature is where the TMA client moves from functionally working to operationally trustworthy."

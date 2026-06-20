@@ -72,7 +72,7 @@ describe('initTelegramSafely', () => {
     expect(() => result.cleanup()).not.toThrow()
   })
 
-  it('returns a real cleanup when SDK init succeeds', async () => {
+  it('signals ready immediately and returns a real cleanup when SDK init succeeds', async () => {
     const cleanup = vi.fn()
     const viewportMountResolver: {
       current: ((value: undefined) => void) | null
@@ -97,7 +97,7 @@ describe('initTelegramSafely', () => {
 
     expect(result.error).toBeNull()
     expect(bindTheme).toHaveBeenCalledWith(DEFAULT_TMA_BG)
-    expect(miniAppReady).not.toHaveBeenCalled()
+    expect(miniAppReady).toHaveBeenCalledTimes(1)
 
     if (!viewportMountResolver.current) {
       throw new Error('Viewport mount resolver was not captured')

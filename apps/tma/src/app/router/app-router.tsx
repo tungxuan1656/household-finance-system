@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
-import { LoadingFallback } from '@/components/shared/loading-fallback'
+import { LoadingSkeleton } from '@/components/shared/loading-skeleton'
 import {
   RootErrorElement,
   RouteErrorBoundary,
@@ -159,13 +159,13 @@ const FatalLaunchPage = lazy(async () => {
 
 const renderLazyRoute = (Component: React.ComponentType) => (
   <RouteErrorBoundary>
-    <Suspense fallback={<LoadingFallback />}>
+    <Suspense fallback={<LoadingSkeleton />}>
       <Component />
     </Suspense>
   </RouteErrorBoundary>
 )
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
   {
     path: TMA_PATHS.root,
     errorElement: <RootErrorElement />,
