@@ -1,0 +1,17 @@
+{
+  "id": "feat-112c",
+  "name": "Telegram bot expense create",
+  "status": "planned",
+  "description": "/ai one-expense parse, preview, explicit confirm, duplicate prevention, created_via_bot marker, and audit logging.",
+  "dependencies": ["feat-017", "feat-109", "feat-112a"],
+  "evidence": {
+    "planned": [
+      "ExecPlan: docs/exec-plans/plans/2026-06-22-telegram-bot-expense-create.md"
+    ],
+    "artifacts": [
+      "docs/exec-plans/plans/2026-06-22-telegram-bot-expense-create.md"
+    ],
+    "verification": ["Pending implementation."]
+  },
+  "notes": "Bot cannot edit or delete expenses. Missing required parse fields ask user to re-enter."
+}

@@ -1,0 +1,17 @@
+{
+  "id": "feat-112a",
+  "name": "Telegram bot foundation",
+  "status": "planned",
+  "description": "Worker bot foundation with webhook secret verification, Telegram API adapter, Telegram identity-to-user lookup, no token persistence, and /start + /help linked/unlinked behavior.",
+  "dependencies": ["feat-080", "feat-111"],
+  "evidence": {
+    "planned": [
+      "ExecPlan: docs/exec-plans/plans/2026-06-22-telegram-bot-foundation.md"
+    ],
+    "artifacts": [
+      "docs/exec-plans/plans/2026-06-22-telegram-bot-foundation.md"
+    ],
+    "verification": ["Pending implementation."]
+  },
+  "notes": "First implementation slice. Must not store app access/refresh tokens in bot tables."
+}

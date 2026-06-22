@@ -604,6 +604,36 @@
       "id": "feat-111",
       "name": "Telegram bot companion product spec",
       "status": "done"
+    },
+    {
+      "id": "feat-112",
+      "name": "Telegram bot companion implementation plan set",
+      "status": "planned"
+    },
+    {
+      "id": "feat-112a",
+      "name": "Telegram bot foundation",
+      "status": "planned"
+    },
+    {
+      "id": "feat-112b",
+      "name": "Telegram bot read commands",
+      "status": "planned"
+    },
+    {
+      "id": "feat-112c",
+      "name": "Telegram bot expense create",
+      "status": "planned"
+    },
+    {
+      "id": "feat-112d",
+      "name": "Telegram bot settings",
+      "status": "planned"
+    },
+    {
+      "id": "feat-112e",
+      "name": "Telegram bot notifications",
+      "status": "planned"
     }
   ]
 }

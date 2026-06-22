@@ -20,8 +20,14 @@ The bot helps users act from chat. It does not replace the TMA.
 - Review top categories for a period.
 - Check budget status and warnings.
 - Receive budget, household activity, invite, and digest notifications.
-- Share or open household invites.
+- Open household and group views in the TMA.
 - Manage bot notification preferences.
+
+## Account Requirement
+
+- User must open the TMA before the bot can show private finance data.
+- If the bot cannot match the Telegram user to an app user, it shows `🏠 Mở Mini App` and asks the user to open the TMA first.
+- Bot does not create a user account by chat alone.
 
 ## Command Set
 
@@ -32,7 +38,6 @@ The bot helps users act from chat. It does not replace the TMA.
 | `/stats` | Show guided spending summary flow. |
 | `/budget` | Show guided budget status flow. |
 | `/top` | Show top spending categories for a selected scope and period. |
-| `/invite` | Start household invite share flow. |
 | `/settings` | Show bot notification preferences. |
 | `/help` | Explain safe bot usage and when to open the TMA. |
 
@@ -73,7 +78,7 @@ Preview shows:
 
 - `✅ Thêm chi tiêu`
 - `🏠 Chọn household`
-- `✏️ Sửa trong app`
+- `🔁 Nhập lại`
 - `❌ Hủy`
 
 If scope is unclear, bot asks the user to choose:
@@ -86,9 +91,13 @@ If scope is unclear, bot asks the user to choose:
 - Bot never creates an expense from free-form text without explicit user confirmation.
 - Bot shows all important parsed fields before confirmation.
 - User can cancel before any expense is created.
-- If the parsed result is incomplete or confusing, bot asks a short clarifying question or sends the user to the TMA.
+- If required fields are missing, bot shows an error and asks the user to enter the expense again.
+- Bot handles one expense per message in MVP.
+- Low confidence is acceptable when the bot can still show a complete preview and the user confirms it.
 - After save, bot confirms success and offers `Xem chi tiết` and `Thêm khoản khác`.
 - Duplicate taps must not create duplicate expenses.
+- Bot-created expenses are visible in audit/history as created through Telegram bot.
+- Bot does not edit or delete expenses.
 
 ## Statistics Flow
 
@@ -110,7 +119,6 @@ User sends `/stats`, `/top`, or chooses `📊 Xem thống kê`.
    - Total spend
    - Change versus previous comparable period, when available
    - Top categories
-   - Optional household member breakdown when household scope is selected
 
 ### Follow-up Actions
 
@@ -122,6 +130,8 @@ User sends `/stats`, `/top`, or chooses `📊 Xem thống kê`.
 
 - Bot only shows scopes the user can access.
 - Summary is short enough to read in chat.
+- Bot summary text is ready-to-send Vietnamese copy.
+- Household summaries do not include member breakdown in MVP.
 - Full charts, filters, exports, and custom analysis stay in the TMA.
 
 ## Budget Flow
@@ -154,31 +164,29 @@ Bot shows:
 - Bot does not create, edit, or delete budgets.
 - Budget CRUD stays in the TMA.
 
-## Household And Invite Flow
+## Household And Group Flow
 
 ### Household Menu
 
 `👥 Gia đình` shows visible households and quick actions:
 
 - View current month spend.
-- Create or share an invite.
+- Choose a household.
+- Choose a group from that household when needed.
 - Open household in the TMA.
-
-### Invite Flow
-
-User chooses household, then bot returns an invite share action and an open-in-app action.
 
 ### Acceptance Criteria
 
-- Only allowed users can create or share invites.
-- Invite acceptance stays in the existing product invite flow.
+- Bot only lists households and groups visible to the current user.
+- Bot does not create or share household invites.
+- Invite creation and acceptance stay in the TMA.
 - Member removal, role changes, household deletion, and full settings stay in the TMA.
 
 ## Notifications
 
 ### Budget Alerts
 
-Bot may notify when a budget reaches warning or exceeded status.
+Bot may notify when a budget reaches 80% warning or 100% exceeded status.
 
 Alert includes:
 
@@ -215,7 +223,7 @@ Actions:
 
 ### Digests
 
-Bot may send opt-in daily, weekly, or monthly digests.
+Bot may send opt-in weekly digests.
 
 Digest includes:
 
@@ -227,17 +235,12 @@ Digest includes:
 
 ### Invite And Membership Events
 
-Bot may notify about:
-
-- Invite accepted
-- Member joined
-- Member left or removed
-- Role changed
+Bot may notify about invite and membership changes later if product need is clear.
 
 ### Notification Acceptance Criteria
 
 - Notifications respect user preferences.
-- Household activity notifications are opt-in or easy to mute.
+- Household activity notifications are opt-in and default off.
 - Bot avoids spam by grouping repeated low-priority events.
 - Notifications never show household data to users without access.
 
@@ -246,11 +249,8 @@ Bot may notify about:
 `/settings` shows bot-specific preferences:
 
 - Budget alerts on/off.
-- Household activity notifications on/off.
-- Daily digest on/off.
-- Weekly digest on/off.
-- Monthly digest on/off.
-- Quiet mode or mute all.
+- Household activity notifications on/off, default off.
+- Weekly digest on/off, default off.
 - Open full settings in TMA.
 
 ## Out Of Scope
@@ -258,9 +258,11 @@ Bot may notify about:
 - Full budget create, edit, delete.
 - Household create, edit, delete.
 - Member removal or role management.
+- Household invite creation or sharing.
 - Category management.
 - Deep analytics, charts, exports, and custom filters.
 - Multi-step expense editing after save.
+- Expense edit or delete from bot.
 - Fully autonomous finance assistant that performs actions without confirmation.
 - Payments or invoices.
 
@@ -272,6 +274,7 @@ Bot may notify about:
 - `/ai` expense preview and confirmed add.
 - `/stats` guided personal/household summary.
 - `/budget` status view.
+- `/top` top categories.
 - `/settings` notification toggles.
 - Weekly digest opt-in.
 
@@ -283,11 +286,13 @@ Bot may notify about:
 - Unusual spend alerts.
 - Receipt or image-assisted draft creation.
 - Financial health summary cards.
+- Direct deep links into exact TMA detail pages where useful.
 
 ## Rules
 
 - Bot flows must prefer buttons over open-ended text.
 - Bot writes must require explicit confirmation.
+- Bot write scope is create-expense only.
 - Bot should send users to the TMA for any task that needs careful review.
 - Shared domain truth remains in shared specs.
 - This spec only defines Telegram companion behavior.
