@@ -1,0 +1,35 @@
+{
+  "id": "feat-111",
+  "name": "Telegram bot companion product spec",
+  "status": "done",
+  "description": "Product-only spec for the Telegram bot companion surface: option-first commands, confirmed AI expense capture, guided stats/budget flows, household invites, notifications, settings, out-of-scope boundaries, and MVP/later release shape.",
+  "dependencies": [
+    "feat-017",
+    "feat-024",
+    "feat-026",
+    "feat-079",
+    "feat-104",
+    "feat-109"
+  ],
+  "evidence": {
+    "planned": [
+      "Create a separate TMA product spec for Telegram bot companion features without technical implementation details.",
+      "Update the TMA product spec index so future product/implementation work routes to the canonical spec.",
+      "Record docs-only harness evidence and progress."
+    ],
+    "artifacts": [
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "docs/product-specs/tma/index.md",
+      "harness/feature_index.json",
+      "harness/features/feat-111.json",
+      "harness/progress.md"
+    ],
+    "verification": [
+      "Readback confirmed docs/product-specs/tma/telegram-bot-companion.md contains product-only Telegram bot companion behavior, command/menu flows, notification settings, out-of-scope boundaries, and release shape.",
+      "git diff --check -- docs/product-specs/tma/telegram-bot-companion.md docs/product-specs/tma/index.md harness/feature_index.json harness/features/feat-111.json harness/progress.md -> OK (exit 0, no output).",
+      "jq empty harness/feature_index.json harness/features/feat-111.json -> OK (exit 0, no output).",
+      "git status --short shows only the intended docs/harness files changed or added."
+    ]
+  },
+  "notes": "Spec intentionally avoids hosting, webhook, storage, API route, callback payload, and database details. It captures user-visible product behavior only. No commit made unless user requests."
+}

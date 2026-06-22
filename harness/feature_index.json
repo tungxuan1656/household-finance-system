@@ -599,6 +599,11 @@
       "id": "feat-110",
       "name": "Reference data strongest HTTP cache + TMA icon presentation hook",
       "status": "done"
+    },
+    {
+      "id": "feat-111",
+      "name": "Telegram bot companion product spec",
+      "status": "done"
     }
   ]
 }
