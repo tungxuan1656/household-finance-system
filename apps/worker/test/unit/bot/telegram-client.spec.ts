@@ -24,4 +24,28 @@ describe('TelegramClient', () => {
       'https://api.telegram.org/bottest-token/sendMessage',
     )
   })
+
+  it('includes Telegram error descriptions in thrown errors', async () => {
+    const response = new Response(
+      JSON.stringify({
+        ok: false,
+        error_code: 400,
+        description: 'Bad Request: BUTTON_URL_INVALID',
+      }),
+      {
+        status: 400,
+        statusText: 'Bad Request',
+        headers: { 'content-type': 'application/json' },
+      },
+    )
+
+    const fetchMock = vi.fn(() =>
+      Promise.resolve(response),
+    ) as typeof globalThis.fetch
+    const client = new TelegramClient('test-token', fetchMock)
+
+    await expect(client.sendMessage(123, 'hello')).rejects.toThrow(
+      'Telegram API HTTP 400: Bad Request: BUTTON_URL_INVALID',
+    )
+  })
 })

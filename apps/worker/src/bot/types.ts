@@ -97,4 +97,8 @@ export interface CommandContext {
   db: D1Database
   /** Bag of worker env vars needed by specific commands (e.g. AI config). */
   env?: Record<string, string | undefined>
+  /** Configured TMA URL for web_app.url buttons and text links. */
+  telegramBotTmaUrl: string
+  /** Configured deep-link URL for bot chat links / future use. */
+  telegramBotDeepLinkUrl: string
 }

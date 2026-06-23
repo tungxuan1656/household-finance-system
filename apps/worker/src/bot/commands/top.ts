@@ -18,13 +18,17 @@ import { resolveReadScope } from './read-scope'
 export const handleTopCommand = async (
   ctx: CommandContext,
 ): Promise<BotResponse> => {
+  const tmaUrl = ctx.telegramBotTmaUrl
+
   if (!ctx.appUserId) {
     return {
       text:
         'Vui lòng mở Mini App để đăng nhập và sử dụng thống kê.\n\n' +
-        '🏠 <a href="https://t.me/household_finance_bot/app">Mở Mini App</a>',
+        '🏠 <a href="' +
+        tmaUrl +
+        '">Mở Mini App</a>',
       parseMode: 'HTML',
-      replyMarkup: openAppKeyboard(),
+      replyMarkup: openAppKeyboard(tmaUrl),
     }
   }
 
@@ -56,6 +60,6 @@ export const handleTopCommand = async (
       data.periodLabel,
     ),
     parseMode: 'HTML',
-    replyMarkup: openAppKeyboard(),
+    replyMarkup: openAppKeyboard(tmaUrl),
   }
 }

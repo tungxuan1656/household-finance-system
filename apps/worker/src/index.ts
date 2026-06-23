@@ -77,10 +77,10 @@ const scheduled: ExportedHandler<Env>['scheduled'] = async (
 
   try {
     // Daily jobs
-    await runBudgetAlerts(db, client)
+    await runBudgetAlerts(db, client, config.telegramBotTmaUrl)
 
     // Weekly digest — run on Monday (cron expression handles frequency)
-    await runWeeklyDigest(db, client)
+    await runWeeklyDigest(db, client, config.telegramBotDeepLinkUrl)
   } catch (error) {
     console.error('scheduled: notification jobs failed', error)
   }

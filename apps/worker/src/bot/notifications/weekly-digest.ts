@@ -55,6 +55,7 @@ const getWeekKey = (): { week: number; year: number } => {
 export const runWeeklyDigest = async (
   db: D1Database,
   telegramClient: TelegramClient,
+  deepLinkUrl: string,
 ): Promise<void> => {
   const { week, year } = getWeekKey()
   const currentPeriod = getCurrentPeriod()
@@ -165,6 +166,7 @@ export const runWeeklyDigest = async (
           budgetWarnings,
           currencyCode,
           periodLabel,
+          deepLinkUrl,
         }),
         parseMode: 'HTML',
         requiredPref: 'weekly_digest',

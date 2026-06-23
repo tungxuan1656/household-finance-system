@@ -26,6 +26,8 @@ const buildCtx = (overrides: Partial<CommandContext> = {}): CommandContext => ({
   appUserId: 'user-1',
   locale: 'vi',
   db: mockDb,
+  telegramBotTmaUrl: 'https://phofis-tma.pages.dev/',
+  telegramBotDeepLinkUrl: 'https://t.me/phofis_bot',
   ...overrides,
 })
 

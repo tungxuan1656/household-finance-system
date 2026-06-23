@@ -50,6 +50,8 @@
     "RATE_LIMIT_ENABLED": "false",
     "RATE_LIMIT_MAX_REQUESTS": "10",
     "REFRESH_TOKEN_TTL_SECONDS": "2592000",
+    "TELEGRAM_BOT_TMA_URL": "https://phofis-tma.pages.dev/",
+    "TELEGRAM_BOT_DEEP_LINK_URL": "https://t.me/phofis_bot",
   },
   /**
    * Static Assets

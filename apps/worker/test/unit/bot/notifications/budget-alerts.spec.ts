@@ -116,7 +116,7 @@ describe('runBudgetAlerts', () => {
   it('no linked chats → no sends', async () => {
     const db = buildMockDb([])
 
-    await runBudgetAlerts(db, mockClient)
+    await runBudgetAlerts(db, mockClient, 'https://phofis-tma.pages.dev/')
 
     expect(mockSendNotif).toHaveBeenCalledTimes(0)
   })
@@ -129,7 +129,7 @@ describe('runBudgetAlerts', () => {
       categoryActualMinorByKey: {},
     })
 
-    await runBudgetAlerts(db, mockClient)
+    await runBudgetAlerts(db, mockClient, 'https://phofis-tma.pages.dev/')
 
     expect(mockSendNotif).toHaveBeenCalledTimes(1)
     expect(mockSendNotif.mock.calls[0][0].requiredPref).toBe('budget_alerts')
@@ -143,7 +143,7 @@ describe('runBudgetAlerts', () => {
       categoryActualMinorByKey: {},
     })
 
-    await runBudgetAlerts(db, mockClient)
+    await runBudgetAlerts(db, mockClient, 'https://phofis-tma.pages.dev/')
 
     expect(mockSendNotif).toHaveBeenCalledTimes(1)
     expect(mockSendNotif.mock.calls[0][0].notificationType).toBe(
@@ -159,7 +159,7 @@ describe('runBudgetAlerts', () => {
       categoryActualMinorByKey: {},
     })
 
-    await runBudgetAlerts(db, mockClient)
+    await runBudgetAlerts(db, mockClient, 'https://phofis-tma.pages.dev/')
 
     expect(mockSendNotif).toHaveBeenCalledTimes(1)
     expect(mockSendNotif.mock.calls[0][0].notificationType).toBe(
@@ -172,7 +172,7 @@ describe('runBudgetAlerts', () => {
     // Corrupt: scope=personal but no ownerUserId
     setupBudget({ ownerUserId: null })
 
-    await runBudgetAlerts(db, mockClient)
+    await runBudgetAlerts(db, mockClient, 'https://phofis-tma.pages.dev/')
 
     expect(mockSendNotif).toHaveBeenCalledTimes(0)
   })
@@ -182,6 +182,8 @@ describe('runBudgetAlerts', () => {
     // Make listBudgets throw
     mockListBudgets.mockRejectedValue(new Error('DB error'))
 
-    await expect(runBudgetAlerts(db, mockClient)).resolves.toBeUndefined()
+    await expect(
+      runBudgetAlerts(db, mockClient, 'https://phofis-tma.pages.dev/'),
+    ).resolves.toBeUndefined()
   })
 })

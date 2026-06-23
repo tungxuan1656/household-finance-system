@@ -21,6 +21,8 @@ const createEnv = (overrides: Partial<Record<string, unknown>> = {}): Env =>
     INVITATION_TOKEN_PEPPER: 'invitation-pepper',
     TELEGRAM_BOT_TOKEN: 'test-telegram-bot-token',
     TELEGRAM_BOT_WEBHOOK_SECRET: 'test-webhook-secret',
+    TELEGRAM_BOT_TMA_URL: 'https://phofis-tma.pages.dev/',
+    TELEGRAM_BOT_DEEP_LINK_URL: 'https://t.me/phofis_bot',
     FIREBASE_PROJECT_ID: 'household-finance-prod',
     APP_ENV: 'test',
     CLOUDINARY_CLOUD_NAME: 'demo-cloud',
@@ -43,6 +45,8 @@ describe('env config', () => {
     expect(config.telegramBotToken).toBe('test-telegram-bot-token')
     expect(config.telegramBotWebhookSecret).toBe('test-webhook-secret')
     expect(config.telegramFreshnessWindowSeconds).toBe(3600)
+    expect(config.telegramBotTmaUrl).toBe('https://phofis-tma.pages.dev/')
+    expect(config.telegramBotDeepLinkUrl).toBe('https://t.me/phofis_bot')
     expect(config.firebaseJwksUrl).toContain(
       'securetoken@system.gserviceaccount.com',
     )
@@ -59,6 +63,18 @@ describe('env config', () => {
   it('throws INTERNAL_ERROR when webhook secret is missing', () => {
     expect(() =>
       readConfig(createEnv({ TELEGRAM_BOT_WEBHOOK_SECRET: undefined })),
+    ).toThrowError(expect.objectContaining({ code: 'INTERNAL_ERROR' }))
+  })
+
+  it('throws INTERNAL_ERROR when TMA URL is missing', () => {
+    expect(() =>
+      readConfig(createEnv({ TELEGRAM_BOT_TMA_URL: undefined })),
+    ).toThrowError(expect.objectContaining({ code: 'INTERNAL_ERROR' }))
+  })
+
+  it('throws INTERNAL_ERROR when bot deep-link URL is missing', () => {
+    expect(() =>
+      readConfig(createEnv({ TELEGRAM_BOT_DEEP_LINK_URL: undefined })),
     ).toThrowError(expect.objectContaining({ code: 'INTERNAL_ERROR' }))
   })
 

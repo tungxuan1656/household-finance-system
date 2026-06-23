@@ -128,6 +128,8 @@ export const readConfig = (env: Env): AppConfig => {
     allowInsecureTestTokens,
     telegramBotToken: readRequired(env, 'TELEGRAM_BOT_TOKEN'),
     telegramBotWebhookSecret: readRequired(env, 'TELEGRAM_BOT_WEBHOOK_SECRET'),
+    telegramBotTmaUrl: readRequired(env, 'TELEGRAM_BOT_TMA_URL'),
+    telegramBotDeepLinkUrl: readRequired(env, 'TELEGRAM_BOT_DEEP_LINK_URL'),
     telegramFreshnessWindowSeconds: readOptionalPositiveInteger(
       env,
       'TELEGRAM_FRESHNESS_WINDOW_SECONDS',

@@ -1,11 +1,10 @@
-import { TMA_URL } from '../constants'
 import type { InlineKeyboardMarkup } from '../types'
 
 /**
  * Build a simple Open App inline keyboard.
  */
-export const openAppKeyboard = (): InlineKeyboardMarkup => ({
-  inline_keyboard: [[{ text: '🏠 Mở Mini App', web_app: { url: TMA_URL } }]],
+export const openAppKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
+  inline_keyboard: [[{ text: '🏠 Mở Mini App', web_app: { url: tmaUrl } }]],
 })
 
 /**
@@ -44,11 +43,13 @@ export const householdSelectKeyboard = (
 /**
  * Build the success keyboard after an expense is created.
  */
-export const expenseCreatedKeyboard = (): InlineKeyboardMarkup => ({
+export const expenseCreatedKeyboard = (
+  tmaUrl: string,
+): InlineKeyboardMarkup => ({
   inline_keyboard: [
     [
       { text: '➕ Thêm khoản khác', callback_data: 'add_another_expense' },
-      { text: '🏠 Mở Mini App', web_app: { url: TMA_URL } },
+      { text: '🏠 Mở Mini App', web_app: { url: tmaUrl } },
     ],
   ],
 })
