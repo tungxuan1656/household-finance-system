@@ -99,7 +99,7 @@ export const handleHouseholdSelect = async (
     dedupeKey: draft.dedupeKey,
     previewJson: JSON.stringify(preview),
     locale: draft.locale,
-  }).catch(() => {})
+  })
 
   return {
     text: renderExpensePreviewText(

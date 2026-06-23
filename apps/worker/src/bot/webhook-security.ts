@@ -9,12 +9,13 @@ const encoder = new TextEncoder()
  * Returns true when both strings are equal in length and content.
  */
 const constantTimeEqual = (a: string, b: string): boolean => {
-  if (a.length !== b.length) {
+  const aBytes = encoder.encode(a)
+  const bBytes = encoder.encode(b)
+
+  if (aBytes.length !== bBytes.length) {
     return false
   }
 
-  const aBytes = encoder.encode(a)
-  const bBytes = encoder.encode(b)
   let result = 0
 
   for (let i = 0; i < aBytes.length; i += 1) {

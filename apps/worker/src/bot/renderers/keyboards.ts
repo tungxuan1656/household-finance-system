@@ -44,9 +44,7 @@ export const householdSelectKeyboard = (
 /**
  * Build the success keyboard after an expense is created.
  */
-export const expenseCreatedKeyboard = (
-  _expenseId: string,
-): InlineKeyboardMarkup => ({
+export const expenseCreatedKeyboard = (): InlineKeyboardMarkup => ({
   inline_keyboard: [
     [
       { text: '➕ Thêm khoản khác', callback_data: 'add_another_expense' },

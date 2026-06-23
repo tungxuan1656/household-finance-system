@@ -189,4 +189,45 @@ describe('handleAiExpenseCommand', () => {
 
     expect(result.text).toContain('không khả dụng')
   })
+
+  it('returns already-added response when dedupe key hits confirmed draft', async () => {
+    const parserModule = await import('@/lib/ai/expense-parser')
+    const draftModule =
+      await import('@/db/repositories/telegram-bot-expense-draft-repository')
+
+    vi.mocked(parserModule.parseExpensesWithAi).mockResolvedValue([
+      {
+        amount: 30000,
+        categoryKey: 'food',
+        title: 'ăn bún',
+        occurredAt: '2026-06-15',
+      },
+    ])
+    vi.mocked(draftModule.createDraftFromPreview).mockResolvedValue({
+      id: 'draft-existing',
+      telegramUserId: '123456789',
+      telegramChatId: '987654321',
+      dedupeKey: 'dedupe-test-key',
+      previewJson: JSON.stringify({
+        amountMinor: 30000,
+        occurredAt: '2026-06-15',
+        categoryKey: 'food',
+        title: 'ăn bún',
+        sourceKey: 'bank-transfer',
+        scope: 'personal',
+      }),
+      status: 'confirmed',
+      createdExpenseId: 'expense-existing-1',
+      locale: 'vi',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    })
+
+    const ctx = buildCtx()
+    const result = await handleAiExpenseCommand(ctx)
+
+    expect(result.text).toContain('đã được thêm trước đó')
+    expect(result.text).toContain('expense-existing-1')
+    expect(result.text).not.toContain('Xem trước chi tiêu')
+  })
 })

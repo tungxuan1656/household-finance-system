@@ -59,6 +59,19 @@ export const upsertDraft = async (
 ): Promise<StoredDraft> => {
   const nowEpoch = Date.now()
 
+  // Idempotency: if a draft with this dedupe key is already confirmed,
+  // return it unchanged so a re-issued /ai cannot re-arm a confirmed state
+  // and silently bypass dedupe.
+  const existing = await findDraftByDedupeKey(
+    db,
+    input.telegramUserId,
+    input.dedupeKey,
+  )
+
+  if (existing && existing.status === 'confirmed') {
+    return existing
+  }
+
   await db
     .prepare(
       `INSERT INTO telegram_bot_expense_drafts
@@ -177,6 +190,10 @@ export const findDraftByDedupeKey = async (
 /**
  * Mark a draft as confirmed, recording the created expense id.
  * Returns the updated draft.
+ *
+ * Accepts both 'pending' (caller invoked without prior claim) and
+ * 'confirming' (caller already won the CAS claim) so the confirmed
+ * transition always succeeds after the expense has been created.
  */
 export const markDraftConfirmed = async (
   db: D1Database,
@@ -192,7 +209,7 @@ export const markDraftConfirmed = async (
               created_expense_id = ?,
               updated_at = ?
         WHERE id = ?
-          AND status = 'pending'`,
+          AND status IN ('pending', 'confirming')`,
     )
     .bind(expenseId, nowEpoch, draftId)
     .run()
@@ -201,10 +218,7 @@ export const markDraftConfirmed = async (
 }
 
 /**
- * Mark a draft as expired.
- */
-/**
- * Atomically claim a draft for confirmation (CAS pattern — HIGH 3).
+ * Atomically claim a draft for confirmation (CAS pattern).
  * Updates status from 'pending' to 'confirming' and returns true
  * if the row was affected. Only one concurrent caller can succeed.
  */
@@ -226,6 +240,12 @@ export const claimDraftForConfirm = async (
   return (result.meta.changes ?? 0) > 0
 }
 
+/**
+ * Mark a draft as expired.
+ * Accepts both 'pending' and 'confirming' so a draft claimed but never
+ * confirmed (e.g., a worker crash between CAS and markDraftConfirmed)
+ * can still be reaped.
+ */
 export const expireDraft = async (
   db: D1Database,
   draftId: string,
@@ -236,7 +256,7 @@ export const expireDraft = async (
           SET status = 'expired',
               updated_at = ?
         WHERE id = ?
-          AND status = 'pending'`,
+          AND status IN ('pending', 'confirming')`,
     )
     .bind(Date.now(), draftId)
     .run()

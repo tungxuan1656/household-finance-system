@@ -7,7 +7,11 @@ import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
 import { getMinorUnits } from '@/lib/currency'
 
 import { renderExpensePreviewText } from '../renderers/finance-text'
-import { expensePreviewKeyboard, openAppKeyboard } from '../renderers/keyboards'
+import {
+  expenseCreatedKeyboard,
+  expensePreviewKeyboard,
+  openAppKeyboard,
+} from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
 const YYYY_MM_DD_RE = /^\d{4}-\d{2}-\d{2}$/
@@ -63,7 +67,15 @@ export const handleAiExpenseCommand = async (
 
   // Extract text after /ai command
   const parts = ctx.text.split(/\s+/)
-  const expenseText = parts.length > 1 ? parts.slice(1).join(' ').trim() : ''
+  const scopeToken = parts[1] ?? ''
+  const hasScopeArg = scopeToken.startsWith('hh:') || scopeToken === 'household'
+  const expenseText =
+    parts.length > 1
+      ? parts
+          .slice(hasScopeArg ? 2 : 1)
+          .join(' ')
+          .trim()
+      : ''
 
   if (!expenseText) {
     return {
@@ -149,9 +161,6 @@ export const handleAiExpenseCommand = async (
       : ''
 
   // Default scope: personal
-  const scopeArg = ctx.text.split(/\s+/).slice(1).join(' ').trim()
-  const hasScopeArg = scopeArg.startsWith('hh:') || scopeArg === 'household'
-
   let scope: 'personal' | 'household' = 'personal'
   let householdId: string | undefined
   let householdName: string | undefined
@@ -161,8 +170,8 @@ export const handleAiExpenseCommand = async (
     const householdIds = await listActiveHouseholdIdsForUser(db, ctx.appUserId)
 
     if (householdIds.length > 0) {
-      const targetHhId = scopeArg.startsWith('hh:')
-        ? scopeArg.slice(3).trim()
+      const targetHhId = scopeToken.startsWith('hh:')
+        ? scopeToken.slice(3).trim()
         : householdIds[0]
 
       if (householdIds.includes(targetHhId)) {
@@ -209,6 +218,20 @@ export const handleAiExpenseCommand = async (
     preview,
     locale: ctx.locale,
   })
+
+  // Idempotency: dedupe key already created an expense for this input.
+  // Surface the same confirmation message the confirm handler shows on a
+  // repeat tap, instead of a confusing preview that would otherwise re-arm
+  // the confirmed state if confirmed by accident.
+  if (draft.status === 'confirmed' && draft.createdExpenseId) {
+    return {
+      text:
+        '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
+        `Mã giao dịch: <code>${draft.createdExpenseId}</code>`,
+      parseMode: 'HTML',
+      replyMarkup: expenseCreatedKeyboard(),
+    }
+  }
 
   return {
     text: renderExpensePreviewText(preview, currencyCode) + extraNote,

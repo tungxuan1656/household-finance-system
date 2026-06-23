@@ -47,6 +47,7 @@ const baseArgs = {
   db: mockDb,
   telegramClient: mockClient,
   householdId: 'hh-1',
+  expenseId: 'expense-123',
   actorUserId: 'actor-1',
   expenseTitle: 'ăn bún',
   expenseAmountMinor: 3000000,

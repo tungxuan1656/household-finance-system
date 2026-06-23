@@ -10,6 +10,7 @@ export interface HouseholdActivityOptions {
   db: D1Database
   telegramClient: TelegramClient
   householdId: string
+  expenseId: string
   actorUserId: string
   expenseTitle: string
   expenseAmountMinor: number
@@ -30,6 +31,7 @@ export const sendHouseholdActivity = async (
     db,
     telegramClient,
     householdId,
+    expenseId,
     actorUserId,
     expenseTitle,
     expenseAmountMinor,
@@ -71,7 +73,7 @@ export const sendHouseholdActivity = async (
       telegramClient,
       telegramUserId: chat.telegramUserId,
       notificationType: 'household_activity',
-      dedupeKey: `household_activity:${householdId}:${expenseOccurredAt}:${expenseTitle}`,
+      dedupeKey: `household_activity:${householdId}:${expenseId}`,
       text: renderHouseholdActivityText(activityTextOptions),
       parseMode: 'HTML',
       requiredPref: 'household_activity',

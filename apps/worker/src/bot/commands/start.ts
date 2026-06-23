@@ -47,14 +47,10 @@ export const handleStartCommand = (ctx: CommandContext): BotResponse => {
         ],
         [
           { text: '💸 Ngân sách', callback_data: 'budget' },
-          { text: '👥 Gia đình', callback_data: 'household' },
-        ],
-        [
           { text: '⚙️ Cài đặt', callback_data: 'settings' },
-          { text: '🏠 Mở Mini App', web_app: { url: TMA_URL } },
         ],
+        [{ text: '🏠 Mở Mini App', web_app: { url: TMA_URL } }],
       ],
-      // TODO: Implement callback_data handlers for each button in a follow-up slice
     },
   }
 }

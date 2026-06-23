@@ -6,6 +6,7 @@ import type {
 } from './types'
 
 const TELEGRAM_API_BASE = 'https://api.telegram.org'
+const TELEGRAM_API_TIMEOUT_MS = 10_000
 
 export class TelegramClient {
   private readonly botToken: string
@@ -79,6 +80,7 @@ export class TelegramClient {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(TELEGRAM_API_TIMEOUT_MS),
     })
 
     await this.throwOnError(response)
@@ -102,6 +104,7 @@ export class TelegramClient {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(TELEGRAM_API_TIMEOUT_MS),
     })
 
     await this.throwOnError(response)

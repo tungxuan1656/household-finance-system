@@ -59,7 +59,6 @@ describe('handleStartCommand', () => {
       expect(labels).toContain('➕ Thêm chi tiêu')
       expect(labels).toContain('📊 Xem thống kê')
       expect(labels).toContain('💸 Ngân sách')
-      expect(labels).toContain('👥 Gia đình')
       expect(labels).toContain('⚙️ Cài đặt')
       expect(labels).toContain('🏠 Mở Mini App')
     }

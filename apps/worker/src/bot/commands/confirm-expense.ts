@@ -63,7 +63,7 @@ export const handleConfirmExpense = async (
         '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
         `Mã giao dịch: <code>${draft.createdExpenseId}</code>`,
       parseMode: 'HTML',
-      replyMarkup: expenseCreatedKeyboard(draft.createdExpenseId),
+      replyMarkup: expenseCreatedKeyboard(),
     }
   }
 
@@ -80,7 +80,7 @@ export const handleConfirmExpense = async (
           '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
           `Mã giao dịch: <code>${updatedDraft.createdExpenseId}</code>`,
         parseMode: 'HTML',
-        replyMarkup: expenseCreatedKeyboard(updatedDraft.createdExpenseId),
+        replyMarkup: expenseCreatedKeyboard(),
       }
     }
 
@@ -161,7 +161,7 @@ export const handleConfirmExpense = async (
   return {
     text: renderConfirmSuccessText(preview, currencyCode),
     parseMode: 'HTML',
-    replyMarkup: expenseCreatedKeyboard(expense.id),
+    replyMarkup: expenseCreatedKeyboard(),
   }
 }
 
