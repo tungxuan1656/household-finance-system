@@ -1,0 +1,37 @@
+{
+  "id": "feat-112c",
+  "name": "Telegram bot expense create",
+  "status": "done",
+  "description": "/ai one-expense parse, preview, explicit confirm, duplicate prevention, created_via_bot marker, and audit logging.",
+  "dependencies": ["feat-017", "feat-109", "feat-112a"],
+  "evidence": {
+    "planned": [
+      "ExecPlan: docs/exec-plans/plans/2026-06-22-telegram-bot-expense-create.md"
+    ],
+    "done": [
+      "Migration 0003 adds telegram_bot_expense_drafts table + ALTER expenses ADD created_via_bot.",
+      "/ai <text> parses via parseExpensesWithAi, shows preview (amount/date/category/title/source/scope) with confirm/household/retry/cancel buttons.",
+      "Confirm creates ONE expense with created_via_bot=1 + audit log {source:'telegram_bot', expenseId}.",
+      "Idempotent confirm via dedupe_key (SHA256 of telegram_user_id + raw_text + occurredAt_date); draft expiry ~10 min.",
+      "Household selection two-step flow: empty payload lists member households; hhselect applies selection.",
+      "Membership verification on both household-select and confirm (defense-in-depth) blocks non-member household expense creation.",
+      "Default occurredAt uses today (new Date().toISOString().slice(0,10)) not 1st of month.",
+      "Oracle review approved after blocker fixes (B1 household selection, B2 membership verification, M4 occurredAt); security re-check confirmed fixes."
+    ],
+    "artifacts": [
+      "docs/exec-plans/plans/2026-06-22-telegram-bot-expense-create.md",
+      "apps/worker/migrations/0003_telegram_bot_expense_create.sql",
+      "apps/worker/src/db/repositories/telegram-bot-expense-draft-repository.ts",
+      "apps/worker/src/bot/commands/ai-expense.ts",
+      "apps/worker/src/bot/commands/confirm-expense.ts",
+      "apps/worker/test/unit/bot/commands/ai-expense.spec.ts",
+      "apps/worker/test/unit/bot/commands/confirm-expense.spec.ts"
+    ],
+    "verification": [
+      "./init.sh typecheck -> pass.",
+      "./init.sh test -> 89 tests pass after blocker fixes.",
+      "Oracle review ses_1104c50f3ffeg4DmSJG6CxWu1i found blockers; fixer resolved; security re-check ses_110461e4fffexrM7dynlhzNVlc verified B1+B2 fixed, no new issues, 112d cleared."
+    ]
+  },
+  "notes": "Bot cannot edit or delete expenses. Missing required parse fields ask user to re-enter."
+}

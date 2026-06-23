@@ -599,6 +599,41 @@
       "id": "feat-110",
       "name": "Reference data strongest HTTP cache + TMA icon presentation hook",
       "status": "done"
+    },
+    {
+      "id": "feat-111",
+      "name": "Telegram bot companion product spec",
+      "status": "done"
+    },
+    {
+      "id": "feat-112",
+      "name": "Telegram bot companion implementation plan set",
+      "status": "done"
+    },
+    {
+      "id": "feat-112a",
+      "name": "Telegram bot foundation",
+      "status": "done"
+    },
+    {
+      "id": "feat-112b",
+      "name": "Telegram bot read commands",
+      "status": "done"
+    },
+    {
+      "id": "feat-112c",
+      "name": "Telegram bot expense create",
+      "status": "done"
+    },
+    {
+      "id": "feat-112d",
+      "name": "Telegram bot settings",
+      "status": "done"
+    },
+    {
+      "id": "feat-112e",
+      "name": "Telegram bot notifications",
+      "status": "done"
     }
   ]
 }

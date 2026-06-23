@@ -13,6 +13,7 @@ export interface StoredExpense {
   deletedAt: number | null
   createdAt: number
   updatedAt: number
+  createdViaBot: number
 }
 
 export type ExpenseRow = {
@@ -30,6 +31,7 @@ export type ExpenseRow = {
   deleted_at: number | null
   created_at: number
   updated_at: number
+  created_via_bot: number
 }
 
 export const mapRow = (r: ExpenseRow): StoredExpense => ({
@@ -47,4 +49,5 @@ export const mapRow = (r: ExpenseRow): StoredExpense => ({
   deletedAt: r.deleted_at,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
+  createdViaBot: r.created_via_bot ?? 0,
 })

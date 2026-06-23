@@ -2,6 +2,10 @@
 
 - last-archived: 2026-06-19
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
+- 2026-06-23 — Telegram bot webhook reply bugfix: bind fetch to globalThis to stop Workers illegal invocation (feat-112 evidence)
+- 2026-06-22 — Telegram bot companion implemented: feat-112a-e all done, post-commit review fixes applied, verified (feat-112 evidence)
+- 2026-06-22 — Telegram bot companion implementation split into slice ExecPlans (feat-112/112a-e planned)
+- 2026-06-22 — Telegram bot companion product spec (feat-111 evidence)
 - 2026-06-20 — TMA native-feel PR prep: worker/TMA patch versions + full verify (feat-084 evidence)
 - 2026-06-20 — TMA native-feel quick wins: early ready, route skeletons, chunk preload, query cache (feat-084 evidence)
 - 2026-06-20 — TMA native-feel performance audit and improvement plan (feat-084 evidence)

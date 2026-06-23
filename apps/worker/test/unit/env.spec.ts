@@ -20,6 +20,7 @@ const createEnv = (overrides: Partial<Record<string, unknown>> = {}): Env =>
     AUTH_REFRESH_TOKEN_PEPPER: 'refresh-pepper',
     INVITATION_TOKEN_PEPPER: 'invitation-pepper',
     TELEGRAM_BOT_TOKEN: 'test-telegram-bot-token',
+    TELEGRAM_BOT_WEBHOOK_SECRET: 'test-webhook-secret',
     FIREBASE_PROJECT_ID: 'household-finance-prod',
     APP_ENV: 'test',
     CLOUDINARY_CLOUD_NAME: 'demo-cloud',
@@ -40,10 +41,25 @@ describe('env config', () => {
     expect(config.allowInsecureTestTokens).toBe(false)
     expect(config.invitationTokenPepper).toBe('invitation-pepper')
     expect(config.telegramBotToken).toBe('test-telegram-bot-token')
+    expect(config.telegramBotWebhookSecret).toBe('test-webhook-secret')
     expect(config.telegramFreshnessWindowSeconds).toBe(3600)
     expect(config.firebaseJwksUrl).toContain(
       'securetoken@system.gserviceaccount.com',
     )
+  })
+
+  it('reads a different webhook secret value', () => {
+    const config = readConfig(
+      createEnv({ TELEGRAM_BOT_WEBHOOK_SECRET: 'my-custom-secret' }),
+    )
+
+    expect(config.telegramBotWebhookSecret).toBe('my-custom-secret')
+  })
+
+  it('throws INTERNAL_ERROR when webhook secret is missing', () => {
+    expect(() =>
+      readConfig(createEnv({ TELEGRAM_BOT_WEBHOOK_SECRET: undefined })),
+    ).toThrowError(expect.objectContaining({ code: 'INTERNAL_ERROR' }))
   })
 
   it('reads cloudinary config only when media flow needs it', () => {

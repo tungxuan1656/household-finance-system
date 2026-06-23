@@ -1,5 +1,8 @@
 import { Hono } from 'hono'
 
+import { sendHouseholdActivity } from '@/bot/notifications/household-activity'
+import { TelegramClient } from '@/bot/telegram-client'
+import { findHouseholdById } from '@/db/repositories/household-repository'
 import { replaceExpenseGroupsHandler } from '@/handlers/expense-groups/replace-expense-groups'
 import { createExpenseHandler } from '@/handlers/expenses/create-expense'
 import { deleteExpenseHandler } from '@/handlers/expenses/delete-expense'
@@ -27,6 +30,37 @@ expensesRoutes.use('/expenses/:id/groups', authMiddleware)
 // POST /api/v1/expenses
 expensesRoutes.post('/expenses', async (ctx) => {
   const dto = await createExpenseHandler(ctx)
+
+  // Fire-and-forget: household activity notification for household expenses
+  if (dto.householdId) {
+    const tokenRaw = (ctx.env as unknown as Record<string, unknown>)
+      .TELEGRAM_BOT_TOKEN
+    const botToken =
+      typeof tokenRaw === 'string' && tokenRaw.trim() ? tokenRaw : null
+
+    if (botToken) {
+      const client = new TelegramClient(botToken)
+      const currentUser = ctx.get('currentUser')
+      const household = await findHouseholdById(ctx.env.DB, dto.householdId)
+      const householdName = household?.name ?? ''
+
+      sendHouseholdActivity({
+        db: ctx.env.DB,
+        telegramClient: client,
+        householdId: dto.householdId,
+        expenseId: dto.id,
+        actorUserId: currentUser.id,
+        expenseTitle: dto.title,
+        expenseAmountMinor: dto.amountMinor,
+        expenseCategoryKey: dto.categoryKey,
+        expenseOccurredAt: new Date(dto.occurredAt).toISOString().slice(0, 10),
+        expenseCurrencyCode: dto.currencyCode,
+        householdName,
+      }).catch((err: unknown) => {
+        console.error('household-activity: send failed', err)
+      })
+    }
+  }
 
   return success<typeof dto>(ctx, dto, 201)
 })

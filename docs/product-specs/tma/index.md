@@ -9,6 +9,7 @@ TMA-only product behavior for `apps/tma`.
 - `expense-capture.md`
 - `invite-entrypoints.md`
 - `tma-settings.md`
+- `telegram-bot-companion.md`
 
 ## Rule
 

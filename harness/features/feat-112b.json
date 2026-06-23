@@ -1,0 +1,39 @@
+{
+  "id": "feat-112b",
+  "name": "Telegram bot read commands",
+  "status": "done",
+  "description": "Read-only /stats, /top, and /budget commands with current-user household/group scope options and Vietnamese-ready finance summaries.",
+  "dependencies": ["feat-027", "feat-028", "feat-099", "feat-112a"],
+  "evidence": {
+    "planned": [
+      "ExecPlan: docs/exec-plans/plans/2026-06-22-telegram-bot-read-commands.md"
+    ],
+    "done": [
+      "Added /stats, /top, /budget commands with personal + active household scope options.",
+      "Worker-safe finance renderers (finance-text.ts) and keyboard builders (keyboards.ts) avoid importing Hono handlers.",
+      "Scope gated by listActiveHouseholdIdsForUser; inaccessible households rejected.",
+      "Shared read-scope.ts helper extracted after review to dedupe stats/top scope parsing.",
+      "Invalid budget scope skipped with warning instead of misleading 0% fallback.",
+      "Oracle review approved with 2 MEDIUM findings fixed (invalid budget handling, scope helper extraction)."
+    ],
+    "artifacts": [
+      "docs/exec-plans/plans/2026-06-22-telegram-bot-read-commands.md",
+      "apps/worker/src/bot/renderers/finance-text.ts",
+      "apps/worker/src/bot/renderers/keyboards.ts",
+      "apps/worker/src/bot/commands/stats.ts",
+      "apps/worker/src/bot/commands/top.ts",
+      "apps/worker/src/bot/commands/budget.ts",
+      "apps/worker/src/bot/commands/read-scope.ts",
+      "apps/worker/test/unit/bot/renderers/finance-text.spec.ts",
+      "apps/worker/test/unit/bot/commands/stats.spec.ts",
+      "apps/worker/test/unit/bot/commands/top.spec.ts",
+      "apps/worker/test/unit/bot/commands/budget.spec.ts"
+    ],
+    "verification": [
+      "./init.sh typecheck -> pass.",
+      "./init.sh test -> 66 tests pass after impl.",
+      "Oracle review approved; 112c cleared to start."
+    ]
+  },
+  "notes": "No member breakdown in bot MVP. Commands are read-only."
+}
