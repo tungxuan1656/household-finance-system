@@ -161,6 +161,8 @@ export const handleDetailExpense = async (
 ): Promise<BotResponse> => {
   if (!ctx.appUserId) {
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text:
         'Vui lòng mở Mini App để đăng nhập.\n\n' +
         '🏠 <a href="' +

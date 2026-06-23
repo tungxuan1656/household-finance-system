@@ -37,7 +37,8 @@ export const detectAmountInVnd = (
   const lowerText = text.toLowerCase()
 
   // ── Pattern 1: n.k (e.g. 1.5k, 30k, 100k) ──
-  const kPattern = /(\d+(?:\.\d+)?)\s*k/i
+  // Word boundary after 'k' prevents matching "kg", "km", "kWh" (units, not money).
+  const kPattern = /(\d+(?:\.\d+)?)\s*k\b/i
   let match = kPattern.exec(lowerText)
 
   if (match) {
@@ -78,8 +79,10 @@ export const detectAmountInVnd = (
     }
   }
 
-  // Standard "n.tr" format with word boundary
-  const trPattern = /(\d+(?:\.\d+)?)\s*tr\b/i
+  // Standard "n.tr" format with Unicode-aware boundary.
+  // Plain \b fails for Vietnamese: "1 trường" matches because 'ư' is non-ASCII
+  // (non-word char) so \b between 'r' and 'ư' is a boundary.
+  const trPattern = /(\d+(?:\.\d+)?)\s*tr(?![\p{L}\p{N}])/iu
   match = trPattern.exec(lowerText)
 
   if (match) {
@@ -92,8 +95,9 @@ export const detectAmountInVnd = (
   }
 
   // ── Pattern 4: n củ / n cụ / n cù (e.g. 1 củ = 1.000.000) ──
-  // Hỗ trợ cả 3 dấu: ủ (hook above), ụ (dot below), ù (grave accent)
-  const cuPattern = /(\d+(?:\.\d+)?)\s*c[uùụủ]/i
+  // Hỗ trợ cả 3 dấu: ủ (hook above), ụ (dot below), ù (grave accent).
+  // Unicode-aware boundary prevents matching "1 cứu" (rescue), "1 cuồng" etc.
+  const cuPattern = /(\d+(?:\.\d+)?)\s*c[uùụủ](?![\p{L}\p{N}])/iu
   match = cuPattern.exec(lowerText)
 
   if (match) {

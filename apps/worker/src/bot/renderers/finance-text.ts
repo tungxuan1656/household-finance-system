@@ -129,7 +129,8 @@ export const renderTopCategoriesText = (
     const amount = formatMinorAmount(cat.totalSpendMinor)
     const bar = renderProgressBar(cat.percentOfTotal)
 
-    return `${label}\t${amount}₫\n${bar} ${cat.percentOfTotal}%`
+    // Amount on its own line so Telegram clients (variable-width tabs) align it.
+    return `${label}\n<b>${amount}₫</b>\n${bar} ${cat.percentOfTotal}%`
   })
 
   return (

@@ -72,7 +72,7 @@ export const containsAnyWord = (
  * Returns:
  *   'income'   — income words present, NO spend verb → reject
  *   'ambiguous' — both income and spend present → reject
- *   'expense'   — no income words, or income + spend → OK (spend intent clear)
+ *   'expense'   — no income words → OK (spend intent clear, no income conflict)
  */
 export const classifyIntent = (
   text: string,

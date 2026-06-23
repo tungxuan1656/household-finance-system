@@ -81,6 +81,7 @@ export const buildDraftFromItem = async (
   let scope: 'personal' | 'household' = 'personal'
   let householdId: string | undefined
   let householdName: string | undefined
+  let currencyCode = 'VND'
 
   if (hasScopeArg) {
     const householdIds = await listActiveHouseholdIdsForUser(db, ctx.appUserId!)
@@ -96,17 +97,11 @@ export const buildDraftFromItem = async (
           scope = 'household'
           householdId = hh.id
           householdName = hh.name
+          currencyCode = hh.defaultCurrencyCode ?? 'VND'
         }
       }
     }
   }
-
-  // Determine currency from household or default VND
-  const currencyCode =
-    scope === 'household' && householdId
-      ? ((await findHouseholdById(db, householdId))?.defaultCurrencyCode ??
-        'VND')
-      : 'VND'
 
   const amountMinor =
     options.overrideAmountMinor !== undefined
