@@ -23,6 +23,34 @@ export class TelegramClient {
     return `${TELEGRAM_API_BASE}/bot${this.botToken}`
   }
 
+  /**
+   * Throw on non-2xx Telegram API response.
+   */
+  private async throwOnError(response: Response): Promise<void> {
+    if (response.ok) {
+      // Telegram returns 200 with { ok: true } on success
+      let body: { ok?: boolean; description?: string } | undefined
+
+      try {
+        body = (await response.json()) as { ok?: boolean; description?: string }
+      } catch {
+        // Non-JSON body from a 200 response is unexpected — assume success
+        return
+      }
+
+      if (body && body.ok === false) {
+        throw new Error(`Telegram API error: ${body.description ?? 'unknown'}`)
+      }
+
+      return
+    }
+
+    // HTTP error (4xx/5xx)
+    const statusText = response.statusText || 'Unknown HTTP error'
+
+    throw new Error(`Telegram API HTTP ${response.status}: ${statusText}`)
+  }
+
   async sendMessage(
     chatId: number | string,
     text: string,
@@ -47,11 +75,15 @@ export class TelegramClient {
       body.reply_markup = options.replyMarkup
     }
 
-    return this.fetchFn(`${this.apiBase}/sendMessage`, {
+    const response = await this.fetchFn(`${this.apiBase}/sendMessage`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
     })
+
+    await this.throwOnError(response)
+
+    return response
   }
 
   async answerCallbackQuery(
@@ -66,11 +98,15 @@ export class TelegramClient {
       body.text = text
     }
 
-    return this.fetchFn(`${this.apiBase}/answerCallbackQuery`, {
+    const response = await this.fetchFn(`${this.apiBase}/answerCallbackQuery`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
     })
+
+    await this.throwOnError(response)
+
+    return response
   }
 
   async setWebhook(url: string, secretToken?: string): Promise<Response> {

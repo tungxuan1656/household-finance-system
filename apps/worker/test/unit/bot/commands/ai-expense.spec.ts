@@ -48,7 +48,7 @@ vi.mock('@/db/repositories/telegram-bot-expense-draft-repository', () => ({
     telegramChatId: '987654321',
     dedupeKey: 'dedupe-test-key',
     previewJson: JSON.stringify({
-      amountMinor: 3000000, // 30k VND in minor units
+      amountMinor: 30000, // 30k VND in minor units (VND has 0 fraction digits)
       occurredAt: '2026-06-15',
       categoryKey: 'food',
       title: 'ăn bún',

@@ -159,6 +159,24 @@ const handleCallbackQuery = async (
       result = await handleSettingsCommand(ctx)
       break
     }
+    case 'stats': {
+      result = await handleStatsCommand(ctx)
+      break
+    }
+    case 'budget': {
+      result = await handleBudgetCommand(ctx)
+      break
+    }
+    case 'add_expense': {
+      result = {
+        text:
+          'Vui lòng nhập nội dung chi tiêu bằng lệnh /ai.\n\n' +
+          'Ví dụ: <code>/ai ăn bún 30k 15/6</code>',
+        parseMode: 'HTML' as const,
+      }
+
+      break
+    }
     default: {
       // Unknown callback — answer it quietly
       await answerCallbackQuery(client, cq.id, undefined)

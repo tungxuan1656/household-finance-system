@@ -129,6 +129,43 @@ export const upsertTelegramBotChat = async (
 }
 
 /**
+ * Find a chat record by app user id (user_id column).
+ * Used by household-activity to look up telegram chats for member app user ids.
+ */
+export const findTelegramBotChatByAppUserId = async (
+  db: D1Database,
+  appUserId: string,
+): Promise<StoredTelegramBotChat | null> => {
+  const row = await db
+    .prepare(
+      `SELECT id,
+              telegram_user_id,
+              telegram_chat_id,
+              user_id,
+              preferences,
+              locale,
+              created_at,
+              updated_at
+         FROM telegram_bot_chats
+        WHERE user_id = ?
+        LIMIT 1`,
+    )
+    .bind(appUserId)
+    .first<{
+      id: string
+      telegram_user_id: string
+      telegram_chat_id: string
+      user_id: string | null
+      preferences: string
+      locale: string
+      created_at: number
+      updated_at: number
+    }>()
+
+  return row ? toStoredChat(row) : null
+}
+
+/**
  * Update the preferences column for a telegram_bot_chat record.
  * Uses the unique telegram_user_id index to find the row.
  */

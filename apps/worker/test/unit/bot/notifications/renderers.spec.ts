@@ -53,7 +53,7 @@ describe('notification renderers', () => {
       expect(result).toContain('Gia đình Test')
       expect(result).toContain('Tung')
       expect(result).toContain('ăn bún')
-      expect(result).toContain('30.000')
+      expect(result).toContain('3.000.000')
       expect(result).toContain('Ăn uống')
     })
   })
@@ -78,7 +78,7 @@ describe('notification renderers', () => {
       })
 
       expect(result).toContain('Bản tin hàng tuần')
-      expect(result).toContain('150.000')
+      expect(result).toContain('15.000.000')
       expect(result).toContain('5 khoản')
       expect(result).toContain('Ăn uống')
       expect(result).toContain('Ngân sách cá nhân')

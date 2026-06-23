@@ -28,16 +28,28 @@ describe('finance-text', () => {
   })
 
   describe('formatMinorAmount', () => {
-    it('formats a typical VND amount', () => {
-      expect(formatMinorAmount(15000000)).toBe('150.000')
+    it('formats VND (0 decimals)', () => {
+      expect(formatMinorAmount(30000, 'VND')).toBe('30.000')
+    })
+
+    it('formats a larger VND amount', () => {
+      expect(formatMinorAmount(15000000, 'VND')).toBe('15.000.000')
     })
 
     it('formats zero', () => {
-      expect(formatMinorAmount(0)).toBe('0')
+      expect(formatMinorAmount(0, 'VND')).toBe('0')
     })
 
-    it('formats small amount', () => {
-      expect(formatMinorAmount(5000)).toBe('50')
+    it('formats USD (2 decimals)', () => {
+      expect(formatMinorAmount(12345, 'USD')).toBe('123,45')
+    })
+
+    it('formats JPY (0 decimals)', () => {
+      expect(formatMinorAmount(500, 'JPY')).toBe('500')
+    })
+
+    it('formats KWD (3 decimals)', () => {
+      expect(formatMinorAmount(12345, 'KWD')).toBe('12,345')
     })
   })
 
@@ -67,7 +79,7 @@ describe('finance-text', () => {
 
       expect(result).toContain('Thống kê')
       expect(result).toContain('cá nhân')
-      expect(result).toContain('150.000')
+      expect(result).toContain('15.000.000')
       expect(result).toContain('VND')
       expect(result).toContain('3 khoản')
     })
@@ -116,7 +128,7 @@ describe('finance-text', () => {
 
       expect(result).toContain('🟢')
       expect(result).toContain('Ngân sách cá nhân')
-      expect(result).toContain('10.000')
+      expect(result).toContain('1.000.000')
       expect(result).toContain('Đã dùng 20%')
     })
 
@@ -173,7 +185,7 @@ describe('finance-text', () => {
       )
 
       expect(result).toContain('Xem trước chi tiêu')
-      expect(result).toContain('30.000')
+      expect(result).toContain('3.000.000')
       expect(result).toContain('VND')
       expect(result).toContain('Ăn uống')
       expect(result).toContain('2026-06-15')
@@ -215,7 +227,7 @@ describe('finance-text', () => {
       )
 
       expect(result).toContain('Đã thêm chi tiêu thành công')
-      expect(result).toContain('30.000')
+      expect(result).toContain('3.000.000')
       expect(result).toContain('Ăn uống')
       expect(result).toContain('ăn bún')
     })

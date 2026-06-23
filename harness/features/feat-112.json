@@ -20,7 +20,7 @@
     ],
     "done": [
       "All five child slices feat-112a through feat-112e implemented, reviewed, and verified on branch feat-112-telegram-bot.",
-      "Full ./init.sh verification passed: install, harness, lint, typecheck, test all green (128 worker tests).",
+      "Full ./init.sh verification passed after post-commit review fixes: install, harness, lint, typecheck, test all green (131 worker tests).",
       "Oracle reviews passed for each slice with blockers/highs fixed before proceeding: 112a (webhook secret + user_id), 112b (scope helper + invalid budget), 112c (household selection + membership verification + occurredAt), 112d (no blockers), 112e (actor name + currency + corrupt scope + orchestrator tests)."
     ],
     "artifacts": [
@@ -38,7 +38,7 @@
     ],
     "verification": [
       "./init.sh -> Done! (install, harness, lint, typecheck, test all green).",
-      "128 worker tests pass (118 bot unit + 10 auth-telegram integration).",
+      "131 worker tests pass after post-commit review fixes (121 bot unit + 10 auth-telegram integration).",
       "jq empty harness/feature_index.json harness/features/feat-112*.json -> OK."
     ]
   },

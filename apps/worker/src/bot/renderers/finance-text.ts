@@ -34,29 +34,13 @@ export const getCategoryLabel = (key: string): string =>
 
 /**
  * Format a minor-amount integer to a readable Vietnamese string.
- * Example: 150000 -> "150.000", 50000 -> "50.000"
+ * Uses currency-aware fraction digits (VND=0, USD=2, etc.).
+ * Example: formatMinorAmount(30000, 'VND') → "30.000"
+ *          formatMinorAmount(12345, 'USD') → "123.45"
  */
-export const formatMinorAmount = (
-  minor: number,
-  _currencyCode: string = 'VND',
-): string => {
-  const major = minor / 100
-  const parts = Math.floor(major).toFixed(0).split('')
-  const formatted: string[] = []
+import { formatMinorAmount } from '@/lib/currency'
 
-  for (let i = parts.length - 1, group = 0; i >= 0; i -= 1, group += 1) {
-    if (group > 0 && group % 3 === 0) {
-      formatted.unshift('.')
-    }
-    formatted.unshift(parts[i])
-  }
-
-  const result = formatted.join('')
-
-  return minor % 100 !== 0
-    ? `${result},${String(minor % 100).padStart(2, '0')}`
-    : result
-}
+export { formatMinorAmount }
 
 /**
  * Get the current period key in YYYY-MM format.

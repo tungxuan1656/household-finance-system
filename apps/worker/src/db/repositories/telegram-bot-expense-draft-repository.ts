@@ -203,6 +203,29 @@ export const markDraftConfirmed = async (
 /**
  * Mark a draft as expired.
  */
+/**
+ * Atomically claim a draft for confirmation (CAS pattern — HIGH 3).
+ * Updates status from 'pending' to 'confirming' and returns true
+ * if the row was affected. Only one concurrent caller can succeed.
+ */
+export const claimDraftForConfirm = async (
+  db: D1Database,
+  draftId: string,
+): Promise<boolean> => {
+  const result = await db
+    .prepare(
+      `UPDATE telegram_bot_expense_drafts
+          SET status = 'confirming',
+              updated_at = ?
+        WHERE id = ?
+          AND status = 'pending'`,
+    )
+    .bind(Date.now(), draftId)
+    .run()
+
+  return (result.meta.changes ?? 0) > 0
+}
+
 export const expireDraft = async (
   db: D1Database,
   draftId: string,

@@ -4,6 +4,7 @@ import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membe
 import { findHouseholdById } from '@/db/repositories/household-repository'
 import type { PreviewData } from '@/db/repositories/telegram-bot-expense-draft-repository'
 import {
+  claimDraftForConfirm,
   expireDraft,
   findDraftById,
   isDraftExpired,
@@ -65,8 +66,17 @@ export const handleConfirmExpense = async (
     return buildAlreadyCreatedResponse(ctx, draft.createdExpenseId)
   }
 
-  // Only process pending drafts
-  if (draft.status !== 'pending') {
+  // Atomically claim the draft (CAS — HIGH 3). Only one concurrent caller succeeds.
+  const claimed = await claimDraftForConfirm(db, draft.id)
+
+  if (!claimed) {
+    // Another request claimed it first — re-read to see if it's confirmed
+    const updatedDraft = await findDraftById(db, draft.id)
+
+    if (updatedDraft?.status === 'confirmed' && updatedDraft.createdExpenseId) {
+      return buildAlreadyCreatedResponse(ctx, updatedDraft.createdExpenseId)
+    }
+
     return {
       text: 'Yêu cầu thêm chi tiêu này đã được xử lý. Vui lòng thử lại với /ai.',
       parseMode: 'HTML',

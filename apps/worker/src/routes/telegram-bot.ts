@@ -22,10 +22,15 @@ telegramBotRoutes.post('/telegram/webhook', async (ctx) => {
   const update = await ctx.req.json<TelegramUpdate>()
 
   // Resolve app user identity once and share with upsert + command handler
+  // Must handle both message and callback_query updates (HIGH 1)
   let resolvedAppUserId: string | null = null
 
-  if (update.message?.from && !update.message.from.is_bot) {
-    const telegramUserId = String(update.message.from.id)
+  const messageFrom = update.message?.from
+  const callbackFrom = update.callback_query?.from
+  const userFrom = messageFrom ?? callbackFrom
+
+  if (userFrom && !userFrom.is_bot) {
+    const telegramUserId = String(userFrom.id)
 
     resolvedAppUserId = await findAppUserIdByTelegramId(
       ctx.env.DB,
@@ -36,14 +41,20 @@ telegramBotRoutes.post('/telegram/webhook', async (ctx) => {
       return null
     })
 
-    await upsertTelegramBotChat(ctx.env.DB, {
-      telegramUserId,
-      telegramChatId: String(update.message.chat.id),
-      userId: resolvedAppUserId,
-      locale: update.message.from.language_code ?? 'vi',
-    }).catch((err: unknown) => {
-      console.error('telegram-webhook: upsert chat record failed', err)
-    })
+    // Upsert chat record when we have a chat id (message context)
+    const chatId =
+      update.message?.chat.id ?? update.callback_query?.message?.chat.id
+
+    if (chatId) {
+      await upsertTelegramBotChat(ctx.env.DB, {
+        telegramUserId,
+        telegramChatId: String(chatId),
+        userId: resolvedAppUserId,
+        locale: userFrom.language_code ?? 'vi',
+      }).catch((err: unknown) => {
+        console.error('telegram-webhook: upsert chat record failed', err)
+      })
+    }
   }
 
   const client = new TelegramClient(config.telegramBotToken)

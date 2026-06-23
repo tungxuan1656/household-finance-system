@@ -64,6 +64,7 @@ vi.mock('@/db/repositories/telegram-bot-expense-draft-repository', () => ({
   expireDraft: vi.fn().mockResolvedValue(undefined),
   markDraftConfirmed: vi.fn().mockResolvedValue(null),
   upsertDraft: vi.fn().mockResolvedValue(null),
+  claimDraftForConfirm: vi.fn().mockResolvedValue(true),
 }))
 
 // Mock expense repository

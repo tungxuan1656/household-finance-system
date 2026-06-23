@@ -1,5 +1,5 @@
 import { listHouseholdMembers } from '@/db/repositories/household-membership-repository'
-import { findTelegramBotChatByUserId } from '@/db/repositories/telegram-bot-chat-repository'
+import { findTelegramBotChatByAppUserId } from '@/db/repositories/telegram-bot-chat-repository'
 
 import type { TelegramClient } from '../telegram-client'
 import type { HouseholdActivityTextOptions } from './renderers'
@@ -50,8 +50,8 @@ export const sendHouseholdActivity = async (
     // Skip the actor
     if (member.userId === actorUserId) continue
 
-    // Find telegram chat for this member
-    const chat = await findTelegramBotChatByUserId(db, member.userId)
+    // Find telegram chat by app user id (HIGH 4 — member.userId is app user id)
+    const chat = await findTelegramBotChatByAppUserId(db, member.userId)
 
     if (!chat) continue
 

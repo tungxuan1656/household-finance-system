@@ -17,7 +17,8 @@
       "All sends via TelegramClient.sendMessage; no Telegram logic outside bot/.",
       "scheduled handler exported from src/index.ts; triggers.crons in wrangler.jsonc.",
       "Fire-and-forget household activity hook doesn't fail expense create.",
-      "Oracle review found blocker B1 (wrong actor name) + H1-H3 (currency, corrupt scope); all fixed + 16 orchestrator tests added (incl. B1 regression)."
+      "Oracle review found blocker B1 (wrong actor name) + H1-H3 (currency, corrupt scope); all fixed + 16 orchestrator tests added (incl. B1 regression).",
+      "Post-commit review fixes applied: callback identity for callback_query, atomic draft claim on confirm, app-user chat lookup for household notifications, Telegram HTTP error handling, main menu callback handling, and currency-aware bot amount formatting/storage."
     ],
     "artifacts": [
       "docs/exec-plans/plans/2026-06-22-telegram-bot-notifications.md",
@@ -39,7 +40,7 @@
     ],
     "verification": [
       "./init.sh typecheck -> pass.",
-      "./init.sh test -> 128 tests pass after blocker fixes (118 bot unit + 10 auth-telegram).",
+      "./init.sh test -> 131 tests pass after post-commit review fixes (121 bot unit + 10 auth-telegram).",
       "Oracle review ses_11037a6b3ffe0JjIOD5AuctW09 found B1+H1-H3; fixer resolved; 13/13 acceptance criteria pass."
     ]
   },

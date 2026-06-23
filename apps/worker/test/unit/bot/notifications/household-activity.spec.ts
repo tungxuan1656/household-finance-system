@@ -17,11 +17,11 @@ const mockDb = {
 } as unknown as D1Database
 
 // Hoisted mock refs
-const { mockListMembers, mockFindChat, mockSendNotif } = vi.hoisted(() => {
+const { mockListMembers, mockFindChatByApp, mockSendNotif } = vi.hoisted(() => {
   const mlm = vi.fn()
-  const mfc = vi.fn()
+  const mfcApp = vi.fn()
   const msn = vi.fn().mockResolvedValue('skipped')
-  return { mockListMembers: mlm, mockFindChat: mfc, mockSendNotif: msn }
+  return { mockListMembers: mlm, mockFindChatByApp: mfcApp, mockSendNotif: msn }
 })
 
 vi.mock('@/db/repositories/household-membership-repository', () => ({
@@ -29,7 +29,8 @@ vi.mock('@/db/repositories/household-membership-repository', () => ({
 }))
 
 vi.mock('@/db/repositories/telegram-bot-chat-repository', () => ({
-  findTelegramBotChatByUserId: mockFindChat,
+  findTelegramBotChatByUserId: vi.fn(),
+  findTelegramBotChatByAppUserId: mockFindChatByApp,
 }))
 
 vi.mock('@/bot/notifications/sender', () => ({
@@ -59,9 +60,8 @@ describe('sendHouseholdActivity', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockSendNotif.mockResolvedValue('skipped')
-    // Reset implementations to prevent cross-test leakage
     mockListMembers.mockResolvedValue([])
-    mockFindChat.mockResolvedValue(null)
+    mockFindChatByApp.mockResolvedValue(null)
   })
 
   it('B1: recipient sees actor name, not their own', async () => {
@@ -83,7 +83,7 @@ describe('sendHouseholdActivity', () => {
         avatarUrl: null,
       },
     ])
-    mockFindChat.mockResolvedValue({
+    mockFindChatByApp.mockResolvedValue({
       id: 'chat-2',
       telegramUserId: '999',
       telegramChatId: '888',
@@ -96,12 +96,8 @@ describe('sendHouseholdActivity', () => {
 
     await sendHouseholdActivity(baseArgs)
 
-    // sendNotification should be called with actor's name, not recipient's
     expect(mockSendNotif).toHaveBeenCalledTimes(1)
-    const callText = mockSendNotif.mock.calls[0][0].text
-    expect(callText).toBe('Test notification text')
-    // The renderer mock returns fixed text, but the sender receives it
-    // We verify the flow — the key is that the mock was called (B1 would have thrown or skipped)
+    expect(mockSendNotif.mock.calls[0][0].text).toBe('Test notification text')
   })
 
   it('actor is excluded from recipients', async () => {
@@ -123,7 +119,7 @@ describe('sendHouseholdActivity', () => {
         avatarUrl: null,
       },
     ])
-    mockFindChat.mockResolvedValue({
+    mockFindChatByApp.mockResolvedValue({
       id: 'chat-2',
       telegramUserId: '999',
       telegramChatId: '888',
@@ -136,7 +132,6 @@ describe('sendHouseholdActivity', () => {
 
     await sendHouseholdActivity(baseArgs)
 
-    // Should notify exactly 1 recipient (other-1), not the actor
     expect(mockSendNotif).toHaveBeenCalledTimes(1)
   })
 
@@ -159,7 +154,7 @@ describe('sendHouseholdActivity', () => {
         avatarUrl: null,
       },
     ])
-    mockFindChat.mockResolvedValue({
+    mockFindChatByApp.mockResolvedValue({
       id: 'chat-2',
       telegramUserId: '999',
       telegramChatId: '888',
@@ -172,7 +167,6 @@ describe('sendHouseholdActivity', () => {
 
     await sendHouseholdActivity(baseArgs)
 
-    // The sendNotification itself gates on household_activity preference
     expect(mockSendNotif).toHaveBeenCalledTimes(1)
     expect(mockSendNotif.mock.calls[0][0].requiredPref).toBe(
       'household_activity',
@@ -198,12 +192,10 @@ describe('sendHouseholdActivity', () => {
         avatarUrl: null,
       },
     ])
-    // Only one member has a chat (the actor), the other has none
-    mockFindChat.mockResolvedValue(null)
+    mockFindChatByApp.mockResolvedValue(null)
 
     await sendHouseholdActivity(baseArgs)
 
-    // No notification sent (no non-actor members with chats)
     expect(mockSendNotif).toHaveBeenCalledTimes(0)
   })
 

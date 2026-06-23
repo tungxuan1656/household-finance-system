@@ -4,6 +4,7 @@ import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membe
 import { findHouseholdById } from '@/db/repositories/household-repository'
 import { createDraftFromPreview } from '@/db/repositories/telegram-bot-expense-draft-repository'
 import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
+import { getMinorUnits } from '@/lib/currency'
 
 import { renderExpensePreviewText } from '../renderers/finance-text'
 import { expensePreviewKeyboard, openAppKeyboard } from '../renderers/keyboards'
@@ -183,7 +184,7 @@ export const handleAiExpenseCommand = async (
       : 'VND'
 
   const preview = {
-    amountMinor: validItem.amount * 100, // Convert VND to minor units
+    amountMinor: getMinorUnits(validItem.amount, currencyCode),
     occurredAt: validItem.occurredAt,
     categoryKey: validItem.categoryKey,
     title: validItem.title,
