@@ -13,7 +13,7 @@ import {
   renderBudgetLine,
   renderBudgetStatusText,
 } from '../renderers/finance-text'
-import { openAppKeyboard } from '../renderers/keyboards'
+import { budgetKeyboard, openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
 const calculateThresholdStatus = (
@@ -171,6 +171,6 @@ export const handleBudgetCommand = async (
   return {
     text: renderBudgetStatusText(lines),
     parseMode: 'HTML',
-    replyMarkup: openAppKeyboard(tmaUrl),
+    replyMarkup: budgetKeyboard(tmaUrl),
   }
 }

@@ -84,6 +84,10 @@ export interface BotResponse {
   text: string
   parseMode?: ParseMode
   replyMarkup?: InlineKeyboardMarkup | ReplyKeyboardMarkup | ReplyKeyboardRemove
+  /** 'send' (default) creates new message; 'edit' replaces existing message. */
+  mode?: 'send' | 'edit'
+  /** Required when mode='edit'. Telegram message_id to edit. */
+  targetMessageId?: number
 }
 
 /** Context passed to command handlers. */

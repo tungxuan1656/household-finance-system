@@ -1,67 +1,30 @@
-import { resolveLocale } from '@/lib/i18n'
-import type { AppConfig } from '@/types'
+import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
 
 import { findAppUserIdByTelegramId } from './account-linking'
+import type { BotServiceDeps } from './callback-dispatcher'
+import {
+  buildCtx,
+  extractCommand,
+  handleCallbackQuery,
+} from './callback-dispatcher'
 import { handleAiExpenseCommand } from './commands/ai-expense'
+import {
+  buildDraftFromItem,
+  normalizeAiItem,
+} from './commands/ai-expense-shared'
 import { handleBudgetCommand } from './commands/budget'
-import {
-  handleCancelExpense,
-  handleConfirmExpense,
-  handleRetryExpense,
-} from './commands/confirm-expense'
 import { handleHelpCommand } from './commands/help'
-import { handleHouseholdSelect } from './commands/household-select'
-import {
-  handlePreferenceToggle,
-  handleSettingsCommand,
-} from './commands/settings'
+import { handleSettingsCommand } from './commands/settings'
 import { handleStartCommand } from './commands/start'
 import { handleStatsCommand } from './commands/stats'
 import { handleTopCommand } from './commands/top'
+import { detectAmountInVnd, looksLikeExpense } from './lib/vn-amount-detector'
+import { renderExpensePreviewText } from './renderers/finance-text'
+import { expensePreviewCompactKeyboard } from './renderers/keyboards'
 import { TelegramClient } from './telegram-client'
 import type { BotResponse, TelegramUpdate } from './types'
 
-export interface BotServiceDeps {
-  db: D1Database
-  config: Pick<
-    AppConfig,
-    'telegramBotToken' | 'telegramBotTmaUrl' | 'telegramBotDeepLinkUrl'
-  >
-  telegramClient?: TelegramClient
-  /**
-   * Pre-resolved app user id to avoid duplicate identity lookup.
-   * When set, skips the findAppUserIdByTelegramId call.
-   * null means the identity was checked and does not exist.
-   */
-  resolvedAppUserId?: string | null
-  /** Worker env bag for commands that need it (AI config, etc.). */
-  env?: Record<string, string | undefined>
-}
-
-interface BuildCtxOptions {
-  userId: number
-  chatId: number
-  text: string
-  appUserId: string | null
-  deps: BotServiceDeps
-  firstName?: string
-  lastName?: string
-  languageCode?: string
-}
-
-const buildCtx = (o: BuildCtxOptions) => ({
-  userId: o.userId,
-  chatId: o.chatId,
-  userDisplayName:
-    [o.firstName, o.lastName].filter(Boolean).join(' ').trim() || null,
-  text: o.text,
-  appUserId: o.appUserId,
-  locale: resolveLocale(o.languageCode ?? null),
-  db: o.deps.db,
-  env: o.deps.env,
-  telegramBotTmaUrl: o.deps.config.telegramBotTmaUrl,
-  telegramBotDeepLinkUrl: o.deps.config.telegramBotDeepLinkUrl,
-})
+export type { BotServiceDeps }
 
 export const handleUpdate = async (
   update: TelegramUpdate,
@@ -77,128 +40,8 @@ export const handleUpdate = async (
 }
 
 /**
- * Handle a callback query from an inline keyboard button.
- */
-const handleCallbackQuery = async (
-  cq: NonNullable<TelegramUpdate['callback_query']>,
-  deps: BotServiceDeps,
-  client: TelegramClient,
-): Promise<number> => {
-  if (!cq.data || !cq.from || cq.from.is_bot) {
-    return 0
-  }
-
-  const appUserId =
-    deps.resolvedAppUserId !== undefined
-      ? deps.resolvedAppUserId
-      : await findAppUserIdByTelegramId(deps.db, String(cq.from.id))
-
-  const message = cq.message
-  const chatId = message?.chat.id ?? cq.from.id
-
-  const ctx = buildCtx({
-    userId: cq.from.id,
-    chatId,
-    text: cq.data,
-    appUserId,
-    deps,
-    firstName: cq.from.first_name,
-    lastName: cq.from.last_name,
-    languageCode: cq.from.language_code,
-  })
-
-  return processCallbackAction(cq.data, ctx, client, cq.id, chatId)
-}
-
-/**
- * Process a callback query action: dispatch to handler, send message, answer callback.
- */
-const processCallbackAction = async (
-  data: string,
-  ctx: ReturnType<typeof buildCtx>,
-  client: TelegramClient,
-  cqId: string,
-  chatId: number,
-): Promise<number> => {
-  const parts = data.split(':')
-  const action = parts[0]
-  const draftId = parts[1]
-  const payload = parts.slice(2).join(':')
-
-  let result: BotResponse
-
-  switch (action) {
-    case 'confirm': {
-      result = await handleConfirmExpense(ctx, draftId)
-      break
-    }
-    case 'cancel': {
-      result = await handleCancelExpense(ctx, draftId)
-      break
-    }
-    case 'retry': {
-      result = await handleRetryExpense(ctx, draftId)
-      break
-    }
-    case 'household':
-    case 'hhselect': {
-      result = await handleHouseholdSelect(ctx, draftId, payload)
-      break
-    }
-    case 'pref': {
-      result = await handlePreferenceToggle(ctx, draftId)
-      break
-    }
-    case 'settings': {
-      result = await handleSettingsCommand(ctx)
-      break
-    }
-    case 'stats': {
-      result = await handleStatsCommand(ctx)
-      break
-    }
-    case 'budget': {
-      result = await handleBudgetCommand(ctx)
-      break
-    }
-    case 'add_expense': {
-      result = {
-        text:
-          'Vui lòng nhập nội dung chi tiêu bằng lệnh /ai.\n\n' +
-          'Ví dụ: <code>/ai ăn bún 30k 15/6</code>',
-        parseMode: 'HTML' as const,
-      }
-
-      break
-    }
-    default: {
-      // Quietly answer unknown callback
-      try {
-        await client.answerCallbackQuery(cqId)
-      } catch {
-        /* non-critical */
-      }
-
-      return 0
-    }
-  }
-
-  await client.sendMessage(chatId, result.text, {
-    parseMode: result.parseMode,
-    replyMarkup: result.replyMarkup,
-  })
-
-  try {
-    await client.answerCallbackQuery(cqId)
-  } catch {
-    /* non-critical */
-  }
-
-  return 1
-}
-
-/**
  * Handle a regular message update.
+ * Supports bot commands and natural expense input.
  */
 const handleMessageUpdate = async (
   update: TelegramUpdate,
@@ -215,8 +58,108 @@ const handleMessageUpdate = async (
   const isBotCommand =
     text.startsWith('/') || text.startsWith('！') || text.startsWith('!')
 
+  // ── Natural expense input (non-command, private chat, linked user) ─────
   if (!isBotCommand) {
-    return 0
+    // Only process in private chats for linked users
+    if (message.chat.type !== 'private') return 0
+
+    const appUserId =
+      deps.resolvedAppUserId !== undefined
+        ? deps.resolvedAppUserId
+        : await findAppUserIdByTelegramId(deps.db, String(message.from.id))
+
+    if (!appUserId) return 0
+    if (!looksLikeExpense(text)) return 0
+
+    const amountResult = detectAmountInVnd(text)
+
+    if (!amountResult) return 0
+
+    // Check AI config
+    if (
+      !deps.env?.OPENAI_COMPAT_BASE_URL ||
+      !deps.env?.OPENAI_COMPAT_API_KEY ||
+      !deps.env?.OPENAI_COMPAT_MODEL
+    ) {
+      return 0
+    }
+
+    // Call AI parser for category/date/source
+    let rawItems: Array<{
+      amount: number
+      categoryKey: string
+      sourceKey?: string
+      title: string
+      occurredAt?: string
+    }>
+
+    try {
+      rawItems = await parseExpensesWithAi(
+        text,
+        {
+          baseUrl: deps.env.OPENAI_COMPAT_BASE_URL,
+          apiKey: deps.env.OPENAI_COMPAT_API_KEY,
+          model: deps.env.OPENAI_COMPAT_MODEL,
+        },
+        { defaultOccurredAt: new Date().toISOString().slice(0, 10) },
+      )
+    } catch (error) {
+      if (error instanceof AiUpstreamError) return 0
+
+      throw error
+    }
+
+    if (rawItems.length === 0) return 0
+
+    // Normalize the first valid item
+    const defaultDate = new Date().toISOString().slice(0, 10)
+    let validItem = normalizeAiItem(rawItems[0]!, defaultDate)
+
+    if (!validItem) return 0
+
+    // Override AI amount with our detected amount (more reliable)
+    validItem = { ...validItem, amount: amountResult.amountVnd }
+
+    // Build preview + draft
+    const ctx = buildCtx({
+      userId: message.from.id,
+      chatId: message.chat.id,
+      text,
+      appUserId,
+      deps,
+      firstName: message.from.first_name,
+      lastName: message.from.last_name,
+      languageCode: message.from.language_code,
+    })
+
+    const built = await buildDraftFromItem(ctx, validItem, {
+      rawText: text,
+      defaultDate,
+    })
+
+    if ('status' in built) {
+      // Already-confirmed expense (dedupe hit) — send confirmation as new message
+      await client.sendMessage(ctx.chatId, built.text, {
+        parseMode: 'HTML',
+        replyMarkup: built.replyMarkup,
+      })
+
+      return 1
+    }
+
+    // Send compact preview
+    const previewText = renderExpensePreviewText(
+      built.preview,
+      built.currencyCode,
+      { compact: true },
+    )
+
+    await client.sendMessage(ctx.chatId, previewText, {
+      parseMode: 'HTML',
+      replyMarkup: expensePreviewCompactKeyboard(built.draftId),
+    })
+
+    return 1
   }
 
   const command = extractCommand(text)
@@ -236,7 +179,7 @@ const handleMessageUpdate = async (
     languageCode: message.from.language_code,
   })
 
-  let result
+  let result!: BotResponse
 
   switch (command) {
     case 'start': {
@@ -278,20 +221,4 @@ const handleMessageUpdate = async (
   })
 
   return 1
-}
-
-/**
- * Extract the command name from a message text.
- * Supports /command, /command@botname, and fullwidth variants.
- */
-const extractCommand = (text: string): string => {
-  const normalized =
-    text
-      .replace(/^[！!]/, '/')
-      .split(/\s+/)[0]
-      ?.toLowerCase()
-      ?.replace(/@\w+$/, '')
-      ?.replace(/^\//, '') ?? ''
-
-  return normalized
 }

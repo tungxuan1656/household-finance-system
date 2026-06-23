@@ -81,19 +81,28 @@ const buildSettingsKeyboard = (
   ],
 })
 
+export interface SettingsOptions {
+  mode?: 'send' | 'edit'
+  targetMessageId?: number
+}
+
 /**
  * Handle /settings command.
  *
  * Shows current notification preference toggles.
  * Unlinked users get Open App guidance.
+ * When called from callback, pass options with mode='edit' + targetMessageId.
  */
 export const handleSettingsCommand = async (
   ctx: CommandContext,
+  options?: SettingsOptions,
 ): Promise<BotResponse> => {
   const tmaUrl = ctx.telegramBotTmaUrl
 
   if (!ctx.appUserId) {
     return {
+      mode: options?.mode,
+      targetMessageId: options?.targetMessageId,
       text:
         'Vui lòng mở Mini App để đăng nhập và quản lý cài đặt.\n\n' +
         '🏠 <a href="' +
@@ -110,6 +119,8 @@ export const handleSettingsCommand = async (
     : { ...DEFAULT_PREFERENCES }
 
   return {
+    mode: options?.mode,
+    targetMessageId: options?.targetMessageId,
     text:
       '⚙️ <b>Cài đặt thông báo</b>\n\n' +
       'Chọn một tùy chọn bên dưới để bật/tắt:',
@@ -121,15 +132,19 @@ export const handleSettingsCommand = async (
 /**
  * Handle a preference toggle callback (pref:*).
  * Reads current preferences, flips the toggled one, persists, re-renders.
+ * When called from callback, pass options with mode='edit' + targetMessageId.
  */
 export const handlePreferenceToggle = async (
   ctx: CommandContext,
   prefKey: string,
+  options?: SettingsOptions,
 ): Promise<BotResponse> => {
   const tmaUrl = ctx.telegramBotTmaUrl
 
   if (!ctx.appUserId) {
     return {
+      mode: options?.mode,
+      targetMessageId: options?.targetMessageId,
       text:
         'Vui lòng mở Mini App để đăng nhập.\n\n' +
         '🏠 <a href="' +
@@ -147,6 +162,8 @@ export const handlePreferenceToggle = async (
   // Ensure chat record exists with defaults
   if (!chat) {
     return {
+      mode: options?.mode,
+      targetMessageId: options?.targetMessageId,
       text: 'Không tìm thấy thông tin người dùng. Vui lòng thử lại sau.',
       parseMode: 'HTML',
     }
@@ -170,6 +187,8 @@ export const handlePreferenceToggle = async (
   )
 
   return {
+    mode: options?.mode,
+    targetMessageId: options?.targetMessageId,
     text:
       '⚙️ <b>Cài đặt thông báo</b>\n\n' +
       'Chọn một tùy chọn bên dưới để bật/tắt:',

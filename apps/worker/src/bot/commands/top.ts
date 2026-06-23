@@ -1,7 +1,7 @@
 import { getAnalyticsOverview } from '@/db/repositories/expense-analytics-repository'
 
 import { renderTopCategoriesText } from '../renderers/finance-text'
-import { openAppKeyboard } from '../renderers/keyboards'
+import { openAppKeyboard, topKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 import { resolveReadScope } from './read-scope'
 
@@ -60,6 +60,6 @@ export const handleTopCommand = async (
       data.periodLabel,
     ),
     parseMode: 'HTML',
-    replyMarkup: openAppKeyboard(tmaUrl),
+    replyMarkup: topKeyboard(tmaUrl),
   }
 }

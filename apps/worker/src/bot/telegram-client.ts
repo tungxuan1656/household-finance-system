@@ -125,6 +125,70 @@ export class TelegramClient {
     return response
   }
 
+  async editMessageText(
+    chatId: number | string,
+    messageId: number,
+    text: string,
+    options?: {
+      parseMode?: ParseMode
+      replyMarkup?: InlineKeyboardMarkup
+    },
+  ): Promise<Response> {
+    const body: Record<string, unknown> = {
+      chat_id: chatId,
+      message_id: messageId,
+      text,
+    }
+
+    if (options?.parseMode) {
+      body.parse_mode = options.parseMode
+    }
+
+    if (options?.replyMarkup) {
+      body.reply_markup = options.replyMarkup
+    }
+
+    const response = await this.fetchFn(`${this.apiBase}/editMessageText`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(TELEGRAM_API_TIMEOUT_MS),
+    })
+
+    await this.throwOnError(response)
+
+    return response
+  }
+
+  async editMessageReplyMarkup(
+    chatId: number | string,
+    messageId: number,
+    replyMarkup?: InlineKeyboardMarkup,
+  ): Promise<Response> {
+    const body: Record<string, unknown> = {
+      chat_id: chatId,
+      message_id: messageId,
+    }
+
+    if (replyMarkup) {
+      body.reply_markup = replyMarkup
+    }
+
+    const response = await this.fetchFn(
+      `${this.apiBase}/editMessageReplyMarkup`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(TELEGRAM_API_TIMEOUT_MS),
+      },
+    )
+
+    await this.throwOnError(response)
+
+    return response
+  }
+
   async setWebhook(url: string, secretToken?: string): Promise<Response> {
     const body: Record<string, unknown> = { url }
 

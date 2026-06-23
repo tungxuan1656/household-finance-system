@@ -2,6 +2,7 @@
 
 - last-archived: 2026-06-19
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
+- 2026-06-23 — Telegram bot UX polish: edit-message routing, natural VN-amount expense input (no /ai), compact preview + top-categories progress bar, contextual Mở Mini App buttons (feat-113 evidence)
 - 2026-06-23 — Telegram bot URL env bugfix: TMA web_app URL configured from Worker env + Telegram API error descriptions (feat-112 evidence)
 - 2026-06-23 — Telegram bot webhook reply bugfix: bind fetch to globalThis to stop Workers illegal invocation (feat-112 evidence)
 - 2026-06-22 — Telegram bot companion implemented: feat-112a-e all done, post-commit review fixes applied, verified (feat-112 evidence)

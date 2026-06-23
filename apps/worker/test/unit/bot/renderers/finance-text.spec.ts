@@ -10,11 +10,39 @@ import {
   renderBudgetStatusText,
   renderConfirmSuccessText,
   renderExpensePreviewText,
+  renderProgressBar,
   renderStatsText,
   renderTopCategoriesText,
 } from '@/bot/renderers/finance-text'
 
 describe('finance-text', () => {
+  describe('renderProgressBar', () => {
+    it('renders full bar at 100%', () => {
+      expect(renderProgressBar(100, 8)).toBe('▓▓▓▓▓▓▓▓')
+    })
+
+    it('renders empty bar at 0%', () => {
+      expect(renderProgressBar(0, 8)).toBe('░░░░░░░░')
+    })
+
+    it('renders half-filled bar at 50%', () => {
+      expect(renderProgressBar(50, 8)).toBe('▓▓▓▓░░░░')
+    })
+
+    it('clamps values above 100', () => {
+      expect(renderProgressBar(200, 4)).toBe('▓▓▓▓')
+    })
+
+    it('clamps values below 0', () => {
+      expect(renderProgressBar(-10, 4)).toBe('░░░░')
+    })
+
+    it('defaults to 16 width', () => {
+      const bar = renderProgressBar(50)
+      expect(bar.length).toBe(16)
+    })
+  })
+
   describe('getCategoryLabel', () => {
     it('returns Vietnamese label for known key', () => {
       expect(getCategoryLabel('food')).toBe('Ăn uống')
@@ -103,10 +131,12 @@ describe('finance-text', () => {
       )
 
       expect(result).toContain('Danh mục chi tiêu')
-      expect(result).toContain('1. Ăn uống')
-      expect(result).toContain('2. Di chuyển')
+      expect(result).toContain('Ăn uống')
+      expect(result).toContain('Di chuyển')
       expect(result).toContain('50%')
       expect(result).toContain('25%')
+      // Progress bar character (full block ▓)
+      expect(result).toContain('▓')
     })
 
     it('renders empty state when no categories', () => {
@@ -209,6 +239,28 @@ describe('finance-text', () => {
       )
 
       expect(result).toContain('Gia đình Test')
+    })
+
+    it('renders compact preview without date/source/scope', () => {
+      const result = renderExpensePreviewText(
+        {
+          amountMinor: 30000,
+          occurredAt: '2026-06-15',
+          categoryKey: 'food',
+          title: 'ăn bún',
+          sourceKey: 'bank-transfer',
+          scope: 'personal',
+        },
+        'VND',
+        { compact: true },
+      )
+
+      expect(result).toContain('Chi tiêu nhanh')
+      expect(result).toContain('30.000')
+      expect(result).toContain('Ăn uống')
+      expect(result).toContain('ăn bún')
+      expect(result).not.toContain('Nguồn:')
+      expect(result).not.toContain('Phạm vi:')
     })
   })
 

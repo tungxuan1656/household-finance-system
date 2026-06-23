@@ -634,6 +634,11 @@
       "id": "feat-112e",
       "name": "Telegram bot notifications",
       "status": "done"
+    },
+    {
+      "id": "feat-113",
+      "name": "Telegram bot UX polish: edit messages, natural expense input, compact preview",
+      "status": "done"
     }
   ]
 }
