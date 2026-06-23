@@ -29,29 +29,10 @@ export const budgetKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
 })
 
 /**
- * Compact expense preview keyboard (used for natural input preview).
- * Row 1: Save + Detail, Row 2: Household + Cancel.
- */
-export const expensePreviewCompactKeyboard = (
-  draftId: string,
-): InlineKeyboardMarkup => ({
-  inline_keyboard: [
-    [
-      { text: '✅ Lưu', callback_data: `confirm:${draftId}` },
-      { text: '📋 Chi tiết', callback_data: `detail:${draftId}` },
-    ],
-    [
-      { text: '🏠 Household', callback_data: `household:${draftId}` },
-      { text: '❌ Hủy', callback_data: `cancel:${draftId}` },
-    ],
-  ],
-})
-
-/**
- * Full expense preview keyboard (used for /ai and detail view).
+ * Expense preview keyboard.
  * Row 1: Confirm + Household, Row 2: Retry + Cancel.
  */
-export const expensePreviewFullKeyboard = (
+export const expensePreviewKeyboard = (
   draftId: string,
 ): InlineKeyboardMarkup => ({
   inline_keyboard: [
@@ -89,8 +70,8 @@ export const expenseCreatedKeyboard = (
 ): InlineKeyboardMarkup => ({
   inline_keyboard: [
     [
-      { text: '➕ Thêm khoản khác', callback_data: 'add_another_expense' },
-      { text: '🏠 Mở Mini App', web_app: { url: tmaUrl } },
+      { text: '📋 Xem chi tiết', web_app: { url: tmaUrl } },
+      { text: '➕ Thêm khoản khác', callback_data: 'add_expense' },
     ],
   ],
 })

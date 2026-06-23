@@ -53,6 +53,7 @@ Rules:
 - The generic `🏠 Mở Mini App` button stays only for unlinked users as an `openAppKeyboard` guidance prompt. Linked users do not see this button.
 - The bot never edits a system message it did not send.
 - The bot never silently replaces a user's message.
+- When the bot begins analyzing a user message (both `/ai` and natural input), it sends a loader message `⏳ Đang phân tích chi tiêu...` first, then calls `editMessageText` to replace the loader with the result. This anchors the response slot and gives instant feedback.
 
 ## Main Menu
 
@@ -73,8 +74,8 @@ Menu actions use buttons by default. Text prompts are only for expense input or 
 
 Two equivalent entry forms. Both end at the same preview / confirm step.
 
-1. `/ai` form — user sends `/ai ăn bún 30k 15/6` or chooses `➕ Thêm chi tiêu` and then enters expense text.
-2. Natural input — in a private chat, a linked user sends one short message that matches the amount detector patterns. The bot routes it through the same preview / confirm pipeline as the `/ai` form. Group chats do not run this path.
+1. `/ai` form — user sends `/ai ăn bún 30k 15/6` or chooses `➕ Thêm chi tiêu` and then enters expense text. Bot immediately sends `⏳ Đang phân tích chi tiêu...` as a placeholder, then replaces it with the preview after analysis completes.
+2. Natural input — in a private chat, a linked user sends one short message that matches the amount detector patterns. The bot sends the same loader placeholder, then runs analysis and replaces it with the preview. Group chats do not run this path.
 
 Natural input patterns the bot accepts:
 
@@ -91,19 +92,17 @@ Natural input must be rejected when:
 
 ### Preview
 
-Bot returns a structured preview. Two density modes:
+Bot returns a structured full preview with all parsed fields:
 
-- Full preview (default) — Amount, Date, Category, Note or title, Source when known, Scope (personal or household), Group when known.
-- Compact preview — Amount, Category, Title only. Used after the user has already tapped through once and the chat thread is getting long.
+- Amount, Date, Category, Note or title, Source when known, Scope (personal or household), Group when known.
 
-The compact preview exposes a `📋 Chi tiết` button. Tapping it calls `editMessageText` to swap the compact body with the full preview. `📋 Chi tiết` does not appear in the full preview because the user is already reading it.
+No compact mode. All previews are always full.
 
 ### Required Actions
 
 Preview shows:
 
 - `✅ Thêm chi tiêu`
-- `📋 Chi tiết` (compact preview only)
 - `🏠 Chọn household`
 - `🔁 Nhập lại`
 - `❌ Hủy`
@@ -121,7 +120,7 @@ If scope is unclear, bot asks the user to choose:
 - If required fields are missing, bot shows an error and asks the user to enter the expense again.
 - Bot handles one expense per message in MVP.
 - Low confidence is acceptable when the bot can still show a complete preview and the user confirms it.
-- After save, bot confirms success and offers `Xem chi tiết` and `Thêm khoản khác`.
+- After save, bot edits the original preview message in-place to a one-line success state (`✅ Đã lưu chi tiêu {amount} {currency} — {title}`) and swaps the preview keyboard for a post-save keyboard with `📋 Xem chi tiết` and `➕ Thêm khoản khác`. Bot does not send a new success message.
 - Duplicate taps must not create duplicate expenses.
 - Bot-created expenses are visible in audit/history as created through Telegram bot.
 - Bot does not edit or delete expenses.

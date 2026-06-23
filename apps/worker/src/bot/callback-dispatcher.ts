@@ -2,7 +2,6 @@ import { resolveLocale } from '@/lib/i18n'
 import type { AppConfig } from '@/types'
 
 import { findAppUserIdByTelegramId } from './account-linking'
-import { handleDetailExpense } from './commands/ai-expense'
 import { handleBudgetCommand } from './commands/budget'
 import {
   handleCancelExpense,
@@ -115,7 +114,7 @@ const processCallbackAction = async (
 
   switch (action) {
     case 'confirm': {
-      result = await handleConfirmExpense(ctx, draftId)
+      result = await handleConfirmExpense(ctx, draftId, messageId)
       break
     }
     case 'cancel': {
@@ -129,17 +128,6 @@ const processCallbackAction = async (
     case 'household':
     case 'hhselect': {
       result = await handleHouseholdSelect(ctx, draftId, payload)
-      break
-    }
-    case 'detail': {
-      if (!messageId) {
-        // Edge case: should never happen from a real callback
-        await client.answerCallbackQuery(cqId).catch(() => {})
-
-        return 0
-      }
-
-      result = await handleDetailExpense(ctx, draftId, messageId)
       break
     }
     case 'pref': {

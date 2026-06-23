@@ -4,10 +4,13 @@ import { TelegramClient } from '@/bot/telegram-client'
 
 describe('TelegramClient', () => {
   it('calls injected fetch with globalThis binding', async () => {
-    const response = new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'content-type': 'application/json' },
-    })
+    const response = new Response(
+      JSON.stringify({ ok: true, result: { message_id: 123 } }),
+      {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      },
+    )
 
     const fetchMock = vi.fn(function (this: unknown) {
       expect(this).toBe(globalThis)

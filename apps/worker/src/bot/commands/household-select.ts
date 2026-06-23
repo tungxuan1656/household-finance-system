@@ -8,7 +8,7 @@ import {
 
 import { renderExpensePreviewText } from '../renderers/finance-text'
 import {
-  expensePreviewFullKeyboard,
+  expensePreviewKeyboard,
   householdSelectKeyboard,
   openAppKeyboard,
 } from '../renderers/keyboards'
@@ -114,7 +114,7 @@ export const handleHouseholdSelect = async (
         : 'VND',
     ),
     parseMode: 'HTML',
-    replyMarkup: expensePreviewFullKeyboard(draft.id),
+    replyMarkup: expensePreviewKeyboard(draft.id),
   }
 }
 

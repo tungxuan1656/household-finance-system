@@ -154,26 +154,13 @@ export interface ParsedPreviewData {
 
 /**
  * Render an expense preview text for Telegram.
- *
- * When compact=true, shows only amount / category / title without date/source/scope.
- * Compact mode ends without the "Chọn hành động" prompt (keyboard provides actions).
  */
 export const renderExpensePreviewText = (
   preview: ParsedPreviewData,
   currencyCode: string,
-  options?: { compact?: boolean },
 ): string => {
   const amountFormatted = formatMinorAmount(preview.amountMinor, currencyCode)
   const categoryLabel = getCategoryLabel(preview.categoryKey)
-
-  if (options?.compact) {
-    return (
-      '📝 <b>Chi tiêu nhanh</b>\n\n' +
-      `💰 <b>${amountFormatted} ${currencyCode}</b>\n` +
-      `📂 ${categoryLabel}\n` +
-      `📄 ${preview.title}`
-    )
-  }
 
   const scopeLabel =
     preview.scope === 'household' && preview.householdName
@@ -196,25 +183,6 @@ export const renderExpensePreviewText = (
   text += '\n\nChọn hành động bên dưới:'
 
   return text
-}
-
-/**
- * Render a success message after an expense is created.
- */
-export const renderConfirmSuccessText = (
-  preview: ParsedPreviewData,
-  currencyCode: string,
-): string => {
-  const amountFormatted = formatMinorAmount(preview.amountMinor, currencyCode)
-  const categoryLabel = getCategoryLabel(preview.categoryKey)
-
-  return (
-    '✅ <b>Đã thêm chi tiêu thành công!</b>\n\n' +
-    `💰 ${amountFormatted} ${currencyCode}\n` +
-    `📂 ${categoryLabel}\n` +
-    `📄 ${preview.title}\n` +
-    `📅 ${preview.occurredAt}`
-  )
 }
 
 const getSourceLabel = (key: string): string => {

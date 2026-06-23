@@ -20,9 +20,9 @@ import { handleStatsCommand } from './commands/stats'
 import { handleTopCommand } from './commands/top'
 import { detectAmountInVnd, looksLikeExpense } from './lib/vn-amount-detector'
 import { renderExpensePreviewText } from './renderers/finance-text'
-import { expensePreviewCompactKeyboard } from './renderers/keyboards'
+import { expensePreviewKeyboard } from './renderers/keyboards'
 import { TelegramClient } from './telegram-client'
-import type { BotResponse, TelegramUpdate } from './types'
+import type { BotResponse, InlineKeyboardMarkup, TelegramUpdate } from './types'
 
 export type { BotServiceDeps }
 
@@ -84,6 +84,12 @@ const handleMessageUpdate = async (
       return 0
     }
 
+    // ── Send loader message ─────────────────────────────────────────
+    const loaderMsgId = await client.sendMessage(
+      message.chat.id,
+      '⏳ Đang phân tích chi tiêu...',
+    )
+
     // Call AI parser for category/date/source
     let rawItems: Array<{
       amount: number
@@ -104,18 +110,45 @@ const handleMessageUpdate = async (
         { defaultOccurredAt: new Date().toISOString().slice(0, 10) },
       )
     } catch (error) {
-      if (error instanceof AiUpstreamError) return 0
+      if (error instanceof AiUpstreamError) {
+        await client.editMessageText(
+          message.chat.id,
+          loaderMsgId,
+          'Rất tiếc, dịch vụ AI tạm thời không khả dụng. Vui lòng thử lại sau.',
+          { parseMode: 'HTML' },
+        )
+
+        return 1
+      }
 
       throw error
     }
 
-    if (rawItems.length === 0) return 0
+    if (rawItems.length === 0) {
+      await client.editMessageText(
+        message.chat.id,
+        loaderMsgId,
+        'Không thể nhận diện chi tiêu từ tin nhắn của bạn. Vui lòng thử lại với cách viết khác.',
+        { parseMode: 'HTML' },
+      )
+
+      return 1
+    }
 
     // Normalize the first valid item
     const defaultDate = new Date().toISOString().slice(0, 10)
     let validItem = normalizeAiItem(rawItems[0]!, defaultDate)
 
-    if (!validItem) return 0
+    if (!validItem) {
+      await client.editMessageText(
+        message.chat.id,
+        loaderMsgId,
+        'Thiếu thông tin bắt buộc (số tiền, danh mục, ngày, nội dung). Vui lòng thử lại.',
+        { parseMode: 'HTML' },
+      )
+
+      return 1
+    }
 
     // Override AI amount with our detected amount (more reliable)
     validItem = { ...validItem, amount: amountResult.amountVnd }
@@ -138,8 +171,8 @@ const handleMessageUpdate = async (
     })
 
     if ('status' in built) {
-      // Already-confirmed expense (dedupe hit) — send confirmation as new message
-      await client.sendMessage(ctx.chatId, built.text, {
+      // Already-confirmed expense (dedupe hit) — edit loader with confirmation
+      await client.editMessageText(message.chat.id, loaderMsgId, built.text, {
         parseMode: 'HTML',
         replyMarkup: built.replyMarkup,
       })
@@ -147,16 +180,15 @@ const handleMessageUpdate = async (
       return 1
     }
 
-    // Send compact preview
+    // Edit loader with full preview
     const previewText = renderExpensePreviewText(
       built.preview,
       built.currencyCode,
-      { compact: true },
     )
 
-    await client.sendMessage(ctx.chatId, previewText, {
+    await client.editMessageText(message.chat.id, loaderMsgId, previewText, {
       parseMode: 'HTML',
-      replyMarkup: expensePreviewCompactKeyboard(built.draftId),
+      replyMarkup: expensePreviewKeyboard(built.draftId),
     })
 
     return 1
@@ -179,6 +211,23 @@ const handleMessageUpdate = async (
     languageCode: message.from.language_code,
   })
 
+  // ── /ai command: loader → edit flow ───────────────────────────────
+  if (command === 'ai') {
+    const loaderMsgId = await client.sendMessage(
+      ctx.chatId,
+      '⏳ Đang phân tích chi tiêu...',
+    )
+
+    const result = await handleAiExpenseCommand(ctx)
+
+    await client.editMessageText(ctx.chatId, loaderMsgId, result.text, {
+      parseMode: result.parseMode,
+      replyMarkup: result.replyMarkup as InlineKeyboardMarkup | undefined,
+    })
+
+    return 1
+  }
+
   let result!: BotResponse
 
   switch (command) {
@@ -200,10 +249,6 @@ const handleMessageUpdate = async (
     }
     case 'budget': {
       result = await handleBudgetCommand(ctx)
-      break
-    }
-    case 'ai': {
-      result = await handleAiExpenseCommand(ctx)
       break
     }
     case 'settings': {

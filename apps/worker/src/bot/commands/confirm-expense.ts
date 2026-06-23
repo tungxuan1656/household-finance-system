@@ -10,9 +10,9 @@ import {
   isDraftExpired,
   markDraftConfirmed,
 } from '@/db/repositories/telegram-bot-expense-draft-repository'
+import { formatMinorAmount } from '@/lib/currency'
 import { newId } from '@/utils/id'
 
-import { renderConfirmSuccessText } from '../renderers/finance-text'
 import { expenseCreatedKeyboard, openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
@@ -25,6 +25,7 @@ import type { BotResponse, CommandContext } from '../types'
 export const handleConfirmExpense = async (
   ctx: CommandContext,
   draftId: string,
+  messageId?: number,
 ): Promise<BotResponse> => {
   const tmaUrl = ctx.telegramBotTmaUrl
 
@@ -45,6 +46,8 @@ export const handleConfirmExpense = async (
 
   if (!draft) {
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text: 'Không tìm thấy yêu cầu thêm chi tiêu. Vui lòng thử lại với /ai.',
       parseMode: 'HTML',
     }
@@ -55,6 +58,8 @@ export const handleConfirmExpense = async (
     await expireDraft(db, draft.id).catch(() => {})
 
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text: 'Phiên thêm chi tiêu đã hết hạn (10 phút). Vui lòng thử lại với /ai.',
       parseMode: 'HTML',
     }
@@ -63,6 +68,8 @@ export const handleConfirmExpense = async (
   // Check if already confirmed — idempotent
   if (draft.status === 'confirmed' && draft.createdExpenseId) {
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text:
         '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
         `Mã giao dịch: <code>${draft.createdExpenseId}</code>`,
@@ -80,6 +87,8 @@ export const handleConfirmExpense = async (
 
     if (updatedDraft?.status === 'confirmed' && updatedDraft.createdExpenseId) {
       return {
+        mode: 'edit',
+        targetMessageId: messageId,
         text:
           '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
           `Mã giao dịch: <code>${updatedDraft.createdExpenseId}</code>`,
@@ -89,6 +98,8 @@ export const handleConfirmExpense = async (
     }
 
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text: 'Yêu cầu thêm chi tiêu này đã được xử lý. Vui lòng thử lại với /ai.',
       parseMode: 'HTML',
     }
@@ -101,6 +112,8 @@ export const handleConfirmExpense = async (
     preview = JSON.parse(draft.previewJson) as PreviewData
   } catch {
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text: 'Dữ liệu xem trước không hợp lệ. Vui lòng thử lại với /ai.',
       parseMode: 'HTML',
     }
@@ -112,6 +125,8 @@ export const handleConfirmExpense = async (
 
     if (!householdIds.includes(preview.householdId)) {
       return {
+        mode: 'edit',
+        targetMessageId: messageId,
         text: 'Bạn không có quyền thêm chi tiêu vào hộ gia đình này.',
         parseMode: 'HTML',
       }
@@ -162,8 +177,12 @@ export const handleConfirmExpense = async (
     console.error('confirm-expense: audit log write failed', err)
   })
 
+  const amountFormatted = formatMinorAmount(preview.amountMinor, currencyCode)
+
   return {
-    text: renderConfirmSuccessText(preview, currencyCode),
+    mode: 'edit',
+    targetMessageId: messageId,
+    text: `✅ Đã lưu chi tiêu ${amountFormatted} ${currencyCode} — ${preview.title}`,
     parseMode: 'HTML',
     replyMarkup: expenseCreatedKeyboard(tmaUrl),
   }

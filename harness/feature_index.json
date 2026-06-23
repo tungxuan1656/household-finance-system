@@ -639,6 +639,11 @@
       "id": "feat-113",
       "name": "Telegram bot UX polish: edit messages, natural expense input, compact preview",
       "status": "done"
+    },
+    {
+      "id": "feat-114",
+      "name": "Bot UX v2: loader message, always-full preview, save replaces preview",
+      "status": "done"
     }
   ]
 }
