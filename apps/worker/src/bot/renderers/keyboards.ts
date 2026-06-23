@@ -8,9 +8,50 @@ export const openAppKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
 })
 
 /**
- * Build the expense preview action keyboard with confirm, household, retry, cancel buttons.
+ * Contextual keyboard for /stats — open stats in Mini App.
  */
-export const expensePreviewKeyboard = (
+export const statsKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
+  inline_keyboard: [[{ text: '📊 Mở thống kê', web_app: { url: tmaUrl } }]],
+})
+
+/**
+ * Contextual keyboard for /top — view transactions in Mini App.
+ */
+export const topKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
+  inline_keyboard: [[{ text: '📋 Xem giao dịch', web_app: { url: tmaUrl } }]],
+})
+
+/**
+ * Contextual keyboard for /budget — view details in Mini App.
+ */
+export const budgetKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
+  inline_keyboard: [[{ text: '💸 Xem chi tiết', web_app: { url: tmaUrl } }]],
+})
+
+/**
+ * Compact expense preview keyboard (used for natural input preview).
+ * Row 1: Save + Detail, Row 2: Household + Cancel.
+ */
+export const expensePreviewCompactKeyboard = (
+  draftId: string,
+): InlineKeyboardMarkup => ({
+  inline_keyboard: [
+    [
+      { text: '✅ Lưu', callback_data: `confirm:${draftId}` },
+      { text: '📋 Chi tiết', callback_data: `detail:${draftId}` },
+    ],
+    [
+      { text: '🏠 Household', callback_data: `household:${draftId}` },
+      { text: '❌ Hủy', callback_data: `cancel:${draftId}` },
+    ],
+  ],
+})
+
+/**
+ * Full expense preview keyboard (used for /ai and detail view).
+ * Row 1: Confirm + Household, Row 2: Retry + Cancel.
+ */
+export const expensePreviewFullKeyboard = (
   draftId: string,
 ): InlineKeyboardMarkup => ({
   inline_keyboard: [

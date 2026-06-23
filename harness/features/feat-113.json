@@ -1,0 +1,46 @@
+{
+  "id": "feat-113",
+  "name": "Telegram bot UX polish: edit messages, natural expense input, compact preview",
+  "status": "done",
+  "description": "Bot message hygiene (edit instead of new bubble for /settings, contextual buttons in /stats /top /budget), natural expense input in private chats (no /ai prefix required) via Vietnamese amount detector, compact expense preview with 'Chi tiết' expansion, top categories progress bar.",
+  "dependencies": ["feat-112c"],
+  "evidence": {
+    "planned": [
+      "Inline plan: 3 features (message hygiene, natural VN amount input, compact preview + top categories bar). Out of scope: undo, auto-save. User decisions: private-chat-only natural input; xxx000 = nghìn VND; contextual buttons replace generic Mở Mini App for linked user."
+    ],
+    "done": [
+      "TelegramClient.editMessageText + editMessageReplyMarkup added; same throw-on-error pattern.",
+      "BotResponse extended with mode: 'send'|'edit' + targetMessageId; callback dispatch routes edit to editMessageText.",
+      "/settings callback uses editMessageText on the same message (no new bubble).",
+      "/stats /top /budget use contextual keyboards (statsKeyboard/topKeyboard/budgetKeyboard) for linked user; unlinked still uses openAppKeyboard.",
+      "vn-amount-detector.ts: pure functions detectAmountInVnd + looksLikeExpense. Patterns: 30k, 1tr, 1tr5, 1 triệu, 1 củ, 1 lít, 5 xị, 20 nghìn, 100.000, trailing-000 ≥1000. Rejects income words, <1000, >12 digits, ambiguous 00 endings.",
+      "Natural input path in service.ts: private chat + linked user + amount pattern → reuse /ai draft/confirm flow with detected amount overriding AI. No auto-save.",
+      "ai-expense.ts: extracted buildDraftFromItem + exported computeDedupeKey; both /ai and natural input use it. handleDetailExpense added for 'detail:' callback.",
+      "finance-text.ts: renderExpensePreviewText({compact}) shows amount/category/title only. renderProgressBar(percent, width=16) returns ▓...▓░...░. renderTopCategoriesText renders progress bar per category.",
+      "keyboards.ts: expensePreviewCompactKeyboard (✅ Lưu / 📋 Chi tiết / 🏠 Household / ❌ Hủy), expensePreviewFullKeyboard (renamed from old), statsKeyboard/topKeyboard/budgetKeyboard.",
+      "household-select.ts: updated to use expensePreviewFullKeyboard rename."
+    ],
+    "artifacts": [
+      "apps/worker/src/bot/telegram-client.ts",
+      "apps/worker/src/bot/types.ts",
+      "apps/worker/src/bot/service.ts",
+      "apps/worker/src/bot/commands/ai-expense.ts",
+      "apps/worker/src/bot/commands/settings.ts",
+      "apps/worker/src/bot/commands/stats.ts",
+      "apps/worker/src/bot/commands/top.ts",
+      "apps/worker/src/bot/commands/budget.ts",
+      "apps/worker/src/bot/commands/household-select.ts",
+      "apps/worker/src/bot/renderers/finance-text.ts",
+      "apps/worker/src/bot/renderers/keyboards.ts",
+      "apps/worker/src/bot/lib/vn-amount-detector.ts",
+      "apps/worker/test/unit/bot/lib/vn-amount-detector.spec.ts",
+      "apps/worker/test/unit/bot/renderers/finance-text.spec.ts"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh test -> OK (633 tests pass, 103 files; +38 amount detector + 8 finance-text render tests).",
+      "All existing ai-expense, confirm-expense, settings, stats, top, budget tests pass unchanged."
+    ]
+  },
+  "notes": "Out of scope per user: undo/revert, auto-save without confirmation. Spec doc unchanged (telegram-bot-companion.md still valid)."
+}

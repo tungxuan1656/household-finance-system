@@ -99,8 +99,13 @@ export const renderStatsText = (
   )
 }
 
+import { renderProgressBar } from './progress-bar'
+
+export { renderProgressBar }
+
 /**
  * Render top categories text for Telegram.
+ * Each category line includes a progress bar visual.
  */
 export const renderTopCategoriesText = (
   categories: Array<{
@@ -119,17 +124,18 @@ export const renderTopCategoriesText = (
     )
   }
 
-  const lines = categories.map((cat, index) => {
+  const lines = categories.map((cat) => {
     const label = getCategoryLabel(cat.categoryKey)
     const amount = formatMinorAmount(cat.totalSpendMinor)
+    const bar = renderProgressBar(cat.percentOfTotal)
 
-    return `${index + 1}. ${label}: ${amount}₫ (${cat.percentOfTotal}%)`
+    return `${label}\t${amount}₫\n${bar} ${cat.percentOfTotal}%`
   })
 
   return (
     `📊 <b>Danh mục chi tiêu</b>\n` +
     `${scopeLabel} · ${periodLabel}\n\n` +
-    lines.join('\n')
+    lines.join('\n\n')
   )
 }
 
@@ -147,13 +153,27 @@ export interface ParsedPreviewData {
 
 /**
  * Render an expense preview text for Telegram.
+ *
+ * When compact=true, shows only amount / category / title without date/source/scope.
+ * Compact mode ends without the "Chọn hành động" prompt (keyboard provides actions).
  */
 export const renderExpensePreviewText = (
   preview: ParsedPreviewData,
   currencyCode: string,
+  options?: { compact?: boolean },
 ): string => {
   const amountFormatted = formatMinorAmount(preview.amountMinor, currencyCode)
   const categoryLabel = getCategoryLabel(preview.categoryKey)
+
+  if (options?.compact) {
+    return (
+      '📝 <b>Chi tiêu nhanh</b>\n\n' +
+      `💰 <b>${amountFormatted} ${currencyCode}</b>\n` +
+      `📂 ${categoryLabel}\n` +
+      `📄 ${preview.title}`
+    )
+  }
+
   const scopeLabel =
     preview.scope === 'household' && preview.householdName
       ? `🏠 ${preview.householdName}`

@@ -1,50 +1,16 @@
 import type { ParsedExpenseItem } from '@/contracts/expense-parse-schemas'
-import { parsedExpenseItemSchema } from '@/contracts/expense-parse-schemas'
-import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
-import { createDraftFromPreview } from '@/db/repositories/telegram-bot-expense-draft-repository'
+import { findDraftById } from '@/db/repositories/telegram-bot-expense-draft-repository'
 import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
-import { getMinorUnits } from '@/lib/currency'
 
+import type { ParsedPreviewData } from '../renderers/finance-text'
 import { renderExpensePreviewText } from '../renderers/finance-text'
 import {
-  expenseCreatedKeyboard,
-  expensePreviewKeyboard,
+  expensePreviewFullKeyboard,
   openAppKeyboard,
 } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
-
-const YYYY_MM_DD_RE = /^\d{4}-\d{2}-\d{2}$/
-
-/**
- * Pure normalization of a raw AI item into a ParsedExpenseItem (no Hono context).
- * Mirrors the logic in parse-expense.ts handler lines ~76-101 but as a pure function.
- */
-export const normalizeAiItem = (
-  item: {
-    amount: number
-    categoryKey: string
-    sourceKey?: string
-    title: string
-    occurredAt?: string
-  },
-  defaultOccurredAt: string,
-): ParsedExpenseItem | null => {
-  const candidate = {
-    amount: item.amount,
-    categoryKey: item.categoryKey,
-    sourceKey: item.sourceKey ?? ('bank-transfer' as const),
-    title: item.title.trim(),
-    occurredAt:
-      typeof item.occurredAt === 'string' && YYYY_MM_DD_RE.test(item.occurredAt)
-        ? item.occurredAt
-        : defaultOccurredAt,
-  }
-
-  const result = parsedExpenseItemSchema.safeParse(candidate)
-
-  return result.success ? result.data : null
-}
+import { buildDraftFromItem, normalizeAiItem } from './ai-expense-shared'
 
 /**
  * Handle /ai <text> command.
@@ -162,98 +128,80 @@ export const handleAiExpenseCommand = async (
       ? '\n\nℹ️ Chỉ xử lý khoản chi tiêu đầu tiên. Các khoản còn lại đã được bỏ qua.'
       : ''
 
-  // Default scope: personal
-  let scope: 'personal' | 'household' = 'personal'
-  let householdId: string | undefined
-  let householdName: string | undefined
-  const db = ctx.db
-
-  if (hasScopeArg) {
-    const householdIds = await listActiveHouseholdIdsForUser(db, ctx.appUserId)
-
-    if (householdIds.length > 0) {
-      const targetHhId = scopeToken.startsWith('hh:')
-        ? scopeToken.slice(3).trim()
-        : householdIds[0]
-
-      if (householdIds.includes(targetHhId)) {
-        const hh = await findHouseholdById(db, targetHhId)
-        if (hh) {
-          scope = 'household'
-          householdId = hh.id
-          householdName = hh.name
-        }
-      }
-    }
-  }
-
-  // Determine currency from household or default VND
-  const currencyCode =
-    scope === 'household' && householdId
-      ? ((await findHouseholdById(db, householdId))?.defaultCurrencyCode ??
-        'VND')
-      : 'VND'
-
-  const preview = {
-    amountMinor: getMinorUnits(validItem.amount, currencyCode),
-    occurredAt: validItem.occurredAt,
-    categoryKey: validItem.categoryKey,
-    title: validItem.title,
-    sourceKey: validItem.sourceKey,
-    scope,
-    householdId: scope === 'household' ? householdId : undefined,
-    householdName: scope === 'household' ? householdName : undefined,
-  }
-
-  // Create draft for confirm/cancel tracking
-  const dedupeKey = await computeDedupeKey(
-    ctx.appUserId,
-    expenseText,
-    validItem.occurredAt,
-  )
-
-  const draft = await createDraftFromPreview({
-    db,
-    telegramUserId: String(ctx.userId),
-    telegramChatId: String(ctx.chatId),
-    dedupeKey,
-    preview,
-    locale: ctx.locale,
+  const built = await buildDraftFromItem(ctx, validItem, {
+    rawText: expenseText,
+    defaultDate,
+    scopeArg: hasScopeArg ? scopeToken : undefined,
   })
 
-  // Idempotency: dedupe key already created an expense for this input.
-  // Surface the same confirmation message the confirm handler shows on a
-  // repeat tap, instead of a confusing preview that would otherwise re-arm
-  // the confirmed state if confirmed by accident.
-  if (draft.status === 'confirmed' && draft.createdExpenseId) {
+  if ('status' in built) {
     return {
-      text:
-        '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
-        `Mã giao dịch: <code>${draft.createdExpenseId}</code>`,
+      text: built.text,
       parseMode: 'HTML',
-      replyMarkup: expenseCreatedKeyboard(ctx.telegramBotTmaUrl),
+      replyMarkup: built.replyMarkup,
     }
   }
 
   return {
-    text: renderExpensePreviewText(preview, currencyCode) + extraNote,
+    text:
+      renderExpensePreviewText(built.preview, built.currencyCode) + extraNote,
     parseMode: 'HTML',
-    replyMarkup: expensePreviewKeyboard(draft.id),
+    replyMarkup: expensePreviewFullKeyboard(built.draftId),
   }
 }
 
 /**
- * Compute a dedupe key: SHA-256 of (telegramUserId + "|" + rawText + "|" + occurredAt).
+ * Handle the detail:draftId callback — show full preview
+ * (with date, source, scope) instead of compact.
  */
-const computeDedupeKey = async (
-  telegramUserId: string,
-  rawText: string,
-  occurredAt: string,
-): Promise<string> => {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(`${telegramUserId}|${rawText}|${occurredAt}`)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
+export const handleDetailExpense = async (
+  ctx: CommandContext,
+  draftId: string,
+  messageId: number,
+): Promise<BotResponse> => {
+  if (!ctx.appUserId) {
+    return {
+      text:
+        'Vui lòng mở Mini App để đăng nhập.\n\n' +
+        '🏠 <a href="' +
+        ctx.telegramBotTmaUrl +
+        '">Mở Mini App</a>',
+      parseMode: 'HTML',
+      replyMarkup: openAppKeyboard(ctx.telegramBotTmaUrl),
+    }
+  }
 
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+  const draft = await findDraftById(ctx.db, draftId)
+
+  if (!draft) {
+    return {
+      text: 'Không tìm thấy yêu cầu thêm chi tiêu.',
+      parseMode: 'HTML',
+    }
+  }
+
+  let preview: ParsedPreviewData
+
+  try {
+    preview = JSON.parse(draft.previewJson) as ParsedPreviewData
+  } catch {
+    return {
+      text: 'Dữ liệu xem trước không hợp lệ.',
+      parseMode: 'HTML',
+    }
+  }
+
+  const currencyCode =
+    preview.scope === 'household' && preview.householdId
+      ? ((await findHouseholdById(ctx.db, preview.householdId))
+          ?.defaultCurrencyCode ?? 'VND')
+      : 'VND'
+
+  return {
+    mode: 'edit',
+    targetMessageId: messageId,
+    text: renderExpensePreviewText(preview, currencyCode, { compact: false }),
+    parseMode: 'HTML',
+    replyMarkup: expensePreviewFullKeyboard(draftId),
+  }
 }
