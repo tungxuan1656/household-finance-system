@@ -46,10 +46,23 @@ export class TelegramClient {
       return
     }
 
-    // HTTP error (4xx/5xx)
-    const statusText = response.statusText || 'Unknown HTTP error'
+    // HTTP error (4xx/5xx) — try to extract description from JSON body
+    let description: string | undefined
 
-    throw new Error(`Telegram API HTTP ${response.status}: ${statusText}`)
+    try {
+      const body = (await response.json()) as {
+        ok?: boolean
+        description?: string
+      }
+
+      description = body?.description
+    } catch {
+      // Non-JSON body — use status text only
+    }
+
+    const detail = description ?? (response.statusText || 'Unknown HTTP error')
+
+    throw new Error(`Telegram API HTTP ${response.status}: ${detail}`)
   }
 
   async sendMessage(

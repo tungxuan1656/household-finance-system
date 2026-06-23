@@ -23,7 +23,10 @@ import type { BotResponse, TelegramUpdate } from './types'
 
 export interface BotServiceDeps {
   db: D1Database
-  config: Pick<AppConfig, 'telegramBotToken'>
+  config: Pick<
+    AppConfig,
+    'telegramBotToken' | 'telegramBotTmaUrl' | 'telegramBotDeepLinkUrl'
+  >
   telegramClient?: TelegramClient
   /**
    * Pre-resolved app user id to avoid duplicate identity lookup.
@@ -56,6 +59,8 @@ const buildCtx = (o: BuildCtxOptions) => ({
   locale: resolveLocale(o.languageCode ?? null),
   db: o.deps.db,
   env: o.deps.env,
+  telegramBotTmaUrl: o.deps.config.telegramBotTmaUrl,
+  telegramBotDeepLinkUrl: o.deps.config.telegramBotDeepLinkUrl,
 })
 
 export const handleUpdate = async (

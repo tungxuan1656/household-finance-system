@@ -40,6 +40,7 @@ const resolveSpendScope = (budget: {
 export const runBudgetAlerts = async (
   db: D1Database,
   telegramClient: TelegramClient,
+  tmaUrl: string,
 ): Promise<void> => {
   const currentPeriod = getCurrentPeriod()
 
@@ -123,7 +124,7 @@ export const runBudgetAlerts = async (
               isExceeded: false,
             }),
             parseMode: 'HTML',
-            replyMarkup: budgetAlertKeyboard(),
+            replyMarkup: budgetAlertKeyboard(tmaUrl),
             requiredPref: 'budget_alerts',
           })
         }
@@ -144,7 +145,7 @@ export const runBudgetAlerts = async (
               isExceeded: true,
             }),
             parseMode: 'HTML',
-            replyMarkup: budgetAlertKeyboard(),
+            replyMarkup: budgetAlertKeyboard(tmaUrl),
             requiredPref: 'budget_alerts',
           })
         }

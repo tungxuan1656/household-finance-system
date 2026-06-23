@@ -1,4 +1,3 @@
-import { TMA_URL } from '../constants'
 import type { BotResponse, CommandContext } from '../types'
 
 /**
@@ -8,13 +7,15 @@ import type { BotResponse, CommandContext } from '../types'
  * Unlinked user: shows Open App guidance only.
  */
 export const handleStartCommand = (ctx: CommandContext): BotResponse => {
+  const tmaUrl = ctx.telegramBotTmaUrl
+
   if (!ctx.appUserId) {
     return {
       text:
         'Xin chào! 👋\n\n' +
         'Vui lòng mở Mini App để bắt đầu sử dụng bot.\n\n' +
         '🏠 <a href="' +
-        TMA_URL +
+        tmaUrl +
         '">Mở Mini App</a>',
       parseMode: 'HTML',
       replyMarkup: {
@@ -22,7 +23,7 @@ export const handleStartCommand = (ctx: CommandContext): BotResponse => {
           [
             {
               text: '🏠 Mở Mini App',
-              web_app: { url: TMA_URL },
+              web_app: { url: tmaUrl },
             },
           ],
         ],
@@ -49,7 +50,7 @@ export const handleStartCommand = (ctx: CommandContext): BotResponse => {
           { text: '💸 Ngân sách', callback_data: 'budget' },
           { text: '⚙️ Cài đặt', callback_data: 'settings' },
         ],
-        [{ text: '🏠 Mở Mini App', web_app: { url: TMA_URL } }],
+        [{ text: '🏠 Mở Mini App', web_app: { url: tmaUrl } }],
       ],
     },
   }

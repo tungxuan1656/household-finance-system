@@ -21,6 +21,8 @@ const buildCtx = (overrides: Partial<CommandContext> = {}): CommandContext => ({
   appUserId: 'user-1',
   locale: 'vi',
   db: mockDb,
+  telegramBotTmaUrl: 'https://phofis-tma.pages.dev/',
+  telegramBotDeepLinkUrl: 'https://t.me/phofis_bot',
   env: {
     OPENAI_COMPAT_BASE_URL: 'https://api.openai.com',
     OPENAI_COMPAT_API_KEY: 'test-key',

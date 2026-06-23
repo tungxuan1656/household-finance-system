@@ -1,4 +1,3 @@
-import { TMA_URL } from '../constants'
 import { formatMinorAmount, getCategoryLabel } from '../renderers/finance-text'
 import type { InlineKeyboardMarkup } from '../types'
 
@@ -74,11 +73,11 @@ export const renderBudgetAlertText = (
 /**
  * Common inline keyboard for budget alerts.
  */
-export const budgetAlertKeyboard = (): InlineKeyboardMarkup => ({
+export const budgetAlertKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
   inline_keyboard: [
     [
       { text: '📊 Xem chi tiết', callback_data: 'budget' },
-      { text: '🏠 Mở Mini App', web_app: { url: TMA_URL } },
+      { text: '🏠 Mở Mini App', web_app: { url: tmaUrl } },
     ],
   ],
 })
@@ -115,7 +114,7 @@ export const renderHouseholdActivityText = (
  * Render a weekly digest notification.
  */
 export const renderWeeklyDigestText = (
-  options: WeeklyDigestTextOptions,
+  options: WeeklyDigestTextOptions & { tmaUrl: string },
 ): string => {
   const {
     totalSpendMinor,
@@ -124,6 +123,7 @@ export const renderWeeklyDigestText = (
     budgetWarnings,
     currencyCode,
     periodLabel,
+    tmaUrl,
   } = options
   const total = formatMinorAmount(totalSpendMinor, currencyCode)
   const countLabel = expenseCount === 1 ? '1 khoản' : `${expenseCount} khoản`
@@ -154,7 +154,7 @@ export const renderWeeklyDigestText = (
     }
   }
 
-  text += `\n🏠 <a href="${TMA_URL}">Mở Mini App</a>`
+  text += `\n🏠 <a href="${tmaUrl}">Mở Mini App</a>`
 
   return text
 }

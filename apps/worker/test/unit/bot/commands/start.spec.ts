@@ -19,6 +19,8 @@ const buildCtx = (overrides: Partial<CommandContext> = {}): CommandContext => ({
       }),
     }),
   } as unknown as D1Database,
+  telegramBotTmaUrl: 'https://phofis-tma.pages.dev/',
+  telegramBotDeepLinkUrl: 'https://t.me/phofis_bot',
   ...overrides,
 })
 
@@ -35,9 +37,13 @@ describe('handleStartCommand', () => {
     if (result.replyMarkup && 'inline_keyboard' in result.replyMarkup) {
       const buttons = result.replyMarkup.inline_keyboard.flat()
       const labels = buttons.map((b) => b.text)
+      const openAppButton = buttons.find((b) => b.text === '🏠 Mở Mini App')
 
       expect(labels).toContain('🏠 Mở Mini App')
       expect(labels).not.toContain('➕ Thêm chi tiêu')
+      expect(openAppButton).toMatchObject({
+        web_app: { url: 'https://phofis-tma.pages.dev/' },
+      })
     }
   })
 
@@ -55,12 +61,16 @@ describe('handleStartCommand', () => {
     if (result.replyMarkup && 'inline_keyboard' in result.replyMarkup) {
       const buttons = result.replyMarkup.inline_keyboard.flat()
       const labels = buttons.map((b) => b.text)
+      const openAppButton = buttons.find((b) => b.text === '🏠 Mở Mini App')
 
       expect(labels).toContain('➕ Thêm chi tiêu')
       expect(labels).toContain('📊 Xem thống kê')
       expect(labels).toContain('💸 Ngân sách')
       expect(labels).toContain('⚙️ Cài đặt')
       expect(labels).toContain('🏠 Mở Mini App')
+      expect(openAppButton).toMatchObject({
+        web_app: { url: 'https://phofis-tma.pages.dev/' },
+      })
     }
   })
 

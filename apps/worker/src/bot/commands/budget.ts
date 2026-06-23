@@ -68,13 +68,17 @@ const resolveSpendScope = (budget: {
 export const handleBudgetCommand = async (
   ctx: CommandContext,
 ): Promise<BotResponse> => {
+  const tmaUrl = ctx.telegramBotTmaUrl
+
   if (!ctx.appUserId) {
     return {
       text:
         'Vui lòng mở Mini App để đăng nhập và xem ngân sách.\n\n' +
-        '🏠 <a href="https://t.me/household_finance_bot/app">Mở Mini App</a>',
+        '🏠 <a href="' +
+        tmaUrl +
+        '">Mở Mini App</a>',
       parseMode: 'HTML',
-      replyMarkup: openAppKeyboard(),
+      replyMarkup: openAppKeyboard(tmaUrl),
     }
   }
 
@@ -167,6 +171,6 @@ export const handleBudgetCommand = async (
   return {
     text: renderBudgetStatusText(lines),
     parseMode: 'HTML',
-    replyMarkup: openAppKeyboard(),
+    replyMarkup: openAppKeyboard(tmaUrl),
   }
 }

@@ -45,6 +45,8 @@ export interface AppConfig {
   telegramBotToken: string
   telegramBotWebhookSecret: string
   telegramFreshnessWindowSeconds: number
+  telegramBotTmaUrl: string
+  telegramBotDeepLinkUrl: string
 }
 
 export interface CloudinaryConfig {

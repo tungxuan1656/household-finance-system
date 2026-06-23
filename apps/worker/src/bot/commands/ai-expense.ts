@@ -59,9 +59,11 @@ export const handleAiExpenseCommand = async (
     return {
       text:
         'Vui lòng mở Mini App để đăng nhập và sử dụng tính năng này.\n\n' +
-        '🏠 <a href="https://t.me/household_finance_bot/app">Mở Mini App</a>',
+        '🏠 <a href="' +
+        ctx.telegramBotTmaUrl +
+        '">Mở Mini App</a>',
       parseMode: 'HTML',
-      replyMarkup: openAppKeyboard(),
+      replyMarkup: openAppKeyboard(ctx.telegramBotTmaUrl),
     }
   }
 
@@ -229,7 +231,7 @@ export const handleAiExpenseCommand = async (
         '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
         `Mã giao dịch: <code>${draft.createdExpenseId}</code>`,
       parseMode: 'HTML',
-      replyMarkup: expenseCreatedKeyboard(),
+      replyMarkup: expenseCreatedKeyboard(ctx.telegramBotTmaUrl),
     }
   }
 

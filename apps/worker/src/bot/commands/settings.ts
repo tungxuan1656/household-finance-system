@@ -3,7 +3,6 @@ import {
   updateTelegramBotChatPreferences,
 } from '@/db/repositories/telegram-bot-chat-repository'
 
-import { TMA_URL } from '../constants'
 import { openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
@@ -51,6 +50,7 @@ export const parsePreferences = (raw: string): TelegramBotPreferences => {
  */
 const buildSettingsKeyboard = (
   prefs: TelegramBotPreferences,
+  tmaUrl: string,
 ): BotResponse['replyMarkup'] => ({
   inline_keyboard: [
     [
@@ -77,7 +77,7 @@ const buildSettingsKeyboard = (
         callback_data: 'pref:weekly_digest',
       },
     ],
-    [{ text: '🏠 Mở Mini App', web_app: { url: TMA_URL } }],
+    [{ text: '🏠 Mở Mini App', web_app: { url: tmaUrl } }],
   ],
 })
 
@@ -90,15 +90,17 @@ const buildSettingsKeyboard = (
 export const handleSettingsCommand = async (
   ctx: CommandContext,
 ): Promise<BotResponse> => {
+  const tmaUrl = ctx.telegramBotTmaUrl
+
   if (!ctx.appUserId) {
     return {
       text:
         'Vui lòng mở Mini App để đăng nhập và quản lý cài đặt.\n\n' +
         '🏠 <a href="' +
-        TMA_URL +
+        tmaUrl +
         '">Mở Mini App</a>',
       parseMode: 'HTML',
-      replyMarkup: openAppKeyboard(),
+      replyMarkup: openAppKeyboard(tmaUrl),
     }
   }
 
@@ -112,7 +114,7 @@ export const handleSettingsCommand = async (
       '⚙️ <b>Cài đặt thông báo</b>\n\n' +
       'Chọn một tùy chọn bên dưới để bật/tắt:',
     parseMode: 'HTML',
-    replyMarkup: buildSettingsKeyboard(prefs),
+    replyMarkup: buildSettingsKeyboard(prefs, tmaUrl),
   }
 }
 
@@ -124,15 +126,17 @@ export const handlePreferenceToggle = async (
   ctx: CommandContext,
   prefKey: string,
 ): Promise<BotResponse> => {
+  const tmaUrl = ctx.telegramBotTmaUrl
+
   if (!ctx.appUserId) {
     return {
       text:
         'Vui lòng mở Mini App để đăng nhập.\n\n' +
         '🏠 <a href="' +
-        TMA_URL +
+        tmaUrl +
         '">Mở Mini App</a>',
       parseMode: 'HTML',
-      replyMarkup: openAppKeyboard(),
+      replyMarkup: openAppKeyboard(tmaUrl),
     }
   }
 
@@ -170,6 +174,6 @@ export const handlePreferenceToggle = async (
       '⚙️ <b>Cài đặt thông báo</b>\n\n' +
       'Chọn một tùy chọn bên dưới để bật/tắt:',
     parseMode: 'HTML',
-    replyMarkup: buildSettingsKeyboard(prefs),
+    replyMarkup: buildSettingsKeyboard(prefs, tmaUrl),
   }
 }

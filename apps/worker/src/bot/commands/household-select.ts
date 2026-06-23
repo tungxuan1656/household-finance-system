@@ -28,13 +28,17 @@ export const handleHouseholdSelect = async (
   draftId: string,
   householdIdOrPersonal: string,
 ): Promise<BotResponse> => {
+  const tmaUrl = ctx.telegramBotTmaUrl
+
   if (!ctx.appUserId) {
     return {
       text:
         'Vui lòng mở Mini App để đăng nhập.\n\n' +
-        '🏠 <a href="https://t.me/household_finance_bot/app">Mở Mini App</a>',
+        '🏠 <a href="' +
+        tmaUrl +
+        '">Mở Mini App</a>',
       parseMode: 'HTML',
-      replyMarkup: openAppKeyboard(),
+      replyMarkup: openAppKeyboard(tmaUrl),
     }
   }
 

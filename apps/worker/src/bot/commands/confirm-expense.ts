@@ -26,13 +26,17 @@ export const handleConfirmExpense = async (
   ctx: CommandContext,
   draftId: string,
 ): Promise<BotResponse> => {
+  const tmaUrl = ctx.telegramBotTmaUrl
+
   if (!ctx.appUserId) {
     return {
       text:
         'Vui lòng mở Mini App để đăng nhập.\n\n' +
-        '🏠 <a href="https://t.me/household_finance_bot/app">Mở Mini App</a>',
+        '🏠 <a href="' +
+        tmaUrl +
+        '">Mở Mini App</a>',
       parseMode: 'HTML',
-      replyMarkup: openAppKeyboard(),
+      replyMarkup: openAppKeyboard(tmaUrl),
     }
   }
 
@@ -63,7 +67,7 @@ export const handleConfirmExpense = async (
         '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
         `Mã giao dịch: <code>${draft.createdExpenseId}</code>`,
       parseMode: 'HTML',
-      replyMarkup: expenseCreatedKeyboard(),
+      replyMarkup: expenseCreatedKeyboard(tmaUrl),
     }
   }
 
@@ -80,7 +84,7 @@ export const handleConfirmExpense = async (
           '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
           `Mã giao dịch: <code>${updatedDraft.createdExpenseId}</code>`,
         parseMode: 'HTML',
-        replyMarkup: expenseCreatedKeyboard(),
+        replyMarkup: expenseCreatedKeyboard(tmaUrl),
       }
     }
 
@@ -161,7 +165,7 @@ export const handleConfirmExpense = async (
   return {
     text: renderConfirmSuccessText(preview, currencyCode),
     parseMode: 'HTML',
-    replyMarkup: expenseCreatedKeyboard(),
+    replyMarkup: expenseCreatedKeyboard(tmaUrl),
   }
 }
 
