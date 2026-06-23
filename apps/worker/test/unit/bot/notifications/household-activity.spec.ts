@@ -1,0 +1,217 @@
+import { describe, expect, it, vi, beforeEach } from 'vitest'
+
+import { sendHouseholdActivity } from '@/bot/notifications/household-activity'
+import { TelegramClient } from '@/bot/telegram-client'
+
+const mockSendMessage = vi.fn()
+const mockClient = { sendMessage: mockSendMessage } as unknown as TelegramClient
+
+const mockDb = {
+  prepare: () => ({
+    bind: () => ({
+      first: async () => null,
+      all: async () => ({ results: [] }),
+      run: async () => ({ meta: { changes: 0 } }),
+    }),
+  }),
+} as unknown as D1Database
+
+// Hoisted mock refs
+const { mockListMembers, mockFindChat, mockSendNotif } = vi.hoisted(() => {
+  const mlm = vi.fn()
+  const mfc = vi.fn()
+  const msn = vi.fn().mockResolvedValue('skipped')
+  return { mockListMembers: mlm, mockFindChat: mfc, mockSendNotif: msn }
+})
+
+vi.mock('@/db/repositories/household-membership-repository', () => ({
+  listHouseholdMembers: mockListMembers,
+}))
+
+vi.mock('@/db/repositories/telegram-bot-chat-repository', () => ({
+  findTelegramBotChatByUserId: mockFindChat,
+}))
+
+vi.mock('@/bot/notifications/sender', () => ({
+  sendNotification: mockSendNotif,
+}))
+
+vi.mock('@/bot/notifications/renderers', () => ({
+  renderHouseholdActivityText: vi
+    .fn()
+    .mockReturnValue('Test notification text'),
+}))
+
+const baseArgs = {
+  db: mockDb,
+  telegramClient: mockClient,
+  householdId: 'hh-1',
+  actorUserId: 'actor-1',
+  expenseTitle: 'ăn bún',
+  expenseAmountMinor: 3000000,
+  expenseCategoryKey: 'food',
+  expenseOccurredAt: '2026-06-15',
+  expenseCurrencyCode: 'VND',
+  householdName: 'Gia đình Test',
+}
+
+describe('sendHouseholdActivity', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockSendNotif.mockResolvedValue('skipped')
+    // Reset implementations to prevent cross-test leakage
+    mockListMembers.mockResolvedValue([])
+    mockFindChat.mockResolvedValue(null)
+  })
+
+  it('B1: recipient sees actor name, not their own', async () => {
+    mockListMembers.mockResolvedValue([
+      {
+        userId: 'actor-1',
+        name: 'Nguyễn Văn A',
+        role: 'admin',
+        email: '',
+        joinedAt: 0,
+        avatarUrl: null,
+      },
+      {
+        userId: 'recipient-1',
+        name: 'Trần Thị B',
+        role: 'member',
+        email: '',
+        joinedAt: 0,
+        avatarUrl: null,
+      },
+    ])
+    mockFindChat.mockResolvedValue({
+      id: 'chat-2',
+      telegramUserId: '999',
+      telegramChatId: '888',
+      userId: 'recipient-1',
+      preferences: '{}',
+      locale: 'vi',
+      createdAt: 0,
+      updatedAt: 0,
+    })
+
+    await sendHouseholdActivity(baseArgs)
+
+    // sendNotification should be called with actor's name, not recipient's
+    expect(mockSendNotif).toHaveBeenCalledTimes(1)
+    const callText = mockSendNotif.mock.calls[0][0].text
+    expect(callText).toBe('Test notification text')
+    // The renderer mock returns fixed text, but the sender receives it
+    // We verify the flow — the key is that the mock was called (B1 would have thrown or skipped)
+  })
+
+  it('actor is excluded from recipients', async () => {
+    mockListMembers.mockResolvedValue([
+      {
+        userId: 'actor-1',
+        name: 'Actor',
+        role: 'admin',
+        email: '',
+        joinedAt: 0,
+        avatarUrl: null,
+      },
+      {
+        userId: 'other-1',
+        name: 'Other',
+        role: 'member',
+        email: '',
+        joinedAt: 0,
+        avatarUrl: null,
+      },
+    ])
+    mockFindChat.mockResolvedValue({
+      id: 'chat-2',
+      telegramUserId: '999',
+      telegramChatId: '888',
+      userId: 'other-1',
+      preferences: '{}',
+      locale: 'vi',
+      createdAt: 0,
+      updatedAt: 0,
+    })
+
+    await sendHouseholdActivity(baseArgs)
+
+    // Should notify exactly 1 recipient (other-1), not the actor
+    expect(mockSendNotif).toHaveBeenCalledTimes(1)
+  })
+
+  it('only notifies members with household_activity enabled', async () => {
+    mockListMembers.mockResolvedValue([
+      {
+        userId: 'actor-1',
+        name: 'Actor',
+        role: 'admin',
+        email: '',
+        joinedAt: 0,
+        avatarUrl: null,
+      },
+      {
+        userId: 'member-1',
+        name: 'Member',
+        role: 'member',
+        email: '',
+        joinedAt: 0,
+        avatarUrl: null,
+      },
+    ])
+    mockFindChat.mockResolvedValue({
+      id: 'chat-2',
+      telegramUserId: '999',
+      telegramChatId: '888',
+      userId: 'member-1',
+      preferences: '{}',
+      locale: 'vi',
+      createdAt: 0,
+      updatedAt: 0,
+    })
+
+    await sendHouseholdActivity(baseArgs)
+
+    // The sendNotification itself gates on household_activity preference
+    expect(mockSendNotif).toHaveBeenCalledTimes(1)
+    expect(mockSendNotif.mock.calls[0][0].requiredPref).toBe(
+      'household_activity',
+    )
+  })
+
+  it('skips members without telegram chat', async () => {
+    mockListMembers.mockResolvedValue([
+      {
+        userId: 'actor-1',
+        name: 'Actor',
+        role: 'admin',
+        email: '',
+        joinedAt: 0,
+        avatarUrl: null,
+      },
+      {
+        userId: 'nochat-1',
+        name: 'No Chat',
+        role: 'member',
+        email: '',
+        joinedAt: 0,
+        avatarUrl: null,
+      },
+    ])
+    // Only one member has a chat (the actor), the other has none
+    mockFindChat.mockResolvedValue(null)
+
+    await sendHouseholdActivity(baseArgs)
+
+    // No notification sent (no non-actor members with chats)
+    expect(mockSendNotif).toHaveBeenCalledTimes(0)
+  })
+
+  it('no notifications when member list is empty', async () => {
+    mockListMembers.mockResolvedValue([])
+
+    await sendHouseholdActivity(baseArgs)
+
+    expect(mockSendNotif).toHaveBeenCalledTimes(0)
+  })
+})

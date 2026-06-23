@@ -23,6 +23,7 @@ export interface CreateExpenseInput {
   occurredAt: number
   title: string
   note?: string | null
+  createdViaBot?: number
 }
 
 export const createExpense = async (
@@ -32,6 +33,8 @@ export const createExpense = async (
   const now = Date.now()
 
   // Explicit column insert to avoid SELECT * patterns
+  const createdViaBot = input.createdViaBot ?? 0
+
   await db
     .prepare(
       `INSERT INTO expenses (
@@ -46,9 +49,10 @@ export const createExpense = async (
         occurred_at,
         title,
         note,
+        created_via_bot,
         created_at,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       input.id,
@@ -62,6 +66,7 @@ export const createExpense = async (
       input.occurredAt,
       input.title,
       input.note ?? null,
+      createdViaBot,
       now,
       now,
     )
@@ -82,6 +87,7 @@ export const createExpense = async (
               title,
               note,
               deleted_at,
+              created_via_bot,
               created_at,
               updated_at
          FROM expenses
@@ -170,6 +176,7 @@ export const findExpenseByIdRaw = async (
               title,
               note,
               deleted_at,
+              created_via_bot,
               created_at,
               updated_at
          FROM expenses
@@ -203,6 +210,7 @@ export const findExpenseByIdIncludingDeleted = async (
               title,
               note,
               deleted_at,
+              created_via_bot,
               created_at,
               updated_at
          FROM expenses

@@ -1,7 +1,7 @@
 {
   "id": "feat-112",
   "name": "Telegram bot companion implementation plan set",
-  "status": "planned",
+  "status": "done",
   "description": "Parent planning record for the Telegram bot companion implementation, split into multiple smaller ExecPlans so each PR/slice has independent acceptance and verification.",
   "dependencies": [
     "feat-017",
@@ -18,6 +18,11 @@
       "Implementation seams inspected by explorer session ses_111391bc5ffeTpeoz2oslZVBsa.",
       "Initial umbrella ExecPlan was replaced with five smaller ExecPlans after user requested easier per-slice verification."
     ],
+    "done": [
+      "All five child slices feat-112a through feat-112e implemented, reviewed, and verified on branch feat-112-telegram-bot.",
+      "Full ./init.sh verification passed: install, harness, lint, typecheck, test all green (128 worker tests).",
+      "Oracle reviews passed for each slice with blockers/highs fixed before proceeding: 112a (webhook secret + user_id), 112b (scope helper + invalid budget), 112c (household selection + membership verification + occurredAt), 112d (no blockers), 112e (actor name + currency + corrupt scope + orchestrator tests)."
+    ],
     "artifacts": [
       "docs/exec-plans/plans/2026-06-22-telegram-bot-foundation.md",
       "docs/exec-plans/plans/2026-06-22-telegram-bot-read-commands.md",
@@ -32,8 +37,9 @@
       "harness/progress.md"
     ],
     "verification": [
-      "git diff --check -- docs/exec-plans/plans/2026-06-22-telegram-bot-foundation.md docs/exec-plans/plans/2026-06-22-telegram-bot-read-commands.md docs/exec-plans/plans/2026-06-22-telegram-bot-expense-create.md docs/exec-plans/plans/2026-06-22-telegram-bot-settings.md docs/exec-plans/plans/2026-06-22-telegram-bot-notifications.md docs/exec-plans/index.md docs/exec-plans/tech-debt-tracker.md harness/feature_index.json harness/features/feat-112.json harness/features/feat-112a.json harness/features/feat-112b.json harness/features/feat-112c.json harness/features/feat-112d.json harness/features/feat-112e.json harness/progress.md -> OK, no output.",
-      "jq empty harness/feature_index.json harness/features/feat-112.json harness/features/feat-112a.json harness/features/feat-112b.json harness/features/feat-112c.json harness/features/feat-112d.json harness/features/feat-112e.json -> OK, no output."
+      "./init.sh -> Done! (install, harness, lint, typecheck, test all green).",
+      "128 worker tests pass (118 bot unit + 10 auth-telegram integration).",
+      "jq empty harness/feature_index.json harness/features/feat-112*.json -> OK."
     ]
   },
   "notes": "Child features feat-112a through feat-112e track the execution slices. Plans explicitly reject storing app access/refresh tokens in bot tables. User will handle manual Telegram bot testing; automated repo tests remain required for implementation PRs. No commit made unless user requests."

@@ -24,6 +24,7 @@ export default defineWorkersConfig({
             AUTH_REFRESH_TOKEN_PEPPER: 'test-auth-refresh-pepper',
             INVITATION_TOKEN_PEPPER: 'test-invitation-pepper',
             TELEGRAM_BOT_TOKEN: 'test-telegram-bot-token',
+            TELEGRAM_BOT_WEBHOOK_SECRET: 'test-webhook-secret',
             TELEGRAM_FRESHNESS_WINDOW_SECONDS: '3600',
             APP_ENV: 'test',
             CLOUDINARY_CLOUD_NAME: 'demo-cloud',

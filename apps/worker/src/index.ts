@@ -1,7 +1,11 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 
+import { runBudgetAlerts } from '@/bot/notifications/budget-alerts'
+import { runWeeklyDigest } from '@/bot/notifications/weekly-digest'
+import { TelegramClient } from '@/bot/telegram-client'
 import { resolveCorsOrigin } from '@/lib/cors'
+import { readConfig } from '@/lib/env'
 import { notFound } from '@/lib/errors'
 import { fromUnknownError } from '@/lib/response'
 import { requestContextMiddleware } from '@/middlewares/request-context'
@@ -19,6 +23,7 @@ import { migrateRoutes } from '@/routes/migrate'
 import { profileRoutes } from '@/routes/profile'
 import { protectedRoutes } from '@/routes/protected'
 import { referenceDataRoutes } from '@/routes/reference-data'
+import { telegramBotRoutes } from '@/routes/telegram-bot'
 import type { AppBindings } from '@/types'
 
 const app = new Hono<AppBindings>()
@@ -55,7 +60,33 @@ app.route('/api/v1', expensesRoutes)
 app.route('/api/v1', migrateRoutes)
 app.route('/api/v1', groupsRoutes)
 app.route('/api/v1', budgetsRoutes)
+app.route('/api/v1', telegramBotRoutes)
+
+/**
+ * Cron-triggered notification jobs.
+ * Daily at 9am UTC: budget alerts.
+ * Weekly (Monday): weekly digest.
+ */
+const scheduled: ExportedHandler<Env>['scheduled'] = async (
+  controller,
+  env,
+) => {
+  const config = readConfig(env)
+  const client = new TelegramClient(config.telegramBotToken)
+  const db = env.DB
+
+  try {
+    // Daily jobs
+    await runBudgetAlerts(db, client)
+
+    // Weekly digest — run on Monday (cron expression handles frequency)
+    await runWeeklyDigest(db, client)
+  } catch (error) {
+    console.error('scheduled: notification jobs failed', error)
+  }
+}
 
 export default {
   fetch: app.fetch,
+  scheduled,
 } satisfies ExportedHandler<Env>

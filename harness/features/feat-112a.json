@@ -1,17 +1,41 @@
 {
   "id": "feat-112a",
   "name": "Telegram bot foundation",
-  "status": "planned",
+  "status": "done",
   "description": "Worker bot foundation with webhook secret verification, Telegram API adapter, Telegram identity-to-user lookup, no token persistence, and /start + /help linked/unlinked behavior.",
   "dependencies": ["feat-080", "feat-111"],
   "evidence": {
     "planned": [
       "ExecPlan: docs/exec-plans/plans/2026-06-22-telegram-bot-foundation.md"
     ],
-    "artifacts": [
-      "docs/exec-plans/plans/2026-06-22-telegram-bot-foundation.md"
+    "done": [
+      "Migration 0002_telegram_bot_foundation.sql adds telegram_bot_chats table (no token columns).",
+      "Webhook secret required via readRequired; route always verifies; invalid secret returns 401.",
+      "Route resolves Telegram identity before chat upsert and populates user_id for linked users; unlinked users get Open App guidance only.",
+      "Telegram API isolated to telegram-client.ts adapter; domain handlers return pure BotResponse.",
+      "/start shows menu buttons for linked users; /help explains bot/TMA boundary.",
+      "Oracle review approved after blocker fixes (webhook secret required, user_id populated, silent catches replaced with console.error)."
     ],
-    "verification": ["Pending implementation."]
+    "artifacts": [
+      "docs/exec-plans/plans/2026-06-22-telegram-bot-foundation.md",
+      "apps/worker/migrations/0002_telegram_bot_foundation.sql",
+      "apps/worker/src/db/repositories/telegram-bot-chat-repository.ts",
+      "apps/worker/src/bot/types.ts",
+      "apps/worker/src/bot/telegram-client.ts",
+      "apps/worker/src/bot/webhook-security.ts",
+      "apps/worker/src/bot/account-linking.ts",
+      "apps/worker/src/bot/service.ts",
+      "apps/worker/src/bot/commands/start.ts",
+      "apps/worker/src/bot/commands/help.ts",
+      "apps/worker/src/routes/telegram-bot.ts",
+      "apps/worker/test/unit/bot/",
+      "apps/worker/test/integration/telegram-bot.spec.ts"
+    ],
+    "verification": [
+      "./init.sh typecheck -> pass.",
+      "./init.sh test -> 37 tests pass after initial impl; grew with downstream slices.",
+      "Oracle review ses_110b72317ffe9rn8njFiAoI5nS approved with warnings only."
+    ]
   },
   "notes": "First implementation slice. Must not store app access/refresh tokens in bot tables."
 }

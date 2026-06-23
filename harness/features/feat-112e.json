@@ -1,17 +1,47 @@
 {
   "id": "feat-112e",
   "name": "Telegram bot notifications",
-  "status": "planned",
+  "status": "done",
   "description": "Delivery log/dedupe plus budget alerts, opt-in household activity, and opt-in weekly digest scheduled sends.",
   "dependencies": ["feat-027", "feat-028", "feat-112a", "feat-112d"],
   "evidence": {
     "planned": [
       "ExecPlan: docs/exec-plans/plans/2026-06-22-telegram-bot-notifications.md"
     ],
-    "artifacts": [
-      "docs/exec-plans/plans/2026-06-22-telegram-bot-notifications.md"
+    "done": [
+      "Migration 0004 adds telegram_bot_notification_deliveries table with UNIQUE dedupe index.",
+      "Budget warning (80%) and exceeded (100%) sent once per budget/user/period via cron daily 9am UTC.",
+      "Household activity event-driven on expense create; notifies members with household_activity=true except actor.",
+      "Weekly digest cron-triggered; only weekly_digest=true users; uses currencyCode from analytics DTO.",
+      "Delivery log records sent/failed/skipped; INSERT OR IGNORE for idempotent dedupe.",
+      "All sends via TelegramClient.sendMessage; no Telegram logic outside bot/.",
+      "scheduled handler exported from src/index.ts; triggers.crons in wrangler.jsonc.",
+      "Fire-and-forget household activity hook doesn't fail expense create.",
+      "Oracle review found blocker B1 (wrong actor name) + H1-H3 (currency, corrupt scope); all fixed + 16 orchestrator tests added (incl. B1 regression)."
     ],
-    "verification": ["Pending implementation."]
+    "artifacts": [
+      "docs/exec-plans/plans/2026-06-22-telegram-bot-notifications.md",
+      "apps/worker/migrations/0004_telegram_bot_notification_deliveries.sql",
+      "apps/worker/src/db/repositories/telegram-bot-notification-delivery-repository.ts",
+      "apps/worker/src/bot/notifications/renderers.ts",
+      "apps/worker/src/bot/notifications/sender.ts",
+      "apps/worker/src/bot/notifications/budget-alerts.ts",
+      "apps/worker/src/bot/notifications/household-activity.ts",
+      "apps/worker/src/bot/notifications/weekly-digest.ts",
+      "apps/worker/src/index.ts",
+      "apps/worker/wrangler.jsonc",
+      "apps/worker/src/routes/expenses.ts",
+      "apps/worker/test/unit/bot/notifications/sender.spec.ts",
+      "apps/worker/test/unit/bot/notifications/renderers.spec.ts",
+      "apps/worker/test/unit/bot/notifications/household-activity.spec.ts",
+      "apps/worker/test/unit/bot/notifications/budget-alerts.spec.ts",
+      "apps/worker/test/unit/bot/notifications/weekly-digest.spec.ts"
+    ],
+    "verification": [
+      "./init.sh typecheck -> pass.",
+      "./init.sh test -> 128 tests pass after blocker fixes (118 bot unit + 10 auth-telegram).",
+      "Oracle review ses_11037a6b3ffe0JjIOD5AuctW09 found B1+H1-H3; fixer resolved; 13/13 acceptance criteria pass."
+    ]
   },
   "notes": "Dedupe is mandatory. Household activity and weekly digest are opt-in only."
 }

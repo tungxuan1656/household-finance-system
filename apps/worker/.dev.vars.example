@@ -20,6 +20,8 @@ AUTH_ALLOW_INSECURE_TEST_TOKENS="false"
 TELEGRAM_BOT_TOKEN="replace-with-telegram-bot-token"
 # Optional freshness window for Telegram initData (default 3600 seconds)
 # TELEGRAM_FRESHNESS_WINDOW_SECONDS="3600"
+# Required webhook secret for Telegram bot (X-Telegram-Bot-Api-Secret-Token verification)
+TELEGRAM_BOT_WEBHOOK_SECRET="replace-with-webhook-secret"
 
 # Secrets
 AUTH_JWT_SECRET="replace-with-local-secret"

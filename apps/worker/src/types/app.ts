@@ -43,6 +43,7 @@ export interface AppConfig {
   firebaseJwksUrl: string
   allowInsecureTestTokens: boolean
   telegramBotToken: string
+  telegramBotWebhookSecret: string
   telegramFreshnessWindowSeconds: number
 }
 

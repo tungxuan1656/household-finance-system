@@ -1,5 +1,7 @@
 import { Hono } from 'hono'
 
+import { sendHouseholdActivity } from '@/bot/notifications/household-activity'
+import { TelegramClient } from '@/bot/telegram-client'
 import { replaceExpenseGroupsHandler } from '@/handlers/expense-groups/replace-expense-groups'
 import { createExpenseHandler } from '@/handlers/expenses/create-expense'
 import { deleteExpenseHandler } from '@/handlers/expenses/delete-expense'
@@ -10,6 +12,7 @@ import { listExpensesHandler } from '@/handlers/expenses/list-expenses'
 import { parseExpenseHandler } from '@/handlers/expenses/parse-expense'
 import { restoreExpenseHandler } from '@/handlers/expenses/restore-expense'
 import { updateExpenseHandler } from '@/handlers/expenses/update-expense'
+import { readConfig } from '@/lib/env'
 import { success } from '@/lib/response'
 import { authMiddleware } from '@/middlewares/auth'
 import type { AppBindings } from '@/types'
@@ -27,6 +30,33 @@ expensesRoutes.use('/expenses/:id/groups', authMiddleware)
 // POST /api/v1/expenses
 expensesRoutes.post('/expenses', async (ctx) => {
   const dto = await createExpenseHandler(ctx)
+
+  // Fire-and-forget: household activity notification for household expenses
+  if (dto.householdId) {
+    const config = readConfig(ctx.env)
+    const client = new TelegramClient(config.telegramBotToken)
+    const currentUser = ctx.get('currentUser')
+    // Get household name
+    const { findHouseholdById } =
+      await import('@/db/repositories/household-repository')
+    const household = await findHouseholdById(ctx.env.DB, dto.householdId)
+    const householdName = household?.name ?? ''
+
+    sendHouseholdActivity({
+      db: ctx.env.DB,
+      telegramClient: client,
+      householdId: dto.householdId,
+      actorUserId: currentUser.id,
+      expenseTitle: dto.title,
+      expenseAmountMinor: dto.amountMinor,
+      expenseCategoryKey: dto.categoryKey,
+      expenseOccurredAt: new Date(dto.occurredAt).toISOString().slice(0, 10),
+      expenseCurrencyCode: dto.currencyCode,
+      householdName,
+    }).catch((err: unknown) => {
+      console.error('household-activity: send failed', err)
+    })
+  }
 
   return success<typeof dto>(ctx, dto, 201)
 })

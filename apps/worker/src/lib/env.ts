@@ -127,6 +127,7 @@ export const readConfig = (env: Env): AppConfig => {
       readOptional(env, 'FIREBASE_JWKS_URL') ?? DEFAULT_FIREBASE_JWKS_URL,
     allowInsecureTestTokens,
     telegramBotToken: readRequired(env, 'TELEGRAM_BOT_TOKEN'),
+    telegramBotWebhookSecret: readRequired(env, 'TELEGRAM_BOT_WEBHOOK_SECRET'),
     telegramFreshnessWindowSeconds: readOptionalPositiveInteger(
       env,
       'TELEGRAM_FRESHNESS_WINDOW_SECONDS',
