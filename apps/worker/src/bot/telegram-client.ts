@@ -17,7 +17,7 @@ export class TelegramClient {
     fetchFn: typeof globalThis.fetch = globalThis.fetch,
   ) {
     this.botToken = botToken
-    this.fetchFn = fetchFn
+    this.fetchFn = (input, init) => fetchFn.call(globalThis, input, init)
   }
 
   private get apiBase(): string {

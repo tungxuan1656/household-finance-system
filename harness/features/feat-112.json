@@ -21,7 +21,8 @@
     "done": [
       "All five child slices feat-112a through feat-112e implemented, reviewed, and verified on branch feat-112-telegram-bot.",
       "Full ./init.sh verification passed after post-commit review fixes: install, harness, lint, typecheck, test all green (131 worker tests).",
-      "Oracle reviews passed for each slice with blockers/highs fixed before proceeding: 112a (webhook secret + user_id), 112b (scope helper + invalid budget), 112c (household selection + membership verification + occurredAt), 112d (no blockers), 112e (actor name + currency + corrupt scope + orchestrator tests)."
+      "Oracle reviews passed for each slice with blockers/highs fixed before proceeding: 112a (webhook secret + user_id), 112b (scope helper + invalid budget), 112c (household selection + membership verification + occurredAt), 112d (no blockers), 112e (actor name + currency + corrupt scope + orchestrator tests).",
+      "Post-implementation bugfix: TelegramClient now calls fetch with a correct globalThis binding so webhook replies no longer crash with Cloudflare Workers 'Illegal invocation' during manual bot testing."
     ],
     "artifacts": [
       "docs/exec-plans/plans/2026-06-22-telegram-bot-foundation.md",
@@ -39,8 +40,10 @@
     "verification": [
       "./init.sh -> Done! (install, harness, lint, typecheck, test all green).",
       "131 worker tests pass after post-commit review fixes (121 bot unit + 10 auth-telegram integration).",
-      "jq empty harness/feature_index.json harness/features/feat-112*.json -> OK."
+      "jq empty harness/feature_index.json harness/features/feat-112*.json -> OK.",
+      "2026-06-23 targeted verification: ./init.sh typecheck -> OK; ./init.sh lint -> OK; pnpm --filter worker exec vitest run test/unit/bot/telegram-client.spec.ts test/integration/telegram-bot.spec.ts -> 9 passed.",
+      "2026-06-23 final verification: ./init.sh -> Done!"
     ]
   },
-  "notes": "Child features feat-112a through feat-112e track the execution slices. Plans explicitly reject storing app access/refresh tokens in bot tables. User will handle manual Telegram bot testing; automated repo tests remain required for implementation PRs. No commit made unless user requests."
+  "notes": "Child features feat-112a through feat-112e track the execution slices. Plans explicitly reject storing app access/refresh tokens in bot tables. User will handle manual Telegram bot testing; automated repo tests remain required for implementation PRs. A follow-up bugfix bound TelegramClient fetch correctly for Worker runtime host-function calls. No commit made unless user requests."
 }
