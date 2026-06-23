@@ -12,12 +12,15 @@ This is a `pnpm` monorepo with three main runtime surfaces:
 - `apps/tma`: React + TypeScript + Vite SPA for Telegram Mini App
 - `apps/worker`: Cloudflare Workers + Hono + D1 + Zod
 
+The worker also hosts a Telegram bot companion (under `apps/worker/src/bot/`) for chat-first expense capture, read commands, and notifications. The bot is a surface, not a separate runtime; it shares one D1 truth and one auth contract with the rest of the system.
+
 Core intent:
 
-- quick expense capture
+- quick expense capture (web forms, TMA, or one Telegram chat line)
 - household-level visibility and roles
 - monthly budget control
 - clear and actionable spending insights
+- a chat-first companion surface for fast finance actions without opening the TMA
 
 ## Repository structure
 
@@ -25,7 +28,8 @@ Core intent:
 .
 |- apps/
 |  |- web/      # Frontend (Next.js + React)
-|  |- worker/   # Backend/Edge API (Cloudflare Worker)
+|  |- tma/      # Telegram Mini App (Vite + React)
+|  |- worker/   # Backend/Edge API (Cloudflare Worker) + Telegram bot companion
 |- docs/        # Product, architecture, plans, standards
 |- init.sh      # Standard setup + verification entry point
 |- AGENTS.md    # Working rules for agent and team workflow

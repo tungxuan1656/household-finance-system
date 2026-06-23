@@ -104,7 +104,7 @@ export const handleSettingsCommand = async (
       mode: options?.mode,
       targetMessageId: options?.targetMessageId,
       text:
-        'Vui lòng mở Mini App để đăng nhập và quản lý cài đặt.\n\n' +
+        'Mở Mini App để cài đặt thông báo.\n\n' +
         '🏠 <a href="' +
         tmaUrl +
         '">Mở Mini App</a>',
@@ -121,9 +121,7 @@ export const handleSettingsCommand = async (
   return {
     mode: options?.mode,
     targetMessageId: options?.targetMessageId,
-    text:
-      '⚙️ <b>Cài đặt thông báo</b>\n\n' +
-      'Chọn một tùy chọn bên dưới để bật/tắt:',
+    text: '⚙️ <b>Cài đặt thông báo</b>\n\n' + 'Bật/tắt:',
     parseMode: 'HTML',
     replyMarkup: buildSettingsKeyboard(prefs, tmaUrl),
   }
@@ -146,7 +144,7 @@ export const handlePreferenceToggle = async (
       mode: options?.mode,
       targetMessageId: options?.targetMessageId,
       text:
-        'Vui lòng mở Mini App để đăng nhập.\n\n' +
+        'Mở Mini App để đăng nhập.\n\n' +
         '🏠 <a href="' +
         tmaUrl +
         '">Mở Mini App</a>',
@@ -164,7 +162,7 @@ export const handlePreferenceToggle = async (
     return {
       mode: options?.mode,
       targetMessageId: options?.targetMessageId,
-      text: 'Không tìm thấy thông tin người dùng. Vui lòng thử lại sau.',
+      text: 'Không tìm thấy thông tin. Thử lại sau.',
       parseMode: 'HTML',
     }
   }
@@ -189,9 +187,7 @@ export const handlePreferenceToggle = async (
   return {
     mode: options?.mode,
     targetMessageId: options?.targetMessageId,
-    text:
-      '⚙️ <b>Cài đặt thông báo</b>\n\n' +
-      'Chọn một tùy chọn bên dưới để bật/tắt:',
+    text: '⚙️ <b>Cài đặt thông báo</b>\n\n' + 'Bật/tắt:',
     parseMode: 'HTML',
     replyMarkup: buildSettingsKeyboard(prefs, tmaUrl),
   }

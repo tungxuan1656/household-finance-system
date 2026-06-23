@@ -198,6 +198,59 @@ describe('detectAmountInVnd', () => {
   it('D29: returns null for empty text', () => {
     expect(detectAmountInVnd('')).toBeNull()
   })
+
+  // ── Boundary: k must not match unit suffixes ────────────────────────────
+  it('D30: rejects "50kg" (kg is a unit, not money)', () => {
+    expect(detectAmountInVnd('mua gạo 50kg')).toBeNull()
+  })
+
+  it('D31: rejects "100km" (km is a distance)', () => {
+    expect(detectAmountInVnd('chạy 100km')).toBeNull()
+  })
+
+  it('D32: rejects "5kWh" (kWh is a power unit)', () => {
+    expect(detectAmountInVnd('điện 5kWh')).toBeNull()
+  })
+
+  // ── Boundary: tr must not match Vietnamese words starting with tr ────────
+  it('D33: rejects "1 trường" (trường = school/field, not million)', () => {
+    expect(detectAmountInVnd('mua 1 trường học')).toBeNull()
+  })
+
+  it('D34: rejects "2 triển" (triển = display/exhibit)', () => {
+    expect(detectAmountInVnd('phí 2 triển lãm')).toBeNull()
+  })
+
+  // ── Boundary: củ must not match Vietnamese words after the diacritic ─────
+  it('D35: rejects "1 cứu" (cứu = rescue, not million)', () => {
+    expect(detectAmountInVnd('1 cứu hộ')).toBeNull()
+  })
+
+  it('D36: rejects "2 cuồng" (cuồng = crazy, not million)', () => {
+    expect(detectAmountInVnd('2 cuồng')).toBeNull()
+  })
+
+  // ── Regression: k/tr/củ still match at natural boundaries ────────────────
+  it('D37: detects "30k." (k followed by punctuation)', () => {
+    expect(detectAmountInVnd('ăn 30k.')).toEqual({
+      amountVnd: 30_000,
+      matched: '30k',
+    })
+  })
+
+  it('D38: detects "1tr" at end of string', () => {
+    expect(detectAmountInVnd('mua đồ 1tr')).toEqual({
+      amountVnd: 1_000_000,
+      matched: '1tr',
+    })
+  })
+
+  it('D39: detects "1 củ" at end of string', () => {
+    expect(detectAmountInVnd('mua laptop 1 củ')).toEqual({
+      amountVnd: 1_000_000,
+      matched: '1 củ',
+    })
+  })
 })
 
 describe('looksLikeExpense', () => {

@@ -107,43 +107,49 @@ describe('handleConfirmExpense', () => {
     expect(result.text).toContain('Mở Mini App')
   })
 
-  it('returns not found when draft does not exist', async () => {
+  it('returns not found with edit mode when draft does not exist', async () => {
     const draftModule =
       await import('@/db/repositories/telegram-bot-expense-draft-repository')
     vi.mocked(draftModule.findDraftById).mockResolvedValue(null)
 
     const ctx = buildCtx()
-    const result = await handleConfirmExpense(ctx, 'nonexistent')
+    const result = await handleConfirmExpense(ctx, 'nonexistent', 42)
 
+    expect(result.mode).toBe('edit')
+    expect(result.targetMessageId).toBe(42)
     expect(result.text).toContain('Không tìm thấy')
   })
 
-  it('returns expired error when draft is too old', async () => {
+  it('returns expired error with edit mode when draft is too old', async () => {
     const draftModule =
       await import('@/db/repositories/telegram-bot-expense-draft-repository')
     vi.mocked(draftModule.findDraftById).mockResolvedValue(pendingDraft)
     vi.mocked(draftModule.isDraftExpired).mockReturnValue(true)
 
     const ctx = buildCtx()
-    const result = await handleConfirmExpense(ctx, 'draft-abc-123')
+    const result = await handleConfirmExpense(ctx, 'draft-abc-123', 42)
 
-    expect(result.text).toContain('hết hạn')
+    expect(result.mode).toBe('edit')
+    expect(result.targetMessageId).toBe(42)
+    expect(result.text).toContain('Hết hạn')
   })
 
-  it('returns already-created response when draft already confirmed (idempotent)', async () => {
+  it('returns already-created response with edit mode when draft already confirmed (idempotent)', async () => {
     const draftModule =
       await import('@/db/repositories/telegram-bot-expense-draft-repository')
     vi.mocked(draftModule.findDraftById).mockResolvedValue(confirmedDraft)
     vi.mocked(draftModule.isDraftExpired).mockReturnValue(false)
 
     const ctx = buildCtx()
-    const result = await handleConfirmExpense(ctx, 'draft-abc-123')
+    const result = await handleConfirmExpense(ctx, 'draft-abc-123', 42)
 
-    expect(result.text).toContain('đã được thêm trước đó')
+    expect(result.mode).toBe('edit')
+    expect(result.targetMessageId).toBe(42)
+    expect(result.text).toContain('Đã thêm trước đó')
     expect(result.text).toContain('expense-123')
   })
 
-  it('creates expense with created_via_bot=1 and marks draft confirmed', async () => {
+  it('creates expense with created_via_bot=1, edit mode, and one-line success text', async () => {
     const draftModule =
       await import('@/db/repositories/telegram-bot-expense-draft-repository')
     const expenseModule = await import('@/db/repositories/expense-repository')
@@ -170,9 +176,14 @@ describe('handleConfirmExpense', () => {
     })
 
     const ctx = buildCtx()
-    const result = await handleConfirmExpense(ctx, 'draft-abc-123')
+    const result = await handleConfirmExpense(ctx, 'draft-abc-123', 42)
 
-    expect(result.text).toContain('Đã thêm chi tiêu thành công')
+    // One-line success text (edit in place, no new message)
+    expect(result.mode).toBe('edit')
+    expect(result.targetMessageId).toBe(42)
+    expect(result.text).toContain('Đã lưu chi tiêu')
+    expect(result.text).toContain('3.000.000')
+    expect(result.text).toContain('ăn bún')
 
     // Verify created_via_bot=1
     expect(
@@ -193,7 +204,7 @@ describe('handleConfirmExpense', () => {
     expect(vi.mocked(draftModule.markDraftConfirmed).mock.calls.length).toBe(1)
   })
 
-  it('rejects confirm for household scope when user is not a member (B2)', async () => {
+  it('rejects confirm for household scope when user is not a member with edit mode', async () => {
     const draftModule =
       await import('@/db/repositories/telegram-bot-expense-draft-repository')
     const membershipModule =
@@ -217,12 +228,14 @@ describe('handleConfirmExpense', () => {
     )
 
     const ctx = buildCtx()
-    const result = await handleConfirmExpense(ctx, 'draft-abc-123')
+    const result = await handleConfirmExpense(ctx, 'draft-abc-123', 42)
 
-    expect(result.text).toContain('không có quyền')
+    expect(result.mode).toBe('edit')
+    expect(result.targetMessageId).toBe(42)
+    expect(result.text).toContain('quyền')
   })
 
-  it('returns success keyboard with add another and open app buttons', async () => {
+  it('returns edit mode with post-save keyboard containing Xem chi tiết and Thêm khoản khác', async () => {
     const draftModule =
       await import('@/db/repositories/telegram-bot-expense-draft-repository')
     const expenseModule = await import('@/db/repositories/expense-repository')
@@ -248,15 +261,17 @@ describe('handleConfirmExpense', () => {
     })
 
     const ctx = buildCtx()
-    const result = await handleConfirmExpense(ctx, 'draft-abc-123')
+    const result = await handleConfirmExpense(ctx, 'draft-abc-123', 42)
 
+    expect(result.mode).toBe('edit')
+    expect(result.targetMessageId).toBe(42)
     expect(result.replyMarkup).toBeDefined()
     if (result.replyMarkup && 'inline_keyboard' in result.replyMarkup) {
       const labels = result.replyMarkup.inline_keyboard
         .flat()
         .map((b) => b.text)
+      expect(labels).toContain('📋 Xem chi tiết')
       expect(labels).toContain('➕ Thêm khoản khác')
-      expect(labels).toContain('🏠 Mở Mini App')
     }
   })
 })
@@ -341,7 +356,7 @@ describe('handleHouseholdSelect', () => {
       'hh-forbidden',
     )
 
-    expect(result.text).toContain('không có quyền')
+    expect(result.text).toContain('quyền')
   })
 })
 

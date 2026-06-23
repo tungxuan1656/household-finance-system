@@ -8,7 +8,7 @@ import {
 
 import { renderExpensePreviewText } from '../renderers/finance-text'
 import {
-  expensePreviewFullKeyboard,
+  expensePreviewKeyboard,
   householdSelectKeyboard,
   openAppKeyboard,
 } from '../renderers/keyboards'
@@ -33,7 +33,7 @@ export const handleHouseholdSelect = async (
   if (!ctx.appUserId) {
     return {
       text:
-        'Vui lòng mở Mini App để đăng nhập.\n\n' +
+        'Mở Mini App để đăng nhập.\n\n' +
         '🏠 <a href="' +
         tmaUrl +
         '">Mở Mini App</a>',
@@ -47,7 +47,7 @@ export const handleHouseholdSelect = async (
 
   if (!draft || draft.status !== 'pending') {
     return {
-      text: 'Không tìm thấy yêu cầu hoặc đã hết hạn. Vui lòng thử lại với /ai.',
+      text: 'Không tìm thấy hoặc đã hết hạn. Thử lại với /ai.',
       parseMode: 'HTML',
     }
   }
@@ -79,7 +79,7 @@ export const handleHouseholdSelect = async (
 
     if (!householdIds.includes(householdIdOrPersonal)) {
       return {
-        text: 'Bạn không có quyền chọn hộ gia đình này.',
+        text: 'Không có quyền chọn hộ này.',
         parseMode: 'HTML',
       }
     }
@@ -87,7 +87,7 @@ export const handleHouseholdSelect = async (
     const household = await findHouseholdById(db, householdIdOrPersonal)
     if (!household) {
       return {
-        text: 'Không tìm thấy hộ gia đình.',
+        text: 'Không tìm thấy hộ.',
         parseMode: 'HTML',
       }
     }
@@ -114,7 +114,7 @@ export const handleHouseholdSelect = async (
         : 'VND',
     ),
     parseMode: 'HTML',
-    replyMarkup: expensePreviewFullKeyboard(draft.id),
+    replyMarkup: expensePreviewKeyboard(draft.id),
   }
 }
 
@@ -131,7 +131,7 @@ const buildHouseholdSelection = async (
 
   if (householdIds.length === 0) {
     return {
-      text: 'Bạn chưa tham gia hộ gia đình nào. Chi tiêu sẽ được thêm ở phạm vi cá nhân.',
+      text: 'Chưa tham gia hộ nào. Sẽ thêm ở cá nhân.',
       parseMode: 'HTML',
     }
   }
@@ -146,7 +146,7 @@ const buildHouseholdSelection = async (
   }
 
   return {
-    text: 'Chọn phạm vi cho chi tiêu này:',
+    text: 'Chọn phạm vi:',
     parseMode: 'HTML',
     replyMarkup: householdSelectKeyboard(draft.id, households),
   }

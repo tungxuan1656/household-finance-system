@@ -75,7 +75,7 @@ export class TelegramClient {
         | ReplyKeyboardMarkup
         | ReplyKeyboardRemove
     },
-  ): Promise<Response> {
+  ): Promise<number> {
     const body: Record<string, unknown> = {
       chat_id: chatId,
       text,
@@ -96,9 +96,23 @@ export class TelegramClient {
       signal: AbortSignal.timeout(TELEGRAM_API_TIMEOUT_MS),
     })
 
-    await this.throwOnError(response)
+    const result = (await response.json()) as {
+      ok?: boolean
+      result?: { message_id: number }
+      description?: string
+    }
 
-    return response
+    if (!response.ok) {
+      throw new Error(
+        `Telegram API HTTP ${response.status}: ${result?.description || response.statusText}`,
+      )
+    }
+
+    if (result && result.ok === false) {
+      throw new Error(`Telegram API error: ${result.description ?? 'unknown'}`)
+    }
+
+    return result!.result!.message_id
   }
 
   async answerCallbackQuery(

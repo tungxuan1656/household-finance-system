@@ -1,7 +1,11 @@
 # Progress Index
 
-- last-archived: 2026-06-19
+- last-archived: 2026-06-23
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
+- 2026-06-23 — Tighten bot copy + spec command descriptions: drop filler, keep emoji + technical terms exact; Command Set 8-word max; Auto-detect 1-sentence; 11 source files + 1 spec + 1 test (feat-116 evidence)
+- 2026-06-23 — Bot Command Set rewrite + /start natural-input hint: spec Command Set + new Auto-detect subsection, Main Menu tip, start.ts adds `💬 Mẹo: gửi thẳng tin nhắn chi tiêu — bot tự phân tích, không cần /ai.` for linked users (feat-115 evidence)
+- 2026-06-23 — Telegram bot UX v2: loader message, always-full preview, save replaces preview (feat-114 evidence)
+- 2026-06-23 — Telegram bot UX polish docs: spec adds Message Hygiene + Natural Expense Input + compact preview + progress bar; ARCHITECTURE.md + backend folder structure + global docs now cover bot companion as a first-class surface (feat-113 docs)
 - 2026-06-23 — Telegram bot UX polish: edit-message routing, natural VN-amount expense input (no /ai), compact preview + top-categories progress bar, contextual Mở Mini App buttons (feat-113 evidence)
 - 2026-06-23 — Telegram bot URL env bugfix: TMA web_app URL configured from Worker env + Telegram API error descriptions (feat-112 evidence)
 - 2026-06-23 — Telegram bot webhook reply bugfix: bind fetch to globalThis to stop Workers illegal invocation (feat-112 evidence)

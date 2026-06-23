@@ -73,7 +73,7 @@ export const handleBudgetCommand = async (
   if (!ctx.appUserId) {
     return {
       text:
-        'Vui lòng mở Mini App để đăng nhập và xem ngân sách.\n\n' +
+        'Mở Mini App để xem ngân sách.\n\n' +
         '🏠 <a href="' +
         tmaUrl +
         '">Mở Mini App</a>',

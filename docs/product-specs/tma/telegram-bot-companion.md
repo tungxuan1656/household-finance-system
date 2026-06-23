@@ -33,13 +33,31 @@ The bot helps users act from chat. It does not replace the TMA.
 
 | Command | Purpose |
 |---------|---------|
-| `/start` | Show main menu and connect user to core actions. |
-| `/ai` | Parse one free-form expense message and show a confirmation preview. |
-| `/stats` | Show guided spending summary flow. |
-| `/budget` | Show guided budget status flow. |
-| `/top` | Show top spending categories for a selected scope and period. |
-| `/settings` | Show bot notification preferences. |
-| `/help` | Explain safe bot usage and when to open the TMA. |
+| `/start` | Main menu + auto-detect hint. |
+| `/ai` | Parse one expense message. Optional in private chat. |
+| `/stats` | Spending summary for a period. |
+| `/budget` | Budget status + warnings. |
+| `/top` | Top categories for a period. |
+| `/settings` | Toggle bot notifications. |
+| `/help` | Bot usage + TMA handoff. |
+
+### Auto-detect
+
+In private chat, a linked user can send a short expense message (e.g. `ăn bún 30k 15/6`). Bot auto-detects, sends loader, then shows preview. `/ai` is an optional alias, not a required prefix. `/start` echoes this hint.
+
+## Message Hygiene
+
+Bot chat must stay readable. Avoid new bubbles when one edit suffices.
+
+Rules:
+
+- Bot may edit the original message instead of sending a new one when the reply is a follow-up to a user action (toggle, confirm, scope switch).
+- Bot must use `editMessageText` + `editMessageReplyMarkup` for `/settings` toggles. The toggle changes the message in place and updates the inline keyboard.
+- `/stats` `/top` `/budget` must use contextual keyboards (`statsKeyboard` / `topKeyboard` / `budgetKeyboard`) for linked users. These expose the next likely action and stay inside the chat.
+- The generic `🏠 Mở Mini App` button stays only for unlinked users as an `openAppKeyboard` guidance prompt. Linked users do not see this button.
+- The bot never edits a system message it did not send.
+- The bot never silently replaces a user's message.
+- When the bot begins analyzing a user message (both `/ai` and natural input), it sends a loader message `⏳ Đang phân tích chi tiêu...` first, then calls `editMessageText` to replace the loader with the result. This anchors the response slot and gives instant feedback.
 
 ## Main Menu
 
@@ -54,23 +72,37 @@ The bot helps users act from chat. It does not replace the TMA.
 
 Menu actions use buttons by default. Text prompts are only for expense input or explicit search-like input.
 
+Linked user menu text: `💬 Gửi thẳng "ăn bún 30k" — bot tự phân tích, không cần /ai.`
+
 ## Expense Capture Flow
 
 ### Entry
 
-User sends `/ai ăn bún 30k 15/6` or chooses `➕ Thêm chi tiêu` and then enters expense text.
+Two equivalent entry forms. Both end at the same preview / confirm step.
+
+1. `/ai` form — user sends `/ai ăn bún 30k 15/6` or chooses `➕ Thêm chi tiêu` and then enters expense text. Bot immediately sends `⏳ Đang phân tích chi tiêu...` as a placeholder, then replaces it with the preview after analysis completes.
+2. Natural input — in a private chat, a linked user sends one short message that matches the amount detector patterns. The bot sends the same loader placeholder, then runs analysis and replaces it with the preview. Group chats do not run this path.
+
+Natural input patterns the bot accepts:
+
+- Plain VND with thousand separators: `100.000`, `1.500.000`.
+- Trailing-000 numbers ≥ 1000 are always read as thousand VND: `30000` → `30.000`, `1500000` → `1.500.000`.
+- Short Vietnamese amount words: `30k`, `1tr`, `1tr5`, `1 triệu`, `1 củ`, `1 lít`, `5 xị`, `20 nghìn`.
+
+Natural input must be rejected when:
+
+- The chat is not private.
+- The user is not linked to a local app account.
+- The text does not contain a recognized amount.
+- The text contains an income word (`thu`, `nhận`, `lương`, `thưởng`, ...).
 
 ### Preview
 
-Bot returns a structured preview:
+Bot returns a structured full preview with all parsed fields:
 
-- Amount
-- Date
-- Category
-- Note or title
-- Source, when known
-- Scope: personal or household
-- Group, when known
+- Amount, Date, Category, Note or title, Source when known, Scope (personal or household), Group when known.
+
+No compact mode. All previews are always full.
 
 ### Required Actions
 
@@ -94,7 +126,7 @@ If scope is unclear, bot asks the user to choose:
 - If required fields are missing, bot shows an error and asks the user to enter the expense again.
 - Bot handles one expense per message in MVP.
 - Low confidence is acceptable when the bot can still show a complete preview and the user confirms it.
-- After save, bot confirms success and offers `Xem chi tiết` and `Thêm khoản khác`.
+- After save, bot edits the original preview message in-place to a one-line success state (`✅ Đã lưu chi tiêu {amount} {currency} — {title}`) and swaps the preview keyboard for a post-save keyboard with `📋 Xem chi tiết` and `➕ Thêm khoản khác`. Bot does not send a new success message.
 - Duplicate taps must not create duplicate expenses.
 - Bot-created expenses are visible in audit/history as created through Telegram bot.
 - Bot does not edit or delete expenses.
@@ -118,7 +150,7 @@ User sends `/stats`, `/top`, or chooses `📊 Xem thống kê`.
 3. Bot shows summary:
    - Total spend
    - Change versus previous comparable period, when available
-   - Top categories
+   - Top categories, each with a short Vietnamese copy line, an amount, and a Unicode progress bar (▓/░) showing that category's share of the period total. Bar width is fixed (16 cells) so categories line up in the chat.
 
 ### Follow-up Actions
 
@@ -294,5 +326,8 @@ Bot may notify about invite and membership changes later if product need is clea
 - Bot writes must require explicit confirmation.
 - Bot write scope is create-expense only.
 - Bot should send users to the TMA for any task that needs careful review.
+- Bot edits the original message when the reply is a follow-up; it does not post a new bubble just to show the next state.
+- Bot reads amount patterns only inside the natural-input path. Numbers from that path still pass through the same `/ai` draft / confirm pipeline.
+- `xxx000` with at least 4 digits always reads as thousand VND inside the natural-input path. Numbers below 1000, with more than 12 digits, or with ambiguous `00` endings are rejected.
 - Shared domain truth remains in shared specs.
 - This spec only defines Telegram companion behavior.

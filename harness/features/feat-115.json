@@ -1,0 +1,33 @@
+{
+  "id": "feat-115",
+  "name": "Bot Command Set rewrite + /start natural-input hint",
+  "status": "done",
+  "description": "Rewrite the bot Command Set descriptions in the spec for clarity, and surface the Auto-detect behavior on /start so users learn once that they can send a free-form expense message without /ai.",
+  "dependencies": ["feat-114"],
+  "evidence": {
+    "planned": [
+      "Inline plan: rewrite Command Set table + add Auto-detect subsection, add Main Menu hint, edit start.ts response, add test, no scope expansion."
+    ],
+    "done": [
+      "Spec Command Set table: /start, /ai, /stats, /budget, /top, /settings, /help descriptions rewritten to be more informative and action-oriented.",
+      "Spec adds Auto-detect subsection under Command Set explaining that /ai is optional in private chat for linked users.",
+      "Spec Main Menu section adds a one-line tip line documenting the natural-input hint shown to linked users on /start.",
+      "apps/worker/src/bot/commands/start.ts: linked-user response now ends with '💬 Mẹo: gửi thẳng tin nhắn chi tiêu (vd: \"ăn bún 30k\") — bot tự phân tích, không cần /ai.'",
+      "Unlinked-user /start response unchanged (still 'Mở Mini App' guidance only).",
+      "Test added: 'includes natural-input hint for linked user' asserts 'không cần /ai' is in the text."
+    ],
+    "artifacts": [
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "apps/worker/src/bot/commands/start.ts",
+      "apps/worker/test/unit/bot/commands/start.spec.ts",
+      "harness/features/feat-115.json",
+      "harness/feature_index.json"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh test -> OK (start.spec.ts 4/4 pass).",
+      "./init.sh lint -> OK."
+    ]
+  },
+  "notes": "Pre-existing spec/code discrepancy: spec Main Menu lists '👥 Gia đình' but current code has only 4 action buttons + Mở Mini App. Out of scope for this task — left for a follow-up."
+}

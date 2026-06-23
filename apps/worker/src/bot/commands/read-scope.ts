@@ -67,7 +67,7 @@ export const resolveReadScope = async (
   if (householdIds.length === 0) {
     return {
       error: {
-        text: 'Bạn chưa tham gia hộ gia đình nào.',
+        text: 'Chưa tham gia gia đình nào.',
         parseMode: 'HTML',
       },
     }
@@ -80,7 +80,7 @@ export const resolveReadScope = async (
   if (!householdIds.includes(householdId)) {
     return {
       error: {
-        text: 'Bạn không có quyền xem hộ gia đình này.',
+        text: 'Không có quyền xem hộ này.',
         parseMode: 'HTML',
       },
     }

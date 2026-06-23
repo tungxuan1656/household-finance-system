@@ -24,23 +24,37 @@
       "apps/worker/src/bot/telegram-client.ts",
       "apps/worker/src/bot/types.ts",
       "apps/worker/src/bot/service.ts",
+      "apps/worker/src/bot/callback-dispatcher.ts",
       "apps/worker/src/bot/commands/ai-expense.ts",
+      "apps/worker/src/bot/commands/ai-expense-shared.ts",
       "apps/worker/src/bot/commands/settings.ts",
       "apps/worker/src/bot/commands/stats.ts",
       "apps/worker/src/bot/commands/top.ts",
       "apps/worker/src/bot/commands/budget.ts",
       "apps/worker/src/bot/commands/household-select.ts",
       "apps/worker/src/bot/renderers/finance-text.ts",
+      "apps/worker/src/bot/renderers/progress-bar.ts",
       "apps/worker/src/bot/renderers/keyboards.ts",
       "apps/worker/src/bot/lib/vn-amount-detector.ts",
+      "apps/worker/src/bot/lib/vn-amount-patterns.ts",
       "apps/worker/test/unit/bot/lib/vn-amount-detector.spec.ts",
-      "apps/worker/test/unit/bot/renderers/finance-text.spec.ts"
+      "apps/worker/test/unit/bot/renderers/finance-text.spec.ts",
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "docs/references/backend/architecture-and-boundaries.md",
+      "docs/references/backend/project-folder-structure.md",
+      "docs/BACKEND.md",
+      "ARCHITECTURE.md",
+      "README.md",
+      "docs/TMA.md",
+      "docs/PRODUCT.vi.md"
     ],
     "verification": [
       "./init.sh typecheck -> OK.",
       "./init.sh test -> OK (633 tests pass, 103 files; +38 amount detector + 8 finance-text render tests).",
-      "All existing ai-expense, confirm-expense, settings, stats, top, budget tests pass unchanged."
+      "All existing ai-expense, confirm-expense, settings, stats, top, budget tests pass unchanged.",
+      "Pre-push hook: all source files under 300 lines (max 295).",
+      "./init.sh after docs update -> Done! (no code changes, doc-only)."
     ]
   },
-  "notes": "Out of scope per user: undo/revert, auto-save without confirmation. Spec doc unchanged (telegram-bot-companion.md still valid)."
+  "notes": "Out of scope per user: undo/revert, auto-save without confirmation. Docs updated to match: spec adds Message Hygiene, Natural Expense Input (Entry form 2), compact preview with Chi tiet expansion, top-categories progress bar, and explicit amount-pattern + edit-vs-send rules. Architecture + folder structure + global docs (ARCHITECTURE.md, README.md, PRODUCT.vi.md, TMA.md, BACKEND.md) now list the bot companion as a first-class surface."
 }

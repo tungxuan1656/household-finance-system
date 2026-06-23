@@ -1,0 +1,43 @@
+{
+  "id": "feat-114",
+  "name": "Bot UX v2: loader message, always-full preview, save replaces preview",
+  "status": "done",
+  "description": "Telegram bot companion UX improvements: loader message before AI analysis, always-full preview (remove compact mode), save action edits preview message in-place with one-line success.",
+  "dependencies": ["feat-113"],
+  "evidence": {
+    "planned": [
+      "Inline plan: 3 UX changes (loader, always-full preview, save-edits-preview). No scope expansion."
+    ],
+    "done": [
+      "Loader message: natural input and /ai paths send '⏳ Đang phân tích chi tiêu...' placeholder, then editMessageText after analysis.",
+      "Always full preview: renderExpensePreviewText compact parameter removed; expensePreviewCompactKeyboard removed; expensePreviewFullKeyboard renamed to expensePreviewKeyboard; handleDetailExpense removed.",
+      "Save replaces preview: handleConfirmExpense accepts messageId, returns mode:'edit' + one-line success text, replyMarkup uses updated expenseCreatedKeyboard (Xem chi tiết / Thêm khoản khác).",
+      "TelegramClient.sendMessage returns message_id for loader tracking.",
+      "expenseCreatedKeyboard updated: '📋 Xem chi tiết' replaces '🏠 Mở Mini App', callback_data fixed to 'add_expense'.",
+      "callback-dispatcher passes messageId to handleConfirmExpense; detail: case removed.",
+      "renderConfirmSuccessText removed (no longer used)."
+    ],
+    "artifacts": [
+      "apps/worker/src/bot/telegram-client.ts",
+      "apps/worker/src/bot/service.ts",
+      "apps/worker/src/bot/callback-dispatcher.ts",
+      "apps/worker/src/bot/commands/ai-expense.ts",
+      "apps/worker/src/bot/commands/confirm-expense.ts",
+      "apps/worker/src/bot/commands/household-select.ts",
+      "apps/worker/src/bot/renderers/finance-text.ts",
+      "apps/worker/src/bot/renderers/keyboards.ts",
+      "apps/worker/test/unit/bot/renderers/finance-text.spec.ts",
+      "apps/worker/test/unit/bot/commands/confirm-expense.spec.ts",
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "harness/features/feat-114.json",
+      "harness/feature_index.json"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh test -> OK (compact-related tests removed cleanly).",
+      "All modified source files < 300 lines.",
+      "./init.sh after docs update -> Done!"
+    ]
+  },
+  "notes": "Compact preview fully removed. handleDetailExpense removed. renderConfirmSuccessText removed. callback_data 'add_another_expense' fixed to 'add_expense' to match dispatcher. All error/edge paths in handleConfirmExpense now use mode:'edit' for consistent message hygiene."
+}

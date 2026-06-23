@@ -71,7 +71,7 @@ describe('handleSettingsCommand', () => {
     const result = await handleSettingsCommand(ctx)
 
     expect(result.text).toContain('Mở Mini App')
-    expect(result.text).toContain('đăng nhập')
+    expect(result.text).toContain('cài đặt')
   })
 
   it('T2: shows 3 toggle buttons with default states for linked user', async () => {

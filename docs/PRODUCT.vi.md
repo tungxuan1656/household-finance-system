@@ -333,3 +333,25 @@ Không bao gồm trong core model MVP:
 * Bank integration
 
 👉 Giữ scope đủ nhỏ để ship nhanh.
+
+---
+
+## **10. Telegram Bot Companion (chat-first surface)**
+
+Một Telegram bot đi kèm, dùng song song với web và TMA. Bot là **lớp companion**, không phải app chính.
+
+* Người dùng có thể:
+  * Thêm chi tiêu bằng **một tin nhắn ngắn** (private chat, có liên kết tài khoản).
+  * Xem thống kê nhanh (`/stats`), top category (`/top`), tình trạng ngân sách (`/budget`).
+  * Nhận cảnh báo ngân sách, hoạt động household, digest tuần (tùy chọn).
+  * Tắt / bật từng loại thông báo qua `/settings`.
+* Bot **KHÔNG**:
+  * Thay thế TMA cho mọi thứ.
+  * Tự động lưu chi tiêu mà không có xác nhận.
+  * Tạo / sửa / xóa budget, household, group.
+* Bot phải:
+  * Edit message khi phản hồi tiếp (không spam bubble mới khi đã có message phù hợp).
+  * Phân biệt rõ private vs group chat.
+  * Phân biệt user đã liên kết tài khoản với user chưa liên kết.
+
+Quy tắc chi tiết sống tại `docs/product-specs/tma/telegram-bot-companion.md`.

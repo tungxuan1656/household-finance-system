@@ -8,7 +8,6 @@ import {
   getCurrentPeriod,
   renderBudgetLine,
   renderBudgetStatusText,
-  renderConfirmSuccessText,
   renderExpensePreviewText,
   renderProgressBar,
   renderStatsText,
@@ -239,49 +238,6 @@ describe('finance-text', () => {
       )
 
       expect(result).toContain('Gia đình Test')
-    })
-
-    it('renders compact preview without date/source/scope', () => {
-      const result = renderExpensePreviewText(
-        {
-          amountMinor: 30000,
-          occurredAt: '2026-06-15',
-          categoryKey: 'food',
-          title: 'ăn bún',
-          sourceKey: 'bank-transfer',
-          scope: 'personal',
-        },
-        'VND',
-        { compact: true },
-      )
-
-      expect(result).toContain('Chi tiêu nhanh')
-      expect(result).toContain('30.000')
-      expect(result).toContain('Ăn uống')
-      expect(result).toContain('ăn bún')
-      expect(result).not.toContain('Nguồn:')
-      expect(result).not.toContain('Phạm vi:')
-    })
-  })
-
-  describe('renderConfirmSuccessText', () => {
-    it('renders success message', () => {
-      const result = renderConfirmSuccessText(
-        {
-          amountMinor: 3000000, // 30k VND
-          occurredAt: '2026-06-15',
-          categoryKey: 'food',
-          title: 'ăn bún',
-          sourceKey: 'bank-transfer',
-          scope: 'personal',
-        },
-        'VND',
-      )
-
-      expect(result).toContain('Đã thêm chi tiêu thành công')
-      expect(result).toContain('3.000.000')
-      expect(result).toContain('Ăn uống')
-      expect(result).toContain('ăn bún')
     })
   })
 })
