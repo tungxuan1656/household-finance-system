@@ -644,6 +644,11 @@
       "id": "feat-114",
       "name": "Bot UX v2: loader message, always-full preview, save replaces preview",
       "status": "done"
+    },
+    {
+      "id": "feat-115",
+      "name": "Bot Command Set rewrite + /start natural-input hint",
+      "status": "done"
     }
   ]
 }

@@ -38,7 +38,8 @@ export const handleStartCommand = (ctx: CommandContext): BotResponse => {
       'Chào ' +
       displayName +
       '! 🎉\n\n' +
-      'Tôi là trợ lý chi tiêu của bạn. Chọn một hành động bên dưới:',
+      'Tôi là trợ lý chi tiêu của bạn. Chọn một hành động bên dưới:\n\n' +
+      '💬 Mẹo: gửi thẳng tin nhắn chi tiêu (vd: "ăn bún 30k") — bot tự phân tích, không cần /ai.',
     parseMode: 'HTML',
     replyMarkup: {
       inline_keyboard: [

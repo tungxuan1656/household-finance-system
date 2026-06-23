@@ -33,13 +33,19 @@ The bot helps users act from chat. It does not replace the TMA.
 
 | Command | Purpose |
 |---------|---------|
-| `/start` | Show main menu and connect user to core actions. |
-| `/ai` | Parse one free-form expense message and show a confirmation preview. |
-| `/stats` | Show guided spending summary flow. |
-| `/budget` | Show guided budget status flow. |
-| `/top` | Show top spending categories for a selected scope and period. |
-| `/settings` | Show bot notification preferences. |
+| `/start` | Show main menu, link user to TMA, and echo the natural-input hint. |
+| `/ai` | Parse one free-form expense message and show a confirmation preview. Optional — see Auto-detect below. |
+| `/stats` | Show guided personal or household spending summary for a chosen period. |
+| `/budget` | Show budget status and warn when close to or over the cap. |
+| `/top` | Show top spending categories for a chosen scope and period. |
+| `/settings` | Toggle bot notifications: budget alerts, household activity, weekly digest. |
 | `/help` | Explain safe bot usage and when to open the TMA. |
+
+### Auto-detect
+
+In a private chat, a linked user can send a short natural-language expense message such as `ăn bún 30k 15/6` without typing any command. The bot detects the amount, sends a loader placeholder, then runs analysis and replaces it with the same preview as `/ai`. This makes `/ai` an optional alias for clarity, not a required prefix.
+
+`/start` echoes this hint so the user learns it once on first run. See Expense Capture Flow for the full pattern list and gate conditions.
 
 ## Message Hygiene
 
@@ -67,6 +73,8 @@ Rules:
 - `🏠 Mở Mini App`
 
 Menu actions use buttons by default. Text prompts are only for expense input or explicit search-like input.
+
+For a linked user the menu text also includes a one-line tip: `💬 Mẹo: gửi thẳng tin nhắn chi tiêu (vd: "ăn bún 30k") — bot tự phân tích, không cần /ai.` This anchors the Auto-detect behavior described above.
 
 ## Expense Capture Flow
 
