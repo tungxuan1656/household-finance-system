@@ -22,7 +22,9 @@ TELEGRAM_BOT_TOKEN="replace-with-telegram-bot-token"
 # TELEGRAM_FRESHNESS_WINDOW_SECONDS="3600"
 # Required webhook secret for Telegram bot (X-Telegram-Bot-Api-Secret-Token verification)
 TELEGRAM_BOT_WEBHOOK_SECRET="replace-with-webhook-secret"
-# Telegram bot URLs
+# Telegram bot URLs.
+# TELEGRAM_BOT_DEEP_LINK_URL should be a Telegram Mini App deep link
+# (e.g. https://t.me/<bot_username>/<app_short_name> or https://t.me/<bot_username>?startapp=...).
 TELEGRAM_BOT_TMA_URL="https://phofis-tma.pages.dev/"
 TELEGRAM_BOT_DEEP_LINK_URL="https://t.me/phofis_bot"
 

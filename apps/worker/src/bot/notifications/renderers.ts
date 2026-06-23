@@ -114,7 +114,7 @@ export const renderHouseholdActivityText = (
  * Render a weekly digest notification.
  */
 export const renderWeeklyDigestText = (
-  options: WeeklyDigestTextOptions & { tmaUrl: string },
+  options: WeeklyDigestTextOptions & { deepLinkUrl: string },
 ): string => {
   const {
     totalSpendMinor,
@@ -123,7 +123,7 @@ export const renderWeeklyDigestText = (
     budgetWarnings,
     currencyCode,
     periodLabel,
-    tmaUrl,
+    deepLinkUrl,
   } = options
   const total = formatMinorAmount(totalSpendMinor, currencyCode)
   const countLabel = expenseCount === 1 ? '1 khoản' : `${expenseCount} khoản`
@@ -154,7 +154,7 @@ export const renderWeeklyDigestText = (
     }
   }
 
-  text += `\n🏠 <a href="${tmaUrl}">Mở Mini App</a>`
+  text += `\n🏠 <a href="${deepLinkUrl}">Mở Mini App</a>`
 
   return text
 }

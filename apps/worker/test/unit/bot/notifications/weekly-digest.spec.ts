@@ -103,7 +103,7 @@ describe('runWeeklyDigest', () => {
   it('weekly_digest=false → sender gates on requiredPref', async () => {
     const db = buildMockDb([{ telegram_user_id: 'tg-1', user_id: 'user-1' }])
 
-    await runWeeklyDigest(db, mockClient, 'https://phofis-tma.pages.dev/')
+    await runWeeklyDigest(db, mockClient, 'https://t.me/phofis_bot')
 
     expect(mockSendNotif).toHaveBeenCalledTimes(1)
     expect(mockSendNotif.mock.calls[0][0].requiredPref).toBe('weekly_digest')
@@ -121,7 +121,7 @@ describe('runWeeklyDigest', () => {
       householdId: null,
     })
 
-    await runWeeklyDigest(db, mockClient, 'https://phofis-tma.pages.dev/')
+    await runWeeklyDigest(db, mockClient, 'https://t.me/phofis_bot')
 
     expect(mockSendNotif).toHaveBeenCalledTimes(1)
     // The currency passed to the renderer is not directly observable via mock
@@ -132,7 +132,7 @@ describe('runWeeklyDigest', () => {
     const db = buildMockDb([{ telegram_user_id: 'tg-1', user_id: 'user-1' }])
     mockSendNotif.mockResolvedValue('skipped')
 
-    await runWeeklyDigest(db, mockClient, 'https://phofis-tma.pages.dev/')
+    await runWeeklyDigest(db, mockClient, 'https://t.me/phofis_bot')
 
     expect(mockSendNotif).toHaveBeenCalledTimes(1)
   })
@@ -140,7 +140,7 @@ describe('runWeeklyDigest', () => {
   it('empty chat list → no sends', async () => {
     const db = buildMockDb([])
 
-    await runWeeklyDigest(db, mockClient, 'https://phofis-tma.pages.dev/')
+    await runWeeklyDigest(db, mockClient, 'https://t.me/phofis_bot')
 
     expect(mockSendNotif).toHaveBeenCalledTimes(0)
   })
@@ -150,7 +150,7 @@ describe('runWeeklyDigest', () => {
     mockGetAnalytics.mockRejectedValue(new Error('DB error'))
 
     await expect(
-      runWeeklyDigest(db, mockClient, 'https://phofis-tma.pages.dev/'),
+      runWeeklyDigest(db, mockClient, 'https://t.me/phofis_bot'),
     ).resolves.toBeUndefined()
   })
 })

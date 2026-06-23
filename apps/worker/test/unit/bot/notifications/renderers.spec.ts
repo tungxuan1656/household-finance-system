@@ -75,7 +75,7 @@ describe('notification renderers', () => {
         ],
         currencyCode: 'VND',
         periodLabel: 'Tháng 6/2026',
-        tmaUrl: 'https://phofis-tma.pages.dev/',
+        deepLinkUrl: 'https://t.me/phofis_bot',
       })
 
       expect(result).toContain('Bản tin hàng tuần')
@@ -84,7 +84,7 @@ describe('notification renderers', () => {
       expect(result).toContain('Ăn uống')
       expect(result).toContain('Ngân sách cá nhân')
       expect(result).toContain('85%')
-      expect(result).toContain('https://phofis-tma.pages.dev/')
+      expect(result).toContain('https://t.me/phofis_bot')
     })
   })
 })
