@@ -38,6 +38,7 @@ Rules:
 | Telegram Mini App auth/bot boundary | `docs/references/frontend/tma/auth-and-bot-pattern.md` |
 | Backend tests | `docs/references/backend/testing-pattern.md` |
 | Workers/D1/Wrangler specifics | `docs/references/backend/cloudflare-workers.md` |
+| Telegram bot companion (worker subsystem) | `docs/product-specs/tma/telegram-bot-companion.md` + `docs/references/frontend/tma/auth-and-bot-pattern.md` (boundary) |
 | Shared type names | `docs/references/shared/type-naming-pattern.md` |
 
 ## Verification

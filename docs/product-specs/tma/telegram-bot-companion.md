@@ -41,6 +41,19 @@ The bot helps users act from chat. It does not replace the TMA.
 | `/settings` | Show bot notification preferences. |
 | `/help` | Explain safe bot usage and when to open the TMA. |
 
+## Message Hygiene
+
+Bot chat must stay readable. Avoid new bubbles when one edit suffices.
+
+Rules:
+
+- Bot may edit the original message instead of sending a new one when the reply is a follow-up to a user action (toggle, confirm, scope switch).
+- Bot must use `editMessageText` + `editMessageReplyMarkup` for `/settings` toggles. The toggle changes the message in place and updates the inline keyboard.
+- `/stats` `/top` `/budget` must use contextual keyboards (`statsKeyboard` / `topKeyboard` / `budgetKeyboard`) for linked users. These expose the next likely action and stay inside the chat.
+- The generic `🏠 Mở Mini App` button stays only for unlinked users as an `openAppKeyboard` guidance prompt. Linked users do not see this button.
+- The bot never edits a system message it did not send.
+- The bot never silently replaces a user's message.
+
 ## Main Menu
 
 `/start` shows these actions:
@@ -58,25 +71,39 @@ Menu actions use buttons by default. Text prompts are only for expense input or 
 
 ### Entry
 
-User sends `/ai ăn bún 30k 15/6` or chooses `➕ Thêm chi tiêu` and then enters expense text.
+Two equivalent entry forms. Both end at the same preview / confirm step.
+
+1. `/ai` form — user sends `/ai ăn bún 30k 15/6` or chooses `➕ Thêm chi tiêu` and then enters expense text.
+2. Natural input — in a private chat, a linked user sends one short message that matches the amount detector patterns. The bot routes it through the same preview / confirm pipeline as the `/ai` form. Group chats do not run this path.
+
+Natural input patterns the bot accepts:
+
+- Plain VND with thousand separators: `100.000`, `1.500.000`.
+- Trailing-000 numbers ≥ 1000 are always read as thousand VND: `30000` → `30.000`, `1500000` → `1.500.000`.
+- Short Vietnamese amount words: `30k`, `1tr`, `1tr5`, `1 triệu`, `1 củ`, `1 lít`, `5 xị`, `20 nghìn`.
+
+Natural input must be rejected when:
+
+- The chat is not private.
+- The user is not linked to a local app account.
+- The text does not contain a recognized amount.
+- The text contains an income word (`thu`, `nhận`, `lương`, `thưởng`, ...).
 
 ### Preview
 
-Bot returns a structured preview:
+Bot returns a structured preview. Two density modes:
 
-- Amount
-- Date
-- Category
-- Note or title
-- Source, when known
-- Scope: personal or household
-- Group, when known
+- Full preview (default) — Amount, Date, Category, Note or title, Source when known, Scope (personal or household), Group when known.
+- Compact preview — Amount, Category, Title only. Used after the user has already tapped through once and the chat thread is getting long.
+
+The compact preview exposes a `📋 Chi tiết` button. Tapping it calls `editMessageText` to swap the compact body with the full preview. `📋 Chi tiết` does not appear in the full preview because the user is already reading it.
 
 ### Required Actions
 
 Preview shows:
 
 - `✅ Thêm chi tiêu`
+- `📋 Chi tiết` (compact preview only)
 - `🏠 Chọn household`
 - `🔁 Nhập lại`
 - `❌ Hủy`
@@ -118,7 +145,7 @@ User sends `/stats`, `/top`, or chooses `📊 Xem thống kê`.
 3. Bot shows summary:
    - Total spend
    - Change versus previous comparable period, when available
-   - Top categories
+   - Top categories, each with a short Vietnamese copy line, an amount, and a Unicode progress bar (▓/░) showing that category's share of the period total. Bar width is fixed (16 cells) so categories line up in the chat.
 
 ### Follow-up Actions
 
@@ -294,5 +321,8 @@ Bot may notify about invite and membership changes later if product need is clea
 - Bot writes must require explicit confirmation.
 - Bot write scope is create-expense only.
 - Bot should send users to the TMA for any task that needs careful review.
+- Bot edits the original message when the reply is a follow-up; it does not post a new bubble just to show the next state.
+- Bot reads amount patterns only inside the natural-input path. Numbers from that path still pass through the same `/ai` draft / confirm pipeline.
+- `xxx000` with at least 4 digits always reads as thousand VND inside the natural-input path. Numbers below 1000, with more than 12 digits, or with ambiguous `00` endings are rejected.
 - Shared domain truth remains in shared specs.
 - This spec only defines Telegram companion behavior.

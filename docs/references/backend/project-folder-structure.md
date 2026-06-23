@@ -29,6 +29,16 @@ src/
     env.ts
   utils/
     id.ts
+  bot/
+    service.ts          # webhook entry, command dispatch, callback routing
+    telegram-client.ts  # Telegram Bot API adapter
+    webhook-security.ts
+    account-linking.ts
+    types.ts
+    commands/           # one file per command: start, help, settings, stats, top, budget, ai-expense, confirm-expense, household-select, read-scope
+    renderers/          # Vietnamese text + Telegram keyboard builders
+    lib/                # pure helpers used by commands/renderers (e.g. amount detector, patterns)
+    notifications/      # scheduled sends: budget alerts, household activity, weekly digest
 ```
 
 `feature*` means the real domain name, such as `auth`, `profile`, `expenses`, or `households`.
@@ -44,6 +54,7 @@ src/
 - `lib/auth/`: auth/security infrastructure, including Firebase verification, JWT issue/verify, token hashing.
 - `lib/`: cross-cutting runtime helpers shared by multiple features.
 - `utils/`: small pure helpers with no framework or request-context dependency.
+- `bot/`: Telegram bot companion surface. `service.ts` is the only webhook entry; `telegram-client.ts` is the only module allowed to call Telegram Bot API. `commands/` and `renderers/` only consume contracts and shared services — they never talk to Telegram directly and never write to D1 directly. Pure helpers under `bot/lib/` may not depend on Hono context or fetch globals.
 
 ## Placement rules
 

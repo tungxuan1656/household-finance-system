@@ -8,6 +8,7 @@ TMA router. Read this for `apps/tma` work, then read only exact TMA leaf docs ne
 - One product, one worker API, one D1 truth.
 - TMA uses Telegram-native bridge behavior and WebView performance constraints.
 - Shared domain rules live under `docs/product-specs/shared/*`; TMA-only UX rules live under `docs/product-specs/tma/*`.
+- The Telegram bot companion is a worker subsystem under `apps/worker/src/bot/`, not under `apps/tma`. TMA work that touches bot interaction (launch context, deep-link payloads, invite buttons) still goes through `docs/product-specs/tma/telegram-bot-companion.md` and `docs/references/frontend/tma/auth-and-bot-pattern.md`.
 
 ## Read Next By Task
 

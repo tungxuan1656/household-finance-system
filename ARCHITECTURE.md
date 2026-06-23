@@ -18,6 +18,7 @@ System map. Keep short. Route deeper behavior to exact docs.
 | `expenses` | Capture, validate, query expenses | web forms → worker routes | `docs/product-specs/shared/expense-tracking.md` |
 | `budgets` | Budget setup and tracking | worker aggregates + web budget views | `docs/product-specs/shared/budget-management.md` |
 | `insights` | Analytics, comparisons, exports | worker analytics + web dashboards | `docs/product-specs/shared/analytics-overview.md` |
+| `bot-companion` | Chat-first finance surface (read commands, expense capture, alerts, digests) | Telegram webhook → worker bot service | `docs/product-specs/tma/telegram-bot-companion.md` |
 
 ## Layer Model
 
@@ -39,6 +40,7 @@ Rules:
 | Frontend | `docs/FRONTEND.md` |
 | TMA | `docs/TMA.md` |
 | Backend | `docs/BACKEND.md` |
+| Bot companion | `docs/product-specs/tma/telegram-bot-companion.md` |
 | API contracts | `docs/references/backend/api-contract-and-validation.md` |
 | Auth/security | `docs/references/backend/security-and-auth-pattern.md`, `docs/SECURITY.md` |
 | Testing placement | `docs/testing/test-placement-and-sharding-convention.md` |
