@@ -10,20 +10,13 @@ export const handleHelpCommand = (ctx: CommandContext): BotResponse => {
   return {
     text:
       '🤖 <b>Trợ lý Chi tiêu</b>\n\n' +
-      'Tôi có thể giúp bạn:\n' +
-      '• Thêm chi tiêu nhanh bằng tin nhắn\n' +
-      '• Xem thống kê chi tiêu\n' +
-      '• Kiểm tra ngân sách\n' +
-      '• Nhận thông báo ngân sách\n\n' +
-      'Mọi thao tác phức tạp như xem biểu đồ, ' +
-      'quản lý hộ gia đình, và cài đặt chi tiết ' +
-      'đều có trong Mini App.\n\n' +
+      '• Thêm chi tiêu (gửi thẳng hoặc /ai)\n' +
+      '• Xem /stats, /top, /budget\n' +
+      '• /settings cài đặt thông báo\n\n' +
+      'Biểu đồ, gia đình, cài đặt chi tiết: mở Mini App.\n\n' +
       '🏠 <a href="' +
       tmaUrl +
-      '">Mở Mini App</a>\n\n' +
-      '/start - Menu chính\n' +
-      '/settings - Cài đặt thông báo\n' +
-      '/help - Trợ giúp này',
+      '">Mở Mini App</a>',
     parseMode: 'HTML',
     replyMarkup: {
       inline_keyboard: [[{ text: '🏠 Mở Mini App', web_app: { url: tmaUrl } }]],

@@ -131,7 +131,7 @@ describe('handleConfirmExpense', () => {
 
     expect(result.mode).toBe('edit')
     expect(result.targetMessageId).toBe(42)
-    expect(result.text).toContain('hết hạn')
+    expect(result.text).toContain('Hết hạn')
   })
 
   it('returns already-created response with edit mode when draft already confirmed (idempotent)', async () => {
@@ -145,7 +145,7 @@ describe('handleConfirmExpense', () => {
 
     expect(result.mode).toBe('edit')
     expect(result.targetMessageId).toBe(42)
-    expect(result.text).toContain('đã được thêm trước đó')
+    expect(result.text).toContain('Đã thêm trước đó')
     expect(result.text).toContain('expense-123')
   })
 
@@ -232,7 +232,7 @@ describe('handleConfirmExpense', () => {
 
     expect(result.mode).toBe('edit')
     expect(result.targetMessageId).toBe(42)
-    expect(result.text).toContain('không có quyền')
+    expect(result.text).toContain('quyền')
   })
 
   it('returns edit mode with post-save keyboard containing Xem chi tiết and Thêm khoản khác', async () => {
@@ -356,7 +356,7 @@ describe('handleHouseholdSelect', () => {
       'hh-forbidden',
     )
 
-    expect(result.text).toContain('không có quyền')
+    expect(result.text).toContain('quyền')
   })
 })
 

@@ -33,19 +33,17 @@ The bot helps users act from chat. It does not replace the TMA.
 
 | Command | Purpose |
 |---------|---------|
-| `/start` | Show main menu, link user to TMA, and echo the natural-input hint. |
-| `/ai` | Parse one free-form expense message and show a confirmation preview. Optional — see Auto-detect below. |
-| `/stats` | Show guided personal or household spending summary for a chosen period. |
-| `/budget` | Show budget status and warn when close to or over the cap. |
-| `/top` | Show top spending categories for a chosen scope and period. |
-| `/settings` | Toggle bot notifications: budget alerts, household activity, weekly digest. |
-| `/help` | Explain safe bot usage and when to open the TMA. |
+| `/start` | Main menu + auto-detect hint. |
+| `/ai` | Parse one expense message. Optional in private chat. |
+| `/stats` | Spending summary for a period. |
+| `/budget` | Budget status + warnings. |
+| `/top` | Top categories for a period. |
+| `/settings` | Toggle bot notifications. |
+| `/help` | Bot usage + TMA handoff. |
 
 ### Auto-detect
 
-In a private chat, a linked user can send a short natural-language expense message such as `ăn bún 30k 15/6` without typing any command. The bot detects the amount, sends a loader placeholder, then runs analysis and replaces it with the same preview as `/ai`. This makes `/ai` an optional alias for clarity, not a required prefix.
-
-`/start` echoes this hint so the user learns it once on first run. See Expense Capture Flow for the full pattern list and gate conditions.
+In private chat, a linked user can send a short expense message (e.g. `ăn bún 30k 15/6`). Bot auto-detects, sends loader, then shows preview. `/ai` is an optional alias, not a required prefix. `/start` echoes this hint.
 
 ## Message Hygiene
 
@@ -74,7 +72,7 @@ Rules:
 
 Menu actions use buttons by default. Text prompts are only for expense input or explicit search-like input.
 
-For a linked user the menu text also includes a one-line tip: `💬 Mẹo: gửi thẳng tin nhắn chi tiêu (vd: "ăn bún 30k") — bot tự phân tích, không cần /ai.` This anchors the Auto-detect behavior described above.
+Linked user menu text: `💬 Gửi thẳng "ăn bún 30k" — bot tự phân tích, không cần /ai.`
 
 ## Expense Capture Flow
 

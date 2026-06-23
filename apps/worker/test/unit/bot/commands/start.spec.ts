@@ -85,7 +85,7 @@ describe('handleStartCommand', () => {
     expect(result.text).toContain('Chào bạn')
   })
 
-  it('includes natural-input hint for linked user', async () => {
+  it('includes expense-entry hint for linked user', async () => {
     const ctx = buildCtx({
       appUserId: 'user-abc-123',
       userDisplayName: 'Tung',
@@ -93,6 +93,6 @@ describe('handleStartCommand', () => {
 
     const result = await handleStartCommand(ctx)
 
-    expect(result.text).toContain('không cần /ai')
+    expect(result.text).toContain('gửi thẳng')
   })
 })

@@ -32,8 +32,8 @@ describe('handleHelpCommand', () => {
     const result = handleHelpCommand(ctx)
 
     expect(result.text).toContain('Trợ lý Chi tiêu')
-    expect(result.text).toContain('/start')
-    expect(result.text).toContain('/help')
+    expect(result.text).toContain('/ai')
+    expect(result.text).toContain('/settings')
     expect(result.text).toContain('Mở Mini App')
     expect(result.parseMode).toBe('HTML')
 

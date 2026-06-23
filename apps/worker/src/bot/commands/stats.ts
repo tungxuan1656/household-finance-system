@@ -23,7 +23,7 @@ export const handleStatsCommand = async (
   if (!ctx.appUserId) {
     return {
       text:
-        'Vui lòng mở Mini App để đăng nhập và sử dụng thống kê.\n\n' +
+        'Mở Mini App để xem thống kê.\n\n' +
         '🏠 <a href="' +
         tmaUrl +
         '">Mở Mini App</a>',

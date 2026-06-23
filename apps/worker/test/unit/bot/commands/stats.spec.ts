@@ -52,7 +52,7 @@ describe('handleStatsCommand', () => {
     const result = await handleStatsCommand(buildCtx())
 
     expect(result.text).toContain('Mở Mini App')
-    expect(result.text).toContain('đăng nhập')
+    expect(result.text).toContain('thống kê')
   })
 
   it('returns personal stats for linked user with no scope arg', async () => {
@@ -113,6 +113,6 @@ describe('handleStatsCommand', () => {
     const ctx = buildCtx({ appUserId: 'user-1', text: '/stats hh:hh-unknown' })
     const result = await handleStatsCommand(ctx)
 
-    expect(result.text).toContain('không có quyền')
+    expect(result.text).toContain('hộ này')
   })
 })

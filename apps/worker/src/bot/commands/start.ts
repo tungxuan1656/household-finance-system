@@ -13,7 +13,7 @@ export const handleStartCommand = (ctx: CommandContext): BotResponse => {
     return {
       text:
         'Xin chào! 👋\n\n' +
-        'Vui lòng mở Mini App để bắt đầu sử dụng bot.\n\n' +
+        'Mở Mini App để bắt đầu.\n\n' +
         '🏠 <a href="' +
         tmaUrl +
         '">Mở Mini App</a>',
@@ -38,8 +38,7 @@ export const handleStartCommand = (ctx: CommandContext): BotResponse => {
       'Chào ' +
       displayName +
       '! 🎉\n\n' +
-      'Tôi là trợ lý chi tiêu của bạn. Chọn một hành động bên dưới:\n\n' +
-      '💬 Mẹo: gửi thẳng tin nhắn chi tiêu (vd: "ăn bún 30k") — bot tự phân tích, không cần /ai.',
+      'Chọn hoặc gửi thẳng chi tiêu (vd: "ăn bún 30k").',
     parseMode: 'HTML',
     replyMarkup: {
       inline_keyboard: [

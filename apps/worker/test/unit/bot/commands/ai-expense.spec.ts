@@ -96,7 +96,7 @@ describe('handleAiExpenseCommand', () => {
     const ctx = buildCtx({ text: '/ai' })
     const result = await handleAiExpenseCommand(ctx)
 
-    expect(result.text).toContain('Vui lòng nhập nội dung')
+    expect(result.text).toContain('Nhập nội dung chi tiêu')
   })
 
   it('returns preview with confirm buttons for valid expense', async () => {
@@ -139,7 +139,7 @@ describe('handleAiExpenseCommand', () => {
     const ctx = buildCtx()
     const result = await handleAiExpenseCommand(ctx)
 
-    expect(result.text).toContain('Không thể nhận diện chi tiêu')
+    expect(result.text).toContain('Chưa nhận diện được chi tiêu')
   })
 
   it('returns re-entry guidance when AI returns invalid item (missing fields)', async () => {
@@ -151,7 +151,7 @@ describe('handleAiExpenseCommand', () => {
     const ctx = buildCtx()
     const result = await handleAiExpenseCommand(ctx)
 
-    expect(result.text).toContain('Thiếu thông tin bắt buộc')
+    expect(result.text).toContain('Thiếu thông tin')
   })
 
   it('uses only first item when AI returns multiple expenses', async () => {
@@ -176,7 +176,7 @@ describe('handleAiExpenseCommand', () => {
 
     expect(result.text).toContain('Xem trước chi tiêu')
     expect(result.text).toContain('ăn bún')
-    expect(result.text).toContain('Chỉ xử lý khoản chi tiêu đầu tiên')
+    expect(result.text).toContain('Chỉ xử lý khoản đầu')
     expect(result.text).not.toContain('xe ôm')
   })
 

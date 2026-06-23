@@ -23,7 +23,7 @@ export const handleTopCommand = async (
   if (!ctx.appUserId) {
     return {
       text:
-        'Vui lòng mở Mini App để đăng nhập và sử dụng thống kê.\n\n' +
+        'Mở Mini App để xem top chi tiêu.\n\n' +
         '🏠 <a href="' +
         tmaUrl +
         '">Mở Mini App</a>',

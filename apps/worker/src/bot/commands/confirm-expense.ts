@@ -32,7 +32,7 @@ export const handleConfirmExpense = async (
   if (!ctx.appUserId) {
     return {
       text:
-        'Vui lòng mở Mini App để đăng nhập.\n\n' +
+        'Mở Mini App để đăng nhập.\n\n' +
         '🏠 <a href="' +
         tmaUrl +
         '">Mở Mini App</a>',
@@ -48,7 +48,7 @@ export const handleConfirmExpense = async (
     return {
       mode: 'edit',
       targetMessageId: messageId,
-      text: 'Không tìm thấy yêu cầu thêm chi tiêu. Vui lòng thử lại với /ai.',
+      text: 'Không tìm thấy yêu cầu. Thử lại với /ai.',
       parseMode: 'HTML',
     }
   }
@@ -60,7 +60,7 @@ export const handleConfirmExpense = async (
     return {
       mode: 'edit',
       targetMessageId: messageId,
-      text: 'Phiên thêm chi tiêu đã hết hạn (10 phút). Vui lòng thử lại với /ai.',
+      text: 'Hết hạn (10 phút). Thử lại với /ai.',
       parseMode: 'HTML',
     }
   }
@@ -71,8 +71,8 @@ export const handleConfirmExpense = async (
       mode: 'edit',
       targetMessageId: messageId,
       text:
-        '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
-        `Mã giao dịch: <code>${draft.createdExpenseId}</code>`,
+        '✅ Đã thêm trước đó.\n\n' +
+        `Mã: <code>${draft.createdExpenseId}</code>`,
       parseMode: 'HTML',
       replyMarkup: expenseCreatedKeyboard(tmaUrl),
     }
@@ -100,7 +100,7 @@ export const handleConfirmExpense = async (
     return {
       mode: 'edit',
       targetMessageId: messageId,
-      text: 'Yêu cầu thêm chi tiêu này đã được xử lý. Vui lòng thử lại với /ai.',
+      text: 'Đã xử lý. Thử lại với /ai.',
       parseMode: 'HTML',
     }
   }
@@ -114,7 +114,7 @@ export const handleConfirmExpense = async (
     return {
       mode: 'edit',
       targetMessageId: messageId,
-      text: 'Dữ liệu xem trước không hợp lệ. Vui lòng thử lại với /ai.',
+      text: 'Dữ liệu không hợp lệ. Thử lại với /ai.',
       parseMode: 'HTML',
     }
   }
@@ -127,7 +127,7 @@ export const handleConfirmExpense = async (
       return {
         mode: 'edit',
         targetMessageId: messageId,
-        text: 'Bạn không có quyền thêm chi tiêu vào hộ gia đình này.',
+        text: 'Không có quyền thêm vào hộ này.',
         parseMode: 'HTML',
       }
     }
@@ -222,8 +222,6 @@ export const handleRetryExpense = async (
   _ctx: CommandContext,
   _draftId: string,
 ): Promise<BotResponse> => ({
-  text:
-    'Vui lòng gửi lại nội dung chi tiêu bằng lệnh /ai.\n\n' +
-    'Ví dụ: <code>/ai ăn bún 30k 15/6</code>',
+  text: 'Gửi lại bằng /ai.\n\n' + 'Vd: <code>/ai ăn bún 30k 15/6</code>',
   parseMode: 'HTML',
 })

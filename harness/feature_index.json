@@ -649,6 +649,11 @@
       "id": "feat-115",
       "name": "Bot Command Set rewrite + /start natural-input hint",
       "status": "done"
+    },
+    {
+      "id": "feat-116",
+      "name": "Tighten bot message copy + spec command descriptions",
+      "status": "done"
     }
   ]
 }

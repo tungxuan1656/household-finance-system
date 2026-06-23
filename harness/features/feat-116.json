@@ -1,0 +1,47 @@
+{
+  "id": "feat-116",
+  "name": "Tighten bot message copy + spec command descriptions",
+  "status": "done",
+  "description": "Drop filler words (Vui lòng, Rất tiếc, tính năng, sử dụng, quản lý) from all bot user-facing messages and rewrite spec Command Set descriptions to be terse. No behavior change.",
+  "dependencies": ["feat-115"],
+  "evidence": {
+    "planned": [
+      "Inline plan: 11 source files + 1 spec + 1 test + harness. Copy-only rewrite, no logic change."
+    ],
+    "done": [
+      "start.ts: unlinked greeting drops 'Vui lòng'; linked greeting shortened to one-liner.",
+      "help.ts: footer command list removed; bullets tightened.",
+      "settings.ts: 4 messages shortened (unlinked /settings, unlinked toggle, linked header, not found).",
+      "stats.ts / budget.ts / top.ts: unlinked guidance shortened.",
+      "ai-expense.ts: 6 messages shortened (unlinked, empty, no-config, AI error, no-items, invalid, multi-note). 'không khả dụng' substring preserved for test.",
+      "confirm-expense.ts: 7 messages shortened (unlinked, not found, expired, already confirmed x2, race, invalid preview, no permission, retry).",
+      "household-select.ts: 5 messages shortened.",
+      "read-scope.ts: 2 messages shortened.",
+      "spec: Command Set table rewritten to 8-word max; Auto-detect subsection collapsed to 1 sentence; Main Menu tip updated.",
+      "test ai-expense.spec.ts: 4 assertion strings updated to match new copy."
+    ],
+    "artifacts": [
+      "apps/worker/src/bot/commands/start.ts",
+      "apps/worker/src/bot/commands/help.ts",
+      "apps/worker/src/bot/commands/settings.ts",
+      "apps/worker/src/bot/commands/stats.ts",
+      "apps/worker/src/bot/commands/budget.ts",
+      "apps/worker/src/bot/commands/top.ts",
+      "apps/worker/src/bot/commands/ai-expense.ts",
+      "apps/worker/src/bot/commands/confirm-expense.ts",
+      "apps/worker/src/bot/commands/household-select.ts",
+      "apps/worker/src/bot/commands/read-scope.ts",
+      "apps/worker/test/unit/bot/commands/ai-expense.spec.ts",
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "harness/features/feat-116.json",
+      "harness/feature_index.json"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh test -> OK (641+ tests pass, 4 assertion strings updated).",
+      "./init.sh lint -> OK.",
+      "./init.sh -> Done!"
+    ]
+  },
+  "notes": "Copy-only. No behavior change. All test assertions updated to match new shorter copy."
+}
