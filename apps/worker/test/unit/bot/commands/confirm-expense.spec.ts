@@ -3,9 +3,9 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 import {
   handleCancelExpense,
   handleConfirmExpense,
-  handleHouseholdSelect,
   handleRetryExpense,
 } from '@/bot/commands/confirm-expense'
+import { handleHouseholdSelect } from '@/bot/commands/household-select'
 import type { CommandContext } from '@/bot/types'
 
 const mockDb = {

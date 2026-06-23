@@ -7,10 +7,10 @@ import { handleBudgetCommand } from './commands/budget'
 import {
   handleCancelExpense,
   handleConfirmExpense,
-  handleHouseholdSelect,
   handleRetryExpense,
 } from './commands/confirm-expense'
 import { handleHelpCommand } from './commands/help'
+import { handleHouseholdSelect } from './commands/household-select'
 import {
   handlePreferenceToggle,
   handleSettingsCommand,
@@ -46,38 +46,18 @@ interface BuildCtxOptions {
   languageCode?: string
 }
 
-/**
- * Build a CommandContext from a Telegram user and chat.
- */
-const buildCtx = (options: BuildCtxOptions) => {
-  const {
-    userId,
-    chatId,
-    text,
-    appUserId,
-    deps,
-    firstName,
-    lastName,
-    languageCode,
-  } = options
+const buildCtx = (o: BuildCtxOptions) => ({
+  userId: o.userId,
+  chatId: o.chatId,
+  userDisplayName:
+    [o.firstName, o.lastName].filter(Boolean).join(' ').trim() || null,
+  text: o.text,
+  appUserId: o.appUserId,
+  locale: resolveLocale(o.languageCode ?? null),
+  db: o.deps.db,
+  env: o.deps.env,
+})
 
-  return {
-    userId,
-    chatId,
-    userDisplayName:
-      [firstName, lastName].filter(Boolean).join(' ').trim() || null,
-    text,
-    appUserId,
-    locale: resolveLocale(languageCode ?? null),
-    db: deps.db,
-    env: deps.env,
-  }
-}
-
-/**
- * Process a Telegram update and send the appropriate response.
- * Returns the number of messages sent, or throws on fatal errors.
- */
 export const handleUpdate = async (
   update: TelegramUpdate,
   deps: BotServiceDeps,
@@ -85,12 +65,9 @@ export const handleUpdate = async (
   const client =
     deps.telegramClient ?? new TelegramClient(deps.config.telegramBotToken)
 
-  // Handle callback queries from inline keyboards
-  if (update.callback_query) {
+  if (update.callback_query)
     return handleCallbackQuery(update.callback_query, deps, client)
-  }
 
-  // Handle regular text messages
   return handleMessageUpdate(update, deps, client)
 }
 
@@ -125,7 +102,20 @@ const handleCallbackQuery = async (
     languageCode: cq.from.language_code,
   })
 
-  const parts = cq.data.split(':')
+  return processCallbackAction(cq.data, ctx, client, cq.id, chatId)
+}
+
+/**
+ * Process a callback query action: dispatch to handler, send message, answer callback.
+ */
+const processCallbackAction = async (
+  data: string,
+  ctx: ReturnType<typeof buildCtx>,
+  client: TelegramClient,
+  cqId: string,
+  chatId: number,
+): Promise<number> => {
+  const parts = data.split(':')
   const action = parts[0]
   const draftId = parts[1]
   const payload = parts.slice(2).join(':')
@@ -155,7 +145,6 @@ const handleCallbackQuery = async (
       break
     }
     case 'settings': {
-      // Start menu "⚙️ Cài đặt" button → show settings
       result = await handleSettingsCommand(ctx)
       break
     }
@@ -178,38 +167,29 @@ const handleCallbackQuery = async (
       break
     }
     default: {
-      // Unknown callback — answer it quietly
-      await answerCallbackQuery(client, cq.id, undefined)
+      // Quietly answer unknown callback
+      try {
+        await client.answerCallbackQuery(cqId)
+      } catch {
+        /* non-critical */
+      }
 
       return 0
     }
   }
 
-  // Send the response message
   await client.sendMessage(chatId, result.text, {
     parseMode: result.parseMode,
     replyMarkup: result.replyMarkup,
   })
 
-  // Answer the callback query to clear the loading state
-  await answerCallbackQuery(client, cq.id, undefined)
+  try {
+    await client.answerCallbackQuery(cqId)
+  } catch {
+    /* non-critical */
+  }
 
   return 1
-}
-
-/**
- * Answer a callback query (required by Telegram API).
- */
-const answerCallbackQuery = async (
-  client: TelegramClient,
-  callbackQueryId: string,
-  text?: string,
-): Promise<void> => {
-  try {
-    await client.answerCallbackQuery(callbackQueryId, text)
-  } catch {
-    // Non-critical — Telegram retries if not answered
-  }
 }
 
 /**

@@ -13,12 +13,7 @@ import {
 import { newId } from '@/utils/id'
 
 import { renderConfirmSuccessText } from '../renderers/finance-text'
-import {
-  expenseCreatedKeyboard,
-  expensePreviewKeyboard,
-  householdSelectKeyboard,
-  openAppKeyboard,
-} from '../renderers/keyboards'
+import { expenseCreatedKeyboard, openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
 /**
@@ -63,7 +58,13 @@ export const handleConfirmExpense = async (
 
   // Check if already confirmed — idempotent
   if (draft.status === 'confirmed' && draft.createdExpenseId) {
-    return buildAlreadyCreatedResponse(ctx, draft.createdExpenseId)
+    return {
+      text:
+        '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
+        `Mã giao dịch: <code>${draft.createdExpenseId}</code>`,
+      parseMode: 'HTML',
+      replyMarkup: expenseCreatedKeyboard(draft.createdExpenseId),
+    }
   }
 
   // Atomically claim the draft (CAS — HIGH 3). Only one concurrent caller succeeds.
@@ -74,7 +75,13 @@ export const handleConfirmExpense = async (
     const updatedDraft = await findDraftById(db, draft.id)
 
     if (updatedDraft?.status === 'confirmed' && updatedDraft.createdExpenseId) {
-      return buildAlreadyCreatedResponse(ctx, updatedDraft.createdExpenseId)
+      return {
+        text:
+          '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
+          `Mã giao dịch: <code>${updatedDraft.createdExpenseId}</code>`,
+        parseMode: 'HTML',
+        replyMarkup: expenseCreatedKeyboard(updatedDraft.createdExpenseId),
+      }
     }
 
     return {
@@ -158,17 +165,6 @@ export const handleConfirmExpense = async (
   }
 }
 
-const buildAlreadyCreatedResponse = (
-  _ctx: CommandContext,
-  expenseId: string,
-): BotResponse => ({
-  text:
-    '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
-    `Mã giao dịch: <code>${expenseId}</code>`,
-  parseMode: 'HTML',
-  replyMarkup: expenseCreatedKeyboard(expenseId),
-})
-
 /**
  * Handle a cancel expense action. Marks draft cancelled.
  */
@@ -193,144 +189,6 @@ export const handleCancelExpense = async (
   return {
     text: 'Đã hủy thêm chi tiêu.',
     parseMode: 'HTML',
-  }
-}
-
-/**
- * Handle a household select action.
- *
- * Two modes:
- * 1. `household:draftId` (payload empty) — show household selection keyboard
- * 2. `hhselect:draftId:personal|householdId` (payload set) — apply selection, re-render preview
- *
- * Verifies membership before setting household scope.
- */
-export const handleHouseholdSelect = async (
-  ctx: CommandContext,
-  draftId: string,
-  householdIdOrPersonal: string,
-): Promise<BotResponse> => {
-  if (!ctx.appUserId) {
-    return {
-      text:
-        'Vui lòng mở Mini App để đăng nhập.\n\n' +
-        '🏠 <a href="https://t.me/household_finance_bot/app">Mở Mini App</a>',
-      parseMode: 'HTML',
-      replyMarkup: openAppKeyboard(),
-    }
-  }
-
-  const db = ctx.db
-  const draft = await findDraftById(db, draftId)
-
-  if (!draft || draft.status !== 'pending') {
-    return {
-      text: 'Không tìm thấy yêu cầu hoặc đã hết hạn. Vui lòng thử lại với /ai.',
-      parseMode: 'HTML',
-    }
-  }
-
-  // Mode 1: No payload — show household selection keyboard
-  if (!householdIdOrPersonal) {
-    return buildHouseholdSelection(ctx, db, draft)
-  }
-
-  // Mode 2: Apply selection
-  let preview: PreviewData
-
-  try {
-    preview = JSON.parse(draft.previewJson) as PreviewData
-  } catch {
-    return {
-      text: 'Dữ liệu xem trước không hợp lệ.',
-      parseMode: 'HTML',
-    }
-  }
-
-  if (householdIdOrPersonal === 'personal') {
-    preview.scope = 'personal'
-    preview.householdId = undefined
-    preview.householdName = undefined
-  } else {
-    // Verify membership before setting household scope
-    const householdIds = await listActiveHouseholdIdsForUser(db, ctx.appUserId)
-
-    if (!householdIds.includes(householdIdOrPersonal)) {
-      return {
-        text: 'Bạn không có quyền chọn hộ gia đình này.',
-        parseMode: 'HTML',
-      }
-    }
-
-    const household = await findHouseholdById(db, householdIdOrPersonal)
-    if (!household) {
-      return {
-        text: 'Không tìm thấy hộ gia đình.',
-        parseMode: 'HTML',
-      }
-    }
-    preview.scope = 'household'
-    preview.householdId = household.id
-    preview.householdName = household.name
-  }
-
-  // Update the draft with new preview
-  const { upsertDraft } =
-    await import('@/db/repositories/telegram-bot-expense-draft-repository')
-  const { renderExpensePreviewText } = await import('../renderers/finance-text')
-
-  await upsertDraft(db, {
-    telegramUserId: draft.telegramUserId,
-    telegramChatId: draft.telegramChatId,
-    dedupeKey: draft.dedupeKey,
-    previewJson: JSON.stringify(preview),
-    locale: draft.locale,
-  }).catch(() => {})
-
-  return {
-    text: renderExpensePreviewText(
-      preview,
-      preview.scope === 'household' && preview.householdId
-        ? ((await findHouseholdById(db, preview.householdId))
-            ?.defaultCurrencyCode ?? 'VND')
-        : 'VND',
-    ),
-    parseMode: 'HTML',
-    replyMarkup: expensePreviewKeyboard(draft.id),
-  }
-}
-
-/**
- * Build a household selection message with inline keyboard.
- * Queries user's active households and renders the selection keyboard.
- */
-const buildHouseholdSelection = async (
-  ctx: CommandContext,
-  db: D1Database,
-  draft: { id: string },
-): Promise<BotResponse> => {
-  const householdIds = await listActiveHouseholdIdsForUser(db, ctx.appUserId!)
-
-  if (householdIds.length === 0) {
-    return {
-      text: 'Bạn chưa tham gia hộ gia đình nào. Chi tiêu sẽ được thêm ở phạm vi cá nhân.',
-      parseMode: 'HTML',
-    }
-  }
-
-  const households: Array<{ id: string; name: string }> = []
-
-  for (const hhId of householdIds) {
-    const hh = await findHouseholdById(db, hhId)
-    if (hh) {
-      households.push({ id: hh.id, name: hh.name })
-    }
-  }
-
-  return {
-    text: 'Chọn phạm vi cho chi tiêu này:',
-    parseMode: 'HTML',
-    replyMarkup: householdSelectKeyboard(draft.id, households),
   }
 }
 
