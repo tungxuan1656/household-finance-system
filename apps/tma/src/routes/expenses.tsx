@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { ExpenseSummaryCard, ExpenseTimeline } from '@/components/finance'
-import { FilterIcon } from '@/components/shared/tma-icons'
+import { FilterIcon, PlusIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
 import {
@@ -20,7 +20,7 @@ import {
 } from '@/features/home/api'
 import type { ExpenseListParams } from '@/features/home/types'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { selection } from '@/lib/telegram/haptics'
+import { impact, selection } from '@/lib/telegram/haptics'
 
 export const ExpensesPage = () => {
   const navigate = useNavigate()
@@ -82,6 +82,7 @@ export const ExpensesPage = () => {
           <CardTitle>{t('expenses.loadingTitle')}</CardTitle>
           <CardDescription>{t('expenses.loadingDesc')}</CardDescription>
         </Card>
+        <ExpensesAddFab />
       </TmaPageShell>
     )
   }
@@ -145,6 +146,36 @@ export const ExpensesPage = () => {
           )}
         </>
       )}
+      <ExpensesAddFab />
     </TmaPageShell>
+  )
+}
+
+/**
+ * Floating add-expense button — mirrors the center bubble from
+ * `TmaBottomTabs` so the affordance stays consistent when the bottom tabs
+ * are hidden (which is the case on the `/expenses` route).
+ */
+const ExpensesAddFab = () => {
+  const { t } = useTranslation()
+
+  const prefetchAddExpense = () => {
+    void import('@/routes/add-expense-category').catch(() => undefined)
+  }
+
+  return (
+    <div className='pointer-events-none fixed inset-x-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] z-30 flex justify-center px-4'>
+      <Link
+        aria-label={t('shell.addExpenseAria')}
+        className='pointer-events-auto grid size-13.5 place-items-center rounded-full bg-linear-to-br from-[#2a3a5c] to-tma-text-strong text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
+        to={TMA_PATHS.expensesNewCategory}
+        onClick={() => {
+          impact('medium')
+        }}
+        onMouseEnter={prefetchAddExpense}
+        onTouchStart={prefetchAddExpense}>
+        <PlusIcon height='24' width='24' />
+      </Link>
+    </div>
   )
 }
