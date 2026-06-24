@@ -1,0 +1,40 @@
+{
+  "id": "feat-117",
+  "name": "Bot expense preview in-place edit: scope switch + cancel, drop retry",
+  "status": "done",
+  "description": "Telegram bot expense preview flow stays in one message. Scope switch (🏠 Chọn household → Chọn phạm vi → re-render preview) and cancel (❌ Hủy) now edit the original preview message in place via mode:'edit' + targetMessageId. The 🔁 Nhập lại button was removed from the preview keyboard — users can simply send a new expense message.",
+  "dependencies": ["feat-114"],
+  "evidence": {
+    "planned": [
+      "Inline plan: extend feat-114's edit-in-place pattern to the household-select (both branches) and cancel flows. Drop the retry button from expensePreviewKeyboard. Keep handleRetryExpense + retry dispatcher case for stale buttons (also edit in place). Optional messageId parameter keeps existing unit tests green."
+    ],
+    "done": [
+      "household-select.ts: handleHouseholdSelect + buildHouseholdSelection accept optional messageId, all return paths set mode:'edit' + targetMessageId. Doc comment explains dispatcher fallback when messageId is undefined (tests).",
+      "callback-dispatcher.ts: passes messageId to handleHouseholdSelect, handleCancelExpense, handleRetryExpense.",
+      "confirm-expense.ts: handleCancelExpense accepts optional messageId, returns mode:'edit' + targetMessageId (replyMarkup undefined = no buttons below the cancel state). handleRetryExpense same shape — defensive for stale messages.",
+      "keyboards.ts: expensePreviewKeyboard drops the 🔁 Nhập lại row. Layout is now Row 1: Confirm + Household, Row 2: Cancel.",
+      "Spec: docs/product-specs/tma/telegram-bot-companion.md Required Actions no longer lists retry. Acceptance Criteria adds explicit rules for 🏠 (edits to Chọn phạm vi, picks scope, edits back) and ❌ Hủy (edits to 'Đã huỷ thêm chi tiêu.' with no buttons).",
+      "Tests: 3 new edit-mode tests in confirm-expense.spec.ts (cancel, household-select both branches). 1 new test in keyboards.spec.ts asserts retry button is gone + callbacks wired correctly. ai-expense.spec.ts updated to assert retry absent."
+    ],
+    "artifacts": [
+      "apps/worker/src/bot/commands/household-select.ts",
+      "apps/worker/src/bot/commands/confirm-expense.ts",
+      "apps/worker/src/bot/callback-dispatcher.ts",
+      "apps/worker/src/bot/renderers/keyboards.ts",
+      "apps/worker/test/unit/bot/commands/confirm-expense.spec.ts",
+      "apps/worker/test/unit/bot/commands/ai-expense.spec.ts",
+      "apps/worker/test/unit/bot/renderers/keyboards.spec.ts",
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "harness/features/feat-117.json",
+      "harness/feature_index.json"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh test -> OK (649 tests pass, 104 files; +5 edit-mode tests, +1 keyboard spec, -1 ai-expense assertion rewrite).",
+      "./init.sh lint -> OK.",
+      "./init.sh (full: install, harness, lint, typecheck, test) -> Done!",
+      "All modified source files < 300 lines (max 239)."
+    ]
+  },
+  "notes": "Optional messageId keeps handleHouseholdSelect/handleCancelExpense/handleRetryExpense callable from non-callback contexts without forcing edit mode. The retry button was removed from the keyboard; the callback + handler stay so any stale messages in user chats edit in place rather than re-showing the bug."
+}

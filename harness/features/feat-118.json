@@ -1,0 +1,37 @@
+{
+  "id": "feat-118",
+  "name": "Bot expense compact summary line: household select + save success",
+  "status": "done",
+  "description": "Telegram bot compact follow-up states show a one-line expense summary `[Category] title amount₫ dd/MM` so the user can still see what expense they're dealing with after the full structured preview is replaced. Applied to: household selection prompt (Chọn phạm vi) and save success (✅ saved). The mode-2 scope-applied path re-renders the full structured preview as before.",
+  "dependencies": ["feat-117"],
+  "evidence": {
+    "planned": [
+      "Inline plan: add renderExpenseSummaryLine helper to finance-text.ts. Use it in buildHouseholdSelection (mode 1 prompt) and handleConfirmExpense success. Mode 2 (scope applied) keeps the full structured preview so the user can review the final state. Spec updated to document the compact format and reuse rule."
+    ],
+    "done": [
+      "finance-text.ts: renderExpenseSummaryLine(preview, currencyCode) returns `[Category] title amount₫ dd/MM`. Tolerates non-YYYY-MM-DD dates by falling back to the raw string. Uses getCategoryLabel + formatMinorAmount so labels and currency match the rest of the bot.",
+      "household-select.ts: buildHouseholdSelection now parses draft.previewJson and prepends the summary line above `Chọn phạm vi:` and above the no-households fallback. All paths still edit-in-place.",
+      "confirm-expense.ts: handleConfirmExpense success now returns `✅ [Category] title amount₫ dd/MM` instead of the old `✅ Đã lưu chi tiêu {amount} {currency} — {title}`. Drops the now-unused formatMinorAmount import.",
+      "Spec: docs/product-specs/tma/telegram-bot-companion.md Acceptance Criteria now describes the compact summary format for 🏠 and the ✅ save prefix.",
+      "Tests: 2 new finance-text tests for renderExpenseSummaryLine (happy path + malformed date). Updated confirm-expense success test to assert new format. Updated household-select mode-1 + 'switches to household scope' tests: mode-1 asserts the summary line; scope-applied asserts the full preview re-renders."
+    ],
+    "artifacts": [
+      "apps/worker/src/bot/renderers/finance-text.ts",
+      "apps/worker/src/bot/commands/household-select.ts",
+      "apps/worker/src/bot/commands/confirm-expense.ts",
+      "apps/worker/test/unit/bot/renderers/finance-text.spec.ts",
+      "apps/worker/test/unit/bot/commands/confirm-expense.spec.ts",
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "harness/features/feat-118.json",
+      "harness/feature_index.json"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh test -> OK (651 tests pass, 104 files; +2 summary helper tests, ~6 assertion updates).",
+      "./init.sh lint -> OK.",
+      "./init.sh (full) -> Done!",
+      "All modified source files < 300 lines (max 287)."
+    ]
+  },
+  "notes": "Mode 2 (scope applied) intentionally keeps the full structured preview so the user sees the final state with all fields (source, scope, etc.) — the one-liner is reserved for the two compact follow-up states where the user needs to confirm context quickly. The spec's Message Hygiene rule still governs in-place edits."
+}

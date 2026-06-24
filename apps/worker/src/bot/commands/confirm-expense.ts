@@ -10,9 +10,9 @@ import {
   isDraftExpired,
   markDraftConfirmed,
 } from '@/db/repositories/telegram-bot-expense-draft-repository'
-import { formatMinorAmount } from '@/lib/currency'
 import { newId } from '@/utils/id'
 
+import { renderExpenseSummaryLine } from '../renderers/finance-text'
 import { expenseCreatedKeyboard, openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
@@ -177,12 +177,10 @@ export const handleConfirmExpense = async (
     console.error('confirm-expense: audit log write failed', err)
   })
 
-  const amountFormatted = formatMinorAmount(preview.amountMinor, currencyCode)
-
   return {
     mode: 'edit',
     targetMessageId: messageId,
-    text: `✅ Đã lưu chi tiêu ${amountFormatted} ${currencyCode} — ${preview.title}`,
+    text: `✅ ${renderExpenseSummaryLine(preview, currencyCode)}`,
     parseMode: 'HTML',
     replyMarkup: expenseCreatedKeyboard(tmaUrl),
   }
@@ -190,13 +188,18 @@ export const handleConfirmExpense = async (
 
 /**
  * Handle a cancel expense action. Marks draft cancelled.
+ * Edits the preview message in place to a "Đã huỷ" state with no buttons,
+ * keeping the chat clean (no extra bubble).
  */
 export const handleCancelExpense = async (
   ctx: CommandContext,
   draftId: string,
+  messageId?: number,
 ): Promise<BotResponse> => {
   if (!ctx.appUserId) {
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text: 'Hủy bỏ.',
       parseMode: 'HTML',
     }
@@ -210,18 +213,25 @@ export const handleCancelExpense = async (
   }
 
   return {
-    text: 'Đã hủy thêm chi tiêu.',
+    mode: 'edit',
+    targetMessageId: messageId,
+    text: 'Đã huỷ thêm chi tiêu.',
     parseMode: 'HTML',
   }
 }
 
 /**
- * Handle a retry action — just tells user to send a new /ai command.
+ * Handle a retry action — tells user to send a new /ai command.
+ * The retry button was removed from the preview keyboard, but stale
+ * messages may still carry the callback. Edits in place for hygiene.
  */
 export const handleRetryExpense = async (
   _ctx: CommandContext,
   _draftId: string,
+  messageId?: number,
 ): Promise<BotResponse> => ({
+  mode: 'edit',
+  targetMessageId: messageId,
   text: 'Gửi lại bằng /ai.\n\n' + 'Vd: <code>/ai ăn bún 30k 15/6</code>',
   parseMode: 'HTML',
 })

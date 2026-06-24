@@ -185,6 +185,29 @@ export const renderExpensePreviewText = (
   return text
 }
 
+/**
+ * Render a compact one-line expense summary.
+ * Format: `[Category] title amount₫ dd/MM`
+ * Example: `[Di chuyển] đổ xăng 500.000₫ 24/06`
+ *
+ * Used in compact follow-up states (household selection, save confirmation)
+ * so the user can still see the expense at a glance without scrolling up
+ * to the full preview. Date is `occurredAt` (YYYY-MM-DD) shortened to dd/MM.
+ * Falls back to the raw string if the date is not in YYYY-MM-DD shape.
+ */
+export const renderExpenseSummaryLine = (
+  preview: ParsedPreviewData,
+  currencyCode: string,
+): string => {
+  const categoryLabel = getCategoryLabel(preview.categoryKey)
+  const amountFormatted = formatMinorAmount(preview.amountMinor, currencyCode)
+  const parts = preview.occurredAt.split('-')
+  const shortDate =
+    parts.length === 3 ? `${parts[2]}/${parts[1]}` : preview.occurredAt
+
+  return `[${categoryLabel}] ${preview.title} ${amountFormatted}₫ ${shortDate}`
+}
+
 const getSourceLabel = (key: string): string => {
   const labels: Record<string, string> = {
     cash: 'Tiền mặt',

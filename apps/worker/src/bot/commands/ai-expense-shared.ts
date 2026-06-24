@@ -6,7 +6,11 @@ import { createDraftFromPreview } from '@/db/repositories/telegram-bot-expense-d
 import { getMinorUnits } from '@/lib/currency'
 
 import type { ParsedPreviewData } from '../renderers/finance-text'
-import { expenseCreatedKeyboard } from '../renderers/keyboards'
+import { renderExpensePreviewText } from '../renderers/finance-text'
+import {
+  expenseCreatedKeyboard,
+  expensePreviewKeyboard,
+} from '../renderers/keyboards'
 import type { InlineKeyboardMarkup } from '../types'
 import type { CommandContext } from '../types'
 
@@ -167,4 +171,90 @@ export const computeDedupeKey = async (
   const hashArray = Array.from(new Uint8Array(hashBuffer))
 
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * Maximum number of expenses parsed from a single /aimulti message.
+ * Caps chat spam while still covering realistic batches (a day of shopping,
+ * a day of travel, etc.).
+ */
+export const MAX_BATCH_SIZE = 10
+
+/**
+ * One preview inside a multi-expense batch.
+ * The service sends one Telegram message per item, each with its own
+ * `draftId` and the standard preview keyboard. The per-message edit-in-place
+ * machinery (confirm / household / cancel) works unchanged.
+ */
+export interface BatchPreviewItem {
+  draftId: string
+  text: string
+  replyMarkup: InlineKeyboardMarkup
+}
+
+/**
+ * Result of `buildDraftsFromItems` — used by the /aimulti handler.
+ * - `previews` is the list of preview items the service should send
+ *   (one Telegram message per item). Empty when nothing could be built.
+ * - `dedupeHits` is a list of (draftId, response) for items whose draft
+ *   was already confirmed (idempotent re-send). The service surfaces these
+ *   as additional confirmation messages so the user still gets feedback.
+ * - `truncatedCount` is the number of raw AI items dropped because they
+ *   exceeded MAX_BATCH_SIZE. 0 when nothing was truncated.
+ * - `invalidCount` is the number of raw AI items the normalizer rejected
+ *   (missing required fields). The service may add a note to the first
+ *   preview so the user knows.
+ */
+export interface BatchBuildResult {
+  previews: BatchPreviewItem[]
+  dedupeHits: Array<{ text: string; replyMarkup: InlineKeyboardMarkup }>
+  truncatedCount: number
+  invalidCount: number
+}
+
+/**
+ * Build N preview items + draft rows from N validated ParsedExpenseItems.
+ * Used by the /aimulti command path. Each item gets its own draft (and
+ * therefore its own confirm / household / cancel message in the chat).
+ *
+ * Errors (DB failure, invalid membership) for an individual item are
+ * converted into a confirmation-style message in the `previews` list
+ * prefixed with `⚠️` so the user can see what happened per item.
+ */
+export const buildDraftsFromItems = async (
+  ctx: CommandContext,
+  validItems: ParsedExpenseItem[],
+  options: {
+    rawText: string
+    defaultDate: string
+    scopeArg?: string
+  },
+): Promise<BatchBuildResult> => {
+  const result: BatchBuildResult = {
+    previews: [],
+    dedupeHits: [],
+    truncatedCount: 0,
+    invalidCount: 0,
+  }
+
+  for (const item of validItems) {
+    const built = await buildDraftFromItem(ctx, item, options)
+
+    if ('status' in built) {
+      result.dedupeHits.push({
+        text: built.text,
+        replyMarkup: built.replyMarkup,
+      })
+
+      continue
+    }
+
+    result.previews.push({
+      draftId: built.draftId,
+      text: renderExpensePreviewText(built.preview, built.currencyCode),
+      replyMarkup: expensePreviewKeyboard(built.draftId),
+    })
+  }
+
+  return result
 }

@@ -127,8 +127,8 @@ describe('handleAiExpenseCommand', () => {
         .map((b) => b.text)
       expect(labels).toContain('✅ Thêm chi tiêu')
       expect(labels).toContain('🏠 Chọn household')
-      expect(labels).toContain('🔁 Nhập lại')
       expect(labels).toContain('❌ Hủy')
+      expect(labels).not.toContain('🔁 Nhập lại')
     }
   })
 
