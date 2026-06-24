@@ -16,6 +16,7 @@ import {
   ChipButton,
   Section,
 } from '@/components/ui'
+import { DatePicker } from '@/components/ui/date-picker'
 import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import type { SourceKey } from '@/features/home/types'
@@ -45,6 +46,8 @@ export const AddExpenseDetailsPage = () => {
   )
   const draftTitle = useAddExpenseFlowStore((state) => state.title)
   const setDetails = useAddExpenseFlowStore((state) => state.setDetails)
+  const date = useAddExpenseFlowStore((state) => state.date)
+  const setDate = useAddExpenseFlowStore((state) => state.setDate)
 
   const [amountInput, setAmountInput] = useState(
     draftAmount > 0 ? formatAmountInput(String(rawFromMinor(draftAmount))) : '',
@@ -53,7 +56,7 @@ export const AddExpenseDetailsPage = () => {
   const [title, setTitle] = useState(draftTitle)
 
   const amount = parseAmountInput(amountInput)
-  const isValid = amount > 0 && sourceId !== null && title.trim().length > 0
+  const isValid = amount > 0 && sourceId !== null
   const hasCategory = category !== null
 
   const handleContinue = useEffectEvent(() => {
@@ -137,6 +140,19 @@ export const AddExpenseDetailsPage = () => {
           <CardTitle>{category.label}</CardTitle>
         </div>
       </Card>
+
+      <DatePicker
+        fullWidth
+        aria-label={t('expenses.add.dateLabel')}
+        className='mt-1'
+        value={date.slice(0, 10)}
+        onChange={(value) => {
+          selection()
+
+          const nextDate = new Date(`${value}T12:00:00+07:00`).toISOString()
+          setDate(nextDate)
+        }}
+      />
 
       <Section className='grid gap-1'>
         <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
