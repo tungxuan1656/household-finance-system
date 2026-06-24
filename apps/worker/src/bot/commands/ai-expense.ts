@@ -2,6 +2,7 @@ import type { ParsedExpenseItem } from '@/contracts/expense-parse-schemas'
 
 import { renderExpensePreviewText } from '../renderers/finance-text'
 import { expensePreviewKeyboard } from '../renderers/keyboards'
+import type { InlineKeyboardMarkup } from '../types'
 import type { BotResponse, CommandContext } from '../types'
 import { parseAiCommandInput } from './ai-expense-preflight'
 import {
@@ -19,12 +20,17 @@ import {
  * message per remaining preview (kind: 'batch'). `truncatedNote` is appended
  * to the first preview text when the AI returned more than MAX_BATCH_SIZE
  * items so the user knows some expenses were dropped.
+ *
+ * When `dedupeHits` is non-empty, the service sends each as a standalone
+ * confirmation message after the preview loop (or instead of it when all
+ * items were already confirmed).
  */
 export type MultiExpenseResult =
   | { kind: 'single'; response: BotResponse }
   | {
       kind: 'batch'
       previews: BatchPreviewItem[]
+      dedupeHits: Array<{ text: string; replyMarkup: InlineKeyboardMarkup }>
       truncatedNote: string | null
     }
 
@@ -208,8 +214,26 @@ export const handleAiMultiExpenseCommand = async (
     scopeArg: hasScopeArg ? scopeToken : undefined,
   })
 
+  // Append the truncation note (if any) — used in the first preview text
+  // or appended to every dedupe hit (the user needs to see items were
+  // dropped even when all parsed items are deduped).
+  const truncatedNote =
+    truncatedCount > 0
+      ? `\n\nℹ️ Chỉ lấy ${MAX_BATCH_SIZE} khoản đầu, ${truncatedCount} khoản sau bỏ qua.`
+      : null
+
+  if (built.previews.length === 0 && built.dedupeHits.length > 0) {
+    // All items were already confirmed — surface dedupe hits as a batch.
+    return {
+      kind: 'batch',
+      previews: [],
+      dedupeHits: built.dedupeHits,
+      truncatedNote,
+    }
+  }
+
   if (built.previews.length === 0) {
-    // Every item deduped to "already confirmed". Tell the user.
+    // Nothing built and no dedupe hits either (edge case).
     return {
       kind: 'single',
       response: {
@@ -219,16 +243,10 @@ export const handleAiMultiExpenseCommand = async (
     }
   }
 
-  // Append the truncation note (if any) to the FIRST preview text so the
-  // user sees it once instead of on every message.
-  const truncatedNote =
-    truncatedCount > 0
-      ? `\n\nℹ️ Chỉ lấy ${MAX_BATCH_SIZE} khoản đầu, ${truncatedCount} khoản sau bỏ qua.`
-      : null
-
   return {
     kind: 'batch',
     previews: built.previews,
+    dedupeHits: built.dedupeHits,
     truncatedNote,
   }
 }

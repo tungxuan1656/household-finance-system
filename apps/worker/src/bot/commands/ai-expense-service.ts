@@ -104,25 +104,38 @@ export const runAiMultiExpenseCommand = async (
     return 1
   }
 
-  // Batch: edit loader into the first preview, then send one Telegram
-  // message per remaining preview. Each preview has its own messageId +
-  // draftId so the per-message edit-in-place machinery works unchanged.
-  const first = result.previews[0]!
-  const firstText = result.truncatedNote
-    ? first.text + result.truncatedNote
-    : first.text
+  // Batch: send previews (if any), then send dedupe confirmation messages
+  // (if any). Each preview gets its own messageId + draftId so the
+  // per-message edit-in-place machinery works unchanged. Each dedupe hit
+  // is a standalone confirmation message, no loader edit or special
+  // handling needed.
 
-  await client.editMessageText(ctx.chatId, loaderMsgId, firstText, {
-    parseMode: 'HTML',
-    replyMarkup: first.replyMarkup,
-  })
+  if (result.previews.length > 0) {
+    const first = result.previews[0]!
+    const firstText = result.truncatedNote
+      ? first.text + result.truncatedNote
+      : first.text
 
-  for (let i = 1; i < result.previews.length; i++) {
-    const p = result.previews[i]!
-
-    await client.sendMessage(ctx.chatId, p.text, {
+    await client.editMessageText(ctx.chatId, loaderMsgId, firstText, {
       parseMode: 'HTML',
-      replyMarkup: p.replyMarkup,
+      replyMarkup: first.replyMarkup,
+    })
+
+    for (let i = 1; i < result.previews.length; i++) {
+      const p = result.previews[i]!
+
+      await client.sendMessage(ctx.chatId, p.text, {
+        parseMode: 'HTML',
+        replyMarkup: p.replyMarkup,
+      })
+    }
+  }
+
+  // Send dedupe hits as standalone confirmation messages.
+  for (const hit of result.dedupeHits) {
+    await client.sendMessage(ctx.chatId, hit.text, {
+      parseMode: 'HTML',
+      replyMarkup: hit.replyMarkup,
     })
   }
 

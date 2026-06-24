@@ -168,7 +168,13 @@ const buildHouseholdSelection = async (
 ): Promise<BotResponse> => {
   const householdIds = await listActiveHouseholdIdsForUser(db, ctx.appUserId!)
 
-  const summary = renderExpenseSummaryLine(preview, 'VND')
+  const currencyCode =
+    preview.scope === 'household' && preview.householdId
+      ? ((await findHouseholdById(db, preview.householdId))
+          ?.defaultCurrencyCode ?? 'VND')
+      : 'VND'
+
+  const summary = renderExpenseSummaryLine(preview, currencyCode)
 
   if (householdIds.length === 0) {
     return {
