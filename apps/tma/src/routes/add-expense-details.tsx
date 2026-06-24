@@ -192,6 +192,16 @@ export const AddExpenseDetailsPage = () => {
             placeholder={t('expenses.add.namePlaceholder')}
             value={title}
             onChange={(event) => setTitle(event.target.value)}
+            onKeyDown={(event) => {
+              if (
+                event.key === 'Enter' &&
+                !event.shiftKey &&
+                !event.nativeEvent.isComposing
+              ) {
+                event.preventDefault()
+                handleContinue()
+              }
+            }}
           />
         </div>
       </Section>

@@ -2,6 +2,7 @@
 
 - last-archived: 2026-06-23
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
+- 2026-06-24 — TMA AI expense input: double textarea height (min-h-45 → min-h-90) with max-h-[60vh] cap to prevent overflow (feat-084 evidence)
 - 2026-06-24 — TMA add-expense step 2: drop title validation, allow empty title (defaults to '') (feat-084 evidence)
 - 2026-06-24 — TMA add-expense step 2: clone DatePicker from step 1 below preview, above money input (shared Zustand date state) (feat-084 evidence)
 - 2026-06-24 — Bot /aimulti batch command: parse up to 10 expenses per message, each as its own Telegram message + draft (feat-119 evidence)
