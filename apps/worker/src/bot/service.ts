@@ -7,7 +7,10 @@ import {
   extractCommand,
   handleCallbackQuery,
 } from './callback-dispatcher'
-import { handleAiExpenseCommand } from './commands/ai-expense'
+import {
+  runAiExpenseCommand,
+  runAiMultiExpenseCommand,
+} from './commands/ai-expense-service'
 import {
   buildDraftFromItem,
   normalizeAiItem,
@@ -22,7 +25,7 @@ import { detectAmountInVnd, looksLikeExpense } from './lib/vn-amount-detector'
 import { renderExpensePreviewText } from './renderers/finance-text'
 import { expensePreviewKeyboard } from './renderers/keyboards'
 import { TelegramClient } from './telegram-client'
-import type { BotResponse, InlineKeyboardMarkup, TelegramUpdate } from './types'
+import type { BotResponse, TelegramUpdate } from './types'
 
 export type { BotServiceDeps }
 
@@ -211,21 +214,14 @@ const handleMessageUpdate = async (
     languageCode: message.from.language_code,
   })
 
-  // ── /ai command: loader → edit flow ───────────────────────────────
+  // /ai command: loader → edit flow
   if (command === 'ai') {
-    const loaderMsgId = await client.sendMessage(
-      ctx.chatId,
-      '⏳ Đang phân tích chi tiêu...',
-    )
+    return runAiExpenseCommand(update, deps, client, ctx.chatId, appUserId)
+  }
 
-    const result = await handleAiExpenseCommand(ctx)
-
-    await client.editMessageText(ctx.chatId, loaderMsgId, result.text, {
-      parseMode: result.parseMode,
-      replyMarkup: result.replyMarkup as InlineKeyboardMarkup | undefined,
-    })
-
-    return 1
+  // /aimulti command: loader → first preview + N-1 more messages
+  if (command === 'aimulti') {
+    return runAiMultiExpenseCommand(update, deps, client, ctx.chatId, appUserId)
   }
 
   let result!: BotResponse

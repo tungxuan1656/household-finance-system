@@ -30,7 +30,9 @@ export const budgetKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
 
 /**
  * Expense preview keyboard.
- * Row 1: Confirm + Household, Row 2: Retry + Cancel.
+ * Row 1: Confirm + Household, Row 2: Cancel.
+ * Cancel edits the message in place to a "Đã huỷ" state with no buttons.
+ * Retry was removed: user can simply send a new expense message instead.
  */
 export const expensePreviewKeyboard = (
   draftId: string,
@@ -40,10 +42,7 @@ export const expensePreviewKeyboard = (
       { text: '✅ Thêm chi tiêu', callback_data: `confirm:${draftId}` },
       { text: '🏠 Chọn household', callback_data: `household:${draftId}` },
     ],
-    [
-      { text: '🔁 Nhập lại', callback_data: `retry:${draftId}` },
-      { text: '❌ Hủy', callback_data: `cancel:${draftId}` },
-    ],
+    [{ text: '❌ Hủy', callback_data: `cancel:${draftId}` }],
   ],
 })
 

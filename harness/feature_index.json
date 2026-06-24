@@ -654,6 +654,21 @@
       "id": "feat-116",
       "name": "Tighten bot message copy + spec command descriptions",
       "status": "done"
+    },
+    {
+      "id": "feat-117",
+      "name": "Bot expense preview in-place edit: scope switch + cancel, drop retry",
+      "status": "done"
+    },
+    {
+      "id": "feat-118",
+      "name": "Bot expense compact summary line: household select + save success",
+      "status": "done"
+    },
+    {
+      "id": "feat-119",
+      "name": "Bot multi-expense batch command /aimulti (up to 10 per message)",
+      "status": "done"
     }
   ]
 }

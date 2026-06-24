@@ -118,16 +118,16 @@ const processCallbackAction = async (
       break
     }
     case 'cancel': {
-      result = await handleCancelExpense(ctx, draftId)
+      result = await handleCancelExpense(ctx, draftId, messageId)
       break
     }
     case 'retry': {
-      result = await handleRetryExpense(ctx, draftId)
+      result = await handleRetryExpense(ctx, draftId, messageId)
       break
     }
     case 'household':
     case 'hhselect': {
-      result = await handleHouseholdSelect(ctx, draftId, payload)
+      result = await handleHouseholdSelect(ctx, draftId, payload, messageId)
       break
     }
     case 'pref': {

@@ -9,6 +9,7 @@ import {
   renderBudgetLine,
   renderBudgetStatusText,
   renderExpensePreviewText,
+  renderExpenseSummaryLine,
   renderProgressBar,
   renderStatsText,
   renderTopCategoriesText,
@@ -238,6 +239,42 @@ describe('finance-text', () => {
       )
 
       expect(result).toContain('Gia đình Test')
+    })
+  })
+
+  describe('renderExpenseSummaryLine', () => {
+    it('renders [Category] title amount₫ dd/MM', () => {
+      const result = renderExpenseSummaryLine(
+        {
+          amountMinor: 5000000,
+          occurredAt: '2026-06-24',
+          categoryKey: 'transport',
+          title: 'đổ xăng',
+          sourceKey: 'cash',
+          scope: 'personal',
+        },
+        'VND',
+      )
+
+      expect(result).toBe('[Di chuyển] đổ xăng 5.000.000₫ 24/06')
+    })
+
+    it('falls back to raw date when not in YYYY-MM-DD shape', () => {
+      const result = renderExpenseSummaryLine(
+        {
+          amountMinor: 100,
+          occurredAt: 'today',
+          categoryKey: 'food',
+          title: 'ăn sáng',
+          sourceKey: 'cash',
+          scope: 'personal',
+        },
+        'VND',
+      )
+
+      expect(result).toContain('ăn sáng')
+      expect(result).toContain('today')
+      expect(result).not.toContain('undefined')
     })
   })
 })

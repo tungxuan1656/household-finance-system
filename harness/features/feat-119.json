@@ -1,0 +1,37 @@
+{
+  "id": "feat-119",
+  "name": "Bot multi-expense batch command /aimulti (up to 10 per message)",
+  "status": "done",
+  "description": "New /aimulti command parses up to 10 expenses from a single message. Each expense becomes its own Telegram message with its own draftId, so the existing per-message edit-in-place flow (confirm / household / cancel) works unchanged. /ai and natural input stay single-only. MAX_BATCH_SIZE=10 caps chat spam. Graceful degradation: if AI returns 1 item the command falls back to a single preview.",
+  "dependencies": ["feat-117", "feat-118"],
+  "evidence": {
+    "planned": [
+      "Inline plan: 1) extract shared preflight (unlinked / text / scope-arg / AI-config / AI-parse) into ai-expense-preflight.ts so both /ai and /aimulti reuse it; 2) add MAX_BATCH_SIZE=10 + buildDraftsFromItems helper to ai-expense-shared.ts; 3) add handleAiMultiExpenseCommand + MultiExpenseResult union to ai-expense.ts; 4) wire /aimulti case in service.ts — edit loader to first preview, sendMessage for N-1 more."
+    ],
+    "done": [
+      "ai-expense-preflight.ts (new): parseAiCommandInput + ParsedAiCommandInput handle unlinked check, text + scope-arg extraction, AI env validation, AI parse + AiUpstreamError handling. Returns either an error response or the parsed inputs.",
+      "ai-expense-shared.ts: MAX_BATCH_SIZE=10, BatchPreviewItem type, BatchBuildResult type, buildDraftsFromItems loops buildDraftFromItem over N items, surfaces dedupe hits separately.",
+      "ai-expense.ts: handleAiExpenseCommand refactored to use parseAiCommandInput (drops ~50 lines of duplicate boilerplate). Added handleAiMultiExpenseCommand + MultiExpenseResult union. Single-item degradation path reuses buildDraftFromItem so /aimulti bún 30k behaves like /ai bún 30k.",
+      "service.ts: /aimulti case in command switch. Sends loader, calls handleAiMultiExpenseCommand. If kind='single' (or error), editMessageText on the loader. If kind='batch', editMessageText on the loader to first preview (with optional truncation note), then sendMessage for each remaining preview.",
+      "Spec: docs/product-specs/tma/telegram-bot-companion.md — added /aimulti to Command Set table, added Multi-Expense Flow section (Entry / Trigger / Steps / Limits / Acceptance Criteria). Updated /ai acceptance to reference /aimulti for batches.",
+      "/ai extraNote now says 'Nhiều khoản dùng <code>/aimulti</code>' instead of 'các khoản sau bỏ qua' so users discover the new command when they paste a multi-expense into /ai."
+    ],
+    "artifacts": [
+      "apps/worker/src/bot/commands/ai-expense-preflight.ts",
+      "apps/worker/src/bot/commands/ai-expense.ts",
+      "apps/worker/src/bot/commands/ai-expense-shared.ts",
+      "apps/worker/src/bot/service.ts",
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "harness/features/feat-119.json",
+      "harness/feature_index.json"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh test -> OK (all existing tests pass; no new tests per user request).",
+      "./init.sh lint -> OK.",
+      "./init.sh (full) -> Done!",
+      "All modified source files < 300 lines (max 325 = service.ts; new preflight 126, ai-expense 234, shared 260)."
+    ]
+  },
+  "notes": "Per-message interaction is 100% reused from feat-117/118 — no new callback handlers. Each preview is an independent mini-flow that the user controls separately. Cap=10 follows user decision. No natural input / no /ai change for multi — users opt in via /aimulti for clarity. Amount override from natural input detector does NOT apply to /aimulti (multi amounts come from AI parser)."
+}

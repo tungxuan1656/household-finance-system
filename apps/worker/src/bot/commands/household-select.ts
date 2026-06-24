@@ -6,7 +6,10 @@ import {
   upsertDraft,
 } from '@/db/repositories/telegram-bot-expense-draft-repository'
 
-import { renderExpensePreviewText } from '../renderers/finance-text'
+import {
+  renderExpensePreviewText,
+  renderExpenseSummaryLine,
+} from '../renderers/finance-text'
 import {
   expensePreviewKeyboard,
   householdSelectKeyboard,
@@ -21,17 +24,25 @@ import type { BotResponse, CommandContext } from '../types'
  * 1. `household:draftId` (payload empty) — show household selection keyboard
  * 2. `hhselect:draftId:personal|householdId` (payload set) — apply selection, re-render preview
  *
+ * Both modes edit the originating message in place so the chat stays clean
+ * (no extra "Chọn phạm vi" bubble stacked above the preview).
+ * When the originating `messageId` is missing (e.g. unit tests), the dispatcher
+ * falls back to `sendMessage` because `targetMessageId` is undefined.
+ *
  * Verifies membership before setting household scope.
  */
 export const handleHouseholdSelect = async (
   ctx: CommandContext,
   draftId: string,
   householdIdOrPersonal: string,
+  messageId?: number,
 ): Promise<BotResponse> => {
   const tmaUrl = ctx.telegramBotTmaUrl
 
   if (!ctx.appUserId) {
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text:
         'Mở Mini App để đăng nhập.\n\n' +
         '🏠 <a href="' +
@@ -47,6 +58,8 @@ export const handleHouseholdSelect = async (
 
   if (!draft || draft.status !== 'pending') {
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text: 'Không tìm thấy hoặc đã hết hạn. Thử lại với /ai.',
       parseMode: 'HTML',
     }
@@ -54,7 +67,20 @@ export const handleHouseholdSelect = async (
 
   // Mode 1: No payload — show household selection keyboard
   if (!householdIdOrPersonal) {
-    return buildHouseholdSelection(ctx, db, draft)
+    let preview: PreviewData
+
+    try {
+      preview = JSON.parse(draft.previewJson) as PreviewData
+    } catch {
+      return {
+        mode: 'edit',
+        targetMessageId: messageId,
+        text: 'Dữ liệu xem trước không hợp lệ.',
+        parseMode: 'HTML',
+      }
+    }
+
+    return buildHouseholdSelection(ctx, db, draft, preview, messageId)
   }
 
   // Mode 2: Apply selection
@@ -64,6 +90,8 @@ export const handleHouseholdSelect = async (
     preview = JSON.parse(draft.previewJson) as PreviewData
   } catch {
     return {
+      mode: 'edit',
+      targetMessageId: messageId,
       text: 'Dữ liệu xem trước không hợp lệ.',
       parseMode: 'HTML',
     }
@@ -79,6 +107,8 @@ export const handleHouseholdSelect = async (
 
     if (!householdIds.includes(householdIdOrPersonal)) {
       return {
+        mode: 'edit',
+        targetMessageId: messageId,
         text: 'Không có quyền chọn hộ này.',
         parseMode: 'HTML',
       }
@@ -87,6 +117,8 @@ export const handleHouseholdSelect = async (
     const household = await findHouseholdById(db, householdIdOrPersonal)
     if (!household) {
       return {
+        mode: 'edit',
+        targetMessageId: messageId,
         text: 'Không tìm thấy hộ.',
         parseMode: 'HTML',
       }
@@ -106,6 +138,8 @@ export const handleHouseholdSelect = async (
   })
 
   return {
+    mode: 'edit',
+    targetMessageId: messageId,
     text: renderExpensePreviewText(
       preview,
       preview.scope === 'household' && preview.householdId
@@ -121,17 +155,26 @@ export const handleHouseholdSelect = async (
 /**
  * Build a household selection message with inline keyboard.
  * Queries user's active households and renders the selection keyboard.
+ * Prepends a compact expense summary line so the user can still see
+ * what expense they're picking scope for, then edits the originating
+ * message in place so no extra bubble appears.
  */
 const buildHouseholdSelection = async (
   ctx: CommandContext,
   db: D1Database,
   draft: { id: string },
+  preview: PreviewData,
+  messageId?: number,
 ): Promise<BotResponse> => {
   const householdIds = await listActiveHouseholdIdsForUser(db, ctx.appUserId!)
 
+  const summary = renderExpenseSummaryLine(preview, 'VND')
+
   if (householdIds.length === 0) {
     return {
-      text: 'Chưa tham gia hộ nào. Sẽ thêm ở cá nhân.',
+      mode: 'edit',
+      targetMessageId: messageId,
+      text: `${summary}\n\nChưa tham gia hộ nào. Sẽ thêm ở cá nhân.`,
       parseMode: 'HTML',
     }
   }
@@ -146,7 +189,9 @@ const buildHouseholdSelection = async (
   }
 
   return {
-    text: 'Chọn phạm vi:',
+    mode: 'edit',
+    targetMessageId: messageId,
+    text: `${summary}\n\nChọn phạm vi:`,
     parseMode: 'HTML',
     replyMarkup: householdSelectKeyboard(draft.id, households),
   }
