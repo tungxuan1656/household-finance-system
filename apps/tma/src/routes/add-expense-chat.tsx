@@ -94,7 +94,7 @@ export const AddExpenseChatPage = () => {
 
       <Textarea
         aria-label={t('expenses.add.aiInputLabel')}
-        className='min-h-45'
+        className='max-h-[60vh] min-h-90'
         disabled={parseMutation.isPending}
         maxLength={MAX_PARSE_TEXT_LENGTH}
         placeholder={t('expenses.add.aiInputPlaceholder')}
