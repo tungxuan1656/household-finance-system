@@ -17,7 +17,8 @@
       "commands/post-create-expense.ts (new): three handlers — handlePostCreateHousehold (renders picker on same message), handlePostCreateApply (verifies ownership + membership, updates household, writes expense.updated audit, edits in place to full preview or back to personal summary), handlePostCreateDelete (verifies ownership, soft-deletes, writes expense.deleted audit, edits to 'Đã xoá — <summary>').",
       "callback-dispatcher.ts: wires three new actions — `ch_household`, `ch_apply`, `ch_delete` — all in mode='edit'.",
       "service.ts: natural-input branch (lines 69–199) replaced with thin wrapper around `runNaturalExpenseCreate`.",
-      "Spec: new 'Natural Input Direct Create (feat-121)' subsection under ### Auto-detect; revised acceptance criteria to scope 'no expense without explicit confirmation' to /ai/aimulti only."
+      "Spec: new 'Natural Input Direct Create (feat-121)' subsection under ### Auto-detect; revised acceptance criteria to scope 'no expense without explicit confirmation' to /ai/aimulti only.",
+      "2026-06-25 regression fix: multi-item natural input now uses each AI-parsed item amount. The detector amount is still used as a single-item override only."
     ],
     "artifacts": [
       "docs/exec-plans/plans/2026-06-25-feat-121-bot-natural-input-direct-create.md",
@@ -39,7 +40,10 @@
     "verification": [
       "./init.sh typecheck -> OK.",
       "./init.sh lint -> OK.",
-      "Worker tests: 99 test files, 623 tests, 28 new (10 natural-expense + 12 post-create + 6 keyboards total including 3 new postCreateKeyboard cases). Pre-existing 595 tests still pass.",
+      "2026-06-25 RED: `pnpm --filter worker exec vitest run test/unit/bot/commands/natural-expense.spec.ts` failed on new regression test with `[30000, 30000, 30000]` instead of `[30000, 25000, 50000]`.",
+      "2026-06-25 GREEN: `pnpm --filter worker exec vitest run test/unit/bot/commands/natural-expense.spec.ts` -> 11 tests passed.",
+      "2026-06-25 final: `./init.sh typecheck` -> OK; `./init.sh lint` -> OK; full `./init.sh` -> Done!.",
+      "Original feat-121 full-run evidence: Worker tests: 99 test files, 623 tests, 28 new (10 natural-expense + 12 post-create + 6 keyboards total including 3 new postCreateKeyboard cases). Pre-existing 595 tests still pass.",
       "TMA tests: 22 files, 113 tests still pass (unchanged).",
       "Full ./init.sh --verbose exits 0 with 'Done!' at the end."
     ]

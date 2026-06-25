@@ -234,6 +234,50 @@ describe('runNaturalExpenseCreate (feat-121)', () => {
     expect(mockEditMessageText).toHaveBeenCalledTimes(1)
   })
 
+  it('uses each parsed item amount when creating multiple natural expenses', async () => {
+    mockGetMinorUnits.mockImplementation((amount: number) => amount)
+    mockParseExpensesWithAi.mockResolvedValue([
+      {
+        amount: 30000,
+        categoryKey: 'food',
+        sourceKey: 'cash',
+        title: 'ăn bún',
+        occurredAt: '2026-06-25',
+      },
+      {
+        amount: 25000,
+        categoryKey: 'food',
+        sourceKey: 'cash',
+        title: 'cà phê',
+        occurredAt: '2026-06-25',
+      },
+      {
+        amount: 50000,
+        categoryKey: 'transport',
+        sourceKey: 'cash',
+        title: 'xăng',
+        occurredAt: '2026-06-25',
+      },
+    ])
+
+    await runNaturalExpenseCreate(
+      buildDeps(),
+      buildClient(),
+      buildMessage('ăn bún 30k, cà phê 25k, đổ xăng 50k'),
+      'app-user-1',
+    )
+
+    const amountMinorByExpense = mockCreateExpense.mock.calls.map((call) => {
+      const input = call[1] as { amountMinor: number }
+      return input.amountMinor
+    })
+
+    expect(amountMinorByExpense).toEqual([30000, 25000, 50000])
+    expect(mockGetMinorUnits).toHaveBeenNthCalledWith(1, 30000, 'VND')
+    expect(mockGetMinorUnits).toHaveBeenNthCalledWith(2, 25000, 'VND')
+    expect(mockGetMinorUnits).toHaveBeenNthCalledWith(3, 50000, 'VND')
+  })
+
   it('passes the detected amount (not the AI amount) to the expense', async () => {
     // AI returns a wildly wrong amount; the detector should win.
     mockParseExpensesWithAi.mockResolvedValue([

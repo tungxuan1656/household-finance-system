@@ -2,6 +2,7 @@
 
 - last-archived: 2026-06-23
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
+- 2026-06-25 — Bot natural-input multi-expense amount bugfix: multi-item natural chat now creates each expense with its own AI-parsed amount; detector amount remains single-item override only. Added RED/GREEN regression test in natural-expense.spec.ts (feat-121 evidence)
 - 2026-06-25 — Bot natural-input direct-create flow (feat-121): bypass preview/confirm; create each parsed expense immediately; one Telegram message per expense with `🏠 Chọn household` + `🗑 Xoá` inline buttons that edit in place (post-create household reassignment + 1-tap soft-delete undo). /ai and /aimulti keep preview → confirm. 28 new unit tests; full ./init.sh --verbose = Done!
 - 2026-06-25 — Bot /aimulti per-item dedupeKey fix: buildDraftsFromItems loop uses `index|title|amount|occurredAt` so each batch item gets its own D1 row; fixes cross-item "đã thêm trước đó", duplicate expenses, and wrong-item household-select edit (feat-120 evidence)
 - 2026-06-24 — TMA AI expense input: double textarea height (min-h-45 → min-h-90) with max-h-[60vh] cap to prevent overflow (feat-084 evidence)

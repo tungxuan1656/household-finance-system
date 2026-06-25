@@ -103,10 +103,11 @@ export const runNaturalExpenseCreate = async (
     return 1
   }
 
-  // Build a validated item list. For natural input we trust the detector
-  // for the amount (override AI's amount with it) and use the AI for the
-  // other fields. We accept up to 50 raw items but cap sends to a sane
-  // per-message maximum to avoid runaway Telegram spam.
+  // Build a validated item list. For single-item natural input we trust the
+  // detector for the amount (override AI's amount with it) and use the AI for
+  // the other fields. For multi-item natural input the detector only proves the
+  // message contains an expense-like amount, so each created expense must keep
+  // its own AI-parsed amount.
   const validItems: ParsedExpenseItem[] = []
 
   for (const raw of rawItems) {
@@ -149,7 +150,8 @@ export const runNaturalExpenseCreate = async (
   }> = []
 
   for (const item of validItems) {
-    const amountVnd = amountResult.amountVnd
+    const amountVnd =
+      validItems.length === 1 ? amountResult.amountVnd : item.amount
     const amountMinor = getMinorUnits(amountVnd, 'VND')
     const occurredAtMs = Date.parse(item.occurredAt)
 
