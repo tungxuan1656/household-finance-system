@@ -179,7 +179,6 @@ const handleMessageUpdate = async (
       // Already-confirmed expense (dedupe hit) — edit loader with confirmation
       await client.editMessageText(message.chat.id, loaderMsgId, built.text, {
         parseMode: 'HTML',
-        replyMarkup: built.replyMarkup,
       })
 
       return 1

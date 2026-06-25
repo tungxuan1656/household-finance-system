@@ -131,7 +131,6 @@ export const runAiMultiExpenseCommand = async (
   for (const hit of result.dedupeHits) {
     await client.sendMessage(ctx.chatId, hit.text, {
       parseMode: 'HTML',
-      replyMarkup: hit.replyMarkup,
     })
   }
 

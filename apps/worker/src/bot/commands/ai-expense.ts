@@ -6,7 +6,6 @@ import {
 import type { ParsedExpenseItem } from '@/contracts/expense-parse-schemas'
 
 import { expensePreviewKeyboard } from '../renderers/keyboards'
-import type { InlineKeyboardMarkup } from '../types'
 import type { BotResponse, CommandContext } from '../types'
 import { parseAiCommandInput } from './ai-expense-preflight'
 import {
@@ -34,7 +33,7 @@ export type MultiExpenseResult =
   | {
       kind: 'batch'
       previews: BatchPreviewItem[]
-      dedupeHits: Array<{ text: string; replyMarkup: InlineKeyboardMarkup }>
+      dedupeHits: Array<{ text: string }>
       truncatedNote: string | null
     }
 
@@ -95,7 +94,6 @@ export const handleAiExpenseCommand = async (
     return {
       text: built.text,
       parseMode: 'HTML',
-      replyMarkup: built.replyMarkup,
     }
   }
 
@@ -191,7 +189,6 @@ export const handleAiMultiExpenseCommand = async (
         response: {
           text: built.text,
           parseMode: 'HTML',
-          replyMarkup: built.replyMarkup,
         },
       }
     }

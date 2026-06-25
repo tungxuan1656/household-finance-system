@@ -13,7 +13,7 @@ import {
 } from '@/db/repositories/telegram-bot-expense-draft-repository'
 import { newId } from '@/utils/id'
 
-import { expenseCreatedKeyboard, openAppKeyboard } from '../renderers/keyboards'
+import { openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
 /**
@@ -74,7 +74,6 @@ export const handleConfirmExpense = async (
         '✅ Đã thêm trước đó.\n\n' +
         `Mã: <code>${draft.createdExpenseId}</code>`,
       parseMode: 'HTML',
-      replyMarkup: expenseCreatedKeyboard(tmaUrl),
     }
   }
 
@@ -93,7 +92,6 @@ export const handleConfirmExpense = async (
           '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
           `Mã giao dịch: <code>${updatedDraft.createdExpenseId}</code>`,
         parseMode: 'HTML',
-        replyMarkup: expenseCreatedKeyboard(tmaUrl),
       }
     }
 
@@ -182,7 +180,6 @@ export const handleConfirmExpense = async (
     targetMessageId: messageId,
     text: `✅ ${renderExpenseSummaryLine({ ...preview, currencyCode })}`,
     parseMode: 'HTML',
-    replyMarkup: expenseCreatedKeyboard(tmaUrl),
   }
 }
 

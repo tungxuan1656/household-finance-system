@@ -60,17 +60,3 @@ export const householdSelectKeyboard = (
     ]),
   ],
 })
-
-/**
- * Build the success keyboard after an expense is created.
- */
-export const expenseCreatedKeyboard = (
-  tmaUrl: string,
-): InlineKeyboardMarkup => ({
-  inline_keyboard: [
-    [
-      { text: '📋 Xem chi tiết', web_app: { url: tmaUrl } },
-      { text: '➕ Thêm khoản khác', callback_data: 'add_expense' },
-    ],
-  ],
-})

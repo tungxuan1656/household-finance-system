@@ -237,7 +237,7 @@ describe('handleConfirmExpense', () => {
     expect(result.text).toContain('quyền')
   })
 
-  it('returns edit mode with post-save keyboard containing Xem chi tiết and Thêm khoản khác', async () => {
+  it('returns edit mode with success text and no post-save keyboard', async () => {
     const draftModule =
       await import('@/db/repositories/telegram-bot-expense-draft-repository')
     const expenseModule = await import('@/db/repositories/expense-repository')
@@ -267,14 +267,8 @@ describe('handleConfirmExpense', () => {
 
     expect(result.mode).toBe('edit')
     expect(result.targetMessageId).toBe(42)
-    expect(result.replyMarkup).toBeDefined()
-    if (result.replyMarkup && 'inline_keyboard' in result.replyMarkup) {
-      const labels = result.replyMarkup.inline_keyboard
-        .flat()
-        .map((b) => b.text)
-      expect(labels).toContain('📋 Xem chi tiết')
-      expect(labels).toContain('➕ Thêm khoản khác')
-    }
+    // Post-save keyboard removed — success message alone is sufficient.
+    expect(result.replyMarkup).toBeUndefined()
   })
 })
 

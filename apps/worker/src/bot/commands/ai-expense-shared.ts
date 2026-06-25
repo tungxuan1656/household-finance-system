@@ -7,10 +7,7 @@ import { findHouseholdById } from '@/db/repositories/household-repository'
 import { createDraftFromPreview } from '@/db/repositories/telegram-bot-expense-draft-repository'
 import { getMinorUnits } from '@/lib/currency'
 
-import {
-  expenseCreatedKeyboard,
-  expensePreviewKeyboard,
-} from '../renderers/keyboards'
+import { expensePreviewKeyboard } from '../renderers/keyboards'
 import type { InlineKeyboardMarkup } from '../types'
 import type { CommandContext } from '../types'
 
@@ -54,7 +51,7 @@ export const normalizeAiItem = (
  *
  * Return type:
  * - { preview, draftId, currencyCode } on success → caller renders + attaches keyboard
- * - { status: 'confirmed', text, replyMarkup } when draft already confirmed (dedupe hit)
+ * - { status: 'confirmed', text } when draft already confirmed (dedupe hit)
  */
 export const buildDraftFromItem = async (
   ctx: CommandContext,
@@ -74,7 +71,6 @@ export const buildDraftFromItem = async (
   | {
       status: 'confirmed'
       text: string
-      replyMarkup: InlineKeyboardMarkup
     }
 > => {
   const db = ctx.db
@@ -146,7 +142,6 @@ export const buildDraftFromItem = async (
       text:
         '✅ Chi tiêu này đã được thêm trước đó.\n\n' +
         `Mã giao dịch: <code>${draft.createdExpenseId}</code>`,
-      replyMarkup: expenseCreatedKeyboard(ctx.telegramBotTmaUrl),
     }
   }
 
@@ -196,7 +191,7 @@ export interface BatchPreviewItem {
  * Result of `buildDraftsFromItems` — used by the /aimulti handler.
  * - `previews` is the list of preview items the service should send
  *   (one Telegram message per item). Empty when nothing could be built.
- * - `dedupeHits` is a list of (draftId, response) for items whose draft
+ * - `dedupeHits` is a list of response texts for items whose draft
  *   was already confirmed (idempotent re-send). The service surfaces these
  *   as additional confirmation messages so the user still gets feedback.
  * - `truncatedCount` is the number of raw AI items dropped because they
@@ -207,7 +202,7 @@ export interface BatchPreviewItem {
  */
 export interface BatchBuildResult {
   previews: BatchPreviewItem[]
-  dedupeHits: Array<{ text: string; replyMarkup: InlineKeyboardMarkup }>
+  dedupeHits: Array<{ text: string }>
   truncatedCount: number
   invalidCount: number
 }
@@ -254,7 +249,6 @@ export const buildDraftsFromItems = async (
     if ('status' in built) {
       result.dedupeHits.push({
         text: built.text,
-        replyMarkup: built.replyMarkup,
       })
 
       continue
