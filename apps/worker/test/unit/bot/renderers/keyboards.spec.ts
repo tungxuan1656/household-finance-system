@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   expensePreviewKeyboard,
   householdSelectKeyboard,
+  postCreateKeyboard,
 } from '@/bot/renderers/keyboards'
 
 describe('expensePreviewKeyboard', () => {
@@ -12,7 +13,7 @@ describe('expensePreviewKeyboard', () => {
     const labels = kb.inline_keyboard.flat().map((b) => b.text)
 
     expect(labels).toContain('✅ Thêm chi tiêu')
-    expect(labels).toContain('🏠 Chọn household')
+    expect(labels).toContain('🏠 Chọn gia đình')
     expect(labels).toContain('❌ Hủy')
     // Retry was removed; users can simply send a new expense message.
     expect(labels).not.toContain('🔁 Nhập lại')
@@ -42,5 +43,31 @@ describe('householdSelectKeyboard', () => {
     expect(rows[0]?.[0]?.text).toBe('👤 Cá nhân')
     expect(rows[1]?.[0]?.text).toBe('🏠 Gia đình A')
     expect(rows[2]?.[0]?.text).toBe('🏠 Gia đình B')
+  })
+})
+
+describe('postCreateKeyboard (feat-121 natural-input direct-create)', () => {
+  it('shows the household and delete buttons when the user has households', () => {
+    const kb = postCreateKeyboard('exp-1', true)
+    const labels = kb.inline_keyboard.flat().map((b) => b.text)
+
+    expect(labels).toContain('🏠 Chọn gia đình')
+    expect(labels).toContain('🗑 Xoá')
+  })
+
+  it('hides the household button when the user has zero households', () => {
+    const kb = postCreateKeyboard('exp-1', false)
+    const labels = kb.inline_keyboard.flat().map((b) => b.text)
+
+    expect(labels).toContain('🗑 Xoá')
+    expect(labels).not.toContain('🏠 Chọn gia đình')
+  })
+
+  it('wires the buttons to ch_household / ch_delete callbacks', () => {
+    const kb = postCreateKeyboard('exp-99', true)
+    const callbacks = kb.inline_keyboard.flat().map((b) => b.callback_data)
+
+    expect(callbacks).toContain('ch_household:exp-99')
+    expect(callbacks).toContain('ch_delete:exp-99')
   })
 })

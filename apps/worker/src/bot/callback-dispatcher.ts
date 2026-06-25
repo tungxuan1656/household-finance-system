@@ -9,6 +9,9 @@ import {
   handleRetryExpense,
 } from './commands/confirm-expense'
 import { handleHouseholdSelect } from './commands/household-select'
+import { handlePostCreateApply } from './commands/post-create-apply'
+import { handlePostCreateDelete } from './commands/post-create-delete'
+import { handlePostCreateHousehold } from './commands/post-create-household'
 import {
   handlePreferenceToggle,
   handleSettingsCommand,
@@ -128,6 +131,18 @@ const processCallbackAction = async (
     case 'household':
     case 'hhselect': {
       result = await handleHouseholdSelect(ctx, draftId, payload, messageId)
+      break
+    }
+    case 'ch_household': {
+      result = await handlePostCreateHousehold(ctx, draftId, messageId)
+      break
+    }
+    case 'ch_apply': {
+      result = await handlePostCreateApply(ctx, draftId, payload, messageId)
+      break
+    }
+    case 'ch_delete': {
+      result = await handlePostCreateDelete(ctx, draftId, messageId)
       break
     }
     case 'pref': {

@@ -47,20 +47,20 @@ export const viMessages = {
   'profile.displayNameMustNotBeBlank': 'Tên hiển thị không được để trống.',
   'profile.displayNameTooLong': 'Tên hiển thị không được vượt quá 100 ký tự.',
   'profile.atLeastOneProfileField': 'Cần cung cấp ít nhất một trường hồ sơ.',
-  'households.nameMustNotBeBlank': 'Tên hộ gia đình không được để trống.',
-  'households.nameTooLong': 'Tên hộ gia đình không được vượt quá 120 ký tự.',
+  'households.nameMustNotBeBlank': 'Tên gia đình không được để trống.',
+  'households.nameTooLong': 'Tên gia đình không được vượt quá 120 ký tự.',
   'households.defaultCurrencyCodeInvalid':
     'Mã tiền tệ mặc định phải gồm đúng 3 ký tự chữ cái.',
-  'households.householdIdMustNotBeBlank': 'Mã hộ gia đình không hợp lệ.',
+  'households.householdIdMustNotBeBlank': 'Mã gia đình không hợp lệ.',
   'households.atLeastOneFieldRequired':
-    'Cần cung cấp ít nhất một trường để cập nhật hộ gia đình.',
+    'Cần cung cấp ít nhất một trường để cập nhật gia đình.',
   'households.timezoneInvalid': 'Múi giờ phải theo định dạng IANA hợp lệ.',
   'households.deleteBlockedByActiveMembers':
-    'Không thể xóa hộ gia đình khi vẫn còn thành viên đang hoạt động khác.',
+    'Không thể xóa gia đình khi vẫn còn thành viên đang hoạt động khác.',
   'households.cannotLeaveAsLastAdmin':
-    'Không thể rời khỏi hộ gia đình khi bạn là quản trị viên cuối cùng.',
+    'Không thể rời khỏi gia đình khi bạn là quản trị viên cuối cùng.',
   'households.cannotRemoveLastAdmin':
-    'Không thể xóa quản trị viên cuối cùng của hộ gia đình.',
+    'Không thể xóa quản trị viên cuối cùng của gia đình.',
   'invitations.invalidRole': 'Vai trò được mời phải là "admin" hoặc "member".',
   'invitations.invalidExpiresIn':
     'Thời gian hết hạn phải là "24h", "72h" hoặc "7d".',
@@ -73,9 +73,9 @@ export const viMessages = {
   // Expense related messages (Vietnamese) - retained for future translations
   'expenses.cannotCreateExpense': 'Không thể tạo chi tiêu.',
   'expenses.invalidCurrencyForHousehold':
-    'Mã tiền tệ cho hộ gia đình không hợp lệ.',
+    'Mã tiền tệ cho gia đình không hợp lệ.',
   'expenses.mustProvideHouseholdIdWhenHouseholdVisible':
-    'Cần cung cấp householdId khi hiển thị trong hộ gia đình.',
+    'Cần cung cấp householdId khi hiển thị trong gia đình.',
   'expenses.expenseNotFound': 'Không tìm thấy chi tiêu.',
   'expenses.expenseForbidden': 'Bạn không có quyền xem chi tiêu này.',
   'expenses.cannotAssignGroupToPrivateExpense':

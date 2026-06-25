@@ -50,7 +50,7 @@ export const handleStatsCommand = async (
   })
 
   const scopeLabel = data.isHousehold
-    ? `hộ gia đình ${data.householdName}`
+    ? `gia đình ${data.householdName}`
     : 'cá nhân'
 
   return {

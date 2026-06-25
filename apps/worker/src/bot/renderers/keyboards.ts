@@ -30,7 +30,7 @@ export const budgetKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
 
 /**
  * Expense preview keyboard.
- * Row 1: Confirm + Household, Row 2: Cancel.
+ * Row 1: Confirm + Gia đình, Row 2: Cancel.
  * Cancel edits the message in place to a "Đã huỷ" state with no buttons.
  * Retry was removed: user can simply send a new expense message instead.
  */
@@ -40,7 +40,7 @@ export const expensePreviewKeyboard = (
   inline_keyboard: [
     [
       { text: '✅ Thêm chi tiêu', callback_data: `confirm:${draftId}` },
-      { text: '🏠 Chọn household', callback_data: `household:${draftId}` },
+      { text: '🏠 Chọn gia đình', callback_data: `household:${draftId}` },
     ],
     [{ text: '❌ Hủy', callback_data: `cancel:${draftId}` }],
   ],
@@ -60,3 +60,36 @@ export const householdSelectKeyboard = (
     ]),
   ],
 })
+
+/**
+ * Post-create keyboard for natural-input direct-create expenses.
+ * Replaces the preview keyboard after a natural-input expense is saved.
+ * Tapping `🏠 Chọn gia đình` shows the household picker; tapping
+ * `🗑 Xoá` soft-deletes the expense and edits the same message in place.
+ *
+ * When the user has no households, the household button is hidden —
+ * the delete button alone is enough for the 1-tap undo.
+ *
+ * Callback IDs:
+ * - `ch_household:<expenseId>`  → show household picker for the expense
+ * - `ch_delete:<expenseId>`    → soft-delete the expense
+ */
+export const postCreateKeyboard = (
+  expenseId: string,
+  hasHouseholds: boolean,
+): InlineKeyboardMarkup => {
+  const rows: Array<Array<{ text: string; callback_data: string }>> = []
+
+  if (hasHouseholds) {
+    rows.push([
+      {
+        text: '🏠 Chọn gia đình',
+        callback_data: `ch_household:${expenseId}`,
+      },
+    ])
+  }
+
+  rows.push([{ text: '🗑 Xoá', callback_data: `ch_delete:${expenseId}` }])
+
+  return { inline_keyboard: rows }
+}

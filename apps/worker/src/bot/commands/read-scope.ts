@@ -91,7 +91,7 @@ export const resolveReadScope = async (
   if (!household) {
     return {
       error: {
-        text: 'Không tìm thấy hộ gia đình.',
+        text: 'Không tìm thấy gia đình.',
         parseMode: 'HTML',
       },
     }

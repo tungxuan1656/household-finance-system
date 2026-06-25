@@ -5,6 +5,7 @@ Do not move files between folders; update sections below to reflect status.
 
 ## Active
 
+- [2026-06-25-feat-121-bot-natural-input-direct-create.md](plans/2026-06-25-feat-121-bot-natural-input-direct-create.md) - feat-121 active: bot natural-input auto-detect path bypasses preview/confirm and creates each parsed expense immediately; each created expense gets one Telegram message with `🏠 Chọn household` + `🗑 Xoá` inline buttons that edit the same message in place (post-create reassignment + soft-delete undo). `/ai` and `/aimulti` keep preview → confirm.
 - [2026-06-22-telegram-bot-foundation.md](plans/2026-06-22-telegram-bot-foundation.md) - feat-112a planned: worker bot foundation with webhook secret verification, Telegram API adapter, Telegram identity-to-user lookup, no token persistence, and `/start` + `/help` linked/unlinked behavior.
 - [2026-06-22-telegram-bot-read-commands.md](plans/2026-06-22-telegram-bot-read-commands.md) - feat-112b planned: read-only `/stats`, `/top`, and `/budget` commands with user-scoped household/group options and Vietnamese-ready summaries.
 - [2026-06-22-telegram-bot-expense-create.md](plans/2026-06-22-telegram-bot-expense-create.md) - feat-112c planned: `/ai` one-expense parse, preview, explicit confirm, duplicate prevention, `created_via_bot` marker, and audit logging.

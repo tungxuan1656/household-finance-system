@@ -1,0 +1,56 @@
+{
+  "id": "feat-121",
+  "name": "Bot natural-input direct-create: bypass preview, create + per-expense household/delete buttons",
+  "status": "done",
+  "description": "Bypass the preview/confirm step on the natural (non-command) chat path. When the amount detector + AI parser produce at least one valid expense, the bot creates each expense immediately and sends one Telegram message per created expense. Each per-expense message uses the compact summary line `[emoji] title · amount₫ · dd/MM` prefixed with `✅` and a `postCreateKeyboard` with `🏠 Chọn household` (hidden when the user has zero households) and `🗑 Xoá` (1-tap soft-delete undo). Tapping `🏠 Chọn household` shows a household picker (re-uses the standard layout with new `ch_apply:<expenseId>:<hhId|personal>` callbacks). Picking a household re-edits the same message to the full preview with the household name; picking `👤 Cá nhân` restores the post-create summary. Tapping `🗑 Xoá` soft-deletes the expense and re-edits the same message to `🗑 Đã xoá — <summary>` with no buttons. /ai and /aimulti keep their preview → confirm flow unchanged. No dedupe on natural input (delete is the undo). Defense-in-depth: every mutating handler re-loads the expense and verifies `spent_by_user_id === ctx.appUserId` before writing. Audit: `expense.created` with `naturalInput:true`, `expense.updated` for household change, `expense.deleted` with `naturalInputUndo:true`.",
+  "dependencies": ["feat-117", "feat-118", "feat-120"],
+  "evidence": {
+    "planned": [
+      "ExecPlan at docs/exec-plans/plans/2026-06-25-feat-121-bot-natural-input-direct-create.md (Level 2 ceremony).",
+      "Index updated: docs/exec-plans/index.md marks feat-121 active.",
+      "Spec updated: docs/product-specs/tma/telegram-bot-companion.md adds 'Natural Input Direct Create' subsection in ### Auto-detect, plus revised acceptance criteria — 'no expense from free-form text without explicit user confirmation' is scoped to /ai/aimulti only; natural-input uses 1-tap delete as undo."
+    ],
+    "done": [
+      "expense-repository.ts: new `updateExpenseHousehold(db, expenseId, householdId, currencyCode)` partial helper. Returns updated row or null. Idempotent against deleted_at IS NULL guard.",
+      "renderers/keyboards.ts: new `postCreateKeyboard(expenseId, hasHouseholds)` returning 1–2 button rows. `🏠 Chọn household` hidden when hasHouseholds=false. Callback IDs: `ch_household:<expenseId>` + `ch_delete:<expenseId>`.",
+      "commands/natural-expense.ts (new): `runNaturalExpenseCreate(deps, client, message, appUserId)` orchestrates amount detector → AI parser → per-item create + audit → per-expense messages. Loader first, then edit loader to first expense summary, then send one extra message per remaining expense. No dedupe, no draft. AI config missing → return 0. AI upstream error → edit loader to AI_UNAVAILABLE_TEXT. No valid items → edit loader to INPUT_UNRECOGNIZED_TEXT. Zero households → hide 🏠 button.",
+      "commands/post-create-expense.ts (new): three handlers — handlePostCreateHousehold (renders picker on same message), handlePostCreateApply (verifies ownership + membership, updates household, writes expense.updated audit, edits in place to full preview or back to personal summary), handlePostCreateDelete (verifies ownership, soft-deletes, writes expense.deleted audit, edits to 'Đã xoá — <summary>').",
+      "callback-dispatcher.ts: wires three new actions — `ch_household`, `ch_apply`, `ch_delete` — all in mode='edit'.",
+      "service.ts: natural-input branch (lines 69–199) replaced with thin wrapper around `runNaturalExpenseCreate`.",
+      "Spec: new 'Natural Input Direct Create (feat-121)' subsection under ### Auto-detect; revised acceptance criteria to scope 'no expense without explicit confirmation' to /ai/aimulti only.",
+      "2026-06-25 regression fix: multi-item natural input now uses each AI-parsed item amount. The detector amount is still used as a single-item override only.",
+      "2026-06-25 currency-on-reassign fix: handlePostCreateApply now keeps currency_code = 'VND' when reassigning a natural-input expense to a non-VND household. Without an FX rate we cannot safely convert amount_minor; previously a 30_000_000 minor VND entry reassigned to a USD household would be reinterpreted as $300,000.00. Regression test in post-create-expense.spec.ts.",
+      "2026-06-25 i18n label cleanup: user-facing `hộ gia đình` / `household` strings replaced with `gia đình` across TMA vi.json (~50 values), worker bot keyboards/notifications/commands, and the Vietnamese error messages in messages.vi.ts. Internal identifiers preserved.",
+      "2026-06-25 refactor: split the 376-line post-create-expense.ts into one file per callback action (post-create-household.ts, post-create-apply.ts, post-create-delete.ts, post-create-shared.ts) to clear the husky 300-line pre-push size hook.",
+      "2026-06-25 version bump: apps/worker/package.json 0.2.3 → 0.3.0 (new feature + bug fixes); apps/tma/package.json 1.1.3 → 1.1.4 (user-visible label changes only)."
+    ],
+    "artifacts": [
+      "docs/exec-plans/plans/2026-06-25-feat-121-bot-natural-input-direct-create.md",
+      "docs/exec-plans/index.md",
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "apps/worker/src/db/repositories/expense-repository.ts",
+      "apps/worker/src/bot/renderers/keyboards.ts",
+      "apps/worker/src/bot/commands/natural-expense.ts",
+      "apps/worker/src/bot/commands/post-create-expense.ts",
+      "apps/worker/src/bot/callback-dispatcher.ts",
+      "apps/worker/src/bot/service.ts",
+      "apps/worker/test/unit/bot/commands/natural-expense.spec.ts",
+      "apps/worker/test/unit/bot/commands/post-create-expense.spec.ts",
+      "apps/worker/test/unit/bot/renderers/keyboards.spec.ts",
+      "harness/feature_index.json",
+      "harness/features/feat-121.json",
+      "harness/progress.md"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh lint -> OK.",
+      "2026-06-25 RED: `pnpm --filter worker exec vitest run test/unit/bot/commands/natural-expense.spec.ts` failed on new regression test with `[30000, 30000, 30000]` instead of `[30000, 25000, 50000]`.",
+      "2026-06-25 GREEN: `pnpm --filter worker exec vitest run test/unit/bot/commands/natural-expense.spec.ts` -> 11 tests passed.",
+      "2026-06-25 final: `./init.sh typecheck` -> OK; `./init.sh lint` -> OK; full `./init.sh` -> Done!.",
+      "Original feat-121 full-run evidence: Worker tests: 99 test files, 623 tests, 28 new (10 natural-expense + 12 post-create + 6 keyboards total including 3 new postCreateKeyboard cases). Pre-existing 595 tests still pass.",
+      "TMA tests: 22 files, 113 tests still pass (unchanged).",
+      "Full ./init.sh --verbose exits 0 with 'Done!' at the end."
+    ]
+  },
+  "notes": "Decision: no dedupe on natural input. The user's flow is 'send → get instant confirmation → fix mistakes with the 🗑 Xoá button'. Dedupe would add latency and a re-confirm step, defeating the speed-first UX. Cost: the same text + same day sends duplicate expenses. Acceptable because the delete button is 1-tap and there is no financial risk of loss. If a future slice needs dedupe, add it as a same-day + same-title + same-amount window before createExpense. Decision: `🏠 Chọn household` is hidden when the user has zero households — the picker would just show a 'no households' note, so the button adds no value and crowds the delete button. Trade-off: we add `updateExpenseHousehold` instead of reusing `updateExpense` because the latter requires a full UpdateExpenseInput (categoryKey, sourceKey, title, etc.); pulling those from the existing row just to pass them back would be a footgun if any field drifts. The new partial helper only touches household_id + currency_code. Defense-in-depth: every mutating handler re-loads the expense and checks `spent_by_user_id === ctx.appUserId`. The callback-dispatcher already filters unlinked users, but this guards against a stale-link race or a malicious callback forged against another user's expenseId."
+}
