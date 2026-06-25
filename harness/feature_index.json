@@ -669,6 +669,11 @@
       "id": "feat-119",
       "name": "Bot multi-expense batch command /aimulti (up to 10 per message)",
       "status": "done"
+    },
+    {
+      "id": "feat-120",
+      "name": "Bot /aimulti per-item dedupeKey — fix cross-item state collision",
+      "status": "done"
     }
   ]
 }

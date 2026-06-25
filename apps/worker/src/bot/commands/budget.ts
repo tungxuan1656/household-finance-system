@@ -1,3 +1,5 @@
+import type { BudgetStatusLabel } from '@/bot/format'
+import { renderBudgetLine, renderBudgetStatusText } from '@/bot/format'
 import { findBudgetLimits } from '@/db/repositories/budget-limit-repository'
 import {
   getBudgetSpendSummary,
@@ -5,14 +7,8 @@ import {
 } from '@/db/repositories/budget-repository'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
+import { formatPeriodLabel, getCurrentPeriod } from '@/lib/period'
 
-import {
-  type BudgetStatusLabel,
-  formatPeriodLabel,
-  getCurrentPeriod,
-  renderBudgetLine,
-  renderBudgetStatusText,
-} from '../renderers/finance-text'
 import { budgetKeyboard, openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
@@ -149,13 +145,13 @@ export const handleBudgetCommand = async (
     }
 
     lines.push(
-      renderBudgetLine(
+      renderBudgetLine({
         name,
-        budget.totalLimitMinor,
-        spendSummary.totalActualMinor,
-        budget.currencyCode,
+        totalPlannedMinor: budget.totalLimitMinor,
+        totalActualMinor: spendSummary.totalActualMinor,
+        currencyCode: budget.currencyCode,
         status,
-      ),
+      }),
     )
   }
 

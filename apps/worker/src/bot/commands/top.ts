@@ -1,6 +1,6 @@
+import { renderTopCategoriesText } from '@/bot/format'
 import { getAnalyticsOverview } from '@/db/repositories/expense-analytics-repository'
 
-import { renderTopCategoriesText } from '../renderers/finance-text'
 import { openAppKeyboard, topKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 import { resolveReadScope } from './read-scope'
@@ -54,11 +54,12 @@ export const handleTopCommand = async (
     : 'cá nhân'
 
   return {
-    text: renderTopCategoriesText(
-      overview.topCategories,
+    text: renderTopCategoriesText({
+      categories: overview.topCategories,
       scopeLabel,
-      data.periodLabel,
-    ),
+      periodLabel: data.periodLabel,
+      currencyCode: overview.currencyCode,
+    }),
     parseMode: 'HTML',
     replyMarkup: topKeyboard(tmaUrl),
   }

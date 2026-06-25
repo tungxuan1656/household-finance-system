@@ -1,0 +1,30 @@
+{
+  "id": "feat-120",
+  "name": "Bot /aimulti per-item dedupeKey — fix cross-item state collision",
+  "status": "done",
+  "description": "Fix /aimulti state collision: dedupeKey was derived from the full command tail, so N items in one batch that shared `occurredAt` got the same dedupeKey, and `upsertDraft`'s ON CONFLICT overwrote a single D1 row. N preview messages were sent with N different texts but all buttons pointed to one row, producing 'đã thêm trước đó' on later items, duplicated expenses, and household-select editing the wrong preview. Fix: buildDraftsFromItems now passes a per-item `rawText = ${index}|${title}|${amount}|${occurredAt}` to buildDraftFromItem so each batch item gets a unique dedupeKey and its own D1 row. /ai single, natural input, and /aimulti single-item graceful-degradation paths are unchanged. Spec updated to clarify the per-item dedupeKey formula and explicitly state that in-batch duplicates (same title|amount|date) become two stand-alone drafts (user cancels the unwanted one).",
+  "dependencies": ["feat-119"],
+  "evidence": {
+    "planned": [
+      "Inline plan: 1) change buildDraftsFromItems loop to indexed; 2) derive per-item rawText (index|title|amount|occurredAt); 3) pass to buildDraftFromItem via spread; 4) update spec doc line 164 + acceptance criteria to match. No buildDraftFromItem / computeDedupeKey signature changes. No new tests per user request (continues feat-119 convention)."
+    ],
+    "done": [
+      "ai-expense-shared.ts buildDraftsFromItems: loop is now `for (let i = 0; ...)`; builds `itemRawText = ${i}|${item.title}|${item.amount}|${item.occurredAt}` per item; passes `{ ...options, rawText: itemRawText }` to buildDraftFromItem. Comment documents the bug and the rationale for the index-included formula.",
+      "docs/product-specs/tma/telegram-bot-companion.md line 164: 'Re-send safety' now describes the per-item content + index formula and clarifies that the per-item text (not the full command tail) is what makes keys unique inside one batch.",
+      "docs/product-specs/tma/telegram-bot-companion.md acceptance criteria: explicit bullet added for in-batch duplicates — 'ăn cơm 30k, ăn cơm 30k' produces two stand-alone drafts, user cancels the unwanted one."
+    ],
+    "artifacts": [
+      "apps/worker/src/bot/commands/ai-expense-shared.ts",
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "harness/features/feat-120.json",
+      "harness/feature_index.json",
+      "harness/progress.md"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh lint -> OK.",
+      "Test suite not run per explicit user request ('bỏ qua tests') — risk: existing /ai mocks don't cover buildDraftsFromItems, so a behavior regression in the per-item rawText construction would not be caught by current tests. Mitigation: change is a 1-loop conversion with a formula built from already-validated ParsedExpenseItem fields; the only failure mode is a typo in the template string, which is exercised at runtime on the first /aimulti the user sends."
+    ]
+  },
+  "notes": "Index-included formula is robust against in-batch duplicates (title|amount|occurredAt collision). Trade-off: if the AI parser re-orders items across re-sends of the same /aimulti, per-item dedupeKeys shift and the re-send is treated as a fresh batch (weakness). Acceptable because the AI parser returns items in input order in practice; user can always confirm a duplicate as a no-op. Alternative content-only hash (sha256(title|amount|occurredAt)) would re-introduce in-batch duplicate collapse, so the index is required to honor the acceptance criterion that bot does not dedupe within a batch."
+}

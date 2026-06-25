@@ -2,6 +2,7 @@
 
 - last-archived: 2026-06-23
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
+- 2026-06-25 — Bot /aimulti per-item dedupeKey fix: buildDraftsFromItems loop uses `index|title|amount|occurredAt` so each batch item gets its own D1 row; fixes cross-item "đã thêm trước đó", duplicate expenses, and wrong-item household-select edit (feat-120 evidence)
 - 2026-06-24 — TMA AI expense input: double textarea height (min-h-45 → min-h-90) with max-h-[60vh] cap to prevent overflow (feat-084 evidence)
 - 2026-06-24 — TMA add-expense step 2: drop title validation, allow empty title (defaults to '') (feat-084 evidence)
 - 2026-06-24 — TMA add-expense step 2: clone DatePicker from step 1 below preview, above money input (shared Zustand date state) (feat-084 evidence)

@@ -1,3 +1,5 @@
+import { LOADER_TEXT } from '@/bot/format'
+
 import type { BotServiceDeps } from '../callback-dispatcher'
 import { buildCtx } from '../callback-dispatcher'
 import {
@@ -36,10 +38,7 @@ export const runAiExpenseCommand = async (
     languageCode: message.from.language_code,
   })
 
-  const loaderMsgId = await client.sendMessage(
-    ctx.chatId,
-    '⏳ Đang phân tích chi tiêu...',
-  )
+  const loaderMsgId = await client.sendMessage(ctx.chatId, LOADER_TEXT)
 
   const result = await handleAiExpenseCommand(ctx)
 
@@ -81,10 +80,7 @@ export const runAiMultiExpenseCommand = async (
     languageCode: message.from.language_code,
   })
 
-  const loaderMsgId = await client.sendMessage(
-    ctx.chatId,
-    '⏳ Đang phân tích chi tiêu...',
-  )
+  const loaderMsgId = await client.sendMessage(ctx.chatId, LOADER_TEXT)
 
   const result: MultiExpenseResult = await handleAiMultiExpenseCommand(ctx)
 
@@ -135,7 +131,6 @@ export const runAiMultiExpenseCommand = async (
   for (const hit of result.dedupeHits) {
     await client.sendMessage(ctx.chatId, hit.text, {
       parseMode: 'HTML',
-      replyMarkup: hit.replyMarkup,
     })
   }
 
