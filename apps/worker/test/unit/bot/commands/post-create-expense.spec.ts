@@ -48,11 +48,9 @@ vi.mock('@/db/repositories/audit-log-repository', () => ({
 }))
 
 // ── Imports under test ───────────────────────────────────────────────────────
-import {
-  handlePostCreateApply,
-  handlePostCreateDelete,
-  handlePostCreateHousehold,
-} from '@/bot/commands/post-create-expense'
+import { handlePostCreateApply } from '@/bot/commands/post-create-apply'
+import { handlePostCreateDelete } from '@/bot/commands/post-create-delete'
+import { handlePostCreateHousehold } from '@/bot/commands/post-create-household'
 import type { CommandContext } from '@/bot/types'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

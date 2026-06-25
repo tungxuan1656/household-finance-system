@@ -9,11 +9,9 @@ import {
   handleRetryExpense,
 } from './commands/confirm-expense'
 import { handleHouseholdSelect } from './commands/household-select'
-import {
-  handlePostCreateApply,
-  handlePostCreateDelete,
-  handlePostCreateHousehold,
-} from './commands/post-create-expense'
+import { handlePostCreateApply } from './commands/post-create-apply'
+import { handlePostCreateDelete } from './commands/post-create-delete'
+import { handlePostCreateHousehold } from './commands/post-create-household'
 import {
   handlePreferenceToggle,
   handleSettingsCommand,
