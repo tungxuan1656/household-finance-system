@@ -1,11 +1,3 @@
-import {
-  AI_UNAVAILABLE_TEXT,
-  INPUT_UNRECOGNIZED_TEXT,
-  LOADER_TEXT,
-  renderExpensePreviewText,
-} from '@/bot/format'
-import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
-
 import { findAppUserIdByTelegramId } from './account-linking'
 import type { BotServiceDeps } from './callback-dispatcher'
 import {
@@ -17,18 +9,13 @@ import {
   runAiExpenseCommand,
   runAiMultiExpenseCommand,
 } from './commands/ai-expense-service'
-import {
-  buildDraftFromItem,
-  normalizeAiItem,
-} from './commands/ai-expense-shared'
 import { handleBudgetCommand } from './commands/budget'
 import { handleHelpCommand } from './commands/help'
+import { runNaturalExpenseCreate } from './commands/natural-expense'
 import { handleSettingsCommand } from './commands/settings'
 import { handleStartCommand } from './commands/start'
 import { handleStatsCommand } from './commands/stats'
 import { handleTopCommand } from './commands/top'
-import { detectAmountInVnd, looksLikeExpense } from './lib/vn-amount-detector'
-import { expensePreviewKeyboard } from './renderers/keyboards'
 import { TelegramClient } from './telegram-client'
 import type { BotResponse, TelegramUpdate } from './types'
 
@@ -50,6 +37,10 @@ export const handleUpdate = async (
 /**
  * Handle a regular message update.
  * Supports bot commands and natural expense input.
+ *
+ * Natural input (feat-121) bypasses the preview/confirm step and
+ * creates each parsed expense immediately. `/ai` and `/aimulti` keep
+ * their preview → confirm flow.
  */
 const handleMessageUpdate = async (
   update: TelegramUpdate,
@@ -67,8 +58,8 @@ const handleMessageUpdate = async (
     text.startsWith('/') || text.startsWith('！') || text.startsWith('!')
 
   // ── Natural expense input (non-command, private chat, linked user) ─────
+  // feat-121: direct-create flow — see commands/natural-expense.ts.
   if (!isBotCommand) {
-    // Only process in private chats for linked users
     if (message.chat.type !== 'private') return 0
 
     const appUserId =
@@ -77,125 +68,13 @@ const handleMessageUpdate = async (
         : await findAppUserIdByTelegramId(deps.db, String(message.from.id))
 
     if (!appUserId) return 0
-    if (!looksLikeExpense(text)) return 0
 
-    const amountResult = detectAmountInVnd(text)
-
-    if (!amountResult) return 0
-
-    // Check AI config
-    if (
-      !deps.env?.OPENAI_COMPAT_BASE_URL ||
-      !deps.env?.OPENAI_COMPAT_API_KEY ||
-      !deps.env?.OPENAI_COMPAT_MODEL
-    ) {
-      return 0
-    }
-
-    // ── Send loader message ─────────────────────────────────────────
-    const loaderMsgId = await client.sendMessage(message.chat.id, LOADER_TEXT)
-
-    // Call AI parser for category/date/source
-    let rawItems: Array<{
-      amount: number
-      categoryKey: string
-      sourceKey?: string
-      title: string
-      occurredAt?: string
-    }>
-
-    try {
-      rawItems = await parseExpensesWithAi(
-        text,
-        {
-          baseUrl: deps.env.OPENAI_COMPAT_BASE_URL,
-          apiKey: deps.env.OPENAI_COMPAT_API_KEY,
-          model: deps.env.OPENAI_COMPAT_MODEL,
-        },
-        { defaultOccurredAt: new Date().toISOString().slice(0, 10) },
-      )
-    } catch (error) {
-      if (error instanceof AiUpstreamError) {
-        await client.editMessageText(
-          message.chat.id,
-          loaderMsgId,
-          AI_UNAVAILABLE_TEXT,
-          { parseMode: 'HTML' },
-        )
-
-        return 1
-      }
-
-      throw error
-    }
-
-    if (rawItems.length === 0) {
-      await client.editMessageText(
-        message.chat.id,
-        loaderMsgId,
-        INPUT_UNRECOGNIZED_TEXT,
-        { parseMode: 'HTML' },
-      )
-
-      return 1
-    }
-
-    // Normalize the first valid item
-    const defaultDate = new Date().toISOString().slice(0, 10)
-    let validItem = normalizeAiItem(rawItems[0]!, defaultDate)
-
-    if (!validItem) {
-      await client.editMessageText(
-        message.chat.id,
-        loaderMsgId,
-        INPUT_UNRECOGNIZED_TEXT,
-        { parseMode: 'HTML' },
-      )
-
-      return 1
-    }
-
-    // Override AI amount with our detected amount (more reliable)
-    validItem = { ...validItem, amount: amountResult.amountVnd }
-
-    // Build preview + draft
-    const ctx = buildCtx({
-      userId: message.from.id,
-      chatId: message.chat.id,
-      text,
-      appUserId,
+    return runNaturalExpenseCreate(
       deps,
-      firstName: message.from.first_name,
-      lastName: message.from.last_name,
-      languageCode: message.from.language_code,
-    })
-
-    const built = await buildDraftFromItem(ctx, validItem, {
-      rawText: text,
-      defaultDate,
-    })
-
-    if ('status' in built) {
-      // Already-confirmed expense (dedupe hit) — edit loader with confirmation
-      await client.editMessageText(message.chat.id, loaderMsgId, built.text, {
-        parseMode: 'HTML',
-      })
-
-      return 1
-    }
-
-    // Edit loader with full preview
-    const previewText = renderExpensePreviewText({
-      ...built.preview,
-      currencyCode: built.currencyCode,
-    })
-
-    await client.editMessageText(message.chat.id, loaderMsgId, previewText, {
-      parseMode: 'HTML',
-      replyMarkup: expensePreviewKeyboard(built.draftId),
-    })
-
-    return 1
+      client,
+      { ...message, from: message.from },
+      appUserId,
+    )
   }
 
   const command = extractCommand(text)

@@ -313,6 +313,42 @@ export const softDeleteExpense = async (
   return Number(result.meta.changes ?? 0) === 1
 }
 
+/**
+ * Partial update for the natural-input post-create household flow.
+ * Only `household_id` and `currency_code` are changed. The caller is
+ * responsible for verifying ownership and household membership before
+ * calling this helper. Returns the updated row, or null when the row
+ * does not exist / was already deleted.
+ *
+ * `householdId` of null sets the expense back to personal scope and
+ * falls back to VND currency.
+ */
+export const updateExpenseHousehold = async (
+  db: D1Database,
+  expenseId: string,
+  householdId: string | null,
+  currencyCode: string,
+): Promise<StoredExpense | null> => {
+  const now = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE expenses
+          SET household_id = ?,
+              currency_code = ?,
+              updated_at = ?
+        WHERE id = ?
+          AND deleted_at IS NULL`,
+    )
+    .bind(householdId, currencyCode, now, expenseId)
+    .run()
+
+  if (Number(result.meta.changes ?? 0) !== 1) {
+    return null
+  }
+
+  return findExpenseByIdRaw(db, expenseId)
+}
+
 export const restoreExpense = async (
   db: D1Database,
   expenseId: string,

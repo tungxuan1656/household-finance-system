@@ -46,6 +46,27 @@ The bot helps users act from chat. It does not replace the TMA.
 
 In private chat, a linked user can send a short expense message (e.g. `ăn bún 30k 15/6`). Bot auto-detects, sends loader, then shows preview. `/ai` is an optional alias, not a required prefix. `/start` echoes this hint.
 
+#### Natural Input Direct Create (feat-121)
+
+For natural input only, the bot bypasses the preview/confirm step. When the amount detector + AI parser produce at least one valid expense, the bot creates each expense immediately and sends one Telegram message per created expense with two inline buttons: `🏠 Chọn household` and `🗑 Xoá`. `/ai` and `/aimulti` keep the existing preview → confirm flow unchanged.
+
+Flow:
+
+1. Loader `⏳ Phân tích...` is sent first (anchors the slot, same as `/ai`).
+2. AI parser returns one or more valid items.
+3. For each valid item, the bot creates the expense directly with `created_via_bot=1` and `scope=personal` by default, then edits the loader into the first per-expense message and sends one extra Telegram message per remaining expense.
+4. Each per-expense message uses the compact summary line `[emoji] title · amount₫ · dd/MM` prefixed with `✅` and a `postCreateKeyboard` (`🏠 Chọn household` + `🗑 Xoá`).
+5. Tapping `🏠 Chọn household` shows the household picker (same `householdSelectKeyboard` as `/ai`).
+6. Picking a household re-edits the same message to a full preview line with `scope/household` information.
+7. Picking `👤 Cá nhân` re-edits the same message back to the personal post-create summary.
+8. Tapping `🗑 Xoá` soft-deletes the expense and re-edits the same message to `🗑 Đã xoá — <summary>` with no buttons.
+9. When the user has zero households, the `🏠 Chọn household` button is hidden (only `🗑 Xoá` is shown).
+10. The bot never sends a separate success/cancel bubble for the natural-input path — every state change edits the same message in place.
+
+### Auto-detect Spec Compatibility
+
+The acceptance criteria in this spec cover both the `/ai`/preview-confirm flow and the natural-input direct-create flow. For natural input, "explicit user confirmation" is replaced with the post-create delete button (1-tap undo). For `/ai` and `/aimulti`, the original "no expense without explicit user confirmation" rule still applies.
+
 ## Message Hygiene
 
 Bot chat must stay readable. Avoid new bubbles when one edit suffices.
@@ -120,9 +141,9 @@ If scope is unclear, bot asks the user to choose:
 
 ### Acceptance Criteria
 
-- Bot never creates an expense from free-form text without explicit user confirmation.
-- Bot shows all important parsed fields before confirmation.
-- User can cancel before any expense is created.
+- For `/ai` and `/aimulti`: bot never creates an expense from free-form text without explicit user confirmation. For natural input (non-command path), the bot creates each parsed expense immediately and surfaces a `🗑 Xoá` button on the same message as a 1-tap undo (see Natural Input Direct Create above).
+- Bot shows all important parsed fields before confirmation (`/ai` / `/aimulti` only).
+- For `/ai` and `/aimulti`: user can cancel before any expense is created.
 - If required fields are missing, bot shows an error and asks the user to enter the expense again.
 - Bot handles one expense per `/ai` message in MVP. `/aimulti` covers batches of up to 10 expenses per message (see Multi-Expense Flow).
 - Low confidence is acceptable when the bot can still show a complete preview and the user confirms it.
@@ -130,9 +151,9 @@ If scope is unclear, bot asks the user to choose:
 - `🏠 Chọn household` edits the original preview message in-place to a compact one-line summary (`[Category] title amount₫ dd/MM`) followed by `Chọn phạm vi:` and a household-selection keyboard. The user picks a scope and the same message is edited back to the full preview (with updated scope). Bot does not stack extra "Chọn phạm vi" or preview bubbles above the original.
 - After save, the preview message is edited in-place to a one-line success state prefixed with `✅` using the same compact format: `✅ [Category] title amount₫ dd/MM`. Keyboard swaps to post-save (`📋 Xem chi tiết` / `➕ Thêm khoản khác`). Bot does not send a new success message.
 - `❌ Hủy` edits the original preview message in-place to `Đã huỷ thêm chi tiêu.` with no inline buttons. Bot does not send a new cancel bubble.
-- Duplicate taps must not create duplicate expenses.
+- For `/ai` and `/aimulti`: duplicate taps must not create duplicate expenses.
 - Bot-created expenses are visible in audit/history as created through Telegram bot.
-- Bot does not edit or delete expenses.
+- Bot does not edit expenses (only assigns household scope to bot-created expenses through the natural-input post-create flow) and only soft-deletes expenses the bot itself created through that same flow.
 
 ## Multi-Expense Flow
 
