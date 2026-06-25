@@ -141,7 +141,7 @@ export const handleBudgetCommand = async (
         ? await findHouseholdById(db, budget.householdId)
         : null
 
-      name = household ? `Ngân sách ${household.name}` : 'Ngân sách hộ gia đình'
+      name = household ? `Ngân sách ${household.name}` : 'Ngân sách gia đình'
     }
 
     lines.push(

@@ -13,7 +13,7 @@ describe('expensePreviewKeyboard', () => {
     const labels = kb.inline_keyboard.flat().map((b) => b.text)
 
     expect(labels).toContain('✅ Thêm chi tiêu')
-    expect(labels).toContain('🏠 Chọn household')
+    expect(labels).toContain('🏠 Chọn gia đình')
     expect(labels).toContain('❌ Hủy')
     // Retry was removed; users can simply send a new expense message.
     expect(labels).not.toContain('🔁 Nhập lại')
@@ -51,7 +51,7 @@ describe('postCreateKeyboard (feat-121 natural-input direct-create)', () => {
     const kb = postCreateKeyboard('exp-1', true)
     const labels = kb.inline_keyboard.flat().map((b) => b.text)
 
-    expect(labels).toContain('🏠 Chọn household')
+    expect(labels).toContain('🏠 Chọn gia đình')
     expect(labels).toContain('🗑 Xoá')
   })
 
@@ -60,7 +60,7 @@ describe('postCreateKeyboard (feat-121 natural-input direct-create)', () => {
     const labels = kb.inline_keyboard.flat().map((b) => b.text)
 
     expect(labels).toContain('🗑 Xoá')
-    expect(labels).not.toContain('🏠 Chọn household')
+    expect(labels).not.toContain('🏠 Chọn gia đình')
   })
 
   it('wires the buttons to ch_household / ch_delete callbacks', () => {

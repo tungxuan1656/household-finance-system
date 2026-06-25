@@ -13,7 +13,7 @@ export const handleHelpCommand = (ctx: CommandContext): BotResponse => {
       '• Gửi thẳng chi tiêu hoặc /ai\n' +
       '• /stats · /top · /budget\n' +
       '• /settings\n\n' +
-      'Biểu đồ, hộ gia đình: mở Mini App.\n\n' +
+      'Biểu đồ, gia đình: mở Mini App.\n\n' +
       '🏠 <a href="' +
       tmaUrl +
       '">Mở Mini App</a>',

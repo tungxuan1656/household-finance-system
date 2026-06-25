@@ -141,7 +141,7 @@ export const runWeeklyDigest = async (
           const hh = budget.householdId
             ? await findHouseholdById(db, budget.householdId)
             : null
-          name = hh ? `Ngân sách ${hh.name}` : 'Ngân sách hộ gia đình'
+          name = hh ? `Ngân sách ${hh.name}` : 'Ngân sách gia đình'
         }
 
         if (percent >= 80) {

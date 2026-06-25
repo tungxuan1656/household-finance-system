@@ -9,7 +9,7 @@
  * All three edit the original per-expense message in place. They never
  * send a new bubble. The handlers are read-modify-write on the inline
  * keyboard: pickers do not persist a state row, so re-tapping
- * `🏠 Chọn household` re-renders the picker fresh.
+ * `🏠 Chọn gia đình` re-renders the picker fresh.
  *
  * Defense in depth: every mutating handler re-loads the expense and
  * verifies `spent_by_user_id === ctx.appUserId` before writing. The
@@ -33,7 +33,7 @@ import {
 import type { BotResponse, CommandContext } from '../types'
 
 /**
- * Tap on `🏠 Chọn household`. Edits the per-expense message to a
+ * Tap on `🏠 Chọn gia đình`. Edits the per-expense message to a
  * compact summary + "Chọn phạm vi:" + household picker keyboard.
  * The picker uses `ch_apply:<expenseId>:<hhId>` callbacks that hit
  * the apply handler below.
