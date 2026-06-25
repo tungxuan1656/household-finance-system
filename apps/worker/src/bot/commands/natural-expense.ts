@@ -1,7 +1,7 @@
 /**
  * Natural-input expense direct-create flow (feat-121).
  *
- * Unlike `/ai` and `/aimulti`, the natural (non-command) chat path skips
+ * Unlike `/add`, the natural (non-command) chat path skips
  * the preview/confirm step. When the amount detector + AI parser produce
  * at least one valid expense, the bot creates each expense immediately
  * and sends one Telegram message per created expense. Each message carries

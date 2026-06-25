@@ -17,7 +17,7 @@ import {
 } from './ai-expense-shared'
 
 /**
- * Result returned by `handleAiMultiExpenseCommand`. The service uses the
+ * Result returned by `handleAddExpenseCommand`. The service uses the
  * `kind` field to decide whether to edit the loader into a single message
  * (kind: 'single') or to edit into the first preview and send one Telegram
  * message per remaining preview (kind: 'batch'). `truncatedNote` is appended
@@ -38,96 +38,26 @@ export type MultiExpenseResult =
     }
 
 /**
- * Handle /ai <text> command.
+ * Handle /add <text> command.
  *
- * Single-expense path. Parses via AI, shows structured preview with
- * confirm buttons. Unlinked users get Open App guidance.
- * For batch input use /aimulti instead.
- */
-export const handleAiExpenseCommand = async (
-  ctx: CommandContext,
-): Promise<BotResponse> => {
-  const pre = await parseAiCommandInput(ctx)
-
-  if (pre.kind === 'response') {
-    return pre.response
-  }
-
-  const { expenseText, hasScopeArg, scopeToken, defaultDate, rawItems } =
-    pre.input
-
-  if (rawItems.length === 0) {
-    return {
-      text: unrecognizedCommandText('/ai ăn bún 30k 15/6'),
-      parseMode: 'HTML',
-    }
-  }
-
-  // Use only the first complete item (multi-expense not supported here)
-  let validItem: ParsedExpenseItem | null = null
-
-  for (const raw of rawItems) {
-    validItem = normalizeAiItem(raw, defaultDate)
-    if (validItem) break
-  }
-
-  if (!validItem) {
-    return {
-      text: missingFieldsText('/ai ăn bún 30k 15/6'),
-      parseMode: 'HTML',
-    }
-  }
-
-  // If there were extra items, note that only the first was used
-  const extraNote =
-    rawItems.length > 1
-      ? '\n\nℹ️ Chỉ xử lý khoản đầu. Nhiều khoản dùng <code>/aimulti</code>.'
-      : ''
-
-  const built = await buildDraftFromItem(ctx, validItem, {
-    rawText: expenseText,
-    defaultDate,
-    scopeArg: hasScopeArg ? scopeToken : undefined,
-  })
-
-  if ('status' in built) {
-    return {
-      text: built.text,
-      parseMode: 'HTML',
-    }
-  }
-
-  return {
-    text:
-      renderExpensePreviewText({
-        ...built.preview,
-        currencyCode: built.currencyCode,
-      }) + extraNote,
-    parseMode: 'HTML',
-    replyMarkup: expensePreviewKeyboard(built.draftId),
-  }
-}
-
-/**
- * Handle /aimulti <text> command.
- *
- * Multi-expense batch path. Parses up to MAX_BATCH_SIZE expenses via AI and
- * returns one preview per item. The service sends one Telegram message per
- * preview (the loader is repurposed as the first preview, like /ai does).
+ * Parses up to MAX_BATCH_SIZE expenses via AI and returns one preview per
+ * item. The service sends one Telegram message per preview (the loader is
+ * repurposed as the first preview). Supports one valid item (single preview)
+ * or multiple valid items (one preview per item).
  *
  * Each preview has its own `draftId` and the standard preview keyboard, so
  * confirm / household / cancel keep working via the per-message edit-in-place
  * machinery from feat-117/118.
  *
  * Returns:
- * - `{ kind: 'single', response }` when the user typed /aimulti but the AI
- *   only produced one valid item. The service edits the loader to that
- *   single preview (graceful degradation, no surprise).
+ * - `{ kind: 'single', response }` when the AI only produced one valid item.
+ *   The service edits the loader to that single preview (graceful degradation,
+ *   no surprise).
  * - `{ kind: 'batch', previews, truncatedNote }` for 2+ valid items.
  *   `truncatedNote` is non-null when the AI returned more than
  *   MAX_BATCH_SIZE items; the service appends it to the first preview text.
  */
-export const handleAiMultiExpenseCommand = async (
+export const handleAddExpenseCommand = async (
   ctx: CommandContext,
 ): Promise<MultiExpenseResult> => {
   const pre = await parseAiCommandInput(ctx)
@@ -143,7 +73,7 @@ export const handleAiMultiExpenseCommand = async (
     return {
       kind: 'single',
       response: {
-        text: unrecognizedCommandText('/aimulti ăn bún 30k, cà phê 25k'),
+        text: unrecognizedCommandText('/add ăn bún 30k, cà phê 25k'),
         parseMode: 'HTML',
       },
     }
@@ -166,15 +96,15 @@ export const handleAiMultiExpenseCommand = async (
     return {
       kind: 'single',
       response: {
-        text: missingFieldsText('/aimulti ăn bún 30k, cà phê 25k'),
+        text: missingFieldsText('/add ăn bún 30k, cà phê 25k'),
         parseMode: 'HTML',
       },
     }
   }
 
   // Graceful degradation: if the AI only returned one valid item, fall
-  // through to the single-expense response shape so the service uses the
-  // existing /ai send path. Avoids sending "1 message" via the batch path.
+  // through to the single-expense response shape. Avoids sending "1
+  // message" via the batch path.
   if (validItems.length === 1) {
     const single = validItems[0]!
     const built = await buildDraftFromItem(ctx, single, {

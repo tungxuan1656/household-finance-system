@@ -9,7 +9,7 @@
 
 /**
  * Format a millisecond epoch as `YYYY-MM-DD` for the renderers. Mirrors
- * what the /ai preview path does, so the post-create summary line uses
+ * what the /add preview path does, so the post-create summary line uses
  * the same date format the user saw during preview.
  */
 export const formatDateOnly = (epochMs: number): string => {

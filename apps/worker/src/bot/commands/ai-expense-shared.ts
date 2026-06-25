@@ -47,7 +47,7 @@ export const normalizeAiItem = (
  * Build preview data + draft from a validated ParsedExpenseItem.
  *
  * Handles scope resolution, currency lookups, draft creation, and dedupe
- * detection. Used by both /ai command handler and natural input handler.
+ * detection. Used by both /add command handler and natural input handler.
  *
  * Return type:
  * - { preview, draftId, currencyCode } on success → caller renders + attaches keyboard
@@ -169,7 +169,7 @@ export const computeDedupeKey = async (
 }
 
 /**
- * Maximum number of expenses parsed from a single /aimulti message.
+ * Maximum number of expenses parsed from a single /add message.
  * Caps chat spam while still covering realistic batches (a day of shopping,
  * a day of travel, etc.).
  */
@@ -188,7 +188,7 @@ export interface BatchPreviewItem {
 }
 
 /**
- * Result of `buildDraftsFromItems` — used by the /aimulti handler.
+ * Result of `buildDraftsFromItems` — used by the /add handler.
  * - `previews` is the list of preview items the service should send
  *   (one Telegram message per item). Empty when nothing could be built.
  * - `dedupeHits` is a list of response texts for items whose draft
@@ -209,7 +209,7 @@ export interface BatchBuildResult {
 
 /**
  * Build N preview items + draft rows from N validated ParsedExpenseItems.
- * Used by the /aimulti command path. Each item gets its own draft (and
+ * Used by the /add command path. Each item gets its own draft (and
  * therefore its own confirm / household / cancel message in the chat).
  *
  * Errors (DB failure, invalid membership) for an individual item are

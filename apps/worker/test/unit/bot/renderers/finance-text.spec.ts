@@ -247,7 +247,7 @@ describe('format', () => {
   })
 
   describe('renderExpenseSummaryLine', () => {
-    it('renders emoji title amount₫ dd/MM', () => {
+    it('renders emoji + category label · title · amount₫ · dd/MM', () => {
       const result = renderExpenseSummaryLine({
         amountMinor: 5000000,
         occurredAt: '2026-06-24',
@@ -259,6 +259,7 @@ describe('format', () => {
       })
 
       expect(result).toContain('🛵')
+      expect(result).toContain('Di chuyển')
       expect(result).toContain('đổ xăng')
       expect(result).toContain('5.000.000₫')
       expect(result).toContain('24/06')

@@ -172,8 +172,8 @@ const processCallbackAction = async (
     case 'add_expense': {
       result = {
         text:
-          'Vui lòng nhập nội dung chi tiêu bằng lệnh /ai.\n\n' +
-          'Ví dụ: <code>/ai ăn bún 30k 15/6</code>',
+          'Vui lòng nhập nội dung chi tiêu bằng lệnh /add.\n\n' +
+          'Ví dụ: <code>/add ăn bún 30k 15/6</code>',
         parseMode: 'HTML' as const,
       }
 

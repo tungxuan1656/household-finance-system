@@ -100,8 +100,9 @@ export function renderExpenseSummaryLine(
   const shortDate =
     parts.length === 3 ? `${parts[2]}/${parts[1]}` : options.occurredAt
   const emoji = getCategoryEmoji(options.categoryKey)
+  const label = getCategoryLabel(options.categoryKey)
 
-  return `${emoji} ${escapeHtml(options.title)} · <code>${amountFormatted}₫</code> · ${shortDate}`
+  return `${emoji} ${escapeHtml(label)} · ${escapeHtml(options.title)} · <code>${amountFormatted}₫</code> · ${shortDate}`
 }
 
 /** Render a single budget status line. */

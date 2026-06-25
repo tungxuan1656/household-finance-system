@@ -35,7 +35,7 @@ const buildMockCtx = (
   userId: 12345,
   chatId: 67890,
   userDisplayName: 'TestUser',
-  text: '/aimulti ...',
+  text: '/add ...',
   appUserId: 'test-app-user-id',
   locale: 'vi',
   db: {} as D1Database,
@@ -85,7 +85,7 @@ describe('buildDraftsFromItems', () => {
     ]
 
     await buildDraftsFromItems(ctx, items, {
-      rawText: '/aimulti ăn trưa 50k, ăn trưa 50k',
+      rawText: '/add ăn trưa 50k, ăn trưa 50k',
       defaultDate: '2025-06-25',
     })
 

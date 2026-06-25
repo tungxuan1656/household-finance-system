@@ -4,7 +4,7 @@ import { openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
 /**
- * Common input shared by `/ai` and `/aimulti` handlers after the standard
+ * Common input shared by `/add` handler after the standard
  * pre-flight checks (unlinked user, missing text, missing AI config, AI
  * parse error). Returned by `parseAiCommandInput` so both handlers can
  * skip the boilerplate and focus on their single vs batch difference.
@@ -24,7 +24,7 @@ export interface ParsedAiCommandInput {
 }
 
 /**
- * Run the common pre-flight for `/ai` and `/aimulti`:
+ * Run the common pre-flight for `/add`:
  * - linked-user check (returns a guidance response when not linked)
  * - extract expense text + optional `hh:<id>` / `household` scope arg
  * - validate AI env config
@@ -70,7 +70,7 @@ export const parseAiCommandInput = async (
       response: {
         text:
           'Nhập nội dung chi tiêu.\n\n' +
-          'Vd: <code>/ai ăn bún 30k 15/6</code>',
+          'Vd: <code>/add ăn bún 30k 15/6</code>',
         parseMode: 'HTML',
       },
     }

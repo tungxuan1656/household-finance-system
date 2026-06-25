@@ -34,8 +34,7 @@ The bot helps users act from chat. It does not replace the TMA.
 | Command | Purpose |
 |---------|---------|
 | `/start` | Main menu + auto-detect hint. |
-| `/ai` | Parse one expense message. Optional in private chat. |
-| `/aimulti` | Parse up to 10 expenses from one message (batch). |
+| `/add` | Parse 1–10 expenses from one message (batch). |
 | `/stats` | Spending summary for a period. |
 | `/budget` | Budget status + warnings. |
 | `/top` | Top categories for a period. |
@@ -44,19 +43,19 @@ The bot helps users act from chat. It does not replace the TMA.
 
 ### Auto-detect
 
-In private chat, a linked user can send a short expense message (e.g. `ăn bún 30k 15/6`). Bot auto-detects, sends loader, then shows preview. `/ai` is an optional alias, not a required prefix. `/start` echoes this hint.
+In private chat, a linked user can send a short expense message (e.g. `ăn bún 30k 15/6`). Bot auto-detects, sends loader, then creates each expense immediately (bypasses preview step — delete button provides 1-tap undo). `/start` echoes this hint.
 
 #### Natural Input Direct Create (feat-121)
 
-For natural input only, the bot bypasses the preview/confirm step. When the amount detector + AI parser produce at least one valid expense, the bot creates each expense immediately and sends one Telegram message per created expense with two inline buttons: `🏠 Chọn household` and `🗑 Xoá`. `/ai` and `/aimulti` keep the existing preview → confirm flow unchanged.
+For natural input only, the bot bypasses the preview/confirm step. When the amount detector + AI parser produce at least one valid expense, the bot creates each expense immediately and sends one Telegram message per created expense with two inline buttons: `🏠 Chọn household` and `🗑 Xoá`. `/add` keeps the existing preview → confirm flow unchanged.
 
 Flow:
 
-1. Loader `⏳ Phân tích...` is sent first (anchors the slot, same as `/ai`).
+1. Loader `⏳ Phân tích...` is sent first (anchors the slot, same as `/add`).
 2. AI parser returns one or more valid items.
 3. For each valid item, the bot creates the expense directly with `created_via_bot=1` and `scope=personal` by default, then edits the loader into the first per-expense message and sends one extra Telegram message per remaining expense.
-4. Each per-expense message uses the compact summary line `[emoji] title · amount₫ · dd/MM` prefixed with `✅` and a `postCreateKeyboard` (`🏠 Chọn household` + `🗑 Xoá`).
-5. Tapping `🏠 Chọn household` shows the household picker (same `householdSelectKeyboard` as `/ai`).
+4. Each per-expense message uses the compact summary line `[emoji] [label] · title · amount₫ · dd/MM` prefixed with `✅` and a `postCreateKeyboard` (`🏠 Chọn household` + `🗑 Xoá`).
+5. Tapping `🏠 Chọn household` shows the household picker (same `householdSelectKeyboard` as `/add`).
 6. Picking a household re-edits the same message to a full preview line with `scope/household` information.
 7. Picking `👤 Cá nhân` re-edits the same message back to the personal post-create summary.
 8. Tapping `🗑 Xoá` soft-deletes the expense and re-edits the same message to `🗑 Đã xoá — <summary>` with no buttons.
@@ -65,7 +64,7 @@ Flow:
 
 ### Auto-detect Spec Compatibility
 
-The acceptance criteria in this spec cover both the `/ai`/preview-confirm flow and the natural-input direct-create flow. For natural input, "explicit user confirmation" is replaced with the post-create delete button (1-tap undo). For `/ai` and `/aimulti`, the original "no expense without explicit user confirmation" rule still applies.
+The acceptance criteria in this spec cover both the `/add`/preview-confirm flow and the natural-input direct-create flow. For natural input, "explicit user confirmation" is replaced with the post-create delete button (1-tap undo). For `/add`, the original "no expense without explicit user confirmation" rule still applies.
 
 ## Message Hygiene
 
@@ -79,7 +78,7 @@ Rules:
 - The generic `🏠 Mở Mini App` button stays only for unlinked users as an `openAppKeyboard` guidance prompt. Linked users do not see this button.
 - The bot never edits a system message it did not send.
 - The bot never silently replaces a user's message.
-- When the bot begins analyzing a user message (both `/ai` and natural input), it sends a loader message `⏳ Đang phân tích chi tiêu...` first, then calls `editMessageText` to replace the loader with the result. This anchors the response slot and gives instant feedback.
+- When the bot begins analyzing a user message (both `/add` and natural input), it sends a loader message `⏳ Đang phân tích chi tiêu...` first, then calls `editMessageText` to replace the loader with the result. This anchors the response slot and gives instant feedback.
 
 ## Main Menu
 
@@ -94,7 +93,7 @@ Rules:
 
 Menu actions use buttons by default. Text prompts are only for expense input or explicit search-like input.
 
-Linked user menu text: `💬 Gửi thẳng "ăn bún 30k" — bot tự phân tích, không cần /ai.`
+Linked user menu text: `💬 Gửi thẳng "ăn bún 30k" — bot tự phân tích, không cần /add.`
 
 ## Expense Capture Flow
 
@@ -102,7 +101,7 @@ Linked user menu text: `💬 Gửi thẳng "ăn bún 30k" — bot tự phân tí
 
 Two equivalent entry forms. Both end at the same preview / confirm step.
 
-1. `/ai` form — user sends `/ai ăn bún 30k 15/6` or chooses `➕ Thêm chi tiêu` and then enters expense text. Bot immediately sends `⏳ Đang phân tích chi tiêu...` as a placeholder, then replaces it with the preview after analysis completes.
+1. `/add` form — user sends `/add ăn bún 30k 15/6` or chooses `➕ Thêm chi tiêu` and then enters expense text. Bot immediately sends `⏳ Đang phân tích chi tiêu...` as a placeholder, then replaces it with the preview after analysis completes.
 2. Natural input — in a private chat, a linked user sends one short message that matches the amount detector patterns. The bot sends the same loader placeholder, then runs analysis and replaces it with the preview. Group chats do not run this path.
 
 Natural input patterns the bot accepts:
@@ -141,17 +140,17 @@ If scope is unclear, bot asks the user to choose:
 
 ### Acceptance Criteria
 
-- For `/ai` and `/aimulti`: bot never creates an expense from free-form text without explicit user confirmation. For natural input (non-command path), the bot creates each parsed expense immediately and surfaces a `🗑 Xoá` button on the same message as a 1-tap undo (see Natural Input Direct Create above).
-- Bot shows all important parsed fields before confirmation (`/ai` / `/aimulti` only).
-- For `/ai` and `/aimulti`: user can cancel before any expense is created.
+- For `/add`: bot never creates an expense from free-form text without explicit user confirmation. For natural input (non-command path), the bot creates each parsed expense immediately and surfaces a `🗑 Xoá` button on the same message as a 1-tap undo (see Natural Input Direct Create above).
+- Bot shows all important parsed fields before confirmation (`/add` only).
+- For `/add`: user can cancel before any expense is created.
 - If required fields are missing, bot shows an error and asks the user to enter the expense again.
-- Bot handles one expense per `/ai` message in MVP. `/aimulti` covers batches of up to 10 expenses per message (see Multi-Expense Flow).
+- `/add` covers from 1 to 10 expenses per message (see Multi-Expense Flow).
 - Low confidence is acceptable when the bot can still show a complete preview and the user confirms it.
 - After save, bot edits the original preview message in-place to a one-line success state (`✅ Đã lưu chi tiêu {amount} {currency} — {title}`) and swaps the preview keyboard for a post-save keyboard with `📋 Xem chi tiết` and `➕ Thêm khoản khác`. Bot does not send a new success message.
-- `🏠 Chọn household` edits the original preview message in-place to a compact one-line summary (`[Category] title amount₫ dd/MM`) followed by `Chọn phạm vi:` and a household-selection keyboard. The user picks a scope and the same message is edited back to the full preview (with updated scope). Bot does not stack extra "Chọn phạm vi" or preview bubbles above the original.
-- After save, the preview message is edited in-place to a one-line success state prefixed with `✅` using the same compact format: `✅ [Category] title amount₫ dd/MM`. Keyboard swaps to post-save (`📋 Xem chi tiết` / `➕ Thêm khoản khác`). Bot does not send a new success message.
+- `🏠 Chọn household` edits the original preview message in-place to a compact one-line summary (`[emoji] [label] · title · amount₫ · dd/MM`) followed by `Chọn phạm vi:` and a household-selection keyboard. The user picks a scope and the same message is edited back to the full preview (with updated scope). Bot does not stack extra "Chọn phạm vi" or preview bubbles above the original.
+- After save, the preview message is edited in-place to a one-line success state prefixed with `✅` using the same compact format: `✅ [emoji] [label] · title · amount₫ · dd/MM`. Keyboard swaps to post-save (`📋 Xem chi tiết` / `➕ Thêm khoản khác`). Bot does not send a new success message.
 - `❌ Hủy` edits the original preview message in-place to `Đã huỷ thêm chi tiêu.` with no inline buttons. Bot does not send a new cancel bubble.
-- For `/ai` and `/aimulti`: duplicate taps must not create duplicate expenses.
+- For `/add`: duplicate taps must not create duplicate expenses.
 - Bot-created expenses are visible in audit/history as created through Telegram bot.
 - Bot does not edit expenses (only assigns household scope to bot-created expenses through the natural-input post-create flow) and only soft-deletes expenses the bot itself created through that same flow.
 
@@ -159,14 +158,15 @@ If scope is unclear, bot asks the user to choose:
 
 ### Entry
 
-`/aimulti` is the batch variant of `/ai`. The user explicitly opts in by typing `/aimulti`. Natural input and `/ai` stay single-only — users who want one expense per message keep the existing flow.
+`/add` handles 1–10 expenses from a single message. The user types `/add` followed by the expense text.
 
 ### Trigger
 
-User sends `/aimulti <text>` where `<text>` contains multiple expenses. Examples:
+User sends `/add <text>` where `<text>` contains one or more expenses. Examples:
 
-- `/aimulti ăn bún 30k, cà phê 25k, đổ xăng 50k`
-- `/aimulti hh:gia-dinh-a bún 30k, cà phê 25k` (scope arg applies to all items)
+- `/add ăn bún 30k`
+- `/add ăn bún 30k, cà phê 25k, đổ xăng 50k`
+- `/add hh:gia-dinh-a bún 30k, cà phê 25k` (scope arg applies to all items)
 
 ### Steps
 
@@ -174,23 +174,23 @@ User sends `/aimulti <text>` where `<text>` contains multiple expenses. Examples
 2. AI parses the text into up to `MAX_BATCH_SIZE = 10` expense items.
 3. Each item is normalized (required fields) and gets its own draft row.
 4. Bot edits the loader into the first preview, then sends one Telegram message per remaining preview. Each preview has its own `messageId` and `draftId`.
-5. The per-message interaction (✅ Lưu / 🏠 Chọn household / ❌ Hủy) works exactly like `/ai` — every preview is a stand-alone mini-flow that edits its own message in place. No special batch mode in the keyboards.
+5. The per-message interaction (✅ Lưu / 🏠 Chọn household / ❌ Hủy) works exactly like `/add` — every preview is a stand-alone mini-flow that edits its own message in place. No special batch mode in the keyboards.
 6. If the user picks the same scope for several items, they tap 🏠 on each preview. There is no "apply to all" button — the user owns the decision per expense.
 
 ### Limits + Edge Cases
 
-- `MAX_BATCH_SIZE = 10` items per `/aimulti`. Items beyond the cap are dropped with a note on the first preview: `ℹ️ Chỉ lấy 10 khoản đầu, N khoản sau bỏ qua.`
+- `MAX_BATCH_SIZE = 10` items per `/add`. Items beyond the cap are dropped with a note on the first preview: `ℹ️ Chỉ lấy 10 khoản đầu, N khoản sau bỏ qua.`
 - Items missing required fields (tiền, danh mục, ngày, nội dung) are dropped silently. If all items are invalid, bot shows a single error message and sends no preview messages.
-- Graceful degradation: if the AI returns only 1 valid item, the command falls back to a single preview (no second message, no scope prompt). Same UX as `/ai`.
-- Re-send safety: each batch item gets its own dedupe key derived from the item's own content + position (`index | title | amount | occurredAt`) wrapped in the standard `(userId, occurredAt)` frame. Re-sending the same `/aimulti` returns the "Đã thêm trước đó" message for every already-confirmed item, plus a fresh preview for any new item. The per-item text (not the full command tail) is what makes the keys unique inside one batch.
+- Graceful degradation: if the AI returns only 1 valid item, the command falls back to a single preview (no second message, no scope prompt).
+- Re-send safety: each batch item gets its own dedupe key derived from the item's own content + position (`index | title | amount | occurredAt`) wrapped in the standard `(userId, occurredAt)` frame. Re-sending the same `/add` returns the "Đã thêm trước đó" message for every already-confirmed item, plus a fresh preview for any new item. The per-item text (not the full command tail) is what makes the keys unique inside one batch.
 
 ### Acceptance Criteria
 
-- `/aimulti` parses up to 10 expenses from one message. Each becomes its own Telegram message with its own draft.
-- The per-preview interaction (confirm / household / cancel) reuses the existing edit-in-place machinery from `/ai`. No new callbacks.
+- `/add` parses up to 10 expenses from one message. Each becomes its own Telegram message with its own draft.
+- The per-preview interaction (confirm / household / cancel) reuses the existing edit-in-place machinery from `/add`. No new callbacks.
 - Bot does not deduplicate or merge items. The user reviews each preview before saving. In particular, when two items in the same batch share `title | amount | occurredAt` (e.g., the user typed `ăn cơm 30k, ăn cơm 30k`), the bot creates two stand-alone drafts; the user cancels whichever one is not intended.
-- The scope arg (`hh:<id>` or `household`) on `/aimulti` applies to every item in the batch.
-- Amount override from the natural input detector does NOT apply to `/aimulti` — multi-item amounts come from the AI parser only.
+- The scope arg (`hh:<id>` or `household`) on `/add` applies to every item in the batch.
+- Amount override from the natural input detector does NOT apply to `/add` — multi-item amounts come from the AI parser only.
 
 ## Statistics Flow
 
@@ -364,7 +364,7 @@ Bot may notify about invite and membership changes later if product need is clea
 ### MVP
 
 - `/start` menu.
-- `/ai` expense preview and confirmed add.
+- `/add` expense preview and confirmed add.
 - `/stats` guided personal/household summary.
 - `/budget` status view.
 - `/top` top categories.
@@ -388,7 +388,7 @@ Bot may notify about invite and membership changes later if product need is clea
 - Bot write scope is create-expense only.
 - Bot should send users to the TMA for any task that needs careful review.
 - Bot edits the original message when the reply is a follow-up; it does not post a new bubble just to show the next state.
-- Bot reads amount patterns only inside the natural-input path. Numbers from that path still pass through the same `/ai` draft / confirm pipeline.
+- Bot reads amount patterns only inside the natural-input path. Numbers from that path still pass through the same `/add` draft / confirm pipeline.
 - `xxx000` with at least 4 digits always reads as thousand VND inside the natural-input path. Numbers below 1000, with more than 12 digits, or with ambiguous `00` endings are rejected.
 - Shared domain truth remains in shared specs.
 - This spec only defines Telegram companion behavior.
