@@ -237,8 +237,19 @@ export const buildDraftsFromItems = async (
     invalidCount: 0,
   }
 
-  for (const item of validItems) {
-    const built = await buildDraftFromItem(ctx, item, options)
+  for (let i = 0; i < validItems.length; i++) {
+    const item = validItems[i]!
+    // Per-item rawText (content + index) so each batch item gets a unique
+    // dedupeKey. Without this, items sharing `occurredAt` collide on
+    // (userId, rawText, occurredAt) and upsertDraft's ON CONFLICT overwrites
+    // sibling rows — turning N preview messages into N buttons pointing at
+    // one D1 row (symptoms: "đã thêm trước đó" on later items, expenses
+    // duplicating, household-select editing the wrong preview).
+    const itemRawText = `${i}|${item.title}|${item.amount}|${item.occurredAt}`
+    const built = await buildDraftFromItem(ctx, item, {
+      ...options,
+      rawText: itemRawText,
+    })
 
     if ('status' in built) {
       result.dedupeHits.push({

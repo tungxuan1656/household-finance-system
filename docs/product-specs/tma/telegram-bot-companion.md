@@ -161,13 +161,13 @@ User sends `/aimulti <text>` where `<text>` contains multiple expenses. Examples
 - `MAX_BATCH_SIZE = 10` items per `/aimulti`. Items beyond the cap are dropped with a note on the first preview: `ℹ️ Chỉ lấy 10 khoản đầu, N khoản sau bỏ qua.`
 - Items missing required fields (tiền, danh mục, ngày, nội dung) are dropped silently. If all items are invalid, bot shows a single error message and sends no preview messages.
 - Graceful degradation: if the AI returns only 1 valid item, the command falls back to a single preview (no second message, no scope prompt). Same UX as `/ai`.
-- Re-send safety: dedupe key is `(userId, rawText, occurredAt)` per item. Re-sending the same `/aimulti` returns the "Đã thêm trước đó" message for every already-confirmed item, plus a fresh preview for any new item.
+- Re-send safety: each batch item gets its own dedupe key derived from the item's own content + position (`index | title | amount | occurredAt`) wrapped in the standard `(userId, occurredAt)` frame. Re-sending the same `/aimulti` returns the "Đã thêm trước đó" message for every already-confirmed item, plus a fresh preview for any new item. The per-item text (not the full command tail) is what makes the keys unique inside one batch.
 
 ### Acceptance Criteria
 
 - `/aimulti` parses up to 10 expenses from one message. Each becomes its own Telegram message with its own draft.
 - The per-preview interaction (confirm / household / cancel) reuses the existing edit-in-place machinery from `/ai`. No new callbacks.
-- Bot does not deduplicate or merge items. The user reviews each preview before saving.
+- Bot does not deduplicate or merge items. The user reviews each preview before saving. In particular, when two items in the same batch share `title | amount | occurredAt` (e.g., the user typed `ăn cơm 30k, ăn cơm 30k`), the bot creates two stand-alone drafts; the user cancels whichever one is not intended.
 - The scope arg (`hh:<id>` or `household`) on `/aimulti` applies to every item in the batch.
 - Amount override from the natural input detector does NOT apply to `/aimulti` — multi-item amounts come from the AI parser only.
 
