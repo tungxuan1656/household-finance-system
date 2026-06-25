@@ -55,10 +55,10 @@ export function renderTopCategoriesText(options: TopCategoriesOptions): string {
 
   const lines = options.categories.map((cat) => {
     const label = getCategoryLabel(cat.categoryKey)
-    const amount = formatMinorAmount(cat.totalSpendMinor)
+    const amount = formatMinorAmount(cat.totalSpendMinor, options.currencyCode)
     const bar = buildProgressBar(cat.percentOfTotal)
 
-    return `<b>${label}</b>\n<code>${amount}₫</code> · ${bar} ${cat.percentOfTotal}%`
+    return `<b>${label}</b>\n<code>${amount} ${options.currencyCode}</code> · ${bar} ${cat.percentOfTotal}%`
   })
 
   return `<b>Top danh mục</b> · ${options.periodLabel}\n\n${lines.join('\n\n')}`
@@ -75,14 +75,14 @@ export function renderExpensePreviewText(
   const categoryLabel = getCategoryLabel(options.categoryKey)
   const scopeLabel =
     options.scope === 'household' && options.householdName
-      ? options.householdName
+      ? escapeHtml(options.householdName)
       : 'Cá nhân'
   let text =
     `<b>${amountFormatted} ${options.currencyCode}</b> · ${categoryLabel}\n` +
     `${escapeHtml(options.title)}\n` +
     `<code>${options.occurredAt}</code> · ${getSourceLabel(options.sourceKey)} · ${scopeLabel}`
   if (options.groupName) {
-    text += ` · ${options.groupName}`
+    text += ` · ${escapeHtml(options.groupName)}`
   }
 
   return text
@@ -134,7 +134,7 @@ export function renderBudgetLine(options: BudgetLineOptions): string {
       label = `Đã dùng ${percent}%`
   }
 
-  return `${emoji} <b>${options.name}</b>\n<code>${actual}</code> / <code>${planned}</code> ${options.currencyCode} · ${label}`
+  return `${emoji} <b>${escapeHtml(options.name)}</b>\n<code>${actual}</code> / <code>${planned}</code> ${options.currencyCode} · ${label}`
 }
 
 /** Render full budget status text from individual lines. */

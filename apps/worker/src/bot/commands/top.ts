@@ -58,6 +58,7 @@ export const handleTopCommand = async (
       categories: overview.topCategories,
       scopeLabel,
       periodLabel: data.periodLabel,
+      currencyCode: overview.currencyCode,
     }),
     parseMode: 'HTML',
     replyMarkup: topKeyboard(tmaUrl),

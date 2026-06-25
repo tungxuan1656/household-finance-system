@@ -30,7 +30,7 @@ export function renderBudgetAlertText(options: BudgetAlertOptions): string {
 
   return (
     `${header}\n\n` +
-    `<b>${options.name}</b>\n` +
+    `<b>${escapeHtml(options.name)}</b>\n` +
     `<code>${actual}</code> / <code>${planned}</code> ${options.currencyCode} · ${percent}%`
   )
 }
@@ -56,8 +56,8 @@ export function renderHouseholdActivityText(
   const emoji = getCategoryEmoji(options.categoryKey)
 
   return (
-    `<b>${options.householdName}</b>\n` +
-    `${options.actorName} đã thêm:\n\n` +
+    `<b>${escapeHtml(options.householdName)}</b>\n` +
+    `${escapeHtml(options.actorName)} đã thêm:\n\n` +
     `${emoji} <code>${amount} ${options.currencyCode}</code> · ${catLabel}\n` +
     `${escapeHtml(options.title)}\n` +
     `<code>${options.occurredAt}</code>`
@@ -93,7 +93,7 @@ export function renderWeeklyDigestText(options: WeeklyDigestOptions): string {
     text += '\n\n<b>Ngân sách:</b>\n'
     for (const bw of options.budgetWarnings) {
       const emoji = bw.status === 'exceeded' ? '🔴' : '🟡'
-      text += `${emoji} ${bw.name} · ${bw.percent}%\n`
+      text += `${emoji} ${escapeHtml(bw.name)} · ${bw.percent}%\n`
     }
   }
   if (options.deepLinkUrl) {

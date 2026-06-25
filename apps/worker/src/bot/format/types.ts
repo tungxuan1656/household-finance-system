@@ -28,6 +28,7 @@ export interface TopCategoriesOptions {
   }>
   scopeLabel: string
   periodLabel: string
+  currencyCode: string
 }
 
 export interface ExpensePreviewOptions extends ParsedPreviewData {
