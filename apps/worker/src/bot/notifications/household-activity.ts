@@ -2,7 +2,6 @@ import { listHouseholdMembers } from '@/db/repositories/household-membership-rep
 import { findTelegramBotChatByAppUserId } from '@/db/repositories/telegram-bot-chat-repository'
 
 import type { TelegramClient } from '../telegram-client'
-import type { HouseholdActivityTextOptions } from './renderers'
 import { renderHouseholdActivityText } from './renderers'
 import { sendNotification } from './sender'
 
@@ -58,7 +57,7 @@ export const sendHouseholdActivity = async (
     if (!chat) continue
 
     // Send via sender with preference gating
-    const activityTextOptions: HouseholdActivityTextOptions = {
+    const activityTextOptions = {
       actorName,
       householdName,
       title: expenseTitle,

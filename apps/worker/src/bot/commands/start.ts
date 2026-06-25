@@ -12,8 +12,7 @@ export const handleStartCommand = (ctx: CommandContext): BotResponse => {
   if (!ctx.appUserId) {
     return {
       text:
-        'Xin chào! 👋\n\n' +
-        'Mở Mini App để bắt đầu.\n\n' +
+        '👋 Mở Mini App để bắt đầu.\n\n' +
         '🏠 <a href="' +
         tmaUrl +
         '">Mở Mini App</a>',
@@ -34,11 +33,7 @@ export const handleStartCommand = (ctx: CommandContext): BotResponse => {
   const displayName = ctx.userDisplayName ?? 'bạn'
 
   return {
-    text:
-      'Chào ' +
-      displayName +
-      '! 🎉\n\n' +
-      'Chọn hoặc gửi thẳng chi tiêu (vd: "ăn bún 30k").',
+    text: displayName + ', gửi chi tiêu (vd: "ăn bún 30k").',
     parseMode: 'HTML',
     replyMarkup: {
       inline_keyboard: [

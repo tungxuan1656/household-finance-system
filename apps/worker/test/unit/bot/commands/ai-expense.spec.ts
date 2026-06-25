@@ -113,8 +113,8 @@ describe('handleAiExpenseCommand', () => {
     const ctx = buildCtx()
     const result = await handleAiExpenseCommand(ctx)
 
-    expect(result.text).toContain('Xem trước chi tiêu')
     expect(result.text).toContain('30.000')
+    expect(result.text).toContain('VND')
     expect(result.text).toContain('Ăn uống')
     expect(result.text).toContain('2026-06-15')
     expect(result.text).toContain('ăn bún')
@@ -139,7 +139,7 @@ describe('handleAiExpenseCommand', () => {
     const ctx = buildCtx()
     const result = await handleAiExpenseCommand(ctx)
 
-    expect(result.text).toContain('Chưa nhận diện được chi tiêu')
+    expect(result.text).toContain('Không nhận diện được')
   })
 
   it('returns re-entry guidance when AI returns invalid item (missing fields)', async () => {
@@ -174,7 +174,6 @@ describe('handleAiExpenseCommand', () => {
     const ctx = buildCtx()
     const result = await handleAiExpenseCommand(ctx)
 
-    expect(result.text).toContain('Xem trước chi tiêu')
     expect(result.text).toContain('ăn bún')
     expect(result.text).toContain('Chỉ xử lý khoản đầu')
     expect(result.text).not.toContain('xe ôm')

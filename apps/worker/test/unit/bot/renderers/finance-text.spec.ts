@@ -2,44 +2,43 @@ import { describe, expect, it } from 'vitest'
 
 import {
   CATEGORY_LABELS,
+  buildProgressBar,
   formatMinorAmount,
-  formatPeriodLabel,
   getCategoryLabel,
-  getCurrentPeriod,
   renderBudgetLine,
   renderBudgetStatusText,
   renderExpensePreviewText,
   renderExpenseSummaryLine,
-  renderProgressBar,
   renderStatsText,
   renderTopCategoriesText,
-} from '@/bot/renderers/finance-text'
+} from '@/bot/format'
+import { formatPeriodLabel, getCurrentPeriod } from '@/lib/period'
 
-describe('finance-text', () => {
-  describe('renderProgressBar', () => {
+describe('format', () => {
+  describe('buildProgressBar', () => {
     it('renders full bar at 100%', () => {
-      expect(renderProgressBar(100, 8)).toBe('▓▓▓▓▓▓▓▓')
+      expect(buildProgressBar(100, 8)).toBe('▓▓▓▓▓▓▓▓')
     })
 
     it('renders empty bar at 0%', () => {
-      expect(renderProgressBar(0, 8)).toBe('░░░░░░░░')
+      expect(buildProgressBar(0, 8)).toBe('░░░░░░░░')
     })
 
     it('renders half-filled bar at 50%', () => {
-      expect(renderProgressBar(50, 8)).toBe('▓▓▓▓░░░░')
+      expect(buildProgressBar(50, 8)).toBe('▓▓▓▓░░░░')
     })
 
     it('clamps values above 100', () => {
-      expect(renderProgressBar(200, 4)).toBe('▓▓▓▓')
+      expect(buildProgressBar(200, 4)).toBe('▓▓▓▓')
     })
 
     it('clamps values below 0', () => {
-      expect(renderProgressBar(-10, 4)).toBe('░░░░')
+      expect(buildProgressBar(-10, 4)).toBe('░░░░')
     })
 
-    it('defaults to 16 width', () => {
-      const bar = renderProgressBar(50)
-      expect(bar.length).toBe(16)
+    it('defaults to 10 width', () => {
+      const bar = buildProgressBar(50)
+      expect(bar.length).toBe(10)
     })
   })
 
@@ -90,23 +89,22 @@ describe('finance-text', () => {
   describe('getCurrentPeriod', () => {
     it('returns a YYYY-MM string', () => {
       const period = getCurrentPeriod()
-
       expect(period).toMatch(/^\d{4}-(0[1-9]|1[0-2])$/)
     })
   })
 
   describe('renderStatsText', () => {
     it('renders stats text with amount and count', () => {
-      const result = renderStatsText(
-        15000000,
-        3,
-        'VND',
-        'cá nhân',
-        'Tháng 6/2026',
-      )
+      const result = renderStatsText({
+        totalSpendMinor: 15000000,
+        expenseCount: 3,
+        currencyCode: 'VND',
+        scopeLabel: 'cá nhân',
+        periodLabel: 'Tháng 6/2026',
+      })
 
-      expect(result).toContain('Thống kê')
       expect(result).toContain('cá nhân')
+      expect(result).toContain('Tháng 6/2026')
       expect(result).toContain('15.000.000')
       expect(result).toContain('VND')
       expect(result).toContain('3 khoản')
@@ -124,13 +122,13 @@ describe('finance-text', () => {
         },
       ]
 
-      const result = renderTopCategoriesText(
+      const result = renderTopCategoriesText({
         categories,
-        'cá nhân',
-        'Tháng 6/2026',
-      )
+        scopeLabel: 'cá nhân',
+        periodLabel: 'Tháng 6/2026',
+      })
 
-      expect(result).toContain('Danh mục chi tiêu')
+      expect(result).toContain('Top danh mục')
       expect(result).toContain('Ăn uống')
       expect(result).toContain('Di chuyển')
       expect(result).toContain('50%')
@@ -140,7 +138,11 @@ describe('finance-text', () => {
     })
 
     it('renders empty state when no categories', () => {
-      const result = renderTopCategoriesText([], 'cá nhân', 'Tháng 6/2026')
+      const result = renderTopCategoriesText({
+        categories: [],
+        scopeLabel: 'cá nhân',
+        periodLabel: 'Tháng 6/2026',
+      })
 
       expect(result).toContain('Chưa có chi tiêu')
     })
@@ -148,35 +150,42 @@ describe('finance-text', () => {
 
   describe('renderBudgetLine', () => {
     it('renders OK status in green', () => {
-      const result = renderBudgetLine(
-        'Ngân sách cá nhân',
-        1000000,
-        200000,
-        'VND',
-        'ok',
-      )
+      const result = renderBudgetLine({
+        name: 'Ngân sách cá nhân',
+        totalPlannedMinor: 1000000,
+        totalActualMinor: 200000,
+        currencyCode: 'VND',
+        status: 'ok',
+      })
 
       expect(result).toContain('🟢')
       expect(result).toContain('Ngân sách cá nhân')
       expect(result).toContain('1.000.000')
+      expect(result).toContain('200.000')
       expect(result).toContain('Đã dùng 20%')
     })
 
     it('renders warning status in yellow', () => {
-      const result = renderBudgetLine('Test', 1000000, 850000, 'VND', 'warning')
+      const result = renderBudgetLine({
+        name: 'Test',
+        totalPlannedMinor: 1000000,
+        totalActualMinor: 850000,
+        currencyCode: 'VND',
+        status: 'warning',
+      })
 
       expect(result).toContain('🟡')
       expect(result).toContain('Đã dùng 85%')
     })
 
     it('renders exceeded status in red', () => {
-      const result = renderBudgetLine(
-        'Test',
-        1000000,
-        1200000,
-        'VND',
-        'exceeded',
-      )
+      const result = renderBudgetLine({
+        name: 'Test',
+        totalPlannedMinor: 1000000,
+        totalActualMinor: 1200000,
+        currencyCode: 'VND',
+        status: 'exceeded',
+      })
 
       expect(result).toContain('🔴')
       expect(result).toContain('Đã vượt 120%')
@@ -202,19 +211,16 @@ describe('finance-text', () => {
 
   describe('renderExpensePreviewText', () => {
     it('renders personal scope preview', () => {
-      const result = renderExpensePreviewText(
-        {
-          amountMinor: 3000000, // 30k VND
-          occurredAt: '2026-06-15',
-          categoryKey: 'food',
-          title: 'ăn bún',
-          sourceKey: 'bank-transfer',
-          scope: 'personal',
-        },
-        'VND',
-      )
+      const result = renderExpensePreviewText({
+        amountMinor: 3000000,
+        occurredAt: '2026-06-15',
+        categoryKey: 'food',
+        title: 'ăn bún',
+        sourceKey: 'bank-transfer',
+        scope: 'personal',
+        currencyCode: 'VND',
+      })
 
-      expect(result).toContain('Xem trước chi tiêu')
       expect(result).toContain('3.000.000')
       expect(result).toContain('VND')
       expect(result).toContain('Ăn uống')
@@ -224,53 +230,50 @@ describe('finance-text', () => {
     })
 
     it('renders household scope preview', () => {
-      const result = renderExpensePreviewText(
-        {
-          amountMinor: 5000000, // 50k VND
-          occurredAt: '2026-06-20',
-          categoryKey: 'transport',
-          title: 'xe ôm',
-          sourceKey: 'cash',
-          scope: 'household',
-          householdId: 'hh-1',
-          householdName: 'Gia đình Test',
-        },
-        'VND',
-      )
+      const result = renderExpensePreviewText({
+        amountMinor: 5000000,
+        occurredAt: '2026-06-20',
+        categoryKey: 'transport',
+        title: 'xe ôm',
+        sourceKey: 'cash',
+        scope: 'household',
+        householdId: 'hh-1',
+        householdName: 'Gia đình Test',
+        currencyCode: 'VND',
+      })
 
       expect(result).toContain('Gia đình Test')
     })
   })
 
   describe('renderExpenseSummaryLine', () => {
-    it('renders [Category] title amount₫ dd/MM', () => {
-      const result = renderExpenseSummaryLine(
-        {
-          amountMinor: 5000000,
-          occurredAt: '2026-06-24',
-          categoryKey: 'transport',
-          title: 'đổ xăng',
-          sourceKey: 'cash',
-          scope: 'personal',
-        },
-        'VND',
-      )
+    it('renders emoji title amount₫ dd/MM', () => {
+      const result = renderExpenseSummaryLine({
+        amountMinor: 5000000,
+        occurredAt: '2026-06-24',
+        categoryKey: 'transport',
+        title: 'đổ xăng',
+        sourceKey: 'cash',
+        scope: 'personal',
+        currencyCode: 'VND',
+      })
 
-      expect(result).toBe('[Di chuyển] đổ xăng 5.000.000₫ 24/06')
+      expect(result).toContain('🛵')
+      expect(result).toContain('đổ xăng')
+      expect(result).toContain('5.000.000₫')
+      expect(result).toContain('24/06')
     })
 
     it('falls back to raw date when not in YYYY-MM-DD shape', () => {
-      const result = renderExpenseSummaryLine(
-        {
-          amountMinor: 100,
-          occurredAt: 'today',
-          categoryKey: 'food',
-          title: 'ăn sáng',
-          sourceKey: 'cash',
-          scope: 'personal',
-        },
-        'VND',
-      )
+      const result = renderExpenseSummaryLine({
+        amountMinor: 100,
+        occurredAt: 'today',
+        categoryKey: 'food',
+        title: 'ăn sáng',
+        sourceKey: 'cash',
+        scope: 'personal',
+        currencyCode: 'VND',
+      })
 
       expect(result).toContain('ăn sáng')
       expect(result).toContain('today')

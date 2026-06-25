@@ -30,7 +30,7 @@ describe('handleStartCommand', () => {
     const result = await handleStartCommand(ctx)
 
     expect(result.text).toContain('Mở Mini App')
-    expect(result.text).toContain('Xin chào')
+    expect(result.text).toContain('👋')
     expect(result.parseMode).toBe('HTML')
     expect(result.replyMarkup).toBeDefined()
 
@@ -55,7 +55,7 @@ describe('handleStartCommand', () => {
 
     const result = await handleStartCommand(ctx)
 
-    expect(result.text).toContain('Chào Tung')
+    expect(result.text).toContain('Tung, gửi chi tiêu')
     expect(result.parseMode).toBe('HTML')
 
     if (result.replyMarkup && 'inline_keyboard' in result.replyMarkup) {
@@ -82,7 +82,8 @@ describe('handleStartCommand', () => {
 
     const result = await handleStartCommand(ctx)
 
-    expect(result.text).toContain('Chào bạn')
+    // userDisplayName is null, fallback to "bạn"
+    expect(result.text).toContain('bạn, gửi chi tiêu')
   })
 
   it('includes expense-entry hint for linked user', async () => {
@@ -93,6 +94,6 @@ describe('handleStartCommand', () => {
 
     const result = await handleStartCommand(ctx)
 
-    expect(result.text).toContain('gửi thẳng')
+    expect(result.text).toContain('gửi chi tiêu')
   })
 })

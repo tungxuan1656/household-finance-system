@@ -1,3 +1,7 @@
+import {
+  renderExpensePreviewText,
+  renderExpenseSummaryLine,
+} from '@/bot/format'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
 import type { PreviewData } from '@/db/repositories/telegram-bot-expense-draft-repository'
@@ -6,10 +10,6 @@ import {
   upsertDraft,
 } from '@/db/repositories/telegram-bot-expense-draft-repository'
 
-import {
-  renderExpensePreviewText,
-  renderExpenseSummaryLine,
-} from '../renderers/finance-text'
 import {
   expensePreviewKeyboard,
   householdSelectKeyboard,
@@ -137,16 +137,16 @@ export const handleHouseholdSelect = async (
     locale: draft.locale,
   })
 
+  const currencyCode =
+    preview.scope === 'household' && preview.householdId
+      ? ((await findHouseholdById(db, preview.householdId))
+          ?.defaultCurrencyCode ?? 'VND')
+      : 'VND'
+
   return {
     mode: 'edit',
     targetMessageId: messageId,
-    text: renderExpensePreviewText(
-      preview,
-      preview.scope === 'household' && preview.householdId
-        ? ((await findHouseholdById(db, preview.householdId))
-            ?.defaultCurrencyCode ?? 'VND')
-        : 'VND',
-    ),
+    text: renderExpensePreviewText({ ...preview, currencyCode }),
     parseMode: 'HTML',
     replyMarkup: expensePreviewKeyboard(draft.id),
   }
@@ -174,7 +174,7 @@ const buildHouseholdSelection = async (
           ?.defaultCurrencyCode ?? 'VND')
       : 'VND'
 
-  const summary = renderExpenseSummaryLine(preview, currencyCode)
+  const summary = renderExpenseSummaryLine({ ...preview, currencyCode })
 
   if (householdIds.length === 0) {
     return {

@@ -1,6 +1,6 @@
+import { renderStatsText } from '@/bot/format'
 import { getAnalyticsOverview } from '@/db/repositories/expense-analytics-repository'
 
-import { renderStatsText } from '../renderers/finance-text'
 import { openAppKeyboard, statsKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 import { resolveReadScope } from './read-scope'
@@ -54,13 +54,13 @@ export const handleStatsCommand = async (
     : 'cá nhân'
 
   return {
-    text: renderStatsText(
-      overview.totalSpendMinor,
-      overview.expenseCount,
-      overview.currencyCode,
+    text: renderStatsText({
+      totalSpendMinor: overview.totalSpendMinor,
+      expenseCount: overview.expenseCount,
+      currencyCode: overview.currencyCode,
       scopeLabel,
-      data.periodLabel,
-    ),
+      periodLabel: data.periodLabel,
+    }),
     parseMode: 'HTML',
     replyMarkup: statsKeyboard(tmaUrl),
   }

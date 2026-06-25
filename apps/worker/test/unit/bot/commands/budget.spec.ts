@@ -94,8 +94,9 @@ describe('handleBudgetCommand', () => {
     expect(result.text).toContain('Ngân sách')
     expect(result.text).toContain('🟢')
     expect(result.text).toContain('Ngân sách cá nhân')
-    expect(result.text).toContain('10.000.000 VND')
-    expect(result.text).toContain('2.000.000 VND')
+    expect(result.text).toContain('10.000.000')
+    expect(result.text).toContain('2.000.000')
+    expect(result.text).toContain('VND')
     expect(result.text).toContain('Đã dùng 20%')
   })
 

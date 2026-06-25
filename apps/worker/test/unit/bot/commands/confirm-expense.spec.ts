@@ -182,10 +182,10 @@ describe('handleConfirmExpense', () => {
     expect(result.mode).toBe('edit')
     expect(result.targetMessageId).toBe(42)
     expect(result.text).toContain('✅')
-    expect(result.text).toContain('[Ăn uống]')
+    expect(result.text).toContain('🍜')
+    expect(result.text).toContain('ăn bún')
     expect(result.text).toContain('3.000.000₫')
     expect(result.text).toContain('15/06')
-    expect(result.text).toContain('ăn bún')
 
     // Verify created_via_bot=1
     expect(

@@ -6,12 +6,12 @@ import {
 import { getAnalyticsOverview } from '@/db/repositories/expense-analytics-repository'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
-
 import {
   formatPeriodLabel,
   getCurrentPeriod,
   toPeriodRange,
-} from '../renderers/finance-text'
+} from '@/lib/period'
+
 import type { TelegramClient } from '../telegram-client'
 import { renderWeeklyDigestText } from './renderers'
 import { sendNotification } from './sender'
@@ -97,7 +97,7 @@ export const runWeeklyDigest = async (
 
       const budgetWarnings: Array<{
         name: string
-        status: string
+        status: 'warning' | 'exceeded'
         percent: number
       }> = []
 

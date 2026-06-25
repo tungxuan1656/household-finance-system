@@ -70,8 +70,8 @@ describe('handleTopCommand', () => {
     const ctx = buildCtx({ appUserId: 'user-1', text: '/top' })
     const result = await handleTopCommand(ctx)
 
-    expect(result.text).toContain('Danh mục chi tiêu')
-    expect(result.text).toContain('cá nhân')
+    expect(result.text).toContain('Top danh mục')
+    expect(result.text).toContain('Tháng 6/2026')
     expect(result.text).toContain('Ăn uống')
     expect(result.text).toContain('Di chuyển')
   })
@@ -115,7 +115,7 @@ describe('handleTopCommand', () => {
     const ctx = buildCtx({ appUserId: 'user-1', text: '/top hh:hh-1' })
     const result = await handleTopCommand(ctx)
 
-    expect(result.text).toContain('Gia đình Test')
+    expect(result.text).toContain('Top danh mục')
     expect(result.text).toContain('Ăn uống')
   })
 })

@@ -1,6 +1,10 @@
+import {
+  missingFieldsText,
+  renderExpensePreviewText,
+  unrecognizedCommandText,
+} from '@/bot/format'
 import type { ParsedExpenseItem } from '@/contracts/expense-parse-schemas'
 
-import { renderExpensePreviewText } from '../renderers/finance-text'
 import { expensePreviewKeyboard } from '../renderers/keyboards'
 import type { InlineKeyboardMarkup } from '../types'
 import type { BotResponse, CommandContext } from '../types'
@@ -55,9 +59,7 @@ export const handleAiExpenseCommand = async (
 
   if (rawItems.length === 0) {
     return {
-      text:
-        'Chưa nhận diện được chi tiêu. Thử cách viết khác.\n\n' +
-        'Vd: <code>/ai ăn bún 30k 15/6</code>',
+      text: unrecognizedCommandText('/ai ăn bún 30k 15/6'),
       parseMode: 'HTML',
     }
   }
@@ -72,9 +74,7 @@ export const handleAiExpenseCommand = async (
 
   if (!validItem) {
     return {
-      text:
-        'Thiếu thông tin (tiền, danh mục, ngày, nội dung). Thử lại.\n\n' +
-        'Vd: <code>/ai ăn bún 30k 15/6</code>',
+      text: missingFieldsText('/ai ăn bún 30k 15/6'),
       parseMode: 'HTML',
     }
   }
@@ -101,7 +101,10 @@ export const handleAiExpenseCommand = async (
 
   return {
     text:
-      renderExpensePreviewText(built.preview, built.currencyCode) + extraNote,
+      renderExpensePreviewText({
+        ...built.preview,
+        currencyCode: built.currencyCode,
+      }) + extraNote,
     parseMode: 'HTML',
     replyMarkup: expensePreviewKeyboard(built.draftId),
   }
@@ -142,9 +145,7 @@ export const handleAiMultiExpenseCommand = async (
     return {
       kind: 'single',
       response: {
-        text:
-          'Chưa nhận diện được chi tiêu. Thử cách viết khác.\n\n' +
-          'Vd: <code>/aimulti ăn bún 30k, cà phê 25k</code>',
+        text: unrecognizedCommandText('/aimulti ăn bún 30k, cà phê 25k'),
         parseMode: 'HTML',
       },
     }
@@ -167,9 +168,7 @@ export const handleAiMultiExpenseCommand = async (
     return {
       kind: 'single',
       response: {
-        text:
-          'Thiếu thông tin (tiền, danh mục, ngày, nội dung) ở tất cả các khoản. Thử lại.\n\n' +
-          'Vd: <code>/aimulti ăn bún 30k, cà phê 25k</code>',
+        text: missingFieldsText('/aimulti ăn bún 30k, cà phê 25k'),
         parseMode: 'HTML',
       },
     }
@@ -200,7 +199,10 @@ export const handleAiMultiExpenseCommand = async (
     return {
       kind: 'single',
       response: {
-        text: renderExpensePreviewText(built.preview, built.currencyCode),
+        text: renderExpensePreviewText({
+          ...built.preview,
+          currencyCode: built.currencyCode,
+        }),
         parseMode: 'HTML',
         replyMarkup: expensePreviewKeyboard(built.draftId),
       },

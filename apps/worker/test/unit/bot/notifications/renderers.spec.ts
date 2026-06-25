@@ -18,7 +18,7 @@ describe('notification renderers', () => {
       })
 
       expect(result).toContain('🟡')
-      expect(result).toContain('Ngân sách sắp hết')
+      expect(result).toContain('Sắp hết ngân sách')
       expect(result).toContain('Ngân sách cá nhân')
       expect(result).toContain('85%')
     })
@@ -33,7 +33,7 @@ describe('notification renderers', () => {
       })
 
       expect(result).toContain('🔴')
-      expect(result).toContain('Ngân sách đã vượt')
+      expect(result).toContain('Vượt ngân sách')
       expect(result).toContain('120%')
     })
   })
@@ -78,7 +78,7 @@ describe('notification renderers', () => {
         deepLinkUrl: 'https://t.me/phofis_bot',
       })
 
-      expect(result).toContain('Bản tin hàng tuần')
+      expect(result).toContain('Tuần')
       expect(result).toContain('15.000.000')
       expect(result).toContain('5 khoản')
       expect(result).toContain('Ăn uống')

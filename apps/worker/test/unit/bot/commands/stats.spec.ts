@@ -59,8 +59,8 @@ describe('handleStatsCommand', () => {
     const ctx = buildCtx({ appUserId: 'user-1', text: '/stats' })
     const result = await handleStatsCommand(ctx)
 
-    expect(result.text).toContain('Thống kê')
     expect(result.text).toContain('cá nhân')
+    expect(result.text).toContain('Tháng 6/2026')
   })
 
   it('returns household stats for linked user with hh: arg', async () => {
@@ -98,8 +98,8 @@ describe('handleStatsCommand', () => {
     const ctx = buildCtx({ appUserId: 'user-1', text: '/stats hh:hh-1' })
     const result = await handleStatsCommand(ctx)
 
-    expect(result.text).toContain('Thống kê')
-    expect(result.text).toContain('Gia đình Test')
+    expect(result.text).toContain('hộ gia đình Gia đình Test')
+    expect(result.text).toContain('Tháng 6/2026')
   })
 
   it('returns inaccessible household message when user is not a member', async () => {

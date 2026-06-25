@@ -1,3 +1,5 @@
+import type { ParsedPreviewData } from '@/bot/format'
+import { renderExpensePreviewText } from '@/bot/format'
 import type { ParsedExpenseItem } from '@/contracts/expense-parse-schemas'
 import { parsedExpenseItemSchema } from '@/contracts/expense-parse-schemas'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
@@ -5,8 +7,6 @@ import { findHouseholdById } from '@/db/repositories/household-repository'
 import { createDraftFromPreview } from '@/db/repositories/telegram-bot-expense-draft-repository'
 import { getMinorUnits } from '@/lib/currency'
 
-import type { ParsedPreviewData } from '../renderers/finance-text'
-import { renderExpensePreviewText } from '../renderers/finance-text'
 import {
   expenseCreatedKeyboard,
   expensePreviewKeyboard,
@@ -262,7 +262,10 @@ export const buildDraftsFromItems = async (
 
     result.previews.push({
       draftId: built.draftId,
-      text: renderExpensePreviewText(built.preview, built.currencyCode),
+      text: renderExpensePreviewText({
+        ...built.preview,
+        currencyCode: built.currencyCode,
+      }),
       replyMarkup: expensePreviewKeyboard(built.draftId),
     })
   }

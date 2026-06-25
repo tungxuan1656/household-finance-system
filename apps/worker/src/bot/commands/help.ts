@@ -9,11 +9,11 @@ export const handleHelpCommand = (ctx: CommandContext): BotResponse => {
 
   return {
     text:
-      '🤖 <b>Trợ lý Chi tiêu</b>\n\n' +
-      '• Thêm chi tiêu (gửi thẳng hoặc /ai)\n' +
-      '• Xem /stats, /top, /budget\n' +
-      '• /settings cài đặt thông báo\n\n' +
-      'Biểu đồ, gia đình, cài đặt chi tiết: mở Mini App.\n\n' +
+      '<b>Trợ lý Chi tiêu</b>\n\n' +
+      '• Gửi thẳng chi tiêu hoặc /ai\n' +
+      '• /stats · /top · /budget\n' +
+      '• /settings\n\n' +
+      'Biểu đồ, hộ gia đình: mở Mini App.\n\n' +
       '🏠 <a href="' +
       tmaUrl +
       '">Mở Mini App</a>',

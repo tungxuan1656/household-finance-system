@@ -1,3 +1,9 @@
+import {
+  AI_UNAVAILABLE_TEXT,
+  INPUT_UNRECOGNIZED_TEXT,
+  LOADER_TEXT,
+  renderExpensePreviewText,
+} from '@/bot/format'
 import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
 
 import { findAppUserIdByTelegramId } from './account-linking'
@@ -22,7 +28,6 @@ import { handleStartCommand } from './commands/start'
 import { handleStatsCommand } from './commands/stats'
 import { handleTopCommand } from './commands/top'
 import { detectAmountInVnd, looksLikeExpense } from './lib/vn-amount-detector'
-import { renderExpensePreviewText } from './renderers/finance-text'
 import { expensePreviewKeyboard } from './renderers/keyboards'
 import { TelegramClient } from './telegram-client'
 import type { BotResponse, TelegramUpdate } from './types'
@@ -88,10 +93,7 @@ const handleMessageUpdate = async (
     }
 
     // ── Send loader message ─────────────────────────────────────────
-    const loaderMsgId = await client.sendMessage(
-      message.chat.id,
-      '⏳ Đang phân tích chi tiêu...',
-    )
+    const loaderMsgId = await client.sendMessage(message.chat.id, LOADER_TEXT)
 
     // Call AI parser for category/date/source
     let rawItems: Array<{
@@ -117,7 +119,7 @@ const handleMessageUpdate = async (
         await client.editMessageText(
           message.chat.id,
           loaderMsgId,
-          'Rất tiếc, dịch vụ AI tạm thời không khả dụng. Vui lòng thử lại sau.',
+          AI_UNAVAILABLE_TEXT,
           { parseMode: 'HTML' },
         )
 
@@ -131,7 +133,7 @@ const handleMessageUpdate = async (
       await client.editMessageText(
         message.chat.id,
         loaderMsgId,
-        'Không thể nhận diện chi tiêu từ tin nhắn của bạn. Vui lòng thử lại với cách viết khác.',
+        INPUT_UNRECOGNIZED_TEXT,
         { parseMode: 'HTML' },
       )
 
@@ -146,7 +148,7 @@ const handleMessageUpdate = async (
       await client.editMessageText(
         message.chat.id,
         loaderMsgId,
-        'Thiếu thông tin bắt buộc (số tiền, danh mục, ngày, nội dung). Vui lòng thử lại.',
+        INPUT_UNRECOGNIZED_TEXT,
         { parseMode: 'HTML' },
       )
 
@@ -184,10 +186,10 @@ const handleMessageUpdate = async (
     }
 
     // Edit loader with full preview
-    const previewText = renderExpensePreviewText(
-      built.preview,
-      built.currencyCode,
-    )
+    const previewText = renderExpensePreviewText({
+      ...built.preview,
+      currencyCode: built.currencyCode,
+    })
 
     await client.editMessageText(message.chat.id, loaderMsgId, previewText, {
       parseMode: 'HTML',

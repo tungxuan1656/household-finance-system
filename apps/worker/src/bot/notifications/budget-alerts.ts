@@ -5,8 +5,8 @@ import {
 } from '@/db/repositories/budget-repository'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
+import { getCurrentPeriod } from '@/lib/period'
 
-import { getCurrentPeriod } from '../renderers/finance-text'
 import type { TelegramClient } from '../telegram-client'
 import { budgetAlertKeyboard, renderBudgetAlertText } from './renderers'
 import { sendNotification } from './sender'

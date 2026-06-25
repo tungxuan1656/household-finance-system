@@ -1,3 +1,4 @@
+import { renderExpenseSummaryLine } from '@/bot/format'
 import { createAuditLogEntry } from '@/db/repositories/audit-log-repository'
 import { createExpense } from '@/db/repositories/expense-repository'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
@@ -12,7 +13,6 @@ import {
 } from '@/db/repositories/telegram-bot-expense-draft-repository'
 import { newId } from '@/utils/id'
 
-import { renderExpenseSummaryLine } from '../renderers/finance-text'
 import { expenseCreatedKeyboard, openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
 
@@ -180,7 +180,7 @@ export const handleConfirmExpense = async (
   return {
     mode: 'edit',
     targetMessageId: messageId,
-    text: `✅ ${renderExpenseSummaryLine(preview, currencyCode)}`,
+    text: `✅ ${renderExpenseSummaryLine({ ...preview, currencyCode })}`,
     parseMode: 'HTML',
     replyMarkup: expenseCreatedKeyboard(tmaUrl),
   }
