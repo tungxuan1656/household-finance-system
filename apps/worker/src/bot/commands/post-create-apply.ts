@@ -83,8 +83,14 @@ export const handlePostCreateApply = async (
     }
 
     targetHouseholdId = household.id
-    targetCurrency = household.defaultCurrencyCode ?? 'VND'
     householdName = household.name
+    // Bot natural-input expenses are always stored in VND minor units
+    // (see natural-expense.ts:155: getMinorUnits(amountVnd, 'VND')).
+    // Without an FX rate we cannot safely convert amount_minor to a
+    // non-VND currency, so the expense stays in VND regardless of the
+    // household's default. Household defaults only affect analytics for
+    // entries created in that currency elsewhere (TMA, web).
+    targetCurrency = 'VND'
   }
 
   const updated = await updateExpenseHousehold(

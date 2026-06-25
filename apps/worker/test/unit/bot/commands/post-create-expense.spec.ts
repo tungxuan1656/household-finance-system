@@ -258,6 +258,35 @@ describe('handlePostCreateApply', () => {
       nextHouseholdId: 'hh-1',
     })
   })
+
+  // Regression: bot natural-input amounts are always parsed as VND and
+  // stored in VND minor units. When the target household defaults to a
+  // non-VND currency, we must not flip currency_code to that default
+  // — the amount_minor would then be misinterpreted (e.g. 30_000_000
+  // minor units read as $300,000.00 instead of 30,000 VND). Without an
+  // FX rate the safe behavior is to keep currency_code = 'VND'.
+  it('keeps currency_code = VND when the household default is non-VND', async () => {
+    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
+    mockFindHouseholdById.mockResolvedValueOnce({
+      id: 'hh-1',
+      name: 'Family Trip',
+      defaultCurrencyCode: 'USD',
+    })
+    mockUpdateExpenseHousehold.mockResolvedValueOnce(
+      buildExpense({ householdId: 'hh-1', currencyCode: 'VND' }),
+    )
+
+    const result = await handlePostCreateApply(buildCtx(), 'exp-1', 'hh-1', 42)
+
+    expect(mockUpdateExpenseHousehold).toHaveBeenCalledWith(
+      {},
+      'exp-1',
+      'hh-1',
+      'VND',
+    )
+    expect(result.text).toMatch(/Family Trip/)
+    expect(result.text).not.toMatch(/USD|\$/)
+  })
 })
 
 describe('handlePostCreateDelete', () => {
