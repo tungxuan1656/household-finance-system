@@ -48,7 +48,7 @@ export const handleConfirmExpense = async (
     return {
       mode: 'edit',
       targetMessageId: messageId,
-      text: 'Không tìm thấy yêu cầu. Thử lại với /ai.',
+      text: 'Không tìm thấy yêu cầu. Thử lại với /add.',
       parseMode: 'HTML',
     }
   }
@@ -60,7 +60,7 @@ export const handleConfirmExpense = async (
     return {
       mode: 'edit',
       targetMessageId: messageId,
-      text: 'Hết hạn (10 phút). Thử lại với /ai.',
+      text: 'Hết hạn (10 phút). Thử lại với /add.',
       parseMode: 'HTML',
     }
   }
@@ -98,7 +98,7 @@ export const handleConfirmExpense = async (
     return {
       mode: 'edit',
       targetMessageId: messageId,
-      text: 'Đã xử lý. Thử lại với /ai.',
+      text: 'Đã xử lý. Thử lại với /add.',
       parseMode: 'HTML',
     }
   }
@@ -112,7 +112,7 @@ export const handleConfirmExpense = async (
     return {
       mode: 'edit',
       targetMessageId: messageId,
-      text: 'Dữ liệu không hợp lệ. Thử lại với /ai.',
+      text: 'Dữ liệu không hợp lệ. Thử lại với /add.',
       parseMode: 'HTML',
     }
   }
@@ -218,7 +218,7 @@ export const handleCancelExpense = async (
 }
 
 /**
- * Handle a retry action — tells user to send a new /ai command.
+ * Handle a retry action — tells user to send a new /add command.
  * The retry button was removed from the preview keyboard, but stale
  * messages may still carry the callback. Edits in place for hygiene.
  */
@@ -229,6 +229,6 @@ export const handleRetryExpense = async (
 ): Promise<BotResponse> => ({
   mode: 'edit',
   targetMessageId: messageId,
-  text: 'Gửi lại bằng /ai.\n\n' + 'Vd: <code>/ai ăn bún 30k 15/6</code>',
+  text: 'Gửi lại bằng /add.\n\n' + 'Vd: <code>/add ăn bún 30k 15/6</code>',
   parseMode: 'HTML',
 })

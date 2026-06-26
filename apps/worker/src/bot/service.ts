@@ -5,10 +5,7 @@ import {
   extractCommand,
   handleCallbackQuery,
 } from './callback-dispatcher'
-import {
-  runAiExpenseCommand,
-  runAiMultiExpenseCommand,
-} from './commands/ai-expense-service'
+import { runAddExpenseCommand } from './commands/ai-expense-service'
 import { handleBudgetCommand } from './commands/budget'
 import { handleHelpCommand } from './commands/help'
 import { runNaturalExpenseCreate } from './commands/natural-expense'
@@ -39,8 +36,8 @@ export const handleUpdate = async (
  * Supports bot commands and natural expense input.
  *
  * Natural input (feat-121) bypasses the preview/confirm step and
- * creates each parsed expense immediately. `/ai` and `/aimulti` keep
- * their preview → confirm flow.
+ * creates each parsed expense immediately. `/add` keeps the
+ * preview → confirm flow.
  */
 const handleMessageUpdate = async (
   update: TelegramUpdate,
@@ -94,14 +91,9 @@ const handleMessageUpdate = async (
     languageCode: message.from.language_code,
   })
 
-  // /ai command: loader → edit flow
-  if (command === 'ai') {
-    return runAiExpenseCommand(update, deps, client, ctx.chatId, appUserId)
-  }
-
-  // /aimulti command: loader → first preview + N-1 more messages
-  if (command === 'aimulti') {
-    return runAiMultiExpenseCommand(update, deps, client, ctx.chatId, appUserId)
+  // /add command: loader → first preview + N-1 more messages (supports 1 or many items)
+  if (command === 'add') {
+    return runAddExpenseCommand(update, deps, client, ctx.chatId, appUserId)
   }
 
   let result!: BotResponse

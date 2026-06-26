@@ -247,7 +247,7 @@ describe('format', () => {
   })
 
   describe('renderExpenseSummaryLine', () => {
-    it('renders emoji title amount₫ dd/MM', () => {
+    it('renders emoji + category label · title · amount₫ · dd/MM', () => {
       const result = renderExpenseSummaryLine({
         amountMinor: 5000000,
         occurredAt: '2026-06-24',
@@ -258,10 +258,12 @@ describe('format', () => {
         currencyCode: 'VND',
       })
 
-      expect(result).toContain('🛵')
-      expect(result).toContain('đổ xăng')
-      expect(result).toContain('5.000.000₫')
-      expect(result).toContain('24/06')
+      // Pin full shape: emoji + label · title · code(amount₫) · dd/MM.
+      // Catches regressions like label/title swap, missing separator,
+      // or wrong date format.
+      expect(result).toMatch(
+        /^🛵 Di chuyển · đổ xăng · <code>5\.000\.000₫<\/code> · 24\/06$/,
+      )
     })
 
     it('falls back to raw date when not in YYYY-MM-DD shape', () => {

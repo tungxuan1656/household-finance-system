@@ -60,7 +60,7 @@ export const handleHouseholdSelect = async (
     return {
       mode: 'edit',
       targetMessageId: messageId,
-      text: 'Không tìm thấy hoặc đã hết hạn. Thử lại với /ai.',
+      text: 'Không tìm thấy hoặc đã hết hạn. Thử lại với /add.',
       parseMode: 'HTML',
     }
   }

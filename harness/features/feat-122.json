@@ -1,0 +1,59 @@
+{
+  "id": "feat-122",
+  "name": "Bot command rename: drop /ai, /aimulti → /add, category line emoji+label",
+  "status": "done",
+  "description": "Remove the /ai single-expense command. Rename /aimulti to /add — the merged command handles 1 or many expenses via the existing preview-confirm flow. Fix compact summary lines (renderExpenseSummaryLine) to show emoji + Vietnamese category label + title + amount + date instead of emoji-only. Ensure notification renderers already show emoji+label (verified, no change needed). Update all user-facing bot copy, documentation, harness records, and tests.",
+  "dependencies": ["feat-119", "feat-121"],
+  "evidence": {
+    "planned": [
+      "Task specification: remove /ai, rename /aimulti → /add, audit category display."
+    ],
+    "done": [
+      "service.ts: removed runAiExpenseCommand import and /ai command block; changed /aimulti → /add; now imports runAddExpenseCommand.",
+      "ai-expense-service.ts: removed runAiExpenseCommand function and handleAiExpenseCommand import; renamed runAiMultiExpenseCommand → runAddExpenseCommand; updated JSDoc.",
+      "ai-expense.ts: removed handleAiExpenseCommand function entirely; renamed handleAiMultiExpenseCommand → handleAddExpenseCommand; removed /ai single-path and extraNote; updated all JSDoc and examples /aimulti → /add.",
+      "ai-expense-preflight.ts: updated comments and example /ai → /add.",
+      "ai-expense-shared.ts: updated all JSDoc references /ai → /add.",
+      "help.ts: updated /ai → /add in command list.",
+      "confirm-expense.ts: updated /ai → /add in all user-facing error/retry strings.",
+      "callback-dispatcher.ts: updated /ai → /add in add_expense callback copy.",
+      "household-select.ts: updated /ai → /add in error string.",
+      "natural-expense.ts: updated comment /ai and /aimulti → /add.",
+      "post-create-shared.ts: updated comment /ai → /add.",
+      "renderers.ts: renderExpenseSummaryLine now includes getCategoryLabel — output: emoji + label · title · amount₫ · dd/MM.",
+      "notifications.ts: verified renderHouseholdActivityText and renderWeeklyDigestText already show emoji + label; budget alert is category-agnostic. No change needed.",
+      "telegram-bot-companion.md: updated Command Set (removed /ai, renamed /aimulti → /add), updated all acceptance criteria, flow descriptions, natural-input section, multi-expense section, MVP list.",
+      "finance-text.spec.ts: updated renderExpenseSummaryLine test assertion to include category label.",
+      "ai-expense-shared.spec.ts: updated mock context text and test rawText from /aimulti → /add.",
+      "feat-119.json: updated name, description, notes to reflect rename.",
+      "feature_index.json: added feat-122 entry.",
+      "progress.md: added rename session entry."
+    ],
+    "artifacts": [
+      "apps/worker/src/bot/service.ts",
+      "apps/worker/src/bot/commands/ai-expense-service.ts",
+      "apps/worker/src/bot/commands/ai-expense.ts",
+      "apps/worker/src/bot/commands/ai-expense-preflight.ts",
+      "apps/worker/src/bot/commands/ai-expense-shared.ts",
+      "apps/worker/src/bot/commands/help.ts",
+      "apps/worker/src/bot/commands/confirm-expense.ts",
+      "apps/worker/src/bot/callback-dispatcher.ts",
+      "apps/worker/src/bot/commands/household-select.ts",
+      "apps/worker/src/bot/commands/natural-expense.ts",
+      "apps/worker/src/bot/commands/post-create-shared.ts",
+      "apps/worker/src/bot/format/renderers.ts",
+      "docs/product-specs/tma/telegram-bot-companion.md",
+      "apps/worker/test/unit/bot/renderers/finance-text.spec.ts",
+      "apps/worker/test/unit/bot/commands/ai-expense-shared.spec.ts",
+      "harness/features/feat-119.json",
+      "harness/features/feat-122.json"
+    ],
+    "verification": [
+      "./init.sh typecheck -> OK.",
+      "./init.sh lint -> OK.",
+      "pnpm --filter worker exec vitest run test/unit/bot/renderers/finance-text.spec.ts test/unit/bot/commands/ai-expense-shared.spec.ts test/unit/bot/commands/natural-expense.spec.ts test/unit/bot/notifications/renderers.spec.ts -> 4 files, 44 tests passed.",
+      "pnpm --filter worker exec vitest run -> 99 files, 625 tests passed (no regressions)."
+    ]
+  },
+  "notes": "Category label was already present in household activity and weekly digest notifications — no change needed there. The compact summary line (used in confirm/household-select success and natural-input post-create messages) was the only spot missing the label."
+}

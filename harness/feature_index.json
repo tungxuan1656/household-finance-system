@@ -679,6 +679,11 @@
       "id": "feat-121",
       "name": "Bot natural-input direct-create: bypass preview, create + per-expense household/delete buttons",
       "status": "done"
+    },
+    {
+      "id": "feat-122",
+      "name": "Bot command rename: drop /ai, /aimulti → /add, category line emoji+label",
+      "status": "done"
     }
   ]
 }

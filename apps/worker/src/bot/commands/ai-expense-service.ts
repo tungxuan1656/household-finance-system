@@ -3,60 +3,21 @@ import { LOADER_TEXT } from '@/bot/format'
 import type { BotServiceDeps } from '../callback-dispatcher'
 import { buildCtx } from '../callback-dispatcher'
 import {
-  handleAiExpenseCommand,
-  handleAiMultiExpenseCommand,
+  handleAddExpenseCommand,
   type MultiExpenseResult,
 } from '../commands/ai-expense'
 import type { TelegramClient } from '../telegram-client'
 import type { InlineKeyboardMarkup, TelegramUpdate } from '../types'
 
 /**
- * Handle the `/ai` command: send loader, run handler, edit loader in place.
- * Returns 1 if the message was processed.
- */
-export const runAiExpenseCommand = async (
-  update: TelegramUpdate,
-  deps: BotServiceDeps,
-  client: TelegramClient,
-  chatId: number,
-  appUserId: string | null,
-): Promise<number> => {
-  const message = update.message
-
-  if (!message?.text || !message.from) {
-    return 0
-  }
-
-  const ctx = buildCtx({
-    userId: message.from.id,
-    chatId,
-    text: message.text,
-    appUserId,
-    deps,
-    firstName: message.from.first_name,
-    lastName: message.from.last_name,
-    languageCode: message.from.language_code,
-  })
-
-  const loaderMsgId = await client.sendMessage(ctx.chatId, LOADER_TEXT)
-
-  const result = await handleAiExpenseCommand(ctx)
-
-  await client.editMessageText(ctx.chatId, loaderMsgId, result.text, {
-    parseMode: result.parseMode,
-    replyMarkup: result.replyMarkup as InlineKeyboardMarkup | undefined,
-  })
-
-  return 1
-}
-
-/**
- * Handle the `/aimulti` command: send loader, run handler, then either edit
+ * Handle the `/add` command: send loader, run handler, then either edit
  * the loader (single/error) or edit the loader to the first preview and
  * send one Telegram message per remaining preview (batch).
+ * Supports one valid item (single preview) or multiple valid items
+ * (one preview message per item).
  * Returns 1 if the message was processed.
  */
-export const runAiMultiExpenseCommand = async (
+export const runAddExpenseCommand = async (
   update: TelegramUpdate,
   deps: BotServiceDeps,
   client: TelegramClient,
@@ -82,7 +43,7 @@ export const runAiMultiExpenseCommand = async (
 
   const loaderMsgId = await client.sendMessage(ctx.chatId, LOADER_TEXT)
 
-  const result: MultiExpenseResult = await handleAiMultiExpenseCommand(ctx)
+  const result: MultiExpenseResult = await handleAddExpenseCommand(ctx)
 
   if (result.kind === 'single') {
     await client.editMessageText(
@@ -125,6 +86,19 @@ export const runAiMultiExpenseCommand = async (
         replyMarkup: p.replyMarkup,
       })
     }
+  } else {
+    // All items were already confirmed: edit the loader into a short
+    // notice (with truncation note if applicable) so the user isn't
+    // left staring at "⏳ Đang phân tích chi tiêu...". Mirrors the
+    // copy used in the single-handler edge case (ai-expense.ts) for
+    // consistency.
+    const notice =
+      'Các khoản này đã được thêm trước đó. Gửi chi tiêu mới để tiếp tục.'
+    const noticeText = result.truncatedNote
+      ? notice + result.truncatedNote
+      : notice
+
+    await client.editMessageText(ctx.chatId, loaderMsgId, noticeText)
   }
 
   // Send dedupe hits as standalone confirmation messages.

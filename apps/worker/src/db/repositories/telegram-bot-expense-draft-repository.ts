@@ -60,7 +60,7 @@ export const upsertDraft = async (
   const nowEpoch = Date.now()
 
   // Idempotency: if a draft with this dedupe key is already confirmed,
-  // return it unchanged so a re-issued /ai cannot re-arm a confirmed state
+  // return it unchanged so a re-issued /add cannot re-arm a confirmed state
   // and silently bypass dedupe.
   const existing = await findDraftByDedupeKey(
     db,
