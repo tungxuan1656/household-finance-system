@@ -47,27 +47,38 @@ describe('householdSelectKeyboard', () => {
 })
 
 describe('postCreateKeyboard (feat-121 natural-input direct-create)', () => {
-  it('shows the household and delete buttons when the user has households', () => {
+  it('shows the household button when the caller asks for it', () => {
     const kb = postCreateKeyboard('exp-1', true)
     const labels = kb.inline_keyboard.flat().map((b) => b.text)
 
     expect(labels).toContain('🏠 Chọn gia đình')
-    expect(labels).toContain('🗑 Xoá')
   })
 
-  it('hides the household button when the user has zero households', () => {
+  it('hides the household button when the caller asks to hide it', () => {
     const kb = postCreateKeyboard('exp-1', false)
     const labels = kb.inline_keyboard.flat().map((b) => b.text)
 
-    expect(labels).toContain('🗑 Xoá')
     expect(labels).not.toContain('🏠 Chọn gia đình')
+    expect(kb.inline_keyboard).toHaveLength(0)
   })
 
-  it('wires the buttons to ch_household / ch_delete callbacks', () => {
+  it('does not render the delete button (removed)', () => {
+    const kbWithHousehold = postCreateKeyboard('exp-1', true)
+    const kbWithoutHousehold = postCreateKeyboard('exp-1', false)
+
+    const allLabels = [
+      ...kbWithHousehold.inline_keyboard.flat(),
+      ...kbWithoutHousehold.inline_keyboard.flat(),
+    ].map((b) => b.text)
+
+    expect(allLabels).not.toContain('🗑 Xoá')
+  })
+
+  it('wires the household button to the ch_household callback', () => {
     const kb = postCreateKeyboard('exp-99', true)
     const callbacks = kb.inline_keyboard.flat().map((b) => b.callback_data)
 
     expect(callbacks).toContain('ch_household:exp-99')
-    expect(callbacks).toContain('ch_delete:exp-99')
+    expect(callbacks).not.toContain('ch_delete:exp-99')
   })
 })

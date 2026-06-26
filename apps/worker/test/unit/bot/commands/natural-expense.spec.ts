@@ -33,7 +33,9 @@ const {
   mockEditMessageText: vi.fn(),
   mockGetMinorUnits: vi.fn().mockReturnValue(30_000_000), // 30,000₫ in VND = 30_000_000 minor
   mockPostCreateKeyboard: vi.fn().mockReturnValue({
-    inline_keyboard: [[{ text: '🗑 Xoá', callback_data: 'ch_delete:exp-1' }]],
+    // Mirrors the real `postCreateKeyboard` shape with no buttons — the
+    // default `showHouseholdButton=false` case (user has no households).
+    inline_keyboard: [],
   }),
 }))
 
@@ -124,9 +126,7 @@ describe('runNaturalExpenseCreate (feat-121)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetMinorUnits.mockReturnValue(30_000_000)
-    mockPostCreateKeyboard.mockReturnValue({
-      inline_keyboard: [[{ text: '🗑 Xoá', callback_data: 'ch_delete:exp-1' }]],
-    })
+    mockPostCreateKeyboard.mockReturnValue({ inline_keyboard: [] })
     mockListActiveHouseholdIdsForUser.mockResolvedValue([])
     mockCreateExpense.mockImplementation(async (_db, input) => ({
       id: input.id,

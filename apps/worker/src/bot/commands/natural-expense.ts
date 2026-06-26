@@ -5,8 +5,8 @@
  * the preview/confirm step. When the amount detector + AI parser produce
  * at least one valid expense, the bot creates each expense immediately
  * and sends one Telegram message per created expense. Each message carries
- * a `postCreateKeyboard` (`🏠 Chọn gia đình` + `🗑 Xoá`) so the user can
- * fix mistakes with 1 tap.
+ * a `postCreateKeyboard` (`🏠 Chọn gia đình`) so the user can reassign
+ * a freshly-created personal expense to a household with 1 tap.
  *
  * No dedupe. No drafts. No scope-arg resolution. The default scope is
  * personal — the user reassigns household through the post-create button

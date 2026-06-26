@@ -64,23 +64,31 @@ export const householdSelectKeyboard = (
 /**
  * Post-create keyboard for natural-input direct-create expenses.
  * Replaces the preview keyboard after a natural-input expense is saved.
- * Tapping `🏠 Chọn gia đình` shows the household picker; tapping
- * `🗑 Xoá` soft-deletes the expense and edits the same message in place.
+ * Tapping `🏠 Chọn gia đình` shows the household picker so the user can
+ * reassign a freshly-created personal expense to a household.
  *
- * When the user has no households, the household button is hidden —
- * the delete button alone is enough for the 1-tap undo.
+ * The `🗑 Xoá` 1-tap undo was removed: users now delete expenses from the
+ * Mini App / web client, not via the bot. The `ch_delete` callback and
+ * `handlePostCreateDelete` are still wired so that pre-existing messages
+ * sent before this change remain functional (Telegram keeps inline
+ * buttons on already-sent messages).
  *
- * Callback IDs:
+ * The `showHouseholdButton` flag is decided by the caller:
+ * - First-time create (personal): show if the user belongs to ≥1 household
+ * - Apply personal: show if the user belongs to ≥1 household
+ * - Apply household: hide (already in a household; tapping again would
+ *   only switch, and the picker is no longer relevant)
+ *
+ * Callback ID:
  * - `ch_household:<expenseId>`  → show household picker for the expense
- * - `ch_delete:<expenseId>`    → soft-delete the expense
  */
 export const postCreateKeyboard = (
   expenseId: string,
-  hasHouseholds: boolean,
+  showHouseholdButton: boolean,
 ): InlineKeyboardMarkup => {
   const rows: Array<Array<{ text: string; callback_data: string }>> = []
 
-  if (hasHouseholds) {
+  if (showHouseholdButton) {
     rows.push([
       {
         text: '🏠 Chọn gia đình',
@@ -88,8 +96,6 @@ export const postCreateKeyboard = (
       },
     ])
   }
-
-  rows.push([{ text: '🗑 Xoá', callback_data: `ch_delete:${expenseId}` }])
 
   return { inline_keyboard: rows }
 }
