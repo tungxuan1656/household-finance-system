@@ -97,6 +97,7 @@ export const RecentExpenses = ({
   showHouseholdLabel = true,
   title: externalTitle,
   viewAllHref = TMA_PATHS.expenses,
+  viewAllState,
   dateFrom,
   dateTo,
 }: {
@@ -106,6 +107,7 @@ export const RecentExpenses = ({
   showHouseholdLabel?: boolean
   title?: string
   viewAllHref?: string
+  viewAllState?: unknown
   dateFrom?: number
   dateTo?: number
 }) => {
@@ -129,7 +131,7 @@ export const RecentExpenses = ({
     <Section>
       <SectionHeader
         action={
-          <TmaInlineAction href={viewAllHref}>
+          <TmaInlineAction href={viewAllHref} state={viewAllState}>
             {t('expensesList.viewAll')}
           </TmaInlineAction>
         }

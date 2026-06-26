@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { ExpenseSummaryCard, ExpenseTimeline } from '@/components/finance'
 import { FilterIcon, PlusIcon } from '@/components/shared/tma-icons'
@@ -22,11 +22,38 @@ import type { ExpenseListParams } from '@/features/home/types'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { impact, selection } from '@/lib/telegram/haptics'
 
+interface ExpensesRouteState {
+  appliedHouseholdId?: string
+  appliedGroupId?: string
+}
+
 export const ExpensesPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { t } = useTranslation()
   const filter = useExpenseListFilterStore((state) => state.filter)
+  const setFilter = useExpenseListFilterStore((state) => state.setFilter)
   const activeFilterCount = countActiveExpenseListFilters(filter)
+
+  useEffect(() => {
+    const state = location.state as ExpensesRouteState | null
+
+    if (!state) return
+
+    const partial: { householdId?: string; groupId?: string } = {}
+
+    if (state.appliedHouseholdId) {
+      partial.householdId = state.appliedHouseholdId
+    }
+
+    if (state.appliedGroupId) {
+      partial.groupId = state.appliedGroupId
+    }
+
+    if (partial.householdId != null || partial.groupId != null) {
+      setFilter(partial)
+    }
+  }, [location.state, setFilter])
 
   const queryParams = useMemo<ExpenseListParams>(
     () => ({

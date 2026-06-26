@@ -175,6 +175,7 @@ export const HouseholdDetailPage = () => {
               householdId={id}
               showHouseholdLabel={false}
               title={t('households.detail.sectionRecent')}
+              viewAllState={{ appliedHouseholdId: id }}
             />
 
             <Section>
