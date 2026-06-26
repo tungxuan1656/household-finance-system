@@ -129,7 +129,9 @@ export const handlePostCreateApply = async (
     console.error('post-create-apply: audit log write failed', err)
   })
 
-  // Personal pick → restore the original ✅ summary + both buttons.
+  // Personal pick → restore the original ✅ summary. The picker only
+  // opened because the user has at least one household, so the household
+  // button is still relevant (they may want to switch again).
   if (!targetHouseholdId) {
     const summary = renderExpenseSummaryLine({
       amountMinor: updated.amountMinor,
@@ -141,8 +143,6 @@ export const handlePostCreateApply = async (
       currencyCode: 'VND',
     })
 
-    // hasHouseholds: the picker only opened because the user has at
-    // least one household, so the household button is still relevant.
     return {
       mode: 'edit',
       targetMessageId: messageId,
@@ -172,6 +172,6 @@ export const handlePostCreateApply = async (
     targetMessageId: messageId,
     text: `✅ ${text}`,
     parseMode: 'HTML',
-    replyMarkup: postCreateKeyboard(expenseId, true),
+    replyMarkup: postCreateKeyboard(expenseId, false),
   }
 }
