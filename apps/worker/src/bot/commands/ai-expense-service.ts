@@ -86,6 +86,19 @@ export const runAddExpenseCommand = async (
         replyMarkup: p.replyMarkup,
       })
     }
+  } else {
+    // All items were already confirmed: edit the loader into a short
+    // notice (with truncation note if applicable) so the user isn't
+    // left staring at "⏳ Đang phân tích chi tiêu...". Mirrors the
+    // copy used in the single-handler edge case (ai-expense.ts) for
+    // consistency.
+    const notice =
+      'Các khoản này đã được thêm trước đó. Gửi chi tiêu mới để tiếp tục.'
+    const noticeText = result.truncatedNote
+      ? notice + result.truncatedNote
+      : notice
+
+    await client.editMessageText(ctx.chatId, loaderMsgId, noticeText)
   }
 
   // Send dedupe hits as standalone confirmation messages.
