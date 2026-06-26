@@ -22,6 +22,13 @@ export const topKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
 })
 
 /**
+ * Contextual keyboard for /recents — open expense list in Mini App.
+ */
+export const recentsKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
+  inline_keyboard: [[{ text: '📋 Xem tất cả', web_app: { url: tmaUrl } }]],
+})
+
+/**
  * Contextual keyboard for /budget — view details in Mini App.
  */
 export const budgetKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({

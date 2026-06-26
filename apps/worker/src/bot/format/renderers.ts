@@ -10,22 +10,6 @@ import type {
 } from './types'
 import { buildProgressBar, escapeHtml } from './utils'
 
-// ─── Private helpers ────────────────────────────────────────────────────
-
-const getSourceLabel = (key: string): string => {
-  const labels: Record<string, string> = {
-    cash: 'Tiền mặt',
-    'bank-transfer': 'Chuyển khoản',
-    card: 'Thẻ',
-    momo: 'MoMo',
-    'zalo-pay': 'ZaloPay',
-    'shopee-pay': 'ShopeePay',
-    other: 'Khác',
-  }
-
-  return labels[key] ?? key
-}
-
 // ─── Render functions ───────────────────────────────────────────────────
 
 /** Render stats overview text. */
@@ -80,7 +64,7 @@ export function renderExpensePreviewText(
   let text =
     `<b>${amountFormatted} ${options.currencyCode}</b> · ${categoryLabel}\n` +
     `${escapeHtml(options.title)}\n` +
-    `<code>${options.occurredAt}</code> · ${getSourceLabel(options.sourceKey)} · ${scopeLabel}`
+    `<code>${options.occurredAt}</code> · ${scopeLabel}`
   if (options.groupName) {
     text += ` · ${escapeHtml(options.groupName)}`
   }
@@ -145,4 +129,33 @@ export function renderBudgetStatusText(lines: string[]): string {
   }
 
   return '<b>Ngân sách</b>\n\n' + lines.join('\n\n')
+}
+
+/** Render a list of recent expenses for /recents command. */
+export function renderRecentsText(options: {
+  expenses: Array<{
+    amountMinor: number
+    occurredAt: string // YYYY-MM-DD
+    categoryKey: string
+    title: string
+    currencyCode: string
+  }>
+}): string {
+  if (options.expenses.length === 0) {
+    return '<b>Chi tiêu gần đây</b>\n\nChưa có chi tiêu nào.'
+  }
+
+  const lines = options.expenses.map((e) =>
+    renderExpenseSummaryLine({
+      amountMinor: e.amountMinor,
+      occurredAt: e.occurredAt,
+      categoryKey: e.categoryKey,
+      title: e.title,
+      sourceKey: 'other',
+      scope: 'personal',
+      currencyCode: e.currencyCode,
+    }),
+  )
+
+  return '<b>Chi tiêu gần đây</b>\n\n' + lines.join('\n')
 }

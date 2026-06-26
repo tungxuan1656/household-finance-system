@@ -9,6 +9,7 @@ import {
   renderBudgetStatusText,
   renderExpensePreviewText,
   renderExpenseSummaryLine,
+  renderRecentsText,
   renderStatsText,
   renderTopCategoriesText,
 } from '@/bot/format'
@@ -210,6 +211,20 @@ describe('format', () => {
   })
 
   describe('renderExpensePreviewText', () => {
+    it('does not render source label', () => {
+      const result = renderExpensePreviewText({
+        amountMinor: 1000000,
+        occurredAt: '2026-06-20',
+        categoryKey: 'food',
+        title: 'ăn trưa',
+        sourceKey: 'cash',
+        scope: 'personal',
+        currencyCode: 'VND',
+      })
+      expect(result).not.toContain('Tiền mặt')
+      expect(result).not.toContain('cash')
+    })
+
     it('renders personal scope preview', () => {
       const result = renderExpensePreviewText({
         amountMinor: 3000000,
@@ -243,6 +258,33 @@ describe('format', () => {
       })
 
       expect(result).toContain('Gia đình Test')
+    })
+  })
+
+  describe('renderRecentsText', () => {
+    it('renders empty state text', () => {
+      const result = renderRecentsText({ expenses: [] })
+
+      expect(result).toContain('Chưa có chi tiêu nào')
+    })
+
+    it('renders header and summary lines for populated list', () => {
+      const result = renderRecentsText({
+        expenses: [
+          {
+            amountMinor: 5000000,
+            occurredAt: '2026-06-24',
+            categoryKey: 'transport',
+            title: 'đổ xăng',
+            currencyCode: 'VND',
+          },
+        ],
+      })
+
+      expect(result).toContain('Chi tiêu gần đây')
+      expect(result).toMatch(
+        /🛵 Di chuyển · đổ xăng · <code>5\.000\.000₫<\/code> · 24\/06/,
+      )
     })
   })
 

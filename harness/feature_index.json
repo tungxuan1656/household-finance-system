@@ -684,6 +684,11 @@
       "id": "feat-122",
       "name": "Bot command rename: drop /ai, /aimulti → /add, category line emoji+label",
       "status": "done"
+    },
+    {
+      "id": "feat-123",
+      "name": "Bot /recents command + drop source from expense previews",
+      "status": "done"
     }
   ]
 }
