@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import {
+  applyExpensesRouteState,
   buildInitialExpenseListFilter,
   countActiveExpenseListFilters,
   useExpenseListFilterStore,
@@ -125,5 +126,66 @@ describe('useExpenseListFilterStore', () => {
     getState().setFilter({})
 
     expect(getState().filter).toEqual(before)
+  })
+})
+
+describe('applyExpensesRouteState', () => {
+  it('returns null when state is null or undefined', () => {
+    expect(applyExpensesRouteState(null)).toBeNull()
+    expect(applyExpensesRouteState(undefined)).toBeNull()
+  })
+
+  it('returns null when neither scope dimension is set', () => {
+    expect(applyExpensesRouteState({})).toBeNull()
+  })
+
+  it('maps appliedHouseholdId to a household-only partial', () => {
+    const partial = applyExpensesRouteState({ appliedHouseholdId: 'hh-1' })
+
+    expect(partial).toEqual({ householdId: 'hh-1', groupId: undefined })
+  })
+
+  it('maps appliedGroupId to a group-only partial', () => {
+    const partial = applyExpensesRouteState({ appliedGroupId: 'group-1' })
+
+    expect(partial).toEqual({ groupId: 'group-1', householdId: undefined })
+  })
+
+  it('clears a stale groupId when applying a household scope', () => {
+    // Simulate the regression: user previously set groupId via the manual
+    // picker, then navigated to a household detail and tapped "view all".
+    // The stale groupId must be cleared so the new household scope does
+    // not AND with it on the API and return zero rows.
+    const partial = applyExpensesRouteState({ appliedHouseholdId: 'hh-2' })
+
+    expect(partial).toEqual({ householdId: 'hh-2', groupId: undefined })
+
+    // Apply on top of a filter that already has a stale groupId.
+    getState().setFilter({ householdId: 'hh-1', groupId: 'group-old' })
+    getState().setFilter(partial!)
+
+    expect(getState().filter.groupId).toBeUndefined()
+    expect(getState().filter.householdId).toBe('hh-2')
+  })
+
+  it('clears a stale householdId when applying a group scope', () => {
+    // Mirror: stale householdId must be cleared when applying a group scope.
+    getState().setFilter({ householdId: 'hh-1', groupId: 'group-old' })
+
+    const partial = applyExpensesRouteState({ appliedGroupId: 'group-2' })!
+
+    getState().setFilter(partial)
+
+    expect(getState().filter.householdId).toBeUndefined()
+    expect(getState().filter.groupId).toBe('group-2')
+  })
+
+  it('prefers the group scope when both dimensions are passed in state', () => {
+    const partial = applyExpensesRouteState({
+      appliedGroupId: 'group-1',
+      appliedHouseholdId: 'hh-1',
+    })
+
+    expect(partial).toEqual({ householdId: undefined, groupId: 'group-1' })
   })
 })

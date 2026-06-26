@@ -7,7 +7,9 @@ import { FilterIcon, PlusIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
 import {
+  applyExpensesRouteState,
   countActiveExpenseListFilters,
+  type ExpensesRouteState,
   useExpenseListFilterStore,
 } from '@/features/expenses/filter-store'
 import { useImportFlowStore } from '@/features/expenses/import-store'
@@ -22,11 +24,6 @@ import type { ExpenseListParams } from '@/features/home/types'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { impact, selection } from '@/lib/telegram/haptics'
 
-interface ExpensesRouteState {
-  appliedHouseholdId?: string
-  appliedGroupId?: string
-}
-
 export const ExpensesPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -36,21 +33,11 @@ export const ExpensesPage = () => {
   const activeFilterCount = countActiveExpenseListFilters(filter)
 
   useEffect(() => {
-    const state = location.state as ExpensesRouteState | null
+    const partial = applyExpensesRouteState(
+      location.state as ExpensesRouteState | null,
+    )
 
-    if (!state) return
-
-    const partial: { householdId?: string; groupId?: string } = {}
-
-    if (state.appliedHouseholdId) {
-      partial.householdId = state.appliedHouseholdId
-    }
-
-    if (state.appliedGroupId) {
-      partial.groupId = state.appliedGroupId
-    }
-
-    if (partial.householdId != null || partial.groupId != null) {
+    if (partial) {
       setFilter(partial)
     }
   }, [location.state, setFilter])

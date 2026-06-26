@@ -12,6 +12,7 @@ import {
   Section,
   SectionHeader,
 } from '@/components/ui'
+import type { ExpensesRouteState } from '@/features/expenses/filter-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import { useExpenseListQuery, useHouseholdsQuery } from '@/features/home/api'
 import {
@@ -107,7 +108,7 @@ export const RecentExpenses = ({
   showHouseholdLabel?: boolean
   title?: string
   viewAllHref?: string
-  viewAllState?: unknown
+  viewAllState?: ExpensesRouteState
   dateFrom?: number
   dateTo?: number
 }) => {
