@@ -1,13 +1,15 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { ExpenseSummaryCard, ExpenseTimeline } from '@/components/finance'
 import { FilterIcon, PlusIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
 import {
+  applyExpensesRouteState,
   countActiveExpenseListFilters,
+  type ExpensesRouteState,
   useExpenseListFilterStore,
 } from '@/features/expenses/filter-store'
 import { useImportFlowStore } from '@/features/expenses/import-store'
@@ -24,9 +26,21 @@ import { impact, selection } from '@/lib/telegram/haptics'
 
 export const ExpensesPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { t } = useTranslation()
   const filter = useExpenseListFilterStore((state) => state.filter)
+  const setFilter = useExpenseListFilterStore((state) => state.setFilter)
   const activeFilterCount = countActiveExpenseListFilters(filter)
+
+  useEffect(() => {
+    const partial = applyExpensesRouteState(
+      location.state as ExpensesRouteState | null,
+    )
+
+    if (partial) {
+      setFilter(partial)
+    }
+  }, [location.state, setFilter])
 
   const queryParams = useMemo<ExpenseListParams>(
     () => ({

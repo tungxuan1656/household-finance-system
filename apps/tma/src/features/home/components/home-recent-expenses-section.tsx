@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { RecentExpenses } from '@/components/finance'
+import type { ExpensesRouteState } from '@/features/expenses/filter-store'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
 type HomeRecentExpensesSectionProps = {
@@ -10,6 +11,7 @@ type HomeRecentExpensesSectionProps = {
   showHouseholdLabel?: boolean
   title?: string
   viewAllHref?: string
+  viewAllState?: ExpensesRouteState
   dateFrom?: number
   dateTo?: number
 }
@@ -21,6 +23,7 @@ export const HomeRecentExpensesSection = ({
   showHouseholdLabel = true,
   title: externalTitle,
   viewAllHref = TMA_PATHS.expenses,
+  viewAllState,
   dateFrom,
   dateTo,
 }: HomeRecentExpensesSectionProps) => {
@@ -37,6 +40,7 @@ export const HomeRecentExpensesSection = ({
       showHouseholdLabel={showHouseholdLabel}
       title={title}
       viewAllHref={viewAllHref}
+      viewAllState={viewAllState}
     />
   )
 }

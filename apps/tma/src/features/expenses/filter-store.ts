@@ -58,6 +58,60 @@ export const useExpenseListFilterStore = create<ExpenseListFilterState>(
 export const getExpenseListFilterSnapshot = () =>
   useExpenseListFilterStore.getState()
 
+/**
+ * Optional payload accepted via `location.state` when navigating to the
+ * `/expenses` route. Each field means "scope the list to this dimension
+ * on mount".
+ */
+export interface ExpensesRouteState {
+  appliedHouseholdId?: string
+  appliedGroupId?: string
+}
+
+/**
+ * Pure mapping from a navigation `location.state` to the partial filter
+ * update that should be applied to the expenses filter store.
+ *
+ * Mirrors the cross-clearing contract of the manual filter picker: when a
+ * household scope is applied, any pre-existing `groupId` is cleared (and
+ * vice versa). Without this, a stale `groupId` from a previous filter
+ * session would AND with the new `householdId` on the API and return zero
+ * rows.
+ *
+ * Returns `null` when no scope dimension is present in the state — the
+ * caller should leave the existing filter untouched.
+ */
+export const applyExpensesRouteState = (
+  state: ExpensesRouteState | null | undefined,
+): Partial<ExpenseListFilter> | null => {
+  if (!state) return null
+
+  const partial: Partial<ExpenseListFilter> = {}
+
+  if (state.appliedHouseholdId != null) {
+    partial.householdId = state.appliedHouseholdId
+    // Drop any leftover group filter — the new household scope must not
+    // be combined with a group from a different household. The picker
+    // has access to allGroups to validate compatibility; navigation
+    // does not, so we always clear to stay consistent with the scope
+    // the user just entered.
+    partial.groupId = undefined
+  }
+
+  if (state.appliedGroupId != null) {
+    partial.groupId = state.appliedGroupId
+    // Mirror: a leftover household scope from a previous session would
+    // AND with this group on the API and return zero rows.
+    partial.householdId = undefined
+  }
+
+  if (partial.householdId === undefined && partial.groupId === undefined) {
+    return null
+  }
+
+  return partial
+}
+
 export const countActiveExpenseListFilters = (
   filter: ExpenseListFilter,
 ): number => {

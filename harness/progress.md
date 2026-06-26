@@ -3,6 +3,7 @@
 - last-archived: 2026-06-23
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
 - 2026-06-25 — Bot command rename (feat-122): drop /ai, /aimulti → /add, category summary line now includes emoji + Vietnamese label. Bot copy/doc updated. Pre-PR.
+- 2026-06-26 — TMA view-all auto-filter: ExpensesPage reads location.state.appliedHouseholdId / appliedGroupId on mount and merges into filter store; TmaInlineAction + RecentExpenses + HomeRecentExpensesSection thread an optional viewAllState; HouseholdDetailPage + GroupDetailPage pass it. Direct nav (bottom tabs) unaffected. PR #109.
 - 2026-06-25 — Version bump: apps/worker/package.json 0.2.3 → 0.3.0 (feat-121 feature + fixes); apps/tma/package.json 1.1.3 → 1.1.4 (i18n label cleanup). Pre-PR #106.
 - 2026-06-25 — Bot natural-input multi-expense amount bugfix: multi-item natural chat now creates each expense with its own AI-parsed amount; detector amount remains single-item override only. Added RED/GREEN regression test in natural-expense.spec.ts (feat-121 evidence)
 - 2026-06-25 — Bot natural-input direct-create flow (feat-121): bypass preview/confirm; create each parsed expense immediately; one Telegram message per expense with `🏠 Chọn household` + `🗑 Xoá` inline buttons that edit in place (post-create household reassignment + 1-tap soft-delete undo). /ai and /aimulti keep preview → confirm. 28 new unit tests; full ./init.sh --verbose = Done!

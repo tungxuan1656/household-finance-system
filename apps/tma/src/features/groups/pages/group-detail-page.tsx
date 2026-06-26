@@ -260,6 +260,7 @@ export const GroupDetailPage = () => {
               showHouseholdLabel={group.householdId == null}
               title={t('groups.detail.sectionExpenses')}
               viewAllHref={TMA_PATHS.expenses}
+              viewAllState={{ appliedGroupId: group.id }}
             />
           </>
         ) : null}

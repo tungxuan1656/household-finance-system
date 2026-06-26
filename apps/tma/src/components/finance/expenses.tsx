@@ -12,6 +12,7 @@ import {
   Section,
   SectionHeader,
 } from '@/components/ui'
+import type { ExpensesRouteState } from '@/features/expenses/filter-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import { useExpenseListQuery, useHouseholdsQuery } from '@/features/home/api'
 import {
@@ -97,6 +98,7 @@ export const RecentExpenses = ({
   showHouseholdLabel = true,
   title: externalTitle,
   viewAllHref = TMA_PATHS.expenses,
+  viewAllState,
   dateFrom,
   dateTo,
 }: {
@@ -106,6 +108,7 @@ export const RecentExpenses = ({
   showHouseholdLabel?: boolean
   title?: string
   viewAllHref?: string
+  viewAllState?: ExpensesRouteState
   dateFrom?: number
   dateTo?: number
 }) => {
@@ -129,7 +132,7 @@ export const RecentExpenses = ({
     <Section>
       <SectionHeader
         action={
-          <TmaInlineAction href={viewAllHref}>
+          <TmaInlineAction href={viewAllHref} state={viewAllState}>
             {t('expensesList.viewAll')}
           </TmaInlineAction>
         }
