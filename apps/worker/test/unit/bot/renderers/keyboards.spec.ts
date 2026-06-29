@@ -4,6 +4,7 @@ import {
   expensePreviewKeyboard,
   householdSelectKeyboard,
   postCreateKeyboard,
+  recentsKeyboard,
 } from '@/bot/renderers/keyboards'
 
 describe('expensePreviewKeyboard', () => {
@@ -80,5 +81,24 @@ describe('postCreateKeyboard (feat-121 natural-input direct-create)', () => {
 
     expect(callbacks).toContain('ch_household:exp-99')
     expect(callbacks).not.toContain('ch_delete:exp-99')
+  })
+})
+
+describe('recentsKeyboard', () => {
+  it('deep-links to the expenses route in the Mini App', () => {
+    const kb = recentsKeyboard('https://phofis-tma.pages.dev/')
+
+    expect(kb.inline_keyboard[0]?.[0]?.text).toBe('📋 Xem tất cả')
+    expect(kb.inline_keyboard[0]?.[0]?.web_app?.url).toBe(
+      'https://phofis-tma.pages.dev/expenses',
+    )
+  })
+
+  it('deep-links correctly when the base URL has no trailing slash', () => {
+    const kb = recentsKeyboard('https://phofis-tma.pages.dev')
+
+    expect(kb.inline_keyboard[0]?.[0]?.web_app?.url).toBe(
+      'https://phofis-tma.pages.dev/expenses',
+    )
   })
 })

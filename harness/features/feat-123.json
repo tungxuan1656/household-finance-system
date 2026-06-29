@@ -10,11 +10,13 @@
     ],
     "done": [
       "apps/worker/src/bot/format/renderers.ts: renderExpensePreviewText third line now omits sourceKey (was `date · source · scope`, now `date · scope`). Added renderRecentsText({ expenses }) that builds a `Chi tiêu gần đây` header + one renderExpenseSummaryLine per item. Empty state: `Chưa có chi tiêu nào.`.",
+      "apps/worker/src/bot/format/renderers.ts: renderExpenseSummaryLine now preserves the legacy `₫` suffix for VND but renders non-VND items with their ISO currency code so `/recents` does not mislabel stored USD/JPY/etc expenses.",
       "apps/worker/src/bot/commands/recents.ts (new): handleRecentsCommand queries listExpenses(db, { userId, limit: 6 }), maps StoredExpense.occurredAt (epoch ms) to YYYY-MM-DD, calls renderRecentsText, returns BotResponse with recentsKeyboard. Unlinked users get Open App guidance.",
       "apps/worker/src/bot/service.ts: added handleRecentsCommand import and `case 'recents':` branch in switch.",
-      "apps/worker/src/bot/renderers/keyboards.ts: added recentsKeyboard(tmaUrl) → `📋 Xem tất cả` web_app button to TMA.",
+      "apps/worker/src/bot/renderers/keyboards.ts: recentsKeyboard now builds a TMA `/expenses` route URL from the deployed base URL so `📋 Xem tất cả` opens the expense list instead of the app home.",
       "apps/worker/src/bot/commands/help.ts: command list now includes `/recents`.",
-      "apps/worker/test/unit/bot/renderers/finance-text.spec.ts: added renderRecentsText tests (empty state + populated line shape) and a regression test asserting renderExpensePreviewText does NOT render source label.",
+      "apps/worker/test/unit/bot/renderers/finance-text.spec.ts: added renderRecentsText tests (empty state + populated line shape), a regression test asserting renderExpensePreviewText does NOT render source label, and a non-VND summary-line regression test.",
+      "apps/worker/test/unit/bot/renderers/keyboards.spec.ts: added recentsKeyboard deep-link coverage for both trailing-slash and no-trailing-slash TMA base URLs.",
       "docs/product-specs/tma/telegram-bot-companion.md: Command Set table adds /recents row.",
       "harness/feature_index.json: feat-123 entry added.",
       "harness/progress.md: session entry added."
@@ -34,6 +36,9 @@
       "./init.sh lint -> OK.",
       "pnpm --filter worker exec vitest run test/unit/bot/renderers/finance-text.spec.ts test/unit/bot/renderers/keyboards.spec.ts -> 2 files, 38 tests passed (31 + 7; +3 new tests in finance-text.spec.ts).",
       "pnpm --filter worker exec vitest run --cache -> 99 files, 629 tests passed (no regressions; +4 net new vs feat-122 baseline of 625).",
+      "pnpm --filter worker typecheck -> OK.",
+      "pnpm --filter worker lint -> OK.",
+      "pnpm --filter worker exec vitest run test/unit/bot/renderers/finance-text.spec.ts test/unit/bot/renderers/keyboards.spec.ts -> 2 files, 41 tests passed.",
       "./init.sh (full: install + harness check + lint/typecheck/test across web/worker/tma) -> Done!"
     ]
   },

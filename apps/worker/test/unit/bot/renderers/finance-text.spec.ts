@@ -308,6 +308,22 @@ describe('format', () => {
       )
     })
 
+    it('uses the currency code for non-VND amounts', () => {
+      const result = renderExpenseSummaryLine({
+        amountMinor: 12345,
+        occurredAt: '2026-06-24',
+        categoryKey: 'food',
+        title: 'coffee',
+        sourceKey: 'cash',
+        scope: 'personal',
+        currencyCode: 'USD',
+      })
+
+      expect(result).toMatch(
+        /^🍜 Ăn uống · coffee · <code>123,45 USD<\/code> · 24\/06$/,
+      )
+    })
+
     it('falls back to raw date when not in YYYY-MM-DD shape', () => {
       const result = renderExpenseSummaryLine({
         amountMinor: 100,

@@ -80,13 +80,17 @@ export function renderExpenseSummaryLine(
     options.amountMinor,
     options.currencyCode,
   )
+  const amountWithCurrency =
+    options.currencyCode === 'VND'
+      ? `${amountFormatted}₫`
+      : `${amountFormatted} ${options.currencyCode}`
   const parts = options.occurredAt.split('-')
   const shortDate =
     parts.length === 3 ? `${parts[2]}/${parts[1]}` : options.occurredAt
   const emoji = getCategoryEmoji(options.categoryKey)
   const label = getCategoryLabel(options.categoryKey)
 
-  return `${emoji} ${escapeHtml(label)} · ${escapeHtml(options.title)} · <code>${amountFormatted}₫</code> · ${shortDate}`
+  return `${emoji} ${escapeHtml(label)} · ${escapeHtml(options.title)} · <code>${amountWithCurrency}</code> · ${shortDate}`
 }
 
 /** Render a single budget status line. */
