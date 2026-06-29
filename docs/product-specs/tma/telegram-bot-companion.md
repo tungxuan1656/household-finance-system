@@ -35,6 +35,7 @@ The bot helps users act from chat. It does not replace the TMA.
 |---------|---------|
 | `/start` | Main menu + auto-detect hint. |
 | `/add` | Parse 1–10 expenses from one message (batch). |
+| `/recents` | 6 most recent personal expenses. |
 | `/stats` | Spending summary for a period. |
 | `/budget` | Budget status + warnings. |
 | `/top` | Top categories for a period. |

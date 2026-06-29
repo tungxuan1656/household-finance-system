@@ -1,5 +1,14 @@
 import type { InlineKeyboardMarkup } from '../types'
 
+const buildTmaRouteUrl = (tmaUrl: string, routePath: string): string => {
+  const url = new URL(tmaUrl)
+  const basePath = url.pathname.replace(/\/$/, '')
+
+  url.pathname = `${basePath}${routePath}`
+
+  return url.toString()
+}
+
 /**
  * Build a simple Open App inline keyboard.
  */
@@ -19,6 +28,20 @@ export const statsKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
  */
 export const topKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
   inline_keyboard: [[{ text: '📋 Xem giao dịch', web_app: { url: tmaUrl } }]],
+})
+
+/**
+ * Contextual keyboard for /recents — open expense list in Mini App.
+ */
+export const recentsKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
+  inline_keyboard: [
+    [
+      {
+        text: '📋 Xem tất cả',
+        web_app: { url: buildTmaRouteUrl(tmaUrl, '/expenses') },
+      },
+    ],
+  ],
 })
 
 /**

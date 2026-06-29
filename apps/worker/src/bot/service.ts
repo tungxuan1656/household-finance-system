@@ -9,6 +9,7 @@ import { runAddExpenseCommand } from './commands/ai-expense-service'
 import { handleBudgetCommand } from './commands/budget'
 import { handleHelpCommand } from './commands/help'
 import { runNaturalExpenseCreate } from './commands/natural-expense'
+import { handleRecentsCommand } from './commands/recents'
 import { handleSettingsCommand } from './commands/settings'
 import { handleStartCommand } from './commands/start'
 import { handleStatsCommand } from './commands/stats'
@@ -117,6 +118,10 @@ const handleMessageUpdate = async (
     }
     case 'budget': {
       result = await handleBudgetCommand(ctx)
+      break
+    }
+    case 'recents': {
+      result = await handleRecentsCommand(ctx)
       break
     }
     case 'settings': {
