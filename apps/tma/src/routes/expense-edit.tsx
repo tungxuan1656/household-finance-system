@@ -18,7 +18,10 @@ import {
 import type { GroupListItem } from '@/features/groups/types'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { useCategoryPresentation } from '@/features/home/presentation'
-import { getExpenseDetailPath } from '@/lib/constants/routes'
+import {
+  getExpenseDetailPath,
+  isExpenseEditFlowPathname,
+} from '@/lib/constants/routes'
 import {
   formatAmountInput,
   minorFromRaw,
@@ -58,11 +61,18 @@ export const ExpenseEditPage = () => {
 
   // Reset edit draft store when leaving the page so a fresh visit hydrates
   // the amount input from the expense instead of reusing a stale draft.
+  // ── IMPORTANT ─────────────────────────────────────────────────────────
+  // /expenses/:id/edit and /expenses/:id/edit/category are sibling routes.
+  // Navigating to the category page unmounts this component.  We must NOT
+  // clear the draft in that case or the category page sees `!draft` and
+  // redirects away (breaking the BackButton as well).
   useEffect(() => {
     return () => {
-      resetStore()
+      if (!isExpenseEditFlowPathname(window.location.pathname, id)) {
+        resetStore()
+      }
     }
-  }, [resetStore])
+  }, [resetStore, id])
 
   const handleAmountChange = (value: string) => {
     const formatted = formatAmountInput(value)

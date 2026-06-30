@@ -40,3 +40,24 @@ export const getBudgetDetailPath = (budgetId: string): string =>
 
 export const getInvitationAcceptPath = (token: string): string =>
   `${TMA_PATHS.invitations}/${token}`
+
+/**
+ * Returns `true` when `pathname` follows the expense-edit flow pattern
+ * `/expenses/:id/edit` (with or without a trailing sub‑path).
+ *
+ * When `expenseId` is provided the check is scoped to that specific expense;
+ * the pathname must reference the same expense id.  This lets callers
+ * distinguish "still inside the same edit flow" from "left the edit flow
+ * entirely" – the core distinction needed to decide whether to preserve
+ * or discard the edit draft on component unmount.
+ */
+export const isExpenseEditFlowPathname = (
+  pathname: string,
+  expenseId?: string,
+): boolean => {
+  const match = pathname.match(/^\/expenses\/([^/]+)\/edit(?:\/|$)/)
+  if (!match) return false
+  if (expenseId !== undefined) return match[1] === expenseId
+
+  return true
+}
