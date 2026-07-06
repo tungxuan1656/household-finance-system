@@ -1,9 +1,8 @@
-import { SELF, env } from 'cloudflare:test'
+import { SELF } from 'cloudflare:test'
 import { describe, expect, it } from 'vitest'
 
 import {
   type ApiEnvelope,
-  type ApiErrorEnvelope,
   exchangeAccessToken,
   parseJson,
   registerWorkerIntegrationSetup,
@@ -11,216 +10,7 @@ import {
 
 registerWorkerIntegrationSetup()
 
-describe('POST /api/v1/incomes — integration tests', () => {
-  it('Happy path: create personal income', async () => {
-    const auth = await exchangeAccessToken(
-      'test:firebase-user-inc-create:inc-create@example.com',
-    )
-
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${auth.accessToken}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: 5000000,
-        sourceKey: 'bank-transfer',
-        title: 'Monthly salary',
-        occurredAt: Date.now(),
-      }),
-    })
-
-    expect(response.status).toBe(201)
-
-    const payload = await parseJson<
-      ApiEnvelope<{
-        id: string
-        title: string
-        amountMinor: number
-        currencyCode: string
-        categoryKey: string
-        sourceKey: string
-        spentByUserId: string
-        note: string | null
-      }>
-    >(response)
-
-    expect(payload.success).toBe(true)
-    expect(payload.data.title).toBe('Monthly salary')
-    expect(payload.data.amountMinor).toBe(5000000)
-    expect(payload.data.currencyCode).toBe('VND')
-    expect(payload.data.categoryKey).toBe('money-in')
-    expect(payload.data.sourceKey).toBe('bank-transfer')
-    expect(payload.data.spentByUserId).toBe(auth.user.id)
-    expect(payload.data.note).toBeNull()
-    expect(typeof payload.data.id).toBe('string')
-  })
-
-  it('accepts optional note', async () => {
-    const auth = await exchangeAccessToken(
-      'test:firebase-user-inc-note:inc-note@example.com',
-    )
-
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${auth.accessToken}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: 2000000,
-        sourceKey: 'bank-transfer',
-        title: 'Freelance payment',
-        occurredAt: Date.now(),
-        note: 'Web dev project',
-      }),
-    })
-
-    expect(response.status).toBe(201)
-
-    const payload =
-      await parseJson<ApiEnvelope<{ note: string | null }>>(response)
-
-    expect(payload.data.note).toBe('Web dev project')
-  })
-
-  it('Error: unauthenticated -> 401', async () => {
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        amount: 100000,
-        sourceKey: 'cash',
-        title: 'Test',
-        occurredAt: Date.now(),
-      }),
-    })
-
-    expect(response.status).toBe(401)
-
-    const payload = await parseJson<ApiErrorEnvelope>(response)
-    expect(payload.success).toBe(false)
-    expect(payload.error.code).toBe('UNAUTHENTICATED')
-  })
-
-  it('Error: missing required fields -> 400', async () => {
-    const auth = await exchangeAccessToken(
-      'test:firebase-user-inc-missing:inc-missing@example.com',
-    )
-
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${auth.accessToken}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({}),
-    })
-
-    expect(response.status).toBe(400)
-
-    const payload = await parseJson<ApiErrorEnvelope>(response)
-    expect(payload.error.code).toBe('INVALID_INPUT')
-  })
-
-  it('Error: negative amount -> 400', async () => {
-    const auth = await exchangeAccessToken(
-      'test:firebase-user-inc-neg:inc-neg@example.com',
-    )
-
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${auth.accessToken}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: -100,
-        sourceKey: 'cash',
-        title: 'Test',
-        occurredAt: Date.now(),
-      }),
-    })
-
-    expect(response.status).toBe(400)
-
-    const payload = await parseJson<ApiErrorEnvelope>(response)
-    expect(payload.error.code).toBe('INVALID_INPUT')
-  })
-
-  it('Error: blank title -> 400', async () => {
-    const auth = await exchangeAccessToken(
-      'test:firebase-user-inc-blank-title:inc-blank@example.com',
-    )
-
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${auth.accessToken}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: 100000,
-        sourceKey: 'cash',
-        title: '   ',
-        occurredAt: Date.now(),
-      }),
-    })
-
-    expect(response.status).toBe(400)
-  })
-
-  it('Error: invalid sourceKey -> 400', async () => {
-    const auth = await exchangeAccessToken(
-      'test:firebase-user-inc-bad-src:inc-bad-src@example.com',
-    )
-
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${auth.accessToken}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: 100000,
-        sourceKey: 'invalid-source',
-        title: 'Test',
-        occurredAt: Date.now(),
-      }),
-    })
-
-    expect(response.status).toBe(400)
-
-    const payload = await parseJson<ApiErrorEnvelope>(response)
-    expect(payload.error.code).toBe('INVALID_INPUT')
-  })
-
-  it('rejects extra fields via strict schema', async () => {
-    const auth = await exchangeAccessToken(
-      'test:firebase-user-inc-extra:inc-extra@example.com',
-    )
-
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${auth.accessToken}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: 100000,
-        sourceKey: 'cash',
-        title: 'Test',
-        occurredAt: Date.now(),
-        categoryKey: 'transport', // should be rejected — server sets it
-      }),
-    })
-
-    expect(response.status).toBe(400)
-  })
-})
-
-describe('GET /api/v1/incomes — integration tests', () => {
+describe('GET /api/v1/incomes — list content', () => {
   it('returns empty list when user has no incomes', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-inc-list-empty:inc-list-empty@example.com',
@@ -411,51 +201,6 @@ describe('GET /api/v1/incomes — integration tests', () => {
     expect(payload.data.items[0].sourceKey).toBe('cash')
   })
 
-  it('excludes soft-deleted incomes from list results', async () => {
-    const auth = await exchangeAccessToken(
-      'test:firebase-user-inc-deleted:inc-deleted@example.com',
-    )
-
-    const createdResponse = await SELF.fetch(
-      'https://example.com/api/v1/incomes',
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${auth.accessToken}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: 1500000,
-          sourceKey: 'cash',
-          title: 'Deleted income',
-          occurredAt: Date.now(),
-        }),
-      },
-    )
-
-    expect(createdResponse.status).toBe(201)
-
-    const createdPayload =
-      await parseJson<ApiEnvelope<{ id: string }>>(createdResponse)
-
-    await env.DB.prepare('UPDATE incomes SET deleted_at = ? WHERE id = ?')
-      .bind(Date.now(), createdPayload.data.id)
-      .run()
-
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      headers: { authorization: `Bearer ${auth.accessToken}` },
-    })
-
-    expect(response.status).toBe(200)
-
-    const payload =
-      await parseJson<
-        ApiEnvelope<{ items: Array<{ id: string }>; nextCursor: string | null }>
-      >(response)
-
-    expect(payload.data.items).toHaveLength(0)
-  })
-
   it('paginates with cursor, newest-first stable order', async () => {
     const auth = await exchangeAccessToken(
       'test:firebase-user-inc-cursor:inc-cursor@example.com',
@@ -547,18 +292,6 @@ describe('GET /api/v1/incomes — integration tests', () => {
       'Income 2',
       'Income 1',
     ])
-  })
-
-  it('Error: unauthenticated -> 401', async () => {
-    const response = await SELF.fetch('https://example.com/api/v1/incomes', {
-      headers: { 'content-type': 'application/json' },
-    })
-
-    expect(response.status).toBe(401)
-
-    const payload = await parseJson<ApiErrorEnvelope>(response)
-    expect(payload.success).toBe(false)
-    expect(payload.error.code).toBe('UNAUTHENTICATED')
   })
 
   it('does not mix incomes between users', async () => {
