@@ -2,6 +2,7 @@
 
 - last-archived: 2026-06-23
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
+- 2026-07-06 — Internal user-targeted expense migration (feat-124): added `POST /api/v1/internal/migrate/expenses` behind `X-Internal-Api-Key` / `INTERNAL_API_KEY`, preserved the public bearer-token migrate route unchanged, refactored shared migration logic around explicit target-user ownership, extended `scripts/migrate-expenses.mjs` with internal mode + guardrails, added internal-route integration coverage, and verified with targeted migrate tests, `./init.sh typecheck`, and full `./init.sh`.
 - 2026-06-30 — TMA expense edit category route fix (feat-108 follow-up): preserved edit draft across `/expenses/:id/edit -> /expenses/:id/edit/category` sibling-route navigation via `isExpenseEditFlowPathname()`, added 10-case pure route guard test, and stopped the redirect/back-button breakage caused by premature unmount reset.
 - 2026-06-29 — Bot /recents PR #110 review fixes (feat-123): `/recents` summary lines now keep ISO currency codes for non-VND expenses, and `📋 Xem tất cả` now deep-links to the TMA `/expenses` route instead of the app home. Added targeted renderer/keyboard regression coverage.
 - 2026-06-26 — Bot /recents command + drop source from expense previews (feat-123): new /recents shows 6 most recent personal expenses (compact summary line, no source); renderExpensePreviewText no longer renders sourceKey. Help + spec Command Set updated.

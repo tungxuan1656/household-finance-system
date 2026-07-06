@@ -689,6 +689,11 @@
       "id": "feat-123",
       "name": "Bot /recents command + drop source from expense previews",
       "status": "done"
+    },
+    {
+      "id": "feat-124",
+      "name": "Internal user-targeted expense migration",
+      "status": "done"
     }
   ]
 }

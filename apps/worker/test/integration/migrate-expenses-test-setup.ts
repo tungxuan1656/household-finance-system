@@ -9,6 +9,9 @@ export const TEST_TOKEN = 'test:firebase-user-migrate:user-migrate@example.com'
 export const HOUSEHOLD_TOKEN =
   'test:firebase-user-migrate-household:user-migrate-hh@example.com'
 
+// Internal API key (must match vitest.config.mts bindings)
+export const INTERNAL_API_KEY = 'test-internal-api-key'
+
 // Get auth for a test identity
 export async function getAuth(tokenId: string) {
   return exchangeAccessToken(tokenId)
@@ -35,6 +38,37 @@ export async function postMigrateAndParse(
   accessToken: string,
 ) {
   const response = await postMigrate(body, accessToken)
+  const payload =
+    await parseJson<ApiEnvelope<MigrateExpensesResultDTO>>(response)
+  return { response, payload }
+}
+
+// POST to /api/v1/internal/migrate/expenses
+export async function postInternalMigrate(
+  body: Record<string, unknown>,
+  apiKey?: string,
+) {
+  const headers: Record<string, string> = {
+    'content-type': 'application/json',
+  }
+
+  if (apiKey !== undefined) {
+    headers['x-internal-api-key'] = apiKey
+  }
+
+  return SELF.fetch('https://example.com/api/v1/internal/migrate/expenses', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+  })
+}
+
+// POST internal + parse response
+export async function postInternalMigrateAndParse(
+  body: Record<string, unknown>,
+  apiKey?: string,
+) {
+  const response = await postInternalMigrate(body, apiKey)
   const payload =
     await parseJson<ApiEnvelope<MigrateExpensesResultDTO>>(response)
   return { response, payload }

@@ -1,35 +1,53 @@
 #!/usr/bin/env node
 // Migrate external personal-finance transactions into the household-finance system
-// via the POST /api/v1/migrate/expenses backend endpoint.
+// via the backend migration endpoints.
+//
+// Modes (mutually exclusive):
+//   1) Token mode (default): POST /api/v1/migrate/expenses — uses Bearer JWT.
+//   2) Internal/admin mode: POST /api/v1/internal/migrate/expenses — uses X-Internal-Api-Key.
 //
 // Usage:
 //   node scripts/migrate-expenses.mjs <transactions-file> [options]
 //
-// Options:
-//   --token <token>        Access token (JWT). Falls back to ACCESS_TOKEN env var.
-//   --remote               Target the remote deployed worker instead of local.
-//   --dry-run              Validate + count without persisting.
-//   --household-id <id>    Scope to a household (omit for personal).
-//   --source-key <key>     Override default sourceKey 'bank-transfer'.
-//   --show-errors <n>      Number of per-entry errors to print (default 20, 0 = all).
-//   --help, -h             Show this help.
+// Options (token mode — default):
+//   --token <token>          Access token (JWT). Falls back to ACCESS_TOKEN env var.
+//
+// Options (internal mode):
+//   --target-user-id <id>    Target user ID to create expenses for (implies internal mode).
+//   --admin-secret <secret>  Internal API key. Falls back to INTERNAL_API_KEY env var.
+//
+// General options:
+//   --remote                 Target the remote deployed worker instead of local.
+//   --dry-run                Validate + count without persisting.
+//   --household-id <id>      Scope to a household (omit for personal).
+//   --source-key <key>       Override default sourceKey 'bank-transfer'.
+//   --show-errors <n>        Number of per-entry errors to print (default 20, 0 = all).
+//   --help, -h               Show this help.
 //
 // Examples:
-//   # Local dry-run preview
-//   node scripts/migrate-expenses.mjs resources/transactions-peronal.json --token <JWT> --dry-run
+//   # Token mode: dry-run preview
+//   node scripts/migrate-expenses.mjs resources/transactions-personal.json --token <JWT> --dry-run
 //
-//   # Remote real run, personal scope
-//   node scripts/migrate-expenses.mjs resources/transactions-peronal.json --token <JWT> --remote
+//   # Internal mode: migrate for another user
+//   node scripts/migrate-expenses.mjs resources/transactions-personal.json --target-user-id <id> --admin-secret <secret>
 //
-//   # Local real run, household scope
-//   ACCESS_TOKEN=<JWT> node scripts/migrate-expenses.mjs resources/transactions-peronal.json --household-id <id>
+//   # Token mode with ACCESS_TOKEN env var
+//   ACCESS_TOKEN=<JWT> node scripts/migrate-expenses.mjs resources/transactions-personal.json
+//
+//   # Internal mode with INTERNAL_API_KEY env var
+//   INTERNAL_API_KEY=<secret> node scripts/migrate-expenses.mjs resources/transactions-personal.json --target-user-id <id>
 
 import { readFileSync } from 'node:fs'
 import process from 'node:process'
 
-const LOCAL_URL = 'http://localhost:8787/api/v1/migrate/expenses'
-const REMOTE_URL =
+const LOCAL_TOKEN_URL = 'http://localhost:8787/api/v1/migrate/expenses'
+const REMOTE_TOKEN_URL =
   'https://household-finance-system.tungxuan-work10.workers.dev/api/v1/migrate/expenses'
+
+const LOCAL_INTERNAL_URL =
+  'http://localhost:8787/api/v1/internal/migrate/expenses'
+const REMOTE_INTERNAL_URL =
+  'https://household-finance-system.tungxuan-work10.workers.dev/api/v1/internal/migrate/expenses'
 
 const printHelp = () => {
   console.log(`Migrate external transactions into the household-finance system.
@@ -37,18 +55,30 @@ const printHelp = () => {
 Usage:
   node scripts/migrate-expenses.mjs <transactions-file> [options]
 
-Options:
-  --token <token>        Access token (JWT). Falls back to ACCESS_TOKEN env var.
-  --remote               Target the remote deployed worker instead of local.
-  --dry-run              Validate + count without persisting.
-  --household-id <id>    Scope to a household (omit for personal).
-  --source-key <key>     Override default sourceKey 'bank-transfer'.
-  --show-errors <n>      Number of per-entry errors to print (default 20, 0 = all).
-  --help, -h             Show this help.
+Modes (mutually exclusive):
+  Token mode (default)       POST /api/v1/migrate/expenses using Bearer JWT
+  Internal/admin mode         POST /api/v1/internal/migrate/expenses using X-Internal-Api-Key
+  (--target-user-id <id>)
+
+Options (token mode — default):
+  --token <token>            Access token (JWT). Falls back to ACCESS_TOKEN env var.
+
+Options (internal mode):
+  --target-user-id <id>      Target user ID to create expenses for (implies internal mode).
+  --admin-secret <secret>    Internal API key. Falls back to INTERNAL_API_KEY env var.
+
+General options:
+  --remote                   Target the remote deployed worker instead of local.
+  --dry-run                  Validate + count without persisting.
+  --household-id <id>        Scope to a household (omit for personal).
+  --source-key <key>         Override default sourceKey 'bank-transfer'.
+  --show-errors <n>          Number of per-entry errors to print (default 20, 0 = all).
+  --help, -h                 Show this help.
 
 Target URLs:
-  local  (default): ${LOCAL_URL}
-  remote (--remote): ${REMOTE_URL}
+  Token  mode: ${LOCAL_TOKEN_URL}
+  Internal mode: ${LOCAL_INTERNAL_URL}
+  Remote (--remote): prepend remote base to the chosen endpoint path.
 
 The transactions file must be the external nested JSON shape:
   { "<dateKey>": { "<txId>": { categoryId, date, money, note } } }
@@ -65,6 +95,8 @@ const parseArgs = (argv) => {
     sourceKey: null,
     showErrors: 20,
     help: false,
+    targetUserId: null,
+    adminSecret: null,
   }
   const args = argv.slice(2)
   for (let i = 0; i < args.length; i++) {
@@ -91,6 +123,12 @@ const parseArgs = (argv) => {
         break
       case '--show-errors':
         opts.showErrors = Number.parseInt(args[++i], 10)
+        break
+      case '--target-user-id':
+        opts.targetUserId = args[++i]
+        break
+      case '--admin-secret':
+        opts.adminSecret = args[++i]
         break
       default:
         if (a.startsWith('--')) {
@@ -141,12 +179,41 @@ const main = async () => {
     process.exit(2)
   }
 
-  const token = opts.token || process.env.ACCESS_TOKEN
-  if (!token) {
+  if (opts.targetUserId && opts.token) {
     console.error(
-      'Error: access token required. Pass --token <JWT> or set ACCESS_TOKEN env var.',
+      'Error: --token cannot be combined with --target-user-id. Choose token mode or internal mode.',
     )
     process.exit(2)
+  }
+
+  if (opts.adminSecret && !opts.targetUserId) {
+    console.error(
+      'Error: --admin-secret requires --target-user-id. Choose internal mode explicitly.',
+    )
+    process.exit(2)
+  }
+
+  // Determine mode: internal if targetUserId is provided, else token mode
+  const isInternal = Boolean(opts.targetUserId)
+
+  if (isInternal) {
+    const secret = opts.adminSecret || process.env.INTERNAL_API_KEY
+    if (!secret) {
+      console.error(
+        'Error: internal mode requires --admin-secret <secret> or INTERNAL_API_KEY env var.',
+      )
+      process.exit(2)
+    }
+    opts._resolvedSecret = secret
+  } else {
+    const token = opts.token || process.env.ACCESS_TOKEN
+    if (!token) {
+      console.error(
+        'Error: token mode requires --token <JWT> or ACCESS_TOKEN env var.',
+      )
+      process.exit(2)
+    }
+    opts._resolvedToken = token
   }
 
   // Read + parse the transactions file.
@@ -155,34 +222,65 @@ const main = async () => {
     const raw = readFileSync(opts.file, 'utf8')
     transactions = JSON.parse(raw)
   } catch (e) {
-    console.error(`Error reading/parsing transactions file "${opts.file}": ${e.message}`)
+    console.error(
+      `Error reading/parsing transactions file "${opts.file}": ${e.message}`,
+    )
     process.exit(2)
   }
 
-  if (typeof transactions !== 'object' || transactions === null || Array.isArray(transactions)) {
-    console.error('Error: transactions file must be a JSON object (nested dateKey -> txId -> tx).')
+  if (
+    typeof transactions !== 'object' ||
+    transactions === null ||
+    Array.isArray(transactions)
+  ) {
+    console.error(
+      'Error: transactions file must be a JSON object (nested dateKey -> txId -> tx).',
+    )
     process.exit(2)
   }
 
-  const url = opts.remote ? REMOTE_URL : LOCAL_URL
+  const url = isInternal
+    ? opts.remote
+      ? REMOTE_INTERNAL_URL
+      : LOCAL_INTERNAL_URL
+    : opts.remote
+      ? REMOTE_TOKEN_URL
+      : LOCAL_TOKEN_URL
 
   // Build request body — only include optional fields when provided.
   const body = { transactions }
   if (opts.dryRun) body.dryRun = true
   if (opts.householdId) body.householdId = opts.householdId
   if (opts.sourceKey) body.sourceKey = opts.sourceKey
+  if (isInternal) body.targetUserId = opts.targetUserId
 
   const totalEntries = Object.values(transactions).reduce(
-    (sum, txMap) => sum + (txMap && typeof txMap === 'object' ? Object.keys(txMap).length : 0),
+    (sum, txMap) =>
+      sum +
+      (txMap && typeof txMap === 'object' ? Object.keys(txMap).length : 0),
     0,
   )
 
+  // Build headers — never print secrets
+  const headers = { 'content-type': 'application/json' }
+  if (isInternal) {
+    headers['x-internal-api-key'] = opts._resolvedSecret
+  } else {
+    headers.authorization = `Bearer ${opts._resolvedToken}`
+  }
+
   console.log('Migrate expenses')
+  console.log(`  mode:       ${isInternal ? 'internal' : 'token'}`)
   console.log(`  target:     ${opts.remote ? 'remote' : 'local'} (${url})`)
   console.log(`  file:       ${opts.file}`)
   console.log(`  entries:    ${totalEntries}`)
   console.log(`  dry-run:    ${opts.dryRun ? 'yes' : 'no'}`)
-  console.log(`  scope:      ${opts.householdId ? `household ${opts.householdId}` : 'personal'}`)
+  console.log(
+    `  scope:      ${opts.householdId ? `household ${opts.householdId}` : 'personal'}`,
+  )
+  if (isInternal) {
+    console.log(`  target-user: ${opts.targetUserId}`)
+  }
   if (opts.sourceKey) console.log(`  source-key: ${opts.sourceKey}`)
   console.log('')
 
@@ -190,10 +288,7 @@ const main = async () => {
   try {
     res = await fetch(url, {
       method: 'POST',
-      headers: {
-        authorization: `Bearer ${token}`,
-        'content-type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(body),
     })
   } catch (e) {
@@ -213,7 +308,8 @@ const main = async () => {
     if (payload && payload.error) {
       console.error(`  code:    ${payload.error.code}`)
       console.error(`  message: ${payload.error.message}`)
-      if (payload.error.details) console.error(`  details: ${JSON.stringify(payload.error.details)}`)
+      if (payload.error.details)
+        console.error(`  details: ${JSON.stringify(payload.error.details)}`)
     } else if (payload) {
       console.error(`  body: ${JSON.stringify(payload)}`)
     } else {
@@ -239,7 +335,9 @@ const main = async () => {
       console.log(`    [${e.date} / ${e.txId}] ${e.reason}`)
     }
     if (errors.length > shown.length) {
-      console.log(`    ... and ${errors.length - shown.length} more (use --show-errors 0 to see all)`)
+      console.log(
+        `    ... and ${errors.length - shown.length} more (use --show-errors 0 to see all)`,
+      )
     }
   } else {
     console.log('  per-entry errors: 0')
@@ -251,7 +349,9 @@ const main = async () => {
 
   console.log('')
   if (data.dryRun) {
-    console.log('Dry-run complete — nothing was persisted. Re-run without --dry-run to import.')
+    console.log(
+      'Dry-run complete — nothing was persisted. Re-run without --dry-run to import.',
+    )
   } else {
     console.log(`Migration complete: ${data.created} expense(s) created.`)
   }

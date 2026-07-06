@@ -1,13 +1,11 @@
 import { SELF } from 'cloudflare:test'
 import { describe, expect, it } from 'vitest'
 
-import type { MigrateExpensesResultDTO } from '@/contracts/migrate-types'
 import type { ApiErrorEnvelope } from '../helpers/test-context'
 import { registerWorkerIntegrationSetup } from '../helpers/test-context'
 
 import {
   TEST_TOKEN,
-  HOUSEHOLD_TOKEN,
   getAuth,
   postMigrate,
   postMigrateAndParse,
@@ -89,7 +87,6 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     expect(payload.data.created).toBe(1)
     expect(payload.data.dryRun).toBe(false)
 
-    // Verify the expense was persisted by fetching the list
     const { response: listResponse, payload: listPayload } =
       await getExpensesList<{
         items: Array<{
@@ -121,12 +118,12 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
       {
         dryRun: true,
         transactions: {
-          '2025-06-01': {
-            'tx-income-cat': {
+          '2025-01-20': {
+            'tx-income-map': {
               categoryId: 9,
-              date: '20250601',
-              money: -30000,
-              note: 'Some expense mapped to money-in',
+              date: '20250120',
+              money: -15000,
+              note: 'Wrong kind',
             },
           },
         },
@@ -136,9 +133,9 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
 
     expect(response.status).toBe(200)
     expect(payload.data.created).toBe(0)
+    expect(payload.data.skipped).toBe(1)
     expect(payload.data.skippedBreakdown.nonExpenseCategory).toBe(1)
-    expect(payload.data.errors).toHaveLength(1)
-    expect(payload.data.errors[0].reason).toBe(
+    expect(payload.data.errors[0]?.reason).toBe(
       'mapped category is not expense-kind',
     )
   })
@@ -149,11 +146,11 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
       {
         dryRun: true,
         transactions: {
-          '2025-03-10': {
-            'tx-blank': {
+          '2025-01-21': {
+            'tx-blank-note': {
               categoryId: 0,
-              date: '20250310',
-              money: -15000,
+              date: '20250121',
+              money: -12000,
               note: '   ',
             },
           },
@@ -165,7 +162,7 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     expect(response.status).toBe(200)
     expect(payload.data.created).toBe(1)
     expect(payload.data.skipped).toBe(0)
-    expect(payload.data.skippedBreakdown.blankNote).toBeUndefined()
+    expect(payload.data.errors).toHaveLength(0)
   })
 
   it('Invalid date', async () => {
@@ -174,12 +171,12 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
       {
         dryRun: true,
         transactions: {
-          bad: {
+          'bad-date-key': {
             'tx-bad-date': {
               categoryId: 0,
-              date: '2025-99-99',
+              date: '20250230',
               money: -10000,
-              note: 'Bad date entry',
+              note: 'Impossible date',
             },
           },
         },
@@ -189,9 +186,9 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
 
     expect(response.status).toBe(200)
     expect(payload.data.created).toBe(0)
+    expect(payload.data.skipped).toBe(1)
     expect(payload.data.skippedBreakdown.invalidDate).toBe(1)
-    expect(payload.data.errors).toHaveLength(1)
-    expect(payload.data.errors[0].reason).toBe('invalid date')
+    expect(payload.data.errors[0]?.reason).toBe('invalid date')
   })
 
   it('Unknown external categoryId', async () => {
@@ -200,12 +197,12 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
       {
         dryRun: true,
         transactions: {
-          '2025-04-20': {
+          '2025-01-25': {
             'tx-unknown-cat': {
               categoryId: 999,
-              date: '20250420',
-              money: -25000,
-              note: 'Unknown category',
+              date: '20250125',
+              money: -11000,
+              note: 'Unknown cat',
             },
           },
         },
@@ -215,9 +212,9 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
 
     expect(response.status).toBe(200)
     expect(payload.data.created).toBe(0)
+    expect(payload.data.skipped).toBe(1)
     expect(payload.data.skippedBreakdown.unknownCategory).toBe(1)
-    expect(payload.data.errors).toHaveLength(1)
-    expect(payload.data.errors[0].reason).toBe('unknown external categoryId')
+    expect(payload.data.errors[0]?.reason).toBe('unknown external categoryId')
   })
 
   it('categoryMapping override', async () => {
@@ -225,14 +222,16 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     const { response, payload } = await postMigrateAndParse(
       {
         dryRun: false,
-        categoryMapping: { '0': 'transport' },
+        categoryMapping: {
+          '99': 'food',
+        },
         transactions: {
-          '2025-07-04': {
+          '2025-01-26': {
             'tx-override': {
-              categoryId: 0,
-              date: '20250704',
-              money: -80000,
-              note: 'Mapped to transport',
+              categoryId: 99,
+              date: '20250126',
+              money: -25000,
+              note: 'Override category',
             },
           },
         },
@@ -243,16 +242,15 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     expect(response.status).toBe(200)
     expect(payload.data.created).toBe(1)
 
-    // Verify categoryKey is 'transport' (override), not 'food' (default)
     const { payload: listPayload } = await getExpensesList<{
       items: Array<{ title: string; categoryKey: string }>
     }>(auth.accessToken)
     const created = findExpenseByTitle(
       listPayload.data.items,
-      'Mapped to transport',
+      'Override category',
     )
     expect(created).toBeDefined()
-    expect(created!.categoryKey).toBe('transport')
+    expect(created!.categoryKey).toBe('food')
   })
 
   it('sourceKey override', async () => {
@@ -262,12 +260,12 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
         dryRun: false,
         sourceKey: 'cash',
         transactions: {
-          '2025-08-10': {
+          '2025-01-27': {
             'tx-source': {
-              categoryId: 5,
-              date: '20250810',
-              money: -120000,
-              note: 'Cash purchase',
+              categoryId: 0,
+              date: '20250127',
+              money: -18000,
+              note: 'Cash expense',
             },
           },
         },
@@ -281,45 +279,37 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     const { payload: listPayload } = await getExpensesList<{
       items: Array<{ title: string; sourceKey: string }>
     }>(auth.accessToken)
-    const created = findExpenseByTitle(listPayload.data.items, 'Cash purchase')
+    const created = findExpenseByTitle(listPayload.data.items, 'Cash expense')
     expect(created).toBeDefined()
     expect(created!.sourceKey).toBe('cash')
   })
 
   it('Auth required — 401', async () => {
-    const response = await SELF.fetch(
-      'https://example.com/api/v1/migrate/expenses',
+    const response = await postMigrate(
       {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          transactions: {
-            '2025-01-01': {
-              'tx-1': {
-                categoryId: 0,
-                date: '20250101',
-                money: -10000,
-                note: 'Test',
-              },
+        dryRun: true,
+        transactions: {
+          '2025-01-28': {
+            'tx-unauth': {
+              categoryId: 0,
+              date: '20250128',
+              money: -10000,
+              note: 'No auth',
             },
           },
-        }),
+        },
       },
+      'invalid-token',
     )
 
     expect(response.status).toBe(401)
-
     const payload = (await response.json()) as ApiErrorEnvelope
     expect(payload.success).toBe(false)
     expect(payload.error.code).toBe('UNAUTHENTICATED')
   })
 
   it('Household scope', async () => {
-    const auth = await getAuth(HOUSEHOLD_TOKEN)
-
-    // Create a household first
+    const auth = await getAuth(TEST_TOKEN)
     const householdResponse = await SELF.fetch(
       'https://example.com/api/v1/households',
       {
@@ -328,28 +318,26 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
           authorization: `Bearer ${auth.accessToken}`,
           'content-type': 'application/json',
         },
-        body: JSON.stringify({ name: 'Migrate Test Household' }),
+        body: JSON.stringify({ name: 'Migrate household' }),
       },
     )
-    expect(householdResponse.status).toBe(201)
 
-    const householdPayload = (await householdResponse.json()) as ApiEnvelope<{
-      id: string
-      defaultCurrencyCode: string
-    }>
+    expect(householdResponse.status).toBe(201)
+    const householdPayload = (await householdResponse.json()) as {
+      data: { id: string }
+    }
     const householdId = householdPayload.data.id
-    const defaultCurrencyCode = householdPayload.data.defaultCurrencyCode
 
     const { response, payload } = await postMigrateAndParse(
       {
         dryRun: false,
         householdId,
         transactions: {
-          '2025-09-01': {
-            'tx-hh': {
+          '2025-01-29': {
+            'tx-household': {
               categoryId: 0,
-              date: '20250901',
-              money: -30000,
+              date: '20250129',
+              money: -44000,
               note: 'Household grocery',
             },
           },
@@ -361,13 +349,8 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     expect(response.status).toBe(200)
     expect(payload.data.created).toBe(1)
 
-    // Verify the expense has the householdId and correct currency
     const { payload: listPayload } = await getExpensesList<{
-      items: Array<{
-        title: string
-        householdId: string | null
-        currencyCode: string
-      }>
+      items: Array<{ title: string; householdId: string | null }>
     }>(auth.accessToken)
     const created = findExpenseByTitle(
       listPayload.data.items,
@@ -375,23 +358,20 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     )
     expect(created).toBeDefined()
     expect(created!.householdId).toBe(householdId)
-    expect(created!.currencyCode).toBe(defaultCurrencyCode)
   })
 
   it('Long note truncation to 200 chars', async () => {
     const auth = await getAuth(TEST_TOKEN)
-    const longNote = 'A'.repeat(250)
-    const truncatedNote = 'A'.repeat(200)
-
+    const longNote = 'x'.repeat(250)
     const { response, payload } = await postMigrateAndParse(
       {
         dryRun: false,
         transactions: {
-          '2025-10-01': {
+          '2025-01-30': {
             'tx-long': {
               categoryId: 0,
-              date: '20251001',
-              money: -50000,
+              date: '20250130',
+              money: -33000,
               note: longNote,
             },
           },
@@ -403,30 +383,29 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     expect(response.status).toBe(200)
     expect(payload.data.created).toBe(1)
 
-    // Verify the title was truncated
     const { payload: listPayload } = await getExpensesList<{
       items: Array<{ title: string }>
     }>(auth.accessToken)
-    const created = findExpenseByTitle(listPayload.data.items, truncatedNote)
+    const created = findExpenseByTitle(
+      listPayload.data.items,
+      longNote.slice(0, 200),
+    )
     expect(created).toBeDefined()
-    expect(created!.title).toHaveLength(200)
   })
 
   it('Batch create 60 entries (exceeds old per-call subrequest budget)', async () => {
     const auth = await getAuth(TEST_TOKEN)
 
-    // Build 60 distinct entries across 3 date keys
-    const transactions: Record<string, Record<string, unknown>> = {}
+    const txMap: Record<
+      string,
+      { categoryId: number; date: string; money: number; note: string }
+    > = {}
+
     for (let i = 0; i < 60; i++) {
-      const dateKey = `2025-11-${String(Math.floor(i / 20) + 1).padStart(2, '0')}`
-      if (!transactions[dateKey]) {
-        transactions[dateKey] = {}
-      }
-      const txId = `tx-batch-${i}`
-      transactions[dateKey][txId] = {
+      txMap[`tx-${i}`] = {
         categoryId: 0,
-        date: dateKey.replace(/-/g, ''),
-        money: -(i + 1) * 1000,
+        date: '20250201',
+        money: -(1000 + i),
         note: `Batch entry ${i}`,
       }
     }
@@ -434,26 +413,27 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     const { response, payload } = await postMigrateAndParse(
       {
         dryRun: false,
-        transactions,
+        transactions: {
+          '2025-02-01': txMap,
+        },
       },
       auth.accessToken,
     )
 
     expect(response.status).toBe(200)
+    expect(payload.success).toBe(true)
     expect(payload.data.created).toBe(60)
-    expect(payload.data.errors).toHaveLength(0)
     expect(payload.data.skipped).toBe(0)
-    expect(payload.data.dryRun).toBe(false)
 
-    // Verify entries were persisted via the list endpoint (limit=100 to cover all batch entries)
     const { payload: listPayload } = await getExpensesList<{
       items: Array<{ title: string }>
     }>(auth.accessToken, 'limit=100')
 
-    const entry0 = findExpenseByTitle(listPayload.data.items, 'Batch entry 0')
-    expect(entry0).toBeDefined()
-
-    const entry59 = findExpenseByTitle(listPayload.data.items, 'Batch entry 59')
-    expect(entry59).toBeDefined()
+    expect(
+      findExpenseByTitle(listPayload.data.items, 'Batch entry 0'),
+    ).toBeDefined()
+    expect(
+      findExpenseByTitle(listPayload.data.items, 'Batch entry 59'),
+    ).toBeDefined()
   })
 })

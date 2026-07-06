@@ -27,6 +27,7 @@ export default defineWorkersConfig({
             TELEGRAM_BOT_WEBHOOK_SECRET: 'test-webhook-secret',
             TELEGRAM_FRESHNESS_WINDOW_SECONDS: '3600',
             APP_ENV: 'test',
+            INTERNAL_API_KEY: 'test-internal-api-key',
             CLOUDINARY_CLOUD_NAME: 'demo-cloud',
             CLOUDINARY_API_KEY: 'demo-key',
             CLOUDINARY_API_SECRET: 'demo-secret',

@@ -1,0 +1,46 @@
+{
+  "id": "feat-124",
+  "name": "Internal user-targeted expense migration",
+  "status": "done",
+  "description": "Add a server-only expense migration path so maintainers can import one legacy JSON file into an explicit existing user account without using that user's JWT. The new `POST /api/v1/internal/migrate/expenses` route is protected by `X-Internal-Api-Key` matched against Worker env secret `INTERNAL_API_KEY`, requires `targetUserId`, validates that the target user exists, reuses the target user's household membership/role checks for household imports, and persists imported expenses with `spentByUserId` set to the target user. The existing authenticated `POST /api/v1/migrate/expenses` route remains unchanged and still binds imports to the caller's own token identity. The CLI now supports mutually exclusive token mode or internal mode (`--admin-secret` + `--target-user-id`) without printing secrets.",
+  "dependencies": ["feat-008", "feat-015a", "feat-033", "feat-106"],
+  "evidence": {
+    "planned": [
+      "Add an additive internal migration endpoint and CLI mode for one-file-per-user operator imports without weakening the existing self-token route."
+    ],
+    "done": [
+      "`apps/worker/src/middlewares/internal-auth.ts` adds internal secret middleware that checks `X-Internal-Api-Key` against `INTERNAL_API_KEY` with constant-time comparison and returns 401 on missing/wrong secret.",
+      "`apps/worker/src/routes/migrate.ts` now exposes both the existing user-authenticated `POST /api/v1/migrate/expenses` path and additive internal `POST /api/v1/internal/migrate/expenses` path with separate middleware boundaries.",
+      "`apps/worker/src/handlers/migrate/migrate-expenses.ts` refactors the import flow around shared migration logic so the public route still uses `currentUser.id` while the internal route validates `targetUserId`, resolves the target user, and reuses target-user household authorization before writes.",
+      "`apps/worker/src/contracts/migrate-schemas.ts` and `apps/worker/src/contracts/migrate-types.ts` keep the public schema strict and unchanged while adding a separate internal request contract that requires `targetUserId`.",
+      "`apps/worker/src/lib/env.ts`, `apps/worker/src/types/app.ts`, `apps/worker/.dev.vars.example`, and `apps/worker/vitest.config.mts` add the new internal secret config for runtime and tests.",
+      "`scripts/migrate-expenses.mjs` now supports internal mode via `--admin-secret` + `--target-user-id`, rejects invalid flag combinations, and keeps token mode unchanged without printing secrets.",
+      "`apps/worker/test/integration/migrate-expenses-test-setup.ts` and `apps/worker/test/integration/migrate-expenses.spec.ts` add internal-route helpers and regression coverage for personal import, household import, missing/wrong secret, missing/unknown target user, household membership denial, and public-route isolation from internal auth headers.",
+      "`docs/exec-plans/plans/2026-07-06-feat-124-internal-user-targeted-migrate.md` and `docs/exec-plans/index.md` were updated through completion, including resolved decisions and closeout notes."
+    ],
+    "artifacts": [
+      "apps/worker/src/middlewares/internal-auth.ts",
+      "apps/worker/src/routes/migrate.ts",
+      "apps/worker/src/handlers/migrate/migrate-expenses.ts",
+      "apps/worker/src/contracts/migrate-schemas.ts",
+      "apps/worker/src/contracts/migrate-types.ts",
+      "apps/worker/src/lib/env.ts",
+      "apps/worker/src/types/app.ts",
+      "apps/worker/.dev.vars.example",
+      "apps/worker/vitest.config.mts",
+      "apps/worker/test/integration/migrate-expenses-test-setup.ts",
+      "apps/worker/test/integration/migrate-expenses.spec.ts",
+      "scripts/migrate-expenses.mjs",
+      "docs/exec-plans/plans/2026-07-06-feat-124-internal-user-targeted-migrate.md",
+      "harness/features/feat-124.json"
+    ],
+    "verification": [
+      "`pnpm --filter worker cf-typegen` completed without error and produced no `apps/worker/worker-configuration.d.ts` diff because `INTERNAL_API_KEY` is a secret, not a generated var binding.",
+      "`pnpm --filter worker exec vitest run test/integration/migrate-expenses.spec.ts` passed with 22/22 tests green.",
+      "`./init.sh typecheck` returned `OK`.",
+      "`./init.sh` returned `Done!`.",
+      "`@oracle` implementation review approved the diff with no blocking issues; only harness/plan closeout remained."
+    ]
+  },
+  "notes": "The new internal route is intentionally operator-only and does not add general staff/admin RBAC. The public migrate endpoint still never accepts target-user override. Dry-run remains the recommended first step and real imports remain non-idempotent, so rerunning the same file can still create duplicates."
+}
