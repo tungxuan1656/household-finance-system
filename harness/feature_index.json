@@ -473,7 +473,7 @@
     {
       "id": "feat-094",
       "name": "Telegram Mini App runtime hardening and bundle reduction",
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": "feat-095",

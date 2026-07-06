@@ -1,7 +1,7 @@
 {
   "id": "feat-079",
   "name": "Telegram Mini App workspace scaffold and bootstrap",
-  "status": "in_progress",
+  "status": "done",
   "description": "Create the `apps/tma` workspace package, Vite/React SPA bootstrap, Telegram bridge initialization layer, env/docs wiring, and repo-tooling integration needed for a real TMA runtime.",
   "dependencies": ["feat-004", "feat-038", "feat-054", "feat-078"],
   "plan": "docs/exec-plans/plans/2026-06-02-telegram-mini-app-runtime-scaffold.md",
@@ -54,5 +54,5 @@
       "2026-06-02 implementation completed: created apps/tma workspace (package.json, tsconfig.json with jsx: react-jsx, vite.config.ts port 5174, eslint.config.mjs adapted from web, vitest.config.ts, index.html, .env.example), 7 Telegram capability wrappers (capabilities/theme/launch-params/back-button/bottom-button/haptics/safe-area) under src/lib/telegram/, app entry and provider tree (main.tsx, app.tsx, app-providers.tsx, telegram-init.ts), query-client and i18n setup with Telegram locale extraction, React Router with /home and /fatal routes, shared UI (app-shell, loading-fallback) and Telegram CSS vars in index.css, init.sh case statement updated with 4 TMA job entries (lint/typecheck/test/build) and 5 runner functions extended, root package.json scripts added (dev:tma/build:tma/lint:tma/typecheck:tma/test:tma), cross-import check clean, ./init.sh lint/typecheck/test/build all pass, full ./init.sh prints Done!."
     ]
   },
-  "notes": "This is the runtime starting point for the new client. No domain feature work should start before this scaffold exists."
+  "notes": "This is the runtime starting point for the new client. No domain feature work should start before this scaffold exists. A 2026-07-07 code-grounded audit confirmed the scaffold is long since shipped and now underpins the current `apps/tma` client. The original plan text still mentions an older `SDKProvider` expectation, but the implemented architecture uses module-level Telegram SDK init in `main.tsx` / `telegram-init.ts`; that wording drift is historical, not an open implementation gap."
 }
