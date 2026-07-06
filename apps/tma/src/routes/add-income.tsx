@@ -23,6 +23,16 @@ import {
 } from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
 
+/** Returns today's local date as YYYY-MM-DD. */
+const todayLocal = (): string => {
+  const d = new Date()
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+
+  return `${yyyy}-${mm}-${dd}`
+}
+
 export const AddIncomePage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -33,7 +43,8 @@ export const AddIncomePage = () => {
   const [amountInput, setAmountInput] = useState('')
   const [sourceId, setSourceId] = useState<SourceKey | null>('bank-transfer')
   const [title, setTitle] = useState('')
-  const [date, setDate] = useState(new Date().toISOString())
+  const [note, setNote] = useState('')
+  const [date, setDate] = useState(todayLocal())
 
   const amount = parseAmountInput(amountInput)
   const isValid = amount > 0 && sourceId !== null
@@ -44,21 +55,23 @@ export const AddIncomePage = () => {
       return
     }
 
+    const cleanedTitle = title.trim()
+    const cleanedNote = note.trim()
+
     createMutation.mutate(
       {
         amount: minorFromRaw(amount),
         sourceKey: sourceId,
-        title: title.trim() || t('incomes.nameUnset'),
-        occurredAt: new Date(date).getTime(),
+        title: cleanedTitle || t('incomes.nameUnset'),
+        occurredAt: new Date(`${date}T00:00:00`).getTime(),
+        ...(cleanedNote ? { note: cleanedNote } : {}),
       },
       {
         onSuccess: () => {
           notification('success')
           navigate(TMA_PATHS.incomes)
         },
-        onError: () => {
-          notification('error')
-        },
+        // Error haptics handled by mutation-level onError — no duplicate here
       },
     )
   })
@@ -112,12 +125,10 @@ export const AddIncomePage = () => {
         fullWidth
         aria-label={t('incomes.fieldDate')}
         className='mt-1'
-        value={date.slice(0, 10)}
+        value={date}
         onChange={(value) => {
           selection()
-
-          const nextDate = new Date(`${value}T12:00:00+07:00`).toISOString()
-          setDate(nextDate)
+          setDate(value)
         }}
       />
 
@@ -169,6 +180,22 @@ export const AddIncomePage = () => {
                 handleSave()
               }
             }}
+          />
+        </div>
+      </Section>
+
+      <Section className='grid gap-1'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+          <NoteIcon className='size-6' />
+          <span>{t('incomes.fieldNote')}</span>
+        </div>
+        <div className='rounded-3xl bg-white p-5'>
+          <textarea
+            className='w-full resize-none border-0 bg-transparent px-0 text-base font-medium text-tma-text-strong outline-none placeholder:text-tma-text-muted/60'
+            placeholder={t('incomes.notePlaceholder')}
+            rows={3}
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
           />
         </div>
       </Section>

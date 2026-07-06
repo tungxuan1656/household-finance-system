@@ -118,7 +118,9 @@
     "createdSuccess": "Đã thêm thu nhập thành công.",
     "listTitle": "Danh sách thu nhập",
     "nameUnset": "Chưa đặt tên",
-    "sourceUnset": "Chưa chọn"
+    "sourceUnset": "Chưa chọn",
+    "fieldNote": "Ghi chú",
+    "notePlaceholder": "Ghi chú thêm (không bắt buộc)"
   },
   "shortcuts": {
     "comingSoon": "Sớm có"
