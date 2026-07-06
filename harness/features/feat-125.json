@@ -19,10 +19,11 @@
       "Add focused worker/TMA verification plus product-spec, plan-index, and harness updates so repo truth matches shipped behavior."
     ],
     "done": [
-      "Worker now ships `apps/worker/migrations/0005_incomes.sql`, `apps/worker/src/routes/incomes.ts`, income contracts/repositories/handlers, and `apps/worker/test/integration/incomes.spec.ts` for authenticated personal-only `GET /api/v1/incomes` and `POST /api/v1/incomes` backed by a dedicated `incomes` table.",
+      "Worker now ships `apps/worker/migrations/0005_incomes.sql`, `apps/worker/src/routes/incomes.ts`, income contracts/repositories/handlers, and split worker income integration specs for authenticated personal-only `GET /api/v1/incomes` and `POST /api/v1/incomes` backed by a dedicated `incomes` table.",
       "The worker create/list contract aligns with the approved MVP: server-owned `categoryKey='money-in'`, request `sourceKey`, response `spentByUserId`, VND-only amount normalization, `source_key` filtering, stable cursor pagination, and `deleted_at IS NULL` filtering so soft-deleted rows stay hidden from the list surface.",
       "TMA now exposes `/incomes` and `/incomes/new` through `apps/tma/src/app/router/app-router.tsx`, adds a Home shortcut entrypoint, and implements a route-local one-page add-income form with Telegram `BottomButton` save behavior, source selection, and success navigation back to the income list.",
       "The TMA income list uses a dedicated income feature module with cursor-based infinite query wiring, separate cache keys, correct stored-minor currency rendering, and a load-more affordance so incomes beyond the worker default page limit remain reachable.",
+      "PR review follow-up polished the add-income route with local `YYYY-MM-DD` date handling, optional note capture/payload support, and single-source error haptic behavior instead of duplicate failure feedback.",
       "Runtime truth was documented in `docs/product-specs/tma/income-capture.md`, the TMA product-spec index now links it, and the feat-125 ExecPlan/index/harness records were updated through completion with verification evidence and the post-review fixes."
     ],
     "artifacts": [
@@ -37,7 +38,11 @@
       "apps/worker/src/handlers/incomes/list-incomes.ts",
       "apps/worker/src/routes/incomes.ts",
       "apps/worker/src/index.ts",
-      "apps/worker/test/integration/incomes.spec.ts",
+      "apps/worker/test/integration/incomes-create.spec.ts",
+      "apps/worker/test/integration/incomes-create-validation.spec.ts",
+      "apps/worker/test/integration/incomes-list-content.spec.ts",
+      "apps/worker/test/integration/incomes-list-deleted.spec.ts",
+      "apps/worker/test/integration/incomes-list-errors.spec.ts",
       "apps/worker/test/helpers/test-context.ts",
       "apps/tma/src/app/router/app-router.tsx",
       "apps/tma/src/components/shared/tma-icons.tsx",
@@ -56,11 +61,11 @@
       "harness/features/feat-125.json"
     ],
     "verification": [
-      "`pnpm --filter worker exec vitest run test/integration/incomes.spec.ts` passed twice during reconciliation and finally passed with 16/16 tests after adding the soft-delete list regression.",
+      "`pnpm --filter worker exec vitest run test/integration/incomes-create.spec.ts test/integration/incomes-create-validation.spec.ts test/integration/incomes-list-content.spec.ts test/integration/incomes-list-deleted.spec.ts test/integration/incomes-list-errors.spec.ts` passed with 16/16 tests after the pre-push split and preserved the full worker income coverage.",
       "`pnpm --filter tma exec vitest run src/test/incomes-api.test.ts` passed after the initial income feature implementation and again after the post-review pagination/amount-display follow-up (2/2 tests green).",
       "`./init.sh build` returned `OK` after the TMA follow-up fixes.",
       "`./init.sh` returned `Done!` after the worker soft-delete regression fix and again after the final TMA follow-up fixes.",
-      "`@oracle` review initially blocked ship on two TMA amount-display bugs and flagged pagination/soft-delete concerns; the follow-up implementation fixed the blockers, and the worker list path now also excludes soft-deleted rows."
+      "`@oracle` review initially blocked ship on two TMA amount-display bugs and flagged pagination/soft-delete concerns; the follow-up implementation fixed the blockers, the worker list path now excludes soft-deleted rows, and the PR review follow-up fixed local-date, note, and duplicate-error-haptic issues before merge prep."
     ]
   },
   "notes": "This remains an intentionally narrow MVP. It does not add income analytics, summaries, edit/delete/detail flows, or any web surface. Telegram-native manual QA in a real Telegram WebView was not run in this session, so remaining risk is limited to safe-area/keyboard/BottomButton feel on-device rather than API or type/build correctness. If execution later needs persisted multi-route draft state, record that decision in the ExecPlan before adding a Zustand store."
