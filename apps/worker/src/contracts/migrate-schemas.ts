@@ -13,37 +13,44 @@ const messages = {
     'Category mapping must be a record of string to valid category keys',
 }
 
-export const migrateExpensesRequestSchema = () =>
-  z
-    .object({
-      transactions: z.record(
+const migrateExpensesBase = () =>
+  z.object({
+    transactions: z.record(
+      z.string(),
+      z.record(
         z.string(),
-        z.record(
-          z.string(),
-          z
-            .object({
-              categoryId: z.number().int(),
-              date: z.string().min(1),
-              money: z.number(),
-              note: z.string(),
-            })
-            .strict(),
-        ),
+        z
+          .object({
+            categoryId: z.number().int(),
+            date: z.string().min(1),
+            money: z.number(),
+            note: z.string(),
+          })
+          .strict(),
       ),
-      householdId: z.string().trim().min(1).optional(),
-      sourceKey: z
-        .enum(REFERENCE_SOURCE_KEYS, {
-          message: messages.invalidSourceKey,
-        })
-        .optional(),
-      categoryMapping: z
-        .record(
-          z.string(),
-          z.enum(REFERENCE_CATEGORY_KEYS, {
-            message: messages.invalidCategoryKey,
-          }),
-        )
-        .optional(),
-      dryRun: z.boolean().optional(),
+    ),
+    householdId: z.string().trim().min(1).optional(),
+    sourceKey: z
+      .enum(REFERENCE_SOURCE_KEYS, {
+        message: messages.invalidSourceKey,
+      })
+      .optional(),
+    categoryMapping: z
+      .record(
+        z.string(),
+        z.enum(REFERENCE_CATEGORY_KEYS, {
+          message: messages.invalidCategoryKey,
+        }),
+      )
+      .optional(),
+    dryRun: z.boolean().optional(),
+  })
+
+export const migrateExpensesRequestSchema = () => migrateExpensesBase().strict()
+
+export const internalMigrateExpensesRequestSchema = () =>
+  migrateExpensesBase()
+    .extend({
+      targetUserId: z.string().trim().min(1),
     })
     .strict()

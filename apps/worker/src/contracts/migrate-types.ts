@@ -1,9 +1,16 @@
 import type { z } from 'zod'
 
-import type { migrateExpensesRequestSchema } from './migrate-schemas'
+import type {
+  internalMigrateExpensesRequestSchema,
+  migrateExpensesRequestSchema,
+} from './migrate-schemas'
 
 export type MigrateExpensesRequest = z.output<
   ReturnType<typeof migrateExpensesRequestSchema>
+>
+
+export type InternalMigrateExpensesRequest = z.output<
+  ReturnType<typeof internalMigrateExpensesRequestSchema>
 >
 
 export interface MigrateExpensesErrorEntry {

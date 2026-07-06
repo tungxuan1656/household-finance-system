@@ -1,11 +1,15 @@
 import type { Context } from 'hono'
 
 import type {
+  InternalMigrateExpensesRequest,
   MigrateExpensesRequest,
   MigrateExpensesResultDTO,
 } from '@/contracts'
 import { categoryKindMap } from '@/contracts/expense-schemas'
-import { migrateExpensesRequestSchema } from '@/contracts/migrate-schemas'
+import {
+  internalMigrateExpensesRequestSchema,
+  migrateExpensesRequestSchema,
+} from '@/contracts/migrate-schemas'
 import type { REFERENCE_CATEGORY_KEYS } from '@/contracts/reference-data'
 import {
   type CreateExpenseInput,
@@ -13,9 +17,10 @@ import {
 } from '@/db/repositories/expense-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
+import { findUserById } from '@/db/repositories/user-repository'
 import { getCurrencyFractionDigits } from '@/handlers/expenses/shared'
 import { forbidden, notFound } from '@/lib/errors'
-import { defaultLocale } from '@/lib/i18n'
+import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
 import { canCreateExpense } from '@/lib/permissions/household-policy'
 import { readJsonBody } from '@/lib/validation'
 import type { AppBindings } from '@/types'
@@ -74,19 +79,14 @@ const isValidDate = (s: string): boolean => {
   )
 }
 
-export const migrateExpensesHandler = async (
-  ctx: MigrateHandlerCtx,
+// ── Shared migration core ──────────────────────────────────────────────────
+
+export const runMigration = async (
+  db: D1Database,
+  locale: SupportedLocale,
+  body: MigrateExpensesRequest,
+  spentByUserId: string,
 ): Promise<MigrateExpensesResultDTO> => {
-  const locale = ctx.get('locale') ?? defaultLocale
-  const currentUser = ctx.get('currentUser')
-  const db = ctx.env.DB
-
-  const body = await readJsonBody<MigrateExpensesRequest>(
-    ctx.req.raw,
-    migrateExpensesRequestSchema(),
-    locale,
-  )
-
   // Determine source key (default 'bank-transfer')
   const sourceKey: string = body.sourceKey ?? 'bank-transfer'
 
@@ -98,7 +98,7 @@ export const migrateExpensesHandler = async (
 
     const membership = await findActiveHouseholdMembership(
       db,
-      currentUser.id,
+      spentByUserId,
       householdId,
     )
     if (!membership) {
@@ -223,7 +223,7 @@ export const migrateExpensesHandler = async (
       const input: CreateExpenseInput = {
         id: newId(),
         householdId,
-        spentByUserId: currentUser.id,
+        spentByUserId,
         categoryKey,
         sourceKey,
         categoryId: null,
@@ -276,4 +276,55 @@ export const migrateExpensesHandler = async (
     errors,
     dryRun: body.dryRun === true,
   }
+}
+
+// ── Public handler (bearer-token self-service) ─────────────────────────────
+
+export const migrateExpensesHandler = async (
+  ctx: MigrateHandlerCtx,
+): Promise<MigrateExpensesResultDTO> => {
+  const locale = ctx.get('locale') ?? defaultLocale
+  const currentUser = ctx.get('currentUser')
+  const db = ctx.env.DB
+
+  const body = await readJsonBody<MigrateExpensesRequest>(
+    ctx.req.raw,
+    migrateExpensesRequestSchema(),
+    locale,
+  )
+
+  return runMigration(db, locale, body, currentUser.id)
+}
+
+// ── Internal handler (admin/internal, targets another user) ────────────────
+
+export const internalMigrateExpensesHandler = async (
+  ctx: MigrateHandlerCtx,
+): Promise<MigrateExpensesResultDTO> => {
+  const locale = ctx.get('locale') ?? defaultLocale
+  const db = ctx.env.DB
+
+  const body = await readJsonBody<InternalMigrateExpensesRequest>(
+    ctx.req.raw,
+    internalMigrateExpensesRequestSchema(),
+    locale,
+  )
+
+  // Validate target user exists
+  const targetUser = await findUserById(db, body.targetUserId)
+
+  if (!targetUser) {
+    throw notFound(locale, 'errors.userNotFound')
+  }
+
+  // Build a clean MigrateExpensesRequest from the internal body
+  const migrateBody: MigrateExpensesRequest = {
+    transactions: body.transactions,
+    householdId: body.householdId,
+    sourceKey: body.sourceKey,
+    categoryMapping: body.categoryMapping,
+    dryRun: body.dryRun,
+  }
+
+  return runMigration(db, locale, migrateBody, body.targetUserId)
 }

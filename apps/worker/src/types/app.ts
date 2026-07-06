@@ -47,6 +47,7 @@ export interface AppConfig {
   telegramFreshnessWindowSeconds: number
   telegramBotTmaUrl: string
   telegramBotDeepLinkUrl: string
+  internalApiKey: string | undefined
 }
 
 export interface CloudinaryConfig {

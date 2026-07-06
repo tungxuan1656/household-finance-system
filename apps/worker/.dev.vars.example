@@ -1,6 +1,9 @@
 # Copy this file to .dev.vars for local worker runtime.
 # Do not commit .dev.vars.
 
+# Internal API key for admin/internal migration routes
+INTERNAL_API_KEY="replace-with-internal-api-key"
+
 # Core auth settings
 AUTH_ISSUER="https://household-finance.local"
 AUTH_AUDIENCE="household-finance-api"
