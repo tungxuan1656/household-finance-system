@@ -9,6 +9,7 @@ const clearTableStatements = [
   'DELETE FROM budgets',
   'DELETE FROM expense_group_items',
   'DELETE FROM expenses',
+  'DELETE FROM incomes',
   'DELETE FROM expense_groups',
   'DELETE FROM expense_categories',
   'DELETE FROM household_invitations',

@@ -1,7 +1,7 @@
 {
   "id": "feat-094",
   "name": "Telegram Mini App runtime hardening and bundle reduction",
-  "status": "in_progress",
+  "status": "done",
   "description": "Harden the TMA startup/runtime path, auth-storage fallback behavior, safe-area reactivity, and route loading so the Mini App launches reliably and loads less code on cold start.",
   "dependencies": [
     "feat-079",
@@ -54,5 +54,5 @@
       "Final GitNexus check for the docs-aligned init/theme slice reported `high` risk with 9 changed files / 11 changed symbols / 7 affected processes, concentrated in `telegram-init.ts`, `theme.ts`, and `App` lifecycle wiring."
     ]
   },
-  "notes": "This feature is a hardening and architecture pass over the active TMA worktree. It intentionally prioritizes runtime correctness and cold-start behavior over new product scope."
+  "notes": "This feature is a hardening and architecture pass over the active TMA worktree. It intentionally prioritized runtime correctness and cold-start behavior over new product scope. A 2026-07-07 code-grounded audit found the implementation fully present in the live TMA app, so the feature is closed as done and no longer treated as an active implementation stream."
 }

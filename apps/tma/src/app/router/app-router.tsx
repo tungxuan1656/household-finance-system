@@ -145,6 +145,18 @@ const CreateBudgetRoute = lazy(async () => {
   return { default: module.CreateBudgetPage }
 })
 
+const IncomesPage = lazy(async () => {
+  const module = await import('@/routes/incomes')
+
+  return { default: module.IncomesPage }
+})
+
+const AddIncomePage = lazy(async () => {
+  const module = await import('@/routes/add-income')
+
+  return { default: module.AddIncomePage }
+})
+
 const BudgetDetailRoute = lazy(async () => {
   const module = await import('@/features/budgets/pages/budget-detail-page')
 
@@ -222,6 +234,14 @@ export const router = createBrowserRouter([
       {
         path: TMA_PATHS.expensesNewImport,
         element: renderLazyRoute(AddExpenseImportPreviewPage),
+      },
+      {
+        path: TMA_PATHS.incomes,
+        element: renderLazyRoute(IncomesPage),
+      },
+      {
+        path: TMA_PATHS.incomesNew,
+        element: renderLazyRoute(AddIncomePage),
       },
       {
         path: TMA_PATHS.households,

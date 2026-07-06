@@ -224,3 +224,10 @@ export const ArrowRightIcon = (props: IconProps) => (
     <path d='m13 6 6 6-6 6' />
   </IconBase>
 )
+
+export const TrendUpIcon = (props: IconProps) => (
+  <IconBase {...props}>
+    <path d='M22 7 13.5 15.5 8.5 10.5 2 17' />
+    <path d='M16 7h6v6' />
+  </IconBase>
+)

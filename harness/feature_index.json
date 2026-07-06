@@ -473,7 +473,7 @@
     {
       "id": "feat-094",
       "name": "Telegram Mini App runtime hardening and bundle reduction",
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": "feat-095",
@@ -693,6 +693,11 @@
     {
       "id": "feat-124",
       "name": "Internal user-targeted expense migration",
+      "status": "done"
+    },
+    {
+      "id": "feat-125",
+      "name": "TMA personal income capture MVP",
       "status": "done"
     }
   ]

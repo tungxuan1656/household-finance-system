@@ -32,6 +32,7 @@ export const HomePage = () => {
       // Errors are swallowed — prefetch is a best-effort optimisation.
       void import('@/routes/statistics').catch(() => undefined)
       void import('@/routes/expenses').catch(() => undefined)
+      void import('@/routes/incomes').catch(() => undefined)
     }, 2_000)
 
     return () => clearTimeout(id)
