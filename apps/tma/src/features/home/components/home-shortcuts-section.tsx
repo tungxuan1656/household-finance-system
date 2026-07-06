@@ -8,6 +8,7 @@ import {
   HouseholdIcon,
   ReceiptIcon,
   SparkIcon,
+  TrendUpIcon,
 } from '@/components/shared/tma-icons'
 import { Section } from '@/components/ui'
 import { useImportFlowStore } from '@/features/expenses/import-store'
@@ -22,6 +23,13 @@ export const HomeShortcutsSection = () => {
       href: TMA_PATHS.expenses,
       icon: ReceiptIcon,
       accent: { background: '#edf4ff', foreground: '#3f7cff' },
+      enabled: true,
+    },
+    {
+      title: t('home.shortcuts.income'),
+      href: TMA_PATHS.incomes,
+      icon: TrendUpIcon,
+      accent: { background: '#eaf7e7', foreground: '#16a34a' },
       enabled: true,
     },
     {

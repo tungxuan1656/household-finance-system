@@ -17,6 +17,7 @@ import { expensesRoutes } from '@/routes/expenses'
 import { groupsRoutes } from '@/routes/groups'
 import { healthRoutes } from '@/routes/health'
 import { householdRoutes } from '@/routes/households'
+import { incomesRoutes } from '@/routes/incomes'
 import { invitationRoutes } from '@/routes/invitations'
 import { mediaRoutes } from '@/routes/media'
 import { migrateRoutes } from '@/routes/migrate'
@@ -59,6 +60,7 @@ app.route('/api/v1', analyticsRoutes)
 app.route('/api/v1', expensesRoutes)
 app.route('/api/v1', migrateRoutes)
 app.route('/api/v1', groupsRoutes)
+app.route('/api/v1', incomesRoutes)
 app.route('/api/v1', budgetsRoutes)
 app.route('/api/v1', telegramBotRoutes)
 

@@ -1,0 +1,67 @@
+{
+  "id": "feat-125",
+  "name": "TMA personal income capture MVP",
+  "status": "done",
+  "description": "Add a personal-only income capture slice for `apps/tma` and `apps/worker`. Worker gets a separate `incomes` table plus authenticated `GET /api/v1/incomes` and `POST /api/v1/incomes` routes. TMA gets `/incomes` and `/incomes/new`, a one-page add-income form that visually reuses expense step 2, a Home shortcut entrypoint, and separate income query keys. MVP always stores `categoryKey='money-in'`, has no household/group behavior, and does not touch expense persistence.",
+  "dependencies": [
+    "feat-007",
+    "feat-016",
+    "feat-017",
+    "feat-079",
+    "feat-080",
+    "feat-084",
+    "feat-108"
+  ],
+  "evidence": {
+    "planned": [
+      "Add a separate worker income persistence path with mirrored expense-like columns, personal-only semantics, and strict server-side `money-in` assignment.",
+      "Add TMA income list + one-page add-income routes with Telegram-native back/bottom button behavior and no reuse of the expense multi-step store.",
+      "Add focused worker/TMA verification plus product-spec, plan-index, and harness updates so repo truth matches shipped behavior."
+    ],
+    "done": [
+      "Worker now ships `apps/worker/migrations/0005_incomes.sql`, `apps/worker/src/routes/incomes.ts`, income contracts/repositories/handlers, and `apps/worker/test/integration/incomes.spec.ts` for authenticated personal-only `GET /api/v1/incomes` and `POST /api/v1/incomes` backed by a dedicated `incomes` table.",
+      "The worker create/list contract aligns with the approved MVP: server-owned `categoryKey='money-in'`, request `sourceKey`, response `spentByUserId`, VND-only amount normalization, `source_key` filtering, stable cursor pagination, and `deleted_at IS NULL` filtering so soft-deleted rows stay hidden from the list surface.",
+      "TMA now exposes `/incomes` and `/incomes/new` through `apps/tma/src/app/router/app-router.tsx`, adds a Home shortcut entrypoint, and implements a route-local one-page add-income form with Telegram `BottomButton` save behavior, source selection, and success navigation back to the income list.",
+      "The TMA income list uses a dedicated income feature module with cursor-based infinite query wiring, separate cache keys, correct stored-minor currency rendering, and a load-more affordance so incomes beyond the worker default page limit remain reachable.",
+      "Runtime truth was documented in `docs/product-specs/tma/income-capture.md`, the TMA product-spec index now links it, and the feat-125 ExecPlan/index/harness records were updated through completion with verification evidence and the post-review fixes."
+    ],
+    "artifacts": [
+      "apps/worker/migrations/0005_incomes.sql",
+      "apps/worker/src/contracts/income-schemas.ts",
+      "apps/worker/src/contracts/income-types.ts",
+      "apps/worker/src/contracts/income.ts",
+      "apps/worker/src/contracts/index.ts",
+      "apps/worker/src/db/repositories/income-row-mapper.ts",
+      "apps/worker/src/db/repositories/income-repository.ts",
+      "apps/worker/src/handlers/incomes/create-income.ts",
+      "apps/worker/src/handlers/incomes/list-incomes.ts",
+      "apps/worker/src/routes/incomes.ts",
+      "apps/worker/src/index.ts",
+      "apps/worker/test/integration/incomes.spec.ts",
+      "apps/worker/test/helpers/test-context.ts",
+      "apps/tma/src/app/router/app-router.tsx",
+      "apps/tma/src/components/shared/tma-icons.tsx",
+      "apps/tma/src/features/home/components/home-shortcuts-section.tsx",
+      "apps/tma/src/features/incomes/api.ts",
+      "apps/tma/src/features/incomes/types.ts",
+      "apps/tma/src/lib/constants/routes.ts",
+      "apps/tma/src/lib/i18n/locales/vi.json",
+      "apps/tma/src/routes/add-income.tsx",
+      "apps/tma/src/routes/home.tsx",
+      "apps/tma/src/routes/incomes.tsx",
+      "apps/tma/src/test/incomes-api.test.ts",
+      "docs/product-specs/tma/index.md",
+      "docs/product-specs/tma/income-capture.md",
+      "docs/exec-plans/plans/2026-07-06-feat-125-tma-income-capture-mvp.md",
+      "harness/features/feat-125.json"
+    ],
+    "verification": [
+      "`pnpm --filter worker exec vitest run test/integration/incomes.spec.ts` passed twice during reconciliation and finally passed with 16/16 tests after adding the soft-delete list regression.",
+      "`pnpm --filter tma exec vitest run src/test/incomes-api.test.ts` passed after the initial income feature implementation and again after the post-review pagination/amount-display follow-up (2/2 tests green).",
+      "`./init.sh build` returned `OK` after the TMA follow-up fixes.",
+      "`./init.sh` returned `Done!` after the worker soft-delete regression fix and again after the final TMA follow-up fixes.",
+      "`@oracle` review initially blocked ship on two TMA amount-display bugs and flagged pagination/soft-delete concerns; the follow-up implementation fixed the blockers, and the worker list path now also excludes soft-deleted rows."
+    ]
+  },
+  "notes": "This remains an intentionally narrow MVP. It does not add income analytics, summaries, edit/delete/detail flows, or any web surface. Telegram-native manual QA in a real Telegram WebView was not run in this session, so remaining risk is limited to safe-area/keyboard/BottomButton feel on-device rather than API or type/build correctness. If execution later needs persisted multi-route draft state, record that decision in the ExecPlan before adding a Zustand store."
+}

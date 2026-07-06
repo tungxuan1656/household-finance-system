@@ -694,6 +694,11 @@
       "id": "feat-124",
       "name": "Internal user-targeted expense migration",
       "status": "done"
+    },
+    {
+      "id": "feat-125",
+      "name": "TMA personal income capture MVP",
+      "status": "done"
     }
   ]
 }

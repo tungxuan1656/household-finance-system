@@ -7,6 +7,7 @@ TMA-only product behavior for `apps/tma`.
 - `launch-and-auth.md`
 - `app-shell-and-navigation.md`
 - `expense-capture.md`
+- `income-capture.md`
 - `invite-entrypoints.md`
 - `tma-settings.md`
 - `telegram-bot-companion.md`

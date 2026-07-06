@@ -88,6 +88,7 @@
     "householdBudgetRemaining": "Còn {{percent}}%",
     "shortcuts": {
       "expense": "Chi tiêu",
+      "income": "Thu nhập",
       "aiImport": "Nhập tự động",
       "household": "Gia đình",
       "group": "Nhóm",
@@ -97,6 +98,27 @@
   },
   "homePage": {
     "title": "Trang chủ"
+  },
+  "incomes": {
+    "title": "Thu nhập",
+    "addTitle": "Thêm thu nhập",
+    "emptyTitle": "Chưa có thu nhập nào",
+    "emptyDesc": "Ghi nhận thu nhập đầu tiên để bắt đầu theo dõi.",
+    "loadingTitle": "Đang tải danh sách thu nhập",
+    "loadingDesc": "Vui lòng chờ trong giây lát.",
+    "fieldAmount": "Số tiền",
+    "fieldName": "Tên khoản thu",
+    "namePlaceholder": "Ví dụ: Lương tháng 7",
+    "fieldDate": "Ngày nhận",
+    "source": "Nguồn tiền",
+    "saveAction": "Lưu thu nhập",
+    "saveWithAmount": "Lưu {{amount}}",
+    "saveError": "Không thể lưu thu nhập lúc này.",
+    "saving": "Đang lưu...",
+    "createdSuccess": "Đã thêm thu nhập thành công.",
+    "listTitle": "Danh sách thu nhập",
+    "nameUnset": "Chưa đặt tên",
+    "sourceUnset": "Chưa chọn"
   },
   "shortcuts": {
     "comingSoon": "Sớm có"
