@@ -15,13 +15,15 @@
       "`apps/worker/src/contracts/migrate-schemas.ts` and `apps/worker/src/contracts/migrate-types.ts` keep the public schema strict and unchanged while adding a separate internal request contract that requires `targetUserId`.",
       "`apps/worker/src/lib/env.ts`, `apps/worker/src/types/app.ts`, `apps/worker/.dev.vars.example`, and `apps/worker/vitest.config.mts` add the new internal secret config for runtime and tests.",
       "`scripts/migrate-expenses.mjs` now supports internal mode via `--admin-secret` + `--target-user-id`, rejects invalid flag combinations, and keeps token mode unchanged without printing secrets.",
-      "`apps/worker/test/integration/migrate-expenses-test-setup.ts` and `apps/worker/test/integration/migrate-expenses.spec.ts` add internal-route helpers and regression coverage for personal import, household import, missing/wrong secret, missing/unknown target user, household membership denial, and public-route isolation from internal auth headers.",
+      "`apps/worker/test/integration/migrate-expenses-test-setup.ts`, `apps/worker/test/integration/migrate-expenses.spec.ts`, and `apps/worker/test/integration/migrate-expenses-internal.spec.ts` cover personal import, household import, missing/wrong secret, missing/unknown target user, household membership denial, public-route isolation from internal auth headers, and the split public/internal route coverage introduced during PR prep.",
+      "The follow-up mapping fix restored legacy category coverage for `7 -> repairs` and `21 -> self-development` in `apps/worker/src/handlers/migrate/shared.ts` and added regression tests so those ids no longer fall through as unknown categories.",
       "`docs/exec-plans/plans/2026-07-06-feat-124-internal-user-targeted-migrate.md` and `docs/exec-plans/index.md` were updated through completion, including resolved decisions and closeout notes."
     ],
     "artifacts": [
       "apps/worker/src/middlewares/internal-auth.ts",
       "apps/worker/src/routes/migrate.ts",
       "apps/worker/src/handlers/migrate/migrate-expenses.ts",
+      "apps/worker/src/handlers/migrate/shared.ts",
       "apps/worker/src/contracts/migrate-schemas.ts",
       "apps/worker/src/contracts/migrate-types.ts",
       "apps/worker/src/lib/env.ts",
@@ -30,6 +32,7 @@
       "apps/worker/vitest.config.mts",
       "apps/worker/test/integration/migrate-expenses-test-setup.ts",
       "apps/worker/test/integration/migrate-expenses.spec.ts",
+      "apps/worker/test/integration/migrate-expenses-internal.spec.ts",
       "scripts/migrate-expenses.mjs",
       "docs/exec-plans/plans/2026-07-06-feat-124-internal-user-targeted-migrate.md",
       "harness/features/feat-124.json"
@@ -37,6 +40,7 @@
     "verification": [
       "`pnpm --filter worker cf-typegen` completed without error and produced no `apps/worker/worker-configuration.d.ts` diff because `INTERNAL_API_KEY` is a secret, not a generated var binding.",
       "`pnpm --filter worker exec vitest run test/integration/migrate-expenses.spec.ts` passed with 22/22 tests green.",
+      "`pnpm --filter worker exec vitest run test/integration/migrate-expenses.spec.ts test/integration/migrate-expenses-internal.spec.ts` passed with 24/24 tests green after restoring legacy mappings `7 -> repairs` and `21 -> self-development`.",
       "`./init.sh typecheck` returned `OK`.",
       "`./init.sh` returned `Done!`.",
       "`@oracle` implementation review approved the diff with no blocking issues; only harness/plan closeout remained."

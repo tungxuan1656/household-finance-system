@@ -217,6 +217,58 @@ describe('POST /api/v1/migrate/expenses - integration tests', () => {
     expect(payload.data.errors[0]?.reason).toBe('unknown external categoryId')
   })
 
+  it('Legacy categoryId 7 maps to repairs (expense kind)', async () => {
+    const auth = await getAuth(TEST_TOKEN)
+    const { response, payload } = await postMigrateAndParse(
+      {
+        dryRun: true,
+        transactions: {
+          '2025-02-01': {
+            'tx-legacy-7': {
+              categoryId: 7,
+              date: '20250201',
+              money: -50000,
+              note: 'Repairs legacy',
+            },
+          },
+        },
+      },
+      auth.accessToken,
+    )
+
+    expect(response.status).toBe(200)
+    expect(payload.data.created).toBe(1)
+    expect(payload.data.skipped).toBe(0)
+    expect(payload.data.skippedBreakdown.unknownCategory).toBe(0)
+    expect(payload.data.errors).toHaveLength(0)
+  })
+
+  it('Legacy categoryId 21 maps to self-development (expense kind)', async () => {
+    const auth = await getAuth(TEST_TOKEN)
+    const { response, payload } = await postMigrateAndParse(
+      {
+        dryRun: true,
+        transactions: {
+          '2025-02-01': {
+            'tx-legacy-21': {
+              categoryId: 21,
+              date: '20250201',
+              money: -30000,
+              note: 'Self-dev legacy',
+            },
+          },
+        },
+      },
+      auth.accessToken,
+    )
+
+    expect(response.status).toBe(200)
+    expect(payload.data.created).toBe(1)
+    expect(payload.data.skipped).toBe(0)
+    expect(payload.data.skippedBreakdown.unknownCategory).toBe(0)
+    expect(payload.data.errors).toHaveLength(0)
+  })
+
   it('categoryMapping override', async () => {
     const auth = await getAuth(TEST_TOKEN)
     const { response, payload } = await postMigrateAndParse(

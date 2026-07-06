@@ -27,6 +27,7 @@ export const DEFAULT_CATEGORY_MAPPING: Record<
   '4': 'family',
   '5': 'shopping',
   '6': 'health',
+  '7': 'repairs',
   '8': 'social',
   '9': 'money-in',
   '10': 'lending',
@@ -40,6 +41,7 @@ export const DEFAULT_CATEGORY_MAPPING: Record<
   '18': 'travel',
   '19': 'education',
   '20': 'relatives',
+  '21': 'self-development',
   '22': 'sports',
   '23': 'beauty',
 }
