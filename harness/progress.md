@@ -2,6 +2,7 @@
 
 - last-archived: 2026-06-23
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
+- 2026-07-07 — Telegram bot household notification link fix (feat-112e): Telegram auth exchange now backfills `telegram_bot_chats.user_id` for users who opened the bot before signing into TMA, so later family expense notifications can resolve their chat without needing a second bot interaction; `./init.sh` passed. Household activity preference remains opt-in/default-off.
 - 2026-07-07 — TMA income create navigation-stack fix (feat-125): add-income success now uses history back-navigation so saving returns to the existing `/incomes` screen instead of pushing a duplicate list entry; `./init.sh typecheck`, `./init.sh lint`, and final `./init.sh` all passed.
 - 2026-07-07 — Open-plan code audit cleanup: code-grounded review closed stale-open `feat-094` and `feat-079` as done, moved their ExecPlans out of `Active`, and narrowed `feat-080` to closeout/manual-smoke scope only because the worker+TMA auth/session path is already implemented in code.
 - 2026-07-07 — Version bump follow-up for feat-125 / PR #114: apps/worker/package.json 0.3.1 → 0.4.0 and apps/tma/package.json 1.1.5 → 1.2.0, then push the existing income-capture PR branch.

@@ -166,6 +166,29 @@ export const findTelegramBotChatByAppUserId = async (
 }
 
 /**
+ * Link a telegram bot chat row to an app user by telegram user id.
+ * Only sets user_id when the existing value is NULL — never overwrites a
+ * non-null user_id. Safe to call during Telegram auth exchange for users
+ * who opened the bot before authenticating via TMA.
+ */
+export const linkTelegramBotChatToUser = async (
+  db: D1Database,
+  telegramUserId: string,
+  appUserId: string,
+): Promise<void> => {
+  await db
+    .prepare(
+      `UPDATE telegram_bot_chats
+          SET user_id = ?,
+              updated_at = ?
+        WHERE telegram_user_id = ?
+          AND user_id IS NULL`,
+    )
+    .bind(appUserId, Date.now(), telegramUserId)
+    .run()
+}
+
+/**
  * Update the preferences column for a telegram_bot_chat record.
  * Uses the unique telegram_user_id index to find the row.
  */
