@@ -4,7 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
-import { deleteRequest, get, post } from '@/lib/api/client'
+import { ApiClientError, deleteRequest, get, post } from '@/lib/api/client'
 import { notification } from '@/lib/telegram/haptics'
 
 import type {
@@ -72,6 +72,12 @@ export const useDeleteIncomeMutation = () => {
       await invalidateIncomeSurfaces(queryClient)
     },
     onError: (error) => {
+      if (error instanceof ApiClientError && error.code === 'NOT_FOUND') {
+        void invalidateIncomeSurfaces(queryClient)
+
+        return
+      }
+
       console.error(error)
       notification('error')
     },

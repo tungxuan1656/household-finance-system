@@ -2,6 +2,7 @@
 
 - last-archived: 2026-06-23
 <!-- new-session-marker: add new entries below this line as `- YYYY-MM-DD — title (harness/progress/archive/progress-YYYY-MM-DD.md)` -->
+- 2026-07-07 — TMA income delete stale-row review fix (feat-125): delete `NOT_FOUND` now invalidates income queries and clears inline confirm state so stale rows from another device/session do not stay stuck on the list; `pnpm --filter tma exec vitest run src/test/incomes-api.test.ts` and fresh `./init.sh` passed.
 - 2026-07-07 — TMA income delete follow-up (feat-125): added worker `DELETE /api/v1/incomes/:id` soft-delete with audit rollback + integration coverage, and TMA list-level inline delete confirmation with cache refresh. Reconciled follow-up fixes for the `{ deleted: true }` response shape and single-source error haptics; final `./init.sh`, `./init.sh build`, and focused worker/TMA income tests passed.
 - 2026-07-07 — Telegram bot household notification link fix (feat-112e): Telegram auth exchange now backfills `telegram_bot_chats.user_id` for users who opened the bot before signing into TMA, so later family expense notifications can resolve their chat without needing a second bot interaction; `./init.sh` passed. Household activity preference remains opt-in/default-off.
 - 2026-07-07 — TMA income create navigation-stack fix (feat-125): add-income success now uses history back-navigation so saving returns to the existing `/incomes` screen instead of pushing a duplicate list entry; `./init.sh typecheck`, `./init.sh lint`, and final `./init.sh` all passed.

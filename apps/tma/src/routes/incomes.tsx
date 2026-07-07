@@ -10,6 +10,7 @@ import {
   useDeleteIncomeMutation,
   useIncomesInfiniteQuery,
 } from '@/features/incomes/api'
+import { ApiClientError } from '@/lib/api/client'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel } from '@/lib/formatters'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
@@ -39,7 +40,11 @@ export const IncomesPage = () => {
       await deleteIncomeMutation.mutateAsync(incomeId)
       notification('success')
       setConfirmDeleteId(null)
-    } catch {}
+    } catch (error) {
+      if (error instanceof ApiClientError && error.code === 'NOT_FOUND') {
+        setConfirmDeleteId(null)
+      }
+    }
   }
 
   if (incomesQuery.isLoading) {

@@ -26,7 +26,8 @@
       "PR review follow-up polished the add-income route with local `YYYY-MM-DD` date handling, optional note capture/payload support, and single-source error haptic behavior instead of duplicate failure feedback.",
       "A TMA navigation follow-up changed add-income success handling from `navigate(TMA_PATHS.incomes)` to `navigate(-1)` so saving returns to the existing income-list screen instead of pushing a duplicate `/incomes` entry onto the SPA history stack.",
       "Runtime truth was documented in `docs/product-specs/tma/income-capture.md`, the TMA product-spec index now links it, and the feat-125 ExecPlan/index/harness records were updated through completion with verification evidence and the post-review fixes.",
-      "A follow-up now adds authenticated worker `DELETE /api/v1/incomes/:id` soft-delete support with audit rollback safety, plus a TMA income-list trash action with inline confirm so users can remove mistaken income rows without adding an income detail or edit route."
+      "A follow-up now adds authenticated worker `DELETE /api/v1/incomes/:id` soft-delete support with audit rollback safety, plus a TMA income-list trash action with inline confirm so users can remove mistaken income rows without adding an income detail or edit route.",
+      "PR review follow-up now self-heals stale deleted income rows in TMA: a delete `NOT_FOUND` response invalidates the income list cache and clears inline confirm state instead of leaving the stale card stuck on screen."
     ],
     "artifacts": [
       "apps/worker/migrations/0005_incomes.sql",
@@ -73,7 +74,8 @@
       "`./init.sh` returned `Done!` after the worker soft-delete regression fix and again after the final TMA follow-up fixes.",
       "`@oracle` review initially blocked ship on two TMA amount-display bugs and flagged pagination/soft-delete concerns; the follow-up implementation fixed the blockers, the worker list path now excludes soft-deleted rows, and the PR review follow-up fixed local-date, note, and duplicate-error-haptic issues before merge prep.",
       "`pnpm --filter worker exec vitest run test/integration/incomes test/integration/expenses-delete.spec.ts`, `pnpm --filter worker exec tsc --noEmit`, and worker eslint passed after adding DELETE /api/v1/incomes/:id coverage.",
-      "`pnpm --filter tma exec vitest run src/test/incomes-api.test.ts`, `./init.sh typecheck`, `./init.sh lint`, `./init.sh build`, and final `./init.sh` passed after adding TMA inline income delete confirmation and reconciling the delete response/error-haptic follow-up."
+      "`pnpm --filter tma exec vitest run src/test/incomes-api.test.ts`, `./init.sh typecheck`, `./init.sh lint`, `./init.sh build`, and final `./init.sh` passed after adding TMA inline income delete confirmation and reconciling the delete response/error-haptic follow-up.",
+      "`pnpm --filter tma exec vitest run src/test/incomes-api.test.ts` and fresh `./init.sh` passed after the stale-delete review follow-up changed `NOT_FOUND` delete handling to refetch + clear inline confirm state."
     ]
   },
   "notes": "This remains an intentionally narrow MVP. It now supports list-level income delete, but still does not add income analytics, summaries, a detail route, an edit flow, or any web surface. Telegram-native manual QA in a real Telegram WebView was not run in this session, so remaining risk is limited to on-device tap-target/inline-confirm feel rather than API or type/build correctness. If execution later needs persisted multi-route draft state, record that decision in the ExecPlan before adding a Zustand store."
