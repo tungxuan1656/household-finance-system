@@ -120,7 +120,8 @@
     "nameUnset": "Chưa đặt tên",
     "sourceUnset": "Chưa chọn",
     "fieldNote": "Ghi chú",
-    "notePlaceholder": "Ghi chú thêm (không bắt buộc)"
+    "notePlaceholder": "Ghi chú thêm (không bắt buộc)",
+    "deleteAction": "Xóa thu nhập"
   },
   "shortcuts": {
     "comingSoon": "Sớm có"

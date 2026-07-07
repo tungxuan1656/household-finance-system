@@ -34,3 +34,7 @@ export interface IncomeListResponse {
   items: IncomeDTO[]
   nextCursor: string | null
 }
+
+export interface DeleteIncomeResponse {
+  deleted: true
+}

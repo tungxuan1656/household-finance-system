@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const getMock = vi.fn()
+const deleteRequestMock = vi.fn()
 
 vi.mock('@/lib/api/client', () => ({
+  deleteRequest: deleteRequestMock,
   get: getMock,
 }))
 
@@ -11,6 +13,7 @@ const loadIncomesApi = () => import('@/features/incomes/api')
 describe('incomes API', () => {
   beforeEach(() => {
     getMock.mockReset()
+    deleteRequestMock.mockReset()
   })
 
   it('incomeListInfiniteQueryOptions.queryFn calls GET /incomes with cursor', async () => {
@@ -44,5 +47,21 @@ describe('incomes API', () => {
     expect(
       opts.getNextPageParam({ items: [], nextCursor: null } as any),
     ).toBeUndefined()
+  })
+
+  it('deleteIncome calls DELETE /incomes/:id', async () => {
+    deleteRequestMock.mockResolvedValue({ deleted: true })
+
+    const { deleteIncome } = await loadIncomesApi()
+    const result = await deleteIncome('income-1')
+
+    expect(deleteRequestMock).toHaveBeenCalledWith('/incomes/income-1')
+    expect(result).toEqual({ deleted: true })
+  })
+
+  it('useDeleteIncomeMutation is a function', async () => {
+    const { useDeleteIncomeMutation } = await loadIncomesApi()
+
+    expect(typeof useDeleteIncomeMutation).toBe('function')
   })
 })

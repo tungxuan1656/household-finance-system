@@ -3,6 +3,7 @@ import type { z } from 'zod'
 import type {
   createIncomeRequestSchema,
   incomeListQuerySchema,
+  incomePathParamsSchema,
 } from './income-schemas'
 import type { REFERENCE_SOURCE_KEYS } from './reference-data'
 
@@ -32,3 +33,11 @@ export interface IncomeListResponse {
   items: IncomeDTO[]
   nextCursor: string | null
 }
+
+export interface DeleteIncomeResponse {
+  deleted: true
+}
+
+export type IncomePathParams = z.output<
+  ReturnType<typeof incomePathParamsSchema>
+>

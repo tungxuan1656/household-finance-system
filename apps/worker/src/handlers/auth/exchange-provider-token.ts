@@ -1,3 +1,4 @@
+import { linkTelegramBotChatToUser } from '@/db/repositories/telegram-bot-chat-repository'
 import {
   upsertUserByFirebaseIdentity,
   upsertUserByTelegramIdentity,
@@ -26,6 +27,10 @@ export const exchangeProviderToken = async (
       identity,
       input.locale,
     )
+
+    // Link any existing bot chat that was created before TMA auth
+    // (webhook with null user_id). Preserves existing non-null user_id.
+    await linkTelegramBotChatToUser(env.DB, identity.subject, user.id)
 
     return issueAppSession(env, {
       user,
