@@ -11,6 +11,7 @@ import {
   useIncomesInfiniteQuery,
 } from '@/features/incomes/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
+import { formatDateLabel } from '@/lib/formatters'
 import { impact, notification, selection } from '@/lib/telegram/haptics'
 
 export const IncomesPage = () => {
@@ -67,7 +68,7 @@ export const IncomesPage = () => {
               <div className='flex items-center justify-between'>
                 <div className='grid gap-0.5'>
                   <CardTitle>
-                    {new Date(income.occurredAt).toLocaleDateString('vi-VN')}
+                    {formatDateLabel(new Date(income.occurredAt).toISOString())}
                   </CardTitle>
                   <CardDescription>
                     {income.title || t('incomes.nameUnset')}
