@@ -3,13 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { PlusIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  Card,
-  CardDescription,
-  CardTitle,
-  Section,
-} from '@/components/ui'
+import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import { useIncomesInfiniteQuery } from '@/features/incomes/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
@@ -35,12 +29,6 @@ export const IncomesPage = () => {
 
   return (
     <TmaPageShell title={t('incomes.title')}>
-      <Section>
-        <h2 className='py-3 text-lg font-bold text-tma-text-strong'>
-          {t('incomes.listTitle')}
-        </h2>
-      </Section>
-
       {incomes.length === 0 ? (
         <Card>
           <CardTitle>{t('incomes.emptyTitle')}</CardTitle>
