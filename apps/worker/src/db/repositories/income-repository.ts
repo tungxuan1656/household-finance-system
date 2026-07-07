@@ -134,6 +134,100 @@ const encodeIncomeCursor = (
   income: Pick<IncomeRow, 'occurred_at' | 'id'>,
 ): string => btoa(`${income.occurred_at}:${income.id}`)
 
+/**
+ * Find income by ID (only non-deleted).
+ */
+export const findIncomeById = async (
+  db: D1Database,
+  incomeId: string,
+): Promise<StoredIncome | null> => {
+  const row = await db
+    .prepare(
+      `SELECT ${INCOME_COLUMNS}
+         FROM incomes
+        WHERE id = ?
+          AND deleted_at IS NULL
+        LIMIT 1`,
+    )
+    .bind(incomeId)
+    .first<IncomeRow>()
+
+  if (!row) return null
+
+  return mapIncomeRow(row)
+}
+
+/**
+ * Find income by ID including soft-deleted rows.
+ */
+export const findIncomeByIdIncludingDeleted = async (
+  db: D1Database,
+  incomeId: string,
+): Promise<StoredIncome | null> => {
+  const row = await db
+    .prepare(
+      `SELECT ${INCOME_COLUMNS}
+         FROM incomes
+        WHERE id = ?
+        LIMIT 1`,
+    )
+    .bind(incomeId)
+    .first<IncomeRow>()
+
+  if (!row) return null
+
+  return mapIncomeRow(row)
+}
+
+/**
+ * Soft-delete an income by setting deleted_at.
+ * Returns true if a row was actually updated.
+ */
+export const softDeleteIncome = async (
+  db: D1Database,
+  incomeId: string,
+): Promise<boolean> => {
+  const now = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE incomes
+          SET deleted_at = ?,
+              updated_at = ?
+        WHERE id = ?
+          AND deleted_at IS NULL`,
+    )
+    .bind(now, now, incomeId)
+    .run()
+
+  return Number(result.meta.changes ?? 0) === 1
+}
+
+/**
+ * Restore a soft-deleted income (used for audit rollback).
+ */
+export const restoreIncome = async (
+  db: D1Database,
+  incomeId: string,
+): Promise<StoredIncome | null> => {
+  const now = Date.now()
+  const result = await db
+    .prepare(
+      `UPDATE incomes
+          SET deleted_at = NULL,
+              updated_at = ?
+        WHERE id = ?
+          AND deleted_at IS NOT NULL`,
+    )
+    .bind(now, incomeId)
+    .run()
+
+  if (Number(result.meta.changes ?? 0) !== 1) {
+    return null
+  }
+
+  return findIncomeById(db, incomeId)
+}
+
 export const listIncomes = async (
   db: D1Database,
   input: ListIncomesInput,

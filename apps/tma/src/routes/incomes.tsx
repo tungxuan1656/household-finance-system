@@ -1,19 +1,45 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
-import { PlusIcon } from '@/components/shared/tma-icons'
+import { PlusIcon, TrashIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
 import { formatCurrencyMinor } from '@/features/home/presentation'
-import { useIncomesInfiniteQuery } from '@/features/incomes/api'
+import {
+  useDeleteIncomeMutation,
+  useIncomesInfiniteQuery,
+} from '@/features/incomes/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { impact } from '@/lib/telegram/haptics'
+import { impact, notification, selection } from '@/lib/telegram/haptics'
 
 export const IncomesPage = () => {
   const { t } = useTranslation()
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const incomesQuery = useIncomesInfiniteQuery()
+  const deleteIncomeMutation = useDeleteIncomeMutation()
 
   const incomes = incomesQuery.data?.pages.flatMap((page) => page.items) ?? []
+
+  const handleDeleteStart = (incomeId: string) => {
+    selection()
+    setConfirmDeleteId(incomeId)
+  }
+
+  const handleDeleteCancel = () => {
+    selection()
+    setConfirmDeleteId(null)
+  }
+
+  const handleDeleteConfirm = async (incomeId: string) => {
+    impact('heavy')
+
+    try {
+      await deleteIncomeMutation.mutateAsync(incomeId)
+      notification('success')
+      setConfirmDeleteId(null)
+    } catch {}
+  }
 
   if (incomesQuery.isLoading) {
     return (
@@ -47,10 +73,44 @@ export const IncomesPage = () => {
                     {income.title || t('incomes.nameUnset')}
                   </CardDescription>
                 </div>
-                <span className='font-mono text-lg font-semibold text-green-600'>
-                  +
-                  {formatCurrencyMinor(income.amountMinor, income.currencyCode)}
-                </span>
+
+                <div className='flex items-center gap-2'>
+                  <span className='font-mono text-lg font-semibold text-green-600'>
+                    +
+                    {formatCurrencyMinor(
+                      income.amountMinor,
+                      income.currencyCode,
+                    )}
+                  </span>
+
+                  {confirmDeleteId === income.id ? (
+                    <div className='flex gap-1'>
+                      <Button
+                        className='h-8 px-2 text-xs'
+                        disabled={deleteIncomeMutation.isPending}
+                        size='sm'
+                        variant='danger'
+                        onClick={() => handleDeleteConfirm(income.id)}>
+                        {t('common.delete')}
+                      </Button>
+                      <Button
+                        className='h-8 px-2 text-xs'
+                        disabled={deleteIncomeMutation.isPending}
+                        size='sm'
+                        variant='ghost'
+                        onClick={handleDeleteCancel}>
+                        {t('common.cancel')}
+                      </Button>
+                    </div>
+                  ) : (
+                    <button
+                      aria-label={t('incomes.deleteAction')}
+                      className='text-tma-text-secondary grid size-8 place-items-center rounded-full transition active:scale-90 active:bg-black/10'
+                      onClick={() => handleDeleteStart(income.id)}>
+                      <TrashIcon height='17' width='17' />
+                    </button>
+                  )}
+                </div>
               </div>
             </Card>
           ))}

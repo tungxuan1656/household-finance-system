@@ -4,11 +4,12 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
-import { get, post } from '@/lib/api/client'
+import { deleteRequest, get, post } from '@/lib/api/client'
 import { notification } from '@/lib/telegram/haptics'
 
 import type {
   CreateIncomeRequest,
+  DeleteIncomeResponse,
   IncomeDTO,
   IncomeListParams,
   IncomeListResponse,
@@ -44,11 +45,29 @@ export const incomeListInfiniteQueryOptions = (params?: IncomeListParams) => ({
 export const useIncomesInfiniteQuery = (params?: IncomeListParams) =>
   useInfiniteQuery(incomeListInfiniteQueryOptions(params))
 
+export const deleteIncome = (id: string) =>
+  deleteRequest<DeleteIncomeResponse>(`/incomes/${id}`)
+
 export const useCreateIncomeMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: createIncome,
+    onSuccess: async () => {
+      await invalidateIncomeSurfaces(queryClient)
+    },
+    onError: (error) => {
+      console.error(error)
+      notification('error')
+    },
+  })
+}
+
+export const useDeleteIncomeMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => deleteIncome(id),
     onSuccess: async () => {
       await invalidateIncomeSurfaces(queryClient)
     },

@@ -42,3 +42,10 @@ export const incomeListQuerySchema = () =>
       source_key: z.enum(REFERENCE_SOURCE_KEYS).optional(),
     })
     .strict()
+
+export const incomePathParamsSchema = () =>
+  z
+    .object({
+      id: z.string().trim().min(1, 'Income ID must not be blank'),
+    })
+    .strict()
