@@ -24,6 +24,7 @@
       "TMA now exposes `/incomes` and `/incomes/new` through `apps/tma/src/app/router/app-router.tsx`, adds a Home shortcut entrypoint, and implements a route-local one-page add-income form with Telegram `BottomButton` save behavior, source selection, and success navigation back to the income list.",
       "The TMA income list uses a dedicated income feature module with cursor-based infinite query wiring, separate cache keys, correct stored-minor currency rendering, and a load-more affordance so incomes beyond the worker default page limit remain reachable.",
       "PR review follow-up polished the add-income route with local `YYYY-MM-DD` date handling, optional note capture/payload support, and single-source error haptic behavior instead of duplicate failure feedback.",
+      "A TMA navigation follow-up changed add-income success handling from `navigate(TMA_PATHS.incomes)` to `navigate(-1)` so saving returns to the existing income-list screen instead of pushing a duplicate `/incomes` entry onto the SPA history stack.",
       "Runtime truth was documented in `docs/product-specs/tma/income-capture.md`, the TMA product-spec index now links it, and the feat-125 ExecPlan/index/harness records were updated through completion with verification evidence and the post-review fixes."
     ],
     "artifacts": [
@@ -63,6 +64,8 @@
     "verification": [
       "`pnpm --filter worker exec vitest run test/integration/incomes-create.spec.ts test/integration/incomes-create-validation.spec.ts test/integration/incomes-list-content.spec.ts test/integration/incomes-list-deleted.spec.ts test/integration/incomes-list-errors.spec.ts` passed with 16/16 tests after the pre-push split and preserved the full worker income coverage.",
       "`pnpm --filter tma exec vitest run src/test/incomes-api.test.ts` passed after the initial income feature implementation and again after the post-review pagination/amount-display follow-up (2/2 tests green).",
+      "`./init.sh typecheck` and `./init.sh lint` returned `OK` after the income navigation-stack follow-up changed add-income success to history back-navigation.",
+      "`./init.sh` returned `Done!` after the income navigation-stack follow-up, confirming the final repo state stayed green after the add-income history fix and harness updates.",
       "`./init.sh build` returned `OK` after the TMA follow-up fixes.",
       "`./init.sh` returned `Done!` after the worker soft-delete regression fix and again after the final TMA follow-up fixes.",
       "`@oracle` review initially blocked ship on two TMA amount-display bugs and flagged pagination/soft-delete concerns; the follow-up implementation fixed the blockers, the worker list path now excludes soft-deleted rows, and the PR review follow-up fixed local-date, note, and duplicate-error-haptic issues before merge prep."
