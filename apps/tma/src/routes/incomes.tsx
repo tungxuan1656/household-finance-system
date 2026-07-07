@@ -52,11 +52,11 @@ export const IncomesPage = () => {
             <Card key={income.id}>
               <div className='flex items-center justify-between'>
                 <div className='grid gap-0.5'>
-                  <CardTitle className='text-base'>
-                    {income.title || t('incomes.nameUnset')}
+                  <CardTitle>
+                    {new Date(income.occurredAt).toLocaleDateString('vi-VN')}
                   </CardTitle>
                   <CardDescription>
-                    {new Date(income.occurredAt).toLocaleDateString('vi-VN')}
+                    {income.title || t('incomes.nameUnset')}
                   </CardDescription>
                 </div>
                 <span className='font-mono text-lg font-semibold text-green-600'>

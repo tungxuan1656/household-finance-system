@@ -28,3 +28,4 @@ __pycache__/
 .playwright
 data/state_store.db
 .antigravitycli
+.codegraph/

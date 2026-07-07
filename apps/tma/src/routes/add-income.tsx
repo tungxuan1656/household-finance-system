@@ -9,7 +9,6 @@ import { DatePicker } from '@/components/ui/date-picker'
 import { getSourceOptions } from '@/features/expenses/presentation'
 import type { SourceKey } from '@/features/home/types'
 import { useCreateIncomeMutation } from '@/features/incomes/api'
-import { TMA_PATHS } from '@/lib/constants/routes'
 import {
   currencyDisplaySymbol,
   formatAmountInput,
@@ -69,7 +68,7 @@ export const AddIncomePage = () => {
       {
         onSuccess: () => {
           notification('success')
-          navigate(TMA_PATHS.incomes)
+          navigate(-1)
         },
         // Error haptics handled by mutation-level onError — no duplicate here
       },
