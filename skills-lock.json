@@ -29,7 +29,13 @@
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
       "skillPath": "skills/coding-standards/SKILL.md",
-      "computedHash": "1bc198a6205b2ba5e39cc835702557772bffbbcb3cb63bf509114c5df5ec4d45"
+      "computedHash": "94f8d33db00faef148fb7a9f88c2e37e4d2afe109cdb9978b06fe280892de405"
+    },
+    "design-taste-frontend": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "6d838b246d0e35d0b53f4f23f98ba7a1dd561937e64f7d0c7553b0928e376c3e"
     },
     "executing-plans": {
       "source": "tungxuan1656/harness-slim",
@@ -91,6 +97,12 @@
       "skillPath": "skills/repo-gardening/SKILL.md",
       "computedHash": "1fb5872f40a7491e1ea1310db1fa74bdec36b6ed2ab4b24b3fa8091625ac84c7"
     },
+    "shadcn": {
+      "source": "shadcn-ui/ui",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn/SKILL.md",
+      "computedHash": "c1a68ee06a668aced9ab2b5fbdea5f989864123794eb2e056b339a072dbb7f10"
+    },
     "simple-english": {
       "source": "tungxuan1656/harness-slim",
       "sourceType": "github",
@@ -109,6 +121,12 @@
       "skillPath": "skills/systematic-debugging/SKILL.md",
       "computedHash": "1d68a2033dd44e9089b83d2326400634d2df02aa9e913c742c77252dfed4efed"
     },
+    "telegram-bot": {
+      "source": "claude-office-skills/skills",
+      "sourceType": "github",
+      "skillPath": "telegram-bot/SKILL.md",
+      "computedHash": "8c9554098e2f9c4baa53980e09f3bd7374034c1948e73341b691a33ebb473db9"
+    },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
@@ -119,7 +137,7 @@
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/react-view-transitions/SKILL.md",
-      "computedHash": "c8952fc9127fa0564d0cb71dccb4215a5608ac933b5831104f09173a97a46f85"
+      "computedHash": "b1be40dfc6e714612020c7583b574cc4c92a1b5bc185a7dd3eea5c0123653d1c"
     },
     "verification-before-completion": {
       "source": "tungxuan1656/harness-slim",

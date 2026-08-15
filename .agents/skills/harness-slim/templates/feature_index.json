@@ -1,0 +1,10 @@
+{
+  "features": [
+    {
+      "id": "feat-001",
+      "title": "First Feature",
+      "status": "todo",
+      "depends_on": []
+    }
+  ]
+}
