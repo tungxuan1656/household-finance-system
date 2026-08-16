@@ -1,179 +1,42 @@
-import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
-import { LoadingSkeleton } from '@/components/shared/loading-skeleton'
 import {
   RootErrorElement,
   RouteErrorBoundary,
 } from '@/components/shared/route-error-boundary'
+import { BudgetDetailPage } from '@/features/budgets/pages/budget-detail-page'
+import { BudgetListPage } from '@/features/budgets/pages/budget-list-page'
+import { CreateBudgetPage } from '@/features/budgets/pages/create-budget-page'
+import { ExpenseFilterPage } from '@/features/expenses/pages/expense-filter-page'
+import { CreateGroupPage } from '@/features/groups/pages/create-group-page'
+import { GroupDetailPage } from '@/features/groups/pages/group-detail-page'
+import { GroupListPage } from '@/features/groups/pages/group-list-page'
+import { CreateHouseholdPage } from '@/features/households/pages/create-household-page'
+import { HouseholdDetailPage } from '@/features/households/pages/household-detail-page'
+import { HouseholdListPage } from '@/features/households/pages/household-list-page'
+import { AcceptInvitationPage } from '@/features/invitations/pages/accept-invitation-page'
+import { PeriodPickerPage } from '@/features/period/pages/period-picker-page'
 import { TMA_PATHS } from '@/lib/constants/routes'
+import { AddExpenseCategoryPage } from '@/routes/add-expense-category'
+import { AddExpenseChatPage } from '@/routes/add-expense-chat'
+import { AddExpenseContextPage } from '@/routes/add-expense-context'
+import { AddExpenseDetailsPage } from '@/routes/add-expense-details'
+import { AddExpenseImportPreviewPage } from '@/routes/add-expense-import-preview'
+import { AddIncomePage } from '@/routes/add-income'
+import { ExpenseDetailPage } from '@/routes/expense-detail'
+import { ExpenseEditPage } from '@/routes/expense-edit'
+import { ExpenseEditCategoryPage } from '@/routes/expense-edit-category'
+import { ExpensesPage } from '@/routes/expenses'
+import { FatalLaunchPage } from '@/routes/fatal-launch'
+import { HomePage } from '@/routes/home'
+import { IncomesPage } from '@/routes/incomes'
+import { StatisticsPage } from '@/routes/statistics'
 
 import RootLayout from './root-layout'
 
-const HomePage = lazy(async () => {
-  const module = await import('@/routes/home')
-
-  return { default: module.HomePage }
-})
-
-const StatisticsPage = lazy(async () => {
-  const module = await import('@/routes/statistics')
-
-  return { default: module.StatisticsPage }
-})
-
-const ExpensesPage = lazy(async () => {
-  const module = await import('@/routes/expenses')
-
-  return { default: module.ExpensesPage }
-})
-
-const ExpenseDetailPage = lazy(async () => {
-  const module = await import('@/routes/expense-detail')
-
-  return { default: module.ExpenseDetailPage }
-})
-
-const ExpenseFilterPage = lazy(async () => {
-  const module = await import('@/features/expenses/pages/expense-filter-page')
-
-  return { default: module.ExpenseFilterPage }
-})
-
-const ExpenseEditPage = lazy(async () => {
-  const module = await import('@/routes/expense-edit')
-
-  return { default: module.ExpenseEditPage }
-})
-
-const ExpenseEditCategoryPage = lazy(async () => {
-  const module = await import('@/routes/expense-edit-category')
-
-  return { default: module.ExpenseEditCategoryPage }
-})
-
-const AddExpenseCategoryPage = lazy(async () => {
-  const module = await import('@/routes/add-expense-category')
-
-  return { default: module.AddExpenseCategoryPage }
-})
-
-const AddExpenseDetailsPage = lazy(async () => {
-  const module = await import('@/routes/add-expense-details')
-
-  return { default: module.AddExpenseDetailsPage }
-})
-
-const AddExpenseContextPage = lazy(async () => {
-  const module = await import('@/routes/add-expense-context')
-
-  return { default: module.AddExpenseContextPage }
-})
-
-const AddExpenseChatPage = lazy(async () => {
-  const module = await import('@/routes/add-expense-chat')
-
-  return { default: module.AddExpenseChatPage }
-})
-
-const AddExpenseImportPreviewPage = lazy(async () => {
-  const module = await import('@/routes/add-expense-import-preview')
-
-  return { default: module.AddExpenseImportPreviewPage }
-})
-
-const HouseholdsPage = lazy(async () => {
-  const module = await import('@/features/households/pages/household-list-page')
-
-  return { default: module.HouseholdListPage }
-})
-
-const GroupsPage = lazy(async () => {
-  const module = await import('@/features/groups/pages/group-list-page')
-
-  return { default: module.GroupListPage }
-})
-
-const BudgetsPage = lazy(async () => {
-  const module = await import('@/features/budgets/pages/budget-list-page')
-
-  return { default: module.BudgetListPage }
-})
-
-const PeriodRoute = lazy(async () => {
-  const module = await import('@/features/period/pages/period-picker-page')
-
-  return { default: module.PeriodPickerPage }
-})
-
-const CreateHouseholdRoute = lazy(async () => {
-  const module =
-    await import('@/features/households/pages/create-household-page')
-
-  return { default: module.CreateHouseholdPage }
-})
-
-const HouseholdDetailRoute = lazy(async () => {
-  const module =
-    await import('@/features/households/pages/household-detail-page')
-
-  return { default: module.HouseholdDetailPage }
-})
-
-const AcceptInvitationRoute = lazy(async () => {
-  const module =
-    await import('@/features/invitations/pages/accept-invitation-page')
-
-  return { default: module.AcceptInvitationPage }
-})
-
-const CreateGroupRoute = lazy(async () => {
-  const module = await import('@/features/groups/pages/create-group-page')
-
-  return { default: module.CreateGroupPage }
-})
-
-const GroupDetailRoute = lazy(async () => {
-  const module = await import('@/features/groups/pages/group-detail-page')
-
-  return { default: module.GroupDetailPage }
-})
-
-const CreateBudgetRoute = lazy(async () => {
-  const module = await import('@/features/budgets/pages/create-budget-page')
-
-  return { default: module.CreateBudgetPage }
-})
-
-const IncomesPage = lazy(async () => {
-  const module = await import('@/routes/incomes')
-
-  return { default: module.IncomesPage }
-})
-
-const AddIncomePage = lazy(async () => {
-  const module = await import('@/routes/add-income')
-
-  return { default: module.AddIncomePage }
-})
-
-const BudgetDetailRoute = lazy(async () => {
-  const module = await import('@/features/budgets/pages/budget-detail-page')
-
-  return { default: module.BudgetDetailPage }
-})
-
-const FatalLaunchPage = lazy(async () => {
-  const module = await import('@/routes/fatal-launch')
-
-  return { default: module.FatalLaunchPage }
-})
-
-const renderLazyRoute = (Component: React.ComponentType) => (
+const renderRoute = (Component: React.ComponentType) => (
   <RouteErrorBoundary>
-    <Suspense fallback={<LoadingSkeleton />}>
-      <Component />
-    </Suspense>
+    <Component />
   </RouteErrorBoundary>
 )
 
@@ -185,107 +48,107 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: renderLazyRoute(HomePage),
+        element: renderRoute(HomePage),
       },
       {
         path: TMA_PATHS.period,
-        element: renderLazyRoute(PeriodRoute),
+        element: renderRoute(PeriodPickerPage),
       },
       {
         path: TMA_PATHS.statistics,
-        element: renderLazyRoute(StatisticsPage),
+        element: renderRoute(StatisticsPage),
       },
       {
         path: TMA_PATHS.expenses,
-        element: renderLazyRoute(ExpensesPage),
+        element: renderRoute(ExpensesPage),
       },
       {
         path: `${TMA_PATHS.expenses}/:id`,
-        element: renderLazyRoute(ExpenseDetailPage),
+        element: renderRoute(ExpenseDetailPage),
       },
       {
         path: TMA_PATHS.expensesFilter,
-        element: renderLazyRoute(ExpenseFilterPage),
+        element: renderRoute(ExpenseFilterPage),
       },
       {
         path: `${TMA_PATHS.expenses}/:id/edit`,
-        element: renderLazyRoute(ExpenseEditPage),
+        element: renderRoute(ExpenseEditPage),
       },
       {
         path: `${TMA_PATHS.expenses}/:id/edit/category`,
-        element: renderLazyRoute(ExpenseEditCategoryPage),
+        element: renderRoute(ExpenseEditCategoryPage),
       },
       {
         path: TMA_PATHS.expensesNewCategory,
-        element: renderLazyRoute(AddExpenseCategoryPage),
+        element: renderRoute(AddExpenseCategoryPage),
       },
       {
         path: TMA_PATHS.expensesNewDetails,
-        element: renderLazyRoute(AddExpenseDetailsPage),
+        element: renderRoute(AddExpenseDetailsPage),
       },
       {
         path: TMA_PATHS.expensesNewContext,
-        element: renderLazyRoute(AddExpenseContextPage),
+        element: renderRoute(AddExpenseContextPage),
       },
       {
         path: TMA_PATHS.expensesNewChat,
-        element: renderLazyRoute(AddExpenseChatPage),
+        element: renderRoute(AddExpenseChatPage),
       },
       {
         path: TMA_PATHS.expensesNewImport,
-        element: renderLazyRoute(AddExpenseImportPreviewPage),
+        element: renderRoute(AddExpenseImportPreviewPage),
       },
       {
         path: TMA_PATHS.incomes,
-        element: renderLazyRoute(IncomesPage),
+        element: renderRoute(IncomesPage),
       },
       {
         path: TMA_PATHS.incomesNew,
-        element: renderLazyRoute(AddIncomePage),
+        element: renderRoute(AddIncomePage),
       },
       {
         path: TMA_PATHS.households,
-        element: renderLazyRoute(HouseholdsPage),
+        element: renderRoute(HouseholdListPage),
       },
       {
         path: TMA_PATHS.householdsNew,
-        element: renderLazyRoute(CreateHouseholdRoute),
+        element: renderRoute(CreateHouseholdPage),
       },
       {
         path: `${TMA_PATHS.households}/:id`,
-        element: renderLazyRoute(HouseholdDetailRoute),
+        element: renderRoute(HouseholdDetailPage),
       },
       {
         path: `${TMA_PATHS.invitations}/:token`,
-        element: renderLazyRoute(AcceptInvitationRoute),
+        element: renderRoute(AcceptInvitationPage),
       },
       {
         path: TMA_PATHS.groups,
-        element: renderLazyRoute(GroupsPage),
+        element: renderRoute(GroupListPage),
       },
       {
         path: TMA_PATHS.groupsNew,
-        element: renderLazyRoute(CreateGroupRoute),
+        element: renderRoute(CreateGroupPage),
       },
       {
         path: `${TMA_PATHS.groups}/:id`,
-        element: renderLazyRoute(GroupDetailRoute),
+        element: renderRoute(GroupDetailPage),
       },
       {
         path: TMA_PATHS.budgets,
-        element: renderLazyRoute(BudgetsPage),
+        element: renderRoute(BudgetListPage),
       },
       {
         path: TMA_PATHS.budgetsNew,
-        element: renderLazyRoute(CreateBudgetRoute),
+        element: renderRoute(CreateBudgetPage),
       },
       {
         path: `${TMA_PATHS.budgets}/:id`,
-        element: renderLazyRoute(BudgetDetailRoute),
+        element: renderRoute(BudgetDetailPage),
       },
       {
         path: TMA_PATHS.fatal,
-        element: renderLazyRoute(FatalLaunchPage),
+        element: renderRoute(FatalLaunchPage),
       },
     ],
   },

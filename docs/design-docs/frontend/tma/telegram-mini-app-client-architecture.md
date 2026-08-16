@@ -152,7 +152,7 @@ That is correct only when the bundle stays loaded and state stays in memory/stor
 - Optimize for Telegram WebView first.
 - Animate `transform` and `opacity`, not layout properties.
 - Keep keyboard-safe layouts, safe-area spacing, and low-end Android fallback in the core plan.
-- Heavy analysis screens should lazy-load.
+- Route code loads eagerly; defer non-critical data and render work until after interaction as appropriate.
 - Haptics should be meaningful, not everywhere.
 - Touch-first handlers are allowed on high-frequency controls only when there is measured delay or gesture benefit.
 

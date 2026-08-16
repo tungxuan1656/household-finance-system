@@ -41,7 +41,7 @@ apps/tma/
   src/
     app/
       bootstrap/          # init, providers, app shell
-      router/             # router creation, route shells, lazy routes
+      router/             # router creation, route shells, eager route imports
     features/
       <domain>/
         api/
@@ -97,7 +97,7 @@ apps/tma -> apps/web/src imports
 Keep shell responsibilities explicit:
 
 - Root app shell owns bootstrap gates, providers, viewport/theme binding, and fatal launch/auth failure UI.
-- Route shells own route composition, route-level lazy loading, and route-level guards.
+- Route shells own route composition, eager route imports, and route-level guards.
 - Flow shells own `BackButton`, `BottomButton`, closing-confirmation, and multi-step flow state wiring.
 - Leaf components render feature UI. They do not own Telegram global chrome.
 
@@ -106,7 +106,7 @@ Keep shell responsibilities explicit:
 - All in-app navigation stays inside SPA history.
 - Use `navigate()` or `Link` only.
 - Full-page route changes with `window.location` are a bug for TMA flows.
-- Route-level code splitting is allowed and preferred for heavier read surfaces.
+- TMA routes use eager static imports. Do not use `React.lazy`, `Suspense` route fallbacks, or route-level code splitting.
 - If BrowserRouter is used, deployment must include SPA fallback rewrites. Do not rely on 404 recovery.
 
 ## UI-system rules
@@ -163,8 +163,7 @@ cn('rounded-[18px] px-3 py-2', isActive && 'bg-tma-primary/12 text-tma-primary')
 
 ## Performance defaults
 
-- Lazy-load heavier read surfaces such as insights or chart-heavy screens.
-- Keep startup light: auth bootstrap, current user, and route intent first; bulk reference data later.
+- Load route code eagerly; keep startup light with narrow auth bootstrap data and route intent first, deferring only non-critical server data, not route modules.
 - Keep animation, safe-area, and keyboard behavior inside the shared shell layer, not re-solved per page.
 
 ## Verification rules
