@@ -2,7 +2,7 @@
 
 Shared product truth. These specs apply across all client surfaces unless a surface-specific spec adds UX-only behavior.
 
-## Current Specs
+## Specs
 
 - `authentication-session.md`
 - `expense-tracking.md`

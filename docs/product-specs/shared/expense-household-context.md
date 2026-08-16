@@ -1,5 +1,7 @@
 # Expense Household Context
 
+Status: current
+
 ## Goal
 
 Define how an expense becomes a household expense in Product V2.

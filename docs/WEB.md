@@ -7,7 +7,7 @@ Web router. Read this for `apps/web` work, then read only exact web leaf docs ne
 - Web is one frontend surface, not the whole frontend layer.
 - `apps/web` uses Next.js App Router and shadcn primitives.
 - Responsive desktop/mobile web behavior lives here and in web leaf docs.
-- TMA and future mobile-app rules do not belong here.
+- TMA rules do not belong here.
 
 ## Read Next By Task
 
@@ -34,5 +34,5 @@ Web router. Read this for `apps/web` work, then read only exact web leaf docs ne
 ## Verification
 
 - Run focused web checks for touched area.
-- Use `./init.sh <param>` instead of `pnpm <cmd>` for lint/typecheck/test/build.
+- Use one phased parameter at a time: `./init.sh <param>` for format, lint, typecheck, test, or build. The full `./init.sh` runs format, lint, typecheck, test, then web and TMA builds.
 - For `apps/web`, never add component/page render tests. Prefer util/api/store/helper unit tests plus browser/manual evidence for UI behavior.

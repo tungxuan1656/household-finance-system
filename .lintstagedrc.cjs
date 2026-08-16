@@ -15,6 +15,6 @@ module.exports = {
   ],
   '*.{json,md,yml,yaml}': ['prettier --write'],
   'docs/**/*.{md,yml,yaml}': ['prettier --write'],
-  'harness/**/*.{json,md,yml,yaml}': ['prettier --write'],
+  'features/**/*.{json,md,yml,yaml}': ['prettier --write'],
   '.github/**/*.{yml,yaml}': ['prettier --write'],
 }

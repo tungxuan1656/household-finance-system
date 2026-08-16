@@ -11,7 +11,7 @@ This doc records the product-direction shift from `v1` to `v2`.
 
 Use this doc when:
 
-- checking why `PRODUCT.md` and `PRODUCT.vi.md` changed
+- checking why the current product specs changed
 - aligning feature specs with the current product truth
 - reviewing old implementation decisions that still assume the old model
 
@@ -136,15 +136,12 @@ Specs, copy, and UI should now assume:
 
 Likely docs/specs to review after this direction change:
 
-- `docs/product-specs/expense-spender-model.md` (thay thế `expense-ownership.md` — spender là canonical owner, không phải payer/creator)
-- `docs/product-specs/expense-household-context.md` (thay thế `data-visibility.md` — không có privacy mode, chỉ có personal vs household-attached)
-- `docs/product-specs/expense-grouping.md`
-- `docs/product-specs/expense-tracking.md`
+- `docs/product-specs/shared/expense-spender-model.md` (thay thế `expense-ownership.md` — spender là canonical owner, không phải payer/creator)
+- `docs/product-specs/shared/expense-household-context.md` (thay thế `data-visibility.md` — không có privacy mode, chỉ có personal vs household-attached)
+- `docs/product-specs/shared/expense-grouping.md`
+- `docs/product-specs/shared/expense-tracking.md`
 - any UI copy or backend contract that still exposes `payer`, `creator`, or `private/public` as product-truth concepts
 
 ## Current source of truth
 
-For the current high-level product definition, use:
-
-- `docs/PRODUCT.vi.md`
-- `docs/PRODUCT.md`
+For the current high-level product definition, use `docs/product-specs/index.md` and its shared or surface-specific branches.

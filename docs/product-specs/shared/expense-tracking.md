@@ -1,5 +1,7 @@
 # Expense Tracking
 
+Status: current
+
 ## Goal
 
 Enable fast, accurate expense capture with minimal friction so users record transactions consistently.

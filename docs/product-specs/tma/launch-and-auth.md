@@ -1,5 +1,7 @@
 # TMA Launch And Auth
 
+Status: current
+
 ## Goal
 
 Allow a user to open the Mini App from Telegram and enter the product without a separate email/password form.

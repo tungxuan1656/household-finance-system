@@ -1,5 +1,7 @@
 # Telegram Bot Companion
 
+Status: mixed
+
 ## Goal
 
 Define the Telegram bot as a companion surface for fast finance actions, reminders, and summaries.

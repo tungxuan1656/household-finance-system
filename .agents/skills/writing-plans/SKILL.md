@@ -1,258 +1,175 @@
 ---
 name: writing-plans
-description: Use for Level 2 or Level 3 work, or when sequencing is unclear. Write or update an ExecPlan that fits the harness and exact task scope.
-argument-hint: 'Describe feature goal, scope (frontend/backend/fullstack), constraints, and expected verification artifacts.'
+description: Use when you have a spec or requirements for a multi-step task and need an implementation plan before touching code. Reuse the repository's canonical plan location and active feature record when present.
 ---
 
 # Writing Plans
 
-Create or update an implementation-ready ExecPlan only when the task needs that level of ceremony.
+## Overview
 
-## Relationship to Initial Thinking and Brainstorming
+Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
 
-`writing-plans` starts after the task direction is sufficiently clear.
+Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
-It may follow:
-- direct initial triage from `using-skills`
-- `grill-with-docs` when terminology, scenarios, or edge cases need one focused clarification pass
-- a formal `brainstorming` pass
+**Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
-Do not require brainstorming before every plan.
+## Select the plan artifact
 
-Require brainstorming first only when the plan would otherwise encode unresolved ambiguity, unchosen tradeoffs, or unclear acceptance criteria.
+Read `AGENTS.md`, existing plans, and active work records before creating a
+plan. Reuse the repository's canonical plan path.
 
-This skill governs full ExecPlans, not planning in general.
-All tasks still need some planning artifact before execution:
-- tiny direct-task note for true one-shot work
-- explicit inline plan for normal Level 1 multi-step work
-- full ExecPlan for the cases covered by this skill
+- When Harness Slim is active, create `docs/plans/feat-<id>.md` for a
+  multi-step feature and link it from `features/feat-<id>.md`.
+- Otherwise reuse the maintained plan location and tracker already used by the
+  repository.
+- If no plan owner or location is clear, ask `agent-docs-architect` when it is
+  installed to map it before writing. Otherwise surface the path decision and
+  do not create `docs/superpowers/` as a fallback.
 
-Normal inline-plan work should stay inline. Do not invoke `writing-plans` just to satisfy the idea that every task needs a plan.
+Use an isolated workspace only when the repository policy, task risk, or user
+scope calls for one. Use native git worktree commands when available; do not
+require another skill to create it.
 
-## When to Write a Plan
+## Scope Check
 
-Use this skill for:
-- Level 2 planned feature work
-- Level 3 high-risk work
-- existing plans that need tightening before execution
-- tasks with unclear sequencing, acceptance criteria, or multi-stage verification
-- tasks with multiple implementation steps
-- tasks spanning multiple files, layers, or domains
-- tasks that need progress tracking in harness artifacts
+If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
 
-Do not use this skill for:
-- Level 0 direct tasks
-- most Level 1 small changes
-- generic brainstorming with no implementation intent
+## File Structure
 
-Do not create a full ExecPlan for Level 0 direct tasks.
+Before defining tasks, map out which files will be created or modified and what each one is responsible for. This is where decomposition decisions get locked in.
 
-For Level 1 tasks, prefer a brief inline plan unless risk or ambiguity is discovered.
-Do not treat "small" as permission to skip planning entirely.
-Also do not treat "needs a plan" as permission to over-escalate normal Level 1 work into a full ExecPlan.
+- Design units with clear boundaries and well-defined interfaces. Each file should have one clear responsibility.
+- You reason best about code you can hold in context at once, and your edits are more reliable when files are focused. Prefer smaller, focused files over large ones that do too much.
+- Files that change together should live together. Split by responsibility, not by technical layer.
+- In existing codebases, follow established patterns. If the codebase uses large files, don't unilaterally restructure - but if a file you're modifying has grown unwieldy, including a split in the plan is reasonable.
 
-For Level 1, a short inline plan is enough:
+This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.
 
-```text
-Inline plan:
-1. Inspect affected file and relevant reference.
-2. Make scoped change.
-3. Run targeted verification.
-4. Report result.
+## Task Right-Sizing
+
+A task is the smallest unit that carries its own test cycle and is worth a
+fresh reviewer's gate. When drawing task boundaries: fold setup,
+configuration, scaffolding, and documentation steps into the task whose
+deliverable needs them; split only where a reviewer could meaningfully
+reject one task while approving its neighbor. Each task ends with an
+independently testable deliverable.
+
+## Bite-Sized Task Granularity
+
+**Each step is one action (2-5 minutes):**
+- "Write the failing test" - step
+- "Run it to make sure it fails" - step
+- "Implement the minimal code to make the test pass" - step
+- "Run the tests and make sure they pass" - step
+- "Commit" - step
+
+## Plan Document Header
+
+**Every plan MUST start with this header:**
+
+```markdown
+# [Feature Name] Implementation Plan
+
+> **Execution:** Follow the repository's implementation and verification rules. Use `subagent-driven-development` or `executing-plans` only when installed and appropriate. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** [One sentence describing what this builds]
+
+**Architecture:** [2-3 sentences about approach]
+
+**Tech Stack:** [Key technologies/libraries]
+
+## Global Constraints
+
+[The spec's project-wide requirements — version floors, dependency limits,
+naming and copy rules, platform requirements — one line each, with exact
+values copied verbatim from the spec. Every task's requirements implicitly
+include this section.]
+
+---
 ```
 
-If the task includes several meaningful steps such as reading docs, comparing patterns, extracting a helper, updating a page, and running focused verification, it should usually show an inline plan even if it still does not deserve a full ExecPlan.
+## Task Structure
 
-## Additional Reading
+````markdown
+### Task N: [Component Name]
 
-AGENTS.md is read at session start. For plan writing, also read:
-- `docs/PLANS.md` — plan lifecycle and execution policy
-- `docs/exec-plans/__plan-template__.md` — canonical ExecPlan template
-- `docs/exec-plans/index.md` — current plan status
-- `harness/feature_index.json` — current feature status
-- Related `harness/features/*.json` — feature dependencies and evidence
-- `harness/progress.md` — recent session history
-- `harness/session-handoff.md` — if work spans sessions
+**Files:**
+- Create: `exact/path/to/file.py`
+- Modify: `exact/path/to/existing.py:123-145`
+- Test: `tests/exact/path/to/test.py`
 
-Read scope-specific reference docs based on what the plan touches:
-- Frontend: relevant `docs/references/frontend/<surface>/*` (see Scope-Driven Standards Matrix below)
-- Backend: relevant `docs/references/backend/*` (see Scope-Driven Standards Matrix below)
-- Shared: `docs/references/shared/type-naming-pattern.md`
+**Interfaces:**
+- Consumes: [what this task uses from earlier tasks — exact signatures]
+- Produces: [what later tasks rely on — exact function names, parameter
+  and return types. A task's implementer sees only their own task; this
+  block is how they learn the names and types neighboring tasks use.]
 
-## Mandatory Inputs
+- [ ] **Step 1: Write the failing test**
 
-Collect or infer the following before drafting:
-- User-visible outcome (what behavior changes and how to verify it).
-- Scope boundaries (in-scope and out-of-scope).
-- Target domain: `frontend`, `backend`, `shared`, `fullstack`, or `tooling/docs`.
-- Risks or constraints (security, rollout, data migration, compatibility).
+```python
+def test_specific_behavior():
+    result = function(input)
+    assert result == expected
+```
 
-If the scope is unclear, ask concise clarifying questions before writing the plan.
+- [ ] **Step 2: Run test to verify it fails**
 
-## Plan Lifecycle Requirements
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: FAIL with "function not defined"
 
-- Save plans to `docs/exec-plans/plans/YYYY-MM-DD-<feature-name>.md`.
-- Active and completed plan files stay in `docs/exec-plans/plans/` (no file moves across status folders).
-- Plan status must be tracked in `docs/exec-plans/index.md` under `Active` and `Completed` sections.
-- Deferred items must be logged in `docs/exec-plans/tech-debt-tracker.md`.
+- [ ] **Step 3: Write minimal implementation**
 
-## Scope-Driven Standards Matrix
+```python
+def function(input):
+    return expected
+```
 
-After identifying scope, require these references in the plan:
+- [ ] **Step 4: Run test to verify it passes**
 
-### Web Frontend Scope
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: PASS
 
-Must apply:
-- `docs/references/frontend/web/project-folder-structure.md`
-- `docs/references/frontend/web/component-structure-pattern.md`
-- `docs/references/frontend/web/naming-and-conventions-pattern.md`
-- `docs/references/frontend/web/form-pattern.md` (if forms are involved)
-- `docs/references/frontend/web/dialog-and-form-pattern.md` (if dialog/form flows exist)
-- `docs/references/frontend/web/api-react-query-pattern.md` (if API hooks/queries are touched)
-- `docs/references/frontend/web/zustand-store-pattern.md` (if state stores are touched)
-- `docs/references/frontend/web/i18n-label-pattern.md` (if new labels/copy are added)
+- [ ] **Step 5: Commit**
 
-### TMA Frontend Scope
+```bash
+git add tests/path/test.py src/path/file.py
+git commit -m "feat: add specific feature"
+```
+````
 
-Must apply:
-- `docs/TMA.md`
-- `docs/references/frontend/tma/app-structure-and-client-rules.md`
-- `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`
-- `docs/references/frontend/tma/state-and-storage-pattern.md`
-- `docs/references/frontend/tma/auth-and-bot-pattern.md` (if auth, deep links, or bot boundaries are touched)
+## No Placeholders
 
-### Backend Scope
-
-Must apply:
-- `docs/references/backend/architecture-and-boundaries.md`
-- `docs/references/backend/api-contract-and-validation.md`
-- `docs/references/backend/error-handling-pattern.md`
-- `docs/references/backend/security-and-auth-pattern.md`
-- `docs/references/backend/testing-pattern.md`
-- `docs/references/backend/database-pattern.md` (if D1/SQL/data model changes are involved)
-- `docs/references/backend/cloudflare-workers.md` (if worker runtime/config/deploy is touched)
-
-### Shared Scope
-
-Must apply:
-- `docs/references/shared/type-naming-pattern.md`
-
-### Fullstack Scope
-
-Must combine all required frontend + backend + shared references relevant to touched areas.
-
-## Companion Skills To Note In The Plan
-
-When useful, note companion skills that should be used during implementation:
-- `grill-with-docs` before planning when product or repo vocabulary is still loose
-- `prototype` before locking the plan when UX or logic shape is still uncertain
-- `to-issues` after plan approval when execution needs thinner vertical slices
-- `test-driven-development` for behavior changes
-- `systematic-debugging` for bugs or failures
-- `requesting-code-review` for Level 2 or Level 3 review checkpoints
-- `verification-before-completion` before completion claims
-- `subagent-driven-development` only when the work is large enough, parallelizable enough, or explicitly requested
-- `executing-plans` when execution will stay inline in the current session
-- `handoff` if the plan is likely to pause with unfinished work
-
-Add a dedicated research or domain-review step only when the task actually needs it.
-
-If uncertainty is high, include a dedicated research step in the plan before implementation.
-
-## Plan Authoring Workflow
-
-Follow this sequence strictly.
-
-1. **Define purpose and user-observable behavior.**
-2. **Lock scope** — explicitly list in-scope and out-of-scope items.
-3. **Build a scope map:**
-   - Files and modules expected to change.
-   - Layer impact using `Types -> Config -> Repo -> Service -> Runtime -> UI` from `ARCHITECTURE.md`.
-   - Hard dependency checks from `ARCHITECTURE.md`:
-     - Lower layers do not depend on higher layers.
-     - UI does not bypass runtime/service contracts.
-     - Data access enters through repository or explicit adapter boundaries.
-   - If new dependencies are introduced, include explicit justification in the plan.
-4. **Add standards enforcement section:**
-   - List required references from the scope-driven matrix.
-   - Convert each selected reference into concrete coding constraints.
-5. **Write implementation narrative:**
-   - File-by-file planned edits.
-   - Data flow and interface contracts.
-6. **Add concrete commands** with working directory and expected short outputs.
-   - Include targeted verification and final broader verification appropriate to the task level.
-7. **Add validation matrix:**
-   - Happy path.
-   - Validation/error paths.
-   - Unauthorized/forbidden when relevant.
-   - Regression checks for fixed bugs.
-8. **Add idempotence and recovery:**
-   - Re-run safety.
-   - Backup/rollback for risky operations.
-9. **Add harness integration:**
-   - Required updates for `harness/feature_index.json`, `harness/features/*.json`, and `harness/progress.md`.
-10. **Add decision log placeholders and progress checklist** suitable for multi-session execution.
-    - Enforce one clearly owned current step with owner and status.
-
-## Output Contract
-
-A plan is complete only if all checks pass:
-- Uses the section structure from `docs/exec-plans/__plan-template__.md`.
-- Is self-contained: no hidden assumptions.
-- Includes explicit verification commands and expected outputs.
-- Includes scope-based standards and coding notes from `docs/references`.
-- Includes required harness updates and evidence expectations.
-- Provides at least one concrete acceptance artifact (test, curl response, build transcript, or equivalent).
-- Includes all minimum sections required by `docs/PLANS.md`:
-  - objective
-  - scope and out-of-scope
-  - verification path
-  - risks and blockers
-  - progress log
-  - open decisions
-
-## Ambiguity Handling
-
-If any of these are missing, ask before finalizing:
-- Exact user-visible behavior.
-- Ownership boundary between frontend/backend.
-- Data migration or backward-compatibility constraints.
-- Security/privacy sensitivity level.
-
-Use minimal, high-signal questions and continue once answered.
-
-## Writing Rules
-
-- Use exact file paths always.
-- Do not use placeholders like `TBD`, `TODO`, or `fill in later`.
-- If a step changes code, show the actual code or command the engineer should use.
-- Keep tasks bite-sized: one action, usually 2-5 minutes.
-- Prefer test-first steps for behavior changes.
-- Keep every plan self-contained so it can be executed without the original conversation.
-- Remove or split any step that covers multiple independent subsystems.
+Every step must contain the actual content an engineer needs. These are **plan failures** — never write them:
+- "TBD", "TODO", "implement later", "fill in details"
+- "Add appropriate error handling" / "add validation" / "handle edge cases"
+- "Write tests for the above" (without actual test code)
+- "Similar to Task N" (repeat the code — the engineer may be reading tasks out of order)
+- Steps that describe what to do without showing how (code blocks required for code steps)
+- References to types, functions, or methods not defined in any task
 
 ## Self-Review
 
-After writing the complete plan, review it against the spec and the harness rules yourself:
+After writing the complete plan, look at the spec with fresh eyes and check the plan against it. This is a checklist you run yourself — not a subagent dispatch.
 
-1. **Spec coverage**: can you point to a task for each requirement?
-2. **Placeholder scan**: remove any incomplete sections, vague requirements, or missing commands.
-3. **Type and name consistency**: do all file paths, function names, and commands match across tasks?
-4. **Harness alignment**: does the plan update the required harness artifacts and respect repo layering?
-5. **Verification readiness**: is there a concrete acceptance artifact and a clear verification path?
+**1. Spec coverage:** Skim each section/requirement in the spec. Can you point to a task that implements it? List any gaps.
 
-If you find issues, fix them inline. If a requirement has no task, add the task.
+**2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
+
+**3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
+
+If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
 ## Execution Handoff
 
-After saving the plan, recommend the execution mode that matches the actual work:
-- small or moderate plan in current session: `executing-plans`
-- large, parallelizable, or high-risk plan: candidate for `subagent-driven-development`
+After saving the plan, offer execution choice:
 
-Do not force subagent execution by default in this phase.
+**"Plan complete and saved to `<plan-path>`. Choose an execution approach:**
 
-## Quick Prompt Examples
+**1. Subagent-driven** - Use `subagent-driven-development` when it is installed, tasks are independent, and the user authorizes delegated execution.
 
-- "Create an ExecPlan for adding recurring expense reminder API + UI flow."
-- "Plan a backend-only feature for household invitation token validation."
-- "Plan a frontend-only budget form refactor with accessibility and i18n updates."
+**2. Inline execution** - Execute in this session, optionally with `executing-plans`, using the repository's verification and branch rules.
+
+**Which approach?"**
+
+Do not require either optional skill. Record the selected approach in the
+feature or handoff record when the repository has one.

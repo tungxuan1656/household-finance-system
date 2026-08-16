@@ -1,5 +1,7 @@
 # Analytics Overview
 
+Status: current
+
 ## Goal
 
 Provide clear spending summaries for personal, household, and group contexts.

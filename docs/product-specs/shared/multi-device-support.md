@@ -1,5 +1,7 @@
 # Multi-device Support
 
+Status: proposed
+
 ## Goal
 
 Ensure seamless sync and consistent UX across multiple devices (mobile, desktop) with conflict resolution and near-real-time updates.

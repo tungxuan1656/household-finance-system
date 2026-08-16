@@ -1,5 +1,7 @@
 # New User Onboarding
 
+Status: current
+
 ## Goal
 
 Get a new user to their first expense as quickly as possible. The product is immediately usable for personal finance; household setup is optional.

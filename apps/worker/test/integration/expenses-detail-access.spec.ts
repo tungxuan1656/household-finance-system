@@ -92,14 +92,13 @@ describe('GET /api/v1/expenses/:id - expense detail access', () => {
 
     expect(response.status).toBe(200)
 
-    const payload =
-      await parseJson<
-        ApiEnvelope<{
-          id: string
-          householdId: string | null
-          spentByUserId: string
-        }>
-      >(response)
+    const payload = await parseJson<
+      ApiEnvelope<{
+        id: string
+        householdId: string | null
+        spentByUserId: string
+      }>
+    >(response)
     expect(payload.data.id).toBe(created.data.id)
     expect(payload.data.householdId).toBe(householdId)
     expect(payload.data.spentByUserId).toBe(owner.user.id)

@@ -6,7 +6,6 @@ Frontend implementation rules split by surface.
 
 - `web/`: `apps/web` implementation rules. Start at `web/index.md`.
 - `tma/`: `apps/tma` implementation rules. Start at `tma/index.md`.
-- `mobile-app/`: future native mobile surface.
 
 ## Rule
 

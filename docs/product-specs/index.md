@@ -1,13 +1,18 @@
 # Product Specs Index
 
-User-visible behavior map. Specs describe behavior and acceptance criteria, not implementation architecture.
+User-visible behavior map. Specs describe current behavior and accepted roadmap behavior, not implementation architecture.
 
 ## Branches
 
 - `shared/`: product truth valid across all client surfaces.
 - `web/`: behavior valid only for `apps/web`.
 - `tma/`: behavior valid only for `apps/tma`.
-- `mobile-app/`: future native surface. Stub only today.
+
+## Status Convention
+
+- `Status: current` — repo evidence shows the behavior is implemented or is the current product contract.
+- `Status: proposed` — accepted direction without current implementation evidence.
+- `Status: mixed` — current behavior and accepted future direction share the same spec.
 
 ## Quick Routes
 
@@ -16,7 +21,6 @@ User-visible behavior map. Specs describe behavior and acceptance criteria, not 
 | Shared product/domain rules | `docs/product-specs/shared/index.md` |
 | Web-only UX and surface behavior | `docs/product-specs/web/index.md` |
 | TMA-only UX and surface behavior | `docs/product-specs/tma/index.md` |
-| Future mobile-app surface | `docs/product-specs/mobile-app/index.md` |
 
 ## Rules
 

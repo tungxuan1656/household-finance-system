@@ -4,7 +4,11 @@
 
 import { API_ENDPOINTS } from '../../../../src/api/endpoints'
 import { API_BASE, CATEGORIES, SOURCES, getAccessToken } from './types'
-import type { CreateExpenseRequest, CreateBudgetRequest, CreateExpenseGroupRequest } from './types'
+import type {
+  CreateExpenseRequest,
+  CreateBudgetRequest,
+  CreateExpenseGroupRequest,
+} from './types'
 
 // ============================================================
 // API HELPERS (bypass axios interceptor for seeding)
@@ -21,7 +25,9 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   })
   const json = await response.json()
   if (!response.ok) {
-    throw new Error(`API POST ${path} failed: ${response.status} ${JSON.stringify(json)}`)
+    throw new Error(
+      `API POST ${path} failed: ${response.status} ${JSON.stringify(json)}`,
+    )
   }
   return json.data ?? json
 }
@@ -37,18 +43,26 @@ export async function apiDelete(path: string): Promise<void> {
 // EXPENSE HELPERS
 // ============================================================
 
-export async function createExpense(data: Partial<CreateExpenseRequest>): Promise<string> {
+export async function createExpense(
+  data: Partial<CreateExpenseRequest>,
+): Promise<string> {
   const payload: CreateExpenseRequest = {
     amount: data.amount ?? Math.floor(Math.random() * 500000) + 10000,
-    categoryKey: data.categoryKey ?? CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)],
-    sourceKey: data.sourceKey ?? SOURCES[Math.floor(Math.random() * SOURCES.length)],
+    categoryKey:
+      data.categoryKey ??
+      CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)],
+    sourceKey:
+      data.sourceKey ?? SOURCES[Math.floor(Math.random() * SOURCES.length)],
     title: data.title ?? 'Test expense',
     occurredAt: data.occurredAt ?? Date.now(),
     note: data.note,
     householdId: data.householdId,
     groupIds: data.groupIds,
   }
-  const result = await apiPost<{ id: string }>(API_ENDPOINTS.expenses.create, payload)
+  const result = await apiPost<{ id: string }>(
+    API_ENDPOINTS.expenses.create,
+    payload,
+  )
   return result.id
 }
 
@@ -60,14 +74,19 @@ export async function deleteExpense(id: string): Promise<void> {
 // BUDGET HELPERS
 // ============================================================
 
-export async function createBudget(data: Partial<CreateBudgetRequest>): Promise<string> {
+export async function createBudget(
+  data: Partial<CreateBudgetRequest>,
+): Promise<string> {
   const payload: CreateBudgetRequest = {
     householdId: data.householdId ?? '',
     period: data.period ?? '2026-06',
     totalLimit: data.totalLimit ?? 10000000,
     categoryLimits: data.categoryLimits,
   }
-  const result = await apiPost<{ id: string }>(API_ENDPOINTS.budgets.create, payload)
+  const result = await apiPost<{ id: string }>(
+    API_ENDPOINTS.budgets.create,
+    payload,
+  )
   return result.id
 }
 
@@ -75,7 +94,9 @@ export async function createBudget(data: Partial<CreateBudgetRequest>): Promise<
 // GROUP HELPERS
 // ============================================================
 
-export async function createGroup(data: Partial<CreateExpenseGroupRequest>): Promise<string> {
+export async function createGroup(
+  data: Partial<CreateExpenseGroupRequest>,
+): Promise<string> {
   const payload: CreateExpenseGroupRequest = {
     name: data.name ?? 'Test Group',
     description: data.description,
@@ -84,7 +105,10 @@ export async function createGroup(data: Partial<CreateExpenseGroupRequest>): Pro
     endDate: data.endDate,
     eventBudget: data.eventBudget,
   }
-  const result = await apiPost<{ id: string }>(API_ENDPOINTS.groups.create, payload)
+  const result = await apiPost<{ id: string }>(
+    API_ENDPOINTS.groups.create,
+    payload,
+  )
   return result.id
 }
 
@@ -103,7 +127,9 @@ export async function createHousehold(name: string): Promise<string> {
   })
   const json = await response.json()
   if (!response.ok) {
-    throw new Error(`Create household failed: ${response.status} ${JSON.stringify(json)}`)
+    throw new Error(
+      `Create household failed: ${response.status} ${JSON.stringify(json)}`,
+    )
   }
   return (json.data ?? json).id
 }

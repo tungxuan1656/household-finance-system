@@ -36,7 +36,9 @@ const createContext = (): Context<AppBindings> =>
 describe('response helper', () => {
   it('returns the standard success envelope', async () => {
     const response = success(createContext(), { ok: true })
-    const payload = (await response.json()) as ApiSuccessEnvelope<{ ok: boolean }>
+    const payload = (await response.json()) as ApiSuccessEnvelope<{
+      ok: boolean
+    }>
 
     expect(response.status).toBe(200)
     expect(payload).toEqual({

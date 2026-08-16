@@ -1,9 +1,0 @@
-{
-  "id": "feat-020",
-  "name": "Expense visibility rules",
-  "description": "SUPERSEDED — visibility model (private | household enum, server-side enforcement, default resolution, UI toggle) has been merged into feat-017 (Expense entry create flow) on 2026-04-22. Read enforcement (filtering household feeds) is covered by feat-018. Do not implement this feat separately.",
-  "dependencies": [],
-  "status": "superseded",
-  "evidence": "Merged into feat-017 on 2026-04-22 to avoid shipping expense creation without visibility logic already in place.",
-  "updated_at": "2026-04-22"
-}

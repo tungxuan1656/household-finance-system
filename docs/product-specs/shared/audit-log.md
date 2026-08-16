@@ -1,5 +1,7 @@
 # Audit Log
 
+Status: current
+
 ## Goal
 
 Maintain an immutable, queryable audit trail of important actions (member changes, expense edits/deletes, role changes, invites) for debugging and conflict resolution.

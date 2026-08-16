@@ -46,6 +46,6 @@ Rules:
 - Cover happy path, validation failure, unauthorized/forbidden, not found, conflict when relevant.
 - Record API evidence in plan/harness.
 - Logs must help debug without exposing secrets/personal data.
-- Use `./init.sh <param>` instead of `pnpm <cmd>` for lint/typecheck/test/build.
+- Use one phased parameter at a time: `./init.sh <param>` for format, lint, typecheck, test, or build. The full `./init.sh` runs format, lint, typecheck, test, then web and TMA builds.
 - Manual one-file lint/test OK for focused debug.
 - Run full `./init.sh` only at final verification.

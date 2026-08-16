@@ -5,7 +5,7 @@ Tick every box before running any deploy command. If anything is unchecked → D
 ## Code Readiness
 
 - [ ] Deploy commit is pushed to `main` (or release branch merged into `main`).
-- [ ] `./init.sh` runs clean: install → harness → lint → typecheck → test. Specifically pass:
+- [ ] `./init.sh` runs clean: format → lint → typecheck → test → web/TMA builds. Specifically pass:
   - `pnpm --filter worker lint`
   - `pnpm --filter worker typecheck`
   - `pnpm --filter worker test --run`

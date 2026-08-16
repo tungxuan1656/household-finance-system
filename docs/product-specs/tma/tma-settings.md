@@ -1,5 +1,7 @@
 # TMA Settings
 
+Status: current
+
 ## Goal
 
 Define the TMA settings surface as part of the root tab shell.

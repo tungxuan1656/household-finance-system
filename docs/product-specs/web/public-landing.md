@@ -1,5 +1,7 @@
 # Public Landing
 
+Status: current
+
 ## Goal
 
 Provide a public browser landing surface for the web app.

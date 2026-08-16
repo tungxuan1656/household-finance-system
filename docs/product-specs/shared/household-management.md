@@ -1,5 +1,7 @@
 # Household Management
 
+Status: current
+
 ## Goal
 
 Provide clear lifecycle and settings management for households.

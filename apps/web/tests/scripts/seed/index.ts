@@ -53,9 +53,17 @@ async function seedMonthlyExpenses(months: number = 3): Promise<void> {
   const now = new Date()
   for (let m = 0; m < months; m++) {
     const monthDate = new Date(now.getFullYear(), now.getMonth() - m, 1)
-    const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate()
+    const daysInMonth = new Date(
+      monthDate.getFullYear(),
+      monthDate.getMonth() + 1,
+      0,
+    ).getDate()
     for (let d = 0; d < Math.min(daysInMonth, 10); d++) {
-      const date = new Date(monthDate.getFullYear(), monthDate.getMonth(), d + 1)
+      const date = new Date(
+        monthDate.getFullYear(),
+        monthDate.getMonth(),
+        d + 1,
+      )
       const id = await createExpense({
         amount: Math.floor(Math.random() * 500000) + 50000,
         categoryKey: CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)],

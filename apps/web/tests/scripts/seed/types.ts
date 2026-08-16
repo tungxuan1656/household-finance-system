@@ -9,7 +9,8 @@ import type { CreateExpenseGroupRequest } from '../../src/features/groups/types/
 import type { CreateHouseholdRequest } from '../../src/features/households/types/household'
 
 // Test account credentials
-export const TEST_EMAIL = process.env.TEST_ACCOUNT_EMAIL ?? 'tungxuan101998@gmail.com'
+export const TEST_EMAIL =
+  process.env.TEST_ACCOUNT_EMAIL ?? 'tungxuan101998@gmail.com'
 export const TEST_PASSWORD = process.env.TEST_ACCOUNT_PASSWORD ?? '10101998'
 
 // API base URL (Cloudflare Workers default port)
@@ -46,7 +47,14 @@ export const createdIds: CreatedIds = {
 // Global access token
 let _accessToken = ''
 export const getAccessToken = () => _accessToken
-export const setAccessToken = (token: string) => { _accessToken = token }
+export const setAccessToken = (token: string) => {
+  _accessToken = token
+}
 
 // Request types
-export type { CreateExpenseRequest, CreateBudgetRequest, CreateExpenseGroupRequest, CreateHouseholdRequest }
+export type {
+  CreateExpenseRequest,
+  CreateBudgetRequest,
+  CreateExpenseGroupRequest,
+  CreateHouseholdRequest,
+}

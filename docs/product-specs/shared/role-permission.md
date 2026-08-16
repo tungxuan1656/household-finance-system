@@ -1,5 +1,7 @@
 # Role & Permission
 
+Status: mixed
+
 ## Goal
 
 Define a minimal, safe permission model for household-scoped actions.

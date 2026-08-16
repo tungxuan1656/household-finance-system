@@ -9,56 +9,66 @@ export class InsightsPage extends BasePage {
   readonly url = () => '/insights'
 
   // Selectors
-  readonly overviewPanel(): Locator {
-    return this.page.locator('[data-testid="insights-overview"], .overview-panel')
+  overviewPanel(): Locator {
+    return this.page.locator(
+      '[data-testid="insights-overview"], .overview-panel',
+    )
   }
 
-  readonly chartsSection(): Locator {
+  chartsSection(): Locator {
     return this.page.locator('[data-testid="insights-charts"], .charts-section')
   }
 
-  readonly comparisonPanel(): Locator {
-    return this.page.locator('[data-testid="comparison-panel"], .comparison-panel')
+  comparisonPanel(): Locator {
+    return this.page.locator(
+      '[data-testid="comparison-panel"], .comparison-panel',
+    )
   }
 
-  readonly groupsPanel(): Locator {
+  groupsPanel(): Locator {
     return this.page.locator('[data-testid="groups-panel"], .groups-panel')
   }
 
-  readonly periodSelector(): Locator {
+  periodSelector(): Locator {
     return this.page.locator('[data-testid="period-selector"], [name="period"]')
   }
 
-  readonly householdSelector(): Locator {
-    return this.page.locator('[data-testid="household-selector"], [name="household"]')
+  householdSelector(): Locator {
+    return this.page.locator(
+      '[data-testid="household-selector"], [name="household"]',
+    )
   }
 
-  readonly exportButton(): Locator {
+  exportButton(): Locator {
     return this.page.getByRole('button', { name: /export/i })
   }
 
-  readonly weekOption(): Locator {
+  weekOption(): Locator {
     return this.page.getByRole('option', { name: /week/i })
   }
 
-  readonly monthOption(): Locator {
+  monthOption(): Locator {
     return this.page.getByRole('option', { name: /month/i })
   }
 
-  readonly quarterOption(): Locator {
+  quarterOption(): Locator {
     return this.page.getByRole('option', { name: /quarter/i })
   }
 
-  readonly yearOption(): Locator {
+  yearOption(): Locator {
     return this.page.getByRole('option', { name: /year/i })
   }
 
-  readonly emptyState(): Locator {
-    return this.page.locator('[data-testid="empty-state"], .empty-state, [data-testid="no-data"]')
+  emptyState(): Locator {
+    return this.page.locator(
+      '[data-testid="empty-state"], .empty-state, [data-testid="no-data"]',
+    )
   }
 
   // Actions
-  async selectPeriod(period: 'week' | 'month' | 'quarter' | 'year'): Promise<void> {
+  async selectPeriod(
+    period: 'week' | 'month' | 'quarter' | 'year',
+  ): Promise<void> {
     await this.periodSelector().click()
     switch (period) {
       case 'week':
@@ -100,7 +110,11 @@ export class InsightsPage extends BasePage {
     return null
   }
 
-  async getComparisonData(): Promise<{ current: string; previous: string; delta: string }> {
+  async getComparisonData(): Promise<{
+    current: string
+    previous: string
+    delta: string
+  }> {
     const panel = this.comparisonPanel()
     const text = await panel.textContent()
     // Parse comparison data from text

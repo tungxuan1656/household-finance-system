@@ -7,7 +7,7 @@ Use this runbook when:
 - Onboarding a new team member to the release flow.
 - Recovering after an incident (rollback).
 
-Do NOT use this for code changes or local debugging. For local dev, see `AGENTS.md` + `./init.sh dev`.
+Do NOT use this for code changes or local debugging. Use the app-specific development commands in `AGENTS.md`.
 
 ## Doc Architecture
 
@@ -26,7 +26,8 @@ This index routes to leaf docs. Leaf docs hold the rules. Do not duplicate rule 
 
 Repo tooling:
 - `pnpm` monorepo, workspace at repo root.
-- `./init.sh <param>` wrapper for `pnpm <cmd>`. Params: `install`, `lint`, `typecheck`, `test`, `build`. Run full `./init.sh` only at final verification.
+- Phased verification uses one parameter per command: `./init.sh format`, `./init.sh lint`, `./init.sh typecheck`, `./init.sh test`, or `./init.sh build`.
+- Full `./init.sh` runs format, lint, typecheck, test, then web and TMA builds. It does not install or sync.
 - `wrangler` (Cloudflare CLI), wrapped in `apps/worker/package.json` scripts.
 - Cloudflare dashboard + Cloudflare API token.
 
@@ -57,7 +58,7 @@ Web (`apps/web`) is a Next.js standalone app, deployed via Vercel or equivalent.
 
 A deploy is done when:
 - Pre-deploy checklist is fully ticked.
-- `./init.sh lint typecheck test` passes on the deploy commit.
+- Full `./init.sh` passes on the deploy commit.
 - D1 migrations applied remotely.
 - Worker deploy succeeds, no errors in Cloudflare logs for first 5 minutes.
 - TMA bundle serves successfully over HTTPS, `/api/v1/health` reachable from Telegram WebView.

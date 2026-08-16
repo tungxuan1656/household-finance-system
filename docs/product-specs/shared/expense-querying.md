@@ -1,5 +1,7 @@
 # Expense Querying
 
+Status: current
+
 ## Goal
 
 Define filtering and querying semantics for personal, household, and group views.

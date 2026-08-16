@@ -1,39 +1,31 @@
 ---
 name: executing-plans
-description: Use when you have a written implementation plan and will execute it inline, sequentially by default, with review and verification checkpoints.
+description: Use when you have a written implementation plan to execute in a separate session with review checkpoints
 ---
 
 # Executing Plans
 
-Load the plan, review it critically, execute it step by step, and verify results before completion.
+## Overview
 
-## Relationship to Thinking and Planning
+Load a plan, review it critically, execute its tasks, and report verified
+results.
 
-This skill executes an existing plan.
+**Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
-Do not restart brainstorming unless execution reveals:
-- invalid assumptions
-- missing acceptance criteria
-- unexpected architecture constraints
-- new product or design tradeoffs
-- unclear implementation direction
-
-If that happens, stop and escalate back to `using-skills` for triage, then use `brainstorming` or `writing-plans` as needed.
-
-## Additional Reading
-
-AGENTS.md is read at session start. For plan execution, also read:
-- The plan file (read completely)
-- Scope-specific reference docs only when the plan references them
+For independent tasks that benefit from delegated execution, use
+`subagent-driven-development` only when it is installed and the user authorizes
+that approach. This skill remains self-contained when it is not installed.
 
 ## The Process
 
 ### Step 1: Load and Review Plan
-
-1. Read the plan file completely
-2. Review critically — identify any questions or concerns about the plan
-3. If concerns: raise them with your human partner before starting
-4. If no concerns: create TodoWrite and proceed
+1. Confirm the approved workspace. Use the current working tree or create a
+   native git worktree when repository policy, task risk, or user scope calls
+   for isolation.
+2. Read plan file
+3. Review critically - identify any questions or concerns about the plan
+4. If concerns: Raise them with your human partner before starting
+5. If no concerns: Create todos for the plan items and proceed
 
 ### Step 2: Execute Tasks
 
@@ -43,22 +35,10 @@ For each task:
 3. Run verifications as specified
 4. Mark as completed
 
-### Step 3: Verify and Complete
+### Step 3: Complete Development
 
-After all tasks complete and verified:
-1. Run needed `./init.sh <param>` commands; use full `./init.sh` only for final verification
-2. Use `verification-before-completion` skill to confirm all claims
-3. Use `requesting-code-review` skill for final review
-4. Update harness artifacts:
-   - `harness/features/*.json` — update status and evidence
-   - `harness/feature_index.json` — update feature status
-   - `harness/progress.md` — add session entry
-
-## Execution Mode Rule
-
-Sequential execution is the default.
-
-If the plan is clearly large, parallelizable, or high-risk, mark it as a candidate for `subagent-driven-development`, but do not switch automatically in this phase.
+After all tasks complete and verification is fresh, follow the repository's
+branch, review, and delivery policy. Do not require an external finishing skill.
 
 ## When to Stop and Ask for Help
 
@@ -76,31 +56,12 @@ If the plan is clearly large, parallelizable, or high-risk, mark it as a candida
 - Partner updates the plan based on your feedback
 - Fundamental approach needs rethinking
 
-**Don't force through blockers** — stop and ask.
-
-## Harness Integration
-
-- Update `harness/progress.md` after each significant task completion
-- Update `harness/progress.md` when a meaningful milestone lands, not after every trivial file touch
-- Update `harness/session-handoff.md` if stopping mid-plan
-- Record evidence in `harness/features/*.json` as tasks complete
-- Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
-- Run full `./init.sh` only at final verification.
+**Don't force through blockers** - stop and ask.
 
 ## Remember
-
 - Review plan critically first
 - Follow plan steps exactly
 - Don't skip verifications
-- Reference skills when the plan says to
+- Reference skills when plan says to
 - Stop when blocked, don't guess
-
-## Integration
-
-**Required workflow skills:**
-- **writing-plans** — Creates the plan this skill executes
-- **verification-before-completion** — Verify before claiming done
-- **requesting-code-review** — Review before merge
-
-**Alternative workflow:**
-- **subagent-driven-development** — Preferred when subagents are available
+- Never start implementation on main/master branch without explicit user consent

@@ -1,5 +1,7 @@
 # Budget Notification
 
+Status: proposed
+
 ## Goal
 
 Deliver timely alerts when budgets approach or exceed thresholds and provide actionable paths to investigate and resolve overspend.

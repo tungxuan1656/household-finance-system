@@ -22,7 +22,6 @@ TMA router. Read this for `apps/tma` work, then read only exact TMA leaf docs ne
 | Worker auth, startapp, invite payloads, bot boundary | `docs/references/frontend/tma/auth-and-bot-pattern.md` |
 | Local dev, Telegram test env, debugging, hardening QA | `docs/references/frontend/tma/development-and-hardening-pattern.md` |
 | Exact local worker/TMA/Telegram smoke workflow | `docs/references/frontend/tma/local-testing-runbook.md` |
-| Which docs to read per TMA phase, locked defaults, remaining slice prerequisites | `docs/references/frontend/tma/runtime-readiness-and-slice-map.md` |
 | Screen structure, visual system, page map for current TMA build | `apps/tma/DESIGN.md` |
 | Durable client direction | `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md` |
 | Shared naming | `docs/references/shared/type-naming-pattern.md` |
@@ -30,6 +29,6 @@ TMA router. Read this for `apps/tma` work, then read only exact TMA leaf docs ne
 ## Verification
 
 - Verify TMA docs/harness changes directly when the work is docs-only.
-- Use `./init.sh <param>` instead of `pnpm <cmd>` for repo verification.
+- Use one phased parameter at a time: `./init.sh <param>` for format, lint, typecheck, test, or build. The full `./init.sh` runs format, lint, typecheck, test, then web and TMA builds.
 - For `apps/tma`, never add component/page render tests. Prefer util/api/store/helper unit tests plus browser/manual evidence for UI behavior.
 - Run full `./init.sh` only at final verification.

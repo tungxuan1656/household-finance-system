@@ -1,5 +1,7 @@
 # Expense Grouping
 
+Status: current
+
 ## Goal
 
 Allow users to group expenses into events or projects to track event-level budgets and insights.

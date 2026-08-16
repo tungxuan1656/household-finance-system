@@ -1,5 +1,7 @@
 # Notification System
 
+Status: proposed
+
 ## Goal
 
 Provide a minimal, reliable notification system for key events in Phase 2+.

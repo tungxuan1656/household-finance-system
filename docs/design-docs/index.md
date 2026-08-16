@@ -7,7 +7,6 @@ Durable design decision map. Read only when task changes lasting UI, product, or
 - `shared/`: durable product or repo direction that is not surface-specific.
 - `frontend/web/`: durable web UI and shell direction.
 - `frontend/tma/`: durable TMA client direction.
-- `frontend/mobile-app/`: future native mobile-app direction.
 
 ## Current Project Direction
 
@@ -17,7 +16,6 @@ Durable design decision map. Read only when task changes lasting UI, product, or
 
 ## Current Docs
 
-- `docs/design-docs/shared/core-beliefs.md`
 - `docs/design-docs/shared/product-direction-v2.md`
 - `docs/design-docs/frontend/web/protected-shell-and-tab-surfaces.md`
 - `docs/design-docs/frontend/tma/telegram-mini-app-client-architecture.md`

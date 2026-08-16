@@ -8,12 +8,6 @@ Canonical leaf standards map. Use this index to choose exact rule doc. Do not re
 |------|-----|
 | DTO / Request / Response names | `shared/type-naming-pattern.md` |
 
-## Architecture
-
-| Need | Doc |
-|------|-----|
-| Mono-repo layout, shared packages, tooling, CI, convention drift | `architecture/mono-repo-issues.md` |
-
 ## Frontend
 
 | Need | Doc |
@@ -21,7 +15,6 @@ Canonical leaf standards map. Use this index to choose exact rule doc. Do not re
 | Frontend surface router | `frontend/index.md` |
 | Web implementation rules | `frontend/web/project-folder-structure.md` and neighboring web leaves |
 | TMA implementation rules | `frontend/tma/app-structure-and-client-rules.md` and neighboring TMA leaves |
-| Future mobile-app implementation rules | `frontend/mobile-app/index.md` |
 
 ## Backend
 

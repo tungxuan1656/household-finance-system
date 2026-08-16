@@ -35,53 +35,11 @@ Core intent:
 |- AGENTS.md    # Working rules for agent and team workflow
 ```
 
-## Architecture & Harness
-
-This repository's architecture and development "harness" follow modern
-harness-engineering guidance. In particular, we adopt the five-subsystem
-approach (Instructions, State, Verification, Scope, Lifecycle) to ensure
-reproducible agent workflows, session continuity, and clear verification
-paths across features. See `docs/knowledge/harness-engineering.md` for
-additional detail and templates used in this project.
-
-Primary sources and inspirations:
-
-- OpenAI — Harness Engineering: https://openai.com/index/harness-engineering/
-- WalkingLabs — Learn Harness Engineering: https://github.com/walkinglabs/learn-harness-engineering
-
-Many thanks to the authors and maintainers of those resources for their
-guidance and examples that informed this repository's harness design.
-
-## Knowledge & Guides
-
-This repository includes a small set of concise knowledge guides used as
-reference material for agent workflows, architecture, and execution planning.
-Below are the key documents with short summaries and links into the repo.
-
-- [AI Is Forcing Us To Write Good Code](docs/knowledge/ai-is-forcing-us-to-write-good-code.md#L1): Argues that strong engineering practices (tests, types, fast automation, clear file structure) are now essential to make agent-driven development safe and productive.
-- [ARCHITECTURE (Guide)](docs/knowledge/architecture-guide.md#L1): High-level map of the codebase — what to include in a stable architecture doc, boundaries, invariants, and maintenance guidance.
-- [ExecPlan: Using PLANS.md (Codex ExecPlan)](docs/knowledge/codex-exec-plan.md#L1): A structured ExecPlan template for multi-hour tasks with observable acceptance criteria, commands, progress logs, and idempotent steps.
-- [Harness Engineering — Condensed Summary](docs/knowledge/harness-engineering.md#L1): Condensed summary of harness engineering covering the five-subsystem harness, design principles, verification, state, lifecycle, and practical artifacts.
-
-If you'd like the full text of any of these guides embedded directly into this README, tell me which one(s) and I'll paste them inlined beneath their summaries.
-
-
 ## Required reading before coding
 
-Follow this order for fastest onboarding:
-
-1. `AGENTS.md`
-2. `ARCHITECTURE.md`
-3. `docs/PRODUCT.md`
-4. `docs/PLANS.md`
-5. `docs/product-specs/index.md`
-6. `docs/RELIABILITY.md`
-7. `docs/SECURITY.md`
-8. `docs/FRONTEND.md`
-9. `docs/WEB.md`
-10. `docs/TMA.md`
-
-These files define scope, boundaries, verification, and quality expectations.
+Read least docs that fully cover the task. Start with `AGENTS.md`, then follow
+its task-specific route to the relevant parent doc, index, and exact leaf
+references. Do not read broad folders by default.
 
 ## Prerequisites
 
@@ -94,19 +52,12 @@ These files define scope, boundaries, verification, and quality expectations.
 From repository root:
 
 ```bash
-./init.sh install
+pnpm install
 ./init.sh
 ```
 
-`./init.sh` runs the standard verification path:
-
-- install dependencies
-- lint
-- typecheck
-- tests (web + worker)
-- GitNexus sync
-
-Build is explicit-only: run `./init.sh build` when build evidence is required.
+`./init.sh` runs format, lint, typecheck, tests, and web/TMA builds. Worker
+build is explicitly skipped. It does not deploy.
 
 ## Common commands
 
@@ -117,35 +68,18 @@ Run from repository root.
 pnpm dev:web
 pnpm dev:worker
 
-# Quality
-./init.sh lint
-./init.sh typecheck
-./init.sh test
-./init.sh build
+# Quality (after `pnpm install`)
+./init.sh
 
 # Build / deploy
 pnpm deploy:worker
 ```
 
-AI agents: use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
+## Feature state
 
-## One-feature-at-a-time workflow
-
-The project follows a strict execution workflow:
-
-1. Work on one feature/plan per session.
-2. Keep boundaries from `ARCHITECTURE.md`.
-3. Verify before claiming done. Full `./init.sh` only final.
-4. Record evidence and progress in required artifacts.
-
-Expected project artifacts (per `AGENTS.md`):
-
-- `harness/feature_index.json`: lightweight feature state tracker
-- `harness/features/*.json`: detailed per-feature records
-- `harness/progress.md`: session progress log
-- `harness/session-handoff.md`: optional handoff file
-
-If these files are missing, create and maintain them as part of the team workflow.
+Root `feature_index.json`, `features/*.md`, and `progress.md` are the only
+feature-state files. See `AGENTS.md` for status, planning, recovery, and
+verification rules.
 
 ## Product scope (MVP snapshot)
 

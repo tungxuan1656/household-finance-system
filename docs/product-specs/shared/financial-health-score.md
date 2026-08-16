@@ -1,5 +1,7 @@
 # Financial Health Score
 
+Status: proposed
+
 ## Goal
 
 Provide a simple, interpretable health score in Phase 2+.
