@@ -1,5 +1,7 @@
 # Authentication Session
 
+Status: current
+
 ## Goal
 
 Provide secure, fast, low-friction authentication for supported clients while keeping one worker-owned access-token and refresh-token session model.

@@ -1,5 +1,7 @@
 # Expense Categorization
 
+Status: mixed
+
 ## Goal
 
 Provide clear, maintainable categorization for expenses to power budgets and analytics.

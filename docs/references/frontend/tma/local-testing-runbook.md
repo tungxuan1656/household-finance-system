@@ -31,11 +31,7 @@ Use one mode at a time.
 
 ## Prerequisites
 
-From repo root:
-
-```bash
-./init.sh install
-```
+Dependencies must already be installed separately. This runbook does not install or sync the workspace.
 
 Create local worker env:
 

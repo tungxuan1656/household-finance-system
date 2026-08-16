@@ -1,5 +1,7 @@
 # TMA Income Capture
 
+Status: current
+
 ## Goal
 
 Provide a TMA-first personal income flow so users can record money-in and remove mistaken entries without using the expense wizard.

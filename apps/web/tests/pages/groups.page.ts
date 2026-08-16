@@ -9,39 +9,43 @@ export class GroupsPage extends BasePage {
   readonly url = () => '/groups'
 
   // Selectors
-  readonly createGroupButton(): Locator {
+  createGroupButton(): Locator {
     return this.page.getByRole('button', { name: /create group|new group/i })
   }
 
-  readonly groupList(): Locator {
+  groupList(): Locator {
     return this.page.locator('[data-testid="group-list"], .group-list')
   }
 
-  readonly groupItems(): Locator {
+  groupItems(): Locator {
     return this.page.locator('[data-testid="group-item"], .group-item')
   }
 
-  readonly groupNameInput(): Locator {
+  groupNameInput(): Locator {
     return this.page.locator('[name="name"], [data-testid="group-name"]')
   }
 
-  readonly groupDescriptionInput(): Locator {
-    return this.page.locator('[name="description"], [data-testid="group-description"]')
+  groupDescriptionInput(): Locator {
+    return this.page.locator(
+      '[name="description"], [data-testid="group-description"]',
+    )
   }
 
-  readonly groupBudgetInput(): Locator {
-    return this.page.locator('[name="eventBudget"], [data-testid="group-budget"]')
+  groupBudgetInput(): Locator {
+    return this.page.locator(
+      '[name="eventBudget"], [data-testid="group-budget"]',
+    )
   }
 
-  readonly startDateInput(): Locator {
+  startDateInput(): Locator {
     return this.page.locator('[name="startDate"], [data-testid="start-date"]')
   }
 
-  readonly endDateInput(): Locator {
+  endDateInput(): Locator {
     return this.page.locator('[name="endDate"], [data-testid="end-date"]')
   }
 
-  readonly archiveButton(): Locator {
+  archiveButton(): Locator {
     return this.page.getByRole('button', { name: /archive/i })
   }
 
@@ -51,7 +55,13 @@ export class GroupsPage extends BasePage {
     await this.page.waitForSelector('[role="dialog"]', { state: 'visible' })
   }
 
-  async fillGroupForm(data: { name: string; description?: string; budget?: number; startDate?: string; endDate?: string }): Promise<void> {
+  async fillGroupForm(data: {
+    name: string
+    description?: string
+    budget?: number
+    startDate?: string
+    endDate?: string
+  }): Promise<void> {
     await this.groupNameInput().fill(data.name)
     if (data.description) {
       await this.groupDescriptionInput().fill(data.description)
@@ -74,7 +84,9 @@ export class GroupsPage extends BasePage {
 
   async archiveGroup(groupName: string): Promise<void> {
     const groupItem = this.page.locator('.group-item', { hasText: groupName })
-    await groupItem.locator('[aria-label="archive"], [data-testid="archive-btn"]').click()
+    await groupItem
+      .locator('[aria-label="archive"], [data-testid="archive-btn"]')
+      .click()
     // Confirm dialog
     await this.page.getByRole('button', { name: /confirm|archive/i }).click()
     await this.page.waitForTimeout(1000)

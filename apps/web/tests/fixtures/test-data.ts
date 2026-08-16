@@ -34,9 +34,13 @@ export const TEST_SOURCES: SourceKey[] = [
 // DATA GENERATORS
 // ============================================================
 
-export function generateExpenseData(overrides?: Partial<CreateExpenseRequest>): CreateExpenseRequest {
-  const randomCategory = TEST_CATEGORIES[Math.floor(Math.random() * TEST_CATEGORIES.length)]
-  const randomSource = TEST_SOURCES[Math.floor(Math.random() * TEST_SOURCES.length)]
+export function generateExpenseData(
+  overrides?: Partial<CreateExpenseRequest>,
+): CreateExpenseRequest {
+  const randomCategory =
+    TEST_CATEGORIES[Math.floor(Math.random() * TEST_CATEGORIES.length)]
+  const randomSource =
+    TEST_SOURCES[Math.floor(Math.random() * TEST_SOURCES.length)]
 
   return {
     amount: generateRandomAmount(),
@@ -51,7 +55,9 @@ export function generateExpenseData(overrides?: Partial<CreateExpenseRequest>): 
   }
 }
 
-export function generateBudgetData(overrides?: Partial<CreateBudgetRequest>): Partial<CreateBudgetRequest> {
+export function generateBudgetData(
+  overrides?: Partial<CreateBudgetRequest>,
+): Partial<CreateBudgetRequest> {
   const currentMonth = new Date().toISOString().slice(0, 7) // YYYY-MM format
   const currentPeriod = `${currentMonth}`
 
@@ -68,7 +74,9 @@ export function generateBudgetData(overrides?: Partial<CreateBudgetRequest>): Pa
   }
 }
 
-export function generateGroupData(overrides?: Partial<CreateExpenseGroupRequest>): Partial<CreateExpenseGroupRequest> {
+export function generateGroupData(
+  overrides?: Partial<CreateExpenseGroupRequest>,
+): Partial<CreateExpenseGroupRequest> {
   return {
     name: `Test Group ${Date.now()}`,
     description: 'Test group description',
@@ -83,7 +91,10 @@ export function generateAmount() {
   return generateRandomAmount()
 }
 
-export function generateRandomAmount(min: number = 10000, max: number = 500000) {
+export function generateRandomAmount(
+  min: number = 10000,
+  max: number = 500000,
+) {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
@@ -109,7 +120,9 @@ export function generateFutureDate(daysAhead: number) {
 // EXPENSE DATA SETS (for insights testing)
 // ============================================================
 
-export function generateDailyExpenseDataset(count: number = 30): CreateExpenseRequest[] {
+export function generateDailyExpenseDataset(
+  count: number = 30,
+): CreateExpenseRequest[] {
   const expenses: CreateExpenseRequest[] = []
   const msPerDay = 24 * 60 * 60 * 1000
 
@@ -127,17 +140,27 @@ export function generateDailyExpenseDataset(count: number = 30): CreateExpenseRe
   return expenses
 }
 
-export function generateMonthlyExpenseDataset(months: number = 3): CreateExpenseRequest[] {
+export function generateMonthlyExpenseDataset(
+  months: number = 3,
+): CreateExpenseRequest[] {
   const expenses: CreateExpenseRequest[] = []
   const now = new Date()
 
   for (let m = 0; m < months; m++) {
     const monthDate = new Date(now.getFullYear(), now.getMonth() - m, 1)
-    const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate()
+    const daysInMonth = new Date(
+      monthDate.getFullYear(),
+      monthDate.getMonth() + 1,
+      0,
+    ).getDate()
     const expenseCount = Math.min(daysInMonth, 10)
 
     for (let d = 0; d < expenseCount; d++) {
-      const dayDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), d + 1)
+      const dayDate = new Date(
+        monthDate.getFullYear(),
+        monthDate.getMonth(),
+        d + 1,
+      )
       expenses.push({
         amount: generateRandomAmount(50000, 500000),
         categoryKey: TEST_CATEGORIES[d % TEST_CATEGORIES.length],
@@ -151,14 +174,16 @@ export function generateMonthlyExpenseDataset(months: number = 3): CreateExpense
   return expenses
 }
 
-export function generateYearlyExpenseDataset(years: number = 2): CreateExpenseRequest[] {
+export function generateYearlyExpenseDataset(
+  years: number = 2,
+): CreateExpenseRequest[] {
   const expenses: CreateExpenseRequest[] = []
   const now = new Date()
 
   for (let y = 0; y < years; y++) {
     const year = now.getFullYear() - y
     for (let m = 0; m < 12; m++) {
-      const monthDate = new Date(year, m-1, 15)
+      const monthDate = new Date(year, m - 1, 15)
       expenses.push({
         amount: generateRandomAmount(100000, 1000000),
         categoryKey: TEST_CATEGORIES[m % TEST_CATEGORIES.length],

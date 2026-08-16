@@ -1,5 +1,7 @@
 # Household Invitation
 
+Status: mixed
+
 ## Goal
 
 Support reliable invite flows (links/codes/email) for onboarding members into a household while maintaining security and auditability.

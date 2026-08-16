@@ -1,5 +1,7 @@
 # Web Navigation Shell
 
+Status: current
+
 ## Goal
 
 Define the top-level protected navigation model for `apps/web`.

@@ -9,36 +9,44 @@ export class AccountPage extends BasePage {
   readonly url = () => '/account'
 
   // Selectors
-  readonly profileSection(): Locator {
-    return this.page.locator('[data-testid="profile-section"], .profile-section')
+  profileSection(): Locator {
+    return this.page.locator(
+      '[data-testid="profile-section"], .profile-section',
+    )
   }
 
-  readonly avatarDisplay(): Locator {
-    return this.page.locator('[data-testid="avatar"], .avatar, img[alt="avatar"]')
+  avatarDisplay(): Locator {
+    return this.page.locator(
+      '[data-testid="avatar"], .avatar, img[alt="avatar"]',
+    )
   }
 
-  readonly displayNameInput(): Locator {
-    return this.page.locator('[data-testid="display-name"], [name="displayName"]')
+  displayNameInput(): Locator {
+    return this.page.locator(
+      '[data-testid="display-name"], [name="displayName"]',
+    )
   }
 
-  readonly emailDisplay(): Locator {
+  emailDisplay(): Locator {
     return this.page.locator('[data-testid="email"], .email')
   }
 
-  readonly changePasswordButton(): Locator {
+  changePasswordButton(): Locator {
     return this.page.getByRole('button', { name: /change password/i })
   }
 
-  readonly signOutButton(): Locator {
+  signOutButton(): Locator {
     return this.page.getByRole('button', { name: /sign out|logout/i })
   }
 
-  readonly themeSelector(): Locator {
+  themeSelector(): Locator {
     return this.page.locator('[data-testid="theme-selector"], [name="theme"]')
   }
 
-  readonly settingsSection(): Locator {
-    return this.page.locator('[data-testid="settings-section"], .settings-section')
+  settingsSection(): Locator {
+    return this.page.locator(
+      '[data-testid="settings-section"], .settings-section',
+    )
   }
 
   // Actions
@@ -54,11 +62,20 @@ export class AccountPage extends BasePage {
     await this.page.waitForSelector('[role="dialog"]', { state: 'visible' })
   }
 
-  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  async changePassword(
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
     await this.openChangePasswordDialog()
-    await this.page.locator('[name="currentPassword"], [data-testid="current-password"]').fill(currentPassword)
-    await this.page.locator('[name="newPassword"], [data-testid="new-password"]').fill(newPassword)
-    await this.page.locator('[name="confirmPassword"], [data-testid="confirm-password"]').fill(newPassword)
+    await this.page
+      .locator('[name="currentPassword"], [data-testid="current-password"]')
+      .fill(currentPassword)
+    await this.page
+      .locator('[name="newPassword"], [data-testid="new-password"]')
+      .fill(newPassword)
+    await this.page
+      .locator('[name="confirmPassword"], [data-testid="confirm-password"]')
+      .fill(newPassword)
     await this.page.getByRole('button', { name: /submit|change|save/i }).click()
     await this.page.waitForTimeout(1000)
   }

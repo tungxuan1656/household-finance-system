@@ -9,42 +9,54 @@ export class ExpensesPage extends BasePage {
   readonly url = () => '/expenses'
 
   // Selectors
-  readonly addExpenseButton(): Locator {
+  addExpenseButton(): Locator {
     return this.page.getByRole('button', { name: /add expense|new expense/i })
   }
 
-  readonly expenseList(): Locator {
-    return this.page.locator('[data-testid="expense-list"], [data-expense-list], .expense-list')
+  expenseList(): Locator {
+    return this.page.locator(
+      '[data-testid="expense-list"], [data-expense-list], .expense-list',
+    )
   }
 
-  readonly expenseItems(): Locator {
-    return this.page.locator('[data-testid="expense-item"], [data-expense-item]')
+  expenseItems(): Locator {
+    return this.page.locator(
+      '[data-testid="expense-item"], [data-expense-item]',
+    )
   }
 
-  readonly filterBar(): Locator {
+  filterBar(): Locator {
     return this.page.locator('[data-testid="filter-bar"], .filters')
   }
 
-  readonly categoryFilter(): Locator {
-    return this.page.locator('[data-testid="category-filter"], [name="category"]')
+  categoryFilter(): Locator {
+    return this.page.locator(
+      '[data-testid="category-filter"], [name="category"]',
+    )
   }
 
-  readonly dateRangeFilter(): Locator {
-    return this.page.locator('[data-testid="date-range-filter"], [name="dateRange"]')
+  dateRangeFilter(): Locator {
+    return this.page.locator(
+      '[data-testid="date-range-filter"], [name="dateRange"]',
+    )
   }
 
-  readonly householdFilter(): Locator {
-    return this.page.locator('[data-testid="household-filter"], [name="household"]')
+  householdFilter(): Locator {
+    return this.page.locator(
+      '[data-testid="household-filter"], [name="household"]',
+    )
   }
 
-  readonly groupFilter(): Locator {
+  groupFilter(): Locator {
     return this.page.locator('[data-testid="group-filter"], [name="group"]')
   }
 
   // Actions
   async openAddExpenseDrawer(): Promise<void> {
     await this.addExpenseButton().click()
-    await this.page.waitForSelector('[role="dialog"], [role="presentation"]', { state: 'visible' })
+    await this.page.waitForSelector('[role="dialog"], [role="presentation"]', {
+      state: 'visible',
+    })
   }
 
   async filterByCategory(category: string): Promise<void> {

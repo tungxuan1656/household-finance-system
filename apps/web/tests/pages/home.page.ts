@@ -9,31 +9,35 @@ export class HomePage extends BasePage {
   readonly url = () => '/home'
 
   // Selectors
-  readonly heroStatsCard(): Locator {
-    return this.page.locator('[data-testid="hero-stats"], .hero-stats, .stats-card')
+  heroStatsCard(): Locator {
+    return this.page.locator(
+      '[data-testid="hero-stats"], .hero-stats, .stats-card',
+    )
   }
 
-  readonly recentExpensesSection(): Locator {
-    return this.page.locator('[data-testid="recent-expenses"], .recent-expenses')
+  recentExpensesSection(): Locator {
+    return this.page.locator(
+      '[data-testid="recent-expenses"], .recent-expenses',
+    )
   }
 
-  readonly categoryStatsSection(): Locator {
+  categoryStatsSection(): Locator {
     return this.page.locator('[data-testid="category-stats"], .category-stats')
   }
 
-  readonly personalTab(): Locator {
+  personalTab(): Locator {
     return this.page.getByRole('tab', { name: /personal/i })
   }
 
-  readonly householdTab(): Locator {
+  householdTab(): Locator {
     return this.page.getByRole('tab', { name: /household/i })
   }
 
-  readonly budgetLimitDisplay(): Locator {
+  budgetLimitDisplay(): Locator {
     return this.page.locator('[data-testid="budget-limit"], .budget-limit')
   }
 
-  readonly daysRemaining(): Locator {
+  daysRemaining(): Locator {
     return this.page.locator('[data-testid="days-remaining"], .days-remaining')
   }
 
@@ -48,7 +52,11 @@ export class HomePage extends BasePage {
     await this.page.waitForTimeout(500)
   }
 
-  async getHeroStats(): Promise<{ spend: string; budget: string; daysRemaining: string }> {
+  async getHeroStats(): Promise<{
+    spend: string
+    budget: string
+    daysRemaining: string
+  }> {
     const stats: Record<string, string> = {}
     const heroText = await this.heroStatsCard().textContent()
     // Parse stats from text content

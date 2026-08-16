@@ -1,5 +1,7 @@
 # Smart Category Suggestion
 
+Status: proposed
+
 ## Goal
 
 Provide optional ML-assisted suggestions for categorizing expenses to reduce manual work and improve data quality (Phase 2 feature).

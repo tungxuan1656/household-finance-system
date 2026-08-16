@@ -1,5 +1,7 @@
 # Expense Spender Model
 
+Status: current
+
 ## Goal
 
 Define the ownership truth for expenses in Product V2.

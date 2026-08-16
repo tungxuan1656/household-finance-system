@@ -1,5 +1,7 @@
 # Feature name
 
+Status: current | proposed | mixed
+
 ## Goal
 
 `[Describe feature]`

@@ -12,15 +12,19 @@ import { BasePage } from './base.page'
 export class SignInPage extends BasePage {
   readonly url = () => '/sign-in'
 
-  readonly emailInput(): ReturnType<Page['locator']> {
-    return this.page.locator('[name="email"], [type="email"], input[type="email"]')
+  emailInput(): ReturnType<Page['locator']> {
+    return this.page.locator(
+      '[name="email"], [type="email"], input[type="email"]',
+    )
   }
 
-  readonly passwordInput(): ReturnType<Page['locator']> {
-    return this.page.locator('[name="password"], [type="password"], input[type="password"]')
+  passwordInput(): ReturnType<Page['locator']> {
+    return this.page.locator(
+      '[name="password"], [type="password"], input[type="password"]',
+    )
   }
 
-  readonly submitButton(): ReturnType<Page['locator']> {
+  submitButton(): ReturnType<Page['locator']> {
     return this.page.getByRole('button', { name: /sign in|login|submit/i })
   }
 

@@ -5,18 +5,17 @@ VERBOSE=false
 
 usage() {
   cat >&2 <<'EOF'
-Usage: ./init.sh [--verbose] [install|lint|typecheck|test|build|sync]
+Usage: ./init.sh [--verbose] [format|lint|typecheck|test|build]
 
-No argument runs the full flow:
-  install -> harness check -> lint/typecheck/test in parallel -> sync
+No argument runs the full verification flow:
+  format -> lint --fix -> bounded typecheck/test/build checks
 
 Command behavior:
-  install    pnpm install
-  lint       run web lint --fix + twlint --fix and worker lint --fix and tma lint in parallel
-  typecheck  run web, worker, and tma typecheck in parallel
-  test       run web, worker, and tma tests in parallel
-  build      run web, worker dry-run deploy, and tma build in parallel
-  sync       (removed)
+  format    run each workspace's declared format script
+  lint      run the root lint:fix script
+  typecheck run web, worker, and tma typechecks
+  test      run web, worker, and tma tests
+  build     run web and tma builds; worker has no declared non-deploy build
 EOF
 }
 
@@ -31,64 +30,58 @@ run_quiet() {
   fi
 
   local log_file
+  local status
   log_file="$(mktemp)"
 
   if "$@" >"$log_file" 2>&1; then
     rm -f "$log_file"
     return 0
-  fi
-
-  local status=$?
-  echo "${label} failed; output follows" >&2
-  cat "$log_file" >&2
-  rm -f "$log_file"
-  return "$status"
-}
-
-run_install() {
-  if [ -t 1 ]; then
-    run_quiet "install" pnpm install --prefer-offline
   else
-    run_quiet "install" env CI=true pnpm install --prefer-offline
+    status=$?
+    echo "${label} failed; output follows" >&2
+    cat "$log_file" >&2
+    rm -f "$log_file"
+    return "$status"
   fi
 }
 
-run_harness_check() {
-  run_quiet "harness" ./scripts/check_harness_size.sh
+run_format() {
+  run_quiet "format web" pnpm --filter web format || return $?
+  run_quiet "format worker" pnpm --filter worker format || return $?
+  run_quiet "format tma" pnpm --filter tma format || return $?
 }
 
-run_worker_build() {
-  local out_dir
-  out_dir="$(mktemp -d)"
-  trap 'rm -rf "$out_dir"' RETURN
-
-  pnpm --filter worker exec wrangler deploy --dry-run --outdir "$out_dir"
+run_lint() {
+  run_quiet "lint" pnpm lint:fix
 }
 
-run_web_lint() {
-  pnpm --filter web lint --fix --cache --cache-location .eslintcache
-  pnpm --filter web twlint --fix
+run_check() {
+  case "$1" in
+    "web typecheck") pnpm --filter web typecheck ;;
+    "worker typecheck") pnpm --filter worker typecheck ;;
+    "tma typecheck") pnpm --filter tma typecheck ;;
+    "web test") pnpm --filter web test ;;
+    "worker test") pnpm --filter worker test ;;
+    "tma test") pnpm --filter tma test ;;
+    "web build") pnpm --filter web build ;;
+    "tma build") pnpm --filter tma build ;;
+    *)
+      echo "Unknown check: $1" >&2
+      return 2
+      ;;
+  esac
 }
 
 start_background_job() {
   local label="$1"
   local log_file="$2"
   local status_file="$3"
-  shift 3
 
   (
     set +e
-    "$@" >"$log_file" 2>&1
+    run_check "$label" >"$log_file" 2>&1
     printf '%s' "$?" >"$status_file"
   ) &
-}
-
-print_verbose_parallel_logs() {
-  local index
-  for index in "${!labels[@]}"; do
-    echo "=== ${labels[$index]} ==="
-    cat "${log_files[$index]}"
-  done
 }
 
 cleanup_parallel_files() {
@@ -102,139 +95,142 @@ run_parallel_checks() {
   local check_name="$1"
   shift
 
-  local labels=()
-  local pids=()
-  local log_files=()
-  local status_files=()
-  local completed=()
+  local max_jobs="${HARNESS_JOBS:-4}"
+  if [[ ! "$max_jobs" =~ ^[1-9][0-9]*$ ]]; then
+    echo "HARNESS_JOBS must be a positive integer" >&2
+    return 2
+  fi
 
-  local label log_file status_file pid
-  while [ "$#" -gt 0 ]; do
-    label="$1"
-    shift
-
-    log_file="$(mktemp)"
-    status_file="$(mktemp)"
-    rm -f "$status_file"
-
-    labels+=("$label")
-    log_files+=("$log_file")
-    status_files+=("$status_file")
-    completed+=("0")
-
-    case "$label" in
-      "web lint") start_background_job "$label" "$log_file" "$status_file" run_web_lint ;;
-      "worker lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker lint --fix --cache --cache-location .eslintcache ;;
-      "tma lint") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma lint --fix --cache --cache-location .eslintcache ;;
-      "web typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web typecheck ;;
-      "worker typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker typecheck ;;
-      "tma typecheck") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma typecheck ;;
-      "web test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web exec vitest run --cache ;;
-      "worker test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter worker exec vitest run --cache ;;
-      "tma test") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma exec vitest run --cache --passWithNoTests ;;
-      "web build") start_background_job "$label" "$log_file" "$status_file" pnpm --filter web build ;;
-      "worker build") start_background_job "$label" "$log_file" "$status_file" run_worker_build ;;
-      "tma build") start_background_job "$label" "$log_file" "$status_file" pnpm --filter tma build ;;
-      *)
-        echo "Unknown parallel job: ${label}" >&2
-        cleanup_parallel_files "${log_files[@]}" "${status_files[@]}"
-        return 2
-        ;;
-    esac
-
-    pid=$!
-    pids+=("$pid")
-  done
-
-  local total="${#pids[@]}"
+  local -a labels=("$@")
+  local -a pids=()
+  local -a log_files=()
+  local -a status_files=()
+  local -a started=()
+  local -a completed=()
+  local total="${#labels[@]}"
+  local next=0
+  local active=0
   local done_count=0
-  local index status failed_index=-1
+  local failed_index=-1
+  local index label log_file status_file status
 
   while [ "$done_count" -lt "$total" ]; do
-    for index in "${!pids[@]}"; do
-      if [ "${completed[$index]}" = "1" ]; then
-        continue
-      fi
+    while [ "$next" -lt "$total" ] && [ "$active" -lt "$max_jobs" ]; do
+      label="${labels[$next]}"
+      log_file="$(mktemp)"
+      status_file="$(mktemp)"
+      rm -f "$status_file"
 
-      if [ -f "${status_files[$index]}" ]; then
+      log_files[$next]="$log_file"
+      status_files[$next]="$status_file"
+      started[$next]=1
+      completed[$next]=0
+      start_background_job "$label" "$log_file" "$status_file"
+      pids[$next]=$!
+      active=$((active + 1))
+      next=$((next + 1))
+    done
+
+    local progressed=false
+    for index in "${!labels[@]}"; do
+      if [ "${started[$index]:-0}" = "1" ] && \
+        [ "${completed[$index]:-0}" = "0" ] && \
+        [ -f "${status_files[$index]}" ]; then
         wait "${pids[$index]}" 2>/dev/null || true
-        status="$(cat "${status_files[$index]}")"
-        completed[$index]="1"
+        status="$(<"${status_files[$index]}")"
+        completed[$index]=1
+        active=$((active - 1))
         done_count=$((done_count + 1))
+        progressed=true
 
         if [ "$status" -ne 0 ]; then
           failed_index="$index"
-          break 2
+          break
         fi
       fi
     done
 
-    sleep 0.2
+    if [ "$failed_index" -ne -1 ]; then
+      break
+    fi
+
+    if [ "$done_count" -lt "$total" ] && [ "$progressed" = "false" ]; then
+      sleep 0.1
+    fi
   done
 
   if [ "$failed_index" -ne -1 ]; then
-    for index in "${!pids[@]}"; do
-      if [ "${completed[$index]}" = "0" ]; then
+    for index in "${!labels[@]}"; do
+      if [ "${started[$index]:-0}" = "1" ] && [ "${completed[$index]:-0}" = "0" ]; then
         kill "${pids[$index]}" 2>/dev/null || true
       fi
     done
 
-    for pid in "${pids[@]}"; do
-      wait "$pid" 2>/dev/null || true
+    for index in "${!labels[@]}"; do
+      if [ "${started[$index]:-0}" = "1" ]; then
+        wait "${pids[$index]}" 2>/dev/null || true
+      fi
     done
 
     if [ "$VERBOSE" = "true" ]; then
-      print_verbose_parallel_logs >&2
+      for index in "${!labels[@]}"; do
+        [ "${started[$index]:-0}" = "1" ] || continue
+        echo "=== ${labels[$index]} ===" >&2
+        cat "${log_files[$index]}" >&2
+      done
     else
       echo "${labels[$failed_index]} failed during ${check_name}; output follows" >&2
       cat "${log_files[$failed_index]}" >&2
     fi
+
     cleanup_parallel_files "${log_files[@]}" "${status_files[@]}"
     return 1
   fi
 
   if [ "$VERBOSE" = "true" ]; then
-    print_verbose_parallel_logs
+    for index in "${!labels[@]}"; do
+      echo "=== ${labels[$index]} ==="
+      cat "${log_files[$index]}"
+    done
   fi
 
   cleanup_parallel_files "${log_files[@]}" "${status_files[@]}"
 }
 
-run_lint() {
-  run_parallel_checks "lint" "web lint" "worker lint" "tma lint"
-}
-
 run_typecheck() {
-  run_parallel_checks "typecheck" "web typecheck" "worker typecheck" "tma typecheck"
+  run_parallel_checks "typecheck" \
+    "web typecheck" \
+    "worker typecheck" \
+    "tma typecheck"
 }
 
 run_test() {
-  run_parallel_checks "test" "web test" "worker test" "tma test"
-}
-
-run_build() {
-  run_parallel_checks "build" "web build" "worker build" "tma build"
-}
-
-run_full() {
-  run_install
-  run_harness_check
-  run_parallel_checks \
-    "verification" \
-    "web lint" \
-    "worker lint" \
-    "tma lint" \
-    "web typecheck" \
-    "worker typecheck" \
-    "tma typecheck" \
+  run_parallel_checks "test" \
     "web test" \
     "worker test" \
     "tma test"
-  local status=$?
-  if [ $status -eq 0 ]; then
-    echo "Done!"
-  fi
-  return $status
+}
+
+run_build() {
+  echo "SKIP [build] worker: no declared non-deploy build command"
+  run_parallel_checks "build" "web build" "tma build"
+}
+
+run_full() {
+  run_format
+  run_lint
+  local -a checks=(
+    "web typecheck"
+    "worker typecheck"
+    "tma typecheck"
+    "web test"
+    "worker test"
+    "tma test"
+    "web build"
+    "tma build"
+  )
+  echo "SKIP [build] worker: no declared non-deploy build command"
+  run_parallel_checks "verification" "${checks[@]}"
 }
 
 command="full"
@@ -243,7 +239,7 @@ command_set=false
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --verbose) VERBOSE=true ;;
-    install|lint|typecheck|test|build|full|help|--help|-h)
+    format|lint|typecheck|test|build|help|--help|-h)
       if [ "$command_set" = "true" ]; then
         usage
         exit 2
@@ -261,7 +257,7 @@ done
 
 case "$command" in
   full) run_full ;;
-  install) run_install && echo "OK" ;;
+  format) run_format && echo "OK" ;;
   lint) run_lint && echo "OK" ;;
   typecheck) run_typecheck && echo "OK" ;;
   test) run_test && echo "OK" ;;

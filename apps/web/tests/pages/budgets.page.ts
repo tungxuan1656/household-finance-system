@@ -9,32 +9,36 @@ export class BudgetsPage extends BasePage {
   readonly url = () => '/budgets'
 
   // Selectors
-  readonly createBudgetButton(): Locator {
+  createBudgetButton(): Locator {
     return this.page.getByRole('button', { name: /create budget|new budget/i })
   }
 
-  readonly budgetList(): Locator {
+  budgetList(): Locator {
     return this.page.locator('[data-testid="budget-list"], .budget-list')
   }
 
-  readonly budgetItems(): Locator {
+  budgetItems(): Locator {
     return this.page.locator('[data-testid="budget-item"], .budget-item')
   }
 
-  readonly budgetStatusPanel(): Locator {
-    return this.page.locator('[data-testid="budget-status-panel"], .budget-status')
+  budgetStatusPanel(): Locator {
+    return this.page.locator(
+      '[data-testid="budget-status-panel"], .budget-status',
+    )
   }
 
-  readonly periodSelector(): Locator {
+  periodSelector(): Locator {
     return this.page.locator('[data-testid="period-selector"], [name="period"]')
   }
 
-  readonly totalLimitInput(): Locator {
+  totalLimitInput(): Locator {
     return this.page.locator('[data-testid="total-limit"], [name="totalLimit"]')
   }
 
-  readonly categoryLimitsSection(): Locator {
-    return this.page.locator('[data-testid="category-limits"], .category-limits')
+  categoryLimitsSection(): Locator {
+    return this.page.locator(
+      '[data-testid="category-limits"], .category-limits',
+    )
   }
 
   // Actions
@@ -53,12 +57,17 @@ export class BudgetsPage extends BasePage {
 
   async addCategoryLimit(categoryKey: string, limit: number): Promise<void> {
     // Click add category limit button
-    await this.page.getByRole('button', { name: /add category|add limit/i }).click()
+    await this.page
+      .getByRole('button', { name: /add category|add limit/i })
+      .click()
     // Select category
     await this.page.getByRole('combobox').first().click()
     await this.page.getByRole('option', { name: categoryKey }).click()
     // Enter limit
-    await this.page.locator('input[type="number"]').last().fill(limit.toString())
+    await this.page
+      .locator('input[type="number"]')
+      .last()
+      .fill(limit.toString())
   }
 
   async submitBudget(): Promise<void> {

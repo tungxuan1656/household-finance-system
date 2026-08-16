@@ -1,5 +1,7 @@
 # Profile Management
 
+Status: current
+
 ## Goal
 
 Allow users to manage personal profile data, linked identity providers, and household membership overview in a clear, recoverable way.

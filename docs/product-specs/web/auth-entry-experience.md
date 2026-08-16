@@ -1,5 +1,7 @@
 # Web Auth Entry Experience
 
+Status: current
+
 ## Goal
 
 Let web users sign up, sign in, and sign out through a normal browser-first auth experience.

@@ -16,39 +16,43 @@ export class ExpenseDetailPage extends BasePage {
   readonly url = () => `/expenses/${this._expenseId ?? '[:id]'}/`
 
   // Selectors
-  readonly expenseTitle(): Locator {
-    return this.page.locator('[data-testid="expense-title"], .expense-title, h1')
+  expenseTitle(): Locator {
+    return this.page.locator(
+      '[data-testid="expense-title"], .expense-title, h1',
+    )
   }
 
-  readonly expenseAmount(): Locator {
+  expenseAmount(): Locator {
     return this.page.locator('[data-testid="expense-amount"], .expense-amount')
   }
 
-  readonly expenseCategory(): Locator {
-    return this.page.locator('[data-testid="expense-category"], .expense-category')
+  expenseCategory(): Locator {
+    return this.page.locator(
+      '[data-testid="expense-category"], .expense-category',
+    )
   }
 
-  readonly expenseSource(): Locator {
+  expenseSource(): Locator {
     return this.page.locator('[data-testid="expense-source"], .expense-source')
   }
 
-  readonly expenseDate(): Locator {
+  expenseDate(): Locator {
     return this.page.locator('[data-testid="expense-date"], .expense-date')
   }
 
-  readonly expenseNote(): Locator {
+  expenseNote(): Locator {
     return this.page.locator('[data-testid="expense-note"], .expense-note')
   }
 
-  readonly editButton(): Locator {
+  editButton(): Locator {
     return this.page.getByRole('button', { name: /edit/i })
   }
 
-  readonly deleteButton(): Locator {
+  deleteButton(): Locator {
     return this.page.getByRole('button', { name: /delete/i })
   }
 
-  readonly backButton(): Locator {
+  backButton(): Locator {
     return this.page.getByRole('button', { name: /back|back to list/i })
   }
 
@@ -77,12 +81,14 @@ export class ExpenseDetailPage extends BasePage {
     note: string | null
   }> {
     return {
-      title: await this.expenseTitle().textContent() ?? '',
-      amount: await this.expenseAmount().textContent() ?? '',
-      category: await this.expenseCategory().textContent() ?? '',
-      source: await this.expenseSource().textContent() ?? '',
-      date: await this.expenseDate().textContent() ?? '',
-      note: (await this.expenseNote().isVisible()) ? await this.expenseNote().textContent() : null,
+      title: (await this.expenseTitle().textContent()) ?? '',
+      amount: (await this.expenseAmount().textContent()) ?? '',
+      category: (await this.expenseCategory().textContent()) ?? '',
+      source: (await this.expenseSource().textContent()) ?? '',
+      date: (await this.expenseDate().textContent()) ?? '',
+      note: (await this.expenseNote().isVisible())
+        ? await this.expenseNote().textContent()
+        : null,
     }
   }
 }

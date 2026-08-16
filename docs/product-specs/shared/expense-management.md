@@ -1,5 +1,7 @@
 # Expense Management
 
+Status: current
+
 ## Goal
 
 Define lifecycle rules for edit, delete, restore, and audit so expense data stays understandable and recoverable.

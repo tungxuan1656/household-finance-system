@@ -1,9 +1,0 @@
-{
-  "id": "feat-011",
-  "name": "Household CRUD + household pages (no active household global)",
-  "description": "Implement household CRUD and household management pages without any global active-household state. Backend: POST /api/v1/households, GET /api/v1/households, GET /api/v1/households/:id, PATCH /api/v1/households/:id (admin), DELETE /api/v1/households/:id (admin; implemented with recoverable soft-delete storage). Frontend: single zustand household.store, /households list with create flow, /households/:id detail with edit/delete, and /more navigation to households plus sidebar More item. The core household list/detail shell from this feature is now complemented by later completed follow-ups for real invitations and member-management flows (`feat-013`, `feat-014`, `feat-015b`), so the harness should treat those surfaces as implemented rather than still-placeholder-only.",
-  "dependencies": ["feat-033", "feat-007"],
-  "status": "done",
-  "evidence": "Committed work recorded in progress on 2026-04-25 for the no-active-household rework plus later completed follow-ups `feat-013` and `feat-014`/`feat-015b`. Worker household CRUD endpoints (POST/GET list/GET detail/PATCH/DELETE), non-archived list/detail behavior, and admin-only update/delete checks were verified, while web moved to one `household.store` and added `/households`, `/households/:id`, and `/more` without active-household context. Later evidence confirms invite acceptance, invite creation, real members list, remove-member, leave-household, and role-aware UI affordances are implemented. Verification history captured in progress/ExecPlans includes `pnpm typecheck:worker`, `pnpm test:worker`, `pnpm typecheck:web`, `pnpm test:web`, `pnpm build:web`, and `./init.sh` passing.",
-  "updated_at": "2026-05-07"
-}

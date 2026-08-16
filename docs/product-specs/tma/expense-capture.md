@@ -1,5 +1,7 @@
 # TMA Expense Capture
 
+Status: current
+
 ## Goal
 
 Provide a TMA-first expense-create flow optimized for Telegram WebView speed and clarity.

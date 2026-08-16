@@ -1,5 +1,7 @@
 # TMA Invite Entrypoints
 
+Status: current
+
 ## Goal
 
 Define how TMA enters household invite flows from Telegram deep links.

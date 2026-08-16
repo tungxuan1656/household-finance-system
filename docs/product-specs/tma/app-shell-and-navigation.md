@@ -1,5 +1,7 @@
 # TMA App Shell And Navigation
 
+Status: current
+
 ## Goal
 
 Define the top-level shell and navigation model for `apps/tma`.

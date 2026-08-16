@@ -1,5 +1,7 @@
 # Recurring Expense
 
+Status: proposed
+
 ## Goal
 
 Enable users to schedule recurring expenses in Phase 2+.

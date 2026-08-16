@@ -1,5 +1,7 @@
 # Advanced Insight Analytics
 
+Status: proposed
+
 ## Goal
 
 Provide deeper analytics beyond basic rollups in Phase 2+.

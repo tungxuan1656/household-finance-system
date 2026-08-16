@@ -27,11 +27,19 @@ export async function waitForElements(page: Page, selector: string) {
 // FORM HELPERS
 // ============================================================
 
-export async function fillFormField(page: Page, selector: string, value: string) {
+export async function fillFormField(
+  page: Page,
+  selector: string,
+  value: string,
+) {
   await page.fill(selector, value)
 }
 
-export async function selectFormOption(page: Page, selector: string, value: string) {
+export async function selectFormOption(
+  page: Page,
+  selector: string,
+  value: string,
+) {
   await page.selectOption(selector, value)
 }
 
@@ -45,7 +53,9 @@ export async function clickButton(page: Page, text: string | RegExp) {
 
 export async function openDrawer(page: Page, drawerTriggerSelector: string) {
   await page.click(drawerTriggerSelector)
-  await waitForElement(page, '[role="dialog"], [role="presentation"]', { state: 'visible' })
+  await waitForElement(page, '[role="dialog"], [role="presentation"]', {
+    state: 'visible',
+  })
 }
 
 export async function closeDrawer(page: Page) {
@@ -58,7 +68,10 @@ export async function closeDrawer(page: Page) {
 // DATA HELPERS
 // ============================================================
 
-export function generateRandomAmount(min: number = 10000, max: number = 500000) {
+export function generateRandomAmount(
+  min: number = 10000,
+  max: number = 500000,
+) {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
@@ -78,9 +91,8 @@ export function formatDateForInput(timestamp: number): string {
 // ============================================================
 
 export async function assertTextVisible(page: Page, text: string | RegExp) {
-  const locator = typeof text === 'string'
-    ? page.getByText(text)
-    : page.getByText(text)
+  const locator =
+    typeof text === 'string' ? page.getByText(text) : page.getByText(text)
   await expect(locator).toBeVisible()
 }
 

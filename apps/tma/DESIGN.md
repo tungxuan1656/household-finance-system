@@ -2,7 +2,7 @@
 
 Package-local screen and interaction spec for the next `apps/tma` build.
 
-This file is the canonical visual/page reference for TMA surfaces. It does not replace shared product rules from `docs/PRODUCT.vi.md` or TMA platform rules from `docs/TMA.md`.
+This file is the canonical visual/page reference for TMA surfaces. It does not replace shared product rules from `docs/product-specs/index.md` or TMA platform rules from `docs/TMA.md`.
 
 ## Goal
 

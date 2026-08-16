@@ -1,5 +1,7 @@
 # Budget Management
 
+Status: mixed
+
 ## Goal
 
 Allow users to define and track budgets for personal, household, and group contexts.

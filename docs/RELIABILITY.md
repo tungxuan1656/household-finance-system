@@ -4,14 +4,15 @@ Reliability rules. Read for runtime health, restartability, or verification-path
 
 ## Standard Paths
 
-- Use `./init.sh <param>` instead of `pnpm <cmd>` for install/lint/typecheck/test/build.
-- Params: `install`, `lint`, `typecheck`, `test`, `build`, `sync`.
-- Run full `./init.sh` only at final verification.
+- Use one phased parameter at a time: `./init.sh <param>`.
+- Phased parameters cover `format`, `lint`, `typecheck`, `test`, and `build`.
+- There is no install or sync phase in the approved init path.
+- Run full `./init.sh` at final verification.
 - Frontend dev: `pnpm --filter web dev`.
 - Worker dev: `pnpm --filter worker dev`.
 - Runtime logs: `wrangler tail` / `wrangler dev` when worker debugging needs traces.
 
-Full `./init.sh`: install, harness, lint, typecheck, test, sync. No build.
+Full `./init.sh`: format, lint, typecheck, test, then web and TMA builds.
 
 ## Required Signals
 

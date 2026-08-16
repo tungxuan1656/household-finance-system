@@ -1,5 +1,7 @@
 # Add Expense Dialog Experience
 
+Status: current
+
 ## Goal
 
 Provide one ultra-fast, low-friction dialog for recording expenses.
