@@ -59,3 +59,11 @@
 **Evidence**: `./init.sh` passed; `bash -n init.sh scripts/detect_ci_scope.sh` passed; `git diff --check` and Prettier checks passed. A temporary external `pnpm` shim returning 17 made `./init.sh format` exit 17 without `OK`; both independent re-reviews found no new issue. Earlier cutover evidence remains in prior entries.
 **Blockers**: none
 **Next**: Start a new feature only after user scope.
+
+## 2026-08-16 - feat-127
+
+**State**: active
+**Done**: Created the tracker and concise inline plan for TMA eager route loading.
+**Evidence**: No verification claimed; implementation evidence is pending.
+**Blockers**: none
+**Next**: Independent plan review.
