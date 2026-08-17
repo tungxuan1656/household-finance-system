@@ -31,4 +31,7 @@ Migrate feasible TMA generic UI primitives to the approved shadcn UI foundation.
 ## Handoff
 
 - State: active
-- Plan: Pending design-doc review.
+- Plan: [`docs/plans/feat-128.md`](../docs/plans/feat-128.md) — accepted implementation plan covering provenance, primitive contracts, nine in-page CTA routes, bridge deletion, fixed-light/token gates, BackButton/shell audit, rollback, tests, and Telegram QA.
+- Evidence: Approved UI/navigation docs are reconciled; current source review established the nine CTA paths and the complete BottomButton/MainButton bridge surface.
+- Blockers: none
+- Next: Execute Checkpoint A provenance/config and dependency-locking gate.

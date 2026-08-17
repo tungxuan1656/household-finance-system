@@ -6,13 +6,15 @@ Status: current
 
 Provide a TMA-first personal income flow so users can record money-in and remove mistaken entries without using the expense wizard.
 
+For TMA UI and CTA ownership rules, see [native UI and navigation pattern](../../references/frontend/tma/native-ui-and-navigation-pattern.md) and [TMA Design](../../apps/tma/DESIGN.md).
+
 ## User Flow
 
 1. User opens `Incomes` from a Home shortcut.
 2. User reviews the personal income list.
 3. User taps the add action to open a one-page add-income form.
 4. User enters date, amount, title, source, and optional note.
-5. User saves through Telegram `BottomButton`.
+5. User saves through an in-page shadcn `Button` CTA.
 6. TMA returns to the income list and shows the newly created income.
 7. User can delete an income directly from the list through an inline confirm action.
 

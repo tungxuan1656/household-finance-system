@@ -13,6 +13,8 @@ Use this doc for:
 
 For exact local commands and the current smoke-test order, read `docs/references/frontend/tma/local-testing-runbook.md`.
 
+For canonical TMA UI and navigation rules, see [native UI and navigation pattern](native-ui-and-navigation-pattern.md) and [TMA Design](../../../../apps/tma/DESIGN.md).
+
 ## Local development rules
 
 - Production Mini App entry points should use HTTPS.
@@ -52,7 +54,7 @@ Check at least:
 
 - iOS Telegram
 - Android Telegram
-- light and dark theme
+- fixed light-only UI
 - supported and unsupported storage capability paths
 - launch with and without supported deep-link intent
 - keyboard overlap on the main form flows
@@ -61,8 +63,8 @@ Check at least:
 ## Release checklist
 
 - No full-page reloads between TMA routes.
-- `BackButton` and `BottomButton` behave correctly across key flows.
-- Theme and safe-area handling work across iOS and Android.
+- `BackButton` and in-page shadcn `Button` CTAs behave correctly across key flows.
+- Fixed light UI and safe-area handling work across iOS and Android.
 - Auth failure, invite failure, and storage-fallback states are actionable.
 - Performance evidence exists for first open and expense-capture flow.
 

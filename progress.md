@@ -107,3 +107,11 @@
 **Evidence**: User confirmed the real TMA cold-launch/navigation test.
 **Blockers**: none
 **Next**: None.
+
+## 2026-08-17 - feat-128
+
+**State**: active
+**Done**: Created the accepted implementation plan at `docs/plans/feat-128.md`, including locked Base UI/preset/dependency decisions, nine CTA migrations, complete bridge deletion, safe-area/token gates, BackButton audit, rollback checkpoints, non-render tests, and required Telegram/repository verification.
+**Evidence**: `features/feat-128.md` Handoff links the plan; the plan records no documentation-duplication work and no known gaps.
+**Blockers**: none
+**Next**: Execute Checkpoint A provenance/config and dependency-locking gate.
