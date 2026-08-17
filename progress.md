@@ -83,3 +83,27 @@
 **Evidence**: The accepted entry size is 656.43 kB / 198.41 kB gzip; the real Telegram cold-launch trace remains required.
 **Blockers**: Real Telegram cold-launch trace remains unrun pending an authorized deploy/manual Telegram test.
 **Next**: Run the authorized cold-launch tap trace before deciding whether the eager-loading tradeoff is acceptable.
+
+## 2026-08-17 - feat-127
+
+**State**: todo
+**Done**: Transitioned the unrelated TMA eager route loading feature out of active state.
+**Evidence**: Automatic TMA verification remains recorded in the feature handoff; the real Telegram cold-launch trace is still unrun.
+**Blockers**: Real Telegram cold-launch trace remains unrun pending an authorized deploy/manual Telegram test.
+**Next**: After an authorized deploy, cache-clear/cold launch; tap Expenses, Households, and add-expense; confirm no new JS chunk request begins from each tap while API fetch/XHR may occur.
+
+## 2026-08-17 - feat-128
+
+**State**: active
+**Done**: Activated the TMA shadcn UI migration feature.
+**Evidence**: `feature_index.json` lists feat-128 as the only active feature; the confirmed scope is recorded in `features/feat-128.md`.
+**Blockers**: Design-doc review is pending.
+**Next**: Review the design doc before finalizing the implementation plan.
+
+## 2026-08-17 - feat-127
+
+**State**: done
+**Done**: Completed the remaining feat-127 acceptance items.
+**Evidence**: User confirmed the real TMA cold-launch/navigation test.
+**Blockers**: none
+**Next**: None.

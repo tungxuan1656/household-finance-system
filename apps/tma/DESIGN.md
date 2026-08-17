@@ -19,6 +19,13 @@ Build a Telegram Mini App that feels:
 - Every main screen has a top header.
 - Root tab screens do not render an app-owned back button.
 - Detail and flow screens use Telegram `BackButton`, not a fake in-content back chip.
+- TMA UI uses shadcn/ui with Base UI and exact preset `b6G3fhkA4` (Lyra, yellow/neutral, Geist Mono, Lucide).
+- TMA UI is fixed light-only and does not sync its visual theme to Telegram.
+- Every route uses in-page shadcn `Button` CTAs; Telegram `BottomButton` and `MainButton` are not used.
+- The locally customized Button triggers Telegram `impact('light')` once for an enabled activation.
+- Preserve the tab rail, one scroll root per screen, native-picker/date-picker behavior, and existing haptics.
+- Preserve `DataState` behavior and restyle it with shadcn/ui.
+- Legacy `--tma-*` UI tokens are transitional only and are removed after all consumers migrate.
 - Bottom navigation has 3 positions: `Home`, a centered `+` action, and `Statistics`.
 - The centered `+` is a notch-style action button that opens the add-expense flow. It is visually larger than the tabs and overlaps the rail.
 - `Settings` is intentionally not in the bottom tabs (temporarily removed). The native `Close` action lives on root screens via an in-page close pill.
@@ -33,9 +40,9 @@ Reference mood from the attached screens:
 - large white cards with soft shadow
 - strong rounded geometry
 - crisp black money values
-- blue for active UI state
+- yellow/neutral preset treatment for active UI state
 - green for healthy/category data accents
-- yellow for highlight/glow moments only
+- yellow for primary highlight and glow moments
 - bottom tab rail with liquid-glass feel
 
 The app should feel like a finance tool with iOS-like calmness, not a noisy dashboard.
@@ -49,7 +56,7 @@ The app should feel like a finance tool with iOS-like calmness, not a noisy dash
 - Text strong: `#111827`
 - Text muted: `#7b8496`
 - Separator: `rgba(17, 24, 39, 0.08)`
-- Primary accent: `#3f7cff`
+- Primary accent: preset yellow/neutral treatment
 - Positive/chart green: `#5dd36d`
 - Highlight yellow: `#ffd84d`
 - Danger/spend emphasis: use content hierarchy, not bright red by default
@@ -71,10 +78,7 @@ The app should feel like a finance tool with iOS-like calmness, not a noisy dash
 
 ### Typography
 
-- First ship uses native system stack for speed and Telegram fit:
-  `-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif`
-- Money values use the same stack with tighter tracking and heavier weight.
-- No web-font download on the first TMA ship.
+- Typography follows the locked Geist Mono preset.
 
 ## Shell model
 
@@ -181,12 +185,7 @@ Structure, top to bottom:
 Rules:
 
 - Visual style should stay close to the reference screen.
-- Appearance card contains 3 states conceptually:
-  - `Theo Telegram`
-  - `Sáng`
-  - `Tối`
-- Default behavior stays Telegram-synced.
-- If manual override is not implemented yet, the UI should still prioritize `Theo Telegram` as the truthful default.
+- Appearance is fixed light-only. Do not sync the visual theme to Telegram or expose a light/dark switch.
 - Preference cells include at least:
   - `Ngôn ngữ`
   - `Tiền tệ`
@@ -243,9 +242,9 @@ Rules:
 - Amount entry should support VND-friendly formatting and big tap targets.
 - Source selection sits under amount as chips or compact cells.
 - Note field is minimal and low-friction.
-- Telegram `BottomButton` owns the transition from step 2 -> step 3.
+- An in-page shadcn `Button` owns the transition from step 2 -> step 3.
 - Button text should be action-specific, e.g. `Tiếp tục`.
-- Step 2 page should not render its own sticky footer button.
+- Step 2 must not use Telegram `BottomButton` or `MainButton`.
 
 ### `add-expense-3`
 
@@ -263,7 +262,7 @@ Rules:
   - date
   - household if selected
   - group if selected
-- Saving uses Telegram `BottomButton`.
+- Saving uses an in-page shadcn `Button`.
 - Button text should be concrete, e.g. `Lưu chi tiêu`.
 - Success should feel immediate and calm, with a small success haptic only once.
 
@@ -291,46 +290,46 @@ Rules:
 - `expenses` route can lazy-load advanced filters.
 - Add-expense flow keeps state in a tiny local store; never refetch broad app data between steps.
 - Preload the next add-expense step after a valid selection when cheap.
-- Use haptics only for category select, confirm save, and important destructive confirms.
+- Every enabled shadcn `Button` activation gets one centralized light Telegram impact. Category selection, save confirmation, and important destructive confirmation may add semantic, meaning-specific haptics; preserve existing native picker/date-picker haptics, and do not add indiscriminate feedback to non-button controls.
 - Prefer SVG icons and simple chart rendering. No Lottie.
 
 ## Implementation notes
 
 - Build the shell so `home` and `statistics` share the same header and tab-rail contract.
-- `expenses` and `add-expense-*` should live under a separate flow shell so Telegram `BackButton` and `BottomButton` wiring stays centralized.
+- `expenses` and `add-expense-*` should live under a separate flow shell so Telegram `BackButton` wiring and in-page CTA state stay centralized.
 - Keep the floating add bubble available on root tabs only.
 - If a surface is not implemented yet, ship a truthful placeholder inside the final shell instead of breaking the page map.
 
 ## Styling
 
-TMA uses **Tailwind CSS v4** (`@tailwindcss/vite`) with a custom design-token layer. The full token list lives in `apps/tma/src/index.css` inside the `@theme inline` block — that file is the source of truth, this section is the user-facing summary.
+TMA uses **shadcn/ui with Base UI** using exact preset `b6G3fhkA4` (Lyra, yellow/neutral, Geist Mono, Lucide). Tailwind CSS v4 (`@tailwindcss/vite`) remains the styling substrate. Legacy `--tma-*` UI tokens and their utility aliases are transitional only and are removed after all consumers migrate.
 
 ### Tokens available as utility classes
 
 | Domain | Utility prefix | Example |
 |---|---|---|
-| Colors | `bg-tma-*`, `text-tma-*`, `border-tma-*` | `bg-tma-primary`, `text-tma-text-muted`, `border-tma-line` |
-| Shadows | `shadow-tma-*` | `shadow-tma-card`, `shadow-tma-soft` |
-| Font | `font-mono` | JetBrains Mono (used for money values) |
-| Animation | `animate-tma-spin` | pull-to-refresh and loading spinner |
+| Colors | legacy `bg-tma-*`, `text-tma-*`, `border-tma-*` | transitional aliases only |
+| Shadows | legacy `shadow-tma-*` | transitional aliases only |
+| Font | `font-mono` | Geist Mono |
+| Animation | legacy `animate-tma-spin` | transitional alias only |
 
-Opacity modifier works on colors: `bg-tma-primary/12` produces the 12 % primary tint used for selected states.
+During migration, legacy opacity modifiers such as `bg-tma-primary/12` may remain for selected states.
 
 ### Component styling
 
-`src/index.css` is limited to `:root` tokens, `@theme inline`, base reset rules, and shared keyframes. Do not add BEM-style component classes there. Reusable shapes live in `src/components/ui`, while shared/smart components compose Tailwind utilities in JSX.
+`src/index.css` is limited to transitional `:root` tokens, `@theme inline`, base reset rules, and shared keyframes. Do not add BEM-style component classes there. Reusable shapes live in `src/components/ui`, while shared/smart components compose shadcn/ui and Tailwind utilities in JSX.
 
 ### Class composition helper
 
 Use `cn()` from `@/lib/utils` (clsx + tailwind-merge) for conditional className. Never hand-roll template literals for state modifiers.
 
 ```tsx
-cn('rounded-[18px] px-3 py-2', isActive && 'bg-tma-primary/12 text-tma-primary')
+cn('rounded-[18px] px-3 py-2', isActive && 'bg-muted text-foreground')
 ```
 
 ### Conventions
 
 - ≤ 2 CSS properties per class → prefer utility. Layout / multi-property shapes → keep the component class.
-- Dynamic values (chart bar height, runtime safe-area) → keep inline `style={{ ... }}`. Static `style={{ margin: 0 }}` and `style={{ color: 'var(--tma-*)' }}` → convert to utility.
-- Safe-area runtime vars (`--tma-safe-*`, `--tma-content-safe-*`) come from the Telegram SDK. Never hardcode; read them with Tailwind arbitrary values such as `pt-[var(--tma-safe-top)]`.
+- Dynamic values (chart bar height, runtime safe-area) → keep inline `style={{ ... }}`. Static `style={{ margin: 0 }}` and `style={{ color: 'var(--tma-*)' }}` → convert to utility while migrating away from legacy UI tokens.
+- Safe-area runtime vars (`--tma-safe-*`, `--tma-content-safe-*`) are Telegram SDK platform values, not legacy UI tokens. Never hardcode; read them with Tailwind arbitrary values such as `pt-[var(--tma-safe-top)]`.
 - Pseudo-classes (`:active`, `:hover`) use Tailwind variants (`active:scale-95`). Add `transition-transform` / `transition-opacity` so the variant actually animates.

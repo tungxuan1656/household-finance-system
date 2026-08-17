@@ -9,6 +9,12 @@
     {
       "id": "feat-127",
       "title": "TMA eager route loading",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-128",
+      "title": "TMA shadcn UI migration",
       "status": "active",
       "depends_on": []
     }

@@ -13,7 +13,7 @@ The repo has two web clients:
 TMA adds different constraints:
 
 - Telegram WebView instead of a normal browser tab
-- native bridge APIs for back button, bottom buttons, theme, haptics, and storage
+- native bridge APIs for back button, safe-area handling, haptics, and storage
 - launch-context auth instead of a form-first sign-in entry
 - stricter mobile performance and keyboard behavior
 
@@ -25,9 +25,11 @@ This doc locks the durable client direction before runtime code starts.
 - Product truth, worker APIs, and D1 truth stay shared.
 - Use React + Vite SPA. Do not embed TMA inside Next.js App Router.
 - Use SPA routing only. Full-page reload navigation is a bug.
-- TMA does not inherit `shadcn/ui` as its primary UI system.
+- TMA adopts `shadcn/ui` with Base UI using preset `b6G3fhkA4` (Lyra, yellow/neutral, Geist Mono, Lucide).
+- TMA UI is fixed light-only and does not sync its visual theme to Telegram.
 - The first TMA shell should use three root tabs: `Home`, `Statistics`, and `Settings`, with `Expenses` as a secondary flow page.
-- Telegram bridge features are first-class when supported: back button, bottom buttons, theme vars, haptics, closing confirmation, and deep links.
+- Telegram bridge features are first-class when supported: `BackButton`, safe-area handling, haptics, closing confirmation, and deep links.
+- Every route uses in-page shadcn `Button` CTAs. The local Button customization triggers Telegram `impact('light')` once for an enabled activation.
 - Bot chat is companion UX only: launch, invite, alerts, and summaries.
 
 ## Boundary with the current repo
@@ -91,14 +93,16 @@ Rules:
 
 - Next.js route structure
 - web protected-shell wrappers
-- shadcn-first page composition
+- Telegram-specific native shell primitives
 - desktop-first dialog assumptions
 
 ### TMA UI policy
 
-- Telegram-adaptive list, section, cell, and switch primitives are allowed for low-level mobile shell UI.
+- Use shadcn/ui with Base UI as the TMA component system and the locked preset above.
+- Keep the UI fixed light-only. Do not sync visual theme colors to Telegram theme vars.
 - Project-owned components should own high-touch finance flows such as amount entry, bottom sheets, and success/error microstates.
-- Theme colors should come from Telegram CSS vars first. Avoid hardcoded web-theme assumptions.
+- Preserve `DataState` behavior and restyle it with shadcn/ui.
+- Legacy `--tma-*` UI tokens are transitional only and are removed after all consumers migrate.
 
 ## Navigation and native chrome
 
@@ -128,7 +132,7 @@ That is correct only when the bundle stays loaded and state stays in memory/stor
 ### Telegram-native controls
 
 - `BackButton` is manual. Show, hide, and wire it per route or flow shell.
-- `BottomButton` state belongs to the current flow shell, not random leaf controls.
+- Do not use Telegram `BottomButton` or `MainButton` on any route. Use in-page shadcn `Button` CTAs instead.
 - There is no native title header. The app renders its own header.
 
 ## Storage, session, and cache
@@ -152,6 +156,7 @@ That is correct only when the bundle stays loaded and state stays in memory/stor
 - Optimize for Telegram WebView first.
 - Animate `transform` and `opacity`, not layout properties.
 - Keep keyboard-safe layouts, safe-area spacing, and low-end Android fallback in the core plan.
+- Keep the tab rail, one scroll root per screen, and existing native-picker/date-picker behavior in the core plan.
 - Route code loads eagerly; defer non-critical data and render work until after interaction as appropriate.
 - Haptics should be meaningful, not everywhere.
 - Touch-first handlers are allowed on high-frequency controls only when there is measured delay or gesture benefit.

@@ -20,9 +20,9 @@ Eliminate initial navigation delay caused by React.lazy route chunks in `apps/tm
 ## Acceptance
 
 - [x] The app router contains no lazy loading or `Suspense`.
-- [ ] No page JavaScript resource starts when initially tapping Expenses, Households, or add-expense after cold launch; API requests may remain.
+- [x] No page JavaScript resource starts when initially tapping Expenses, Households, or add-expense after cold launch; API requests may remain.
 - [x] Production hosting is unchanged.
-- [ ] TMA verification passes and real Telegram manual evidence is recorded.
+- [x] TMA verification passes and real Telegram manual evidence is recorded.
 
 ## Relevant docs
 
@@ -57,7 +57,7 @@ Eliminate initial navigation delay caused by React.lazy route chunks in `apps/tm
 ## Handoff
 
 - Handoff owns recovery for this feature; do not create a separate recovery file.
-- State: active
-- Evidence: `pnpm --filter tma lint` passed with 15 pre-existing warnings; `pnpm --filter tma typecheck` passed; `pnpm --filter tma test` passed (24 test files, 134 tests); `pnpm --filter tma build` passed with one entry JS asset (656.43 kB, 198.41 kB gzip), and Vite reported remaining dynamic import call sites do not become chunks because routes are statically imported; `./init.sh` completed successfully with the Worker build skipped by declared configuration; parent confirmed no lazy/Suspense/LoadingSkeleton occurrences in `apps/tma/src` and the loading-skeleton file is absent; `git diff --check` passed.
-- Blockers: Real Telegram cold-launch trace remains unrun pending an authorized deploy/manual Telegram test.
-- Next: After an authorized deploy, cache-clear/cold launch; tap Expenses, Households, and add-expense; confirm no new JS chunk request begins from each tap while API fetch/XHR may occur.
+- State: done
+- Evidence: User confirmed the real TMA cold-launch/navigation test.
+- Blockers: none
+- Next: None.
