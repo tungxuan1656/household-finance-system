@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { CoinIcon, NoteIcon, SunIcon } from '@/components/shared/tma-icons'
 import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
-import { ChipButton, Section } from '@/components/ui'
+import { Button, ChipButton, Section } from '@/components/ui'
 import { DatePicker } from '@/components/ui/date-picker'
 import { getSourceOptions } from '@/features/expenses/presentation'
 import type { SourceKey } from '@/features/home/types'
@@ -15,11 +15,6 @@ import {
   minorFromRaw,
   parseAmountInput,
 } from '@/lib/formatters'
-import {
-  hideBottomButton,
-  setBottomButton,
-  updateBottomButton,
-} from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
 
 /** Returns today's local date as YYYY-MM-DD. */
@@ -76,48 +71,11 @@ export const AddIncomePage = () => {
   })
 
   useEffect(() => {
-    const cleanup = setBottomButton({
-      text: isSaving
-        ? t('incomes.saving')
-        : amount > 0
-          ? t('incomes.saveWithAmount', {
-              amount: formatAmountInput(String(amount)),
-            })
-          : t('incomes.saveAction'),
-      enabled: isValid && !isSaving,
-      showProgress: isSaving,
-      onClick: () => {
-        handleSave()
-      },
-    })
-
-    return cleanup
-  }, [t, isValid, isSaving, amount])
-
-  useEffect(() => {
-    updateBottomButton({
-      text: isSaving
-        ? t('incomes.saving')
-        : amount > 0
-          ? t('incomes.saveWithAmount', {
-              amount: formatAmountInput(String(amount)),
-            })
-          : t('incomes.saveAction'),
-      enabled: isValid && !isSaving,
-      showProgress: isSaving,
-    })
-  }, [t, isValid, isSaving, amount])
-
-  useEffect(() => {
     amountInputRef.current?.focus({ preventScroll: true })
-
-    return () => {
-      hideBottomButton()
-    }
   }, [])
 
   return (
-    <TmaPageShell reserveBottomButton title={t('incomes.addTitle')}>
+    <TmaPageShell title={t('incomes.addTitle')}>
       <TmaPageHeader title={t('incomes.addTitle')} />
 
       <DatePicker
@@ -132,7 +90,7 @@ export const AddIncomePage = () => {
       />
 
       <Section className='grid gap-1'>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <CoinIcon className='mt-1 size-6' />
           <span>{t('incomes.fieldAmount')}</span>
         </div>
@@ -140,7 +98,7 @@ export const AddIncomePage = () => {
           <input
             ref={amountInputRef}
             autoFocus={true}
-            className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-tma-text-strong outline-none'
+            className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-foreground outline-none'
             inputMode='numeric'
             placeholder='0'
             type='text'
@@ -149,23 +107,23 @@ export const AddIncomePage = () => {
               setAmountInput(formatAmountInput(event.target.value))
             }}
           />
-          <span className='font-mono text-3xl font-semibold text-tma-text-strong/80'>
+          <span className='font-mono text-3xl font-semibold text-foreground/80'>
             .000
           </span>
-          <span className='text-xs font-semibold text-tma-text-muted'>
+          <span className='text-xs font-semibold text-muted-foreground'>
             {currencyDisplaySymbol('VND')}
           </span>
         </label>
       </Section>
 
       <Section className='grid gap-1'>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <NoteIcon className='size-6' />
           <span>{t('incomes.fieldName')}</span>
         </div>
         <div className='rounded-3xl bg-white p-5'>
           <input
-            className='w-full border-0 bg-transparent px-0 text-base font-medium text-tma-text-strong outline-none'
+            className='w-full border-0 bg-transparent px-0 text-base font-medium text-foreground outline-none'
             placeholder={t('incomes.namePlaceholder')}
             value={title}
             onChange={(event) => setTitle(event.target.value)}
@@ -184,13 +142,13 @@ export const AddIncomePage = () => {
       </Section>
 
       <Section className='grid gap-1'>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <NoteIcon className='size-6' />
           <span>{t('incomes.fieldNote')}</span>
         </div>
         <div className='rounded-3xl bg-white p-5'>
           <textarea
-            className='w-full resize-none border-0 bg-transparent px-0 text-base font-medium text-tma-text-strong outline-none placeholder:text-tma-text-muted/60'
+            className='w-full resize-none border-0 bg-transparent px-0 text-base font-medium text-foreground outline-none placeholder:text-muted-foreground/60'
             placeholder={t('incomes.notePlaceholder')}
             rows={3}
             value={note}
@@ -200,7 +158,7 @@ export const AddIncomePage = () => {
       </Section>
 
       <Section>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <SunIcon className='size-6' />
           <span>{t('incomes.source')}</span>
         </div>
@@ -210,7 +168,6 @@ export const AddIncomePage = () => {
               key={source.id}
               className={sourceId === source.id ? 'ring-2 ring-green-300' : ''}
               onClick={() => {
-                selection()
                 setSourceId(source.id)
               }}>
               <span className='font-semibold'>{source.label}</span>
@@ -218,6 +175,20 @@ export const AddIncomePage = () => {
           ))}
         </div>
       </Section>
+
+      <Button
+        aria-busy={isSaving}
+        className='mt-5 mb-2 w-full'
+        disabled={!isValid || isSaving}
+        onClick={handleSave}>
+        {isSaving
+          ? t('incomes.saving')
+          : amount > 0
+            ? t('incomes.saveWithAmount', {
+                amount: formatAmountInput(String(amount)),
+              })
+            : t('incomes.saveAction')}
+      </Button>
     </TmaPageShell>
   )
 }

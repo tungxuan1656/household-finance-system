@@ -22,11 +22,6 @@ import {
 import { PeriodPickerSection } from '@/features/period/components/period-picker-section'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { type PeriodSelection } from '@/lib/period'
-import {
-  hideBottomButton,
-  setBottomButton,
-  updateBottomButton,
-} from '@/lib/telegram/bottom-button'
 
 import { useExpenseListFilterStore } from '../filter-store'
 import { useExpenseFilterOptions } from '../hooks/use-expense-filter-options'
@@ -109,30 +104,6 @@ export const ExpenseFilterPage = () => {
     navigate(TMA_PATHS.expenses, { replace: true })
   })
 
-  useEffect(() => {
-    const cleanup = setBottomButton({
-      text: t('expenses.filter.apply'),
-      enabled: true,
-      showProgress: false,
-      onClick: () => {
-        handleApply()
-      },
-    })
-
-    return () => {
-      cleanup()
-      hideBottomButton()
-    }
-  }, [t])
-
-  useEffect(() => {
-    updateBottomButton({
-      text: t('expenses.filter.apply'),
-      enabled: true,
-      showProgress: false,
-    })
-  }, [filter])
-
   const {
     makeSortOptions,
     householdPickerOptions,
@@ -171,7 +142,7 @@ export const ExpenseFilterPage = () => {
     filter.categoryKey != null
 
   return (
-    <TmaPageShell reserveBottomButton title={t('expenses.filter.title')}>
+    <TmaPageShell title={t('expenses.filter.title')}>
       {/* Reset at top */}
       <div className='flex justify-end px-1 pt-1 pb-2'>
         <Button
@@ -239,6 +210,10 @@ export const ExpenseFilterPage = () => {
           />
         )}
       </Section>
+
+      <Button className='mt-5 mb-2 w-full' onClick={handleApply}>
+        {t('expenses.filter.apply')}
+      </Button>
     </TmaPageShell>
   )
 }

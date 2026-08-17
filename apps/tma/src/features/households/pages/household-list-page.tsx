@@ -81,7 +81,7 @@ export const HouseholdListPage = () => {
         <div className='flex items-start justify-between gap-3'>
           <div>
             <Eyebrow>{t('households.thisMonth')}</Eyebrow>
-            <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
+            <strong className='mt-1 block text-[30px] leading-none font-extrabold text-foreground'>
               {householdCards.length}
             </strong>
           </div>

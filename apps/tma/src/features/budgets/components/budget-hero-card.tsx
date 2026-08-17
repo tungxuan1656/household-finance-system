@@ -28,7 +28,7 @@ export const BudgetHeroCard = ({
         <Chip
           className={
             budget.scope === 'personal'
-              ? 'bg-tma-warning/20 text-[#8a6800]'
+              ? 'bg-amber-400/20 text-[#8a6800]'
               : undefined
           }
           tone={budget.scope === 'personal' ? 'warning' : 'muted'}>

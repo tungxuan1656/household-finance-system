@@ -81,7 +81,7 @@ const GroupListCard = ({
 
   return (
     <Link
-      className='grid gap-3 rounded-3xl bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
+      className='grid gap-3 rounded-3xl bg-white p-4 shadow-md transition active:scale-[0.99]'
       to={getGroupDetailPath(item.group.id)}
       onClick={() => impact('light')}>
       <div className='flex items-start justify-between gap-3'>
@@ -109,7 +109,7 @@ const GroupListCard = ({
         </div>
         <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
           <Eyebrow>{t('groups.statBudget')}</Eyebrow>
-          <strong className='text-sm text-tma-text-strong'>
+          <strong className='text-sm text-foreground'>
             {getGroupBudgetLabel(item.group, t)}
           </strong>
         </div>
@@ -122,7 +122,7 @@ const GroupListCard = ({
               className={
                 progress.isOverBudget
                   ? 'h-full rounded-full bg-[#d93838]'
-                  : 'h-full rounded-full bg-tma-primary'
+                  : 'h-full rounded-full bg-primary'
               }
               style={{ width: `${progress.widthPercent}%` }}
             />
@@ -133,7 +133,7 @@ const GroupListCard = ({
         </div>
       ) : null}
 
-      <div className='flex items-center justify-between gap-3 text-sm text-tma-text-muted'>
+      <div className='flex items-center justify-between gap-3 text-sm text-muted-foreground'>
         <span className='truncate'>{getGroupContextLabel(item, t)}</span>
         <span className='shrink-0'>
           {getGroupDateRangeLabel(item.group, t)}
@@ -178,7 +178,7 @@ export const GroupListPage = () => {
       <Card className='grid gap-3 p-5'>
         <div className='flex items-start justify-between gap-3'>
           <div>
-            <strong className='mt-1 block text-[30px] leading-none font-extrabold text-tma-text-strong'>
+            <strong className='mt-1 block text-[30px] leading-none font-extrabold text-foreground'>
               {groupItems.length}
             </strong>
           </div>

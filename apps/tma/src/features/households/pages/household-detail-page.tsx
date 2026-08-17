@@ -103,7 +103,7 @@ export const HouseholdDetailPage = () => {
           className={
             feedback.tone === 'error'
               ? 'mb-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mb-3 border-tma-positive/20 bg-tma-positive/10'
+              : 'mb-3 border-emerald-500/20 bg-emerald-500/10'
           }>
           <CardDescription
             className={
@@ -211,7 +211,7 @@ export const HouseholdDetailPage = () => {
                           className={
                             member.role === 'admin'
                               ? 'm-0 text-sm font-semibold text-[#d3a10c]'
-                              : 'm-0 text-sm font-semibold text-tma-text-strong'
+                              : 'm-0 text-sm font-semibold text-foreground'
                           }>
                           {member.name ||
                             user?.displayName ||
@@ -223,7 +223,7 @@ export const HouseholdDetailPage = () => {
                       </div>
                       {isAdmin && member.userId !== user?.id ? (
                         <button
-                          className='shrink-0 rounded-full p-2 text-tma-text-muted transition active:scale-90 active:text-[#d93838]'
+                          className='shrink-0 rounded-full p-2 text-muted-foreground transition active:scale-90 active:text-[#d93838]'
                           disabled={isRemoving}
                           type='button'
                           onClick={() =>

@@ -115,3 +115,11 @@
 **Evidence**: `features/feat-128.md` Handoff links the plan; the plan records no documentation-duplication work and no known gaps.
 **Blockers**: none
 **Next**: Execute Checkpoint A provenance/config and dependency-locking gate.
+
+## 2026-08-17 - feat-128
+
+**State**: active
+**Done**: Completed the Base UI/preset migration, primitive and CTA replacement, BottomButton bridge removal, fixed-light theme, token cleanup, BackButton audit, and automatic verification.
+**Evidence**: `pnpm --filter tma lint`, `typecheck`, `test` (27 files, 147 tests), and `build` passed. `./init.sh`, the bridge/theme/token audits, and `git diff --check` passed.
+**Blockers**: Real Telegram iOS/Android QA in host light and host dark settings remains required.
+**Next**: Record the manual Telegram QA matrix, then run the final whole-branch review.

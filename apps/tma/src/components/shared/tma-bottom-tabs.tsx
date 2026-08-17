@@ -28,8 +28,8 @@ const prefetchRoute = (href: string) => {
 
 /** @internal Spinner shown during pull-to-refresh. Exported for use by TmaPageShell. */
 export const PullToRefreshSpinner = ({ label }: { label?: string }) => (
-  <div className='grid justify-items-center gap-2 py-2 text-xs font-semibold text-tma-text-muted'>
-    <span className='size-5 animate-tma-spin rounded-full border-2 border-current border-t-transparent' />
+  <div className='grid justify-items-center gap-2 py-2 text-xs font-semibold text-muted-foreground'>
+    <span className='size-5 animate-spin rounded-full border-2 border-current border-t-transparent' />
     {label ? <span>{label}</span> : null}
   </div>
 )
@@ -75,8 +75,8 @@ export const TmaBottomTabs = ({
                 key={href}
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'relative flex h-13 min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-tma-text-muted transition-colors',
-                  isActive && 'bg-tma-primary/10 text-tma-primary',
+                  'relative flex h-13 min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-muted-foreground transition-colors',
+                  isActive && 'bg-primary/10 text-primary',
                 )}
                 to={href}
                 onClick={() => {
@@ -100,7 +100,7 @@ export const TmaBottomTabs = ({
 
         <Link
           aria-label={t('shell.addExpenseAria')}
-          className='pointer-events-auto mx-1 -my-4 grid size-13.5 place-items-center rounded-full bg-linear-to-br from-[#2a3a5c] to-tma-text-strong text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
+          className='pointer-events-auto mx-1 -my-4 grid size-13.5 place-items-center rounded-full bg-linear-to-br from-[#2a3a5c] to-foreground text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
           to={bubbleHref}
           onClick={() => {
             impact('medium')
@@ -119,8 +119,8 @@ export const TmaBottomTabs = ({
                 key={href}
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'relative flex h-13 min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-tma-text-muted transition-colors',
-                  isActive && 'bg-tma-primary/10 text-tma-primary',
+                  'relative flex h-13 min-w-20 flex-col items-center justify-center gap-0.5 rounded-full px-2 text-[10px] font-semibold text-muted-foreground transition-colors',
+                  isActive && 'bg-primary/10 text-primary',
                 )}
                 to={href}
                 onClick={() => {

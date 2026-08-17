@@ -9,6 +9,7 @@ import {
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import {
+  Button,
   buttonVariants,
   Card,
   CardDescription,
@@ -28,11 +29,6 @@ import {
   parseAmountInput,
   rawFromMinor,
 } from '@/lib/formatters'
-import {
-  hideBottomButton,
-  setBottomButton,
-  updateBottomButton,
-} from '@/lib/telegram/bottom-button'
 import { notification, selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseDetailsPage = () => {
@@ -57,7 +53,6 @@ export const AddExpenseDetailsPage = () => {
 
   const amount = parseAmountInput(amountInput)
   const isValid = amount > 0 && sourceId !== null
-  const hasCategory = category !== null
 
   const handleContinue = useEffectEvent(() => {
     if (!isValid || sourceId === null) {
@@ -70,40 +65,7 @@ export const AddExpenseDetailsPage = () => {
   })
 
   useEffect(() => {
-    if (!hasCategory) {
-      return
-    }
-
-    const cleanup = setBottomButton({
-      text: t('expenses.add.continue'),
-      enabled: false,
-      showProgress: false,
-      onClick: () => {
-        handleContinue()
-      },
-    })
-
-    return cleanup
-  }, [hasCategory, t])
-
-  useEffect(() => {
-    if (!hasCategory) {
-      return
-    }
-
-    updateBottomButton({
-      text: t('expenses.add.continue'),
-      enabled: isValid,
-      showProgress: false,
-    })
-  }, [hasCategory, isValid])
-
-  useEffect(() => {
     amountInputRef.current?.focus({ preventScroll: true })
-
-    return () => {
-      hideBottomButton()
-    }
   }, [])
 
   if (!category) {
@@ -129,7 +91,7 @@ export const AddExpenseDetailsPage = () => {
   }
 
   return (
-    <TmaPageShell reserveBottomButton title={t('expenses.add.title')}>
+    <TmaPageShell title={t('expenses.add.title')}>
       <Card className='mt-2 mb-3 flex items-center gap-3 p-2.5'>
         <TmaCategoryIconBadge
           accent={category.accent}
@@ -155,7 +117,7 @@ export const AddExpenseDetailsPage = () => {
       />
 
       <Section className='grid gap-1'>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <CoinIcon className='mt-1 size-6' />
           <span>{t('expenses.edit.fieldAmount')}</span>
         </div>
@@ -163,7 +125,7 @@ export const AddExpenseDetailsPage = () => {
           <input
             ref={amountInputRef}
             autoFocus={true}
-            className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-tma-text-strong outline-none'
+            className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-foreground outline-none'
             inputMode='numeric'
             placeholder='0'
             type='text'
@@ -172,23 +134,23 @@ export const AddExpenseDetailsPage = () => {
               setAmountInput(formatAmountInput(event.target.value))
             }}
           />
-          <span className='font-mono text-3xl font-semibold text-tma-text-strong/80'>
+          <span className='font-mono text-3xl font-semibold text-foreground/80'>
             .000
           </span>
-          <span className='text-xs font-semibold text-tma-text-muted'>
+          <span className='text-xs font-semibold text-muted-foreground'>
             {currencyDisplaySymbol('VND')}
           </span>
         </label>
       </Section>
 
       <Section className='grid gap-1'>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <NoteIcon className='size-6' />
           <span>{t('expenses.add.nameLabel')}</span>
         </div>
         <div className='rounded-3xl bg-white p-5'>
           <input
-            className='w-full border-0 bg-transparent px-0 text-base font-medium text-tma-text-strong outline-none'
+            className='w-full border-0 bg-transparent px-0 text-base font-medium text-foreground outline-none'
             placeholder={t('expenses.add.namePlaceholder')}
             value={title}
             onChange={(event) => setTitle(event.target.value)}
@@ -207,7 +169,7 @@ export const AddExpenseDetailsPage = () => {
       </Section>
 
       <Section>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-tma-text-muted'>
+        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <SunIcon className='size-6' />
           <span>{t('expenses.add.source')}</span>
         </div>
@@ -217,7 +179,6 @@ export const AddExpenseDetailsPage = () => {
               key={source.id}
               className={sourceId === source.id ? 'ring-2 ring-blue-300' : ''}
               onClick={() => {
-                selection()
                 setSourceId(source.id)
               }}>
               <span className='font-semibold'>{source.label}</span>
@@ -225,6 +186,13 @@ export const AddExpenseDetailsPage = () => {
           ))}
         </div>
       </Section>
+
+      <Button
+        className='mt-5 mb-2 w-full'
+        disabled={!isValid}
+        onClick={handleContinue}>
+        {t('expenses.add.continue')}
+      </Button>
     </TmaPageShell>
   )
 }

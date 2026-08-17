@@ -61,23 +61,23 @@ export const ExpenseEditForm = ({
     <>
       {/* Money input */}
       <Card className='mt-3 grid gap-3'>
-        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
+        <div className='inline-flex items-center gap-2 text-xs font-bold text-muted-foreground'>
           <CoinIcon height='16' width='16' />
           <span>{t('expenses.edit.fieldAmount')}</span>
         </div>
         <label className='flex items-end justify-between gap-2 rounded-3xl bg-white p-4'>
           <input
-            className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-tma-text-strong outline-none'
+            className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-foreground outline-none'
             inputMode='numeric'
             placeholder='0'
             type='text'
             value={amountInput}
             onChange={(event) => onAmountChange(event.target.value)}
           />
-          <span className='font-mono text-3xl font-semibold text-tma-text-strong/80'>
+          <span className='font-mono text-3xl font-semibold text-foreground/80'>
             .000
           </span>
-          <span className='text-xs font-semibold text-tma-text-muted'>
+          <span className='text-xs font-semibold text-muted-foreground'>
             {currencyDisplaySymbol(currencyCode)}
           </span>
         </label>
@@ -85,7 +85,7 @@ export const ExpenseEditForm = ({
 
       {/* Title */}
       <Card className='mt-3 grid gap-3'>
-        <div className='inline-flex items-center gap-2 text-xs font-bold text-tma-text-muted'>
+        <div className='inline-flex items-center gap-2 text-xs font-bold text-muted-foreground'>
           <NoteIcon height='16' width='16' />
           <span>{t('expenses.edit.fieldName')}</span>
         </div>
@@ -188,7 +188,6 @@ export const ExpenseEditForm = ({
         <Button
           variant='ghost'
           onClick={() => {
-            selection()
             resetStore()
             navigate(-1)
           }}>

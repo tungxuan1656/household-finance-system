@@ -67,7 +67,6 @@ export const AddExpenseCategoryPage = () => {
                 aria-pressed={false}
                 className='grid min-h-20 content-start'
                 onClick={() => {
-                  selection()
                   selectCategory(category)
                   navigate(TMA_PATHS.expensesNewDetails, { flushSync: true })
                 }}>
@@ -76,7 +75,7 @@ export const AddExpenseCategoryPage = () => {
                   iconUrl={category.iconUrl}
                   symbol={category.symbol}
                 />
-                <span className='text-xs font-semibold text-tma-text-strong'>
+                <span className='text-xs font-semibold text-foreground'>
                   {category.label}
                 </span>
               </ChipButton>

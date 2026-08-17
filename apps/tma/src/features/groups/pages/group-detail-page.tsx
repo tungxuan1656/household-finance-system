@@ -106,7 +106,7 @@ export const GroupDetailPage = () => {
           className={
             feedback.tone === 'error'
               ? 'mb-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mb-3 border-tma-positive/20 bg-tma-positive/10'
+              : 'mb-3 border-emerald-500/20 bg-emerald-500/10'
           }>
           <CardDescription
             className={
@@ -134,7 +134,7 @@ export const GroupDetailPage = () => {
               <div className='flex items-start justify-between gap-3'>
                 <div className='min-w-0'>
                   <Eyebrow>{contextLabel}</Eyebrow>
-                  <h1 className='m-0 mt-1 text-2xl leading-tight font-extrabold text-tma-text-strong'>
+                  <h1 className='m-0 mt-1 text-2xl leading-tight font-extrabold text-foreground'>
                     {group.name}
                   </h1>
                   {group.description ? (
@@ -178,13 +178,13 @@ export const GroupDetailPage = () => {
                     </div>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
                       <Eyebrow>{t('groups.detail.statExpenseCount')}</Eyebrow>
-                      <strong className='text-base text-tma-text-strong'>
+                      <strong className='text-base text-foreground'>
                         {summary?.expenseCount ?? 0}
                       </strong>
                     </div>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
                       <Eyebrow>{t('groups.detail.statBudget')}</Eyebrow>
-                      <strong className='text-sm text-tma-text-strong'>
+                      <strong className='text-sm text-foreground'>
                         {getGroupBudgetLabel(group, t)}
                       </strong>
                     </div>
@@ -206,7 +206,7 @@ export const GroupDetailPage = () => {
 
                   {progress ? (
                     <div className='grid gap-1.5'>
-                      <div className='flex items-center justify-between text-sm text-tma-text-muted'>
+                      <div className='flex items-center justify-between text-sm text-muted-foreground'>
                         <span>{t('groups.detail.statProgress')}</span>
                         <span>{progress.percentUsed}%</span>
                       </div>
@@ -215,7 +215,7 @@ export const GroupDetailPage = () => {
                           className={
                             progress.isOverBudget
                               ? 'h-full rounded-full bg-[#d93838]'
-                              : 'h-full rounded-full bg-tma-primary'
+                              : 'h-full rounded-full bg-primary'
                           }
                           style={{ width: `${progress.widthPercent}%` }}
                         />
@@ -235,7 +235,7 @@ export const GroupDetailPage = () => {
                       key={member.userId}
                       className='flex items-center justify-between gap-3 rounded-[18px] bg-black/4 p-3'>
                       <div className='min-w-0'>
-                        <h3 className='m-0 truncate text-sm font-bold text-tma-text-strong'>
+                        <h3 className='m-0 truncate text-sm font-bold text-foreground'>
                           {member.displayName ??
                             t('groups.detail.memberFallback')}
                         </h3>

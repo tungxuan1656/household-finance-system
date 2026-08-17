@@ -16,7 +16,6 @@ import {
 } from '@/lib/media/avatar-image'
 import { uploadMediaViaCloudinary } from '@/lib/media/cloudinary-upload'
 import { MAX_AVATAR_SIZE_BYTES } from '@/lib/media/constants'
-import { impact } from '@/lib/telegram/haptics'
 
 import { getHouseholdAvatarFallback } from '../presentation'
 import { HouseholdAvatarDialog } from './household-avatar-dialog'
@@ -162,7 +161,7 @@ export const HouseholdAvatarSection = ({
         />
 
         <div className='grid gap-1.5'>
-          <strong className='text-base font-semibold text-tma-text-strong'>
+          <strong className='text-base font-semibold text-foreground'>
             {displayName}
           </strong>
           {summaryText ? (
@@ -178,7 +177,6 @@ export const HouseholdAvatarSection = ({
             type='button'
             variant='outline'
             onClick={() => {
-              impact('light')
               fileInputRef.current?.click()
             }}>
             <CameraIcon height='14' width='14' />

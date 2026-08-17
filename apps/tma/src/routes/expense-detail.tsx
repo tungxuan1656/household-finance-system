@@ -33,7 +33,7 @@ import {
 } from '@/features/home/presentation'
 import { getExpenseEditPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel } from '@/lib/formatters'
-import { impact, notification, selection } from '@/lib/telegram/haptics'
+import { notification } from '@/lib/telegram/haptics'
 
 export const ExpenseDetailPage = () => {
   const { id } = useParams<{ id: string }>()
@@ -59,8 +59,6 @@ export const ExpenseDetailPage = () => {
     if (!expense) return
 
     try {
-      impact('heavy')
-
       await deleteMutation.mutateAsync(expense.id)
       notification('success')
       navigate(TMA_PATHS.expenses, { replace: true })
@@ -118,7 +116,7 @@ export const ExpenseDetailPage = () => {
         <Card className='grid gap-3'>
           <div className='grid gap-1'>
             <Eyebrow>{t('expenses.detail.eyebrowTitle')}</Eyebrow>
-            <strong className='text-sm font-semibold wrap-break-word text-tma-text-strong'>
+            <strong className='text-sm font-semibold wrap-break-word text-foreground'>
               {expense.title.trim() || category.label}
             </strong>
           </div>
@@ -131,7 +129,7 @@ export const ExpenseDetailPage = () => {
             />
             <div>
               <Eyebrow>{t('expenses.detail.eyebrowCategory')}</Eyebrow>
-              <strong className='text-sm font-semibold text-tma-text-strong'>
+              <strong className='text-sm font-semibold text-foreground'>
                 {category.label}
               </strong>
             </div>
@@ -139,13 +137,13 @@ export const ExpenseDetailPage = () => {
           <div className='grid grid-cols-2 gap-3'>
             <div className='grid gap-1'>
               <Eyebrow>{t('expenses.detail.eyebrowSource')}</Eyebrow>
-              <strong className='text-sm font-semibold text-tma-text-strong'>
+              <strong className='text-sm font-semibold text-foreground'>
                 {getSourceLabel(expense.sourceKey, t)}
               </strong>
             </div>
             <div className='grid gap-1'>
               <Eyebrow>{t('expenses.detail.eyebrowSpace')}</Eyebrow>
-              <strong className='text-sm font-semibold text-tma-text-strong'>
+              <strong className='text-sm font-semibold text-foreground'>
                 {spaceLabel}
               </strong>
             </div>
@@ -158,7 +156,7 @@ export const ExpenseDetailPage = () => {
         <SectionHeader title={t('expenses.detail.sectionTime')} />
         <Card className='grid gap-1'>
           <Eyebrow>{t('expenses.detail.eyebrowDate')}</Eyebrow>
-          <strong className='text-base font-semibold text-tma-text-strong'>
+          <strong className='text-base font-semibold text-foreground'>
             {dateLabel}
           </strong>
         </Card>
@@ -171,7 +169,7 @@ export const ExpenseDetailPage = () => {
             <Eyebrow className='text-[#d93838]'>
               {t('expenses.detail.deleteConfirmTitle')}
             </Eyebrow>
-            <strong className='text-sm font-semibold text-tma-text-strong'>
+            <strong className='text-sm font-semibold text-foreground'>
               {t('expenses.detail.deleteConfirmBody')}
             </strong>
           </div>
@@ -185,7 +183,6 @@ export const ExpenseDetailPage = () => {
             <Button
               variant='ghost'
               onClick={() => {
-                selection()
                 setShowDeleteConfirm(false)
               }}>
               {t('common.cancel')}
@@ -197,7 +194,6 @@ export const ExpenseDetailPage = () => {
           <Button
             variant='outline'
             onClick={() => {
-              selection()
               navigate(getExpenseEditPath(expense.id))
             }}>
             {t('expenses.detail.editAction')}
@@ -206,7 +202,6 @@ export const ExpenseDetailPage = () => {
             className='bg-[#d93838]/10 text-[#d93838]'
             variant='ghost'
             onClick={() => {
-              selection()
               setShowDeleteConfirm(true)
             }}>
             {t('expenses.detail.deleteAction')}

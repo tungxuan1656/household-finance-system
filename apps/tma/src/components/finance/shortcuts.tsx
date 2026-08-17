@@ -33,7 +33,7 @@ export const ShortcutItem = ({
         ) : null}
       </div>
       <div>
-        <h3 className='m-0 text-[15px] leading-tight font-semibold text-tma-text-strong'>
+        <h3 className='m-0 text-[15px] leading-tight font-semibold text-foreground'>
           {title}
         </h3>
       </div>
@@ -41,7 +41,7 @@ export const ShortcutItem = ({
   )
 
   const className =
-    'flex items-center content-start gap-3 rounded-3xl border border-black/4 bg-white p-3.5 shadow-tma-soft transition active:scale-[0.98]'
+    'flex items-center content-start gap-3 rounded-3xl border border-black/4 bg-white p-3.5 shadow-sm transition active:scale-[0.98]'
 
   if (disabled) {
     return (

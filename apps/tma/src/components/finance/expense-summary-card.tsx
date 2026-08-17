@@ -19,7 +19,7 @@ export const ExpenseSummaryCard = ({ summary }: ExpenseSummaryCardProps) => {
       <MoneyLabel className='block text-[28px] leading-none font-extrabold tracking-normal'>
         {formatCurrencyMinor(summary.totalSpendMinor, summary.currencyCode)}
       </MoneyLabel>
-      <p className='m-0 text-xs font-semibold text-tma-text-muted'>
+      <p className='m-0 text-xs font-semibold text-muted-foreground'>
         {t('expenses.summary.count', { count: summary.expenseCount })}
       </p>
     </Card>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription } from '@/components/ui'
+import { Button, Card, CardDescription } from '@/components/ui'
 import {
   useExpenseDetailQuery,
   useUpdateExpenseMutation,
@@ -27,8 +27,7 @@ import {
   minorFromRaw,
   parseAmountInput,
 } from '@/lib/formatters'
-import { hideBottomButton, setBottomButton } from '@/lib/telegram/bottom-button'
-import { impact, notification } from '@/lib/telegram/haptics'
+import { notification } from '@/lib/telegram/haptics'
 import { ExpenseEditForm } from '@/routes/expense-edit-form'
 
 export const ExpenseEditPage = () => {
@@ -132,8 +131,6 @@ export const ExpenseEditPage = () => {
     if (!isValid || !draft) return
 
     try {
-      impact('medium')
-
       await updateMutation.mutateAsync({
         id: draft.id,
         payload: {
@@ -155,22 +152,6 @@ export const ExpenseEditPage = () => {
     }
   })
 
-  useEffect(() => {
-    const cleanup = setBottomButton({
-      text: t('expenses.edit.save'),
-      enabled: isValid && !updateMutation.isPending,
-      showProgress: updateMutation.isPending,
-      onClick: () => {
-        void handleSave()
-      },
-    })
-
-    return () => {
-      cleanup()
-      hideBottomButton()
-    }
-  }, [isValid, updateMutation.isPending])
-
   if (expenseQuery.isLoading || !draft) {
     return (
       <TmaPageShell title={t('expenses.edit.title')}>
@@ -182,7 +163,7 @@ export const ExpenseEditPage = () => {
   }
 
   return (
-    <TmaPageShell reserveBottomButton title={t('expenses.edit.title')}>
+    <TmaPageShell title={t('expenses.edit.title')}>
       <ExpenseEditForm
         activeCategory={activeCategory}
         amountInput={amountInput}
@@ -196,6 +177,17 @@ export const ExpenseEditPage = () => {
         sourcePickerOptions={sourcePickerOptions}
         onAmountChange={handleAmountChange}
       />
+      <Button
+        aria-busy={updateMutation.isPending}
+        className='mt-5 mb-2 w-full'
+        disabled={!isValid || updateMutation.isPending}
+        onClick={() => {
+          void handleSave()
+        }}>
+        {updateMutation.isPending
+          ? t('expenses.add.saving')
+          : t('expenses.edit.save')}
+      </Button>
     </TmaPageShell>
   )
 }

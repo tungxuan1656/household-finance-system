@@ -1,7 +1,6 @@
 import {
   backButton,
   hapticFeedback,
-  mainButton,
   secureStorage,
   themeParams,
 } from '@tma.js/sdk'
@@ -12,7 +11,6 @@ type Capability =
   | 'hapticFeedback'
   | 'themeParams'
   | 'backButton'
-  | 'mainButton'
 
 export const isSupported = (capability: Capability): boolean => {
   switch (capability) {
@@ -26,7 +24,5 @@ export const isSupported = (capability: Capability): boolean => {
       return themeParams.isMounted()
     case 'backButton':
       return backButton.isSupported()
-    case 'mainButton':
-      return mainButton.isMounted()
   }
 }

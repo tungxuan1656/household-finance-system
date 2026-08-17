@@ -9,9 +9,10 @@ export const Card = ({
 }: HTMLAttributes<HTMLElement> & { children: ReactNode }) => (
   <section
     className={cn(
-      'rounded-3xl border border-white/70 bg-tma-card-bg p-4 shadow-tma-card',
+      'group/card flex flex-col gap-4 overflow-hidden rounded-[24px] border border-border/70 bg-card p-4 text-sm text-card-foreground shadow-[0_10px_28px_color-mix(in_oklch,var(--foreground),transparent_94%)]',
       className,
     )}
+    data-slot='card'
     {...props}>
     {children}
   </section>
@@ -22,7 +23,10 @@ export const CardHeader = ({
   className,
   ...props
 }: HTMLAttributes<HTMLDivElement> & { children: ReactNode }) => (
-  <div className={cn('mb-3 grid gap-1', className)} {...props}>
+  <div
+    className={cn('grid gap-1', className)}
+    data-slot='card-header'
+    {...props}>
     {children}
   </div>
 )
@@ -34,9 +38,10 @@ export const CardTitle = ({
 }: HTMLAttributes<HTMLHeadingElement> & { children: ReactNode }) => (
   <h2
     className={cn(
-      'm-0 text-base leading-tight font-semibold text-tma-text-strong',
+      'm-0 text-base leading-tight font-semibold text-card-foreground',
       className,
     )}
+    data-slot='card-title'
     {...props}>
     {children}
   </h2>
@@ -48,7 +53,11 @@ export const CardDescription = ({
   ...props
 }: HTMLAttributes<HTMLParagraphElement> & { children: ReactNode }) => (
   <p
-    className={cn('m-0 text-sm leading-normal text-tma-text-muted', className)}
+    className={cn(
+      'm-0 text-sm leading-normal text-muted-foreground',
+      className,
+    )}
+    data-slot='card-description'
     {...props}>
     {children}
   </p>
@@ -59,7 +68,10 @@ export const CardContent = ({
   className,
   ...props
 }: HTMLAttributes<HTMLDivElement> & { children: ReactNode }) => (
-  <div className={cn('grid gap-3', className)} {...props}>
+  <div
+    className={cn('grid gap-3', className)}
+    data-slot='card-content'
+    {...props}>
     {children}
   </div>
 )

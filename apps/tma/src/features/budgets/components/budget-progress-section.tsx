@@ -40,7 +40,7 @@ export const BudgetProgressSection = ({
       </div>
 
       <div className='grid gap-1.5'>
-        <div className='flex items-center justify-between text-sm text-tma-text-muted'>
+        <div className='flex items-center justify-between text-sm text-muted-foreground'>
           <span>{t('budgets.detail.statProgress')}</span>
           <span>{progress.percentUsed}%</span>
         </div>
@@ -48,7 +48,7 @@ export const BudgetProgressSection = ({
           <div
             className={cn(
               'h-full rounded-full',
-              isOver ? 'bg-[#d93838]' : 'bg-tma-primary',
+              isOver ? 'bg-[#d93838]' : 'bg-primary',
             )}
             style={{ width: `${progress.widthPercent}%` }}
           />

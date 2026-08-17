@@ -1,20 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const miniAppCleanup = vi.fn()
-const themeCleanup = vi.fn()
 const viewportCleanup = vi.fn()
 
 let viewportMounted = false
 
-const miniAppBindCssVars = vi.fn(() => miniAppCleanup)
+const miniAppBindCssVars = Object.assign(
+  vi.fn(() => vi.fn()),
+  {
+    isAvailable: vi.fn(() => true),
+  },
+)
 
-;(
-  miniAppBindCssVars as typeof miniAppBindCssVars & {
-    isAvailable: ReturnType<typeof vi.fn>
-  }
-).isAvailable = vi.fn(() => true)
-
-const themeBindCssVars = vi.fn(() => themeCleanup)
+const themeBindCssVars = vi.fn(() => vi.fn())
 const viewportBindCssVars = vi.fn(() => viewportCleanup)
 
 vi.mock('@tma.js/sdk', () => ({
@@ -23,7 +20,6 @@ vi.mock('@tma.js/sdk', () => ({
   },
   themeParams: {
     bindCssVars: themeBindCssVars,
-    bgColor: vi.fn(() => '#123456'),
     isMounted: vi.fn(() => true),
   },
   viewport: {
@@ -32,31 +28,26 @@ vi.mock('@tma.js/sdk', () => ({
   },
 }))
 
-describe('theme binding', () => {
+describe('fixed-light platform initialization', () => {
   beforeEach(() => {
     document.documentElement.removeAttribute('style')
     viewportMounted = false
-    miniAppCleanup.mockReset()
-    themeCleanup.mockReset()
     viewportCleanup.mockReset()
+    viewportBindCssVars.mockClear()
     miniAppBindCssVars.mockClear()
     themeBindCssVars.mockClear()
-    viewportBindCssVars.mockClear()
     vi.resetModules()
   })
 
-  it('binds theme vars immediately and viewport vars after viewport mount', async () => {
+  it('binds viewport safe-area vars after viewport mount and cleans them up', async () => {
     const theme = await import('@/lib/telegram/theme')
 
-    theme.bindTheme()
+    theme.initializeFixedLightPlatform()
 
-    expect(miniAppBindCssVars).toHaveBeenCalledTimes(1)
-    expect(themeBindCssVars).toHaveBeenCalledTimes(1)
+    expect(miniAppBindCssVars).not.toHaveBeenCalled()
+    expect(themeBindCssVars).not.toHaveBeenCalled()
+
     expect(viewportBindCssVars).not.toHaveBeenCalled()
-
-    expect(
-      document.documentElement.style.getPropertyValue('--tma-base-bg'),
-    ).toBe(theme.DEFAULT_TMA_BG)
 
     viewportMounted = true
     theme.syncViewportInsets()
@@ -78,12 +69,10 @@ describe('theme binding', () => {
 
     theme.resetTheme()
 
-    expect(miniAppCleanup).toHaveBeenCalledTimes(1)
-    expect(themeCleanup).toHaveBeenCalledTimes(1)
     expect(viewportCleanup).toHaveBeenCalledTimes(1)
 
     expect(
-      document.documentElement.style.getPropertyValue('--tma-base-bg'),
-    ).toBe('')
+      document.documentElement.style.getPropertyValue('--background'),
+    ).toBe('#f5f7fb')
   })
 })

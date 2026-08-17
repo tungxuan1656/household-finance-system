@@ -95,7 +95,7 @@ export const NativePicker = forwardRef<HTMLSelectElement, NativePickerProps>(
           className={cn(
             'pointer-events-none',
             fullWidth && 'w-full overflow-hidden',
-            !hasValue && 'font-normal text-tma-text-muted',
+            !hasValue && 'font-normal text-muted-foreground',
           )}
           disabled={disabled}
           size={size}

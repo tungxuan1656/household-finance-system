@@ -46,7 +46,7 @@ export const HouseholdAvatarDialog = ({
       role='dialog'>
       <button
         aria-label={t('households.avatarDialog.closePreview')}
-        className='absolute inset-0 bg-tma-text-strong/30'
+        className='absolute inset-0 bg-foreground/30'
         type='button'
         onClick={handleDismiss}
       />

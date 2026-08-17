@@ -1,9 +1,13 @@
-import { backButton, miniApp } from '@tma.js/sdk'
+import { backButton } from '@tma.js/sdk'
 import { useEffect, useMemo } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { useInvitationDeepLinkRedirect } from '@/features/invitations/hooks/use-invitation-deep-link-redirect'
-import { TMA_PATHS } from '@/lib/constants/routes'
+import {
+  isInvitationAcceptPathname,
+  isRootTabPathname,
+  TMA_PATHS,
+} from '@/lib/constants/routes'
 import { impact } from '@/lib/telegram/haptics'
 
 export default function RootLayout() {
@@ -11,8 +15,8 @@ export default function RootLayout() {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const isHome = useMemo(
-    () => location.pathname === TMA_PATHS.root,
+  const isRootTab = useMemo(
+    () => isRootTabPathname(location.pathname),
     [location.pathname],
   )
   // The invitation accept route is a deep-link entry point with no
@@ -20,10 +24,15 @@ export default function RootLayout() {
   // routes with no meaningful back target must own their BackButton
   // (the page closes the mini app instead of navigating back).
   const isInvitationAcceptRoute = useMemo(
-    () =>
-      location.pathname === TMA_PATHS.invitations ||
-      location.pathname.startsWith(`${TMA_PATHS.invitations}/`),
+    () => isInvitationAcceptPathname(location.pathname),
     [location.pathname],
+  )
+  const isFatalRoute = location.pathname === TMA_PATHS.fatal
+  const hasMeaningfulBackTarget = useMemo(
+    () =>
+      typeof window !== 'undefined' &&
+      ((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0,
+    [location.key],
   )
 
   useEffect(() => {
@@ -37,23 +46,29 @@ export default function RootLayout() {
       return
     }
 
+    if (isRootTab || isFatalRoute || !hasMeaningfulBackTarget) {
+      backButton.hide()
+
+      return
+    }
+
     const offClick = backButton.onClick(() => {
       impact('light')
-      if (isHome) {
-        miniApp.close.ifAvailable()
-      } else {
-        navigate(-1)
-      }
+      navigate(-1)
     })
-    if (!isHome) {
-      backButton.show()
-    }
+    backButton.show()
 
     return () => {
       offClick()
       backButton.hide()
     }
-  }, [navigate, isHome, isInvitationAcceptRoute])
+  }, [
+    navigate,
+    isRootTab,
+    isInvitationAcceptRoute,
+    isFatalRoute,
+    hasMeaningfulBackTarget,
+  ])
 
   return <Outlet />
 }

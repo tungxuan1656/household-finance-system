@@ -12,7 +12,10 @@ export const Field = ({
   className,
   ...props
 }: LabelHTMLAttributes<HTMLLabelElement> & { children: ReactNode }) => (
-  <label className={cn('grid gap-2', className)} {...props}>
+  <label
+    className={cn('group/field grid gap-2', className)}
+    data-slot='field'
+    {...props}>
     {children}
   </label>
 )
@@ -26,9 +29,10 @@ export const FieldLabel = ({
 }) => (
   <span
     className={cn(
-      'text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase',
+      'text-xs font-semibold tracking-[0.04em] text-muted-foreground uppercase',
       className,
-    )}>
+    )}
+    data-slot='field-label'>
     {children}
   </span>
 )
@@ -39,7 +43,7 @@ export const Input = ({
 }: InputHTMLAttributes<HTMLInputElement>) => (
   <input
     className={cn(
-      'min-h-12 w-full rounded-2xl border border-tma-line bg-white px-4 text-base font-medium text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
+      'min-h-12 w-full rounded-2xl border border-input bg-background px-4 text-base font-medium text-foreground transition outline-none placeholder:text-muted-foreground focus:border-primary/40 focus:ring-3 focus:ring-ring/30 disabled:opacity-60',
       className,
     )}
     {...props}
@@ -52,7 +56,7 @@ export const Textarea = ({
 }: TextareaHTMLAttributes<HTMLTextAreaElement>) => (
   <textarea
     className={cn(
-      'min-h-26 w-full resize-none rounded-3xl border border-tma-line bg-white p-4 text-sm leading-relaxed text-tma-text-strong transition outline-none focus:border-tma-primary/30 focus:ring-4 focus:ring-tma-primary/10 disabled:opacity-70',
+      'min-h-26 w-full resize-none rounded-3xl border border-input bg-background p-4 text-sm leading-relaxed text-foreground transition outline-none placeholder:text-muted-foreground focus:border-primary/40 focus:ring-3 focus:ring-ring/30 disabled:opacity-60',
       className,
     )}
     {...props}
@@ -66,7 +70,10 @@ export const FieldError = ({
   children: ReactNode
   className?: string
 }) => (
-  <p className={cn('m-0 text-xs font-semibold text-[#d14d7b]', className)}>
+  <p
+    className={cn('m-0 text-xs font-semibold text-destructive', className)}
+    data-slot='field-error'
+    role='alert'>
     {children}
   </p>
 )

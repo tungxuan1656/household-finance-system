@@ -68,7 +68,7 @@ Migrate feasible generic TMA UI primitives to the approved shadcn/ui foundation 
 
 ## Implementation tasks
 
-### 1. Establish generator and dependency provenance
+### Task 1: Establish generator and dependency provenance
 
 - [ ] Add `apps/tma/components.json` from the pinned `shadcn@4.18.0` generator using preset `b6G3fhkA4`, Base UI, Lyra, yellow/neutral, Geist Mono, Lucide, the existing `src/index.css`, `@/components/ui`, and `@/lib/utils` aliases.
 - [ ] Add the generator as an exact `4.18.0` development dependency in `apps/tma/package.json`; add only the runtime packages emitted by the approved Base UI preset and lock their resolved versions in `pnpm-lock.yaml`.
@@ -76,7 +76,7 @@ Migrate feasible generic TMA UI primitives to the approved shadcn/ui foundation 
 - [ ] Capture the generated component/config baseline before local customization. Keep generated provenance distinguishable from local compatibility changes; do not hand-copy a different shadcn version or preset.
 - [ ] Confirm the existing `cn()` utility in `apps/tma/src/lib/utils.ts` remains the shared class-composition seam used by generated and compatibility components.
 
-### 2. Migrate generic UI primitives and preserve contracts
+### Task 2: Migrate generic UI primitives and preserve contracts
 
 - [ ] Replace `button.tsx` with the generated Base UI Button foundation, then retain the current `ButtonProps`, `ButtonVariant`, `ButtonSize`, `buttonVariants`, native attributes, and initial consumer call sites through a local compatibility layer.
 - [ ] Implement the centralized Button activation path so an enabled activation calls `impact('light')` exactly once and then invokes the caller handler once.
@@ -88,7 +88,7 @@ Migrate feasible generic TMA UI primitives to the approved shadcn/ui foundation 
 - [ ] Keep `DataState` behavior unchanged and restyle its Card, title, description, and retry Button through the migrated foundation.
 - [ ] Keep `apps/tma/src/components/ui/index.ts` as the stable barrel and update exports only for generated or compatibility files actually used by TMA.
 
-### 3. Replace every route CTA before bridge deletion
+### Task 3: Replace every route CTA before bridge deletion
 
 Replace the current BottomButton effect with an in-page shadcn `Button` in each route below. Keep the existing handler, validation, navigation, mutation, notification, selection, and semantic haptic behavior; only move CTA ownership from the Telegram bridge into page content.
 
@@ -109,7 +109,7 @@ Replace the current BottomButton effect with an in-page shadcn `Button` in each 
 - [ ] Review all other `Button` consumers in `apps/tma/src/routes/**` and `apps/tma/src/features/**` for the migrated public API, including existing reset, retry, delete, close, and form-submit actions.
 - [ ] Review shell/layout surfaces `apps/tma/src/components/shared/tma-page-shell.tsx`, `tma-bottom-tabs.tsx`, `tma-page-header.tsx`, `app-shell.tsx`, `pull-to-refresh.tsx`, and `loading-picker.tsx`; retain the tab rail, safe-area offsets, one scroll root, and existing eager-route behavior.
 
-### 4. Delete the Telegram BottomButton/MainButton bridge completely
+### Task 4: Delete the Telegram BottomButton/MainButton bridge completely
 
 - [ ] Remove BottomButton imports, effects, cleanup calls, comments, and `reserveBottomButton` props from the nine route sources and every other source consumer.
 - [ ] Remove the `hideBottomButton` effect and extra reserve-bottom-button padding from `apps/tma/src/components/shared/tma-page-shell.tsx`; retain normal tab-rail and safe-area bottom padding.
@@ -120,21 +120,21 @@ Replace the current BottomButton effect with an in-page shadcn `Button` in each 
 - [ ] Update or replace `apps/tma/src/test/theme.test.ts` so visual Telegram theme binding is absent while viewport safe-area binding and cleanup remain covered.
 - [ ] Search all TMA mocks and tests, including `apps/tma/src/test/telegram-init.test.ts`, for MainButton/BottomButton bridge assumptions before declaring deletion complete.
 
-### 5. Make visual theme fixed light-only without losing safe-area setup
+### Task 5: Make visual theme fixed light-only without losing safe-area setup
 
 - [ ] Remove visual Telegram theme binding from `apps/tma/src/lib/telegram/theme.ts`, including Telegram theme CSS-variable subscriptions and visual theme cleanup; retain `themeParams.mount()` in bootstrap, `syncViewportInsets()`, and the `--tma-safe-*`/`--tma-content-safe-*` viewport mapping.
 - [ ] Keep fixed light base colors and `color-scheme: light` in `apps/tma/src/index.css`; keep the native Telegram background/header/bottom-bar setup aligned with the fixed light base.
 - [ ] Preserve `apps/tma/src/lib/telegram/safe-area.ts`, viewport mount timing, safe-area CSS variables, and `TmaPageShell` safe-area padding.
 - [ ] Ensure host light and host dark Telegram settings produce the same fixed light TMA visual UI while safe-area and native picker behavior remain functional.
 
-### 6. Migrate and remove legacy visual tokens only after the zero-reference gate
+### Task 6: Migrate and remove legacy visual tokens only after the zero-reference gate
 
 - [ ] Replace every consumer returned by the visual-token audit across `apps/tma/src/components/**`, `apps/tma/src/routes/**`, `apps/tma/src/features/**`, shared shell files, and tests with generated shadcn/Base UI semantic tokens or local non-visual platform-safe-area values.
 - [ ] Do not remove any `--tma-safe-*` or `--tma-content-safe-*` declaration or binding; these are Telegram platform values, not legacy visual tokens.
 - [ ] After the visual-token audit returns zero, remove the legacy visual declarations and Tailwind aliases from `apps/tma/src/index.css` and delete only now-unused compatibility styling.
 - [ ] Re-run the safe-area audit after cleanup and review every remaining result manually against `theme.ts`, `TmaPageShell`, and the tab rail.
 
-### 7. Audit BackButton ownership and preserve shell navigation
+### Task 7: Audit BackButton ownership and preserve shell navigation
 
 - [ ] Enumerate every `app-router.tsx` route and classify BackButton ownership as RootLayout-owned history/close behavior or invitation-route-owned deep-link close behavior.
 - [ ] Confirm `/` hides BackButton, non-root in-app routes show it when a meaningful back target exists, and `/invitations/:token` keeps its single page-owned close handler without a duplicate RootLayout handler.
@@ -142,7 +142,7 @@ Replace the current BottomButton effect with an in-page shadcn `Button` in each 
 - [ ] Preserve `apps/tma/src/lib/telegram/back-button.ts`, `RootLayout` cleanup, tab rail behavior, route shell ownership, and one scroll root; do not replace BackButton with an in-page fake.
 - [ ] Keep `apps/tma/src/app/router/app-router.tsx` eager static imports unchanged and review its diff explicitly for accidental route-policy changes.
 
-### 8. Add non-render unit coverage and run oracle gates
+### Task 8: Add non-render unit coverage and run oracle gates
 
 - [ ] Add non-render unit coverage for the Button activation contract: enabled activation calls one light impact and one handler; disabled and `aria-busy` activation calls neither; the current public Button prop/variant/size contract remains represented.
 - [ ] Keep tests for `NativePicker`, `DatePicker`, `DataState`, and safe-area behavior non-render; do not add React component rendering tests or a browser harness for this migration.

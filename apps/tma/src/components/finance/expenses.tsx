@@ -46,7 +46,7 @@ export const ExpenseItem = ({
 
   return (
     <article
-      className='flex cursor-pointer items-center gap-3 rounded-3xl bg-tma-card-plain p-3.5 shadow-tma-soft transition active:scale-[0.99]'
+      className='flex cursor-pointer items-center gap-3 rounded-3xl bg-card p-3.5 shadow-sm transition active:scale-[0.99]'
       role='button'
       tabIndex={0}
       onClick={openDetail}
@@ -61,10 +61,10 @@ export const ExpenseItem = ({
       <div className='min-w-0 flex-1'>
         <div className='flex items-start justify-between gap-3'>
           <div className='min-w-0 flex-1'>
-            <h3 className='m-0 truncate text-[15px] leading-tight font-semibold text-tma-text-strong'>
+            <h3 className='m-0 truncate text-[15px] leading-tight font-semibold text-foreground'>
               {category.label}
             </h3>
-            <p className='m-0 mt-1 line-clamp-2 text-sm leading-normal font-medium wrap-break-word text-tma-text-muted'>
+            <p className='m-0 mt-1 line-clamp-2 text-sm leading-normal font-medium wrap-break-word text-muted-foreground'>
               {expense.title.trim() || category.label}
             </p>
           </div>
@@ -190,7 +190,7 @@ export const ExpenseTimeline = ({
     <section className='grid gap-5'>
       {[...sections.entries()].map(([label, items]) => (
         <div key={label} className='grid gap-2.5'>
-          <h2 className='m-0 px-1 text-base leading-tight font-bold text-tma-text-strong'>
+          <h2 className='m-0 px-1 text-base leading-tight font-bold text-foreground'>
             {label}
           </h2>
           <div className='grid gap-2'>

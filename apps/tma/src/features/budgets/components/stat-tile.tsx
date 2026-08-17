@@ -15,7 +15,7 @@ export const StatTile = ({
     <strong
       className={cn(
         'text-base font-extrabold',
-        tone === 'warning' ? 'text-[#d93838]' : 'text-tma-text-strong',
+        tone === 'warning' ? 'text-[#d93838]' : 'text-foreground',
       )}>
       {value}
     </strong>

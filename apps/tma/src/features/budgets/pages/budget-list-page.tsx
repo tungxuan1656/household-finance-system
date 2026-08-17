@@ -42,9 +42,7 @@ const ScopeFilterChip = ({
   <button
     className={cn(
       'inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition active:scale-95',
-      isSelected
-        ? 'bg-tma-primary/12 text-tma-primary'
-        : 'bg-black/6 text-tma-text-strong',
+      isSelected ? 'bg-primary/12 text-primary' : 'bg-black/6 text-foreground',
     )}
     type='button'
     onClick={onClick}>
@@ -224,17 +222,17 @@ export const BudgetListPage = () => {
               return (
                 <Link
                   key={budget.id}
-                  className='flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
+                  className='flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-md transition active:scale-[0.99]'
                   to={getBudgetDetailPath(budget.id)}
                   onClick={() => selection()}>
                   <div className='grid min-w-0 gap-1'>
-                    <span className='text-base font-semibold text-tma-text-strong'>
+                    <span className='text-base font-semibold text-foreground'>
                       {formatBudgetPeriodLabel(budget.period, t)}
                     </span>
                     <Chip
                       className={
                         budget.scope === 'personal'
-                          ? 'bg-tma-warning/20 text-[#8a6800]'
+                          ? 'bg-amber-400/20 text-[#8a6800]'
                           : undefined
                       }
                       tone={budget.scope === 'personal' ? 'warning' : 'muted'}>

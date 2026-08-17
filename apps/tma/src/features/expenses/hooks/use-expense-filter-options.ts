@@ -127,7 +127,6 @@ export const useExpenseFilterOptions = (
   }
 
   const handleSortChange = (next: ExpenseListSort) => {
-    selection()
     setFilter({ sort: next })
   }
 

@@ -89,7 +89,6 @@ export const InviteHouseholdDialog = ({
   // button is the user-visible fallback for sharing.
   const handleShareViaTelegram = () => {
     if (!inviteLink) return
-    impact('light')
     shareURL(inviteLink, t('invitations.shareText', { householdName }))
   }
 
@@ -97,7 +96,6 @@ export const InviteHouseholdDialog = ({
     if (!inviteLink) return
     try {
       await navigator.clipboard.writeText(inviteLink)
-      impact('light')
       notification('success')
     } catch {
       notification('error')
@@ -105,7 +103,6 @@ export const InviteHouseholdDialog = ({
   }
 
   const handleClose = () => {
-    impact('light')
     onClose()
   }
 
@@ -130,7 +127,7 @@ export const InviteHouseholdDialog = ({
                 }}
               />
               {role === 'admin' ? (
-                <p className='mt-1 text-xs font-semibold text-tma-warning'>
+                <p className='mt-1 text-xs font-semibold text-amber-700'>
                   {t('invitations.adminRoleWarning')}
                 </p>
               ) : null}
@@ -163,12 +160,12 @@ export const InviteHouseholdDialog = ({
           </>
         ) : (
           <>
-            <p className='m-0 text-sm text-tma-text-strong'>
+            <p className='m-0 text-sm text-foreground'>
               {t('invitations.linkReady')}
             </p>
 
-            <div className='mt-2 rounded-2xl border border-tma-line bg-tma-line p-3'>
-              <p className='m-0 line-clamp-1 font-mono text-xs break-all text-tma-text-muted'>
+            <div className='mt-2 rounded-2xl border border-border bg-border p-3'>
+              <p className='m-0 line-clamp-1 font-mono text-xs break-all text-muted-foreground'>
                 {inviteLink}
               </p>
             </div>

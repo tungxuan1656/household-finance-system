@@ -1,9 +1,9 @@
-import { useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useEffectEvent, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription } from '@/components/ui'
+import { Button, Card, CardDescription } from '@/components/ui'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { confirmImport } from '@/features/expenses/import-confirm'
 import { useImportFlowStore } from '@/features/expenses/import-store'
@@ -18,11 +18,6 @@ import {
 } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import {
-  hideBottomButton,
-  setBottomButton,
-  updateBottomButton,
-} from '@/lib/telegram/bottom-button'
 import { notification } from '@/lib/telegram/haptics'
 
 import { ImportPreviewItemCard } from './add-expense-import-preview-item-card'
@@ -149,38 +144,6 @@ export const AddExpenseImportPreviewPage = () => {
     }
   })
 
-  // Mount BottomButton once per page lifetime
-  useEffect(() => {
-    if (!hasItems) return
-
-    const cleanup = setBottomButton({
-      text: t('expenses.add.importAction', { count: selectedCount }),
-      enabled: false,
-      showProgress: false,
-      onClick: () => {
-        void handleSave()
-      },
-    })
-
-    return cleanup
-  }, [hasItems, t])
-
-  // Update visual props (title/enabled/progress) without re-binding handler
-  useEffect(() => {
-    if (!hasItems) return
-
-    updateBottomButton({
-      text: isSaving
-        ? t('expenses.add.saving')
-        : t('expenses.add.importAction', { count: selectedCount }),
-      enabled: !isSaving,
-      showProgress: isSaving,
-    })
-  }, [hasItems, selectedCount, isSaving, t])
-
-  // Hide BottomButton on unmount
-  useEffect(() => () => hideBottomButton(), [])
-
   if (!hasItems) {
     return (
       <TmaPageShell title={t('expenses.add.importPreviewTitle')}>
@@ -192,18 +155,16 @@ export const AddExpenseImportPreviewPage = () => {
   }
 
   return (
-    <TmaPageShell
-      reserveBottomButton
-      title={t('expenses.add.importPreviewTitle')}>
+    <TmaPageShell title={t('expenses.add.importPreviewTitle')}>
       {feedback ? (
-        <Card className='mb-3 border-tma-error/20 bg-tma-error-bg/90'>
-          <CardDescription className='text-tma-error'>
+        <Card className='mb-3 border-destructive/20 bg-destructive/10'>
+          <CardDescription className='text-destructive'>
             {feedback}
           </CardDescription>
         </Card>
       ) : null}
 
-      <div className='mb-2 text-sm font-semibold text-tma-text-muted'>
+      <div className='mb-2 text-sm font-semibold text-muted-foreground'>
         {t('expenses.add.importItemCount', { count: items.length })}
       </div>
 
@@ -226,6 +187,18 @@ export const AddExpenseImportPreviewPage = () => {
           />
         ))}
       </div>
+
+      <Button
+        aria-busy={isSaving}
+        className='mt-5 mb-2 w-full'
+        disabled={isSaving}
+        onClick={() => {
+          void handleSave()
+        }}>
+        {isSaving
+          ? t('expenses.add.saving')
+          : t('expenses.add.importAction', { count: selectedCount })}
+      </Button>
     </TmaPageShell>
   )
 }

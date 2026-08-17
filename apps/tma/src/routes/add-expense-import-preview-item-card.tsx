@@ -10,10 +10,10 @@ import { formatVnd } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 
 const ROW_LABEL_CLASS =
-  'text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'
-const ROW_VALUE_CLASS = 'text-sm text-tma-text-strong'
+  'text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'
+const ROW_VALUE_CLASS = 'text-sm text-foreground'
 const PICKER_LABEL_CLASS =
-  'w-16 shrink-0 text-xs font-semibold text-tma-text-muted'
+  'w-16 shrink-0 text-xs font-semibold text-muted-foreground'
 
 type Props = {
   item: ImportItemDraft
@@ -56,10 +56,10 @@ export const ImportPreviewItemCard = ({
   return (
     <Card
       className={cn(
-        'grid animate-tma-card-enter gap-2.5 p-3',
+        'grid animate-in gap-2.5 p-3 duration-250 fade-in slide-in-from-bottom-2',
         !item.include && 'opacity-50',
-        item.status === 'success' && 'border-tma-positive/30',
-        item.status === 'error' && 'border-tma-error/20 bg-tma-error-bg/60',
+        item.status === 'success' && 'border-emerald-500/30',
+        item.status === 'error' && 'border-destructive/20 bg-destructive/60',
       )}
       style={{ animationDelay: `${index * 40}ms` }}>
       {/* Row 1: checkbox | category+title | money */}
@@ -68,7 +68,7 @@ export const ImportPreviewItemCard = ({
           <input
             aria-label={t('expenses.add.includeItem')}
             checked={item.include}
-            className='size-5.5 accent-tma-primary'
+            className='size-5.5 accent-primary'
             disabled={item.status === 'success' || isSaving}
             type='checkbox'
             onChange={() => onToggleInclude(item.id)}
@@ -95,7 +95,7 @@ export const ImportPreviewItemCard = ({
             value={item.parsed.categoryKey}
             onChange={(next) => onSetItemCategory(item.id, next)}
           />
-          <div className='text-sm font-semibold wrap-break-word text-tma-text-strong'>
+          <div className='text-sm font-semibold wrap-break-word text-foreground'>
             {item.parsed.title}
           </div>
         </div>
@@ -119,7 +119,7 @@ export const ImportPreviewItemCard = ({
 
       {/* Row 3: context pickers (label left, picker right) */}
       {item.status !== 'success' ? (
-        <div className='grid gap-2 border-t border-tma-line pt-2.5 pl-2'>
+        <div className='grid gap-2 border-t border-border pt-2.5 pl-2'>
           <div className='flex items-center gap-3'>
             <span className={PICKER_LABEL_CLASS}>
               {t('expenses.add.contextHousehold')}
@@ -163,12 +163,12 @@ export const ImportPreviewItemCard = ({
 
       {/* Status indicator */}
       {item.status === 'success' ? (
-        <div className='pl-7 text-xs font-semibold text-tma-positive'>
+        <div className='pl-7 text-xs font-semibold text-emerald-600'>
           {t('expenses.add.importSuccess')}
         </div>
       ) : null}
       {item.status === 'error' && item.error ? (
-        <div className='pl-7 text-xs font-semibold text-tma-error'>
+        <div className='pl-7 text-xs font-semibold text-destructive'>
           {item.error}
         </div>
       ) : null}

@@ -29,13 +29,10 @@ export const IncomesPage = () => {
   }
 
   const handleDeleteCancel = () => {
-    selection()
     setConfirmDeleteId(null)
   }
 
   const handleDeleteConfirm = async (incomeId: string) => {
-    impact('heavy')
-
     try {
       await deleteIncomeMutation.mutateAsync(incomeId)
       notification('success')
@@ -111,7 +108,7 @@ export const IncomesPage = () => {
                   ) : (
                     <button
                       aria-label={t('incomes.deleteAction')}
-                      className='text-tma-text-secondary grid size-8 place-items-center rounded-full transition active:scale-90 active:bg-black/10'
+                      className='grid size-8 place-items-center rounded-full text-muted-foreground transition active:scale-90 active:bg-black/10'
                       onClick={() => handleDeleteStart(income.id)}>
                       <TrashIcon height='17' width='17' />
                     </button>

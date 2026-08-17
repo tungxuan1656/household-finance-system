@@ -127,7 +127,7 @@ export const StatisticsPage = () => {
                   className='relative grid size-44 place-items-center rounded-full shadow-[inset_0_0_0_1px_rgba(255,255,255,0.7),0_18px_34px_rgba(17,24,39,0.08)]'
                   role='img'
                   style={{ background: getPieBackground(topCategories) }}>
-                  <div className='grid size-24 place-items-center rounded-full bg-white/95 text-center shadow-tma-soft'>
+                  <div className='grid size-24 place-items-center rounded-full bg-white/95 text-center shadow-sm'>
                     <div>
                       <Eyebrow>{t('statistics.total')}</Eyebrow>
                       <MoneyLabel className='block text-sm font-extrabold'>
@@ -167,7 +167,7 @@ export const StatisticsPage = () => {
                             }}
                           />
                           <div className='min-w-0'>
-                            <h3 className='m-0 truncate text-sm font-bold text-tma-text-strong'>
+                            <h3 className='m-0 truncate text-sm font-bold text-foreground'>
                               {presentation.label}
                             </h3>
                             <CardDescription>
@@ -184,7 +184,7 @@ export const StatisticsPage = () => {
                               overview.currencyCode,
                             )}
                           </MoneyLabel>
-                          <span className='text-xs font-bold text-tma-primary'>
+                          <span className='text-xs font-bold text-primary'>
                             {percent}%
                           </span>
                         </div>
@@ -202,19 +202,19 @@ export const StatisticsPage = () => {
             <Section>
               <Card className='grid gap-3'>
                 <div className='grid grid-cols-2 gap-2.5'>
-                  <div className='rounded-2xl border border-black/6 bg-white/80 px-3.5 py-3 shadow-tma-soft'>
-                    <span className='block text-xs font-semibold text-tma-text-muted'>
+                  <div className='rounded-2xl border border-black/6 bg-white/80 px-3.5 py-3 shadow-sm'>
+                    <span className='block text-xs font-semibold text-muted-foreground'>
                       {t('statistics.statExpenseCount')}
                     </span>
-                    <strong className='mt-1 block font-mono text-base font-extrabold text-tma-text-strong [font-variant-numeric:tabular-nums]'>
+                    <strong className='mt-1 block font-mono text-base font-extrabold text-foreground [font-variant-numeric:tabular-nums]'>
                       {overview.expenseCount}
                     </strong>
                   </div>
-                  <div className='rounded-2xl border border-black/6 bg-white/80 px-3.5 py-3 shadow-tma-soft'>
-                    <span className='block text-xs font-semibold text-tma-text-muted'>
+                  <div className='rounded-2xl border border-black/6 bg-white/80 px-3.5 py-3 shadow-sm'>
+                    <span className='block text-xs font-semibold text-muted-foreground'>
                       {t('statistics.dateRange')}
                     </span>
-                    <strong className='mt-1 block font-mono text-sm font-extrabold text-tma-text-strong [font-variant-numeric:tabular-nums]'>
+                    <strong className='mt-1 block font-mono text-sm font-extrabold text-foreground [font-variant-numeric:tabular-nums]'>
                       {formatPeriodSelectionRangeLabel(selectedPeriod)}
                     </strong>
                   </div>

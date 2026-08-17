@@ -163,7 +163,7 @@ export const BudgetDetailPage = () => {
             'mb-3',
             feedback.tone === 'error'
               ? 'border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'border-tma-positive/20 bg-tma-positive/10',
+              : 'border-emerald-500/20 bg-emerald-500/10',
           )}>
           <CardDescription
             className={

@@ -11,7 +11,7 @@ export const Eyebrow = ({
 }) => (
   <p
     className={cn(
-      'm-0 text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase',
+      'm-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase',
       className,
     )}>
     {children}
@@ -40,7 +40,7 @@ export const SectionHeader = ({
   <div className='mb-3 flex items-end justify-between gap-3'>
     <div className='min-w-0'>
       {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-      <h2 className='m-0 text-base leading-tight font-semibold text-tma-text-strong'>
+      <h2 className='m-0 text-base leading-tight font-semibold text-foreground'>
         {title}
       </h2>
     </div>
@@ -60,10 +60,10 @@ export const Chip = ({
   <span
     className={cn(
       'inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold',
-      tone === 'muted' && 'bg-black/6 text-tma-text-strong',
-      tone === 'primary' && 'bg-tma-primary/12 text-tma-primary',
-      tone === 'success' && 'bg-tma-positive/15 text-[#2f9b44]',
-      tone === 'warning' && 'bg-tma-warning/35 text-[#8a6800]',
+      tone === 'muted' && 'bg-muted text-foreground',
+      tone === 'primary' && 'bg-primary/12 text-primary',
+      tone === 'success' && 'bg-emerald-100 text-emerald-700',
+      tone === 'warning' && 'bg-amber-100 text-amber-800',
       className,
     )}>
     {children}
@@ -85,7 +85,7 @@ export const Avatar = ({
 }) => (
   <span
     className={cn(
-      'grid shrink-0 place-items-center overflow-hidden bg-linear-to-br from-tma-primary/20 to-tma-positive/30 font-bold text-tma-text-strong shadow-[inset_0_0_0_1px_rgba(255,255,255,0.54)]',
+      'grid shrink-0 place-items-center overflow-hidden bg-linear-to-br from-primary/20 to-emerald-300/30 font-bold text-foreground shadow-[inset_0_0_0_1px_rgba(255,255,255,0.54)]',
       size === 'sm' && 'size-10 rounded-2xl text-xs',
       size === 'md' && 'size-11 rounded-[18px] text-sm',
       size === 'lg' && 'size-14 rounded-[20px] text-sm',
@@ -109,7 +109,7 @@ export const MoneyLabel = ({
 }) => (
   <span
     className={cn(
-      'font-mono text-tma-text-strong [font-variant-numeric:tabular-nums]',
+      'font-mono text-foreground [font-variant-numeric:tabular-nums]',
       className,
     )}>
     {children}
@@ -133,7 +133,7 @@ export const IconBadge = ({
       'grid shrink-0 place-items-center font-bold',
       size === 'sm' && 'size-9 rounded-xl text-[11px]',
       size === 'md' && 'size-10 rounded-[14px] text-xs',
-      !accent && 'bg-tma-primary/12 text-tma-primary',
+      !accent && 'bg-primary/12 text-primary',
       className,
     )}
     style={

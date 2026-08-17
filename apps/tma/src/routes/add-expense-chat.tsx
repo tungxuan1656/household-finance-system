@@ -1,18 +1,19 @@
-import { useEffect, useEffectEvent, useState } from 'react'
+import { useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription, CardTitle, Textarea } from '@/components/ui'
+import {
+  Button,
+  Card,
+  CardDescription,
+  CardTitle,
+  Textarea,
+} from '@/components/ui'
 import { useParseExpensesMutation } from '@/features/expenses/import-api'
 import { MAX_PARSE_TEXT_LENGTH } from '@/features/expenses/import-api'
 import { useImportFlowStore } from '@/features/expenses/import-store'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import {
-  hideBottomButton,
-  setBottomButton,
-  updateBottomButton,
-} from '@/lib/telegram/bottom-button'
 import { notification } from '@/lib/telegram/haptics'
 
 export const AddExpenseChatPage = () => {
@@ -56,37 +57,8 @@ export const AddExpenseChatPage = () => {
     }
   })
 
-  useEffect(() => {
-    const cleanup = setBottomButton({
-      text: t('expenses.add.parseAction'),
-      enabled: false,
-      showProgress: false,
-      onClick: () => {
-        void handleParse()
-      },
-    })
-
-    return cleanup
-  }, [t])
-
-  // BottomButton lifecycle — visible on this screen only
-  useEffect(() => {
-    updateBottomButton({
-      text: t('expenses.add.parseAction'),
-      enabled: rawText.trim().length > 0 && !parseMutation.isPending,
-      showProgress: parseMutation.isPending,
-    })
-  }, [!!rawText, parseMutation.isPending, t])
-
-  // Clean up BottomButton on unmount
-  useEffect(() => {
-    return () => {
-      hideBottomButton()
-    }
-  }, [])
-
   return (
-    <TmaPageShell reserveBottomButton title={t('expenses.add.aiImportTitle')}>
+    <TmaPageShell title={t('expenses.add.aiImportTitle')}>
       <Card className='mb-4 flex flex-col gap-1'>
         <CardTitle>{t('expenses.add.aiImportDesc')}</CardTitle>
         <CardDescription>{t('expenses.add.aiImportHint')}</CardDescription>
@@ -103,8 +75,10 @@ export const AddExpenseChatPage = () => {
       />
 
       {error ? (
-        <Card className='mt-3 border-tma-error/20 bg-tma-error-bg/90'>
-          <CardDescription className='text-tma-error'>{error}</CardDescription>
+        <Card className='mt-3 border-destructive/20 bg-destructive/10'>
+          <CardDescription className='text-destructive'>
+            {error}
+          </CardDescription>
         </Card>
       ) : null}
 
@@ -113,6 +87,18 @@ export const AddExpenseChatPage = () => {
           <CardDescription>{t('expenses.add.parsing')}</CardDescription>
         </Card>
       ) : null}
+
+      <Button
+        aria-busy={parseMutation.isPending}
+        className='mt-4 mb-2 w-full'
+        disabled={!rawText.trim() || parseMutation.isPending}
+        onClick={() => {
+          void handleParse()
+        }}>
+        {parseMutation.isPending
+          ? t('expenses.add.parsing')
+          : t('expenses.add.parseAction')}
+      </Button>
     </TmaPageShell>
   )
 }

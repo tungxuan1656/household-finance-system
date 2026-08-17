@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -9,6 +9,7 @@ import {
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import {
+  Button,
   buttonVariants,
   Card,
   CardDescription,
@@ -32,11 +33,6 @@ import type { GroupListItem } from '@/features/groups/types'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
-import {
-  hideBottomButton,
-  setBottomButton,
-  updateBottomButton,
-} from '@/lib/telegram/bottom-button'
 import { selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseContextPage = () => {
@@ -116,44 +112,6 @@ export const AddExpenseContextPage = () => {
     reset,
   })
 
-  useEffect(() => {
-    if (!isReady) {
-      return
-    }
-
-    const cleanup = setBottomButton({
-      text: t('expenses.add.saveAction'),
-      enabled: false,
-      showProgress: false,
-      onClick: () => {
-        void handleSave()
-      },
-    })
-
-    return cleanup
-  }, [isReady, t])
-
-  useEffect(() => {
-    if (!isReady) {
-      return
-    }
-
-    updateBottomButton({
-      text: createExpenseMutation.isPending
-        ? t('expenses.add.saving')
-        : t('expenses.add.saveWithAmount', { amount: formatVnd(amount) }),
-      enabled: !createExpenseMutation.isPending,
-      showProgress: createExpenseMutation.isPending,
-    })
-  }, [amount, createExpenseMutation.isPending, isReady])
-
-  useEffect(
-    () => () => {
-      hideBottomButton()
-    },
-    [],
-  )
-
   if (!isReady || !category) {
     return (
       <TmaPageShell title={t('expenses.add.title')}>
@@ -177,7 +135,7 @@ export const AddExpenseContextPage = () => {
   }
 
   return (
-    <TmaPageShell reserveBottomButton title={t('expenses.add.title')}>
+    <TmaPageShell title={t('expenses.add.title')}>
       {feedback ? (
         <Card className='mb-3 border-[#d93838]/20 bg-[#ffeded]/90'>
           <CardDescription className='text-[#d93838]'>
@@ -202,10 +160,10 @@ export const AddExpenseContextPage = () => {
           </div>
         </div>
 
-        <div className='grid gap-2.5 border-t border-tma-line pt-3'>
+        <div className='grid gap-2.5 border-t border-border pt-3'>
           <div className='grid gap-1'>
             <Eyebrow>{t('expenses.add.expenseName')}</Eyebrow>
-            <strong className='truncate text-base font-semibold text-tma-text-strong'>
+            <strong className='truncate text-base font-semibold text-foreground'>
               {title.trim() || t('expenses.add.nameUnset')}
             </strong>
           </div>
@@ -278,6 +236,18 @@ export const AddExpenseContextPage = () => {
           />
         </Field>
       </Card>
+
+      <Button
+        aria-busy={createExpenseMutation.isPending}
+        className='mt-5 mb-2 w-full'
+        disabled={createExpenseMutation.isPending}
+        onClick={() => {
+          void handleSave()
+        }}>
+        {createExpenseMutation.isPending
+          ? t('expenses.add.saving')
+          : t('expenses.add.saveWithAmount', { amount: formatVnd(amount) })}
+      </Button>
     </TmaPageShell>
   )
 }

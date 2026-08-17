@@ -57,7 +57,7 @@ export const HouseholdPreviewItem = ({
   t: (key: string, options?: Record<string, unknown>) => string
 }) => (
   <Link
-    className='grid min-w-55 gap-3 rounded-[22px] bg-white p-3.5 shadow-tma-soft transition active:scale-[0.98]'
+    className='grid min-w-55 gap-3 rounded-[22px] bg-white p-3.5 shadow-sm transition active:scale-[0.98]'
     to={getHouseholdDetailPath(card.household.id)}
     onClick={() => impact('light')}>
     <div className='flex items-start justify-between gap-3'>
@@ -75,7 +75,7 @@ export const HouseholdPreviewItem = ({
       </Chip>
     </div>
     <div>
-      <h3 className='m-0 text-[15px] font-semibold text-tma-text-strong'>
+      <h3 className='m-0 text-[15px] font-semibold text-foreground'>
         {card.household.name}
       </h3>
       <MoneyLabel className='mt-1 block text-sm font-medium'>
@@ -99,7 +99,7 @@ export const HouseholdItem = ({
   t: (key: string, options?: Record<string, unknown>) => string
 }) => (
   <Link
-    className='grid gap-3 rounded-3xl bg-white p-4 shadow-tma-card transition active:scale-[0.99]'
+    className='grid gap-3 rounded-3xl bg-white p-4 shadow-md transition active:scale-[0.99]'
     to={getHouseholdDetailPath(card.household.id)}
     onClick={() => impact('light')}>
     <div className='flex items-center justify-between gap-3'>
@@ -132,12 +132,12 @@ export const HouseholdItem = ({
       <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
         {card.budget ? (
           <>
-            <strong className='text-sm text-tma-text-strong'>
+            <strong className='text-sm text-foreground'>
               {card.budgetLabel}
             </strong>
             <div className='mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/8'>
               <div
-                className='h-full rounded-full bg-tma-positive transition-all'
+                className='h-full rounded-full bg-emerald-500 transition-all'
                 style={{
                   width: `${Math.min(
                     100,
@@ -150,7 +150,7 @@ export const HouseholdItem = ({
             </div>
           </>
         ) : (
-          <strong className='text-sm text-tma-text-muted'>—</strong>
+          <strong className='text-sm text-muted-foreground'>—</strong>
         )}
       </div>
     </div>

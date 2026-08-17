@@ -32,8 +32,8 @@ const PeriodPresetButton = ({
     className={cn(
       'inline-flex min-h-10 items-center gap-1 rounded-full border pr-3 pl-2 text-sm font-medium transition active:scale-95',
       isActive
-        ? 'border-tma-primary bg-tma-primary/12 text-tma-primary shadow-[inset_0_0_0_1px_rgba(63,124,255,0.12)]'
-        : 'border-black/6 bg-white/75 text-tma-text-strong shadow-tma-soft',
+        ? 'border-primary bg-primary/12 text-primary shadow-[inset_0_0_0_1px_rgba(63,124,255,0.12)]'
+        : 'border-black/6 bg-white/75 text-foreground shadow-sm',
     )}
     type='button'
     onClick={onClick}>
@@ -82,7 +82,7 @@ const PeriodRangeTimeline = ({
     />
     <div
       aria-hidden='true'
-      className='grid place-items-center text-tma-text-muted'>
+      className='grid place-items-center text-muted-foreground'>
       <svg
         fill='none'
         height='14'
@@ -179,8 +179,8 @@ export const PeriodPickerSection = ({
         className={cn(
           'mt-3 grid gap-3',
           activePreset
-            ? 'border-tma-primary/30 bg-tma-primary/[0.07]'
-            : 'border-tma-warning/35 bg-[#fff9e6]',
+            ? 'border-primary/30 bg-primary/[0.07]'
+            : 'border-amber-400/35 bg-[#fff9e6]',
         )}>
         <div className='flex flex-wrap items-center gap-2'>
           <Chip tone={activePreset ? 'primary' : 'warning'}>
@@ -189,7 +189,7 @@ export const PeriodPickerSection = ({
               : t('period.sectionCustom')}
           </Chip>
           {!activePreset && candidate.dateFrom > 0 && candidate.dateTo > 0 && (
-            <span className='text-xs text-tma-text-muted'>
+            <span className='text-xs text-muted-foreground'>
               {formatPeriodSelectionRangeLabel(candidate)}
             </span>
           )}

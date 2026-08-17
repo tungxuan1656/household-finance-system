@@ -11,7 +11,6 @@ import { useEditExpenseStore } from '@/features/expenses/store'
 import { useReferenceCategoriesQuery } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 export const ExpenseEditCategoryPage = () => {
@@ -64,10 +63,9 @@ export const ExpenseEditCategoryPage = () => {
                   aria-pressed={isActive}
                   className={cn(
                     'grid min-h-20 content-start',
-                    isActive && 'ring-2 ring-tma-primary',
+                    isActive && 'ring-2 ring-primary',
                   )}
                   onClick={() => {
-                    selection()
                     updateDraft({ categoryKey: category.id })
                     navigate(-1)
                   }}>
@@ -76,7 +74,7 @@ export const ExpenseEditCategoryPage = () => {
                     iconUrl={category.iconUrl}
                     symbol={category.symbol}
                   />
-                  <span className='text-xs font-semibold text-tma-text-strong'>
+                  <span className='text-xs font-semibold text-foreground'>
                     {category.label}
                   </span>
                 </ChipButton>

@@ -90,7 +90,7 @@ export const FinanceSummaryCard = ({
           {showPeriodChip ? <PeriodChipLink /> : null}
         </div>
 
-        <div className='text-xs font-semibold text-tma-text-muted'>
+        <div className='text-xs font-semibold text-muted-foreground'>
           {overviewQuery.isFetching || comparisonQuery.isFetching
             ? t('summary.updating')
             : getComparisonLabel(
@@ -105,13 +105,13 @@ export const FinanceSummaryCard = ({
           <div className='grid gap-2'>
             <div className='h-3 overflow-hidden rounded-full bg-black/[0.07]'>
               <span
-                className='block h-full rounded-full bg-linear-to-r from-tma-primary to-[#7ca8ff] shadow-[0_6px_14px_rgba(63,124,255,0.22)]'
+                className='block h-full rounded-full bg-linear-to-r from-primary to-[#7ca8ff] shadow-[0_6px_14px_rgba(63,124,255,0.22)]'
                 style={{
                   width: `${Math.min(budgetProgress.percentUsed, 100)}%`,
                 }}
               />
             </div>
-            <div className='flex items-center justify-between gap-3 text-xs font-semibold text-tma-text-muted'>
+            <div className='flex items-center justify-between gap-3 text-xs font-semibold text-muted-foreground'>
               {t('summary.budgetUsedPct', {
                 percent: budgetProgress.percentUsed,
               })}
@@ -129,7 +129,7 @@ export const FinanceSummaryCard = ({
             </div>
           </div>
         ) : (
-          <div className='text-xs font-semibold text-tma-text-muted'>
+          <div className='text-xs font-semibold text-muted-foreground'>
             {budget && isMonthPeriodSelection(selectedPeriod)
               ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget, t)
               : showBudgetPeriodContext

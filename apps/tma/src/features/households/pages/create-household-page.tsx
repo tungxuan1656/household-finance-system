@@ -94,7 +94,7 @@ export const CreateHouseholdPage = () => {
           className={
             feedback.tone === 'error'
               ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mt-3 border-tma-positive/20 bg-tma-positive/10'
+              : 'mt-3 border-emerald-500/20 bg-emerald-500/10'
           }>
           <CardDescription
             className={

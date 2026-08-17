@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -18,11 +19,6 @@ import {
 } from '@/features/invitations/api/invitation'
 import { getHouseholdDetailPath } from '@/lib/constants/routes'
 import { formatDateLabel } from '@/lib/formatters'
-import {
-  hideBottomButton,
-  setBottomButton,
-  updateBottomButton,
-} from '@/lib/telegram/bottom-button'
 import { impact, notification } from '@/lib/telegram/haptics'
 
 export const AcceptInvitationPage = () => {
@@ -62,46 +58,7 @@ export const AcceptInvitationPage = () => {
     }
   })
 
-  // Wire the Telegram MainButton (native BottomButton) as the primary CTA.
-  // Per native-ui-and-navigation-pattern.md, primary actions on full pages
-  // must use BottomButton instead of inline buttons.
   const canShowAcceptCta = Boolean(token) && isAuthenticated && Boolean(preview)
-
-  useEffect(() => {
-    if (!canShowAcceptCta) {
-      hideBottomButton()
-
-      return
-    }
-
-    const cleanup = setBottomButton({
-      text: acceptMutation.isPending
-        ? t('invitations.accepting')
-        : t('invitations.acceptAction'),
-      enabled: !acceptMutation.isPending,
-      showProgress: acceptMutation.isPending,
-      onClick: () => {
-        void handleAccept()
-      },
-    })
-
-    return () => {
-      cleanup()
-      hideBottomButton()
-    }
-  }, [canShowAcceptCta, acceptMutation.isPending, t, handleAccept])
-
-  useEffect(() => {
-    if (!canShowAcceptCta) return
-
-    updateBottomButton({
-      text: acceptMutation.isPending
-        ? t('invitations.accepting')
-        : t('invitations.acceptAction'),
-      enabled: !acceptMutation.isPending,
-      showProgress: acceptMutation.isPending,
-    })
-  }, [canShowAcceptCta, acceptMutation.isPending, acceptMutation.variables, t])
 
   // Own the Telegram BackButton on this route. AcceptInvitationPage is a
   // deep-link entry point (?startapp=<token>), so there is no in-app
@@ -160,26 +117,26 @@ export const AcceptInvitationPage = () => {
             <CardContent className='mt-3'>
               <dl className='grid gap-3'>
                 <div className='flex flex-col gap-1'>
-                  <dt className='text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'>
+                  <dt className='text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
                     {t('invitations.householdName')}
                   </dt>
-                  <dd className='m-0 text-sm font-semibold text-tma-text-strong'>
+                  <dd className='m-0 text-sm font-semibold text-foreground'>
                     {preview.household.name}
                   </dd>
                 </div>
                 <div className='flex flex-col gap-1'>
-                  <dt className='text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'>
+                  <dt className='text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
                     {t('invitations.roleLabel')}
                   </dt>
-                  <dd className='m-0 text-sm font-semibold text-tma-text-strong'>
+                  <dd className='m-0 text-sm font-semibold text-foreground'>
                     {toRoleLabel(preview.invitedRole)}
                   </dd>
                 </div>
                 <div className='flex flex-col gap-1'>
-                  <dt className='text-[11px] font-bold tracking-[0.04em] text-tma-text-muted uppercase'>
+                  <dt className='text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
                     {t('invitations.expiresAt')}
                   </dt>
-                  <dd className='m-0 text-sm font-semibold text-tma-text-strong'>
+                  <dd className='m-0 text-sm font-semibold text-foreground'>
                     {formatDateLabel(new Date(preview.expiresAt).toISOString())}
                   </dd>
                 </div>
@@ -187,7 +144,7 @@ export const AcceptInvitationPage = () => {
 
               {!isAuthenticated ? (
                 <div className='mt-4'>
-                  <p className='m-0 text-sm text-tma-text-muted'>
+                  <p className='m-0 text-sm text-muted-foreground'>
                     {t('invitations.requiresAuth')}
                   </p>
                 </div>
@@ -196,6 +153,19 @@ export const AcceptInvitationPage = () => {
           </Card>
         ) : null}
       </DataState>
+      {canShowAcceptCta ? (
+        <Button
+          aria-busy={acceptMutation.isPending}
+          className='mt-4 mb-2 w-full'
+          disabled={acceptMutation.isPending}
+          onClick={() => {
+            void handleAccept()
+          }}>
+          {acceptMutation.isPending
+            ? t('invitations.accepting')
+            : t('invitations.acceptAction')}
+        </Button>
+      ) : null}
     </TmaPageShell>
   )
 }
