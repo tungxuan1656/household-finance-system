@@ -59,3 +59,27 @@
 **Evidence**: `./init.sh` passed; `bash -n init.sh scripts/detect_ci_scope.sh` passed; `git diff --check` and Prettier checks passed. A temporary external `pnpm` shim returning 17 made `./init.sh format` exit 17 without `OK`; both independent re-reviews found no new issue. Earlier cutover evidence remains in prior entries.
 **Blockers**: none
 **Next**: Start a new feature only after user scope.
+
+## 2026-08-16 - feat-127
+
+**State**: active
+**Done**: Created the tracker and concise inline plan for TMA eager route loading.
+**Evidence**: No verification claimed; implementation evidence is pending.
+**Blockers**: none
+**Next**: Independent plan review.
+
+## 2026-08-16 - feat-127
+
+**State**: active
+**Done**: Completed automatic TMA verification: lint passed with 15 pre-existing warnings; typecheck passed; tests passed with 24 test files and 134 tests; build passed with one entry JS asset (656.43 kB, 198.41 kB gzip); `./init.sh` passed with the Worker build skipped by declared configuration; parent confirmed no lazy/Suspense/LoadingSkeleton occurrences in `apps/tma/src`, the loading-skeleton file is absent, and `git diff --check` passed.
+**Evidence**: Vite reported remaining dynamic import call sites do not become chunks because routes are statically imported.
+**Blockers**: Real Telegram cold-launch trace remains unrun pending an authorized deploy/manual Telegram test.
+**Next**: After an authorized deploy, cache-clear/cold launch; tap Expenses, Households, and add-expense; confirm no new JS chunk request begins from each tap while API fetch/XHR may occur.
+
+## 2026-08-16 - feat-127
+
+**State**: active
+**Done**: User accepted all-route eager loading after the P2 review finding.
+**Evidence**: The accepted entry size is 656.43 kB / 198.41 kB gzip; the real Telegram cold-launch trace remains required.
+**Blockers**: Real Telegram cold-launch trace remains unrun pending an authorized deploy/manual Telegram test.
+**Next**: Run the authorized cold-launch tap trace before deciding whether the eager-loading tradeoff is acceptable.

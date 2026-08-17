@@ -36,7 +36,7 @@ For exact local commands and the current smoke-test order, read `docs/references
 
 ## Performance rules
 
-- Optimize startup first: small bootstrap, deferred heavy routes, no unnecessary auth-time waterfalls.
+- Optimize startup first: first interaction must not wait for route module download; keep auth bootstrap narrow, defer non-critical server data, and avoid unnecessary auth-data waterfalls.
 - Degrade gracefully on weak devices and older Telegram versions.
 - Treat WebView jank as a release blocker for primary flows such as launch, add expense, and invite accept.
 
