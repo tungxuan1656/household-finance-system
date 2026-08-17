@@ -2,18 +2,13 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { DatePicker } from '@/components/shared/date-picker'
+import { NativePicker } from '@/components/shared/native-picker'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  Card,
-  CardDescription,
-  CardTitle,
-  DatePicker,
-  Field,
-  FieldLabel,
-  Input,
-  NativePicker,
-} from '@/components/ui'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { getBudgetDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatAmountInput } from '@/lib/formatters'
@@ -161,8 +156,8 @@ const CreateBudgetPage = () => {
         <Card
           className={
             feedback.tone === 'error'
-              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mt-3 border-emerald-500/20 bg-emerald-500/10'
+              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'
+              : 'mt-3 border-emerald-500/20 bg-emerald-500/10 p-4'
           }>
           <CardDescription
             className={
@@ -176,14 +171,17 @@ const CreateBudgetPage = () => {
       <section className='mt-6'>
         <CardTitle className='mb-3'>{t('budgets.createPage.header')}</CardTitle>
 
-        <Card>
+        <Card className='p-4'>
           <form className='grid gap-3.5' onSubmit={handleSubmit}>
             <Field>
-              <FieldLabel>{t('budgets.createPage.fieldScope')}</FieldLabel>
+              <FieldLabel htmlFor='create-budget-scope'>
+                {t('budgets.createPage.fieldScope')}
+              </FieldLabel>
               <NativePicker
                 fullWidth
                 aria-label={t('budgets.createPage.scopePlaceholder')}
                 disabled={isBusy || householdsQuery.isLoading}
+                id='create-budget-scope'
                 options={targetOptions}
                 value={targetValue}
                 onChange={(next) => {
@@ -194,11 +192,14 @@ const CreateBudgetPage = () => {
             </Field>
 
             <Field>
-              <FieldLabel>{t('budgets.createPage.fieldPeriod')}</FieldLabel>
+              <FieldLabel htmlFor='create-budget-period'>
+                {t('budgets.createPage.fieldPeriod')}
+              </FieldLabel>
               <DatePicker
                 fullWidth
                 aria-label={t('budgets.createPage.periodPlaceholder')}
                 disabled={isBusy}
+                id='create-budget-period'
                 mode='month'
                 value={period}
                 onChange={(next) => {
@@ -209,9 +210,12 @@ const CreateBudgetPage = () => {
             </Field>
 
             <Field>
-              <FieldLabel>{t('budgets.createPage.fieldAmount')}</FieldLabel>
+              <FieldLabel htmlFor='create-budget-amount'>
+                {t('budgets.createPage.fieldAmount')}
+              </FieldLabel>
               <Input
                 disabled={isBusy}
+                id='create-budget-amount'
                 inputMode='numeric'
                 placeholder={t('budgets.createPage.amountPlaceholder')}
                 value={totalLimitInput}
@@ -223,18 +227,23 @@ const CreateBudgetPage = () => {
             </Field>
 
             <div className='flex flex-wrap justify-end gap-2.5'>
-              <Button
+              <TmaHapticButton
+                aria-busy={isBusy}
                 disabled={isBusy}
                 type='button'
                 variant='ghost'
                 onClick={() => navigate(TMA_PATHS.budgets)}>
                 {t('common.cancel')}
-              </Button>
-              <Button disabled={isBusy} type='submit' variant='secondary'>
+              </TmaHapticButton>
+              <TmaHapticButton
+                aria-busy={isBusy}
+                disabled={isBusy}
+                type='submit'
+                variant='secondary'>
                 {isBusy
                   ? t('budgets.createPage.submitting')
                   : t('budgets.createPage.title')}
-              </Button>
+              </TmaHapticButton>
             </div>
           </form>
         </Card>

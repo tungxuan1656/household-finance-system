@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { PlusIcon, TrashIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import {
   useDeleteIncomeMutation,
@@ -47,7 +48,7 @@ export const IncomesPage = () => {
   if (incomesQuery.isLoading) {
     return (
       <TmaPageShell title={t('incomes.title')}>
-        <Card>
+        <Card className='p-4'>
           <CardTitle>{t('incomes.loadingTitle')}</CardTitle>
           <CardDescription>{t('incomes.loadingDesc')}</CardDescription>
         </Card>
@@ -59,14 +60,14 @@ export const IncomesPage = () => {
   return (
     <TmaPageShell title={t('incomes.title')}>
       {incomes.length === 0 ? (
-        <Card>
+        <Card className='p-4'>
           <CardTitle>{t('incomes.emptyTitle')}</CardTitle>
           <CardDescription>{t('incomes.emptyDesc')}</CardDescription>
         </Card>
       ) : (
         <div className='grid gap-2'>
           {incomes.map((income) => (
-            <Card key={income.id}>
+            <Card key={income.id} className='p-4'>
               <div className='flex items-center justify-between'>
                 <div className='grid gap-0.5'>
                   <CardTitle>
@@ -88,22 +89,22 @@ export const IncomesPage = () => {
 
                   {confirmDeleteId === income.id ? (
                     <div className='flex gap-1'>
-                      <Button
+                      <TmaHapticButton
                         className='h-8 px-2 text-xs'
                         disabled={deleteIncomeMutation.isPending}
                         size='sm'
-                        variant='danger'
+                        variant='destructive'
                         onClick={() => handleDeleteConfirm(income.id)}>
                         {t('common.delete')}
-                      </Button>
-                      <Button
+                      </TmaHapticButton>
+                      <TmaHapticButton
                         className='h-8 px-2 text-xs'
                         disabled={deleteIncomeMutation.isPending}
                         size='sm'
                         variant='ghost'
                         onClick={handleDeleteCancel}>
                         {t('common.cancel')}
-                      </Button>
+                      </TmaHapticButton>
                     </div>
                   ) : (
                     <button
@@ -122,7 +123,7 @@ export const IncomesPage = () => {
 
       {incomesQuery.hasNextPage && (
         <div className='mt-4 flex justify-center'>
-          <Button
+          <TmaHapticButton
             disabled={incomesQuery.isFetchingNextPage}
             size='sm'
             variant='outline'
@@ -132,7 +133,7 @@ export const IncomesPage = () => {
             {incomesQuery.isFetchingNextPage
               ? t('expenses.loadingMore')
               : t('expenses.loadMore')}
-          </Button>
+          </TmaHapticButton>
         </div>
       )}
 

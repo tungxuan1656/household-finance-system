@@ -7,7 +7,6 @@ import {
 
 type Capability =
   | 'secureStorage'
-  | 'deviceStorage'
   | 'hapticFeedback'
   | 'themeParams'
   | 'backButton'
@@ -16,8 +15,6 @@ export const isSupported = (capability: Capability): boolean => {
   switch (capability) {
     case 'secureStorage':
       return secureStorage.setItem.isAvailable()
-    case 'deviceStorage':
-      return false
     case 'hapticFeedback':
       return hapticFeedback.isSupported()
     case 'themeParams':

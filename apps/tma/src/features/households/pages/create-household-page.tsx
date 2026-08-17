@@ -2,15 +2,11 @@ import { type FormEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  Card,
-  CardDescription,
-  Field,
-  FieldLabel,
-  Input,
-} from '@/components/ui'
+import { Card, CardDescription } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 
 import { useCreateHouseholdMutation, useUpdateHouseholdMutation } from '../api'
@@ -93,8 +89,8 @@ export const CreateHouseholdPage = () => {
         <Card
           className={
             feedback.tone === 'error'
-              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mt-3 border-emerald-500/20 bg-emerald-500/10'
+              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'
+              : 'mt-3 border-emerald-500/20 bg-emerald-500/10 p-4'
           }>
           <CardDescription
             className={
@@ -105,7 +101,7 @@ export const CreateHouseholdPage = () => {
         </Card>
       ) : null}
 
-      <Card className='mt-3 grid gap-3'>
+      <Card className='mt-3 grid gap-3 p-4'>
         <HouseholdAvatarSection
           canEdit
           avatarUrl={avatarUrl}
@@ -120,12 +116,15 @@ export const CreateHouseholdPage = () => {
       </Card>
 
       <section className='mt-6'>
-        <Card>
+        <Card className='p-4'>
           <form className='grid gap-3.5' onSubmit={handleCreateHousehold}>
             <Field>
-              <FieldLabel>{t('households.createPage.fieldName')}</FieldLabel>
+              <FieldLabel htmlFor='create-household-name'>
+                {t('households.createPage.fieldName')}
+              </FieldLabel>
               <Input
                 disabled={isBusy}
+                id='create-household-name'
                 maxLength={120}
                 placeholder={t('households.createPage.namePlaceholder')}
                 type='text'
@@ -138,19 +137,24 @@ export const CreateHouseholdPage = () => {
             </Field>
 
             <div className='flex flex-wrap justify-end gap-2.5'>
-              <Button
+              <TmaHapticButton
+                aria-busy={isBusy}
                 disabled={isBusy}
                 type='button'
                 variant='ghost'
                 onClick={() => navigate(TMA_PATHS.households)}>
                 {t('common.cancel')}
-              </Button>
+              </TmaHapticButton>
 
-              <Button disabled={isBusy} type='submit' variant='secondary'>
+              <TmaHapticButton
+                aria-busy={isBusy}
+                disabled={isBusy}
+                type='submit'
+                variant='secondary'>
                 {isBusy
                   ? t('households.createPage.submitting')
                   : t('households.create')}
-              </Button>
+              </TmaHapticButton>
             </div>
           </form>
         </Card>

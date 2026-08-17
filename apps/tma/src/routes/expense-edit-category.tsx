@@ -2,15 +2,17 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { DataState } from '@/components/shared/data-state'
 import {
   TmaCategoryIconBadge,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
-import { ChipButton, DataState, Section, SectionHeader } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 import { useEditExpenseStore } from '@/features/expenses/store'
 import { useReferenceCategoriesQuery } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
+import { selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 export const ExpenseEditCategoryPage = () => {
@@ -36,8 +38,10 @@ export const ExpenseEditCategoryPage = () => {
 
   return (
     <TmaPageShell title={t('expenses.edit.categoryPicker')}>
-      <Section>
-        <SectionHeader title={t('expenses.edit.sectionCategory')} />
+      <section className='mt-6'>
+        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+          {t('expenses.edit.sectionCategory')}
+        </h2>
         <DataState
           emptyDescription={t('expenses.edit.emptyDescription')}
           emptyTitle={t('expenses.edit.emptyTitle')}
@@ -58,14 +62,17 @@ export const ExpenseEditCategoryPage = () => {
               const isActive = draft.categoryKey === category.id
 
               return (
-                <ChipButton
+                <Button
                   key={category.id}
                   aria-pressed={isActive}
                   className={cn(
                     'grid min-h-20 content-start',
                     isActive && 'ring-2 ring-primary',
                   )}
+                  type='button'
+                  variant='outline'
                   onClick={() => {
+                    selection()
                     updateDraft({ categoryKey: category.id })
                     navigate(-1)
                   }}>
@@ -77,12 +84,12 @@ export const ExpenseEditCategoryPage = () => {
                   <span className='text-xs font-semibold text-foreground'>
                     {category.label}
                   </span>
-                </ChipButton>
+                </Button>
               )
             })}
           </div>
         </DataState>
-      </Section>
+      </section>
     </TmaPageShell>
   )
 }

@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
-import { Card, DataState, Eyebrow, MoneyLabel } from '@/components/ui'
+import { DataState } from '@/components/shared/data-state'
+import { Card } from '@/components/ui/card'
 import {
   budgetListQueryOptions,
   useAnalyticsComparisonQuery,
@@ -77,15 +78,17 @@ export const FinanceSummaryCard = ({
       <Card className='grid gap-4 p-5'>
         <div className='flex items-start justify-between gap-3'>
           <div>
-            <Eyebrow>{title}</Eyebrow>
-            <MoneyLabel className='mt-1 block text-[30px] leading-none font-extrabold tracking-normal'>
+            <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
+              {title}
+            </p>
+            <span className='mt-1 block font-mono text-[30px] leading-none font-extrabold tracking-normal text-foreground [font-variant-numeric:tabular-nums]'>
               {overview
                 ? formatCurrencyMinor(
                     overview.totalSpendMinor,
                     overview.currencyCode,
                   )
                 : '-'}
-            </MoneyLabel>
+            </span>
           </div>
           {showPeriodChip ? <PeriodChipLink /> : null}
         </div>
@@ -119,12 +122,12 @@ export const FinanceSummaryCard = ({
                 {budgetProgress.isOverBudget
                   ? t('summary.overPrefix')
                   : t('summary.remainingPrefix')}
-                <MoneyLabel>
+                <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
                   {formatCurrencyMinor(
                     Math.abs(budgetProgress.remainingMinor),
                     budget?.currencyCode ?? overview?.currencyCode ?? 'VND',
                   )}
-                </MoneyLabel>
+                </span>
               </span>
             </div>
           </div>

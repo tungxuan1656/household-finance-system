@@ -1,19 +1,15 @@
 import { useTranslation } from 'react-i18next'
 
-import {
-  Button,
-  Card,
-  CardTitle,
-  Field,
-  FieldLabel,
-  Input,
-  Textarea,
-} from '@/components/ui'
-import { DatePicker } from '@/components/ui/date-picker'
+import { DatePicker } from '@/components/shared/date-picker'
 import {
   NativePicker,
   type NativePickerOption,
-} from '@/components/ui/native-picker'
+} from '@/components/shared/native-picker'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import { Card, CardTitle } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { formatAmountInput } from '@/lib/formatters'
 
 export type CreateGroupFormProps = {
@@ -61,7 +57,7 @@ export const CreateGroupForm = ({
     <section className='mt-6'>
       <CardTitle className='mb-3'>{t('groups.createPage.header')}</CardTitle>
 
-      <Card>
+      <Card className='p-4'>
         <form
           className='grid gap-3.5'
           onSubmit={(event) => {
@@ -69,9 +65,12 @@ export const CreateGroupForm = ({
             onSubmit()
           }}>
           <Field>
-            <FieldLabel>{t('groups.createPage.fieldName')}</FieldLabel>
+            <FieldLabel htmlFor='create-group-name'>
+              {t('groups.createPage.fieldName')}
+            </FieldLabel>
             <Input
               disabled={isBusy}
+              id='create-group-name'
               maxLength={200}
               placeholder={t('groups.createPage.namePlaceholder')}
               type='text'
@@ -83,11 +82,14 @@ export const CreateGroupForm = ({
           </Field>
 
           <Field>
-            <FieldLabel>{t('groups.createPage.fieldContext')}</FieldLabel>
+            <FieldLabel htmlFor='create-group-context'>
+              {t('groups.createPage.fieldContext')}
+            </FieldLabel>
             <NativePicker
               fullWidth
               aria-label={t('groups.createPage.contextPlaceholder')}
               disabled={isBusy || isHouseholdsLoading}
+              id='create-group-context'
               options={contextOptions}
               value={contextValue}
               onChange={(next) => {
@@ -97,9 +99,12 @@ export const CreateGroupForm = ({
           </Field>
 
           <Field>
-            <FieldLabel>{t('groups.createPage.fieldDescription')}</FieldLabel>
+            <FieldLabel htmlFor='create-group-description'>
+              {t('groups.createPage.fieldDescription')}
+            </FieldLabel>
             <Textarea
               disabled={isBusy}
+              id='create-group-description'
               maxLength={1000}
               placeholder={t('groups.createPage.descriptionHelp')}
               value={description}
@@ -111,11 +116,14 @@ export const CreateGroupForm = ({
 
           <div className='grid gap-3.5'>
             <Field>
-              <FieldLabel>{t('groups.createPage.fieldStartDate')}</FieldLabel>
+              <FieldLabel htmlFor='create-group-start-date'>
+                {t('groups.createPage.fieldStartDate')}
+              </FieldLabel>
               <DatePicker
                 fullWidth
                 aria-label={t('groups.createPage.startDatePlaceholder')}
                 disabled={isBusy}
+                id='create-group-start-date'
                 value={startDate}
                 onChange={(next) => {
                   onStartDateChange(next)
@@ -124,11 +132,14 @@ export const CreateGroupForm = ({
             </Field>
 
             <Field>
-              <FieldLabel>{t('groups.createPage.fieldEndDate')}</FieldLabel>
+              <FieldLabel htmlFor='create-group-end-date'>
+                {t('groups.createPage.fieldEndDate')}
+              </FieldLabel>
               <DatePicker
                 fullWidth
                 aria-label={t('groups.createPage.endDatePlaceholder')}
                 disabled={isBusy}
+                id='create-group-end-date'
                 value={endDate}
                 onChange={(next) => {
                   onEndDateChange(next)
@@ -138,9 +149,12 @@ export const CreateGroupForm = ({
           </div>
 
           <Field>
-            <FieldLabel>{t('groups.createPage.fieldBudget')}</FieldLabel>
+            <FieldLabel htmlFor='create-group-budget'>
+              {t('groups.createPage.fieldBudget')}
+            </FieldLabel>
             <Input
               disabled={isBusy}
+              id='create-group-budget'
               inputMode='numeric'
               placeholder={t('groups.createPage.budgetPlaceholder')}
               value={budgetInput}
@@ -150,19 +164,24 @@ export const CreateGroupForm = ({
             />
           </Field>
           <div className='flex flex-wrap justify-end gap-2.5'>
-            <Button
+            <TmaHapticButton
+              aria-busy={isBusy}
               disabled={isBusy}
               type='button'
               variant='ghost'
               onClick={onCancel}>
               {t('common.cancel')}
-            </Button>
+            </TmaHapticButton>
 
-            <Button disabled={isBusy} type='submit' variant='secondary'>
+            <TmaHapticButton
+              aria-busy={isBusy}
+              disabled={isBusy}
+              type='submit'
+              variant='secondary'>
               {isBusy
                 ? t('groups.createPage.submitting')
                 : t('groups.createPage.title')}
-            </Button>
+            </TmaHapticButton>
           </div>
         </form>
       </Card>

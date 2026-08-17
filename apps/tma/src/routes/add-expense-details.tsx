@@ -2,22 +2,18 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 
+import { DatePicker } from '@/components/shared/date-picker'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { CoinIcon, NoteIcon, SunIcon } from '@/components/shared/tma-icons'
 import {
   TmaCategoryIconBadge,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  buttonVariants,
-  Card,
-  CardDescription,
-  CardTitle,
-  ChipButton,
-  Section,
-} from '@/components/ui'
-import { DatePicker } from '@/components/ui/date-picker'
+import { buttonVariants } from '@/components/ui/button'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { getSourceOptions } from '@/features/expenses/presentation'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import type { SourceKey } from '@/features/home/types'
@@ -75,7 +71,7 @@ export const AddExpenseDetailsPage = () => {
           eyebrow={t('expenses.add.step', { current: '2', total: '3' })}
           title={t('expenses.add.previousStepMissing')}
         />
-        <Card className='grid gap-3'>
+        <Card className='grid gap-3 p-4'>
           <CardTitle>{t('expenses.add.emptyTitle')}</CardTitle>
           <CardDescription>
             {t('expenses.add.previousStepMissingDesc')}
@@ -109,23 +105,21 @@ export const AddExpenseDetailsPage = () => {
         className='mt-1'
         value={date.slice(0, 10)}
         onChange={(value) => {
-          selection()
-
           const nextDate = new Date(`${value}T12:00:00+07:00`).toISOString()
           setDate(nextDate)
         }}
       />
 
-      <Section className='grid gap-1'>
+      <section className='mt-6 grid gap-1'>
         <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <CoinIcon className='mt-1 size-6' />
           <span>{t('expenses.edit.fieldAmount')}</span>
         </div>
         <label className='flex items-end justify-between gap-2 rounded-3xl bg-white p-4'>
-          <input
+          <Input
             ref={amountInputRef}
             autoFocus={true}
-            className='w-full bg-transparent text-right font-mono text-3xl leading-none font-semibold text-foreground outline-none'
+            className='h-auto min-h-0 border-0 bg-transparent px-0 py-0 text-right font-mono text-3xl leading-none font-semibold text-foreground outline-none focus-visible:ring-0'
             inputMode='numeric'
             placeholder='0'
             type='text'
@@ -141,16 +135,16 @@ export const AddExpenseDetailsPage = () => {
             {currencyDisplaySymbol('VND')}
           </span>
         </label>
-      </Section>
+      </section>
 
-      <Section className='grid gap-1'>
+      <section className='mt-6 grid gap-1'>
         <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <NoteIcon className='size-6' />
           <span>{t('expenses.add.nameLabel')}</span>
         </div>
         <div className='rounded-3xl bg-white p-5'>
-          <input
-            className='w-full border-0 bg-transparent px-0 text-base font-medium text-foreground outline-none'
+          <Input
+            className='h-auto min-h-0 border-0 bg-transparent px-0 py-0 text-base font-medium text-foreground outline-none focus-visible:ring-0'
             placeholder={t('expenses.add.namePlaceholder')}
             value={title}
             onChange={(event) => setTitle(event.target.value)}
@@ -166,33 +160,42 @@ export const AddExpenseDetailsPage = () => {
             }}
           />
         </div>
-      </Section>
+      </section>
 
-      <Section>
+      <section className='mt-6'>
         <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
           <SunIcon className='size-6' />
           <span>{t('expenses.add.source')}</span>
         </div>
-        <div className='grid grid-cols-3 gap-2.5'>
+        <ToggleGroup
+          className='grid w-full grid-cols-3 gap-2.5'
+          spacing={0}
+          value={sourceId ? [sourceId] : []}
+          onValueChange={(values) => {
+            const value = values[0]
+            if (value) {
+              selection()
+              setSourceId(value as SourceKey)
+            }
+          }}>
           {getSourceOptions(t).map((source) => (
-            <ChipButton
+            <ToggleGroupItem
               key={source.id}
-              className={sourceId === source.id ? 'ring-2 ring-blue-300' : ''}
-              onClick={() => {
-                setSourceId(source.id)
-              }}>
+              className='min-h-12 rounded-2xl border-transparent bg-card p-2.5 text-sm shadow-sm data-[state=on]:ring-2 data-[state=on]:ring-blue-300'
+              type='button'
+              value={source.id}>
               <span className='font-semibold'>{source.label}</span>
-            </ChipButton>
+            </ToggleGroupItem>
           ))}
-        </div>
-      </Section>
+        </ToggleGroup>
+      </section>
 
-      <Button
+      <TmaHapticButton
         className='mt-5 mb-2 w-full'
         disabled={!isValid}
         onClick={handleContinue}>
         {t('expenses.add.continue')}
-      </Button>
+      </TmaHapticButton>
     </TmaPageShell>
   )
 }

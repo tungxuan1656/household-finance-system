@@ -1,87 +1,26 @@
-import { describe, expect, it, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
-import {
-  activateButton,
-  type ButtonProps,
-  type ButtonSize,
-  type ButtonVariant,
-  buttonVariants,
-} from '@/components/ui/button'
+import { describe, expect, it } from 'vitest'
 
-type ButtonEvent = Parameters<NonNullable<ButtonProps['onClick']>>[0]
+const generatedButtonSource = readFileSync(
+  resolve(process.cwd(), 'src/components/ui/button.tsx'),
+  'utf8',
+)
 
-const event = {} as ButtonEvent
-
-describe('Button activation contract', () => {
-  it('triggers one light impact before one handler for enabled activation', () => {
-    const calls: string[] = []
-    const onClick = vi.fn(() => calls.push('handler'))
-    const onImpact = vi.fn((style: 'light') => calls.push(style))
-
-    activateButton(event, {
-      onClick,
-      onImpact,
-    })
-
-    expect(calls).toEqual(['light', 'handler'])
-    expect(onImpact).toHaveBeenCalledWith('light')
-    expect(onImpact).toHaveBeenCalledTimes(1)
-    expect(onClick).toHaveBeenCalledTimes(1)
+describe('generated Button provenance', () => {
+  it('has no Telegram or haptic import', () => {
+    expect(generatedButtonSource).not.toContain('telegram/haptics')
+    expect(generatedButtonSource).not.toContain('impact(')
+    expect(generatedButtonSource).not.toContain('selection(')
   })
 
-  it('does not trigger a handler or haptic for disabled activation', () => {
-    const onClick = vi.fn()
-    const onImpact = vi.fn()
+  it('has no external haptic activation seam', () => {
+    expect(generatedButtonSource).not.toContain('runTmaHapticActivation')
+    expect(generatedButtonSource).not.toContain('activateButton')
 
-    activateButton(event, { disabled: true, onClick, onImpact })
-
-    expect(onClick).not.toHaveBeenCalled()
-    expect(onImpact).not.toHaveBeenCalled()
-  })
-
-  it('does not trigger a handler or haptic for aria-busy activation', () => {
-    const onClick = vi.fn()
-    const onImpact = vi.fn()
-
-    activateButton(event, {
-      'aria-busy': true,
-      onClick,
-      onImpact,
-    })
-
-    expect(onClick).not.toHaveBeenCalled()
-    expect(onImpact).not.toHaveBeenCalled()
-  })
-
-  it('does not trigger haptic feedback without a handler', () => {
-    const onImpact = vi.fn()
-
-    activateButton(event, { onImpact })
-
-    expect(onImpact).not.toHaveBeenCalled()
-  })
-
-  it('retains the public variant and size contract', () => {
-    const variants: ButtonVariant[] = [
-      'danger',
-      'ghost',
-      'outline',
-      'primary',
-      'secondary',
-    ]
-    const sizes: ButtonSize[] = ['icon', 'md', 'sm']
-    const props = {
-      children: 'Save',
-      size: 'sm',
-      variant: 'secondary',
-    } satisfies ButtonProps
-
-    expect(props).toMatchObject({ size: 'sm', variant: 'secondary' })
-
-    expect(
-      variants.every((variant) =>
-        sizes.every((size) => buttonVariants({ size, variant })),
-      ),
-    ).toBe(true)
+    expect(generatedButtonSource).toMatch(
+      /from ['"]@base-ui\/react\/button['"]/,
+    )
   })
 })

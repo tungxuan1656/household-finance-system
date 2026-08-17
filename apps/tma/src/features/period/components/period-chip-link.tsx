@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 
-import { Chip } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatPeriodSelectionLabel } from '@/lib/period'
 import { selection } from '@/lib/telegram/haptics'
@@ -24,7 +24,9 @@ export const PeriodChipLink = ({
       onClick={() => {
         selection()
       }}>
-      <Chip tone={tone}>{formatPeriodSelectionLabel(selectedPeriod, t)}</Chip>
+      <Badge variant={tone === 'primary' ? 'default' : 'secondary'}>
+        {formatPeriodSelectionLabel(selectedPeriod, t)}
+      </Badge>
     </Link>
   )
 }

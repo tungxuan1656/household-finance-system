@@ -2,8 +2,8 @@ import { useEffect, useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Button } from '@/components/ui'
 import { PeriodPickerSection } from '@/features/period/components/period-picker-section'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { type PeriodSelection } from '@/lib/period'
@@ -77,9 +77,9 @@ export const PeriodPickerPage = () => {
           }
         }}
       />
-      <Button className='mt-5 mb-2 w-full' onClick={handleApply}>
+      <TmaHapticButton className='mt-5 mb-2 w-full' onClick={handleApply}>
         {t('period.pickerConfirm')}
-      </Button>
+      </TmaHapticButton>
     </TmaPageShell>
   )
 }

@@ -10,7 +10,6 @@ import {
   SparkIcon,
   TrendUpIcon,
 } from '@/components/shared/tma-icons'
-import { Section } from '@/components/ui'
 import { useImportFlowStore } from '@/features/expenses/import-store'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
@@ -73,7 +72,7 @@ export const HomeShortcutsSection = () => {
   }>
 
   return (
-    <Section>
+    <section className='mt-6'>
       <div className='grid grid-cols-2 gap-2.5'>
         {shortcutItems.map((item) => (
           <ShortcutItem
@@ -87,6 +86,6 @@ export const HomeShortcutsSection = () => {
           />
         ))}
       </div>
-    </Section>
+    </section>
   )
 }

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 import { normalizeCategoryKey } from '@/features/home/category-key'
-import { generateId } from '@/lib/utils'
+import { generateId } from '@/lib/generate-id'
 
 import type { ParsedExpenseItem } from './import-api'
 

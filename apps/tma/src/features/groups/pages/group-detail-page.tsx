@@ -3,19 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { RecentExpenses } from '@/components/finance'
+import { DataState } from '@/components/shared/data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Card,
-  CardDescription,
-  CardTitle,
-  Chip,
-  DataState,
-  Eyebrow,
-  IconBadge,
-  MoneyLabel,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
@@ -33,8 +24,6 @@ type GroupPageFeedback = {
   message: string
   tone: 'error' | 'success'
 }
-
-const groupAccent = { background: '#fff3e8', foreground: '#ff8a3d' }
 
 const GroupGlyph = () => (
   <svg
@@ -91,7 +80,7 @@ export const GroupDetailPage = () => {
   if (!id) {
     return (
       <TmaPageShell title={t('groups.detail.title')}>
-        <Card>
+        <Card className='p-4'>
           <CardTitle>{t('groups.detail.invalidIdTitle')}</CardTitle>
           <CardDescription>{t('groups.detail.invalidIdDesc')}</CardDescription>
         </Card>
@@ -105,8 +94,8 @@ export const GroupDetailPage = () => {
         <Card
           className={
             feedback.tone === 'error'
-              ? 'mb-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mb-3 border-emerald-500/20 bg-emerald-500/10'
+              ? 'mb-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'
+              : 'mb-3 border-emerald-500/20 bg-emerald-500/10 p-4'
           }>
           <CardDescription
             className={
@@ -133,7 +122,9 @@ export const GroupDetailPage = () => {
             <Card className='grid gap-4 p-5'>
               <div className='flex items-start justify-between gap-3'>
                 <div className='min-w-0'>
-                  <Eyebrow>{contextLabel}</Eyebrow>
+                  <span className='text-xs font-medium text-muted-foreground'>
+                    {contextLabel}
+                  </span>
                   <h1 className='m-0 mt-1 text-2xl leading-tight font-extrabold text-foreground'>
                     {group.name}
                   </h1>
@@ -143,21 +134,25 @@ export const GroupDetailPage = () => {
                     </CardDescription>
                   ) : null}
                 </div>
-                <IconBadge accent={groupAccent}>
+                <div className='flex size-10 items-center justify-center rounded-full bg-[#fff3e8] text-[#ff8a3d]'>
                   <GroupGlyph />
-                </IconBadge>
+                </div>
               </div>
 
               <div className='flex flex-wrap gap-2'>
-                <Chip tone='success'>
+                <Badge variant='secondary'>
                   {getGroupStatusLabel(group.status, t)}
-                </Chip>
-                <Chip>{getGroupDateRangeLabel(group, t)}</Chip>
+                </Badge>
+                <Badge variant='outline'>
+                  {getGroupDateRangeLabel(group, t)}
+                </Badge>
               </div>
             </Card>
 
-            <Section>
-              <SectionHeader title={t('groups.detail.sectionOverview')} />
+            <section className='grid gap-3'>
+              <h2 className='m-0 text-base font-bold'>
+                {t('groups.detail.sectionOverview')}
+              </h2>
               <DataState
                 errorDescription={t('groups.detail.overviewErrorDesc')}
                 errorTitle={t('groups.detail.overviewErrorTitle')}
@@ -166,31 +161,39 @@ export const GroupDetailPage = () => {
                 loadingDescription={t('groups.detail.overviewLoadingDesc')}
                 loadingTitle={t('groups.detail.overviewLoadingTitle')}
                 retryAction={summaryQuery.refetch}>
-                <Card className='grid gap-4'>
+                <Card className='grid gap-4 p-4'>
                   <div className='grid grid-cols-2 gap-2.5'>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <Eyebrow>{t('groups.detail.statTotalSpent')}</Eyebrow>
-                      <MoneyLabel className='text-base font-extrabold'>
+                      <span className='text-xs font-medium text-muted-foreground'>
+                        {t('groups.detail.statTotalSpent')}
+                      </span>
+                      <span className='text-base font-extrabold text-foreground'>
                         {totalSpendMinor != null
                           ? formatCurrencyMinor(totalSpendMinor, 'VND')
                           : '-'}
-                      </MoneyLabel>
+                      </span>
                     </div>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <Eyebrow>{t('groups.detail.statExpenseCount')}</Eyebrow>
+                      <span className='text-xs font-medium text-muted-foreground'>
+                        {t('groups.detail.statExpenseCount')}
+                      </span>
                       <strong className='text-base text-foreground'>
                         {summary?.expenseCount ?? 0}
                       </strong>
                     </div>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <Eyebrow>{t('groups.detail.statBudget')}</Eyebrow>
+                      <span className='text-xs font-medium text-muted-foreground'>
+                        {t('groups.detail.statBudget')}
+                      </span>
                       <strong className='text-sm text-foreground'>
                         {getGroupBudgetLabel(group, t)}
                       </strong>
                     </div>
                     <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <Eyebrow>{t('groups.detail.statRemaining')}</Eyebrow>
-                      <MoneyLabel
+                      <span className='text-xs font-medium text-muted-foreground'>
+                        {t('groups.detail.statRemaining')}
+                      </span>
+                      <span
                         className={
                           summary?.budgetRemainingMinor != null &&
                           summary.budgetRemainingMinor < 0
@@ -200,7 +203,7 @@ export const GroupDetailPage = () => {
                         {formatOptionalGroupMoney(
                           summary?.budgetRemainingMinor ?? null,
                         )}
-                      </MoneyLabel>
+                      </span>
                     </div>
                   </div>
 
@@ -224,12 +227,14 @@ export const GroupDetailPage = () => {
                   ) : null}
                 </Card>
               </DataState>
-            </Section>
+            </section>
 
             {summary?.memberContributions.length ? (
-              <Section>
-                <SectionHeader title={t('groups.detail.sectionMembers')} />
-                <Card className='grid gap-2'>
+              <section className='grid gap-3'>
+                <h2 className='m-0 text-base font-bold'>
+                  {t('groups.detail.sectionMembers')}
+                </h2>
+                <Card className='grid gap-2 p-4'>
                   {summary.memberContributions.map((member) => (
                     <article
                       key={member.userId}
@@ -245,13 +250,13 @@ export const GroupDetailPage = () => {
                           })}
                         </CardDescription>
                       </div>
-                      <MoneyLabel className='shrink-0 text-sm font-bold'>
+                      <span className='shrink-0 text-sm font-bold text-foreground'>
                         {formatCurrencyMinor(member.totalSpendMinor, 'VND')}
-                      </MoneyLabel>
+                      </span>
                     </article>
                   ))}
                 </Card>
-              </Section>
+              </section>
             ) : null}
 
             <RecentExpenses

@@ -1,12 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
-import {
-  Button,
-  Card,
-  CardDescription,
-  CardTitle,
-  Eyebrow,
-} from '@/components/ui'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 
 type HouseholdAvatarDialogProps = {
   isUploading: boolean
@@ -51,9 +46,11 @@ export const HouseholdAvatarDialog = ({
         onClick={handleDismiss}
       />
 
-      <Card className='relative z-10 grid w-[min(100%,360px)] gap-4 bg-white/95 shadow-[0_24px_48px_rgba(17,24,39,0.18)]'>
+      <Card className='relative z-10 grid w-[min(100%,360px)] gap-4 bg-white/95 p-4 shadow-[0_24px_48px_rgba(17,24,39,0.18)]'>
         <div>
-          <Eyebrow>{t('households.avatarDialog.previewEyebrow')}</Eyebrow>
+          <span className='text-xs font-medium text-muted-foreground'>
+            {t('households.avatarDialog.previewEyebrow')}
+          </span>
           <CardTitle>{t('households.avatarDialog.applyTitle')}</CardTitle>
           <CardDescription>
             {t('households.avatarDialog.applyDesc')}
@@ -69,21 +66,23 @@ export const HouseholdAvatarDialog = ({
         ) : null}
 
         <div className='flex justify-end gap-2.5'>
-          <Button
+          <TmaHapticButton
+            aria-busy={isUploading}
             disabled={isUploading}
             variant='ghost'
             onClick={handleDismiss}>
             {t('common.cancel')}
-          </Button>
+          </TmaHapticButton>
 
-          <Button
+          <TmaHapticButton
+            aria-busy={isUploading}
             disabled={isUploading}
             variant='secondary'
             onClick={() => void onApply()}>
             {isUploading
               ? t('households.avatarDialog.uploading')
               : t('households.avatarDialog.applyAction')}
-          </Button>
+          </TmaHapticButton>
         </div>
       </Card>
     </div>

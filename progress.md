@@ -123,3 +123,11 @@
 **Evidence**: `pnpm --filter tma lint`, `typecheck`, `test` (27 files, 147 tests), and `build` passed. `./init.sh`, the bridge/theme/token audits, and `git diff --check` passed.
 **Blockers**: Real Telegram iOS/Android QA in host light and host dark settings remains required.
 **Next**: Record the manual Telegram QA matrix, then run the final whole-branch review.
+
+## 2026-08-17 - feat-128
+
+**State**: active
+**Done**: Reset feat-128 to the approved pristine Base UI/Lyra migration design; retired the earlier custom-primitive direction and rewrote the actionable plan at `docs/plans/feat-128.md`.
+**Evidence**: The replacement plan covers pinned CLI provenance, immutable generated output, external behavior wrappers, consumer migration groups, import/zero-reference gates, rollback points, verification, and real Telegram QA. No code, config, or generated files were changed in this scope reset.
+**Blockers**: Implementation and real Telegram iOS/Android QA remain pending under the replacement plan.
+**Next**: Execute Task 1 safe cleanup, then initialize/regenerate the exact preset through the pinned shadcn CLI.

@@ -2,21 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useParams } from 'react-router-dom'
 
+import { DataState } from '@/components/shared/data-state'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TrashIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Avatar,
-  Button,
-  Card,
-  CardDescription,
-  CardTitle,
-  DataState,
-  Field,
-  FieldLabel,
-  Input,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import { useAuth } from '@/features/auth/auth-provider'
 import { HomeRecentExpensesSection } from '@/features/home/components/home-recent-expenses-section'
 import { InviteHouseholdDialog } from '@/features/invitations/components/invite-household-dialog'
@@ -86,7 +79,7 @@ export const HouseholdDetailPage = () => {
   if (!id) {
     return (
       <TmaPageShell title={t('households.detail.title')}>
-        <Card>
+        <Card className='p-4'>
           <CardTitle>{t('households.detail.invalidIdTitle')}</CardTitle>
           <CardDescription>
             {t('households.detail.invalidIdDesc')}
@@ -102,8 +95,8 @@ export const HouseholdDetailPage = () => {
         <Card
           className={
             feedback.tone === 'error'
-              ? 'mb-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mb-3 border-emerald-500/20 bg-emerald-500/10'
+              ? 'mb-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'
+              : 'mb-3 border-emerald-500/20 bg-emerald-500/10 p-4'
           }>
           <CardDescription
             className={
@@ -129,7 +122,7 @@ export const HouseholdDetailPage = () => {
           <>
             <HouseholdOverviewSection householdId={id} />
 
-            <Card className='mt-3 grid gap-3'>
+            <Card className='mt-3 grid gap-3 p-4'>
               <HouseholdAvatarSection
                 avatarUrl={household.avatarUrl}
                 canEdit={isAdmin}
@@ -144,9 +137,12 @@ export const HouseholdDetailPage = () => {
 
               <form className='grid gap-3.5' onSubmit={handleSave}>
                 <Field>
-                  <FieldLabel>{t('households.detail.fieldName')}</FieldLabel>
+                  <FieldLabel htmlFor='household-detail-name'>
+                    {t('households.detail.fieldName')}
+                  </FieldLabel>
                   <Input
                     disabled={!isAdmin || isBusy}
+                    id='household-detail-name'
                     placeholder={t('households.detail.namePlaceholder')}
                     type='text'
                     value={draftName}
@@ -159,11 +155,15 @@ export const HouseholdDetailPage = () => {
 
                 {isAdmin ? (
                   <div className='flex justify-end'>
-                    <Button disabled={isBusy} type='submit' variant='secondary'>
+                    <TmaHapticButton
+                      aria-busy={isBusy}
+                      disabled={isBusy}
+                      type='submit'
+                      variant='secondary'>
                       {isBusy
                         ? t('households.detail.saving')
                         : t('households.detail.save')}
-                    </Button>
+                    </TmaHapticButton>
                   </div>
                 ) : null}
               </form>
@@ -178,8 +178,10 @@ export const HouseholdDetailPage = () => {
               viewAllState={{ appliedHouseholdId: id }}
             />
 
-            <Section>
-              <SectionHeader title={t('households.detail.sectionMembers')} />
+            <section className='grid gap-3'>
+              <h2 className='m-0 text-base font-bold'>
+                {t('households.detail.sectionMembers')}
+              </h2>
               <DataState
                 emptyDescription={t('households.detail.emptyMembersDesc')}
                 emptyTitle={t('households.detail.emptyMembersTitle')}
@@ -195,17 +197,20 @@ export const HouseholdDetailPage = () => {
                 loadingDescription={t('households.detail.membersLoadingDesc')}
                 loadingTitle={t('households.detail.membersLoading')}
                 retryAction={membersQuery.refetch}>
-                <Card className='grid gap-2'>
+                <Card className='grid gap-2 p-4'>
                   {members.map((member) => (
                     <article
                       key={member.userId}
                       className='flex items-center gap-3'>
-                      <Avatar
-                        alt={member.name}
-                        fallback={getHouseholdAvatarFallback(member.name)}
-                        size='sm'
-                        src={member.avatarUrl}
-                      />
+                      <Avatar size='sm'>
+                        <AvatarImage
+                          alt={member.name}
+                          src={member.avatarUrl ?? undefined}
+                        />
+                        <AvatarFallback>
+                          {getHouseholdAvatarFallback(member.name)}
+                        </AvatarFallback>
+                      </Avatar>
                       <div className='min-w-0 flex-1'>
                         <h3
                           className={
@@ -241,25 +246,25 @@ export const HouseholdDetailPage = () => {
                   ))}
                 </Card>
               </DataState>
-            </Section>
+            </section>
 
             {isAdmin ? (
-              <Section>
-                <SectionHeader
-                  action={
-                    <Button
-                      size='sm'
-                      variant='primary'
-                      onClick={() => {
-                        setShowInviteDialog((prev) => !prev)
-                      }}>
-                      {showInviteDialog
-                        ? t('common.close')
-                        : t('households.detail.inviteAction')}
-                    </Button>
-                  }
-                  title={t('households.detail.sectionInvite')}
-                />
+              <section className='grid gap-3'>
+                <div className='flex items-center justify-between gap-3'>
+                  <h2 className='m-0 text-base font-bold'>
+                    {t('households.detail.sectionInvite')}
+                  </h2>
+                  <TmaHapticButton
+                    size='sm'
+                    variant='default'
+                    onClick={() => {
+                      setShowInviteDialog((prev) => !prev)
+                    }}>
+                    {showInviteDialog
+                      ? t('common.close')
+                      : t('households.detail.inviteAction')}
+                  </TmaHapticButton>
+                </div>
                 {showInviteDialog ? (
                   <InviteHouseholdDialog
                     householdId={id}
@@ -269,7 +274,7 @@ export const HouseholdDetailPage = () => {
                     }}
                   />
                 ) : null}
-              </Section>
+              </section>
             ) : null}
           </>
         ) : null}

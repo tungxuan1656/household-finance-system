@@ -2,7 +2,8 @@ import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 
 import { AppShell } from '@/components/shared/app-shell'
-import { Button, CardDescription, CardTitle } from '@/components/ui'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import { CardDescription, CardTitle } from '@/components/ui/card'
 import { NotFoundPage } from '@/routes/not-found'
 
 // ── Route-level error element (function component – can use hooks) ──
@@ -29,11 +30,11 @@ export const RootErrorElement = () => {
         <div className='grid max-w-sm gap-3'>
           <CardTitle>Something went wrong</CardTitle>
           <CardDescription>{message}</CardDescription>
-          <Button
+          <TmaHapticButton
             className='justify-self-center'
             onClick={() => window.location.reload()}>
             Try again
-          </Button>
+          </TmaHapticButton>
         </div>
       </main>
     </AppShell>
@@ -85,11 +86,11 @@ export class RouteErrorBoundary extends Component<
             <div className='grid max-w-sm gap-3'>
               <CardTitle>Something went wrong</CardTitle>
               <CardDescription>{message}</CardDescription>
-              <Button
+              <TmaHapticButton
                 className='justify-self-center'
                 onClick={this.handleRetry}>
                 Try again
-              </Button>
+              </TmaHapticButton>
             </div>
           </main>
         </AppShell>

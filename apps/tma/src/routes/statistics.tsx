@@ -1,15 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
+import { DataState } from '@/components/shared/data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Card,
-  CardDescription,
-  CardTitle,
-  DataState,
-  Eyebrow,
-  MoneyLabel,
-  Section,
-} from '@/components/ui'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import {
   useAnalyticsComparisonQuery,
   useAnalyticsOverviewQuery,
@@ -64,6 +57,11 @@ const getLegendPercent = (
   return Math.round((category.totalSpendMinor / totalSpendMinor) * 100)
 }
 
+const eyebrowClassName =
+  'm-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'
+const moneyClassName =
+  'font-mono text-foreground [font-variant-numeric:tabular-nums]'
+
 export const StatisticsPage = () => {
   const { t } = useTranslation()
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
@@ -98,13 +96,16 @@ export const StatisticsPage = () => {
             <Card className='mb-3 grid gap-4 p-5'>
               <div className='flex items-start justify-between gap-3'>
                 <div>
-                  <Eyebrow>{t('statistics.eyebrowTotalSpent')}</Eyebrow>
-                  <MoneyLabel className='mt-1 block text-[30px] leading-none font-extrabold'>
+                  <p className={eyebrowClassName}>
+                    {t('statistics.eyebrowTotalSpent')}
+                  </p>
+                  <span
+                    className={`${moneyClassName} mt-1 block text-[30px] leading-none font-extrabold`}>
                     {formatCurrencyMinor(
                       overview.totalSpendMinor,
                       overview.currencyCode,
                     )}
-                  </MoneyLabel>
+                  </span>
                   <CardDescription className='mt-2'>
                     {getComparisonLabel(
                       comparisonQuery.data,
@@ -129,13 +130,16 @@ export const StatisticsPage = () => {
                   style={{ background: getPieBackground(topCategories) }}>
                   <div className='grid size-24 place-items-center rounded-full bg-white/95 text-center shadow-sm'>
                     <div>
-                      <Eyebrow>{t('statistics.total')}</Eyebrow>
-                      <MoneyLabel className='block text-sm font-extrabold'>
+                      <p className={eyebrowClassName}>
+                        {t('statistics.total')}
+                      </p>
+                      <span
+                        className={`${moneyClassName} block text-sm font-extrabold`}>
                         {formatCurrencyMinor(
                           overview.totalSpendMinor,
                           overview.currencyCode,
                         )}
-                      </MoneyLabel>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -178,12 +182,13 @@ export const StatisticsPage = () => {
                           </div>
                         </div>
                         <div className='shrink-0 text-right'>
-                          <MoneyLabel className='block text-sm font-bold'>
+                          <span
+                            className={`${moneyClassName} block text-sm font-bold`}>
                             {formatCurrencyMinor(
                               category.totalSpendMinor,
                               overview.currencyCode,
                             )}
-                          </MoneyLabel>
+                          </span>
                           <span className='text-xs font-bold text-primary'>
                             {percent}%
                           </span>
@@ -199,8 +204,8 @@ export const StatisticsPage = () => {
               </div>
             </Card>
 
-            <Section>
-              <Card className='grid gap-3'>
+            <section className='mt-6'>
+              <Card className='grid gap-3 p-4'>
                 <div className='grid grid-cols-2 gap-2.5'>
                   <div className='rounded-2xl border border-black/6 bg-white/80 px-3.5 py-3 shadow-sm'>
                     <span className='block text-xs font-semibold text-muted-foreground'>
@@ -220,7 +225,7 @@ export const StatisticsPage = () => {
                   </div>
                 </div>
               </Card>
-            </Section>
+            </section>
           </>
         ) : null}
       </DataState>

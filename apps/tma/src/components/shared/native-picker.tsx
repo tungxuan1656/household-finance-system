@@ -1,15 +1,22 @@
 import { forwardRef, useRef } from 'react'
 
 import { ChevronDownIcon } from '@/components/shared/tma-icons'
+import { Button } from '@/components/ui/button'
 import { impact } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
-
-import { Button, type ButtonSize, type ButtonVariant } from './button'
 
 export type NativePickerOption = {
   label: string
   value: string
 }
+
+export type NativePickerSize = 'icon' | 'md' | 'sm'
+export type NativePickerVariant =
+  | 'danger'
+  | 'ghost'
+  | 'outline'
+  | 'primary'
+  | 'secondary'
 
 export interface NativePickerProps {
   'aria-label'?: string
@@ -22,9 +29,24 @@ export interface NativePickerProps {
   options: NativePickerOption[]
   placeholder?: string
   showIcon?: boolean
-  size?: ButtonSize
+  size?: NativePickerSize
   value: string
-  variant?: ButtonVariant
+  variant?: NativePickerVariant
+}
+
+export const shouldActivateNativeControl = (disabled: boolean): boolean =>
+  !disabled
+
+const toGeneratedSize = (size: NativePickerSize): 'default' | 'icon' | 'sm' =>
+  size === 'md' ? 'default' : size
+
+const toGeneratedVariant = (
+  variant: NativePickerVariant,
+): 'default' | 'destructive' | 'ghost' | 'outline' | 'secondary' => {
+  if (variant === 'primary') return 'default'
+  if (variant === 'danger') return 'destructive'
+
+  return variant
 }
 
 export const NativePicker = forwardRef<HTMLSelectElement, NativePickerProps>(
@@ -58,10 +80,6 @@ export const NativePicker = forwardRef<HTMLSelectElement, NativePickerProps>(
       }
     }
 
-    const handleClick = () => {
-      impact('light')
-    }
-
     const selected = options.find((option) => option.value === value)
     const hasValue = Boolean(selected)
     const display = selected?.label ?? placeholder ?? ''
@@ -83,7 +101,9 @@ export const NativePicker = forwardRef<HTMLSelectElement, NativePickerProps>(
           name={name}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          onClick={handleClick}>
+          onClick={() => {
+            if (shouldActivateNativeControl(disabled)) impact('light')
+          }}>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -98,10 +118,10 @@ export const NativePicker = forwardRef<HTMLSelectElement, NativePickerProps>(
             !hasValue && 'font-normal text-muted-foreground',
           )}
           disabled={disabled}
-          size={size}
+          size={toGeneratedSize(size)}
           tabIndex={-1}
           type='button'
-          variant={variant}>
+          variant={toGeneratedVariant(variant)}>
           <span
             className={cn(
               'min-w-0 truncate text-left font-bold',

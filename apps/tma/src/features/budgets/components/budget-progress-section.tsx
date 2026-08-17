@@ -1,4 +1,4 @@
-import { Card, Section, SectionHeader } from '@/components/ui'
+import { Card } from '@/components/ui/card'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import { cn } from '@/lib/utils'
 
@@ -18,9 +18,11 @@ export const BudgetProgressSection = ({
   isOver,
   t,
 }: BudgetProgressSectionProps) => (
-  <Section>
-    <SectionHeader title={t('budgets.detail.statProgress')} />
-    <Card className='grid gap-4'>
+  <section className='grid gap-3'>
+    <h2 className='m-0 text-base font-bold'>
+      {t('budgets.detail.statProgress')}
+    </h2>
+    <Card className='grid gap-4 p-4'>
       <div className='grid grid-cols-2 gap-2.5'>
         <StatTile
           label={t('budgets.detail.statSpent')}
@@ -55,5 +57,5 @@ export const BudgetProgressSection = ({
         </div>
       </div>
     </Card>
-  </Section>
+  </section>
 )

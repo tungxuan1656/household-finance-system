@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { DataState } from '@/components/shared/data-state'
+import { DatePicker } from '@/components/shared/date-picker'
 import {
   TmaCategoryIconBadge,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
-import { ChipButton, DataState, Section, SectionHeader } from '@/components/ui'
-import { DatePicker } from '@/components/ui/date-picker'
+import { Button } from '@/components/ui/button'
 import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import { useReferenceCategoriesQuery } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
@@ -36,15 +37,15 @@ export const AddExpenseCategoryPage = () => {
         className='mt-4'
         value={date.slice(0, 10)}
         onChange={(value) => {
-          selection()
-
           const nextDate = new Date(`${value}T12:00:00+07:00`).toISOString()
           setDate(nextDate)
         }}
       />
 
-      <Section>
-        <SectionHeader title={t('expenses.add.sectionCategory')} />
+      <section className='mt-6'>
+        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+          {t('expenses.add.sectionCategory')}
+        </h2>
         <DataState
           emptyDescription={t('expenses.add.emptyDesc')}
           emptyTitle={t('expenses.add.emptyTitle')}
@@ -62,11 +63,14 @@ export const AddExpenseCategoryPage = () => {
           retryAction={categoriesQuery.refetch}>
           <div className='grid grid-cols-3 gap-2'>
             {categoryOptions.map((category) => (
-              <ChipButton
+              <Button
                 key={category.id}
                 aria-pressed={false}
-                className='grid min-h-20 content-start'
+                className='grid min-h-20 content-start rounded-2xl border-transparent bg-card p-2.5 text-left shadow-sm'
+                type='button'
+                variant='outline'
                 onClick={() => {
+                  selection()
                   selectCategory(category)
                   navigate(TMA_PATHS.expensesNewDetails, { flushSync: true })
                 }}>
@@ -78,11 +82,11 @@ export const AddExpenseCategoryPage = () => {
                 <span className='text-xs font-semibold text-foreground'>
                   {category.label}
                 </span>
-              </ChipButton>
+              </Button>
             ))}
           </div>
         </DataState>
-      </Section>
+      </section>
     </TmaPageShell>
   )
 }

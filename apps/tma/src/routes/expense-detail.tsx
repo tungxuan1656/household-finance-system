@@ -2,19 +2,12 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import {
   TmaCategoryIconBadge,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  Card,
-  CardDescription,
-  Eyebrow,
-  MoneyLabel,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
+import { Card, CardDescription } from '@/components/ui/card'
 import {
   useDeleteExpenseMutation,
   useExpenseDetailQuery,
@@ -70,7 +63,7 @@ export const ExpenseDetailPage = () => {
   if (expenseQuery.isLoading || categoriesQuery.isLoading) {
     return (
       <TmaPageShell title={t('expenses.detail.title')}>
-        <Card>
+        <Card className='p-4'>
           <CardDescription>{t('expenses.detail.loading')}</CardDescription>
         </Card>
       </TmaPageShell>
@@ -80,7 +73,7 @@ export const ExpenseDetailPage = () => {
   if (expenseQuery.isError || !expense) {
     return (
       <TmaPageShell title={t('expenses.detail.title')}>
-        <Card>
+        <Card className='p-4'>
           <CardDescription>{t('expenses.detail.notFound')}</CardDescription>
         </Card>
       </TmaPageShell>
@@ -103,19 +96,25 @@ export const ExpenseDetailPage = () => {
           symbol={category.symbol}
         />
         <div className='min-w-0 flex-1'>
-          <Eyebrow>{t('expenses.detail.amountSpent')}</Eyebrow>
-          <MoneyLabel className='mt-1 block text-[32px] leading-none font-extrabold'>
+          <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
+            {t('expenses.detail.amountSpent')}
+          </p>
+          <span className='mt-1 block font-mono text-[32px] leading-none font-extrabold text-foreground [font-variant-numeric:tabular-nums]'>
             {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
-          </MoneyLabel>
+          </span>
         </div>
       </Card>
 
       {/* Info */}
-      <Section>
-        <SectionHeader title={t('expenses.detail.sectionInfo')} />
-        <Card className='grid gap-3'>
+      <section className='mt-6'>
+        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+          {t('expenses.detail.sectionInfo')}
+        </h2>
+        <Card className='grid gap-3 p-4'>
           <div className='grid gap-1'>
-            <Eyebrow>{t('expenses.detail.eyebrowTitle')}</Eyebrow>
+            <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
+              {t('expenses.detail.eyebrowTitle')}
+            </p>
             <strong className='text-sm font-semibold wrap-break-word text-foreground'>
               {expense.title.trim() || category.label}
             </strong>
@@ -128,7 +127,9 @@ export const ExpenseDetailPage = () => {
               symbol={category.symbol}
             />
             <div>
-              <Eyebrow>{t('expenses.detail.eyebrowCategory')}</Eyebrow>
+              <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
+                {t('expenses.detail.eyebrowCategory')}
+              </p>
               <strong className='text-sm font-semibold text-foreground'>
                 {category.label}
               </strong>
@@ -136,76 +137,84 @@ export const ExpenseDetailPage = () => {
           </div>
           <div className='grid grid-cols-2 gap-3'>
             <div className='grid gap-1'>
-              <Eyebrow>{t('expenses.detail.eyebrowSource')}</Eyebrow>
+              <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
+                {t('expenses.detail.eyebrowSource')}
+              </p>
               <strong className='text-sm font-semibold text-foreground'>
                 {getSourceLabel(expense.sourceKey, t)}
               </strong>
             </div>
             <div className='grid gap-1'>
-              <Eyebrow>{t('expenses.detail.eyebrowSpace')}</Eyebrow>
+              <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
+                {t('expenses.detail.eyebrowSpace')}
+              </p>
               <strong className='text-sm font-semibold text-foreground'>
                 {spaceLabel}
               </strong>
             </div>
           </div>
         </Card>
-      </Section>
+      </section>
 
       {/* Date & Time */}
-      <Section>
-        <SectionHeader title={t('expenses.detail.sectionTime')} />
-        <Card className='grid gap-1'>
-          <Eyebrow>{t('expenses.detail.eyebrowDate')}</Eyebrow>
+      <section className='mt-6'>
+        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+          {t('expenses.detail.sectionTime')}
+        </h2>
+        <Card className='grid gap-1 p-4'>
+          <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
+            {t('expenses.detail.eyebrowDate')}
+          </p>
           <strong className='text-base font-semibold text-foreground'>
             {dateLabel}
           </strong>
         </Card>
-      </Section>
+      </section>
 
       {/* Actions */}
       {showDeleteConfirm ? (
-        <Card className='mt-3 grid gap-3 border-[#d93838]/20 bg-[#ffeded]/90'>
+        <Card className='mt-3 grid gap-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'>
           <div>
-            <Eyebrow className='text-[#d93838]'>
+            <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-[#d93838] uppercase'>
               {t('expenses.detail.deleteConfirmTitle')}
-            </Eyebrow>
+            </p>
             <strong className='text-sm font-semibold text-foreground'>
               {t('expenses.detail.deleteConfirmBody')}
             </strong>
           </div>
           <div className='grid grid-cols-2 gap-2'>
-            <Button
+            <TmaHapticButton
               disabled={deleteMutation.isPending}
-              variant='danger'
+              variant='destructive'
               onClick={handleDelete}>
               {t('expenses.detail.deleteForever')}
-            </Button>
-            <Button
+            </TmaHapticButton>
+            <TmaHapticButton
               variant='ghost'
               onClick={() => {
                 setShowDeleteConfirm(false)
               }}>
               {t('common.cancel')}
-            </Button>
+            </TmaHapticButton>
           </div>
         </Card>
       ) : (
         <div className='mt-6 grid grid-cols-2 gap-3'>
-          <Button
+          <TmaHapticButton
             variant='outline'
             onClick={() => {
               navigate(getExpenseEditPath(expense.id))
             }}>
             {t('expenses.detail.editAction')}
-          </Button>
-          <Button
+          </TmaHapticButton>
+          <TmaHapticButton
             className='bg-[#d93838]/10 text-[#d93838]'
             variant='ghost'
             onClick={() => {
               setShowDeleteConfirm(true)
             }}>
             {t('expenses.detail.deleteAction')}
-          </Button>
+          </TmaHapticButton>
         </div>
       )}
     </TmaPageShell>

@@ -1,12 +1,11 @@
 import { BudgetIcon } from '@/components/shared/tma-icons'
-import { Card, Chip, Eyebrow, IconBadge, MoneyLabel } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import type { HouseholdDTO } from '@/features/home/types'
 
 import { formatBudgetPeriodLabel, getBudgetScopeLabel } from '../presentation'
 import type { BudgetDTO, BudgetStatusDTO } from '../types'
-
-const budgetAccent = { background: '#fff6d9', foreground: '#b48800' }
 
 type BudgetHeroCardProps = {
   budget: BudgetDTO
@@ -24,29 +23,31 @@ export const BudgetHeroCard = ({
   <Card className='grid gap-4 p-5'>
     <div className='flex items-start justify-between gap-3'>
       <div className='flex flex-wrap gap-1.5'>
-        <Chip tone='primary'>{formatBudgetPeriodLabel(budget.period, t)}</Chip>
-        <Chip
+        <Badge>{formatBudgetPeriodLabel(budget.period, t)}</Badge>
+        <Badge
           className={
             budget.scope === 'personal'
               ? 'bg-amber-400/20 text-[#8a6800]'
               : undefined
           }
-          tone={budget.scope === 'personal' ? 'warning' : 'muted'}>
+          variant={budget.scope === 'personal' ? 'secondary' : 'outline'}>
           {getBudgetScopeLabel(budget.scope, household, t)}
-        </Chip>
+        </Badge>
       </div>
-      <IconBadge accent={budgetAccent}>
+      <div className='flex size-10 items-center justify-center rounded-full bg-[#fff6d9] text-[#b48800]'>
         <BudgetIcon height={20} strokeWidth={2} width={20} />
-      </IconBadge>
+      </div>
     </div>
     <div>
-      <Eyebrow>{t('budgets.detail.statLimit')}</Eyebrow>
-      <MoneyLabel className='text-[28px] leading-tight font-extrabold'>
+      <span className='text-xs font-medium text-muted-foreground'>
+        {t('budgets.detail.statLimit')}
+      </span>
+      <span className='text-[28px] leading-tight font-extrabold text-foreground'>
         {formatCurrencyMinor(
           status?.totalPlannedMinor ?? budget.totalLimitMinor,
           budget.currencyCode,
         )}
-      </MoneyLabel>
+      </span>
     </div>
   </Card>
 )

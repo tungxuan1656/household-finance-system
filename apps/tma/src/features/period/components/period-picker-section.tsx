@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DatePicker } from '@/components/shared/date-picker'
 import { CalendarIcon } from '@/components/shared/tma-icons'
-import { Card, Chip, DatePicker, Section, SectionHeader } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   createCustomPeriodSelection,
   createReportingPeriodPresetSelection,
@@ -17,30 +20,6 @@ import {
 } from '@/lib/period'
 import { selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
-
-const PeriodPresetButton = ({
-  isActive,
-  onClick,
-  label,
-}: {
-  isActive: boolean
-  onClick: () => void
-  label: string
-}) => (
-  <button
-    aria-pressed={isActive}
-    className={cn(
-      'inline-flex min-h-10 items-center gap-1 rounded-full border pr-3 pl-2 text-sm font-medium transition active:scale-95',
-      isActive
-        ? 'border-primary bg-primary/12 text-primary shadow-[inset_0_0_0_1px_rgba(63,124,255,0.12)]'
-        : 'border-black/6 bg-white/75 text-foreground shadow-sm',
-    )}
-    type='button'
-    onClick={onClick}>
-    <CalendarIcon aria-hidden='true' className='size-4 text-neutral-700' />
-    {label}
-  </button>
-)
 
 const PeriodTimelineDateButton = ({
   inputLabel,
@@ -162,32 +141,51 @@ export const PeriodPickerSection = ({
   }
 
   return (
-    <Section>
-      <SectionHeader title={t('period.sectionTime')} />
-      <div className='flex flex-wrap gap-2'>
+    <section className='mt-6'>
+      <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+        {t('period.sectionTime')}
+      </h2>
+      <ToggleGroup
+        className='flex w-full flex-wrap gap-2'
+        spacing={0}
+        value={activePreset ? [activePreset] : []}
+        onValueChange={(values) => {
+          const value = values[0]
+          if (
+            value &&
+            REPORTING_PERIOD_PRESETS.includes(value as ReportingPeriodPreset)
+          ) {
+            handlePresetClick(value as ReportingPeriodPreset)
+          }
+        }}>
         {REPORTING_PERIOD_PRESETS.map((preset) => (
-          <PeriodPresetButton
+          <ToggleGroupItem
             key={preset}
-            isActive={activePreset === preset}
-            label={getReportingPeriodPresetLabel(preset, t)}
-            onClick={() => handlePresetClick(preset)}
-          />
+            className='min-h-10 rounded-full border border-black/6 bg-white/75 pr-3 pl-2 text-sm shadow-sm data-[state=on]:border-primary data-[state=on]:bg-primary/12 data-[state=on]:text-primary'
+            type='button'
+            value={preset}>
+            <CalendarIcon
+              aria-hidden='true'
+              className='size-4 text-neutral-700'
+            />
+            {getReportingPeriodPresetLabel(preset, t)}
+          </ToggleGroupItem>
         ))}
-      </div>
+      </ToggleGroup>
 
       <Card
         className={cn(
-          'mt-3 grid gap-3',
+          'mt-3 grid gap-3 p-4',
           activePreset
             ? 'border-primary/30 bg-primary/[0.07]'
             : 'border-amber-400/35 bg-[#fff9e6]',
         )}>
         <div className='flex flex-wrap items-center gap-2'>
-          <Chip tone={activePreset ? 'primary' : 'warning'}>
+          <Badge variant={activePreset ? 'default' : 'secondary'}>
             {activePreset
               ? getReportingPeriodPresetLabel(activePreset, t)
               : t('period.sectionCustom')}
-          </Chip>
+          </Badge>
           {!activePreset && candidate.dateFrom > 0 && candidate.dateTo > 0 && (
             <span className='text-xs text-muted-foreground'>
               {formatPeriodSelectionRangeLabel(candidate)}
@@ -201,6 +199,6 @@ export const PeriodPickerSection = ({
           onToChange={handleToChange}
         />
       </Card>
-    </Section>
+    </section>
   )
 }

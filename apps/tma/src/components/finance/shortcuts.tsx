@@ -2,7 +2,6 @@ import type { ReactElement, SVGProps } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
-import { Chip, IconBadge } from '@/components/ui'
 import { impact } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
@@ -25,11 +24,19 @@ export const ShortcutItem = ({
   const content = (
     <>
       <div className='flex items-start justify-between gap-3'>
-        <IconBadge accent={accent}>
+        <span
+          aria-hidden='true'
+          className='grid size-10 shrink-0 place-items-center rounded-[14px] font-bold'
+          style={{
+            backgroundColor: accent.background,
+            color: accent.foreground,
+          }}>
           <Icon height={20} strokeWidth={2.1} width={20} />
-        </IconBadge>
+        </span>
         {disabled ? (
-          <Chip tone='warning'>{t('shortcuts.comingSoon')}</Chip>
+          <span className='inline-flex min-h-6 items-center gap-1.5 rounded-full bg-amber-100 px-2 text-xs font-semibold text-amber-800'>
+            {t('shortcuts.comingSoon')}
+          </span>
         ) : null}
       </div>
       <div>

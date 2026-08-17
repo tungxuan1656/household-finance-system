@@ -3,16 +3,17 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Button,
+  NativePicker,
+  type NativePickerOption,
+} from '@/components/shared/native-picker'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import {
   Card,
   CardContent,
   CardDescription,
   CardTitle,
-  Field,
-  FieldLabel,
-  NativePicker,
-  type NativePickerOption,
-} from '@/components/ui'
+} from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
 import { useCreateInvitationMutation } from '@/features/invitations/api/invitation'
 import type {
   InvitationRoleDTO,
@@ -107,19 +108,22 @@ export const InviteHouseholdDialog = ({
   }
 
   return (
-    <Card className='mt-3'>
+    <Card className='mt-3 p-4'>
       <CardTitle>{t('invitations.inviteTitle')}</CardTitle>
       <CardDescription>
         {t('invitations.inviteDesc', { householdName })}
       </CardDescription>
 
-      <CardContent className='mt-3'>
+      <CardContent className='mt-3 px-0'>
         {!inviteLink ? (
           <>
             <Field>
-              <FieldLabel>{t('invitations.roleLabel')}</FieldLabel>
+              <FieldLabel htmlFor='invitation-role-picker'>
+                {t('invitations.roleLabel')}
+              </FieldLabel>
               <NativePicker
                 aria-label={t('invitations.roleLabel')}
+                id='invitation-role-picker'
                 options={roleOptions}
                 value={role}
                 onChange={(v) => {
@@ -134,9 +138,12 @@ export const InviteHouseholdDialog = ({
             </Field>
 
             <Field className='mt-3'>
-              <FieldLabel>{t('invitations.ttlLabel')}</FieldLabel>
+              <FieldLabel htmlFor='invitation-ttl-picker'>
+                {t('invitations.ttlLabel')}
+              </FieldLabel>
               <NativePicker
                 aria-label={t('invitations.ttlLabel')}
+                id='invitation-ttl-picker'
                 options={ttlOptions}
                 value={String(ttlHours)}
                 onChange={(v) => setTtlHours(parseInvitationTtlHours(v))}
@@ -144,18 +151,22 @@ export const InviteHouseholdDialog = ({
             </Field>
 
             <div className='mt-4 flex gap-2'>
-              <Button
+              <TmaHapticButton
+                aria-busy={createMutation.isPending}
                 disabled={createMutation.isPending}
-                size='md'
-                variant='primary'
+                size='default'
+                variant='default'
                 onClick={handleCreate}>
                 {createMutation.isPending
                   ? t('invitations.creating')
                   : t('invitations.createInvite')}
-              </Button>
-              <Button size='md' variant='ghost' onClick={handleClose}>
+              </TmaHapticButton>
+              <TmaHapticButton
+                size='default'
+                variant='ghost'
+                onClick={handleClose}>
                 {t('common.cancel')}
-              </Button>
+              </TmaHapticButton>
             </div>
           </>
         ) : (
@@ -171,24 +182,27 @@ export const InviteHouseholdDialog = ({
             </div>
 
             <div className='mt-4 flex gap-2'>
-              <Button
-                size='md'
-                variant='primary'
+              <TmaHapticButton
+                size='default'
+                variant='default'
                 onClick={handleShareViaTelegram}>
                 {t('invitations.shareViaTelegram')}
-              </Button>
-              <Button size='md' variant='outline' onClick={handleCopyLink}>
+              </TmaHapticButton>
+              <TmaHapticButton
+                size='default'
+                variant='outline'
+                onClick={handleCopyLink}>
                 {t('invitations.copyLink')}
-              </Button>
+              </TmaHapticButton>
             </div>
 
-            <Button
+            <TmaHapticButton
               className='mt-2'
               size='sm'
               variant='ghost'
               onClick={handleClose}>
               {t('common.close')}
-            </Button>
+            </TmaHapticButton>
           </>
         )}
       </CardContent>

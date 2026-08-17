@@ -2,22 +2,26 @@ import { forwardRef, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CalendarIcon } from '@/components/shared/tma-icons'
+import { Button } from '@/components/ui/button'
 import { impact } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
-
-import { Button, type ButtonSize, type ButtonVariant } from './button'
 
 const formatDateDisplay = (value: string): string => {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
 
-  if (!match) {
-    return value
-  }
+  if (!match) return value
 
   return `${match[3]}/${match[2]}/${match[1]}`
 }
 
 export type DatePickerMode = 'date' | 'month'
+export type DatePickerSize = 'icon' | 'md' | 'sm'
+export type DatePickerVariant =
+  | 'danger'
+  | 'ghost'
+  | 'outline'
+  | 'primary'
+  | 'secondary'
 
 export interface DatePickerProps {
   'aria-label'?: string
@@ -32,10 +36,12 @@ export interface DatePickerProps {
   onChange: (value: string) => void
   placeholder?: string
   showIcon?: boolean
-  size?: ButtonSize
+  size?: DatePickerSize
   value: string
-  variant?: ButtonVariant
+  variant?: DatePickerVariant
 }
+
+export { formatDateDisplay }
 
 export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
   (
@@ -59,41 +65,27 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
     forwardedRef,
   ) => {
     const { t } = useTranslation()
-
+    const internalRef = useRef<HTMLInputElement>(null)
     const resolvedAriaLabel = ariaLabel ?? t('datePicker.ariaLabel')
     const resolvedPlaceholder = placeholder ?? t('datePicker.placeholder')
-
-    const internalRef = useRef<HTMLInputElement>(null)
 
     const setInputRef = (node: HTMLInputElement | null) => {
       internalRef.current = node
 
-      if (typeof forwardedRef === 'function') {
-        forwardedRef(node)
-      } else if (forwardedRef) {
-        forwardedRef.current = node
-      }
-    }
-
-    const handleClick = () => {
-      impact('light')
+      if (typeof forwardedRef === 'function') forwardedRef(node)
+      else if (forwardedRef) forwardedRef.current = node
     }
 
     const hasValue = value.length > 0
-
     const monthDisplay = (raw: string): string => {
       const match = /^(\d{4})-(\d{2})$/.exec(raw)
-
-      if (!match) {
-        return raw
-      }
+      if (!match) return raw
 
       return t('datePicker.monthDisplay', {
         month: Number(match[2]),
         year: Number(match[1]),
       })
     }
-
     const display = hasValue
       ? mode === 'month'
         ? monthDisplay(value)
@@ -121,7 +113,9 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           type={mode === 'month' ? 'month' : 'date'}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          onClick={handleClick}
+          onClick={() => {
+            if (!disabled) impact('light')
+          }}
         />
         <Button
           aria-hidden='true'
@@ -131,10 +125,16 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             !hasValue && 'font-normal text-muted-foreground',
           )}
           disabled={disabled}
-          size={size}
+          size={size === 'md' ? 'default' : size}
           tabIndex={-1}
           type='button'
-          variant={variant}>
+          variant={
+            variant === 'primary'
+              ? 'default'
+              : variant === 'danger'
+                ? 'destructive'
+                : variant
+          }>
           <span
             className={cn(
               'min-w-0 truncate text-left font-mono font-bold [font-variant-numeric:tabular-nums]',

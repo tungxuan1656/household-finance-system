@@ -2,14 +2,10 @@ import { useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  Card,
-  CardDescription,
-  CardTitle,
-  Textarea,
-} from '@/components/ui'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import { Textarea } from '@/components/ui/textarea'
 import { useParseExpensesMutation } from '@/features/expenses/import-api'
 import { MAX_PARSE_TEXT_LENGTH } from '@/features/expenses/import-api'
 import { useImportFlowStore } from '@/features/expenses/import-store'
@@ -59,7 +55,7 @@ export const AddExpenseChatPage = () => {
 
   return (
     <TmaPageShell title={t('expenses.add.aiImportTitle')}>
-      <Card className='mb-4 flex flex-col gap-1'>
+      <Card className='mb-4 flex flex-col gap-1 p-4'>
         <CardTitle>{t('expenses.add.aiImportDesc')}</CardTitle>
         <CardDescription>{t('expenses.add.aiImportHint')}</CardDescription>
       </Card>
@@ -75,7 +71,7 @@ export const AddExpenseChatPage = () => {
       />
 
       {error ? (
-        <Card className='mt-3 border-destructive/20 bg-destructive/10'>
+        <Card className='mt-3 border-destructive/20 bg-destructive/10 p-4'>
           <CardDescription className='text-destructive'>
             {error}
           </CardDescription>
@@ -83,12 +79,12 @@ export const AddExpenseChatPage = () => {
       ) : null}
 
       {parseMutation.isPending ? (
-        <Card className='mt-3'>
+        <Card className='mt-3 p-4'>
           <CardDescription>{t('expenses.add.parsing')}</CardDescription>
         </Card>
       ) : null}
 
-      <Button
+      <TmaHapticButton
         aria-busy={parseMutation.isPending}
         className='mt-4 mb-2 w-full'
         disabled={!rawText.trim() || parseMutation.isPending}
@@ -98,7 +94,7 @@ export const AddExpenseChatPage = () => {
         {parseMutation.isPending
           ? t('expenses.add.parsing')
           : t('expenses.add.parseAction')}
-      </Button>
+      </TmaHapticButton>
     </TmaPageShell>
   )
 }

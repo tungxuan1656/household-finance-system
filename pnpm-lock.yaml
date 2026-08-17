@@ -6689,7 +6689,7 @@ packages:
   ip-address@10.5.0:
     resolution:
       {
-        integrity: sha512-R5SnVLJmgYYvf2FZgwSBnelz5G4q5AxIC277GDfUaNbrZKNANcBC7RHqYYePlszf4kBolVkJauG0ZjHHFh55g==,
+        integrity: sha512-R5SnVLJmgYYvf2F2ZgwSBnelz5G4q5AxIC277GDfUaNbrZKNANcBC7RHqYYePlszf4kBolVkJauG0ZjHHFh55g==,
       }
     engines: { node: ">= 12" }
 
@@ -15134,8 +15134,8 @@ snapshots:
     dependencies:
       "@babel/core": 7.29.0
       "@babel/parser": 7.29.2
-      "@babel/plugin-transform-typescript": 7.28.6("@babel/core"@7.29.0)
-      "@babel/preset-typescript": 7.28.5("@babel/core"@7.29.0)
+      "@babel/plugin-transform-typescript": 7.28.6(@babel/core@7.29.0)
+      "@babel/preset-typescript": 7.28.5(@babel/core@7.29.0)
       "@dotenvx/dotenvx": 1.61.1
       "@modelcontextprotocol/sdk": 1.29.0(zod@3.25.76)
       "@types/validate-npm-package-name": 4.0.2

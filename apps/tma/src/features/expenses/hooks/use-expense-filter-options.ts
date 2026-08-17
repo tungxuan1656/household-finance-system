@@ -4,7 +4,7 @@ import type { ExpenseGroupDTO } from '@/features/groups/types'
 import { getCategoryLabel } from '@/features/home/presentation'
 import type { CategoryKey } from '@/features/home/types'
 import type { HouseholdDTO, ReferenceCategoryDTO } from '@/features/home/types'
-import { impact, selection } from '@/lib/telegram/haptics'
+import { selection } from '@/lib/telegram/haptics'
 
 import type { ExpenseListSort } from '../filter-store'
 import { useExpenseListFilterStore } from '../filter-store'
@@ -122,7 +122,6 @@ export const useExpenseFilterOptions = (
   }
 
   const handleReset = () => {
-    impact('light')
     reset()
   }
 

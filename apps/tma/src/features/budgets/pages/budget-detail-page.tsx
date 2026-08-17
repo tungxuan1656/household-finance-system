@@ -2,19 +2,12 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
+import { DataState } from '@/components/shared/data-state'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  Card,
-  CardDescription,
-  CardTitle,
-  DataState,
-  Field,
-  FieldLabel,
-  Input,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import { useAuthStore } from '@/features/auth/store'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
@@ -139,7 +132,7 @@ export const BudgetDetailPage = () => {
   if (!id) {
     return (
       <TmaPageShell title={t('budgets.detail.title')}>
-        <Card>
+        <Card className='p-4'>
           <CardTitle>{t('budgets.detail.invalidIdTitle')}</CardTitle>
           <CardDescription>{t('budgets.detail.invalidIdDesc')}</CardDescription>
         </Card>
@@ -160,7 +153,7 @@ export const BudgetDetailPage = () => {
       {feedback ? (
         <Card
           className={cn(
-            'mb-3',
+            'mb-3 p-4',
             feedback.tone === 'error'
               ? 'border-[#d93838]/20 bg-[#ffeded]/90'
               : 'border-emerald-500/20 bg-emerald-500/10',
@@ -204,14 +197,19 @@ export const BudgetDetailPage = () => {
             ) : null}
 
             {canEdit ? (
-              <Section>
-                <SectionHeader title={t('budgets.detail.sectionManage')} />
-                <Card>
+              <section className='grid gap-3'>
+                <h2 className='m-0 text-base font-bold'>
+                  {t('budgets.detail.sectionManage')}
+                </h2>
+                <Card className='p-4'>
                   <form className='grid gap-3.5' onSubmit={handleSubmit}>
                     <Field>
-                      <FieldLabel>{t('budgets.detail.manageLimit')}</FieldLabel>
+                      <FieldLabel htmlFor='budget-detail-limit'>
+                        {t('budgets.detail.manageLimit')}
+                      </FieldLabel>
                       <Input
                         disabled={!isEditing || updateMutation.isPending}
+                        id='budget-detail-limit'
                         inputMode='numeric'
                         value={totalLimitInput}
                         onChange={(event) =>
@@ -224,7 +222,8 @@ export const BudgetDetailPage = () => {
 
                     {isEditing ? (
                       <div className='flex justify-end gap-2'>
-                        <Button
+                        <TmaHapticButton
+                          aria-busy={updateMutation.isPending}
                           disabled={updateMutation.isPending}
                           type='button'
                           variant='ghost'
@@ -236,38 +235,40 @@ export const BudgetDetailPage = () => {
                             )
                           }}>
                           {t('common.cancel')}
-                        </Button>
-                        <Button
+                        </TmaHapticButton>
+                        <TmaHapticButton
+                          aria-busy={updateMutation.isPending}
                           disabled={updateMutation.isPending}
                           type='submit'
                           variant='secondary'>
                           {updateMutation.isPending
                             ? t('budgets.detail.editing')
                             : t('budgets.detail.save')}
-                        </Button>
+                        </TmaHapticButton>
                       </div>
                     ) : (
                       <div className='flex justify-end gap-2'>
-                        <Button
+                        <TmaHapticButton
                           type='button'
                           variant='secondary'
                           onClick={() => setIsEditing(true)}>
                           {t('budgets.detail.editAction')}
-                        </Button>
-                        <Button
+                        </TmaHapticButton>
+                        <TmaHapticButton
+                          aria-busy={deleteMutation.isPending}
                           disabled={deleteMutation.isPending}
                           type='button'
-                          variant='danger'
+                          variant='destructive'
                           onClick={handleDelete}>
                           {deleteMutation.isPending
                             ? t('budgets.detail.deleting')
                             : t('budgets.detail.deleteAction')}
-                        </Button>
+                        </TmaHapticButton>
                       </div>
                     )}
                   </form>
                 </Card>
-              </Section>
+              </section>
             ) : null}
           </>
         ) : null}

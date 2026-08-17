@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { AppShell } from '@/components/shared/app-shell'
 import { AppVersionLabel } from '@/components/shared/app-version-label'
-import { CardDescription, CardTitle } from '@/components/ui'
+import { CardDescription, CardTitle } from '@/components/ui/card'
 
 export const NotFoundPage = () => {
   const { t } = useTranslation()

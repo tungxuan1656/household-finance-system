@@ -1,14 +1,11 @@
 import { type ChangeEvent, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { CameraIcon } from '@/components/shared/tma-icons'
-import {
-  Avatar,
-  Button,
-  CardDescription,
-  CardTitle,
-  FieldError,
-} from '@/components/ui'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { CardDescription, CardTitle } from '@/components/ui/card'
+import { FieldError } from '@/components/ui/field'
 import { ApiClientError } from '@/lib/api/client'
 import {
   isAvatarImageFile,
@@ -153,12 +150,12 @@ export const HouseholdAvatarSection = ({
       </div>
 
       <div className='flex items-center gap-3.5'>
-        <Avatar
-          alt={displayName}
-          fallback={getHouseholdAvatarFallback(displayName)}
-          size='xl'
-          src={currentAvatarSrc}
-        />
+        <Avatar className='size-16'>
+          <AvatarImage alt={displayName} src={currentAvatarSrc} />
+          <AvatarFallback className='text-lg font-semibold'>
+            {getHouseholdAvatarFallback(displayName)}
+          </AvatarFallback>
+        </Avatar>
 
         <div className='grid gap-1.5'>
           <strong className='text-base font-semibold text-foreground'>
@@ -172,7 +169,8 @@ export const HouseholdAvatarSection = ({
 
       {canEdit ? (
         <div className='flex flex-wrap gap-2.5'>
-          <Button
+          <TmaHapticButton
+            aria-busy={isBusy || isUploadingAvatar}
             disabled={isBusy || isUploadingAvatar}
             type='button'
             variant='outline'
@@ -185,7 +183,7 @@ export const HouseholdAvatarSection = ({
                 ? t('households.avatarSection.changeImage')
                 : t('households.avatarSection.addImage')}
             </span>
-          </Button>
+          </TmaHapticButton>
 
           <input
             ref={fileInputRef}

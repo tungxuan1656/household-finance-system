@@ -2,27 +2,19 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  buttonVariants,
-  Card,
-  CardDescription,
-  Chip,
-  DataState,
-  Field,
-  FieldLabel,
-  MoneyLabel,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
+import { DataState } from '@/components/shared/data-state'
 import {
   NativePicker,
   type NativePickerOption,
-} from '@/components/ui/native-picker'
+} from '@/components/shared/native-picker'
+import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { Badge } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
+import { Card, CardDescription } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import { getBudgetDetailPath, TMA_PATHS } from '@/lib/constants/routes'
-import { selection } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
 import { useBudgetListQuery } from '../api'
@@ -140,20 +132,17 @@ export const BudgetListPage = () => {
 
   return (
     <TmaPageShell title={t('budgets.title')}>
-      <Section>
-        <SectionHeader
-          action={
-            canCreateBudget ? (
-              <Link
-                className={buttonVariants({ size: 'sm', variant: 'outline' })}
-                to={TMA_PATHS.budgetsNew}
-                onClick={() => selection()}>
-                {t('budgets.create')}
-              </Link>
-            ) : null
-          }
-          title={t('budgets.title')}
-        />
+      <section className='grid gap-3'>
+        <div className='flex items-center justify-between gap-3'>
+          <h2 className='m-0 text-base font-bold'>{t('budgets.title')}</h2>
+          {canCreateBudget ? (
+            <Link
+              className={buttonVariants({ size: 'sm', variant: 'outline' })}
+              to={TMA_PATHS.budgetsNew}>
+              {t('budgets.create')}
+            </Link>
+          ) : null}
+        </div>
 
         <div className='mb-3 flex flex-wrap gap-2'>
           {SCOPE_FILTER_OPTIONS.map((option) => (
@@ -167,13 +156,16 @@ export const BudgetListPage = () => {
         </div>
 
         {scopeFilter === 'household' ? (
-          <Card className='mb-3 grid gap-2'>
+          <Card className='mb-3 grid gap-2 p-4'>
             <Field>
-              <FieldLabel>{t('budgets.householdLabel')}</FieldLabel>
+              <FieldLabel htmlFor='budget-household-filter'>
+                {t('budgets.householdLabel')}
+              </FieldLabel>
               <NativePicker
                 fullWidth
                 aria-label={t('budgets.chooseHousehold')}
                 disabled={householdsQuery.isLoading || households.length === 0}
+                id='budget-household-filter'
                 options={householdOptions}
                 value={selectedHouseholdId}
                 onChange={(next) => setSelectedHouseholdId(next)}
@@ -192,8 +184,7 @@ export const BudgetListPage = () => {
             budgets.length === 0 && !isInitialLoading && canCreateBudget ? (
               <Link
                 className={buttonVariants({ variant: 'secondary' })}
-                to={TMA_PATHS.budgetsNew}
-                onClick={() => selection()}>
+                to={TMA_PATHS.budgetsNew}>
                 {t('budgets.create')}
               </Link>
             ) : null
@@ -223,34 +214,35 @@ export const BudgetListPage = () => {
                 <Link
                   key={budget.id}
                   className='flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-md transition active:scale-[0.99]'
-                  to={getBudgetDetailPath(budget.id)}
-                  onClick={() => selection()}>
+                  to={getBudgetDetailPath(budget.id)}>
                   <div className='grid min-w-0 gap-1'>
                     <span className='text-base font-semibold text-foreground'>
                       {formatBudgetPeriodLabel(budget.period, t)}
                     </span>
-                    <Chip
+                    <Badge
                       className={
                         budget.scope === 'personal'
                           ? 'bg-amber-400/20 text-[#8a6800]'
                           : undefined
                       }
-                      tone={budget.scope === 'personal' ? 'warning' : 'muted'}>
+                      variant={
+                        budget.scope === 'personal' ? 'secondary' : 'outline'
+                      }>
                       {getBudgetScopeLabel(budget.scope, household, t)}
-                    </Chip>
+                    </Badge>
                   </div>
-                  <MoneyLabel className='shrink-0 text-base font-extrabold'>
+                  <span className='shrink-0 text-base font-extrabold text-foreground'>
                     {formatCurrencyMinor(
                       budget.totalLimitMinor,
                       budget.currencyCode,
                     )}
-                  </MoneyLabel>
+                  </span>
                 </Link>
               )
             })}
           </div>
         </DataState>
-      </Section>
+      </section>
     </TmaPageShell>
   )
 }

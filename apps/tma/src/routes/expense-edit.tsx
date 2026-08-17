@@ -2,8 +2,9 @@ import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Button, Card, CardDescription } from '@/components/ui'
+import { Card, CardDescription } from '@/components/ui/card'
 import {
   useExpenseDetailQuery,
   useUpdateExpenseMutation,
@@ -155,7 +156,7 @@ export const ExpenseEditPage = () => {
   if (expenseQuery.isLoading || !draft) {
     return (
       <TmaPageShell title={t('expenses.edit.title')}>
-        <Card>
+        <Card className='p-4'>
           <CardDescription>{t('expenses.edit.loading')}</CardDescription>
         </Card>
       </TmaPageShell>
@@ -177,7 +178,7 @@ export const ExpenseEditPage = () => {
         sourcePickerOptions={sourcePickerOptions}
         onAmountChange={handleAmountChange}
       />
-      <Button
+      <TmaHapticButton
         aria-busy={updateMutation.isPending}
         className='mt-5 mb-2 w-full'
         disabled={!isValid || updateMutation.isPending}
@@ -187,7 +188,7 @@ export const ExpenseEditPage = () => {
         {updateMutation.isPending
           ? t('expenses.add.saving')
           : t('expenses.edit.save')}
-      </Button>
+      </TmaHapticButton>
     </TmaPageShell>
   )
 }

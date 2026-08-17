@@ -1,17 +1,14 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { DatePicker } from '@/components/shared/date-picker'
+import { NativePicker } from '@/components/shared/native-picker'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { CoinIcon, NoteIcon } from '@/components/shared/tma-icons'
 import { TmaCategoryIconBadge } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  Card,
-  Field,
-  FieldLabel,
-  Input,
-  NativePicker,
-} from '@/components/ui'
-import { DatePicker } from '@/components/ui/date-picker'
+import { Card } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import type { EditExpenseDraft } from '@/features/expenses/store'
 import { useEditExpenseStore } from '@/features/expenses/store'
 import type { SourceKey } from '@/features/home/types'
@@ -60,7 +57,7 @@ export const ExpenseEditForm = ({
   return (
     <>
       {/* Money input */}
-      <Card className='mt-3 grid gap-3'>
+      <Card className='mt-3 grid gap-3 p-4'>
         <div className='inline-flex items-center gap-2 text-xs font-bold text-muted-foreground'>
           <CoinIcon height='16' width='16' />
           <span>{t('expenses.edit.fieldAmount')}</span>
@@ -84,7 +81,7 @@ export const ExpenseEditForm = ({
       </Card>
 
       {/* Title */}
-      <Card className='mt-3 grid gap-3'>
+      <Card className='mt-3 grid gap-3 p-4'>
         <div className='inline-flex items-center gap-2 text-xs font-bold text-muted-foreground'>
           <NoteIcon height='16' width='16' />
           <span>{t('expenses.edit.fieldName')}</span>
@@ -98,7 +95,7 @@ export const ExpenseEditForm = ({
       </Card>
 
       {/* Date */}
-      <Card className='mt-3 overflow-hidden'>
+      <Card className='mt-3 overflow-hidden px-4'>
         <DatePicker
           fullWidth
           aria-label={t('expenses.edit.fieldDate')}
@@ -113,7 +110,7 @@ export const ExpenseEditForm = ({
       </Card>
 
       {/* Category */}
-      <Card className='mt-3 grid gap-0 px-4'>
+      <Card className='mt-3 grid gap-0 p-4'>
         <EditSelectRow
           label={t('expenses.edit.fieldCategory')}
           value={activeCategory.label}
@@ -131,12 +128,15 @@ export const ExpenseEditForm = ({
       </Card>
 
       {/* Source */}
-      <Card className='mt-3 grid gap-3'>
+      <Card className='mt-3 grid gap-3 p-4'>
         <Field>
-          <FieldLabel>{t('expenses.edit.fieldSource')}</FieldLabel>
+          <FieldLabel htmlFor='expense-source-picker'>
+            {t('expenses.edit.fieldSource')}
+          </FieldLabel>
           <NativePicker
             fullWidth
             aria-label={t('expenses.edit.fieldSourcePlaceholder')}
+            id='expense-source-picker'
             options={sourcePickerOptions}
             value={draft.sourceKey}
             onChange={(next) => {
@@ -148,13 +148,16 @@ export const ExpenseEditForm = ({
       </Card>
 
       {/* Household */}
-      <Card className='mt-3 grid gap-3'>
+      <Card className='mt-3 grid gap-3 p-4'>
         <Field>
-          <FieldLabel>{t('expenses.edit.fieldHousehold')}</FieldLabel>
+          <FieldLabel htmlFor='expense-household-picker'>
+            {t('expenses.edit.fieldHousehold')}
+          </FieldLabel>
           <NativePicker
             fullWidth
             aria-label={t('expenses.edit.fieldHouseholdPlaceholder')}
             disabled={isHouseholdLoading}
+            id='expense-household-picker'
             options={householdPickerOptions}
             value={draft.householdId ?? ''}
             onChange={(next) => {
@@ -166,13 +169,16 @@ export const ExpenseEditForm = ({
       </Card>
 
       {/* Group */}
-      <Card className='mt-3 grid gap-3'>
+      <Card className='mt-3 grid gap-3 p-4'>
         <Field>
-          <FieldLabel>{t('expenses.edit.fieldGroup')}</FieldLabel>
+          <FieldLabel htmlFor='expense-group-picker'>
+            {t('expenses.edit.fieldGroup')}
+          </FieldLabel>
           <NativePicker
             fullWidth
             aria-label={t('expenses.edit.fieldGroupPlaceholder')}
             disabled={isGroupLoading}
+            id='expense-group-picker'
             options={groupPickerOptions}
             value={draft.groupId ?? ''}
             onChange={(next) => {
@@ -185,14 +191,14 @@ export const ExpenseEditForm = ({
 
       {/* Cancel */}
       <div className='mt-5 grid'>
-        <Button
+        <TmaHapticButton
           variant='ghost'
           onClick={() => {
             resetStore()
             navigate(-1)
           }}>
           {t('common.cancel')}
-        </Button>
+        </TmaHapticButton>
       </div>
     </>
   )

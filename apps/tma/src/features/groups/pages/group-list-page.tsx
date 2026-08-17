@@ -2,25 +2,15 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { DataState } from '@/components/shared/data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  buttonVariants,
-  Card,
-  CardDescription,
-  CardTitle,
-  Chip,
-  DataState,
-  Eyebrow,
-  IconBadge,
-  MoneyLabel,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import type { HouseholdDTO } from '@/features/home/types'
 import { getGroupDetailPath, TMA_PATHS } from '@/lib/constants/routes'
-import { impact } from '@/lib/telegram/haptics'
 
 import {
   useHouseholdExpenseGroupQueries,
@@ -34,8 +24,6 @@ import {
   getGroupStatusLabel,
 } from '../presentation'
 import type { ExpenseGroupDTO, GroupListItem } from '../types'
-
-const groupAccent = { background: '#fff3e8', foreground: '#ff8a3d' }
 
 const GroupGlyph = () => (
   <svg
@@ -82,15 +70,15 @@ const GroupListCard = ({
   return (
     <Link
       className='grid gap-3 rounded-3xl bg-white p-4 shadow-md transition active:scale-[0.99]'
-      to={getGroupDetailPath(item.group.id)}
-      onClick={() => impact('light')}>
+      to={getGroupDetailPath(item.group.id)}>
       <div className='flex items-start justify-between gap-3'>
-        <IconBadge accent={groupAccent}>
+        <div className='flex size-10 items-center justify-center rounded-full bg-[#fff3e8] text-[#ff8a3d]'>
           <GroupGlyph />
-        </IconBadge>
-        <Chip tone={item.group.status === 'active' ? 'success' : 'warning'}>
+        </div>
+        <Badge
+          variant={item.group.status === 'active' ? 'secondary' : 'outline'}>
           {getGroupStatusLabel(item.group.status, t)}
-        </Chip>
+        </Badge>
       </div>
 
       <div className='min-w-0'>
@@ -102,13 +90,17 @@ const GroupListCard = ({
 
       <div className='grid grid-cols-2 gap-2.5'>
         <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-          <Eyebrow>{t('groups.statSpent')}</Eyebrow>
-          <MoneyLabel className='text-sm font-bold'>
+          <span className='text-xs font-medium text-muted-foreground'>
+            {t('groups.statSpent')}
+          </span>
+          <span className='text-sm font-bold text-foreground'>
             {formatCurrencyMinor(item.group.totalSpendMinor, 'VND')}
-          </MoneyLabel>
+          </span>
         </div>
         <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-          <Eyebrow>{t('groups.statBudget')}</Eyebrow>
+          <span className='text-xs font-medium text-muted-foreground'>
+            {t('groups.statBudget')}
+          </span>
           <strong className='text-sm text-foreground'>
             {getGroupBudgetLabel(item.group, t)}
           </strong>
@@ -182,34 +174,30 @@ export const GroupListPage = () => {
               {groupItems.length}
             </strong>
           </div>
-          <IconBadge accent={groupAccent}>
+          <div className='flex size-10 items-center justify-center rounded-full bg-[#fff3e8] text-[#ff8a3d]'>
             <GroupGlyph />
-          </IconBadge>
+          </div>
         </div>
       </Card>
 
-      <Section>
-        <SectionHeader
-          action={
-            groupItems.length > 0 ? (
-              <Link
-                className={buttonVariants({ size: 'sm', variant: 'outline' })}
-                to={TMA_PATHS.groupsNew}
-                onClick={() => impact('light')}>
-                {t('groups.create')}
-              </Link>
-            ) : null
-          }
-          title={t('groups.header')}
-        />
+      <section className='grid gap-3'>
+        <div className='flex items-center justify-between gap-3'>
+          <h2 className='m-0 text-base font-bold'>{t('groups.header')}</h2>
+          {groupItems.length > 0 ? (
+            <Link
+              className={buttonVariants({ size: 'sm', variant: 'outline' })}
+              to={TMA_PATHS.groupsNew}>
+              {t('groups.create')}
+            </Link>
+          ) : null}
+        </div>
 
         <DataState
           customAction={
             groupItems.length === 0 && !isInitialLoading ? (
               <Link
                 className={buttonVariants({ variant: 'secondary' })}
-                to={TMA_PATHS.groupsNew}
-                onClick={() => impact('light')}>
+                to={TMA_PATHS.groupsNew}>
                 {t('groups.createTitle')}
               </Link>
             ) : null
@@ -238,7 +226,7 @@ export const GroupListPage = () => {
             ))}
           </div>
         </DataState>
-      </Section>
+      </section>
     </TmaPageShell>
   )
 }

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription } from '@/components/ui'
+import { Card, CardDescription } from '@/components/ui/card'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { getGroupDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 
@@ -109,8 +109,8 @@ export const CreateGroupPage = () => {
         <Card
           className={
             feedback.tone === 'error'
-              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mt-3 border-emerald-500/20 bg-emerald-500/10'
+              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'
+              : 'mt-3 border-emerald-500/20 bg-emerald-500/10 p-4'
           }>
           <CardDescription
             className={

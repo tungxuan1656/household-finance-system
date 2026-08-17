@@ -2,24 +2,17 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 
+import { NativePicker } from '@/components/shared/native-picker'
 import { SummaryRow } from '@/components/shared/summary-row'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import {
   TmaCategoryIconBadge,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  buttonVariants,
-  Card,
-  CardDescription,
-  CardTitle,
-  Eyebrow,
-  Field,
-  FieldLabel,
-  MoneyLabel,
-  NativePicker,
-} from '@/components/ui'
+import { buttonVariants } from '@/components/ui/button'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { useAddExpenseContextActions } from '@/features/expenses/hooks/use-add-expense-context-actions'
 import { getSourceOptions } from '@/features/expenses/presentation'
@@ -33,7 +26,6 @@ import type { GroupListItem } from '@/features/groups/types'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
-import { selection } from '@/lib/telegram/haptics'
 
 export const AddExpenseContextPage = () => {
   const navigate = useNavigate()
@@ -119,7 +111,7 @@ export const AddExpenseContextPage = () => {
           eyebrow={t('expenses.add.step', { current: '3', total: '3' })}
           title={t('expenses.add.backToStep2')}
         />
-        <Card className='grid gap-3'>
+        <Card className='grid gap-3 p-4'>
           <CardTitle>{t('expenses.add.previewMissingTitle')}</CardTitle>
           <CardDescription>
             {t('expenses.add.previewMissingDesc')}
@@ -137,7 +129,7 @@ export const AddExpenseContextPage = () => {
   return (
     <TmaPageShell title={t('expenses.add.title')}>
       {feedback ? (
-        <Card className='mb-3 border-[#d93838]/20 bg-[#ffeded]/90'>
+        <Card className='mb-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'>
           <CardDescription className='text-[#d93838]'>
             {feedback}
           </CardDescription>
@@ -155,14 +147,18 @@ export const AddExpenseContextPage = () => {
             <CardTitle className='truncate'>{category.label}</CardTitle>
             <CardDescription>
               {formatDateLabel(date)} ·{' '}
-              <MoneyLabel>{formatVnd(amount)}</MoneyLabel>
+              <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
+                {formatVnd(amount)}
+              </span>
             </CardDescription>
           </div>
         </div>
 
         <div className='grid gap-2.5 border-t border-border pt-3'>
           <div className='grid gap-1'>
-            <Eyebrow>{t('expenses.add.expenseName')}</Eyebrow>
+            <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
+              {t('expenses.add.expenseName')}
+            </p>
             <strong className='truncate text-base font-semibold text-foreground'>
               {title.trim() || t('expenses.add.nameUnset')}
             </strong>
@@ -198,18 +194,19 @@ export const AddExpenseContextPage = () => {
         </div>
       </Card>
 
-      <Card className='grid gap-3'>
+      <Card className='grid gap-3 p-4'>
         <Field>
-          <FieldLabel>{t('expenses.add.contextHousehold')}</FieldLabel>
+          <FieldLabel htmlFor='add-expense-household-picker'>
+            {t('expenses.add.contextHousehold')}
+          </FieldLabel>
           <NativePicker
             fullWidth
             aria-label={t('expenses.add.chooseHousehold')}
             disabled={householdsQuery.isLoading}
+            id='add-expense-household-picker'
             options={householdPickerOptions}
             value={householdId ?? ''}
             onChange={(next) => {
-              selection()
-
               setContext({
                 householdId: next || null,
                 groupId,
@@ -218,16 +215,17 @@ export const AddExpenseContextPage = () => {
           />
         </Field>
         <Field>
-          <FieldLabel>{t('expenses.add.contextGroup')}</FieldLabel>
+          <FieldLabel htmlFor='add-expense-group-picker'>
+            {t('expenses.add.contextGroup')}
+          </FieldLabel>
           <NativePicker
             fullWidth
             aria-label={t('expenses.add.chooseGroup')}
             disabled={personalGroupsQuery.isLoading}
+            id='add-expense-group-picker'
             options={groupPickerOptions}
             value={groupId ?? ''}
             onChange={(next) => {
-              selection()
-
               setContext({
                 householdId,
                 groupId: next || null,
@@ -237,7 +235,7 @@ export const AddExpenseContextPage = () => {
         </Field>
       </Card>
 
-      <Button
+      <TmaHapticButton
         aria-busy={createExpenseMutation.isPending}
         className='mt-5 mb-2 w-full'
         disabled={createExpenseMutation.isPending}
@@ -247,7 +245,7 @@ export const AddExpenseContextPage = () => {
         {createExpenseMutation.isPending
           ? t('expenses.add.saving')
           : t('expenses.add.saveWithAmount', { amount: formatVnd(amount) })}
-      </Button>
+      </TmaHapticButton>
     </TmaPageShell>
   )
 }

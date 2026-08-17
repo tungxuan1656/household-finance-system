@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
+import { NativePicker } from '@/components/shared/native-picker'
 import { TmaCategoryIconBadge } from '@/components/shared/tma-page-shell'
-import { Card, MoneyLabel, NativePicker } from '@/components/ui'
+import { Card } from '@/components/ui/card'
 import type { ImportItemDraft } from '@/features/expenses/import-store'
 import { getSourceLabel } from '@/features/expenses/presentation'
 import { normalizeCategoryKey } from '@/features/home/category-key'
@@ -101,7 +102,9 @@ export const ImportPreviewItemCard = ({
         </div>
 
         <div className='shrink-0 text-right text-lg font-semibold'>
-          <MoneyLabel>{formatVnd(item.parsed.amount)}</MoneyLabel>
+          <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
+            {formatVnd(item.parsed.amount)}
+          </span>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { NativePicker } from '@/components/ui/native-picker'
+import { NativePicker } from '@/components/shared/native-picker'
 
 export const LoadingPicker = ({ loadingLabel }: { loadingLabel: string }) => (
   <NativePicker

@@ -1,10 +1,28 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
-import { Button } from './button'
-import { Card, CardDescription, CardTitle } from './card'
+import { TmaHapticButton } from './tma-haptic-button'
+
+export type DataStateBranch = 'loading' | 'error' | 'empty' | 'content'
+
+export const resolveDataStateBranch = ({
+  isLoading,
+  isError,
+  isEmpty,
+}: {
+  isLoading?: boolean
+  isError?: boolean
+  isEmpty?: boolean
+}): DataStateBranch => {
+  if (isLoading) return 'loading'
+  if (isError) return 'error'
+  if (isEmpty) return 'empty'
+
+  return 'content'
+}
 
 export interface DataStateProps {
   children?: ReactNode
@@ -38,6 +56,7 @@ export const DataState = ({
   retryAction,
 }: DataStateProps) => {
   const { t } = useTranslation()
+  const branch = resolveDataStateBranch({ isLoading, isError, isEmpty })
 
   const resolvedLoadingTitle = loadingTitle ?? t('dataState.loadingTitle')
   const resolvedLoadingDescription =
@@ -49,37 +68,37 @@ export const DataState = ({
   const resolvedErrorDescription =
     errorDescription ?? t('dataState.errorDescription')
 
-  if (isLoading || isError || isEmpty) {
-    const title = isLoading
+  if (branch === 'content') return <>{children}</>
+
+  const title =
+    branch === 'loading'
       ? resolvedLoadingTitle
-      : isError
+      : branch === 'error'
         ? resolvedErrorTitle
         : resolvedEmptyTitle
-    const description = isLoading
+  const description =
+    branch === 'loading'
       ? resolvedLoadingDescription
-      : isError
+      : branch === 'error'
         ? resolvedErrorDescription
         : resolvedEmptyDescription
-    const action =
-      customAction ??
-      (isError && retryAction ? (
-        <Button
-          variant='ghost'
-          onClick={() => {
-            void retryAction()
-          }}>
-          {t('dataState.retry')}
-        </Button>
-      ) : null)
+  const action =
+    customAction ??
+    (branch === 'error' && retryAction ? (
+      <TmaHapticButton
+        variant='ghost'
+        onClick={() => {
+          void retryAction()
+        }}>
+        {t('dataState.retry')}
+      </TmaHapticButton>
+    ) : null)
 
-    return (
-      <Card className={cn('grid gap-3', className)}>
-        <CardTitle>{title}</CardTitle>
-        {description ? <CardDescription>{description}</CardDescription> : null}
-        {action ? <div className='flex justify-end'>{action}</div> : null}
-      </Card>
-    )
-  }
-
-  return <>{children}</>
+  return (
+    <Card className={cn('grid gap-3', className)}>
+      <CardTitle>{title}</CardTitle>
+      {description ? <CardDescription>{description}</CardDescription> : null}
+      {action ? <div className='flex justify-end'>{action}</div> : null}
+    </Card>
+  )
 }

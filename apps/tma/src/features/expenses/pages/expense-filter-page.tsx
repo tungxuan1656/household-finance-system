@@ -3,14 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { LoadingPicker } from '@/components/shared/loading-picker'
+import { NativePicker } from '@/components/shared/native-picker'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  NativePicker,
-  Section,
-  SectionHeader,
-  SegmentedControl,
-} from '@/components/ui'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   useHouseholdExpenseGroupQueries,
   usePersonalExpenseGroupListQuery,
@@ -22,6 +18,7 @@ import {
 import { PeriodPickerSection } from '@/features/period/components/period-picker-section'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { type PeriodSelection } from '@/lib/period'
+import { selection } from '@/lib/telegram/haptics'
 
 import { useExpenseListFilterStore } from '../filter-store'
 import { useExpenseFilterOptions } from '../hooks/use-expense-filter-options'
@@ -145,28 +142,47 @@ export const ExpenseFilterPage = () => {
     <TmaPageShell title={t('expenses.filter.title')}>
       {/* Reset at top */}
       <div className='flex justify-end px-1 pt-1 pb-2'>
-        <Button
+        <TmaHapticButton
           disabled={!isFilterActive}
           size='sm'
           variant='ghost'
           onClick={handleReset}>
           {t('expenses.filter.reset')}
-        </Button>
+        </TmaHapticButton>
       </div>
 
-      <Section className='mt-0'>
-        <SectionHeader title={t('expenses.filter.sortTitle')} />
-        <SegmentedControl
-          options={makeSortOptions(t)}
-          value={filter.sort}
-          onChange={handleSortChange}
-        />
-      </Section>
+      <section className='mt-0'>
+        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+          {t('expenses.filter.sortTitle')}
+        </h2>
+        <ToggleGroup
+          className='grid w-full grid-cols-2 gap-1.5 rounded-[18px] bg-muted/70 p-1.5 shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--foreground),transparent_94%)]'
+          value={[filter.sort]}
+          onValueChange={(values) => {
+            const next = values[0]
+            if (next && next !== filter.sort) {
+              selection()
+              handleSortChange(next as typeof filter.sort)
+            }
+          }}>
+          {makeSortOptions(t).map((option) => (
+            <ToggleGroupItem
+              key={option.value}
+              className='min-h-9 rounded-[13px] px-2 text-xs font-bold text-muted-foreground transition-all outline-none focus-visible:ring-3 focus-visible:ring-ring/30 data-[state=on]:bg-primary/12 data-[state=on]:text-primary'
+              type='button'
+              value={option.value}>
+              {option.label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </section>
 
       <PeriodPickerSection value={periodValue} onChange={handlePeriodChange} />
 
-      <Section>
-        <SectionHeader title={t('expenses.filter.householdTitle')} />
+      <section className='mt-6'>
+        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+          {t('expenses.filter.householdTitle')}
+        </h2>
         {householdsQuery.isLoading ? (
           <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
         ) : (
@@ -178,10 +194,12 @@ export const ExpenseFilterPage = () => {
             onChange={handleHouseholdChange}
           />
         )}
-      </Section>
+      </section>
 
-      <Section>
-        <SectionHeader title={t('expenses.filter.groupTitle')} />
+      <section className='mt-6'>
+        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+          {t('expenses.filter.groupTitle')}
+        </h2>
         {personalGroupsQuery.isLoading ||
         householdGroupQueries.some((q) => q.isLoading) ? (
           <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
@@ -194,10 +212,12 @@ export const ExpenseFilterPage = () => {
             onChange={handleGroupChange}
           />
         )}
-      </Section>
+      </section>
 
-      <Section>
-        <SectionHeader title={t('expenses.filter.categoryAll')} />
+      <section className='mt-6'>
+        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+          {t('expenses.filter.categoryAll')}
+        </h2>
         {referenceCategoriesQuery.isLoading ? (
           <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
         ) : (
@@ -209,11 +229,11 @@ export const ExpenseFilterPage = () => {
             onChange={handleCategoryChange}
           />
         )}
-      </Section>
+      </section>
 
-      <Button className='mt-5 mb-2 w-full' onClick={handleApply}>
+      <TmaHapticButton className='mt-5 mb-2 w-full' onClick={handleApply}>
         {t('expenses.filter.apply')}
-      </Button>
+      </TmaHapticButton>
     </TmaPageShell>
   )
 }

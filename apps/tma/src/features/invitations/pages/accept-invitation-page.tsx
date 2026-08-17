@@ -3,15 +3,15 @@ import { useEffect, useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { DataState } from '@/components/shared/data-state'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardTitle,
-  DataState,
-} from '@/components/ui'
+} from '@/components/ui/card'
 import { useAuth } from '@/features/auth/auth-provider'
 import {
   useAcceptInvitationMutation,
@@ -88,7 +88,7 @@ export const AcceptInvitationPage = () => {
   if (!token) {
     return (
       <TmaPageShell title={t('invitations.acceptTitle')}>
-        <Card>
+        <Card className='p-4'>
           <CardTitle>{t('invitations.invalidTokenTitle')}</CardTitle>
           <CardDescription>{t('invitations.invalidTokenDesc')}</CardDescription>
         </Card>
@@ -110,11 +110,11 @@ export const AcceptInvitationPage = () => {
         loadingTitle={t('invitations.loading')}
         retryAction={previewQuery.refetch}>
         {preview ? (
-          <Card className='mt-3'>
+          <Card className='mt-3 p-4'>
             <CardTitle>{t('invitations.acceptTitle')}</CardTitle>
             <CardDescription>{t('invitations.acceptDesc')}</CardDescription>
 
-            <CardContent className='mt-3'>
+            <CardContent className='mt-3 px-0'>
               <dl className='grid gap-3'>
                 <div className='flex flex-col gap-1'>
                   <dt className='text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
@@ -154,7 +154,7 @@ export const AcceptInvitationPage = () => {
         ) : null}
       </DataState>
       {canShowAcceptCta ? (
-        <Button
+        <TmaHapticButton
           aria-busy={acceptMutation.isPending}
           className='mt-4 mb-2 w-full'
           disabled={acceptMutation.isPending}
@@ -164,7 +164,7 @@ export const AcceptInvitationPage = () => {
           {acceptMutation.isPending
             ? t('invitations.accepting')
             : t('invitations.acceptAction')}
-        </Button>
+        </TmaHapticButton>
       ) : null}
     </TmaPageShell>
   )

@@ -1,17 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { DataState } from '@/components/shared/data-state'
 import {
   TmaCategoryIconBadge,
   TmaInlineAction,
 } from '@/components/shared/tma-page-shell'
-import {
-  Chip,
-  DataState,
-  MoneyLabel,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
 import type { ExpensesRouteState } from '@/features/expenses/filter-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import { useExpenseListQuery, useHouseholdsQuery } from '@/features/home/api'
@@ -68,22 +62,26 @@ export const ExpenseItem = ({
               {expense.title.trim() || category.label}
             </p>
           </div>
-          <MoneyLabel className='shrink-0 pt-0.5 text-base leading-tight font-bold'>
+          <span className='shrink-0 pt-0.5 font-mono text-base leading-tight font-bold text-foreground [font-variant-numeric:tabular-nums]'>
             {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
-          </MoneyLabel>
+          </span>
         </div>
         {showHouseholdLabel && householdLabel ? (
           <div className='mt-2 flex flex-wrap gap-1.5'>
-            <Chip className='min-h-6 max-w-full px-2 text-[11px]'>
+            <span className='inline-flex min-h-6 max-w-full items-center gap-1.5 rounded-full bg-muted px-2 text-[11px] font-semibold text-foreground'>
               <span className='truncate'>{householdLabel}</span>
-            </Chip>
+            </span>
             {groupLabel ? (
-              <Chip className='min-h-6 px-2 text-[11px]'>{groupLabel}</Chip>
+              <span className='inline-flex min-h-6 items-center gap-1.5 rounded-full bg-muted px-2 text-[11px] font-semibold text-foreground'>
+                {groupLabel}
+              </span>
             ) : null}
           </div>
         ) : groupLabel ? (
           <div className='mt-2 flex flex-wrap gap-1.5'>
-            <Chip className='min-h-6 px-2 text-[11px]'>{groupLabel}</Chip>
+            <span className='inline-flex min-h-6 items-center gap-1.5 rounded-full bg-muted px-2 text-[11px] font-semibold text-foreground'>
+              {groupLabel}
+            </span>
           </div>
         ) : null}
       </div>
@@ -129,15 +127,17 @@ export const RecentExpenses = ({
   const recentExpenses = recentExpensesQuery.data?.items ?? []
 
   return (
-    <Section>
-      <SectionHeader
-        action={
+    <section className='mt-6'>
+      <div className='mb-3 flex items-end justify-between gap-3'>
+        <h2 className='m-0 min-w-0 text-base leading-tight font-semibold text-foreground'>
+          {title}
+        </h2>
+        <div className='shrink-0'>
           <TmaInlineAction href={viewAllHref} state={viewAllState}>
             {t('expensesList.viewAll')}
           </TmaInlineAction>
-        }
-        title={title}
-      />
+        </div>
+      </div>
       <DataState
         emptyDescription={t('expensesList.emptyDesc')}
         emptyTitle={t('expensesList.emptyTitle')}
@@ -168,7 +168,7 @@ export const RecentExpenses = ({
           ))}
         </div>
       </DataState>
-    </Section>
+    </section>
   )
 }
 

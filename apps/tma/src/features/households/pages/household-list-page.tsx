@@ -3,15 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { HouseholdItem } from '@/components/finance'
+import { DataState } from '@/components/shared/data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  buttonVariants,
-  Card,
-  DataState,
-  Eyebrow,
-  Section,
-  SectionHeader,
-} from '@/components/ui'
+import { buttonVariants } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { getHouseholdBudgetLabel } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {
@@ -19,7 +14,6 @@ import {
   getMonthBudgetPeriod,
   toAnalyticsRangeParams,
 } from '@/lib/period'
-import { impact } from '@/lib/telegram/haptics'
 
 import {
   useHouseholdBudgetQueries,
@@ -80,7 +74,9 @@ export const HouseholdListPage = () => {
       <Card className='grid gap-3 p-5'>
         <div className='flex items-start justify-between gap-3'>
           <div>
-            <Eyebrow>{t('households.thisMonth')}</Eyebrow>
+            <span className='text-xs font-medium text-muted-foreground'>
+              {t('households.thisMonth')}
+            </span>
             <strong className='mt-1 block text-[30px] leading-none font-extrabold text-foreground'>
               {householdCards.length}
             </strong>
@@ -88,28 +84,26 @@ export const HouseholdListPage = () => {
         </div>
       </Card>
 
-      <Section>
-        <SectionHeader
-          action={
-            householdCards.length > 0 ? (
+      <section className='grid gap-3'>
+        <div className='flex items-center justify-between gap-3'>
+          <h2 className='m-0 text-base font-bold'>{t('households.header')}</h2>
+          <div>
+            {householdCards.length > 0 ? (
               <Link
                 className={buttonVariants({ size: 'sm', variant: 'outline' })}
-                to={TMA_PATHS.householdsNew}
-                onClick={() => impact('light')}>
+                to={TMA_PATHS.householdsNew}>
                 {t('households.create')}
               </Link>
-            ) : null
-          }
-          title={t('households.header')}
-        />
+            ) : null}
+          </div>
+        </div>
 
         <DataState
           customAction={
             householdCards.length === 0 && !householdsQuery.isLoading ? (
               <Link
                 className={buttonVariants({ variant: 'secondary' })}
-                to={TMA_PATHS.householdsNew}
-                onClick={() => impact('light')}>
+                to={TMA_PATHS.householdsNew}>
                 {t('households.createTitle')}
               </Link>
             ) : null
@@ -139,7 +133,7 @@ export const HouseholdListPage = () => {
             ))}
           </div>
         </DataState>
-      </Section>
+      </section>
     </TmaPageShell>
   )
 }

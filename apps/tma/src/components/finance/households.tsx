@@ -2,16 +2,11 @@ import { useQueries } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { DataState } from '@/components/shared/data-state'
 import { UserIcon } from '@/components/shared/tma-icons'
-import {
-  Avatar,
-  CardDescription,
-  CardTitle,
-  Chip,
-  DataState,
-  MoneyLabel,
-  Section,
-} from '@/components/ui'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { CardDescription, CardTitle } from '@/components/ui/card'
 import {
   analyticsOverviewQueryOptions,
   budgetListQueryOptions,
@@ -61,30 +56,31 @@ export const HouseholdPreviewItem = ({
     to={getHouseholdDetailPath(card.household.id)}
     onClick={() => impact('light')}>
     <div className='flex items-start justify-between gap-3'>
-      <Avatar
-        alt={card.household.name}
-        fallback={resolveInitials(card.household.name)}
-        size='sm'
-        src={card.household.avatarUrl}
-      />
-      <Chip className='min-h-6 px-2.5 py-1.5'>
+      <Avatar size='sm'>
+        <AvatarImage
+          alt={card.household.name}
+          src={card.household.avatarUrl ?? undefined}
+        />
+        <AvatarFallback>{resolveInitials(card.household.name)}</AvatarFallback>
+      </Avatar>
+      <Badge className='h-6 px-2.5 py-1.5' variant='secondary'>
         {card.memberCount != null
           ? `${card.memberCount}`
           : t('householdsList.loading')}
         <UserIcon className='inline-block size-3' />
-      </Chip>
+      </Badge>
     </div>
     <div>
       <h3 className='m-0 text-[15px] font-semibold text-foreground'>
         {card.household.name}
       </h3>
-      <MoneyLabel className='mt-1 block text-sm font-medium'>
+      <span className='mt-1 block font-mono text-sm font-medium text-foreground [font-variant-numeric:tabular-nums]'>
         {card.totalSpendMinor != null && card.currencyCode
           ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
           : card.isLoading
             ? t('householdsList.loadingDots')
             : '-'}
-      </MoneyLabel>
+      </span>
     </div>
   </Link>
 )
@@ -103,13 +99,14 @@ export const HouseholdItem = ({
     to={getHouseholdDetailPath(card.household.id)}
     onClick={() => impact('light')}>
     <div className='flex items-center justify-between gap-3'>
-      <Avatar
-        alt={card.household.name}
-        fallback={resolveInitials(card.household.name)}
-        size='lg'
-        src={card.household.avatarUrl}
-      />
-      <Chip tone='primary'>{roleLabel}</Chip>
+      <Avatar size='lg'>
+        <AvatarImage
+          alt={card.household.name}
+          src={card.household.avatarUrl ?? undefined}
+        />
+        <AvatarFallback>{resolveInitials(card.household.name)}</AvatarFallback>
+      </Avatar>
+      <Badge variant='default'>{roleLabel}</Badge>
     </div>
     <div>
       <CardTitle>{card.household.name}</CardTitle>
@@ -121,13 +118,13 @@ export const HouseholdItem = ({
     </div>
     <div className='grid grid-cols-2 gap-2.5'>
       <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-        <MoneyLabel className='text-sm font-bold'>
+        <span className='font-mono text-sm font-bold text-foreground [font-variant-numeric:tabular-nums]'>
           {card.totalSpendMinor != null && card.currencyCode
             ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
             : card.isLoading
               ? t('householdsList.loadingDots')
               : '-'}
-        </MoneyLabel>
+        </span>
       </div>
       <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
         {card.budget ? (
@@ -218,7 +215,7 @@ export const HouseholdPreviewCarousel = () => {
     )
 
   return (
-    <Section>
+    <section className='mt-6'>
       <DataState
         emptyDescription={t('householdsList.emptyDesc')}
         emptyTitle={t('householdsList.emptyTitle')}
@@ -240,6 +237,6 @@ export const HouseholdPreviewCarousel = () => {
           ))}
         </div>
       </DataState>
-    </Section>
+    </section>
   )
 }

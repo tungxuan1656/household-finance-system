@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { ExpenseSummaryCard, ExpenseTimeline } from '@/components/finance'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { FilterIcon, PlusIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Button, Card, CardDescription, CardTitle } from '@/components/ui'
+import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import {
   applyExpensesRouteState,
   countActiveExpenseListFilters,
@@ -92,7 +93,7 @@ export const ExpensesPage = () => {
   if (expensesQuery.isLoading || referenceCategoriesQuery.isLoading) {
     return (
       <TmaPageShell title={t('expenses.title')}>
-        <Card>
+        <Card className='p-4'>
           <CardTitle>{t('expenses.loadingTitle')}</CardTitle>
           <CardDescription>{t('expenses.loadingDesc')}</CardDescription>
         </Card>
@@ -105,7 +106,7 @@ export const ExpensesPage = () => {
     <TmaPageShell title={t('expenses.title')}>
       <ExpenseSummaryCard summary={summaryQuery.data} />
       <div className='mb-2 flex justify-between px-1 py-4'>
-        <Button
+        <TmaHapticButton
           size='sm'
           onClick={() => {
             useImportFlowStore.getState().reset()
@@ -113,11 +114,11 @@ export const ExpensesPage = () => {
           }}>
           <span className='text-xs'>AI</span>
           <span>{t('expenses.aiImport')}</span>
-        </Button>
-        <Button
+        </TmaHapticButton>
+        <TmaHapticButton
           aria-label={t('expenses.openFilterAria')}
           size='sm'
-          variant={activeFilterCount > 0 ? 'primary' : 'outline'}
+          variant={activeFilterCount > 0 ? 'default' : 'outline'}
           onClick={() => {
             navigate(TMA_PATHS.expensesFilter)
           }}>
@@ -127,11 +128,11 @@ export const ExpensesPage = () => {
               ? t('expenses.filterCount', { count: activeFilterCount })
               : t('expenses.filterLabel')}
           </span>
-        </Button>
+        </TmaHapticButton>
       </div>
 
       {expenses.length === 0 ? (
-        <Card>
+        <Card className='p-4'>
           <CardTitle>{t('expenses.emptyTitle')}</CardTitle>
           <CardDescription>{t('expenses.emptyDesc')}</CardDescription>
         </Card>
@@ -143,7 +144,7 @@ export const ExpensesPage = () => {
           />
           {expensesQuery.hasNextPage && (
             <div className='mt-4 flex justify-center'>
-              <Button
+              <TmaHapticButton
                 disabled={expensesQuery.isFetchingNextPage}
                 size='sm'
                 variant='outline'
@@ -153,7 +154,7 @@ export const ExpensesPage = () => {
                 {expensesQuery.isFetchingNextPage
                   ? t('expenses.loadingMore')
                   : t('expenses.loadMore')}
-              </Button>
+              </TmaHapticButton>
             </div>
           )}
         </>
