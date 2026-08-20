@@ -10,6 +10,7 @@ import { type QueryLike, QueryState } from '@/components/shared/query-state'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   useHouseholdExpenseGroupQueries,
@@ -21,7 +22,11 @@ import {
 } from '@/features/home/api'
 import { PeriodPickerSection } from '@/features/period/components/period-picker-section'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { type PeriodSelection } from '@/lib/period'
+import {
+  createReportingPeriodPresetSelection,
+  getMatchingReportingPeriodPreset,
+  type PeriodSelection,
+} from '@/lib/period'
 import { selection } from '@/lib/telegram/haptics'
 
 import { useExpenseListFilterStore } from '../filter-store'
@@ -56,28 +61,6 @@ const ExpenseFilterPickerField = ({
     value={value}
     onChange={onChange}
   />
-)
-
-interface FilterSelectCardProps extends ExpenseFilterPickerFieldProps {
-  title: string
-  query: QueryLike<unknown>
-}
-
-const FilterSelectCard = ({
-  title,
-  query,
-  ...pickerProps
-}: FilterSelectCardProps) => (
-  <Card>
-    <CardHeader className='pb-3'>
-      <CardTitle className='text-sm'>{title}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <QueryState query={query} variant='plain'>
-        {() => <ExpenseFilterPickerField {...pickerProps} />}
-      </QueryState>
-    </CardContent>
-  </Card>
 )
 
 export const ExpenseFilterPage = () => {
@@ -164,10 +147,12 @@ export const ExpenseFilterPage = () => {
     const state = location.state as FilterReturnState | null
 
     if (state?.appliedPeriod) {
+      const matched = getMatchingReportingPeriodPreset(state.appliedPeriod)
+
       setFilter({
         dateFrom: state.appliedPeriod.dateFrom,
         dateTo: state.appliedPeriod.dateTo,
-        periodPreset: 'custom',
+        periodPreset: matched === 'thisMonth' ? 'thisMonth' : 'custom',
       })
     }
   }, [location.state, setFilter])
@@ -180,10 +165,12 @@ export const ExpenseFilterPage = () => {
         return
       }
 
+      const matched = getMatchingReportingPeriodPreset(period)
+
       setFilter({
         dateFrom: period.dateFrom,
         dateTo: period.dateTo,
-        periodPreset: 'custom',
+        periodPreset: matched === 'thisMonth' ? 'thisMonth' : 'custom',
       })
     },
   )
@@ -218,11 +205,23 @@ export const ExpenseFilterPage = () => {
 
   const periodValue: PeriodSelection | null = useMemo(() => {
     if (filter.dateFrom != null && filter.dateTo != null) {
-      return {
+      const temp: PeriodSelection = {
         granularity: 'custom',
         dateFrom: filter.dateFrom,
         dateTo: filter.dateTo,
       }
+      const matched = getMatchingReportingPeriodPreset(temp)
+      if (matched) {
+        const presetSelection = createReportingPeriodPresetSelection(matched)
+
+        return {
+          granularity: presetSelection.granularity,
+          dateFrom: filter.dateFrom,
+          dateTo: filter.dateTo,
+        }
+      }
+
+      return temp
     }
 
     return null
@@ -283,35 +282,69 @@ export const ExpenseFilterPage = () => {
 
       <PeriodPickerSection value={periodValue} onChange={handlePeriodChange} />
 
-      <FilterSelectCard
-        id='expense-filter-household-picker'
-        options={householdPickerOptions}
-        placeholder={t('expenses.filter.householdPlaceholder')}
-        query={householdsQuery}
-        title={t('expenses.filter.householdTitle')}
-        value={filter.householdId ?? ALL_VALUE}
-        onChange={handleHouseholdChange}
-      />
+      <Card>
+        <CardHeader className='pb-3'>
+          <CardTitle className='text-sm'>
+            {t('expenses.filter.detailsTitle', {
+              defaultValue: 'Bộ lọc chi tiết',
+            })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup className='gap-4'>
+            <Field>
+              <FieldLabel htmlFor='expense-filter-household-picker'>
+                {t('expenses.filter.householdTitle')}
+              </FieldLabel>
+              <QueryState query={householdsQuery} variant='plain'>
+                {() => (
+                  <ExpenseFilterPickerField
+                    id='expense-filter-household-picker'
+                    options={householdPickerOptions}
+                    placeholder={t('expenses.filter.householdPlaceholder')}
+                    value={filter.householdId ?? ALL_VALUE}
+                    onChange={handleHouseholdChange}
+                  />
+                )}
+              </QueryState>
+            </Field>
 
-      <FilterSelectCard
-        id='expense-filter-group-picker'
-        options={groupPickerOptions}
-        placeholder={t('expenses.filter.groupTitle')}
-        query={groupsQuery}
-        title={t('expenses.filter.groupTitle')}
-        value={filter.groupId ?? ALL_VALUE}
-        onChange={handleGroupChange}
-      />
+            <Field>
+              <FieldLabel htmlFor='expense-filter-group-picker'>
+                {t('expenses.filter.groupTitle')}
+              </FieldLabel>
+              <QueryState query={groupsQuery} variant='plain'>
+                {() => (
+                  <ExpenseFilterPickerField
+                    id='expense-filter-group-picker'
+                    options={groupPickerOptions}
+                    placeholder={t('expenses.filter.groupTitle')}
+                    value={filter.groupId ?? ALL_VALUE}
+                    onChange={handleGroupChange}
+                  />
+                )}
+              </QueryState>
+            </Field>
 
-      <FilterSelectCard
-        id='expense-filter-category-picker'
-        options={categoryPickerOptions}
-        placeholder={t('expenses.filter.categoryAll')}
-        query={referenceCategoriesQuery}
-        title={t('expenses.filter.categoryAll')}
-        value={filter.categoryKey ?? ALL_VALUE}
-        onChange={handleCategoryChange}
-      />
+            <Field>
+              <FieldLabel htmlFor='expense-filter-category-picker'>
+                {t('expenses.filter.categoryAll')}
+              </FieldLabel>
+              <QueryState query={referenceCategoriesQuery} variant='plain'>
+                {() => (
+                  <ExpenseFilterPickerField
+                    id='expense-filter-category-picker'
+                    options={categoryPickerOptions}
+                    placeholder={t('expenses.filter.categoryAll')}
+                    value={filter.categoryKey ?? ALL_VALUE}
+                    onChange={handleCategoryChange}
+                  />
+                )}
+              </QueryState>
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
     </TmaPageShell>
   )
 }

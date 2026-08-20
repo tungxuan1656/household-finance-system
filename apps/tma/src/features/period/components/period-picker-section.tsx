@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DatePicker } from '@/components/shared/date-picker'
+import { CalendarIcon } from '@/components/shared/tma-icons'
 import { Badge } from '@/components/ui/badge'
 import {
   Card,
@@ -52,10 +53,7 @@ export const PeriodPickerSection = ({
   }, [value])
 
   const activePreset = useMemo(
-    () =>
-      candidate.granularity === 'custom'
-        ? null
-        : getMatchingReportingPeriodPreset(candidate),
+    () => getMatchingReportingPeriodPreset(candidate),
     [candidate],
   )
 
@@ -89,11 +87,26 @@ export const PeriodPickerSection = ({
     onChange(next)
   }
 
+  const hasValidCustomRange = candidate.dateFrom > 0 && candidate.dateTo > 0
+
   return (
     <section className='flex flex-col gap-3'>
-      <h2 className='text-sm font-semibold tracking-widest text-foreground uppercase'>
-        {t('period.sectionTime')}
-      </h2>
+      {/* Clear hierarchy: label + helper */}
+      <div className='flex items-baseline justify-between gap-3 px-1'>
+        <h2 className='text-sm font-semibold tracking-tight text-foreground'>
+          {t('period.sectionTime')}
+        </h2>
+        <span className='text-xs font-medium text-muted-foreground'>
+          {activePreset
+            ? t('period.hintPreset', { defaultValue: 'Đã chọn nhanh' })
+            : hasValidCustomRange
+              ? t('period.hintCustom', { defaultValue: 'Tùy chỉnh' })
+              : t('period.hintChoose', {
+                  defaultValue: 'Chọn khoảng thời gian',
+                })}
+        </span>
+      </div>
+
       <ToggleGroup
         className='flex w-full flex-wrap gap-2'
         value={activePreset ? [activePreset] : []}
@@ -106,33 +119,66 @@ export const PeriodPickerSection = ({
             handlePresetClick(value as ReportingPeriodPreset)
           }
         }}>
-        {REPORTING_PERIOD_PRESETS.map((preset) => (
-          <ToggleGroupItem key={preset} type='button' value={preset}>
-            {getReportingPeriodPresetLabel(preset, t)}
-          </ToggleGroupItem>
-        ))}
+        {REPORTING_PERIOD_PRESETS.map((preset) => {
+          return (
+            <ToggleGroupItem
+              key={preset}
+              className={'bg-white'}
+              size='sm'
+              type='button'
+              value={preset}
+              variant='outline'>
+              {getReportingPeriodPresetLabel(preset, t)}
+            </ToggleGroupItem>
+          )
+        })}
       </ToggleGroup>
 
-      <Card>
-        <CardHeader>
+      <Card className='overflow-hidden border shadow-sm'>
+        <CardHeader className='gap-2'>
           <div className='flex flex-wrap items-center gap-2'>
-            <Badge variant={activePreset ? 'default' : 'secondary'}>
-              {activePreset
-                ? getReportingPeriodPresetLabel(activePreset, t)
-                : t('period.sectionCustom')}
+            <Badge
+              className={
+                activePreset
+                  ? 'inline-flex items-center gap-1.5 bg-primary px-3 py-1 text-xs font-semibold tracking-normal text-primary-foreground normal-case'
+                  : 'inline-flex items-center gap-1.5 bg-muted px-3 py-1 text-xs font-semibold tracking-normal text-muted-foreground normal-case'
+              }
+              variant={activePreset ? 'default' : 'secondary'}>
+              {activePreset ? (
+                <>
+                  <span
+                    aria-hidden
+                    className='size-2 rounded-full bg-primary-foreground'
+                  />
+                  {getReportingPeriodPresetLabel(activePreset, t)}
+                </>
+              ) : (
+                <>
+                  <CalendarIcon className='size-3.5' />
+                  {t('period.sectionCustom')}
+                </>
+              )}
             </Badge>
           </div>
-          {!activePreset && candidate.dateFrom > 0 && candidate.dateTo > 0 && (
-            <CardDescription>
+          {!activePreset && hasValidCustomRange ? (
+            <CardDescription className='text-sm font-medium tracking-normal text-foreground tabular-nums'>
               {formatPeriodSelectionRangeLabel(candidate)}
             </CardDescription>
-          )}
+          ) : !activePreset ? (
+            <CardDescription className='text-xs leading-relaxed'>
+              {t('period.customHint', {
+                defaultValue: 'Chọn ngày bắt đầu và kết thúc bên dưới',
+              })}
+            </CardDescription>
+          ) : null}
         </CardHeader>
         <CardContent>
-          <FieldGroup>
-            <div className='grid grid-cols-[1fr_auto_1fr] items-stretch gap-2.5'>
-              <Field>
-                <FieldLabel htmlFor='period-from-picker'>
+          <FieldGroup className='gap-3'>
+            <div className='grid grid-cols-[1fr_auto_1fr] items-end gap-2.5'>
+              <Field className='gap-1.5'>
+                <FieldLabel
+                  className='text-xs font-medium tracking-normal text-foreground normal-case'
+                  htmlFor='period-from-picker'>
                   {t('period.fieldFrom')}
                 </FieldLabel>
                 <DatePicker
@@ -146,7 +192,7 @@ export const PeriodPickerSection = ({
               </Field>
               <div
                 aria-hidden='true'
-                className='grid place-items-center pt-6 text-muted-foreground'>
+                className='grid place-items-center pb-3 text-muted-foreground'>
                 <svg
                   fill='none'
                   height='14'
@@ -160,8 +206,10 @@ export const PeriodPickerSection = ({
                   <path d='m13 6 6 6-6 6' />
                 </svg>
               </div>
-              <Field>
-                <FieldLabel htmlFor='period-to-picker'>
+              <Field className='gap-1.5'>
+                <FieldLabel
+                  className='text-xs font-medium tracking-normal text-foreground normal-case'
+                  htmlFor='period-to-picker'>
                   {t('period.fieldTo')}
                 </FieldLabel>
                 <DatePicker
