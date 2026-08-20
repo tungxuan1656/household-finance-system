@@ -90,8 +90,8 @@ export const PeriodPickerSection = ({
   }
 
   return (
-    <section className='mt-6'>
-      <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
+    <section className='flex flex-col gap-3'>
+      <h2 className='text-sm font-semibold tracking-widest text-foreground uppercase'>
         {t('period.sectionTime')}
       </h2>
       <ToggleGroup
@@ -113,7 +113,7 @@ export const PeriodPickerSection = ({
         ))}
       </ToggleGroup>
 
-      <Card className='mt-3'>
+      <Card>
         <CardHeader>
           <div className='flex flex-wrap items-center gap-2'>
             <Badge variant={activePreset ? 'default' : 'secondary'}>
