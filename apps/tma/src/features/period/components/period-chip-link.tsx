@@ -19,7 +19,7 @@ export const PeriodChipLink = ({
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
 
   return (
-    <TmaHapticButton className='h-8 px-2.5 py-0'>
+    <TmaHapticButton className='h-8 px-2.5 py-0' size='sm' variant='secondary'>
       <Link
         state={{ backTo: location.pathname }}
         to={TMA_PATHS.period}

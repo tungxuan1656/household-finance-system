@@ -7,9 +7,9 @@ import {
   NativePicker,
   type NativePickerOption,
 } from '@/components/shared/native-picker'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -122,11 +122,9 @@ export const BudgetListPage = () => {
         <div className='flex items-center justify-between gap-3'>
           <h2 className='m-0 text-base font-bold'>{t('budgets.title')}</h2>
           {canCreateBudget ? (
-            <Link
-              className={buttonVariants({ size: 'sm', variant: 'outline' })}
-              to={TMA_PATHS.budgetsNew}>
-              {t('budgets.create')}
-            </Link>
+            <TmaHapticButton size='sm' variant='secondary'>
+              <Link to={TMA_PATHS.budgetsNew}>{t('budgets.create')}</Link>
+            </TmaHapticButton>
           ) : null}
         </div>
 
@@ -182,11 +180,9 @@ export const BudgetListPage = () => {
             filteredBudgets.length === 0 &&
             !isInitialLoading &&
             canCreateBudget ? (
-              <Link
-                className={buttonVariants({ variant: 'secondary' })}
-                to={TMA_PATHS.budgetsNew}>
-                {t('budgets.create')}
-              </Link>
+              <TmaHapticButton size='sm' variant='secondary'>
+                <Link to={TMA_PATHS.budgetsNew}>{t('budgets.create')}</Link>
+              </TmaHapticButton>
             ) : null
           }
           emptyDescription={emptyDescription}
@@ -213,32 +209,33 @@ export const BudgetListPage = () => {
               )
 
               return (
-                <Link
-                  key={budget.id}
-                  className='block'
-                  to={getBudgetDetailPath(budget.id)}>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className='text-base font-semibold'>
-                        {formatBudgetPeriodLabel(budget.period, t)}
-                      </CardTitle>
-                      <Badge
-                        variant={
-                          budget.scope === 'personal' ? 'secondary' : 'outline'
-                        }>
-                        {getBudgetScopeLabel(budget.scope, household, t)}
-                      </Badge>
-                    </CardHeader>
-                    <CardContent className='flex items-center justify-between gap-3'>
-                      <span className='shrink-0 text-base font-extrabold text-foreground'>
-                        {formatCurrencyMinor(
-                          budget.totalLimitMinor,
-                          budget.currencyCode,
-                        )}
-                      </span>
-                    </CardContent>
-                  </Card>
-                </Link>
+                <TmaHapticButton key={budget.id} size='sm' variant='secondary'>
+                  <Link className='block' to={getBudgetDetailPath(budget.id)}>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className='text-base font-semibold'>
+                          {formatBudgetPeriodLabel(budget.period, t)}
+                        </CardTitle>
+                        <Badge
+                          variant={
+                            budget.scope === 'personal'
+                              ? 'secondary'
+                              : 'outline'
+                          }>
+                          {getBudgetScopeLabel(budget.scope, household, t)}
+                        </Badge>
+                      </CardHeader>
+                      <CardContent className='flex items-center justify-between gap-3'>
+                        <span className='shrink-0 text-base font-extrabold text-foreground'>
+                          {formatCurrencyMinor(
+                            budget.totalLimitMinor,
+                            budget.currencyCode,
+                          )}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </TmaHapticButton>
               )
             })}
           </div>

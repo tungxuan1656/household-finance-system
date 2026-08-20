@@ -239,7 +239,7 @@ export const BudgetDetailPage = () => {
                             aria-busy={updateMutation.isPending}
                             disabled={updateMutation.isPending}
                             type='button'
-                            variant='ghost'
+                            variant='secondary'
                             onClick={() => {
                               setIsEditing(false)
 
@@ -254,8 +254,7 @@ export const BudgetDetailPage = () => {
                           <TmaHapticButton
                             aria-busy={updateMutation.isPending}
                             disabled={updateMutation.isPending}
-                            type='submit'
-                            variant='secondary'>
+                            type='submit'>
                             {updateMutation.isPending
                               ? t('budgets.detail.editing')
                               : t('budgets.detail.save')}

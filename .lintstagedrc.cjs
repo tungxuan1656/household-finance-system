@@ -6,6 +6,13 @@ module.exports = {
   'apps/web/**/*.{json,yml,yaml,css,scss,html}': [
     'pnpm --filter web exec prettier --write',
   ],
+  'apps/tma/**/*.{js,cjs,mjs,jsx,ts,tsx}': [
+    'pnpm --filter tma exec eslint --fix',
+    'pnpm --filter tma exec prettier --write',
+  ],
+  'apps/tma/**/*.{json,yml,yaml,css,scss,html}': [
+    'pnpm --filter tma exec prettier --write',
+  ],
   'apps/worker/**/*.{js,cjs,mjs,jsx,ts,tsx}': [
     'pnpm --filter worker exec eslint --fix',
     'pnpm --filter worker exec prettier --write',

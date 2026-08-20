@@ -6,7 +6,6 @@ import { HouseholdItem } from '@/components/finance'
 import { DataState } from '@/components/shared/data-state'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
   CardDescription,
@@ -91,11 +90,11 @@ export const HouseholdListPage = () => {
           <h2 className='mt-4 text-base font-bold'>{t('households.header')}</h2>
           <div>
             {householdCards.length > 0 ? (
-              <Link
-                className={buttonVariants({ size: 'sm', variant: 'outline' })}
-                to={TMA_PATHS.householdsNew}>
-                {t('households.create')}
-              </Link>
+              <TmaHapticButton size='sm' variant='secondary'>
+                <Link to={TMA_PATHS.householdsNew}>
+                  {t('households.create')}
+                </Link>
+              </TmaHapticButton>
             ) : null}
           </div>
         </div>
@@ -103,7 +102,7 @@ export const HouseholdListPage = () => {
         <DataState
           customAction={
             householdCards.length === 0 && !householdsQuery.isLoading ? (
-              <TmaHapticButton size={'sm'} variant={'secondary'}>
+              <TmaHapticButton size='sm' variant='secondary'>
                 <Link to={TMA_PATHS.householdsNew}>
                   {t('households.createTitle')}
                 </Link>

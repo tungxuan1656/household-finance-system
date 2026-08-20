@@ -9,7 +9,6 @@ import {
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
-import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -85,11 +84,11 @@ export const AddExpenseDetailsPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Link
-              className={buttonVariants({ className: 'justify-self-start' })}
-              to={TMA_PATHS.expensesNewCategory}>
-              {t('expenses.add.backToStep1')}
-            </Link>
+            <TmaHapticButton size='sm' variant='secondary'>
+              <Link to={TMA_PATHS.expensesNewCategory}>
+                {t('expenses.add.backToStep1')}
+              </Link>
+            </TmaHapticButton>
           </CardContent>
         </Card>
       </TmaPageShell>

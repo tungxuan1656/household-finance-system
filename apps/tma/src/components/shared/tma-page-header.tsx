@@ -44,7 +44,7 @@ export const TmaPageHeader = ({
 )
 
 export const TmaPageTitleBar = ({ title }: { title: string }) => (
-  <header className='grid min-h-11 place-items-center'>
+  <header className='grid min-h-12 place-items-center'>
     <h1 className='m-0 text-base leading-tight font-bold text-foreground'>
       {title}
     </h1>

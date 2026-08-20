@@ -169,16 +169,12 @@ export const CreateGroupForm = ({
               aria-busy={isBusy}
               disabled={isBusy}
               type='button'
-              variant='ghost'
+              variant='secondary'
               onClick={onCancel}>
               {t('common.cancel')}
             </TmaHapticButton>
 
-            <TmaHapticButton
-              aria-busy={isBusy}
-              disabled={isBusy}
-              type='submit'
-              variant='secondary'>
+            <TmaHapticButton aria-busy={isBusy} disabled={isBusy} type='submit'>
               {isBusy
                 ? t('groups.createPage.submitting')
                 : t('groups.createPage.title')}

@@ -239,15 +239,14 @@ const CreateBudgetPage = () => {
                 aria-busy={isBusy}
                 disabled={isBusy}
                 type='button'
-                variant='ghost'
+                variant='secondary'
                 onClick={() => navigate(TMA_PATHS.budgets)}>
                 {t('common.cancel')}
               </TmaHapticButton>
               <TmaHapticButton
                 aria-busy={isBusy}
                 disabled={isBusy}
-                type='submit'
-                variant='secondary'>
+                type='submit'>
                 {isBusy
                   ? t('budgets.createPage.submitting')
                   : t('budgets.createPage.title')}

@@ -187,17 +187,19 @@ const ExpensesAddFab = () => {
 
   return (
     <div className='pointer-events-none fixed inset-x-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] z-30 flex justify-center px-4'>
-      <Link
-        aria-label={t('shell.addExpenseAria')}
-        className='pointer-events-auto grid size-13.5 place-items-center rounded-full bg-linear-to-br from-[#2a3a5c] to-foreground text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
-        to={TMA_PATHS.expensesNewCategory}
-        onClick={() => {
-          impact('medium')
-        }}
-        onMouseEnter={prefetchAddExpense}
-        onTouchStart={prefetchAddExpense}>
-        <PlusIcon height='24' width='24' />
-      </Link>
+      <TmaHapticButton size='sm' variant='secondary'>
+        <Link
+          aria-label={t('shell.addExpenseAria')}
+          className='pointer-events-auto grid size-13.5 place-items-center rounded-full bg-linear-to-br from-[#2a3a5c] to-foreground text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
+          to={TMA_PATHS.expensesNewCategory}
+          onClick={() => {
+            impact('medium')
+          }}
+          onMouseEnter={prefetchAddExpense}
+          onTouchStart={prefetchAddExpense}>
+          <PlusIcon height='24' width='24' />
+        </Link>
+      </TmaHapticButton>
     </div>
   )
 }

@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { DataState } from '@/components/shared/data-state'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -74,72 +74,74 @@ const GroupListCard = ({
   )
 
   return (
-    <Link className='block' to={getGroupDetailPath(item.group.id)}>
-      <Card>
-        <CardHeader>
-          <div className='flex items-start justify-between gap-3'>
-            <div className='flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground'>
-              <GroupGlyph />
-            </div>
-            <Badge
-              variant={
-                item.group.status === 'active' ? 'secondary' : 'outline'
-              }>
-              {getGroupStatusLabel(item.group.status, t)}
-            </Badge>
-          </div>
-          <div className='min-w-0'>
-            <CardTitle className='truncate'>{item.group.name}</CardTitle>
-            <CardDescription className='line-clamp-2'>
-              {item.group.description || getGroupContextLabel(item, t)}
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent className='grid gap-3'>
-          <div className='grid grid-cols-2 gap-2'>
-            <div className='grid gap-1'>
-              <CardDescription>{t('groups.statSpent')}</CardDescription>
-              <span className='text-sm font-bold text-foreground'>
-                {formatCurrencyMinor(item.group.totalSpendMinor, 'VND')}
-              </span>
-            </div>
-            <div className='grid gap-1'>
-              <CardDescription>{t('groups.statBudget')}</CardDescription>
-              <p className='text-sm font-semibold text-foreground'>
-                {getGroupBudgetLabel(item.group, t)}
-              </p>
-            </div>
-          </div>
-
-          {progress ? (
-            <div className='grid gap-1'>
-              <div className='h-2 overflow-hidden rounded-full bg-black/6'>
-                <div
-                  className={
-                    progress.isOverBudget
-                      ? 'h-full rounded-full bg-destructive'
-                      : 'h-full rounded-full bg-primary'
-                  }
-                  style={{ width: `${progress.widthPercent}%` }}
-                />
+    <TmaHapticButton size='sm' variant='secondary'>
+      <Link className='block' to={getGroupDetailPath(item.group.id)}>
+        <Card>
+          <CardHeader>
+            <div className='flex items-start justify-between gap-3'>
+              <div className='flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+                <GroupGlyph />
               </div>
-              <CardDescription>
-                {t('groups.statBudgetUsedPct', {
-                  percent: progress.percentUsed,
-                })}
+              <Badge
+                variant={
+                  item.group.status === 'active' ? 'secondary' : 'outline'
+                }>
+                {getGroupStatusLabel(item.group.status, t)}
+              </Badge>
+            </div>
+            <div className='min-w-0'>
+              <CardTitle className='truncate'>{item.group.name}</CardTitle>
+              <CardDescription className='line-clamp-2'>
+                {item.group.description || getGroupContextLabel(item, t)}
               </CardDescription>
             </div>
-          ) : null}
+          </CardHeader>
+          <CardContent className='grid gap-3'>
+            <div className='grid grid-cols-2 gap-2'>
+              <div className='grid gap-1'>
+                <CardDescription>{t('groups.statSpent')}</CardDescription>
+                <span className='text-sm font-bold text-foreground'>
+                  {formatCurrencyMinor(item.group.totalSpendMinor, 'VND')}
+                </span>
+              </div>
+              <div className='grid gap-1'>
+                <CardDescription>{t('groups.statBudget')}</CardDescription>
+                <p className='text-sm font-semibold text-foreground'>
+                  {getGroupBudgetLabel(item.group, t)}
+                </p>
+              </div>
+            </div>
 
-          <div className='flex items-center justify-between gap-3 text-sm text-muted-foreground'>
-            <span className='truncate'>{getGroupContextLabel(item, t)}</span>
-            <span className='shrink-0'>
-              {getGroupDateRangeLabel(item.group, t)}
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+            {progress ? (
+              <div className='grid gap-1'>
+                <div className='h-2 overflow-hidden rounded-full bg-black/6'>
+                  <div
+                    className={
+                      progress.isOverBudget
+                        ? 'h-full rounded-full bg-destructive'
+                        : 'h-full rounded-full bg-primary'
+                    }
+                    style={{ width: `${progress.widthPercent}%` }}
+                  />
+                </div>
+                <CardDescription>
+                  {t('groups.statBudgetUsedPct', {
+                    percent: progress.percentUsed,
+                  })}
+                </CardDescription>
+              </div>
+            ) : null}
+
+            <div className='flex items-center justify-between gap-3 text-sm text-muted-foreground'>
+              <span className='truncate'>{getGroupContextLabel(item, t)}</span>
+              <span className='shrink-0'>
+                {getGroupDateRangeLabel(item.group, t)}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+    </TmaHapticButton>
   )
 }
 
@@ -195,22 +197,18 @@ export const GroupListPage = () => {
         <div className='flex items-center justify-between gap-3'>
           <h2 className='m-0 text-base font-bold'>{t('groups.header')}</h2>
           {groupItems.length > 0 ? (
-            <Link
-              className={buttonVariants({ size: 'sm', variant: 'outline' })}
-              to={TMA_PATHS.groupsNew}>
-              {t('groups.create')}
-            </Link>
+            <TmaHapticButton size='sm' variant='secondary'>
+              <Link to={TMA_PATHS.groupsNew}>{t('groups.create')}</Link>
+            </TmaHapticButton>
           ) : null}
         </div>
 
         <DataState
           customAction={
             groupItems.length === 0 && !isInitialLoading ? (
-              <Link
-                className={buttonVariants({ variant: 'secondary' })}
-                to={TMA_PATHS.groupsNew}>
-                {t('groups.createTitle')}
-              </Link>
+              <TmaHapticButton size='sm' variant='secondary'>
+                <Link to={TMA_PATHS.groupsNew}>{t('groups.createTitle')}</Link>
+              </TmaHapticButton>
             ) : null
           }
           emptyDescription={t('groups.emptyDesc')}
