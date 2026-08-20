@@ -6,23 +6,14 @@ import {
   HouseholdPreviewCarousel,
 } from '@/components/finance'
 import { AppVersionLabel } from '@/components/shared/app-version-label'
-import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
-import { useAuth } from '@/features/auth/auth-provider'
+import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { HomeRecentExpensesSection } from '@/features/home/components/home-recent-expenses-section'
 import { HomeShortcutsSection } from '@/features/home/components/home-shortcuts-section'
-import { resolveUserName } from '@/features/home/presentation'
-import { PeriodChipLink } from '@/features/period/components/period-chip-link'
 import { usePeriodStore } from '@/features/period/store'
 
 export const HomePage = () => {
-  const { user } = useAuth()
   const { t } = useTranslation()
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
-  const userName = resolveUserName(
-    t,
-    user?.displayName ?? null,
-    user?.email ?? null,
-  )
 
   // Idle prefetch: after the home page is interactive, start loading chunks
   // for the most likely next routes so navigation feels instant.
@@ -40,8 +31,8 @@ export const HomePage = () => {
 
   return (
     <TmaPageShell title={t('homePage.title')}>
-      <TmaPageHeader title={userName} trailing={<PeriodChipLink />} />
-      <FinanceSummaryCard showBudgetPeriodContext showPeriodChip={false} />
+      <div className='h-4' />
+      <FinanceSummaryCard showBudgetPeriodContext />
       <HomeShortcutsSection />
       <HouseholdPreviewCarousel />
       <HomeRecentExpensesSection
