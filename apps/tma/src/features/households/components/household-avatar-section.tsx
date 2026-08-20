@@ -157,13 +157,13 @@ export const HouseholdAvatarSection = ({
     householdName.trim() || t('households.createPage.newHousehold')
 
   return (
-    <>
+    <div className='flex flex-col gap-3'>
       <div>
         <CardTitle>{title}</CardTitle>
         {description ? <CardDescription>{description}</CardDescription> : null}
       </div>
 
-      <div className='flex items-center gap-3.5'>
+      <div className='flex items-center gap-4'>
         <Avatar className='size-16'>
           <AvatarImage alt={displayName} src={currentAvatarSrc} />
           <AvatarFallback className='text-lg font-semibold'>
@@ -223,6 +223,6 @@ export const HouseholdAvatarSection = ({
         onCancel={clearAvatarCandidate}
         onOpenChange={setAvatarDialogOpen}
       />
-    </>
+    </div>
   )
 }

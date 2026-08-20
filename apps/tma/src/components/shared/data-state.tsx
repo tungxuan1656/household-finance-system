@@ -133,15 +133,17 @@ export const DataState = ({
 
   if (branch === 'empty') {
     return (
-      <Empty className={cn(className)}>
-        <EmptyHeader>
-          <EmptyTitle>{title}</EmptyTitle>
-          {description ? (
-            <EmptyDescription>{description}</EmptyDescription>
-          ) : null}
-        </EmptyHeader>
-        {action ? <EmptyContent>{action}</EmptyContent> : null}
-      </Empty>
+      <Card>
+        <Empty className={cn(className)}>
+          <EmptyHeader>
+            <EmptyTitle>{title}</EmptyTitle>
+            {description ? (
+              <EmptyDescription>{description}</EmptyDescription>
+            ) : null}
+          </EmptyHeader>
+          {action ? <EmptyContent>{action}</EmptyContent> : null}
+        </Empty>
+      </Card>
     )
   }
 

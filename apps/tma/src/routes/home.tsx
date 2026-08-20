@@ -31,7 +31,6 @@ export const HomePage = () => {
 
   return (
     <TmaPageShell title={t('homePage.title')}>
-      <div className='h-4' />
       <FinanceSummaryCard showBudgetPeriodContext />
       <HomeShortcutsSection />
       <HouseholdPreviewCarousel />

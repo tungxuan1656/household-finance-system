@@ -152,8 +152,7 @@ export const CreateHouseholdPage = () => {
               <TmaHapticButton
                 aria-busy={isBusy}
                 disabled={isBusy}
-                type='button'
-                variant='ghost'
+                variant='secondary'
                 onClick={() => navigate(TMA_PATHS.households)}>
                 {t('common.cancel')}
               </TmaHapticButton>
@@ -161,8 +160,7 @@ export const CreateHouseholdPage = () => {
               <TmaHapticButton
                 aria-busy={isBusy}
                 disabled={isBusy}
-                type='submit'
-                variant='secondary'>
+                type='submit'>
                 {isBusy
                   ? t('households.createPage.submitting')
                   : t('households.create')}

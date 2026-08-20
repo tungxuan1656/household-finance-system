@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { HouseholdItem } from '@/components/finance'
 import { DataState } from '@/components/shared/data-state'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -87,7 +88,7 @@ export const HouseholdListPage = () => {
 
       <section className='grid gap-3'>
         <div className='flex items-center justify-between gap-3'>
-          <h2 className='m-0 text-base font-bold'>{t('households.header')}</h2>
+          <h2 className='mt-4 text-base font-bold'>{t('households.header')}</h2>
           <div>
             {householdCards.length > 0 ? (
               <Link
@@ -102,11 +103,11 @@ export const HouseholdListPage = () => {
         <DataState
           customAction={
             householdCards.length === 0 && !householdsQuery.isLoading ? (
-              <Link
-                className={buttonVariants({ variant: 'secondary' })}
-                to={TMA_PATHS.householdsNew}>
-                {t('households.createTitle')}
-              </Link>
+              <TmaHapticButton size={'sm'} variant={'secondary'}>
+                <Link to={TMA_PATHS.householdsNew}>
+                  {t('households.createTitle')}
+                </Link>
+              </TmaHapticButton>
             ) : null
           }
           emptyDescription={t('households.emptyDesc')}
