@@ -20,6 +20,7 @@ import { HouseholdAvatarDialog } from './household-avatar-dialog'
 type HouseholdAvatarSectionProps = {
   avatarUrl: string | null
   canEdit: boolean
+  compact?: boolean
   description?: string
   helperText: string
   isBusy: boolean
@@ -33,6 +34,7 @@ type HouseholdAvatarSectionProps = {
 export const HouseholdAvatarSection = ({
   avatarUrl,
   canEdit,
+  compact = false,
   description,
   helperText,
   householdName,
@@ -158,10 +160,14 @@ export const HouseholdAvatarSection = ({
 
   return (
     <div className='flex flex-col gap-3'>
-      <div>
-        <CardTitle>{title}</CardTitle>
-        {description ? <CardDescription>{description}</CardDescription> : null}
-      </div>
+      {compact ? null : (
+        <div>
+          <CardTitle>{title}</CardTitle>
+          {description ? (
+            <CardDescription>{description}</CardDescription>
+          ) : null}
+        </div>
+      )}
 
       <div className='flex items-center gap-4'>
         <Avatar className='size-16'>
@@ -208,11 +214,11 @@ export const HouseholdAvatarSection = ({
             onChange={handleAvatarFileChange}
           />
         </div>
-      ) : (
+      ) : compact ? null : (
         <CardDescription>{readOnlyMessage}</CardDescription>
       )}
 
-      <CardDescription>{helperText}</CardDescription>
+      {compact ? null : <CardDescription>{helperText}</CardDescription>}
       {avatarError ? <FieldError>{avatarError}</FieldError> : null}
 
       <HouseholdAvatarDialog

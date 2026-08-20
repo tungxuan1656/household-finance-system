@@ -86,11 +86,11 @@ export const HouseholdListPage = () => {
       </Card>
 
       <section className='grid gap-3'>
-        <div className='flex items-center justify-between gap-3'>
-          <h2 className='mt-4 text-base font-bold'>{t('households.header')}</h2>
+        <div className='mt-4 flex items-center justify-between gap-3'>
+          <h2 className='text-base font-bold'>{t('households.header')}</h2>
           <div>
             {householdCards.length > 0 ? (
-              <TmaHapticButton size='sm' variant='secondary'>
+              <TmaHapticButton size='xs'>
                 <Link to={TMA_PATHS.householdsNew}>
                   {t('households.create')}
                 </Link>

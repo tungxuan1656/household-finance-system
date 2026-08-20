@@ -3,26 +3,28 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from '@/components/ui/empty'
-import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
-import { TmaHapticButton } from './tma-haptic-button'
+import {
+  type QueryLike,
+  QueryState,
+  resolveQueryStateBranch,
+} from './query-state'
 
+/**
+ * @deprecated Use `QueryStateBranch` from `query-state.tsx` (`QueryStateBranch`) instead.
+ */
 export type DataStateBranch = 'loading' | 'error' | 'empty' | 'content'
 
+/**
+ * @deprecated Use `resolveQueryStateBranch` from `query-state.tsx` instead.
+ * Maps legacy flags to QueryState branch via fake QueryLike to keep test compatibility.
+ */
 export const resolveDataStateBranch = ({
   isLoading,
   isError,
@@ -32,13 +34,22 @@ export const resolveDataStateBranch = ({
   isError?: boolean
   isEmpty?: boolean
 }): DataStateBranch => {
-  if (isLoading) return 'loading'
-  if (isError) return 'error'
-  if (isEmpty) return 'empty'
+  const fakeQuery: QueryLike<unknown> = {
+    status: isLoading ? 'pending' : isError ? 'error' : 'success',
+    data: undefined,
+    fetchStatus: undefined,
+  }
+  const branch = resolveQueryStateBranch(fakeQuery, !!isEmpty)
+  if (branch === 'pending') return 'loading'
+  if (branch === 'error') return 'error'
+  if (branch === 'empty') return 'empty'
 
   return 'content'
 }
 
+/**
+ * @deprecated Use `QueryStateProps` from `query-state.tsx` instead.
+ */
 export interface DataStateProps {
   children?: ReactNode
   className?: string
@@ -55,6 +66,10 @@ export interface DataStateProps {
   retryAction?: () => unknown | Promise<unknown>
 }
 
+/**
+ * @deprecated Use `QueryState` from `./query-state` instead.
+ * Deprecated alias that maps legacy DataState props to QueryState via QueryLike fake + resolveQueryStateBranch.
+ */
 export const DataState = ({
   children,
   className,
@@ -71,47 +86,19 @@ export const DataState = ({
   retryAction,
 }: DataStateProps) => {
   const { t } = useTranslation()
-  const branch = resolveDataStateBranch({ isLoading, isError, isEmpty })
+  const query: QueryLike<unknown> = {
+    status: isLoading ? 'pending' : isError ? 'error' : 'success',
+    data: undefined,
+    fetchStatus: undefined,
+    refetch: retryAction ? () => void retryAction() : undefined,
+  }
 
-  const resolvedLoadingTitle = loadingTitle ?? t('dataState.loadingTitle')
-  const resolvedLoadingDescription =
-    loadingDescription ?? t('dataState.loadingDescription')
-  const resolvedEmptyTitle = emptyTitle ?? t('dataState.emptyTitle')
-  const resolvedEmptyDescription =
-    emptyDescription ?? t('dataState.emptyDescription')
-  const resolvedErrorTitle = errorTitle ?? t('dataState.errorTitle')
-  const resolvedErrorDescription =
-    errorDescription ?? t('dataState.errorDescription')
+  // Preserve legacy: customAction overrides retryAction for error branch
+  const branch = resolveQueryStateBranch(query, !!isEmpty)
+  if (branch === 'error' && customAction) {
+    const title = errorTitle ?? t('dataState.errorTitle')
+    const description = errorDescription ?? t('dataState.errorDescription')
 
-  if (branch === 'content') return <>{children}</>
-
-  const title =
-    branch === 'loading'
-      ? resolvedLoadingTitle
-      : branch === 'error'
-        ? resolvedErrorTitle
-        : resolvedEmptyTitle
-  const description =
-    branch === 'loading'
-      ? resolvedLoadingDescription
-      : branch === 'error'
-        ? resolvedErrorDescription
-        : resolvedEmptyDescription
-
-  const retryActionNode =
-    branch === 'error' && retryAction ? (
-      <TmaHapticButton
-        variant='outline'
-        onClick={() => {
-          void retryAction()
-        }}>
-        {t('dataState.retry')}
-      </TmaHapticButton>
-    ) : null
-
-  const action = customAction ?? retryActionNode
-
-  if (branch === 'loading') {
     return (
       <Card className={cn(className)}>
         <CardHeader>
@@ -120,42 +107,26 @@ export const DataState = ({
             <CardDescription>{description}</CardDescription>
           ) : null}
         </CardHeader>
-        <CardContent>
-          <div className='grid gap-2'>
-            <Skeleton className='h-4 w-full' />
-            <Skeleton className='h-4 w-5/6' />
-            <Skeleton className='h-4 w-2/3' />
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (branch === 'empty') {
-    return (
-      <Card>
-        <Empty className={cn(className)}>
-          <EmptyHeader>
-            <EmptyTitle>{title}</EmptyTitle>
-            {description ? (
-              <EmptyDescription>{description}</EmptyDescription>
-            ) : null}
-          </EmptyHeader>
-          {action ? <EmptyContent>{action}</EmptyContent> : null}
-        </Empty>
+        <CardFooter className='justify-end'>{customAction}</CardFooter>
       </Card>
     )
   }
 
   return (
-    <Card className={cn(className)}>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description ? <CardDescription>{description}</CardDescription> : null}
-      </CardHeader>
-      {action ? (
-        <CardFooter className='justify-end'>{action}</CardFooter>
-      ) : null}
-    </Card>
+    <QueryState
+      className={className}
+      empty={{
+        title: emptyTitle,
+        description: emptyDescription,
+        action: customAction ?? undefined,
+      }}
+      error={{ title: errorTitle, description: errorDescription }}
+      isEmpty={!!isEmpty}
+      pending={{ title: loadingTitle, description: loadingDescription }}
+      query={query}
+      retryAction={retryAction ? () => void retryAction() : undefined}
+      variant='card'>
+      {() => children}
+    </QueryState>
   )
 }

@@ -111,68 +111,66 @@ export const HouseholdItem = ({
   roleLabel: string
   t: (key: string, options?: Record<string, unknown>) => string
 }) => (
-  <Card className='transition active:scale-[0.99]'>
-    <TmaHapticButton size='sm' variant='secondary'>
-      <Link
-        to={getHouseholdDetailPath(card.household.id)}
-        onClick={() => impact('light')}>
-        <CardHeader>
-          <div className='flex items-center justify-between gap-3'>
-            <Avatar size='lg'>
-              <AvatarImage
-                alt={card.household.name}
-                src={card.household.avatarUrl ?? undefined}
-              />
-              <AvatarFallback>
-                {resolveInitials(card.household.name)}
-              </AvatarFallback>
-            </Avatar>
-            <Badge variant='default'>{roleLabel}</Badge>
-          </div>
-          <CardTitle>{card.household.name}</CardTitle>
-          <CardDescription>
-            {card.memberCount != null
-              ? t('households.memberCountMany', { count: card.memberCount })
-              : t('householdsList.membersLoading')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className='grid grid-cols-2 gap-2.5'>
-          <div className='grid gap-1 p-3'>
-            <span className='font-mono text-sm font-bold text-foreground [font-variant-numeric:tabular-nums]'>
-              {card.totalSpendMinor != null && card.currencyCode
-                ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
-                : card.isLoading
-                  ? t('householdsList.loadingDots')
-                  : '-'}
-            </span>
-          </div>
-          <div className='grid gap-1 p-3'>
-            {card.budget ? (
-              <>
-                <strong className='text-sm text-foreground'>
-                  {card.budgetLabel}
-                </strong>
-                <div className='mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/8'>
-                  <div
-                    className='h-full rounded-full bg-emerald-500 transition-all'
-                    style={{
-                      width: `${Math.min(
+  <Card className='flex transition active:scale-[0.99]'>
+    <Link
+      to={getHouseholdDetailPath(card.household.id)}
+      onClick={() => impact('light')}>
+      <CardHeader>
+        <div className='flex items-center justify-between gap-3'>
+          <Avatar size='lg'>
+            <AvatarImage
+              alt={card.household.name}
+              src={card.household.avatarUrl ?? undefined}
+            />
+            <AvatarFallback>
+              {resolveInitials(card.household.name)}
+            </AvatarFallback>
+          </Avatar>
+          <Badge variant='default'>{roleLabel}</Badge>
+        </div>
+        <CardTitle>{card.household.name}</CardTitle>
+        <CardDescription>
+          {card.memberCount != null
+            ? t('households.memberCountMany', { count: card.memberCount })
+            : t('householdsList.membersLoading')}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='grid grid-cols-2 gap-2.5'>
+        <div className='grid gap-1 p-3'>
+          <span className='font-mono text-sm font-bold text-foreground [font-variant-numeric:tabular-nums]'>
+            {card.totalSpendMinor != null && card.currencyCode
+              ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
+              : card.isLoading
+                ? t('householdsList.loadingDots')
+                : '-'}
+          </span>
+        </div>
+        <div className='grid gap-1 p-3'>
+          {card.budget ? (
+            <>
+              <strong className='text-sm text-foreground'>
+                {card.budgetLabel}
+              </strong>
+              <div className='mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/8'>
+                <div
+                  className='h-full rounded-full bg-emerald-500 transition-all'
+                  style={{
+                    width: `${Math.min(
+                      100,
+                      ((card.totalSpendMinor ?? 0) /
+                        card.budget.totalLimitMinor) *
                         100,
-                        ((card.totalSpendMinor ?? 0) /
-                          card.budget.totalLimitMinor) *
-                          100,
-                      )}%`,
-                    }}
-                  />
-                </div>
-              </>
-            ) : (
-              <strong className='text-sm text-muted-foreground'>—</strong>
-            )}
-          </div>
-        </CardContent>
-      </Link>
-    </TmaHapticButton>
+                    )}%`,
+                  }}
+                />
+              </div>
+            </>
+          ) : (
+            <strong className='text-sm text-muted-foreground'>—</strong>
+          )}
+        </div>
+      </CardContent>
+    </Link>
   </Card>
 )
 

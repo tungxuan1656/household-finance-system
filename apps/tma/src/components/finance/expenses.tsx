@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { DataState } from '@/components/shared/data-state'
+import { QueryState } from '@/components/shared/query-state'
 import {
   TmaCategoryIconBadge,
   TmaInlineAction,
@@ -136,41 +136,44 @@ export const RecentExpenses = ({
           </TmaInlineAction>
         </div>
       </div>
-      <DataState
-        emptyDescription={t('expensesList.emptyDesc')}
-        emptyTitle={t('expensesList.emptyTitle')}
-        errorDescription={t('expensesList.loadErrorDesc')}
-        errorTitle={t('expensesList.loadError')}
-        isEmpty={
-          !recentExpensesQuery.isLoading &&
-          recentExpenses.length === 0 &&
-          !recentExpensesQuery.isError
-        }
-        isError={recentExpensesQuery.isError && recentExpenses.length === 0}
-        isLoading={recentExpensesQuery.isLoading && recentExpenses.length === 0}
-        loadingDescription={t('expensesList.loadingDesc')}
-        loadingTitle={t('expensesList.loading')}
+      <QueryState
+        empty={{
+          description: t('expensesList.emptyDesc'),
+          title: t('expensesList.emptyTitle'),
+        }}
+        error={{
+          description: t('expensesList.loadErrorDesc'),
+          title: t('expensesList.loadError'),
+        }}
+        isEmpty={(data) => (data?.items?.length ?? recentExpenses.length) === 0}
+        query={recentExpensesQuery}
         retryAction={recentExpensesQuery.refetch}>
-        <Card size='sm'>
-          <CardHeader>
-            <CardTitle>{title}</CardTitle>
-          </CardHeader>
-          <CardContent className='grid gap-2'>
-            {recentExpenses.map((expense) => (
-              <ExpenseItem
-                key={expense.id}
-                expense={expense}
-                householdLabel={
-                  expense.householdId
-                    ? householdNameById.get(expense.householdId)
-                    : null
-                }
-                showHouseholdLabel={showHouseholdLabel}
-              />
-            ))}
-          </CardContent>
-        </Card>
-      </DataState>
+        {(data) => {
+          const items = data?.items ?? recentExpenses
+
+          return (
+            <Card size='sm'>
+              <CardHeader>
+                <CardTitle>{title}</CardTitle>
+              </CardHeader>
+              <CardContent className='grid gap-2'>
+                {items.map((expense) => (
+                  <ExpenseItem
+                    key={expense.id}
+                    expense={expense}
+                    householdLabel={
+                      expense.householdId
+                        ? householdNameById.get(expense.householdId)
+                        : null
+                    }
+                    showHouseholdLabel={showHouseholdLabel}
+                  />
+                ))}
+              </CardContent>
+            </Card>
+          )
+        }}
+      </QueryState>
     </section>
   )
 }
