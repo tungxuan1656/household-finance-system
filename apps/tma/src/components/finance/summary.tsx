@@ -86,7 +86,7 @@ export const FinanceSummaryCard = ({
           <div className='flex items-start justify-between gap-3'>
             <div>
               <CardTitle>{title}</CardTitle>
-              <span className='mt-1 block font-mono text-[30px] leading-none font-extrabold tracking-normal text-foreground [font-variant-numeric:tabular-nums]'>
+              <span className='my-2 block font-mono text-[30px] leading-none font-extrabold tracking-normal text-foreground [font-variant-numeric:tabular-nums]'>
                 {overview
                   ? formatCurrencyMinor(
                       overview.totalSpendMinor,
@@ -138,7 +138,7 @@ export const FinanceSummaryCard = ({
               </div>
             </div>
           ) : (
-            <div className='text-xs font-semibold text-muted-foreground'>
+            <div className='text-xs font-medium text-muted-foreground'>
               {budget && isMonthPeriodSelection(selectedPeriod)
                 ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget, t)
                 : showBudgetPeriodContext
