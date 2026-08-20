@@ -54,8 +54,10 @@ const makeTabItems = (t: (key: string) => string) =>
 
 export const TmaBottomTabs = ({
   bubbleHref = TMA_PATHS.expensesNewCategory,
+  className,
 }: {
   bubbleHref?: string
+  className?: string
 }) => {
   const location = useLocation()
   const { t } = useTranslation()
@@ -64,7 +66,10 @@ export const TmaBottomTabs = ({
   return (
     <div
       aria-label={t('shell.navAria')}
-      className='pointer-events-none fixed right-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] left-0 z-30 flex justify-center px-4'>
+      className={cn(
+        'pointer-events-none fixed right-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] left-0 z-30 flex justify-center px-4',
+        className,
+      )}>
       <nav className='pointer-events-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 rounded-[28px] border border-white/50 bg-white/55 p-1 shadow-[0_6px_20px_rgba(17,24,39,0.05),0_1px_2px_rgba(17,24,39,0.04),inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(17,24,39,0.04)] backdrop-blur-md md:min-w-90'>
         <div className='flex justify-start'>
           {tabItems.slice(0, 1).map(({ href, label, icon: Icon, match }) => {
