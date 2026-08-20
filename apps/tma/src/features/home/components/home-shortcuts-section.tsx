@@ -72,9 +72,10 @@ export const HomeShortcutsSection = () => {
   }>
 
   return (
-    <section className='mt-6'>
-      {/* The section stays a plain layout wrapper; ShortcutItem owns each Card. */}
-      <div className='grid grid-cols-2 gap-2.5'>
+    // No external margin: parent gap owns spacing. Plain wrapper for consistent rhythm.
+    <section
+      aria-label={t('home.shortcuts.title', { defaultValue: 'Shortcuts' })}>
+      <div className='grid grid-cols-2 gap-3'>
         {shortcutItems.map((item) => (
           <ShortcutItem
             key={item.title}

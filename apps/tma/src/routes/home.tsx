@@ -31,16 +31,17 @@ export const HomePage = () => {
 
   return (
     <TmaPageShell title={t('homePage.title')}>
-      <FinanceSummaryCard showBudgetPeriodContext />
-      <HomeShortcutsSection />
-      <HouseholdPreviewCarousel />
-      <HomeRecentExpensesSection
-        dateFrom={selectedPeriod.dateFrom}
-        dateTo={selectedPeriod.dateTo}
-        title={t('home.recentExpensesTitle')}
-      />
-      <div className='mt-8'>
-        <AppVersionLabel />
+      {/* Single spacing owner: parent flex gap owns vertical rhythm, children must not leak mt-* */}
+      <div className='flex flex-col gap-6'>
+        <FinanceSummaryCard showBudgetPeriodContext />
+        <HomeShortcutsSection />
+        <HouseholdPreviewCarousel />
+        <HomeRecentExpensesSection
+          dateFrom={selectedPeriod.dateFrom}
+          dateTo={selectedPeriod.dateTo}
+          title={t('home.recentExpensesTitle')}
+        />
+        <AppVersionLabel className='pt-2' />
       </div>
     </TmaPageShell>
   )

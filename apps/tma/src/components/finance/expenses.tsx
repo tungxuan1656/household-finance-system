@@ -7,7 +7,7 @@ import {
   TmaInlineAction,
 } from '@/components/shared/tma-page-shell'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import type { ExpensesRouteState } from '@/features/expenses/filter-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import { useExpenseListQuery, useHouseholdsQuery } from '@/features/home/api'
@@ -122,11 +122,11 @@ export const RecentExpenses = ({
   const householdNameById = buildHouseholdNameMap(
     householdsQuery.data?.items ?? [],
   )
-  const recentExpenses = recentExpensesQuery.data?.items ?? []
 
   return (
-    <section className='mt-6'>
-      <div className='mb-3 flex items-end justify-between gap-3'>
+    // No external margin: parent gap owns spacing. Single header, no duplicate CardTitle.
+    <section className='flex flex-col gap-3'>
+      <div className='flex items-end justify-between gap-3 px-1'>
         <h2 className='m-0 min-w-0 text-base leading-tight font-semibold text-foreground'>
           {title}
         </h2>
@@ -145,18 +145,17 @@ export const RecentExpenses = ({
           description: t('expensesList.loadErrorDesc'),
           title: t('expensesList.loadError'),
         }}
-        isEmpty={(data) => (data?.items?.length ?? recentExpenses.length) === 0}
+        isEmpty={(data) => (data?.items?.length ?? 0) === 0}
         query={recentExpensesQuery}
-        retryAction={recentExpensesQuery.refetch}>
+        retryAction={recentExpensesQuery.refetch}
+        variant='card'>
         {(data) => {
-          const items = data?.items ?? recentExpenses
+          const items = data.items
 
           return (
             <Card size='sm'>
-              <CardHeader>
-                <CardTitle>{title}</CardTitle>
-              </CardHeader>
-              <CardContent className='grid gap-2'>
+              {/* No CardHeader duplication: outer h2 already is the title */}
+              <CardContent className='grid gap-2 p-0'>
                 {items.map((expense) => (
                   <ExpenseItem
                     key={expense.id}
@@ -198,7 +197,7 @@ export const ExpenseTimeline = ({
         <div key={label} className='grid gap-2'>
           <h2 className='px-1 text-sm font-bold text-foreground'>{label}</h2>
           <Card size='sm'>
-            <CardContent className='grid gap-2'>
+            <CardContent className='grid gap-2 p-0'>
               {items.map((expense) => (
                 <ExpenseItem
                   key={expense.id}

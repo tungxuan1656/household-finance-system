@@ -21,7 +21,9 @@ export const ShortcutItem = ({
   title: string
 }) => {
   const content = (
-    <Card size='sm'>
+    <Card
+      className={cn('transition active:scale-[0.98]', disabled && 'opacity-60')}
+      size='sm'>
       <CardHeader className='flex flex-row items-center gap-3 py-1'>
         <span
           aria-hidden='true'
@@ -32,14 +34,16 @@ export const ShortcutItem = ({
           }}>
           <Icon height={20} strokeWidth={2.1} width={20} />
         </span>
-        <h3 className='text-[15px] leading-tight font-semibold'>{title}</h3>
+        <h3 className='line-clamp-2 text-[15px] leading-tight font-semibold'>
+          {title}
+        </h3>
       </CardHeader>
     </Card>
   )
 
   if (disabled) {
     return (
-      <div aria-disabled='true' className={cn('opacity-75')}>
+      <div aria-disabled='true' className={cn('cursor-not-allowed')}>
         {content}
       </div>
     )
@@ -47,7 +51,7 @@ export const ShortcutItem = ({
 
   return (
     <Link
-      className='transition active:scale-[0.98]'
+      className='block rounded-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none'
       to={href}
       onClick={() => {
         onClick?.()

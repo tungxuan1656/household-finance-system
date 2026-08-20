@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
-import { DataState } from '@/components/shared/data-state'
+import { QueryState } from '@/components/shared/query-state'
 import {
   Card,
   CardContent,
@@ -52,103 +52,118 @@ export const FinanceSummaryCard = ({
   const budgetQuery = useQuery({
     ...budgetListQueryOptions(budgetParams),
   })
-  const overview = overviewQuery.data
-  const budget = budgetQuery.data?.items[0] ?? null
-  const budgetPeriodContext = formatBudgetPeriodContext(budgetPeriod, t)
-  const budgetProgress = overview
-    ? getBudgetProgress(overview.totalSpendMinor, budget)
-    : null
-  const isLoading =
-    !overview &&
-    (overviewQuery.isLoading ||
-      comparisonQuery.isLoading ||
-      budgetQuery.isLoading)
-  const isError =
-    !overview && Boolean(overviewQuery.error || comparisonQuery.error)
+
+  const handleRetryAll = () =>
+    void Promise.all([
+      overviewQuery.refetch(),
+      comparisonQuery.refetch(),
+      budgetQuery.refetch(),
+    ])
 
   return (
-    <DataState
-      errorDescription={t('summary.loadErrorDesc')}
-      errorTitle={t('summary.loadError')}
-      isError={isError}
-      isLoading={isLoading}
-      loadingDescription={t('summary.loadingDesc')}
-      loadingTitle={t('summary.loading')}
-      retryAction={async () => {
-        await Promise.all([
-          overviewQuery.refetch(),
-          comparisonQuery.refetch(),
-          budgetQuery.refetch(),
-        ])
-      }}>
-      <Card>
-        <CardHeader>
-          <div className='flex items-start justify-between gap-3'>
-            <div>
-              <CardTitle>{title}</CardTitle>
-              <span className='my-2 block font-mono text-[30px] leading-none font-extrabold tracking-normal text-foreground [font-variant-numeric:tabular-nums]'>
-                {overview
-                  ? formatCurrencyMinor(
+    <QueryState
+      error={{
+        title: t('summary.loadError'),
+        description: t('summary.loadErrorDesc'),
+      }}
+      pending={{
+        title: t('summary.loading'),
+        description: t('summary.loadingDesc'),
+      }}
+      query={overviewQuery}
+      retryAction={handleRetryAll}
+      variant='card'>
+      {(overview) => {
+        const budget = budgetQuery.data?.items[0] ?? null
+        const budgetPeriodContext = formatBudgetPeriodContext(budgetPeriod, t)
+        const budgetProgress = getBudgetProgress(
+          overview.totalSpendMinor,
+          budget,
+        )
+        const isUpdating =
+          overviewQuery.isFetching || comparisonQuery.isFetching
+
+        return (
+          <Card>
+            <CardHeader>
+              <div className='flex items-start justify-between gap-3'>
+                <div className='min-w-0'>
+                  <CardTitle>{title}</CardTitle>
+                  <span className='mt-2 block font-mono text-[28px] leading-none font-extrabold tracking-tight text-foreground [font-variant-numeric:tabular-nums] sm:text-[30px]'>
+                    {formatCurrencyMinor(
                       overview.totalSpendMinor,
                       overview.currencyCode,
-                    )
-                  : '-'}
-              </span>
-            </div>
-            {showPeriodChip ? <PeriodChipLink /> : null}
-          </div>
-          <CardDescription>
-            {overviewQuery.isFetching || comparisonQuery.isFetching
-              ? t('summary.updating')
-              : getComparisonLabel(
-                  comparisonQuery.data,
-                  overview?.expenseCount ?? 0,
-                  selectedPeriod.granularity,
-                  t,
-                )}
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className='grid gap-4'>
-          {budgetProgress && isMonthPeriodSelection(selectedPeriod) ? (
-            <div className='grid gap-2'>
-              <div className='h-3 overflow-hidden rounded-full bg-black/[0.07]'>
-                <span
-                  className='block h-full rounded-full bg-linear-to-r from-primary to-[#7ca8ff] shadow-[0_6px_14px_rgba(63,124,255,0.22)]'
-                  style={{
-                    width: `${Math.min(budgetProgress.percentUsed, 100)}%`,
-                  }}
-                />
-              </div>
-              <div className='flex items-center justify-between gap-3 text-xs font-semibold text-muted-foreground'>
-                {t('summary.budgetUsedPct', {
-                  percent: budgetProgress.percentUsed,
-                })}
-                <span>
-                  {budgetProgress.isOverBudget
-                    ? t('summary.overPrefix')
-                    : t('summary.remainingPrefix')}
-                  <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
-                    {formatCurrencyMinor(
-                      Math.abs(budgetProgress.remainingMinor),
-                      budget?.currencyCode ?? overview?.currencyCode ?? 'VND',
                     )}
                   </span>
-                </span>
+                </div>
+                {showPeriodChip ? (
+                  <div className='shrink-0'>
+                    <PeriodChipLink />
+                  </div>
+                ) : null}
               </div>
-            </div>
-          ) : (
-            <div className='text-xs font-medium text-muted-foreground'>
-              {budget && isMonthPeriodSelection(selectedPeriod)
-                ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget, t)
-                : showBudgetPeriodContext
-                  ? budgetPeriodContext
-                  : t('summary.monthlyOnly')}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </DataState>
+              <CardDescription>
+                {isUpdating
+                  ? t('summary.updating')
+                  : getComparisonLabel(
+                      comparisonQuery.data,
+                      overview.expenseCount ?? 0,
+                      selectedPeriod.granularity,
+                      t,
+                    )}
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className='grid gap-4'>
+              {budgetProgress && isMonthPeriodSelection(selectedPeriod) ? (
+                <div className='grid gap-2'>
+                  <div className='h-3 overflow-hidden rounded-full bg-black/[0.07] dark:bg-white/10'>
+                    <span
+                      className='block h-full rounded-full bg-linear-to-r from-primary to-[#7ca8ff] shadow-[0_6px_14px_rgba(63,124,255,0.22)]'
+                      style={{
+                        width: `${Math.min(budgetProgress.percentUsed, 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <div className='flex items-center justify-between gap-3 text-xs font-semibold text-muted-foreground'>
+                    {t('summary.budgetUsedPct', {
+                      percent: budgetProgress.percentUsed,
+                    })}
+                    <span className='flex items-center gap-1'>
+                      <span>
+                        {budgetProgress.isOverBudget
+                          ? t('summary.overPrefix')
+                          : t('summary.remainingPrefix')}
+                      </span>
+                      <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
+                        {formatCurrencyMinor(
+                          Math.abs(budgetProgress.remainingMinor),
+                          budget?.currencyCode ??
+                            overview.currencyCode ??
+                            'VND',
+                        )}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className='text-xs leading-relaxed font-medium text-muted-foreground'>
+                  {budget && isMonthPeriodSelection(selectedPeriod)
+                    ? getHouseholdBudgetLabel(
+                        overview.totalSpendMinor,
+                        budget,
+                        t,
+                      )
+                    : showBudgetPeriodContext
+                      ? budgetPeriodContext
+                      : t('summary.monthlyOnly')}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )
+      }}
+    </QueryState>
   )
 }
 
