@@ -38,6 +38,6 @@ Replace the earlier custom-primitive migration direction with pristine Base UI/L
 
 - State: active
 - Plan: [`docs/plans/feat-128.md`](../docs/plans/feat-128.md) — the pristine Base UI/Lyra migration plan replacing the earlier custom-primitive plan, with CLI provenance, external behavior seams, consumer migration groups, import/zero-reference gates, rollback points, tests, verification, and Telegram QA.
-- Evidence: Scope reset is documented; this planning correction makes no code/config/generated-file changes. Implementation evidence from the earlier custom plan is superseded and must not be used as acceptance evidence for the pristine migration.
-- Blockers: Implementation and real Telegram iOS/Android QA remain pending under the replacement plan.
-- Next: Execute Task 1 safe cleanup, then initialize/regenerate the exact preset through the pinned shadcn CLI.
+- Evidence: Task 11 applied the exact Sera baseline. Tasks 12–17 completed all consumer recompositions plus remaining state/shell audits and fix rounds. Task 18 automated gates pass: lint has 0 errors/15 existing warnings, typecheck passes, all 31 test files/162 tests pass, build and `./init.sh` pass, and final provenance/generated/bridge/legacy/token/safe-area audits pass. Oracle sessions errored for Tasks 13–16; fallback reviews found and resolved implementation issues. Task 17 fallback review found no issues.
+- Blockers: Real Telegram iOS and Android QA in host light/dark settings is not executable in this environment and remains the only acceptance blocker.
+- Next: Execute the real-device matrix and attach evidence; then complete the feature handoff. No commit requested.

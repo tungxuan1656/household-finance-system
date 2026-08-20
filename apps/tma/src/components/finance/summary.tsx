@@ -2,7 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
 import { DataState } from '@/components/shared/data-state'
-import { Card } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import {
   budgetListQueryOptions,
   useAnalyticsComparisonQuery,
@@ -75,71 +81,72 @@ export const FinanceSummaryCard = ({
           budgetQuery.refetch(),
         ])
       }}>
-      <Card className='grid gap-4 p-5'>
-        <div className='flex items-start justify-between gap-3'>
-          <div>
-            <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-              {title}
-            </p>
-            <span className='mt-1 block font-mono text-[30px] leading-none font-extrabold tracking-normal text-foreground [font-variant-numeric:tabular-nums]'>
-              {overview
-                ? formatCurrencyMinor(
-                    overview.totalSpendMinor,
-                    overview.currencyCode,
-                  )
-                : '-'}
-            </span>
-          </div>
-          {showPeriodChip ? <PeriodChipLink /> : null}
-        </div>
-
-        <div className='text-xs font-semibold text-muted-foreground'>
-          {overviewQuery.isFetching || comparisonQuery.isFetching
-            ? t('summary.updating')
-            : getComparisonLabel(
-                comparisonQuery.data,
-                overview?.expenseCount ?? 0,
-                selectedPeriod.granularity,
-                t,
-              )}
-        </div>
-
-        {budgetProgress && isMonthPeriodSelection(selectedPeriod) ? (
-          <div className='grid gap-2'>
-            <div className='h-3 overflow-hidden rounded-full bg-black/[0.07]'>
-              <span
-                className='block h-full rounded-full bg-linear-to-r from-primary to-[#7ca8ff] shadow-[0_6px_14px_rgba(63,124,255,0.22)]'
-                style={{
-                  width: `${Math.min(budgetProgress.percentUsed, 100)}%`,
-                }}
-              />
-            </div>
-            <div className='flex items-center justify-between gap-3 text-xs font-semibold text-muted-foreground'>
-              {t('summary.budgetUsedPct', {
-                percent: budgetProgress.percentUsed,
-              })}
-              <span>
-                {budgetProgress.isOverBudget
-                  ? t('summary.overPrefix')
-                  : t('summary.remainingPrefix')}
-                <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
-                  {formatCurrencyMinor(
-                    Math.abs(budgetProgress.remainingMinor),
-                    budget?.currencyCode ?? overview?.currencyCode ?? 'VND',
-                  )}
-                </span>
+      <Card>
+        <CardHeader>
+          <div className='flex items-start justify-between gap-3'>
+            <div>
+              <CardTitle>{title}</CardTitle>
+              <span className='mt-1 block font-mono text-[30px] leading-none font-extrabold tracking-normal text-foreground [font-variant-numeric:tabular-nums]'>
+                {overview
+                  ? formatCurrencyMinor(
+                      overview.totalSpendMinor,
+                      overview.currencyCode,
+                    )
+                  : '-'}
               </span>
             </div>
+            {showPeriodChip ? <PeriodChipLink /> : null}
           </div>
-        ) : (
-          <div className='text-xs font-semibold text-muted-foreground'>
-            {budget && isMonthPeriodSelection(selectedPeriod)
-              ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget, t)
-              : showBudgetPeriodContext
-                ? budgetPeriodContext
-                : t('summary.monthlyOnly')}
-          </div>
-        )}
+          <CardDescription>
+            {overviewQuery.isFetching || comparisonQuery.isFetching
+              ? t('summary.updating')
+              : getComparisonLabel(
+                  comparisonQuery.data,
+                  overview?.expenseCount ?? 0,
+                  selectedPeriod.granularity,
+                  t,
+                )}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className='grid gap-4'>
+          {budgetProgress && isMonthPeriodSelection(selectedPeriod) ? (
+            <div className='grid gap-2'>
+              <div className='h-3 overflow-hidden rounded-full bg-black/[0.07]'>
+                <span
+                  className='block h-full rounded-full bg-linear-to-r from-primary to-[#7ca8ff] shadow-[0_6px_14px_rgba(63,124,255,0.22)]'
+                  style={{
+                    width: `${Math.min(budgetProgress.percentUsed, 100)}%`,
+                  }}
+                />
+              </div>
+              <div className='flex items-center justify-between gap-3 text-xs font-semibold text-muted-foreground'>
+                {t('summary.budgetUsedPct', {
+                  percent: budgetProgress.percentUsed,
+                })}
+                <span>
+                  {budgetProgress.isOverBudget
+                    ? t('summary.overPrefix')
+                    : t('summary.remainingPrefix')}
+                  <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
+                    {formatCurrencyMinor(
+                      Math.abs(budgetProgress.remainingMinor),
+                      budget?.currencyCode ?? overview?.currencyCode ?? 'VND',
+                    )}
+                  </span>
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className='text-xs font-semibold text-muted-foreground'>
+              {budget && isMonthPeriodSelection(selectedPeriod)
+                ? getHouseholdBudgetLabel(overview?.totalSpendMinor, budget, t)
+                : showBudgetPeriodContext
+                  ? budgetPeriodContext
+                  : t('summary.monthlyOnly')}
+            </div>
+          )}
+        </CardContent>
       </Card>
     </DataState>
   )

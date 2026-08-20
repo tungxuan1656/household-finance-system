@@ -10,37 +10,23 @@ import {
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
-import { Card, CardDescription } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import { getBudgetDetailPath, TMA_PATHS } from '@/lib/constants/routes'
-import { cn } from '@/lib/utils'
 
 import { useBudgetListQuery } from '../api'
 import { formatBudgetPeriodLabel, getBudgetScopeLabel } from '../presentation'
 
 type ScopeFilter = 'all' | 'household' | 'personal'
-
-const ScopeFilterChip = ({
-  isSelected,
-  label,
-  onClick,
-}: {
-  isSelected: boolean
-  label: string
-  onClick: () => void
-}) => (
-  <button
-    className={cn(
-      'inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition active:scale-95',
-      isSelected ? 'bg-primary/12 text-primary' : 'bg-black/6 text-foreground',
-    )}
-    type='button'
-    onClick={onClick}>
-    {label}
-  </button>
-)
 
 export const BudgetListPage = () => {
   const { t } = useTranslation()
@@ -144,44 +130,58 @@ export const BudgetListPage = () => {
           ) : null}
         </div>
 
-        <div className='mb-3 flex flex-wrap gap-2'>
+        <ToggleGroup
+          className='flex flex-wrap gap-2'
+          value={[scopeFilter]}
+          onValueChange={(values) => {
+            const next = values[0] as ScopeFilter | undefined
+            if (next) setScopeFilter(next)
+          }}>
           {SCOPE_FILTER_OPTIONS.map((option) => (
-            <ScopeFilterChip
-              key={option.value}
-              isSelected={scopeFilter === option.value}
-              label={option.label}
-              onClick={() => setScopeFilter(option.value)}
-            />
+            <ToggleGroupItem key={option.value} value={option.value}>
+              {option.label}
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
 
         {scopeFilter === 'household' ? (
-          <Card className='mb-3 grid gap-2 p-4'>
-            <Field>
-              <FieldLabel htmlFor='budget-household-filter'>
-                {t('budgets.householdLabel')}
-              </FieldLabel>
-              <NativePicker
-                fullWidth
-                aria-label={t('budgets.chooseHousehold')}
-                disabled={householdsQuery.isLoading || households.length === 0}
-                id='budget-household-filter'
-                options={householdOptions}
-                value={selectedHouseholdId}
-                onChange={(next) => setSelectedHouseholdId(next)}
-              />
-            </Field>
-            {selectedHousehold?.role !== 'admin' ? (
-              <CardDescription>
-                {t('budgets.householdViewOnly')}
-              </CardDescription>
-            ) : null}
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('budgets.householdLabel')}</CardTitle>
+              {selectedHousehold?.role !== 'admin' ? (
+                <CardDescription>
+                  {t('budgets.householdViewOnly')}
+                </CardDescription>
+              ) : null}
+            </CardHeader>
+            <CardContent>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor='budget-household-filter'>
+                    {t('budgets.householdLabel')}
+                  </FieldLabel>
+                  <NativePicker
+                    fullWidth
+                    aria-label={t('budgets.chooseHousehold')}
+                    disabled={
+                      householdsQuery.isLoading || households.length === 0
+                    }
+                    id='budget-household-filter'
+                    options={householdOptions}
+                    value={selectedHouseholdId}
+                    onChange={(next) => setSelectedHouseholdId(next)}
+                  />
+                </Field>
+              </FieldGroup>
+            </CardContent>
           </Card>
         ) : null}
 
         <DataState
           customAction={
-            budgets.length === 0 && !isInitialLoading && canCreateBudget ? (
+            filteredBudgets.length === 0 &&
+            !isInitialLoading &&
+            canCreateBudget ? (
               <Link
                 className={buttonVariants({ variant: 'secondary' })}
                 to={TMA_PATHS.budgetsNew}>
@@ -193,7 +193,9 @@ export const BudgetListPage = () => {
           emptyTitle={emptyTitle}
           errorDescription={t('budgets.loadErrorDesc')}
           errorTitle={t('budgets.loadError')}
-          isEmpty={!isInitialLoading && !isInitialError && budgets.length === 0}
+          isEmpty={
+            !isInitialLoading && !isInitialError && filteredBudgets.length === 0
+          }
           isError={isInitialError}
           isLoading={isInitialLoading}
           loadingDescription={t('budgets.loadingDesc')}
@@ -213,30 +215,29 @@ export const BudgetListPage = () => {
               return (
                 <Link
                   key={budget.id}
-                  className='flex items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-md transition active:scale-[0.99]'
+                  className='block'
                   to={getBudgetDetailPath(budget.id)}>
-                  <div className='grid min-w-0 gap-1'>
-                    <span className='text-base font-semibold text-foreground'>
-                      {formatBudgetPeriodLabel(budget.period, t)}
-                    </span>
-                    <Badge
-                      className={
-                        budget.scope === 'personal'
-                          ? 'bg-amber-400/20 text-[#8a6800]'
-                          : undefined
-                      }
-                      variant={
-                        budget.scope === 'personal' ? 'secondary' : 'outline'
-                      }>
-                      {getBudgetScopeLabel(budget.scope, household, t)}
-                    </Badge>
-                  </div>
-                  <span className='shrink-0 text-base font-extrabold text-foreground'>
-                    {formatCurrencyMinor(
-                      budget.totalLimitMinor,
-                      budget.currencyCode,
-                    )}
-                  </span>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className='text-base font-semibold'>
+                        {formatBudgetPeriodLabel(budget.period, t)}
+                      </CardTitle>
+                      <Badge
+                        variant={
+                          budget.scope === 'personal' ? 'secondary' : 'outline'
+                        }>
+                        {getBudgetScopeLabel(budget.scope, household, t)}
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className='flex items-center justify-between gap-3'>
+                      <span className='shrink-0 text-base font-extrabold text-foreground'>
+                        {formatCurrencyMinor(
+                          budget.totalLimitMinor,
+                          budget.currencyCode,
+                        )}
+                      </span>
+                    </CardContent>
+                  </Card>
                 </Link>
               )
             })}

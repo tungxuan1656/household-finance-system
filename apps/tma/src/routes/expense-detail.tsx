@@ -7,7 +7,13 @@ import {
   TmaCategoryIconBadge,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import {
   useDeleteExpenseMutation,
   useExpenseDetailQuery,
@@ -63,8 +69,10 @@ export const ExpenseDetailPage = () => {
   if (expenseQuery.isLoading || categoriesQuery.isLoading) {
     return (
       <TmaPageShell title={t('expenses.detail.title')}>
-        <Card className='p-4'>
-          <CardDescription>{t('expenses.detail.loading')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription>{t('expenses.detail.loading')}</CardDescription>
+          </CardHeader>
         </Card>
       </TmaPageShell>
     )
@@ -73,8 +81,10 @@ export const ExpenseDetailPage = () => {
   if (expenseQuery.isError || !expense) {
     return (
       <TmaPageShell title={t('expenses.detail.title')}>
-        <Card className='p-4'>
-          <CardDescription>{t('expenses.detail.notFound')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription>{t('expenses.detail.notFound')}</CardDescription>
+          </CardHeader>
         </Card>
       </TmaPageShell>
     )
@@ -88,101 +98,105 @@ export const ExpenseDetailPage = () => {
 
   return (
     <TmaPageShell title={t('expenses.detail.title')}>
-      {/* Hero */}
-      <Card className='mb-3 flex items-center gap-4 p-5'>
-        <TmaCategoryIconBadge
-          accent={category.accent}
-          iconUrl={category.iconUrl}
-          symbol={category.symbol}
-        />
-        <div className='min-w-0 flex-1'>
-          <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-            {t('expenses.detail.amountSpent')}
-          </p>
-          <span className='mt-1 block font-mono text-[32px] leading-none font-extrabold text-foreground [font-variant-numeric:tabular-nums]'>
-            {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
-          </span>
-        </div>
+      <Card>
+        <CardHeader>
+          <div className='flex items-center gap-4'>
+            <TmaCategoryIconBadge
+              accent={category.accent}
+              iconUrl={category.iconUrl}
+              symbol={category.symbol}
+            />
+            <div className='min-w-0 flex-1'>
+              <CardDescription>
+                {t('expenses.detail.amountSpent')}
+              </CardDescription>
+              <CardTitle className='font-mono text-[32px] leading-none font-extrabold [font-variant-numeric:tabular-nums]'>
+                {formatCurrencyMinor(expense.amountMinor, expense.currencyCode)}
+              </CardTitle>
+            </div>
+          </div>
+        </CardHeader>
       </Card>
 
-      {/* Info */}
       <section className='mt-6'>
         <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
           {t('expenses.detail.sectionInfo')}
         </h2>
-        <Card className='grid gap-3 p-4'>
-          <div className='grid gap-1'>
-            <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-              {t('expenses.detail.eyebrowTitle')}
-            </p>
-            <strong className='text-sm font-semibold wrap-break-word text-foreground'>
-              {expense.title.trim() || category.label}
-            </strong>
-          </div>
-          <div className='flex items-center gap-3'>
-            <TmaCategoryIconBadge
-              accent={category.accent}
-              iconUrl={category.iconUrl}
-              size='sm'
-              symbol={category.symbol}
-            />
-            <div>
-              <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-                {t('expenses.detail.eyebrowCategory')}
-              </p>
-              <strong className='text-sm font-semibold text-foreground'>
-                {category.label}
-              </strong>
-            </div>
-          </div>
-          <div className='grid grid-cols-2 gap-3'>
+        <Card>
+          <CardContent className='grid gap-3'>
             <div className='grid gap-1'>
-              <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-                {t('expenses.detail.eyebrowSource')}
+              <CardDescription>
+                {t('expenses.detail.eyebrowTitle')}
+              </CardDescription>
+              <p className='text-sm font-semibold wrap-break-word text-foreground'>
+                {expense.title.trim() || category.label}
               </p>
-              <strong className='text-sm font-semibold text-foreground'>
-                {getSourceLabel(expense.sourceKey, t)}
-              </strong>
             </div>
-            <div className='grid gap-1'>
-              <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-                {t('expenses.detail.eyebrowSpace')}
-              </p>
-              <strong className='text-sm font-semibold text-foreground'>
-                {spaceLabel}
-              </strong>
+            <div className='flex items-center gap-3'>
+              <TmaCategoryIconBadge
+                accent={category.accent}
+                iconUrl={category.iconUrl}
+                size='sm'
+                symbol={category.symbol}
+              />
+              <div>
+                <CardDescription>
+                  {t('expenses.detail.eyebrowCategory')}
+                </CardDescription>
+                <p className='text-sm font-semibold text-foreground'>
+                  {category.label}
+                </p>
+              </div>
             </div>
-          </div>
+            <div className='grid grid-cols-2 gap-3'>
+              <div className='grid gap-1'>
+                <CardDescription>
+                  {t('expenses.detail.eyebrowSource')}
+                </CardDescription>
+                <p className='text-sm font-semibold text-foreground'>
+                  {getSourceLabel(expense.sourceKey, t)}
+                </p>
+              </div>
+              <div className='grid gap-1'>
+                <CardDescription>
+                  {t('expenses.detail.eyebrowSpace')}
+                </CardDescription>
+                <p className='text-sm font-semibold text-foreground'>
+                  {spaceLabel}
+                </p>
+              </div>
+            </div>
+          </CardContent>
         </Card>
       </section>
 
-      {/* Date & Time */}
       <section className='mt-6'>
         <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
           {t('expenses.detail.sectionTime')}
         </h2>
-        <Card className='grid gap-1 p-4'>
-          <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-            {t('expenses.detail.eyebrowDate')}
-          </p>
-          <strong className='text-base font-semibold text-foreground'>
-            {dateLabel}
-          </strong>
+        <Card>
+          <CardContent className='grid gap-1'>
+            <CardDescription>
+              {t('expenses.detail.eyebrowDate')}
+            </CardDescription>
+            <p className='text-base font-semibold text-foreground'>
+              {dateLabel}
+            </p>
+          </CardContent>
         </Card>
       </section>
 
-      {/* Actions */}
       {showDeleteConfirm ? (
-        <Card className='mt-3 grid gap-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'>
-          <div>
-            <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-[#d93838] uppercase'>
+        <Card>
+          <CardHeader>
+            <CardTitle className='text-destructive'>
               {t('expenses.detail.deleteConfirmTitle')}
-            </p>
-            <strong className='text-sm font-semibold text-foreground'>
+            </CardTitle>
+            <CardDescription>
               {t('expenses.detail.deleteConfirmBody')}
-            </strong>
-          </div>
-          <div className='grid grid-cols-2 gap-2'>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className='grid grid-cols-2 gap-2'>
             <TmaHapticButton
               disabled={deleteMutation.isPending}
               variant='destructive'
@@ -196,7 +210,7 @@ export const ExpenseDetailPage = () => {
               }}>
               {t('common.cancel')}
             </TmaHapticButton>
-          </div>
+          </CardContent>
         </Card>
       ) : (
         <div className='mt-6 grid grid-cols-2 gap-3'>
@@ -208,8 +222,7 @@ export const ExpenseDetailPage = () => {
             {t('expenses.detail.editAction')}
           </TmaHapticButton>
           <TmaHapticButton
-            className='bg-[#d93838]/10 text-[#d93838]'
-            variant='ghost'
+            variant='destructive'
             onClick={() => {
               setShowDeleteConfirm(true)
             }}>

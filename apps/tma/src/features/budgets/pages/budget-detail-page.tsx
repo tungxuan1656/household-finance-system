@@ -5,15 +5,20 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { DataState } from '@/components/shared/data-state'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { useAuthStore } from '@/features/auth/store'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatAmountInput } from '@/lib/formatters'
 import { impact } from '@/lib/telegram/haptics'
-import { cn } from '@/lib/utils'
 
 import {
   useBudgetDetailQuery,
@@ -132,9 +137,13 @@ export const BudgetDetailPage = () => {
   if (!id) {
     return (
       <TmaPageShell title={t('budgets.detail.title')}>
-        <Card className='p-4'>
-          <CardTitle>{t('budgets.detail.invalidIdTitle')}</CardTitle>
-          <CardDescription>{t('budgets.detail.invalidIdDesc')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('budgets.detail.invalidIdTitle')}</CardTitle>
+            <CardDescription>
+              {t('budgets.detail.invalidIdDesc')}
+            </CardDescription>
+          </CardHeader>
         </Card>
       </TmaPageShell>
     )
@@ -151,19 +160,17 @@ export const BudgetDetailPage = () => {
   return (
     <TmaPageShell title={t('budgets.detail.title')}>
       {feedback ? (
-        <Card
-          className={cn(
-            'mb-3 p-4',
-            feedback.tone === 'error'
-              ? 'border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'border-emerald-500/20 bg-emerald-500/10',
-          )}>
-          <CardDescription
-            className={
-              feedback.tone === 'error' ? 'text-[#d93838]' : 'text-[#2f9b44]'
-            }>
-            {feedback.message}
-          </CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription
+              className={
+                feedback.tone === 'error'
+                  ? 'text-destructive'
+                  : 'text-emerald-600'
+              }>
+              {feedback.message}
+            </CardDescription>
+          </CardHeader>
         </Card>
       ) : null}
 
@@ -201,72 +208,81 @@ export const BudgetDetailPage = () => {
                 <h2 className='m-0 text-base font-bold'>
                   {t('budgets.detail.sectionManage')}
                 </h2>
-                <Card className='p-4'>
-                  <form className='grid gap-3.5' onSubmit={handleSubmit}>
-                    <Field>
-                      <FieldLabel htmlFor='budget-detail-limit'>
-                        {t('budgets.detail.manageLimit')}
-                      </FieldLabel>
-                      <Input
-                        disabled={!isEditing || updateMutation.isPending}
-                        id='budget-detail-limit'
-                        inputMode='numeric'
-                        value={totalLimitInput}
-                        onChange={(event) =>
-                          setTotalLimitInput(
-                            formatAmountInput(event.target.value),
-                          )
-                        }
-                      />
-                    </Field>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t('budgets.detail.sectionManage')}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form className='grid gap-3' onSubmit={handleSubmit}>
+                      <FieldGroup>
+                        <Field>
+                          <FieldLabel htmlFor='budget-detail-limit'>
+                            {t('budgets.detail.manageLimit')}
+                          </FieldLabel>
+                          <Input
+                            disabled={!isEditing || updateMutation.isPending}
+                            id='budget-detail-limit'
+                            inputMode='numeric'
+                            value={totalLimitInput}
+                            onChange={(event) =>
+                              setTotalLimitInput(
+                                formatAmountInput(event.target.value),
+                              )
+                            }
+                          />
+                        </Field>
+                      </FieldGroup>
 
-                    {isEditing ? (
-                      <div className='flex justify-end gap-2'>
-                        <TmaHapticButton
-                          aria-busy={updateMutation.isPending}
-                          disabled={updateMutation.isPending}
-                          type='button'
-                          variant='ghost'
-                          onClick={() => {
-                            setIsEditing(false)
+                      {isEditing ? (
+                        <div className='flex justify-end gap-2'>
+                          <TmaHapticButton
+                            aria-busy={updateMutation.isPending}
+                            disabled={updateMutation.isPending}
+                            type='button'
+                            variant='ghost'
+                            onClick={() => {
+                              setIsEditing(false)
 
-                            setTotalLimitInput(
-                              formatAmountInput(String(budget.totalLimitMinor)),
-                            )
-                          }}>
-                          {t('common.cancel')}
-                        </TmaHapticButton>
-                        <TmaHapticButton
-                          aria-busy={updateMutation.isPending}
-                          disabled={updateMutation.isPending}
-                          type='submit'
-                          variant='secondary'>
-                          {updateMutation.isPending
-                            ? t('budgets.detail.editing')
-                            : t('budgets.detail.save')}
-                        </TmaHapticButton>
-                      </div>
-                    ) : (
-                      <div className='flex justify-end gap-2'>
-                        <TmaHapticButton
-                          type='button'
-                          variant='secondary'
-                          onClick={() => setIsEditing(true)}>
-                          {t('budgets.detail.editAction')}
-                        </TmaHapticButton>
-                        <TmaHapticButton
-                          aria-busy={deleteMutation.isPending}
-                          disabled={deleteMutation.isPending}
-                          type='button'
-                          variant='destructive'
-                          onClick={handleDelete}>
-                          {deleteMutation.isPending
-                            ? t('budgets.detail.deleting')
-                            : t('budgets.detail.deleteAction')}
-                        </TmaHapticButton>
-                      </div>
-                    )}
-                  </form>
+                              setTotalLimitInput(
+                                formatAmountInput(
+                                  String(budget.totalLimitMinor),
+                                ),
+                              )
+                            }}>
+                            {t('common.cancel')}
+                          </TmaHapticButton>
+                          <TmaHapticButton
+                            aria-busy={updateMutation.isPending}
+                            disabled={updateMutation.isPending}
+                            type='submit'
+                            variant='secondary'>
+                            {updateMutation.isPending
+                              ? t('budgets.detail.editing')
+                              : t('budgets.detail.save')}
+                          </TmaHapticButton>
+                        </div>
+                      ) : (
+                        <div className='flex justify-end gap-2'>
+                          <TmaHapticButton
+                            type='button'
+                            variant='secondary'
+                            onClick={() => setIsEditing(true)}>
+                            {t('budgets.detail.editAction')}
+                          </TmaHapticButton>
+                          <TmaHapticButton
+                            aria-busy={deleteMutation.isPending}
+                            disabled={deleteMutation.isPending}
+                            type='button'
+                            variant='destructive'
+                            onClick={handleDelete}>
+                            {deleteMutation.isPending
+                              ? t('budgets.detail.deleting')
+                              : t('budgets.detail.deleteAction')}
+                          </TmaHapticButton>
+                        </div>
+                      )}
+                    </form>
+                  </CardContent>
                 </Card>
               </section>
             ) : null}

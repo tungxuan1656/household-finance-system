@@ -2,19 +2,22 @@ import { useTranslation } from 'react-i18next'
 
 import { NativePicker } from '@/components/shared/native-picker'
 import { TmaCategoryIconBadge } from '@/components/shared/tma-page-shell'
-import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import type { ImportItemDraft } from '@/features/expenses/import-store'
 import { getSourceLabel } from '@/features/expenses/presentation'
 import { normalizeCategoryKey } from '@/features/home/category-key'
 import { useCategoryPresentation } from '@/features/home/presentation'
 import { formatVnd } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
-
-const ROW_LABEL_CLASS =
-  'text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'
-const ROW_VALUE_CLASS = 'text-sm text-foreground'
-const PICKER_LABEL_CLASS =
-  'w-16 shrink-0 text-xs font-semibold text-muted-foreground'
 
 type Props = {
   item: ImportItemDraft
@@ -56,82 +59,90 @@ export const ImportPreviewItemCard = ({
 
   return (
     <Card
-      className={cn(
-        'grid animate-in gap-2.5 p-3 duration-250 fade-in slide-in-from-bottom-2',
-        !item.include && 'opacity-50',
-        item.status === 'success' && 'border-emerald-500/30',
-        item.status === 'error' && 'border-destructive/20 bg-destructive/60',
-      )}
+      className={cn(!item.include && 'opacity-50')}
+      size='sm'
       style={{ animationDelay: `${index * 40}ms` }}>
-      {/* Row 1: checkbox | category+title | money */}
-      <div className='flex items-start gap-3'>
-        <label className='mt-2 flex shrink-0 cursor-pointer items-center'>
-          <input
-            aria-label={t('expenses.add.includeItem')}
-            checked={item.include}
-            className='size-5.5 accent-primary'
-            disabled={item.status === 'success' || isSaving}
-            type='checkbox'
-            onChange={() => onToggleInclude(item.id)}
-          />
-        </label>
+      <CardHeader>
+        <div className='flex items-start gap-3'>
+          <label className='mt-2 flex shrink-0 cursor-pointer items-center'>
+            <input
+              aria-label={t('expenses.add.includeItem')}
+              checked={item.include}
+              className='size-5.5 accent-primary'
+              disabled={item.status === 'success' || isSaving}
+              type='checkbox'
+              onChange={() => onToggleInclude(item.id)}
+            />
+          </label>
 
-        <TmaCategoryIconBadge
-          accent={presentation.accent}
-          iconUrl={presentation.iconUrl}
-          size='sm'
-          symbol={presentation.symbol}
-        />
-
-        <div className='min-w-0 flex-1'>
-          <NativePicker
-            fullWidth
-            aria-label={t('expenses.add.chooseCategory')}
-            disabled={
-              item.status === 'success' || isSaving || categoriesLoading
-            }
-            options={categoryPickerOptions}
-            showIcon={false}
+          <TmaCategoryIconBadge
+            accent={presentation.accent}
+            iconUrl={presentation.iconUrl}
             size='sm'
-            value={item.parsed.categoryKey}
-            onChange={(next) => onSetItemCategory(item.id, next)}
+            symbol={presentation.symbol}
           />
-          <div className='text-sm font-semibold wrap-break-word text-foreground'>
-            {item.parsed.title}
+
+          <div className='min-w-0 flex-1'>
+            <FieldGroup>
+              <Field>
+                <FieldLabel
+                  className='sr-only'
+                  htmlFor={`import-category-${item.id}`}>
+                  {t('expenses.add.chooseCategory')}
+                </FieldLabel>
+                <NativePicker
+                  fullWidth
+                  aria-label={t('expenses.add.chooseCategory')}
+                  disabled={
+                    item.status === 'success' || isSaving || categoriesLoading
+                  }
+                  id={`import-category-${item.id}`}
+                  options={categoryPickerOptions}
+                  showIcon={false}
+                  size='sm'
+                  value={item.parsed.categoryKey}
+                  onChange={(next) => onSetItemCategory(item.id, next)}
+                />
+              </Field>
+            </FieldGroup>
+            <CardTitle className='mt-1 text-sm font-semibold wrap-break-word'>
+              {item.parsed.title}
+            </CardTitle>
+          </div>
+
+          <div className='shrink-0 text-right'>
+            <span className='font-mono text-lg font-semibold text-foreground [font-variant-numeric:tabular-nums]'>
+              {formatVnd(item.parsed.amount)}
+            </span>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className='grid gap-3 pl-8'>
+        <div className='grid grid-cols-2 gap-3'>
+          <div className='grid gap-0.5'>
+            <CardDescription>{t('expenses.add.dateLabel')}</CardDescription>
+            <span className='text-sm text-foreground'>
+              {item.parsed.occurredAt}
+            </span>
+          </div>
+          <div className='grid gap-0.5'>
+            <CardDescription>{t('expenses.add.source')}</CardDescription>
+            <span className='text-sm text-foreground'>{sourceLabel}</span>
           </div>
         </div>
 
-        <div className='shrink-0 text-right text-lg font-semibold'>
-          <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
-            {formatVnd(item.parsed.amount)}
-          </span>
-        </div>
-      </div>
-
-      {/* Row 2: 2-column meta (date, source) */}
-      <div className='grid grid-cols-2 gap-3 pl-8'>
-        <div className='grid gap-0.5'>
-          <span className={ROW_LABEL_CLASS}>{t('expenses.add.dateLabel')}</span>
-          <span className={ROW_VALUE_CLASS}>{item.parsed.occurredAt}</span>
-        </div>
-        <div className='grid gap-0.5'>
-          <span className={ROW_LABEL_CLASS}>{t('expenses.add.source')}</span>
-          <span className={ROW_VALUE_CLASS}>{sourceLabel}</span>
-        </div>
-      </div>
-
-      {/* Row 3: context pickers (label left, picker right) */}
-      {item.status !== 'success' ? (
-        <div className='grid gap-2 border-t border-border pt-2.5 pl-2'>
-          <div className='flex items-center gap-3'>
-            <span className={PICKER_LABEL_CLASS}>
-              {t('expenses.add.contextHousehold')}
-            </span>
-            <div className='min-w-0 flex-1'>
+        {item.status !== 'success' ? (
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor={`import-household-${item.id}`}>
+                {t('expenses.add.contextHousehold')}
+              </FieldLabel>
               <NativePicker
                 fullWidth
                 aria-label={t('expenses.add.chooseHousehold')}
                 disabled={householdsLoading || isSaving}
+                id={`import-household-${item.id}`}
                 options={householdPickerOptions}
                 value={item.householdId ?? ''}
                 onChange={(next) =>
@@ -140,17 +151,16 @@ export const ImportPreviewItemCard = ({
                   })
                 }
               />
-            </div>
-          </div>
-          <div className='flex items-center gap-3'>
-            <span className={PICKER_LABEL_CLASS}>
-              {t('expenses.add.contextGroup')}
-            </span>
-            <div className='min-w-0 flex-1'>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor={`import-group-${item.id}`}>
+                {t('expenses.add.contextGroup')}
+              </FieldLabel>
               <NativePicker
                 fullWidth
                 aria-label={t('expenses.add.chooseGroup')}
                 disabled={groupsLoading || isSaving}
+                id={`import-group-${item.id}`}
                 options={groupPickerOptions}
                 value={item.groupId ?? ''}
                 onChange={(next) =>
@@ -159,21 +169,27 @@ export const ImportPreviewItemCard = ({
                   })
                 }
               />
-            </div>
-          </div>
-        </div>
-      ) : null}
+            </Field>
+          </FieldGroup>
+        ) : null}
+      </CardContent>
 
-      {/* Status indicator */}
-      {item.status === 'success' ? (
-        <div className='pl-7 text-xs font-semibold text-emerald-600'>
-          {t('expenses.add.importSuccess')}
-        </div>
-      ) : null}
-      {item.status === 'error' && item.error ? (
-        <div className='pl-7 text-xs font-semibold text-destructive'>
-          {item.error}
-        </div>
+      {item.status === 'success' || (item.status === 'error' && item.error) ? (
+        <CardFooter className='flex flex-wrap items-center gap-2'>
+          {item.status === 'success' ? (
+            <Badge className='text-emerald-600' variant='secondary'>
+              {t('expenses.add.importSuccess')}
+            </Badge>
+          ) : null}
+          {item.status === 'error' ? (
+            <Badge variant='destructive'>{t('common.error')}</Badge>
+          ) : null}
+          {item.status === 'error' && item.error ? (
+            <CardDescription className='text-destructive'>
+              {item.error}
+            </CardDescription>
+          ) : null}
+        </CardFooter>
       ) : null}
     </Card>
   )

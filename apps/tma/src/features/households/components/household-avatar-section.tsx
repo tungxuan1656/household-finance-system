@@ -1,4 +1,4 @@
-import { type ChangeEvent, useMemo, useRef, useState } from 'react'
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
@@ -59,6 +59,20 @@ export const HouseholdAvatarSection = ({
         : (avatarUrl ?? undefined),
     [avatarDialogOpen, avatarPreviewUrl, avatarUrl],
   )
+
+  const avatarPreviewUrlRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    avatarPreviewUrlRef.current = avatarPreviewUrl
+  }, [avatarPreviewUrl])
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreviewUrlRef.current) {
+        URL.revokeObjectURL(avatarPreviewUrlRef.current)
+      }
+    }
+  }, [])
 
   const clearAvatarCandidate = () => {
     if (avatarPreviewUrl) {

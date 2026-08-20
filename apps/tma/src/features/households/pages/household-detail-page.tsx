@@ -7,8 +7,16 @@ import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TrashIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/features/auth/auth-provider'
 import { HomeRecentExpensesSection } from '@/features/home/components/home-recent-expenses-section'
@@ -79,11 +87,13 @@ export const HouseholdDetailPage = () => {
   if (!id) {
     return (
       <TmaPageShell title={t('households.detail.title')}>
-        <Card className='p-4'>
-          <CardTitle>{t('households.detail.invalidIdTitle')}</CardTitle>
-          <CardDescription>
-            {t('households.detail.invalidIdDesc')}
-          </CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('households.detail.invalidIdTitle')}</CardTitle>
+            <CardDescription>
+              {t('households.detail.invalidIdDesc')}
+            </CardDescription>
+          </CardHeader>
         </Card>
       </TmaPageShell>
     )
@@ -92,18 +102,17 @@ export const HouseholdDetailPage = () => {
   return (
     <TmaPageShell title={t('households.detail.title')}>
       {feedback ? (
-        <Card
-          className={
-            feedback.tone === 'error'
-              ? 'mb-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'
-              : 'mb-3 border-emerald-500/20 bg-emerald-500/10 p-4'
-          }>
-          <CardDescription
-            className={
-              feedback.tone === 'error' ? 'text-[#d93838]' : 'text-[#2f9b44]'
-            }>
-            {feedback.message}
-          </CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription
+              className={
+                feedback.tone === 'error'
+                  ? 'text-destructive'
+                  : 'text-emerald-600'
+              }>
+              {feedback.message}
+            </CardDescription>
+          </CardHeader>
         </Card>
       ) : null}
 
@@ -122,51 +131,55 @@ export const HouseholdDetailPage = () => {
           <>
             <HouseholdOverviewSection householdId={id} />
 
-            <Card className='mt-3 grid gap-3 p-4'>
-              <HouseholdAvatarSection
-                avatarUrl={household.avatarUrl}
-                canEdit={isAdmin}
-                helperText={t('households.detail.imageHelp')}
-                householdName={household.name}
-                isBusy={isBusy}
-                readOnlyMessage={t('households.detail.adminOnly')}
-                summaryText={`${memberSummary} · ${getHouseholdRoleLabel(household.role, t)}`}
-                title={t('households.detail.sectionSettings')}
-                onAvatarUploaded={handleAvatarUploaded}
-              />
+            <Card>
+              <CardContent className='grid gap-3'>
+                <HouseholdAvatarSection
+                  avatarUrl={household.avatarUrl}
+                  canEdit={isAdmin}
+                  helperText={t('households.detail.imageHelp')}
+                  householdName={household.name}
+                  isBusy={isBusy}
+                  readOnlyMessage={t('households.detail.adminOnly')}
+                  summaryText={`${memberSummary} · ${getHouseholdRoleLabel(household.role, t)}`}
+                  title={t('households.detail.sectionSettings')}
+                  onAvatarUploaded={handleAvatarUploaded}
+                />
 
-              <form className='grid gap-3.5' onSubmit={handleSave}>
-                <Field>
-                  <FieldLabel htmlFor='household-detail-name'>
-                    {t('households.detail.fieldName')}
-                  </FieldLabel>
-                  <Input
-                    disabled={!isAdmin || isBusy}
-                    id='household-detail-name'
-                    placeholder={t('households.detail.namePlaceholder')}
-                    type='text'
-                    value={draftName}
-                    onChange={(event) => {
-                      setDraftName(event.target.value)
-                      setFeedback(null)
-                    }}
-                  />
-                </Field>
+                <form className='grid gap-3' onSubmit={handleSave}>
+                  <FieldGroup>
+                    <Field>
+                      <FieldLabel htmlFor='household-detail-name'>
+                        {t('households.detail.fieldName')}
+                      </FieldLabel>
+                      <Input
+                        disabled={!isAdmin || isBusy}
+                        id='household-detail-name'
+                        placeholder={t('households.detail.namePlaceholder')}
+                        type='text'
+                        value={draftName}
+                        onChange={(event) => {
+                          setDraftName(event.target.value)
+                          setFeedback(null)
+                        }}
+                      />
+                    </Field>
+                  </FieldGroup>
 
-                {isAdmin ? (
-                  <div className='flex justify-end'>
-                    <TmaHapticButton
-                      aria-busy={isBusy}
-                      disabled={isBusy}
-                      type='submit'
-                      variant='secondary'>
-                      {isBusy
-                        ? t('households.detail.saving')
-                        : t('households.detail.save')}
-                    </TmaHapticButton>
-                  </div>
-                ) : null}
-              </form>
+                  {isAdmin ? (
+                    <div className='flex justify-end'>
+                      <TmaHapticButton
+                        aria-busy={isBusy}
+                        disabled={isBusy}
+                        type='submit'
+                        variant='secondary'>
+                        {isBusy
+                          ? t('households.detail.saving')
+                          : t('households.detail.save')}
+                      </TmaHapticButton>
+                    </div>
+                  ) : null}
+                </form>
+              </CardContent>
             </Card>
 
             <HomeRecentExpensesSection
@@ -197,53 +210,58 @@ export const HouseholdDetailPage = () => {
                 loadingDescription={t('households.detail.membersLoadingDesc')}
                 loadingTitle={t('households.detail.membersLoading')}
                 retryAction={membersQuery.refetch}>
-                <Card className='grid gap-2 p-4'>
-                  {members.map((member) => (
-                    <article
-                      key={member.userId}
-                      className='flex items-center gap-3'>
-                      <Avatar size='sm'>
-                        <AvatarImage
-                          alt={member.name}
-                          src={member.avatarUrl ?? undefined}
-                        />
-                        <AvatarFallback>
-                          {getHouseholdAvatarFallback(member.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className='min-w-0 flex-1'>
-                        <h3
-                          className={
-                            member.role === 'admin'
-                              ? 'm-0 text-sm font-semibold text-[#d3a10c]'
-                              : 'm-0 text-sm font-semibold text-foreground'
-                          }>
-                          {member.name ||
-                            user?.displayName ||
-                            t('households.detail.memberFallback')}
-                        </h3>
-                        <CardDescription className='text-xs'>
-                          {getHouseholdRoleLabel(member.role, t)}
-                        </CardDescription>
-                      </div>
-                      {isAdmin && member.userId !== user?.id ? (
-                        <button
-                          className='shrink-0 rounded-full p-2 text-muted-foreground transition active:scale-90 active:text-[#d93838]'
-                          disabled={isRemoving}
-                          type='button'
-                          onClick={() =>
-                            handleRemoveMember(member.userId, member.name)
-                          }>
-                          <TrashIcon
-                            className='size-4.5'
-                            height={18}
-                            strokeWidth={1.8}
-                            width={18}
+                <Card>
+                  <CardContent className='grid gap-2'>
+                    {members.map((member) => (
+                      <article
+                        key={member.userId}
+                        className='flex items-center gap-3'>
+                        <Avatar size='sm'>
+                          <AvatarImage
+                            alt={member.name}
+                            src={member.avatarUrl ?? undefined}
                           />
-                        </button>
-                      ) : null}
-                    </article>
-                  ))}
+                          <AvatarFallback>
+                            {getHouseholdAvatarFallback(member.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className='min-w-0 flex-1'>
+                          <h3 className='m-0 text-sm font-semibold text-foreground'>
+                            {member.name ||
+                              user?.displayName ||
+                              t('households.detail.memberFallback')}
+                          </h3>
+                          <div className='flex items-center gap-2'>
+                            <Badge variant='secondary'>
+                              {getHouseholdRoleLabel(member.role, t)}
+                            </Badge>
+                            {member.role === 'admin' ? (
+                              <Badge variant='outline'>
+                                {t('households.roleAdmin')}
+                              </Badge>
+                            ) : null}
+                          </div>
+                        </div>
+                        {isAdmin && member.userId !== user?.id ? (
+                          <Button
+                            aria-label={t('households.detail.removeMember')}
+                            disabled={isRemoving}
+                            size='icon-sm'
+                            type='button'
+                            variant='ghost'
+                            onClick={() =>
+                              handleRemoveMember(member.userId, member.name)
+                            }>
+                            <TrashIcon
+                              height={18}
+                              strokeWidth={1.8}
+                              width={18}
+                            />
+                          </Button>
+                        ) : null}
+                      </article>
+                    ))}
+                  </CardContent>
                 </Card>
               </DataState>
             </section>

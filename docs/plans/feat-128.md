@@ -1,23 +1,27 @@
-# TMA pristine shadcn UI migration Implementation Plan
+# TMA pristine shadcn UI migration and Sera Phase 2 rebaseline Implementation Plan
 
 > **Execution:** Follow the repository's implementation and verification rules. Use `subagent-driven-development` or `executing-plans` only when installed and appropriate. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace the prior custom TMA primitive migration with pristine Base UI/Lyra output from pinned `shadcn@4.18.0` and exact preset `b6G3fhkA4`, while preserving product behavior, native controls, Telegram shell behavior, and finance semantics.
+**Goal:** Preserve the completed Phase 1 migration record and rebaseline the active TMA UI on pristine Base UI/Sera output from pinned `shadcn@4.18.0` and exact preset `b6GzOWK7U`, while preserving product behavior, native controls, Telegram shell behavior, and finance semantics.
 
 **Architecture:** `apps/tma/src/components/ui/` becomes generated shadcn output only. Project/platform behavior lives outside that directory: `TmaHapticButton` wraps the generated Button, `NativePicker`, `DatePicker`, and `DataState` retain their behavior in project-owned locations, and screens own layout and finance meaning. Consumers use upstream Button, Card, Field, Input, Textarea, Label, Badge, Avatar, and ToggleGroup APIs directly instead of compatibility primitives.
 
-**Tech Stack:** React 19, Vite, React Router, TanStack Query, Zustand, Framer Motion, Tailwind CSS v4, Base UI, pinned `shadcn@4.18.0`, exact preset `b6G3fhkA4`, Geist Mono, Lucide, Vitest, ESLint, TypeScript, and the existing `@tma.js/*` bridge.
+**Tech Stack:** React 19, Vite, React Router, TanStack Query, Zustand, Framer Motion, Tailwind CSS v4, Base UI, pinned `shadcn@4.18.0`, exact preset `b6GzOWK7U`, Sera olive/yellow, Geist Mono, Lucide, Vitest, ESLint, TypeScript, and the existing `@tma.js/*` bridge.
 
 ## Global Constraints
 
 - Do not manually edit any generated file under `apps/tma/src/components/ui/`. The shadcn CLI is the only writer allowed to initialize, add, or overwrite generated files; after generation, treat those files as immutable output.
-- Use Base UI from pinned `shadcn@4.18.0` and exact preset `b6G3fhkA4` (Lyra, yellow/neutral, Geist Mono, Lucide).
+- Use Base UI from pinned `shadcn@4.18.0` and exact preset `b6GzOWK7U` (Sera, olive/yellow, Geist Mono, Lucide).
+- `apps/tma/DESIGN.md` is the canonical Phase 2 card, form, selection, surface, and primitive-composition reference. Do not create a competing plan-level visual system.
 - Restore the generated global preset CSS and Geist Mono; remove the system-font override rather than adding another local font stack.
 - Keep fixed light visual behavior: do not apply a dark root class or dark token override, do not bind Telegram theme colors into visual tokens, and do not alter generated dark branches.
 - `TmaHapticButton` is external to `components/ui` and composes the untouched generated Button. Haptics must not be implemented in generated Button code.
 - Move `NativePicker`, `DatePicker`, and `DataState` outside `components/ui` without changing their public behavior, native controls, callbacks, disabled behavior, or existing meaningful haptics.
 - Migrate consumers to upstream `Button`, `Card`, `Field`, `Input`, `Textarea`, `Label`, `Badge`, `Avatar`, and `ToggleGroup` APIs. Do not preserve local compatibility aliases for removed custom primitives.
 - Move layout and finance-specific styling to usage sites. Generic primitive font, radius, borders, shadows, and visual states come from the generated preset.
+- Do not add generic consumer overrides for primitive background, radius, shadow, border, or color. Only meaningful finance/domain accents may be consumer-owned.
+- Use `ToggleGroup` for fixed 2–7-option selections, `NativePicker` for dynamic or long choices, and `Badge` for display-only status or metadata.
+- Put every `Input`, `Textarea`, `NativePicker`, and `DatePicker` in logical Cards with `FieldGroup`/`Field` and linked labels where the generated Sera components support them. Retain only fields present in the current store/API; do not invent a note or textarea field.
 - Remove custom UI files after import and zero-reference gates pass. Do not leave `ChipButton`, `SegmentedControl`, `Eyebrow`, `Section`, `SectionHeader`, `Chip`, `IconBadge`, `MoneyLabel`, or the old form compatibility layer under `components/ui`.
 - Retain in-page CTAs, `BackButton`, safe-area variables and padding, the tab rail, one scroll root per screen, native picker/date-picker interaction, and existing semantic haptics.
 - Do not use Telegram `BottomButton` or `MainButton` anywhere after migration.
@@ -38,6 +42,7 @@
 - Generated global CSS restoration, global Geist Mono restoration, and removal of the system body-font override.
 - External `TmaHapticButton`, `NativePicker`, `DatePicker`, and `DataState` seams.
 - Upstream primitive API migration for every TMA consumer.
+- Phase 2 Sera rebaseline of generated UI and the remaining root, analytics, filter, flow, feature, and raw-control consumers.
 - Removal of custom UI files and old compatibility exports after zero-reference gates.
 - CTA migration, complete BottomButton/MainButton bridge deletion, fixed-light cleanup, and legacy-token cleanup.
 - Generated-file immutability audits, wrapper/behavior tests, repository verification, and real Telegram iOS/Android QA.
@@ -53,8 +58,8 @@
 
 ## File and ownership map
 
-- `apps/tma/components.json`: verify or regenerate through the shadcn CLI; it must describe Base UI, `base-lyra`, neutral/yellow preset output, `src/index.css`, and the existing aliases.
-- `apps/tma/src/components/ui/`: generated `button.tsx`, `card.tsx`, `field.tsx`, `input.tsx`, `textarea.tsx`, `label.tsx`, `badge.tsx`, `avatar.tsx`, `toggle-group.tsx`, `skeleton.tsx`, `separator.tsx`, and `spinner.tsx` only. No hand-edited barrel, haptic, finance, picker, or compatibility file remains here.
+- `apps/tma/components.json`: Phase 2 owner verifies or regenerates through the shadcn CLI; it must describe the resolved Base UI/Sera style, olive/yellow values, `src/index.css`, and the existing aliases. The opaque preset code is proven by pinned CLI decode/apply and workspace-info evidence, not stored here.
+- `apps/tma/src/components/ui/`: generated `button.tsx`, `card.tsx`, `field.tsx`, `input.tsx`, `textarea.tsx`, `label.tsx`, `badge.tsx`, `avatar.tsx`, `toggle-group.tsx`, `alert.tsx`, `empty.tsx`, `input-group.tsx`, `skeleton.tsx`, `separator.tsx`, and `spinner.tsx` only. No hand-edited barrel, haptic, finance, picker, or compatibility file remains here.
 - `apps/tma/src/components/shared/tma-haptic-button.tsx`: external Button wrapper; owns the one-enabled-activation light impact contract.
 - `apps/tma/src/components/shared/native-picker.tsx`, `date-picker.tsx`, and `data-state.tsx`: moved project-owned behavior components with preserved contracts.
 - `apps/tma/src/index.css`: generated preset CSS plus required platform safe-area declarations and fixed-light base setup; no system body-font override and no removed legacy visual aliases after the zero-reference gate.
@@ -71,6 +76,10 @@
 - **DataState:** keeps loading/error/empty branching, retry callback, custom action, and child rendering; it composes upstream Card/Button outside generated `ui`.
 - **Pure behavior helpers:** `shouldActivateNativeControl(disabled: boolean): boolean`, `formatDateDisplay(value: string): string`, and `resolveDataStateBranch({ isLoading, isError, isEmpty }): 'loading' | 'error' | 'empty' | 'content'` are the `.test.ts` contract seams. They support behavior preservation without rendering components or asserting DOM.
 - **Consumer semantics:** screen code owns placement, grouping, amount hierarchy, meaningful domain colors, CTA copy, and route behavior. It does not redefine generic primitive font, radius, border, shadow, or visual-state contracts.
+
+## Historical Phase 1 record — completed and preserved
+
+Tasks 1–10 below, including their checkbox steps, file maps, interfaces, verification commands, rollback checkpoints, and acceptance evidence, are the completed Phase 1 record. They are preserved for provenance and recovery, not as active implementation instructions. Any `b6G3fhkA4`, Lyra, or neutral/yellow requirement inside this historical section is superseded by the active Phase 2 Sera rebaseline using `b6GzOWK7U`; no Phase 1 file or evidence is to be restored over the Sera output.
 
 ### Task 1: Retire the earlier custom migration at a safe cleanup checkpoint
 
@@ -425,7 +434,7 @@
 
 - [ ] **Step 6: Establish rollback point E.** If QA finds a regression, isolate it to the generated baseline, wrapper, route group, shell bridge, or CSS/theme patch and reverse only that scoped patch. Do not restore the prior custom-primitive plan or change backend/API behavior.
 
-## Acceptance gates
+## Historical Phase 1 acceptance evidence — completed and preserved
 
 - [ ] `components.json` and generated primitive files are reproducible from pinned `shadcn@4.18.0`, exact preset `b6G3fhkA4`, Base UI, Lyra, yellow/neutral, Geist Mono, and Lucide.
 - [ ] No file under `apps/tma/src/components/ui/` contains TMA props/defaults, Telegram imports, haptics, finance behavior, compatibility wrappers, or local primitive styling; any generated-file replacement came from the pinned CLI.
@@ -440,7 +449,7 @@
 - [ ] TMA lint, typecheck, tests, build, `./init.sh`, and `git diff --check` pass.
 - [ ] Real Telegram iOS and Android QA covers host light/dark settings and the complete shell, route, CTA, picker, haptic, keyboard, and safe-area matrix.
 
-## Rollback checkpoints
+## Historical Phase 1 rollback checkpoints — preserved
 
 - **Checkpoint A — safe cleanup:** retain `/tmp/feat-128-pre-pristine.diff` and the custom-file/import inventory. Reverse only the scoped TMA cleanup if the replacement boundary is rejected.
 - **Checkpoint B — CLI baseline:** retain `components.json`, package-manager output, generated file list, CSS diff, and exact CLI commands. Rerun the pinned CLI instead of hand-editing generated files when output is wrong.
@@ -449,10 +458,258 @@
 - **Checkpoint E — bridge and token deletion:** do not delete bridge or legacy tokens until their audits are empty. If deletion fails, restore only the bridge or token patch required for diagnosis.
 - **Checkpoint F — Telegram QA:** isolate iOS/Android regressions by shell, wrapper, route group, picker, or CSS/theme scope. Keep backend/API and product business behavior unchanged.
 
-## Handoff
+## Historical Phase 1 handoff — preserved
 
 - Plan path: `docs/plans/feat-128.md`
-- This pristine Base UI/Lyra migration plan replaces the earlier custom-primitive plan. The earlier compatibility-layer direction is retired and must not be reintroduced.
+- This historical Phase 1 record replaced the earlier custom-primitive plan. Its Lyra/`b6G3fhkA4` baseline is superseded by the active Sera Phase 2 rebaseline below; the earlier compatibility-layer direction remains retired and must not be reintroduced.
 - Canonical UI references: `docs/references/frontend/tma/native-ui-and-navigation-pattern.md`, `apps/tma/DESIGN.md`
-- Implementation begins at Task 1 safe cleanup and proceeds through CLI generation, external behavior seams, consumer groups, bridge/token gates, and Telegram QA.
+- Phase 1 implementation began at Task 1 safe cleanup and proceeded through CLI generation, external behavior seams, consumer groups, bridge/token gates, and Telegram QA.
 - No commit steps are included; rollback uses scoped migration artifacts and checkpoints only.
+
+---
+
+## Phase 2 rebaseline — active Sera implementation
+
+Phase 2 supersedes the Phase 1 Lyra/`b6G3fhkA4` generated baseline. The completed Phase 1 tasks and evidence above remain historical; active work starts at Task 11 and uses only exact Sera preset `b6GzOWK7U` from pinned `shadcn@4.18.0`. `apps/tma/DESIGN.md` is the canonical source for card, form, selection, surface, and primitive-composition rules.
+
+### Task 11: Overwrite the generated UI with the exact Sera preset
+
+**Files:**
+- Read-only prerequisite: `apps/tma/DESIGN.md`, `apps/tma/package.json`, and existing `apps/tma/components.json`
+- CLI-owned: `apps/tma/components.json`, `apps/tma/src/components/ui/button.tsx`, `card.tsx`, `field.tsx`, `input.tsx`, `textarea.tsx`, `label.tsx`, `badge.tsx`, `avatar.tsx`, `toggle-group.tsx`, `alert.tsx`, `empty.tsx`, `input-group.tsx`, `separator.tsx`, `skeleton.tsx`, and `spinner.tsx`
+- CLI-generated CSS/dependency output: `apps/tma/src/index.css`, `apps/tma/package.json`, and `pnpm-lock.yaml` only when the pinned CLI/package manager requires it
+
+**Interfaces:**
+- Consumes: canonical Sera rules in `apps/tma/DESIGN.md`, pinned `shadcn@4.18.0`, exact preset `b6GzOWK7U`, existing aliases, `src/index.css`, and `@/lib/utils`.
+- Produces: reproducible Sera Base UI output with `Alert`, `Empty`, and `InputGroup` available for later surfaces; existing `Separator` and `Skeleton` remain in the generated set; no project behavior or compatibility code enters `components/ui`.
+
+- [ ] **Step 1: Verify the prerequisite docs, generator provenance, and existing-project boundary.** Read `apps/tma/DESIGN.md`; confirm the exact pinned generator, existing `components.json`, and existing Base UI setup. Preserve existing aliases, safe-area setup, fixed-light setup, and package-manager ownership. Do not hand-edit `components.json`, package files, lockfiles, or generated components.
+
+- [ ] **Step 2: Apply and overwrite the exact Sera preset on the existing project through the pinned CLI.** Run from the repository root with the TMA workspace as the CLI cwd:
+
+  ```bash
+  pnpm dlx shadcn@4.18.0 apply b6GzOWK7U --cwd apps/tma | tee /tmp/feat-128-sera-preset-apply.txt
+  pnpm dlx shadcn@4.18.0 add button card field input textarea label badge avatar toggle-group alert empty input-group separator skeleton spinner --cwd apps/tma --overwrite
+  ```
+
+  `apply` is the approved preset-switch operation for this existing `components.json` project and preserves its Base UI setup. The pinned CLI apply output is the decoded preset evidence for `b6GzOWK7U`; preserve `separator.tsx` and `skeleton.tsx` as CLI output rather than replacing them with local implementations. Do not use `init`, manually edit configuration, or manually edit any generated file.
+
+- [ ] **Step 3: Run generated provenance and configuration-safety audits.**
+
+  ```bash
+  rg -n --hidden --glob '!node_modules' --glob '!dist' "@/lib/telegram|haptic|TmaHaptic|NativePicker|DatePicker|DataState|finance|TmaHapticButton" apps/tma/src/components/ui
+  pnpm dlx shadcn@4.18.0 info -c apps/tma --json > /tmp/feat-128-tma-shadcn-info.json
+  rg -n 'style|baseColor|iconLibrary|font|tailwind|aliases|src/index.css|@/components/ui|@/lib/utils' apps/tma/components.json /tmp/feat-128-tma-shadcn-info.json
+  pnpm dlx shadcn@4.18.0 add button card field input textarea label badge avatar toggle-group alert empty input-group separator skeleton spinner --cwd apps/tma --overwrite --dry-run > /tmp/feat-128-sera-dry-run.txt
+  git diff -- apps/tma/components.json apps/tma/package.json pnpm-lock.yaml
+  git diff --no-ext-diff --unified=0 -- apps/tma/src/components/ui
+  ```
+
+  Expected: the generated directory contains no project behavior, TMA props, finance classes, haptics, or compatibility exports; `/tmp/feat-128-sera-preset-apply.txt` records the pinned CLI `apply` decode of the requested opaque preset and `/tmp/feat-128-tma-shadcn-info.json` resolves the existing TMA workspace to Sera, olive/yellow, Geist Mono, Lucide, and Base UI values; `components.json` contains only those resolved config values plus aliases and paths, not the opaque preset code; the dry run matches the approved generated set; dependency changes are package-manager/CLI output only; and the generated diff contains only the approved CLI overwrite.
+
+- [ ] **Step 4: Verify the generated baseline before consumer work.** Run `pnpm --filter tma typecheck` and `git diff --check`. Do not proceed if generated output, config provenance, or the Sera preset is not exact.
+
+### Task 12: Recompose root, home, and analytics surfaces with semantic Cards
+
+**Files:**
+- Modify: `apps/tma/src/routes/home.tsx`, `statistics.tsx`, `expenses.tsx`, and `incomes.tsx`
+- Modify: `apps/tma/src/components/finance/summary.tsx`, `shortcuts.tsx`, `expenses.tsx`, `households.tsx`, `expense-summary-card.tsx`, and `apps/tma/src/features/home/components/home-shortcuts-section.tsx`
+
+**Interfaces:**
+- Consumes: Task 11 Sera primitives, external `DataState` and `TmaHapticButton`, existing analytics/query/store contracts, and the locked home/statistics/expenses design in `apps/tma/DESIGN.md`.
+- Produces: root/home/analytics surfaces with semantic Card headers, content, and backgrounds, unchanged data and navigation behavior, consumer-owned layout, and readable finance hierarchy.
+
+- [ ] **Step 1: Recompose root and home summaries, shortcuts, lists, and backgrounds.** Use `CardHeader`/`CardTitle`/`CardDescription`/`CardContent` by semantic role for bounded summaries and grouped lists; keep shell/header and timeline dividers out of Cards. Preserve home shortcut navigation/reset behavior, household/recent-expense data, query branches, one scroll root, and finance formatting.
+
+- [ ] **Step 2: Recompose statistics and analytics states.** Use semantic Card sections for the hero, selected-period content, and ranked summaries; keep `DataState`, period values, chart/data formatting, lazy-load policy, and analytics behavior unchanged. Use `Badge` only for display-only category/legend metadata.
+
+- [ ] **Step 3: Remove generic consumer primitive overrides.** Keep Card padding and grouping at the consumer, but do not set generic Card background, radius, border, shadow, or color. Preserve only meaningful finance/domain accents and high-contrast amounts.
+
+- [ ] **Step 4: Run the root/home/analytics verification.**
+
+  ```bash
+  pnpm --filter tma test -- src/test/home-presentation.test.ts src/test/expense-presentation.test.ts src/test/expense-list-api.test.ts
+  pnpm --filter tma typecheck
+  ```
+
+  Expected: root, home, statistics, expenses, and income presentation/data behavior passes without generated-file edits or compatibility replacements.
+
+### Task 13: Recompose expense filters and period selection
+
+**Files:**
+- Modify: `apps/tma/src/features/expenses/pages/expense-filter-page.tsx`
+- Modify: `apps/tma/src/features/period/pages/period-picker-page.tsx`, `apps/tma/src/features/period/components/period-chip-link.tsx`, and `period-picker-section.tsx`
+- Modify: `apps/tma/src/components/shared/loading-picker.tsx`
+
+**Interfaces:**
+- Consumes: Task 11 Sera `Card`, `Field`, `ToggleGroup`, and generated support primitives plus external `DatePicker`/`NativePicker` behavior.
+- Produces: filter and period surfaces with unchanged state, period return, native picker, selection haptic, apply, reset, and navigation contracts.
+
+- [ ] **Step 1: Make expense filter Date and Money sort single-choice ToggleGroups.** Use generated `ToggleGroup`/`ToggleGroupItem` for the fixed choices, preserving selected state, option meaning, ordering, and existing selection haptics. Do not use `Badge` or a compatibility control as an interactive substitute.
+
+- [ ] **Step 2: Group period and dynamic picker controls semantically.** Put `DatePicker` and dynamic/long `NativePicker` choices in logical Cards with `FieldGroup`/`Field` and linked labels. Use ToggleGroup only for fixed 2–7-option period choices; keep Card padding consumer-owned and generic Card visuals preset-owned.
+
+- [ ] **Step 3: Preserve loading-picker and period behavior.** Retain hidden native controls, date/month modes, period return behavior, disabled states, reset/apply semantics, and exactly the existing meaningful haptics. Do not add fields or change filter/data behavior.
+
+- [ ] **Step 4: Run filter and period verification.**
+
+  ```bash
+  pnpm --filter tma test -- src/test/expense-filter-store.test.ts src/test/period.test.ts src/test/native-picker.test.ts src/test/date-picker.test.ts
+  pnpm --filter tma typecheck
+  ```
+
+  Expected: Date and Money sort are single-choice controls, dynamic choices remain native, and filter/period tests pass with no generated UI modifications.
+
+### Task 14: Recompose add-expense and add-income form controls
+
+**Files:**
+- Modify: `apps/tma/src/routes/add-expense-category.tsx`, `add-expense-details.tsx`, `add-expense-chat.tsx`, and `add-income.tsx`
+
+**Interfaces:**
+- Consumes: Task 11 Sera `Card`, `Field`, `FieldGroup`, `Input`, `Textarea`, `ToggleGroup`, `Label`, `Button`, external `DatePicker`, and `TmaHapticButton`; existing expense/income stores and route contracts.
+- Produces: logically grouped add-expense/income forms with linked labels and unchanged existing fields, confirmation/data behavior, validation, haptics, and navigation.
+
+- [ ] **Step 1: Put every existing add-expense/income control in a logical Card.** Use `CardHeader`/`CardContent` where the grouping has semantic meaning and `FieldGroup`/`Field` with linked labels for inputs. Retain only fields present in the current store/API; do not invent a note or textarea field, and do not alter confirmation/data behavior.
+
+- [ ] **Step 2: Apply the selection/control rules.** Use ToggleGroup for fixed 2–7-option source/category choices, NativePicker for dynamic or long choices, external `DatePicker` for date behavior, and display-only Badge for metadata. Use external `TmaHapticButton` for enabled CTA haptics and keep generated Button haptic-free.
+
+- [ ] **Step 3: Preserve fast-capture flow behavior.** Retain category/date routing, amount formatting, source selection, Enter handling, validation, pending `disabled`/`aria-busy`, notification/reset behavior, one-scroll-root ownership, and semantic selection/save haptics. Do not add generic primitive background, radius, shadow, border, or color overrides.
+
+- [ ] **Step 4: Run add-flow verification.**
+
+  ```bash
+  pnpm --filter tma test -- src/test/expense-flow-store.test.ts src/test/expense-draft.test.ts src/test/incomes-api.test.ts src/test/date-picker.test.ts
+  pnpm --filter tma typecheck
+  ```
+
+  Expected: existing add-expense and income flows pass with logical Cards and linked labels, no invented controls, and all enabled CTAs remaining in-page.
+
+### Task 15: Recompose edit, import, and context forms
+
+**Files:**
+- Modify: `apps/tma/src/routes/expense-detail.tsx`, `expense-edit.tsx`, `expense-edit-form.tsx`, `expense-edit-category.tsx`, and `expense-edit-select-row.tsx`
+- Modify: `apps/tma/src/routes/add-expense-context.tsx`, `add-expense-import-preview.tsx`, and `add-expense-import-preview-item-card.tsx`
+
+**Interfaces:**
+- Consumes: Task 11 Sera form/Card primitives, external `DataState`, `DatePicker`, `NativePicker`, and `TmaHapticButton`, plus existing edit/import/context stores and mutation contracts.
+- Produces: grouped edit/import/context forms and previews with unchanged confirmation, import, mutation, route, picker, disabled, and notification behavior.
+
+- [ ] **Step 1: Group edit controls and context fields in semantic Cards.** Use FieldGroup/Field with linked labels, generated Input/Textarea only where the current product field exists, NativePicker for dynamic household/group choices, and DatePicker for existing date behavior. Preserve amount/category/date/context semantics and readability.
+
+- [ ] **Step 2: Recompose import preview and item cards.** Use CardHeader/CardContent/CardFooter by role, keep partial-failure and selected-count behavior, preserve native picker interaction and import confirmation/data behavior, and use Badge only for display-only status.
+
+- [ ] **Step 3: Preserve CTA and route behavior.** Use external `TmaHapticButton` for enabled CTA haptics, retain truthful `disabled`/`aria-busy`, BackButton ownership, validation, reset, notifications, and one scroll root. Do not add compatibility wrappers or generic primitive overrides.
+
+- [ ] **Step 4: Run edit/import verification.**
+
+  ```bash
+  pnpm --filter tma test -- src/test/expense-edit-flow-route.test.ts src/test/expense-import-api.test.ts src/test/expense-import-confirm.test.ts src/test/expense-flow-store.test.ts
+  pnpm --filter tma typecheck
+  ```
+
+  Expected: edit, import, and context tests pass with unchanged data/confirmation behavior and no generated UI edits.
+
+### Task 16: Recompose household, group, budget, and invitation surfaces
+
+**Files:**
+- Modify: `apps/tma/src/features/households/pages/create-household-page.tsx`, `household-detail-page.tsx`, `household-list-page.tsx`, `households/components/household-avatar-dialog.tsx`, `household-avatar-section.tsx`
+- Modify: `apps/tma/src/features/groups/components/create-group-form.tsx`, `groups/pages/create-group-page.tsx`, `group-list-page.tsx`, and `group-detail-page.tsx`
+- Modify: `apps/tma/src/features/budgets/pages/create-budget-page.tsx`, `budget-detail-page.tsx`, `budget-list-page.tsx`, `budgets/components/budget-hero-card.tsx`, `budget-progress-section.tsx`, and `stat-tile.tsx`
+- Modify: `apps/tma/src/features/invitations/pages/accept-invitation-page.tsx` and `invitations/components/invite-household-dialog.tsx`
+
+**Interfaces:**
+- Consumes: Task 11 Sera Card/Field/FieldGroup/Input/Badge/Avatar/ToggleGroup output, external picker/state components, and existing household/group/budget/invitation API/query/store contracts.
+- Produces: feature surfaces with semantic Cards, linked form labels, unchanged upload, preview, validation, query, mutation, invitation, and navigation behavior.
+
+- [ ] **Step 1: Group household and invitation controls.** Use logical Cards and linked Fields for existing controls, Avatar for identity, Badge for display-only status, and NativePicker for dynamic choices. Preserve household upload/preview/fallback, invite, accept, preview, and BackButton behavior.
+
+- [ ] **Step 2: Group and budget forms and summaries.** Use ToggleGroup only for fixed 2–7-option choices; use NativePicker for dynamic/long choices; retain existing date, amount, category, household, progress, and mutation semantics. Keep finance readability and only meaningful domain accents.
+
+- [ ] **Step 3: Keep primitive styling preset-owned.** Consumer code may own placement, grouping, Card padding, hierarchy, and domain meaning only; it must not set generic Card/input background, radius, shadow, border, or color overrides.
+
+- [ ] **Step 4: Run feature verification.**
+
+  ```bash
+  pnpm --filter tma test -- src/test/household-presentation.test.ts src/test/group-presentation.test.ts src/test/budget-presentation.test.ts src/test/invitation-api.test.ts src/test/back-button-routes.test.ts
+  pnpm --filter tma typecheck
+  ```
+
+  Expected: all feature tests pass with unchanged API/query/store behavior and preserved native controls and haptics.
+
+### Task 17: Audit remaining raw controls, lists, error states, headers, Cards, and colors
+
+**Files:**
+- Modify: `apps/tma/src/routes/not-found.tsx`, `fatal-launch.tsx`
+- Modify: `apps/tma/src/components/shared/route-error-boundary.tsx`, `data-state.tsx`, `date-picker.tsx`, `native-picker.tsx`, and `tma-haptic-button.tsx`
+- Modify: `apps/tma/src/components/shared/tma-page-shell.tsx`, `tma-bottom-tabs.tsx`, `tma-page-header.tsx`, `app-shell.tsx`, and `pull-to-refresh.tsx`
+- Review only: all Task 12–16 consumer files for raw controls, list composition, error/empty/loading states, headers, Card usage, and generic color classes
+
+**Interfaces:**
+- Consumes: completed Task 11–16 Sera output, canonical `apps/tma/DESIGN.md`, platform shell contracts, and existing behavior helpers.
+- Produces: no accidental raw control or generic primitive override outside the generated directory, semantic error/empty/loading feedback, airy headers, preset-owned Cards, and preserved platform behavior.
+
+- [ ] **Step 1: Replace remaining raw controls and list treatments at their owners.** Use generated Button/Input/ToggleGroup or external NativePicker/DatePicker according to the fixed-choice/dynamic-choice rules; use Card for bounded lists and summaries, not shell or timeline decoration; use Alert/Empty/Separator/Skeleton/InputGroup when their semantics fit.
+
+- [ ] **Step 2: Audit error states, headers, Cards, and colors.** Keep `DataState` branches and callbacks unchanged, keep headers outside Cards, preserve safe-area and one-scroll-root ownership, and remove generic consumer background/radius/shadow/border/color overrides. Retain only meaningful finance/domain accents.
+
+- [ ] **Step 3: Recheck platform and CTA invariants.** Preserve `BackButton`, native picker/date-picker interaction, one enabled light haptic per `TmaHapticButton`, fixed light, and no Telegram `MainButton`/`BottomButton`. Do not edit generated UI files.
+
+- [ ] **Step 4: Run the remaining-control audit and verification.**
+
+  ```bash
+  rg -n --hidden --glob '!node_modules' --glob '!dist' --glob '!components/ui/**' "<(button|input|select|textarea)([ >]|$)|BottomButton|MainButton|from ['\"]@/components/ui['\"]|components/ui/(form|chip-button|segmented-control|primitives|native-picker|date-picker|data-state)(['\"/]|$)|className=.*(bg-|text-|border-|rounded-|shadow-)" apps/tma/src
+  pnpm --filter tma test -- src/test/button.test.ts src/test/tma-haptic-button.test.ts src/test/native-picker.test.ts src/test/date-picker.test.ts src/test/data-state.test.ts src/test/theme.test.ts src/test/safe-area.test.ts
+  pnpm --filter tma typecheck
+  ```
+
+  Expected: every remaining match is reviewed as an intentional native control, generated/direct primitive use, or semantic consumer markup; no forbidden bridge/path or generic primitive override remains.
+
+### Task 18: Run automated verification and real Telegram QA for the Sera rebaseline
+
+**Files:**
+- Review and test: all changed TMA source, generated, config, CSS, and `.test.ts` files from Tasks 11–17; no backend/API files
+- Manual evidence: Telegram iOS and Android on real devices in host light and host dark settings
+
+**Interfaces:**
+- Consumes: exact Sera generated baseline, all consumer recompositions, preserved behavior components, shell invariants, and completed import/color/provenance audits.
+- Produces: automated verification and real-device evidence that Phase 2 Sera behavior and visual composition are complete without commits.
+
+- [ ] **Step 1: Run the complete automated TMA verification.**
+
+  ```bash
+  pnpm --filter tma lint
+  pnpm --filter tma typecheck
+  pnpm --filter tma test
+  pnpm --filter tma build
+  ./init.sh
+  git diff --check
+  ```
+
+  Expected: all commands pass; the documented Worker build skip in `./init.sh` remains the only configured skip.
+
+- [ ] **Step 2: Run final Sera provenance and consumer audits.** Decode/apply `b6GzOWK7U` through the pinned CLI evidence from Task 11, then resolve the applied TMA workspace from the repository root with `pnpm dlx shadcn@4.18.0 info -c apps/tma --json`. Confirm that the decoded preset and workspace JSON agree on Sera, olive/yellow, Geist Mono, Lucide, and Base UI; `components.json` contains only the corresponding resolved style/baseColor/icon/alias/path values and is not required to contain the opaque code; generated files match the pinned CLI dry run; no generated file contains application behavior; no custom barrel or legacy component path remains; no generic primitive override remains; safe-area variables remain; and no MainButton/BottomButton reference exists.
+
+- [ ] **Step 3: Run real Telegram iOS QA in host light and host dark settings.** Check cold launch, root/home, statistics, expenses, filters, period, all add-expense steps, income, edit, import, household, group, budget, invitation, loading/error/empty states, headers, Cards, raw/native controls, BackButton, tab rail, safe-area insets, one scroll root, date/native picker interaction, enabled CTA haptics, semantic selection/save haptics, fixed-light appearance, finance readability, and no MainButton/BottomButton.
+
+- [ ] **Step 4: Run the same matrix on real Telegram Android in host light and host dark settings.** Record the same route, form, shell, picker, haptic, typography, keyboard, viewport, safe-area, and fixed-light evidence; check no accidental new chunk navigation.
+
+- [ ] **Step 5: Establish the Phase 2 rollback point.** If validation or QA finds a regression, isolate it to the generated Sera baseline, one owned consumer group, behavior component, shell, or CSS/theme patch. Reverse only that scoped Phase 2 patch; never restore the Phase 1 generated baseline over Sera and never change backend/API behavior.
+
+## Phase 2 acceptance gates
+
+- [ ] The pinned CLI decode/apply evidence and `pnpm dlx shadcn@4.18.0 info -c apps/tma --json` workspace evidence resolve exact preset `b6GzOWK7U` to Sera, olive/yellow, Geist Mono, Lucide, and Base UI; `components.json` contains the matching resolved style/baseColor/icon/alias/path values and is not required to store the opaque preset code.
+- [ ] Every file under `apps/tma/src/components/ui/` is reproducible exact CLI output from that pinned Sera preset, including `alert`, `empty`, `input-group`, `separator`, and `skeleton`; the generated CLI dry run matches the approved set.
+- [ ] Generated UI files contain no TMA props/defaults, Telegram imports, haptics, finance behavior, consumer classes, or compatibility exports; config and dependency changes are CLI/package-manager-owned.
+- [ ] `apps/tma/DESIGN.md` remains the canonical card/form/selection reference; consumers use semantic Card headers/content/background composition without generic background, radius, border, shadow, or color overrides.
+- [ ] Every Input, Textarea, NativePicker, and DatePicker remains in a logical Card with FieldGroup/Field and linked labels where applicable; no note/textarea or other field is invented beyond the current store/API.
+- [ ] Fixed 2–7-option choices use ToggleGroup, dynamic/long choices use NativePicker, and Badge is display-only; native DatePicker/NativePicker behavior and domain haptics remain intact.
+- [ ] Root/home/statistics, expense filter/period, add-expense/income, edit/import/context, household/group/budget/invitation, and remaining raw-control/error/header/card/color groups are migrated with exact file ownership and unchanged product/data behavior.
+- [ ] `DataState`, period/amount/date formatting, filter apply/reset, home shortcut navigation/reset, confirmation/import behavior, validation, disabled/busy states, BackButton, safe-area layout, one scroll root, and finance readability remain intact.
+- [ ] All route CTAs remain in-page; `TmaHapticButton` stays outside `components/ui`; MainButton/BottomButton references are absent.
+- [ ] TMA lint, typecheck, tests, build, `./init.sh`, and `git diff --check` pass, and real Telegram iOS/Android QA covers host light/dark settings and the full Phase 2 matrix.
+
+## Phase 2 handoff
+
+- Active implementation begins at Task 11 and proceeds through exact Sera generation, disjoint consumer groups, remaining-control audits, and Task 18 automated/device verification.
+- Phase 1 tasks, evidence, acceptance record, and rollback checkpoints remain above as historical provenance only.
+- No commit steps are included. Use scoped Phase 2 rollback only; do not restore the superseded Lyra/`b6G3fhkA4` baseline.

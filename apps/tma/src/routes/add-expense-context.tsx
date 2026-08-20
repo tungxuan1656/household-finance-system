@@ -11,8 +11,15 @@ import {
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import { buttonVariants } from '@/components/ui/button'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Separator } from '@/components/ui/separator'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { useAddExpenseContextActions } from '@/features/expenses/hooks/use-add-expense-context-actions'
 import { getSourceOptions } from '@/features/expenses/presentation'
@@ -111,16 +118,20 @@ export const AddExpenseContextPage = () => {
           eyebrow={t('expenses.add.step', { current: '3', total: '3' })}
           title={t('expenses.add.backToStep2')}
         />
-        <Card className='grid gap-3 p-4'>
-          <CardTitle>{t('expenses.add.previewMissingTitle')}</CardTitle>
-          <CardDescription>
-            {t('expenses.add.previewMissingDesc')}
-          </CardDescription>
-          <Link
-            className={buttonVariants({ className: 'justify-self-start' })}
-            to={TMA_PATHS.expensesNewDetails}>
-            {t('expenses.add.backToStep2Action')}
-          </Link>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('expenses.add.previewMissingTitle')}</CardTitle>
+            <CardDescription>
+              {t('expenses.add.previewMissingDesc')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link
+              className={buttonVariants({ className: 'justify-self-start' })}
+              to={TMA_PATHS.expensesNewDetails}>
+              {t('expenses.add.backToStep2Action')}
+            </Link>
+          </CardContent>
         </Card>
       </TmaPageShell>
     )
@@ -129,111 +140,119 @@ export const AddExpenseContextPage = () => {
   return (
     <TmaPageShell title={t('expenses.add.title')}>
       {feedback ? (
-        <Card className='mb-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'>
-          <CardDescription className='text-[#d93838]'>
-            {feedback}
-          </CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription className='text-destructive'>
+              {feedback}
+            </CardDescription>
+          </CardHeader>
         </Card>
       ) : null}
 
-      <Card className='mb-3 grid gap-3 p-3.5'>
-        <div className='flex items-center gap-3'>
-          <TmaCategoryIconBadge
-            accent={category.accent}
-            iconUrl={category.iconUrl}
-            symbol={category.symbol}
-          />
-          <div className='min-w-0 flex-1'>
-            <CardTitle className='truncate'>{category.label}</CardTitle>
-            <CardDescription>
-              {formatDateLabel(date)} ·{' '}
-              <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
-                {formatVnd(amount)}
-              </span>
-            </CardDescription>
-          </div>
-        </div>
+      <div className='grid gap-3'>
+        <Card>
+          <CardHeader>
+            <div className='flex items-center gap-3'>
+              <TmaCategoryIconBadge
+                accent={category.accent}
+                iconUrl={category.iconUrl}
+                symbol={category.symbol}
+              />
+              <div className='min-w-0 flex-1'>
+                <CardTitle className='truncate'>{category.label}</CardTitle>
+                <CardDescription>
+                  {formatDateLabel(date)} ·{' '}
+                  <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
+                    {formatVnd(amount)}
+                  </span>
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className='grid gap-2.5'>
+            <Separator />
+            <div className='grid gap-1'>
+              <CardDescription>{t('expenses.add.expenseName')}</CardDescription>
+              <p className='truncate text-base font-semibold text-foreground'>
+                {title.trim() || t('expenses.add.nameUnset')}
+              </p>
+            </div>
+            <div className='grid grid-cols-2 gap-3'>
+              <SummaryRow
+                label={t('expenses.add.source')}
+                value={selectedSource?.label ?? t('expenses.add.sourceUnset')}
+              />
+              <SummaryRow
+                label={t('expenses.add.contextHousehold')}
+                value={
+                  selectedHousehold?.name ?? t('expenses.add.contextPersonal')
+                }
+              />
+              <SummaryRow
+                label={t('expenses.add.contextGroup')}
+                value={
+                  selectedGroupItem
+                    ? selectedGroupItem.group.name
+                    : t('expenses.edit.optionUngrouped')
+                }
+              />
+              <SummaryRow
+                label={t('expenses.add.contextGroupLabel')}
+                value={
+                  selectedGroupItem
+                    ? getGroupContextLabel(selectedGroupItem, t)
+                    : t('expenses.add.contextPersonal')
+                }
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className='grid gap-2.5 border-t border-border pt-3'>
-          <div className='grid gap-1'>
-            <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-              {t('expenses.add.expenseName')}
-            </p>
-            <strong className='truncate text-base font-semibold text-foreground'>
-              {title.trim() || t('expenses.add.nameUnset')}
-            </strong>
-          </div>
-          <div className='grid grid-cols-2 gap-3'>
-            <SummaryRow
-              label={t('expenses.add.source')}
-              value={selectedSource?.label ?? t('expenses.add.sourceUnset')}
-            />
-            <SummaryRow
-              label={t('expenses.add.contextHousehold')}
-              value={
-                selectedHousehold?.name ?? t('expenses.add.contextPersonal')
-              }
-            />
-            <SummaryRow
-              label={t('expenses.add.contextGroup')}
-              value={
-                selectedGroupItem
-                  ? selectedGroupItem.group.name
-                  : t('expenses.edit.optionUngrouped')
-              }
-            />
-            <SummaryRow
-              label={t('expenses.add.contextGroupLabel')}
-              value={
-                selectedGroupItem
-                  ? getGroupContextLabel(selectedGroupItem, t)
-                  : t('expenses.add.contextPersonal')
-              }
-            />
-          </div>
-        </div>
-      </Card>
-
-      <Card className='grid gap-3 p-4'>
-        <Field>
-          <FieldLabel htmlFor='add-expense-household-picker'>
-            {t('expenses.add.contextHousehold')}
-          </FieldLabel>
-          <NativePicker
-            fullWidth
-            aria-label={t('expenses.add.chooseHousehold')}
-            disabled={householdsQuery.isLoading}
-            id='add-expense-household-picker'
-            options={householdPickerOptions}
-            value={householdId ?? ''}
-            onChange={(next) => {
-              setContext({
-                householdId: next || null,
-                groupId,
-              })
-            }}
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor='add-expense-group-picker'>
-            {t('expenses.add.contextGroup')}
-          </FieldLabel>
-          <NativePicker
-            fullWidth
-            aria-label={t('expenses.add.chooseGroup')}
-            disabled={personalGroupsQuery.isLoading}
-            id='add-expense-group-picker'
-            options={groupPickerOptions}
-            value={groupId ?? ''}
-            onChange={(next) => {
-              setContext({
-                householdId,
-                groupId: next || null,
-              })
-            }}
-          />
-        </Field>
-      </Card>
+        <Card>
+          <CardContent className='grid gap-3'>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor='add-expense-household-picker'>
+                  {t('expenses.add.contextHousehold')}
+                </FieldLabel>
+                <NativePicker
+                  fullWidth
+                  aria-label={t('expenses.add.chooseHousehold')}
+                  disabled={householdsQuery.isLoading}
+                  id='add-expense-household-picker'
+                  options={householdPickerOptions}
+                  value={householdId ?? ''}
+                  onChange={(next) => {
+                    setContext({
+                      householdId: next || null,
+                      groupId,
+                    })
+                  }}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor='add-expense-group-picker'>
+                  {t('expenses.add.contextGroup')}
+                </FieldLabel>
+                <NativePicker
+                  fullWidth
+                  aria-label={t('expenses.add.chooseGroup')}
+                  disabled={personalGroupsQuery.isLoading}
+                  id='add-expense-group-picker'
+                  options={groupPickerOptions}
+                  value={groupId ?? ''}
+                  onChange={(next) => {
+                    setContext({
+                      householdId,
+                      groupId: next || null,
+                    })
+                  }}
+                />
+              </Field>
+            </FieldGroup>
+          </CardContent>
+        </Card>
+      </div>
 
       <TmaHapticButton
         aria-busy={createExpenseMutation.isPending}

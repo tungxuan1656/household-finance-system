@@ -2,6 +2,8 @@ import type { ReactElement, SVGProps } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { impact } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
 
@@ -22,37 +24,32 @@ export const ShortcutItem = ({
 }) => {
   const { t } = useTranslation()
   const content = (
-    <>
-      <div className='flex items-start justify-between gap-3'>
-        <span
-          aria-hidden='true'
-          className='grid size-10 shrink-0 place-items-center rounded-[14px] font-bold'
-          style={{
-            backgroundColor: accent.background,
-            color: accent.foreground,
-          }}>
-          <Icon height={20} strokeWidth={2.1} width={20} />
-        </span>
-        {disabled ? (
-          <span className='inline-flex min-h-6 items-center gap-1.5 rounded-full bg-amber-100 px-2 text-xs font-semibold text-amber-800'>
-            {t('shortcuts.comingSoon')}
+    <Card size='sm'>
+      <CardHeader>
+        <div className='flex items-start justify-between gap-3'>
+          <span
+            aria-hidden='true'
+            className='grid size-10 shrink-0 place-items-center rounded-[14px] font-bold'
+            style={{
+              backgroundColor: accent.background,
+              color: accent.foreground,
+            }}>
+            <Icon height={20} strokeWidth={2.1} width={20} />
           </span>
-        ) : null}
-      </div>
-      <div>
-        <h3 className='m-0 text-[15px] leading-tight font-semibold text-foreground'>
-          {title}
-        </h3>
-      </div>
-    </>
+          {disabled ? (
+            <Badge variant='secondary'>{t('shortcuts.comingSoon')}</Badge>
+          ) : null}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <h3 className='text-[15px] leading-tight font-semibold'>{title}</h3>
+      </CardContent>
+    </Card>
   )
-
-  const className =
-    'flex items-center content-start gap-3 rounded-3xl border border-black/4 bg-white p-3.5 shadow-sm transition active:scale-[0.98]'
 
   if (disabled) {
     return (
-      <div aria-disabled='true' className={cn(className, 'opacity-75')}>
+      <div aria-disabled='true' className={cn('opacity-75')}>
         {content}
       </div>
     )
@@ -60,7 +57,7 @@ export const ShortcutItem = ({
 
   return (
     <Link
-      className={className}
+      className='transition active:scale-[0.98]'
       to={href}
       onClick={() => {
         onClick?.()

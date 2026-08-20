@@ -8,6 +8,7 @@ import {
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useEditExpenseStore } from '@/features/expenses/store'
 import { useReferenceCategoriesQuery } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
@@ -38,58 +39,62 @@ export const ExpenseEditCategoryPage = () => {
 
   return (
     <TmaPageShell title={t('expenses.edit.categoryPicker')}>
-      <section className='mt-6'>
-        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
-          {t('expenses.edit.sectionCategory')}
-        </h2>
-        <DataState
-          emptyDescription={t('expenses.edit.emptyDescription')}
-          emptyTitle={t('expenses.edit.emptyTitle')}
-          errorDescription={t('expenses.edit.loadErrorDesc')}
-          errorTitle={t('expenses.edit.loadError')}
-          isEmpty={
-            !categoriesQuery.isLoading &&
-            !categoriesQuery.isError &&
-            categoryOptions.length === 0
-          }
-          isError={categoriesQuery.isError && categoryOptions.length === 0}
-          isLoading={categoriesQuery.isLoading && categoryOptions.length === 0}
-          loadingDescription={t('expenses.edit.loadErrorDesc')}
-          loadingTitle={t('expenses.edit.loadingCategory')}
-          retryAction={categoriesQuery.refetch}>
-          <div className='grid grid-cols-3 gap-2'>
-            {categoryOptions.map((category) => {
-              const isActive = draft.categoryKey === category.id
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.edit.sectionCategory')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataState
+            emptyDescription={t('expenses.edit.emptyDescription')}
+            emptyTitle={t('expenses.edit.emptyTitle')}
+            errorDescription={t('expenses.edit.loadErrorDesc')}
+            errorTitle={t('expenses.edit.loadError')}
+            isEmpty={
+              !categoriesQuery.isLoading &&
+              !categoriesQuery.isError &&
+              categoryOptions.length === 0
+            }
+            isError={categoriesQuery.isError && categoryOptions.length === 0}
+            isLoading={
+              categoriesQuery.isLoading && categoryOptions.length === 0
+            }
+            loadingDescription={t('expenses.edit.loadErrorDesc')}
+            loadingTitle={t('expenses.edit.loadingCategory')}
+            retryAction={categoriesQuery.refetch}>
+            <div className='grid grid-cols-3 gap-2'>
+              {categoryOptions.map((category) => {
+                const isActive = draft.categoryKey === category.id
 
-              return (
-                <Button
-                  key={category.id}
-                  aria-pressed={isActive}
-                  className={cn(
-                    'grid min-h-20 content-start',
-                    isActive && 'ring-2 ring-primary',
-                  )}
-                  type='button'
-                  variant='outline'
-                  onClick={() => {
-                    selection()
-                    updateDraft({ categoryKey: category.id })
-                    navigate(-1)
-                  }}>
-                  <TmaCategoryIconBadge
-                    accent={category.accent}
-                    iconUrl={category.iconUrl}
-                    symbol={category.symbol}
-                  />
-                  <span className='text-xs font-semibold text-foreground'>
-                    {category.label}
-                  </span>
-                </Button>
-              )
-            })}
-          </div>
-        </DataState>
-      </section>
+                return (
+                  <Button
+                    key={category.id}
+                    aria-pressed={isActive}
+                    className={cn(
+                      'grid min-h-20 content-start gap-1 text-left',
+                      isActive && 'ring-2 ring-primary',
+                    )}
+                    type='button'
+                    variant='outline'
+                    onClick={() => {
+                      selection()
+                      updateDraft({ categoryKey: category.id })
+                      navigate(-1)
+                    }}>
+                    <TmaCategoryIconBadge
+                      accent={category.accent}
+                      iconUrl={category.iconUrl}
+                      symbol={category.symbol}
+                    />
+                    <span className='text-xs font-semibold'>
+                      {category.label}
+                    </span>
+                  </Button>
+                )
+              })}
+            </div>
+          </DataState>
+        </CardContent>
+      </Card>
     </TmaPageShell>
   )
 }

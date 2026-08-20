@@ -6,7 +6,13 @@ import { DataState } from '@/components/shared/data-state'
 import { UserIcon } from '@/components/shared/tma-icons'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { CardDescription, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import {
   analyticsOverviewQueryOptions,
   budgetListQueryOptions,
@@ -51,38 +57,46 @@ export const HouseholdPreviewItem = ({
   card: HouseholdCardViewModel
   t: (key: string, options?: Record<string, unknown>) => string
 }) => (
-  <Link
-    className='grid min-w-55 gap-3 rounded-[22px] bg-white p-3.5 shadow-sm transition active:scale-[0.98]'
-    to={getHouseholdDetailPath(card.household.id)}
-    onClick={() => impact('light')}>
-    <div className='flex items-start justify-between gap-3'>
-      <Avatar size='sm'>
-        <AvatarImage
-          alt={card.household.name}
-          src={card.household.avatarUrl ?? undefined}
-        />
-        <AvatarFallback>{resolveInitials(card.household.name)}</AvatarFallback>
-      </Avatar>
-      <Badge className='h-6 px-2.5 py-1.5' variant='secondary'>
-        {card.memberCount != null
-          ? `${card.memberCount}`
-          : t('householdsList.loading')}
-        <UserIcon className='inline-block size-3' />
-      </Badge>
-    </div>
-    <div>
-      <h3 className='m-0 text-[15px] font-semibold text-foreground'>
-        {card.household.name}
-      </h3>
-      <span className='mt-1 block font-mono text-sm font-medium text-foreground [font-variant-numeric:tabular-nums]'>
-        {card.totalSpendMinor != null && card.currencyCode
-          ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
-          : card.isLoading
-            ? t('householdsList.loadingDots')
-            : '-'}
-      </span>
-    </div>
-  </Link>
+  <Card className='min-w-55 transition active:scale-[0.98]' size='sm'>
+    <Link
+      to={getHouseholdDetailPath(card.household.id)}
+      onClick={() => impact('light')}>
+      <CardHeader>
+        <div className='flex items-start justify-between gap-3'>
+          <Avatar size='sm'>
+            <AvatarImage
+              alt={card.household.name}
+              src={card.household.avatarUrl ?? undefined}
+            />
+            <AvatarFallback>
+              {resolveInitials(card.household.name)}
+            </AvatarFallback>
+          </Avatar>
+          <Badge className='h-6 px-2.5 py-1.5' variant='secondary'>
+            {card.memberCount != null
+              ? `${card.memberCount}`
+              : t('householdsList.loading')}
+            <UserIcon className='inline-block size-3' />
+          </Badge>
+        </div>
+        <CardTitle>{card.household.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <span className='block font-mono text-sm font-medium text-foreground [font-variant-numeric:tabular-nums]'>
+          {card.totalSpendMinor != null && card.currencyCode
+            ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
+            : card.isLoading
+              ? t('householdsList.loadingDots')
+              : '-'}
+        </span>
+        {card.budget ? (
+          <Badge className='mt-2' variant='secondary'>
+            {card.budgetLabel}
+          </Badge>
+        ) : null}
+      </CardContent>
+    </Link>
+  </Card>
 )
 
 export const HouseholdItem = ({
@@ -94,64 +108,67 @@ export const HouseholdItem = ({
   roleLabel: string
   t: (key: string, options?: Record<string, unknown>) => string
 }) => (
-  <Link
-    className='grid gap-3 rounded-3xl bg-white p-4 shadow-md transition active:scale-[0.99]'
-    to={getHouseholdDetailPath(card.household.id)}
-    onClick={() => impact('light')}>
-    <div className='flex items-center justify-between gap-3'>
-      <Avatar size='lg'>
-        <AvatarImage
-          alt={card.household.name}
-          src={card.household.avatarUrl ?? undefined}
-        />
-        <AvatarFallback>{resolveInitials(card.household.name)}</AvatarFallback>
-      </Avatar>
-      <Badge variant='default'>{roleLabel}</Badge>
-    </div>
-    <div>
-      <CardTitle>{card.household.name}</CardTitle>
-      <CardDescription>
-        {card.memberCount != null
-          ? t('households.memberCountMany', { count: card.memberCount })
-          : t('householdsList.membersLoading')}
-      </CardDescription>
-    </div>
-    <div className='grid grid-cols-2 gap-2.5'>
-      <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-        <span className='font-mono text-sm font-bold text-foreground [font-variant-numeric:tabular-nums]'>
-          {card.totalSpendMinor != null && card.currencyCode
-            ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
-            : card.isLoading
-              ? t('householdsList.loadingDots')
-              : '-'}
-        </span>
-      </div>
-      <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-        {card.budget ? (
-          <>
-            <strong className='text-sm text-foreground'>
-              {card.budgetLabel}
-            </strong>
-            <div className='mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/8'>
-              <div
-                className='h-full rounded-full bg-emerald-500 transition-all'
-                style={{
-                  width: `${Math.min(
-                    100,
-                    ((card.totalSpendMinor ?? 0) /
-                      card.budget.totalLimitMinor) *
+  <Card className='transition active:scale-[0.99]'>
+    <Link
+      to={getHouseholdDetailPath(card.household.id)}
+      onClick={() => impact('light')}>
+      <CardHeader>
+        <div className='flex items-center justify-between gap-3'>
+          <Avatar size='lg'>
+            <AvatarImage
+              alt={card.household.name}
+              src={card.household.avatarUrl ?? undefined}
+            />
+            <AvatarFallback>
+              {resolveInitials(card.household.name)}
+            </AvatarFallback>
+          </Avatar>
+          <Badge variant='default'>{roleLabel}</Badge>
+        </div>
+        <CardTitle>{card.household.name}</CardTitle>
+        <CardDescription>
+          {card.memberCount != null
+            ? t('households.memberCountMany', { count: card.memberCount })
+            : t('householdsList.membersLoading')}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='grid grid-cols-2 gap-2.5'>
+        <div className='grid gap-1 p-3'>
+          <span className='font-mono text-sm font-bold text-foreground [font-variant-numeric:tabular-nums]'>
+            {card.totalSpendMinor != null && card.currencyCode
+              ? formatCurrencyMinor(card.totalSpendMinor, card.currencyCode)
+              : card.isLoading
+                ? t('householdsList.loadingDots')
+                : '-'}
+          </span>
+        </div>
+        <div className='grid gap-1 p-3'>
+          {card.budget ? (
+            <>
+              <strong className='text-sm text-foreground'>
+                {card.budgetLabel}
+              </strong>
+              <div className='mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/8'>
+                <div
+                  className='h-full rounded-full bg-emerald-500 transition-all'
+                  style={{
+                    width: `${Math.min(
                       100,
-                  )}%`,
-                }}
-              />
-            </div>
-          </>
-        ) : (
-          <strong className='text-sm text-muted-foreground'>—</strong>
-        )}
-      </div>
-    </div>
-  </Link>
+                      ((card.totalSpendMinor ?? 0) /
+                        card.budget.totalLimitMinor) *
+                        100,
+                    )}%`,
+                  }}
+                />
+              </div>
+            </>
+          ) : (
+            <strong className='text-sm text-muted-foreground'>—</strong>
+          )}
+        </div>
+      </CardContent>
+    </Link>
+  </Card>
 )
 
 export const HouseholdPreviewCarousel = () => {

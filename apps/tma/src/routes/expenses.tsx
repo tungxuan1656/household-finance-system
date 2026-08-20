@@ -6,7 +6,12 @@ import { ExpenseSummaryCard, ExpenseTimeline } from '@/components/finance'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { FilterIcon, PlusIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import {
   applyExpensesRouteState,
   countActiveExpenseListFilters,
@@ -93,9 +98,11 @@ export const ExpensesPage = () => {
   if (expensesQuery.isLoading || referenceCategoriesQuery.isLoading) {
     return (
       <TmaPageShell title={t('expenses.title')}>
-        <Card className='p-4'>
-          <CardTitle>{t('expenses.loadingTitle')}</CardTitle>
-          <CardDescription>{t('expenses.loadingDesc')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('expenses.loadingTitle')}</CardTitle>
+            <CardDescription>{t('expenses.loadingDesc')}</CardDescription>
+          </CardHeader>
         </Card>
         <ExpensesAddFab />
       </TmaPageShell>
@@ -132,9 +139,11 @@ export const ExpensesPage = () => {
       </div>
 
       {expenses.length === 0 ? (
-        <Card className='p-4'>
-          <CardTitle>{t('expenses.emptyTitle')}</CardTitle>
-          <CardDescription>{t('expenses.emptyDesc')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('expenses.emptyTitle')}</CardTitle>
+            <CardDescription>{t('expenses.emptyDesc')}</CardDescription>
+          </CardHeader>
         </Card>
       ) : (
         <>

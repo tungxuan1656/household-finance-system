@@ -4,14 +4,20 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { DatePicker } from '@/components/shared/date-picker'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { CoinIcon, NoteIcon, SunIcon } from '@/components/shared/tma-icons'
 import {
   TmaCategoryIconBadge,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import { buttonVariants } from '@/components/ui/button'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { getSourceOptions } from '@/features/expenses/presentation'
@@ -71,16 +77,20 @@ export const AddExpenseDetailsPage = () => {
           eyebrow={t('expenses.add.step', { current: '2', total: '3' })}
           title={t('expenses.add.previousStepMissing')}
         />
-        <Card className='grid gap-3 p-4'>
-          <CardTitle>{t('expenses.add.emptyTitle')}</CardTitle>
-          <CardDescription>
-            {t('expenses.add.previousStepMissingDesc')}
-          </CardDescription>
-          <Link
-            className={buttonVariants({ className: 'justify-self-start' })}
-            to={TMA_PATHS.expensesNewCategory}>
-            {t('expenses.add.backToStep1')}
-          </Link>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('expenses.add.emptyTitle')}</CardTitle>
+            <CardDescription>
+              {t('expenses.add.previousStepMissingDesc')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link
+              className={buttonVariants({ className: 'justify-self-start' })}
+              to={TMA_PATHS.expensesNewCategory}>
+              {t('expenses.add.backToStep1')}
+            </Link>
+          </CardContent>
         </Card>
       </TmaPageShell>
     )
@@ -88,107 +98,136 @@ export const AddExpenseDetailsPage = () => {
 
   return (
     <TmaPageShell title={t('expenses.add.title')}>
-      <Card className='mt-2 mb-3 flex items-center gap-3 p-2.5'>
-        <TmaCategoryIconBadge
-          accent={category.accent}
-          iconUrl={category.iconUrl}
-          symbol={category.symbol}
-        />
-        <div>
-          <CardTitle>{category.label}</CardTitle>
-        </div>
+      <Card>
+        <CardHeader>
+          <div className='flex items-center gap-3'>
+            <TmaCategoryIconBadge
+              accent={category.accent}
+              iconUrl={category.iconUrl}
+              symbol={category.symbol}
+            />
+            <CardTitle>{category.label}</CardTitle>
+          </div>
+        </CardHeader>
       </Card>
 
-      <DatePicker
-        fullWidth
-        aria-label={t('expenses.add.dateLabel')}
-        className='mt-1'
-        value={date.slice(0, 10)}
-        onChange={(value) => {
-          const nextDate = new Date(`${value}T12:00:00+07:00`).toISOString()
-          setDate(nextDate)
-        }}
-      />
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.add.dateLabel')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor='add-expense-date'>
+                {t('expenses.add.dateLabel')}
+              </FieldLabel>
+              <DatePicker
+                fullWidth
+                aria-label={t('expenses.add.dateLabel')}
+                id='add-expense-date'
+                value={date.slice(0, 10)}
+                onChange={(value) => {
+                  const nextDate = new Date(
+                    `${value}T12:00:00+07:00`,
+                  ).toISOString()
+                  setDate(nextDate)
+                }}
+              />
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
-      <section className='mt-6 grid gap-1'>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
-          <CoinIcon className='mt-1 size-6' />
-          <span>{t('expenses.edit.fieldAmount')}</span>
-        </div>
-        <label className='flex items-end justify-between gap-2 rounded-3xl bg-white p-4'>
-          <Input
-            ref={amountInputRef}
-            autoFocus={true}
-            className='h-auto min-h-0 border-0 bg-transparent px-0 py-0 text-right font-mono text-3xl leading-none font-semibold text-foreground outline-none focus-visible:ring-0'
-            inputMode='numeric'
-            placeholder='0'
-            type='text'
-            value={amountInput}
-            onChange={(event) => {
-              setAmountInput(formatAmountInput(event.target.value))
-            }}
-          />
-          <span className='font-mono text-3xl font-semibold text-foreground/80'>
-            .000
-          </span>
-          <span className='text-xs font-semibold text-muted-foreground'>
-            {currencyDisplaySymbol('VND')}
-          </span>
-        </label>
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.edit.fieldAmount')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor='add-expense-amount'>
+                {t('expenses.edit.fieldAmount')}
+              </FieldLabel>
+              <div className='flex items-end gap-2'>
+                <Input
+                  ref={amountInputRef}
+                  autoFocus={true}
+                  className='text-right font-mono text-3xl font-semibold'
+                  id='add-expense-amount'
+                  inputMode='numeric'
+                  placeholder='0'
+                  type='text'
+                  value={amountInput}
+                  onChange={(event) => {
+                    setAmountInput(formatAmountInput(event.target.value))
+                  }}
+                />
+                <span className='font-mono text-3xl font-semibold text-foreground/80'>
+                  .000
+                </span>
+                <span className='text-xs font-semibold text-muted-foreground'>
+                  {currencyDisplaySymbol('VND')}
+                </span>
+              </div>
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
-      <section className='mt-6 grid gap-1'>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
-          <NoteIcon className='size-6' />
-          <span>{t('expenses.add.nameLabel')}</span>
-        </div>
-        <div className='rounded-3xl bg-white p-5'>
-          <Input
-            className='h-auto min-h-0 border-0 bg-transparent px-0 py-0 text-base font-medium text-foreground outline-none focus-visible:ring-0'
-            placeholder={t('expenses.add.namePlaceholder')}
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            onKeyDown={(event) => {
-              if (
-                event.key === 'Enter' &&
-                !event.shiftKey &&
-                !event.nativeEvent.isComposing
-              ) {
-                event.preventDefault()
-                handleContinue()
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.add.nameLabel')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor='add-expense-title'>
+                {t('expenses.add.nameLabel')}
+              </FieldLabel>
+              <Input
+                id='add-expense-title'
+                placeholder={t('expenses.add.namePlaceholder')}
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                onKeyDown={(event) => {
+                  if (
+                    event.key === 'Enter' &&
+                    !event.shiftKey &&
+                    !event.nativeEvent.isComposing
+                  ) {
+                    event.preventDefault()
+                    handleContinue()
+                  }
+                }}
+              />
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.add.source')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ToggleGroup
+            className='grid w-full grid-cols-3 gap-2'
+            value={sourceId ? [sourceId] : []}
+            onValueChange={(values) => {
+              const value = values[0]
+              if (value) {
+                selection()
+                setSourceId(value as SourceKey)
               }
-            }}
-          />
-        </div>
-      </section>
-
-      <section className='mt-6'>
-        <div className='inline-flex items-center gap-2 text-sm font-bold text-muted-foreground'>
-          <SunIcon className='size-6' />
-          <span>{t('expenses.add.source')}</span>
-        </div>
-        <ToggleGroup
-          className='grid w-full grid-cols-3 gap-2.5'
-          spacing={0}
-          value={sourceId ? [sourceId] : []}
-          onValueChange={(values) => {
-            const value = values[0]
-            if (value) {
-              selection()
-              setSourceId(value as SourceKey)
-            }
-          }}>
-          {getSourceOptions(t).map((source) => (
-            <ToggleGroupItem
-              key={source.id}
-              className='min-h-12 rounded-2xl border-transparent bg-card p-2.5 text-sm shadow-sm data-[state=on]:ring-2 data-[state=on]:ring-blue-300'
-              type='button'
-              value={source.id}>
-              <span className='font-semibold'>{source.label}</span>
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </section>
+            }}>
+            {getSourceOptions(t).map((source) => (
+              <ToggleGroupItem key={source.id} type='button' value={source.id}>
+                {source.label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </CardContent>
+      </Card>
 
       <TmaHapticButton
         className='mt-5 mb-2 w-full'

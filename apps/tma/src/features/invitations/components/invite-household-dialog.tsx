@@ -2,18 +2,16 @@ import { shareURL } from '@tma.js/sdk'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  NativePicker,
-  type NativePickerOption,
-} from '@/components/shared/native-picker'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import {
   Card,
   CardContent,
   CardDescription,
+  CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useCreateInvitationMutation } from '@/features/invitations/api/invitation'
 import type {
   InvitationRoleDTO,
@@ -56,15 +54,15 @@ export const InviteHouseholdDialog = ({
   const [inviteLink, setInviteLink] = useState<string | null>(null)
   const createMutation = useCreateInvitationMutation()
 
-  const roleOptions: NativePickerOption[] = [
-    { label: t('invitations.roleMember'), value: 'member' },
-    { label: t('invitations.roleAdmin'), value: 'admin' },
+  const roleOptions = [
+    { label: t('invitations.roleMember'), value: 'member' as const },
+    { label: t('invitations.roleAdmin'), value: 'admin' as const },
   ]
 
-  const ttlOptions: NativePickerOption[] = [
-    { label: t('invitations.ttl24h'), value: '24' },
-    { label: t('invitations.ttl72h'), value: '72' },
-    { label: t('invitations.ttl7d'), value: '168' },
+  const ttlOptions = [
+    { label: t('invitations.ttl24h'), value: '24' as const },
+    { label: t('invitations.ttl72h'), value: '72' as const },
+    { label: t('invitations.ttl7d'), value: '168' as const },
   ]
 
   const handleCreate = async () => {
@@ -108,47 +106,65 @@ export const InviteHouseholdDialog = ({
   }
 
   return (
-    <Card className='mt-3 p-4'>
-      <CardTitle>{t('invitations.inviteTitle')}</CardTitle>
-      <CardDescription>
-        {t('invitations.inviteDesc', { householdName })}
-      </CardDescription>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('invitations.inviteTitle')}</CardTitle>
+        <CardDescription>
+          {t('invitations.inviteDesc', { householdName })}
+        </CardDescription>
+      </CardHeader>
 
-      <CardContent className='mt-3 px-0'>
+      <CardContent className='grid gap-3'>
         {!inviteLink ? (
           <>
-            <Field>
-              <FieldLabel htmlFor='invitation-role-picker'>
-                {t('invitations.roleLabel')}
-              </FieldLabel>
-              <NativePicker
-                aria-label={t('invitations.roleLabel')}
-                id='invitation-role-picker'
-                options={roleOptions}
-                value={role}
-                onChange={(v) => {
-                  if (isInvitationRole(v)) setRole(v)
-                }}
-              />
-              {role === 'admin' ? (
-                <p className='mt-1 text-xs font-semibold text-amber-700'>
-                  {t('invitations.adminRoleWarning')}
-                </p>
-              ) : null}
-            </Field>
+            <FieldGroup>
+              <Field>
+                <FieldLabel id='invitation-role-label'>
+                  {t('invitations.roleLabel')}
+                </FieldLabel>
+                <ToggleGroup
+                  aria-labelledby='invitation-role-label'
+                  className='flex flex-wrap gap-2'
+                  id='invitation-role-picker'
+                  value={[role]}
+                  onValueChange={(values) => {
+                    const v = values[0]
+                    if (v && isInvitationRole(v)) setRole(v)
+                  }}>
+                  {roleOptions.map((option) => (
+                    <ToggleGroupItem key={option.value} value={option.value}>
+                      {option.label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+                {role === 'admin' ? (
+                  <p className='mt-1 text-xs font-semibold text-amber-700'>
+                    {t('invitations.adminRoleWarning')}
+                  </p>
+                ) : null}
+              </Field>
 
-            <Field className='mt-3'>
-              <FieldLabel htmlFor='invitation-ttl-picker'>
-                {t('invitations.ttlLabel')}
-              </FieldLabel>
-              <NativePicker
-                aria-label={t('invitations.ttlLabel')}
-                id='invitation-ttl-picker'
-                options={ttlOptions}
-                value={String(ttlHours)}
-                onChange={(v) => setTtlHours(parseInvitationTtlHours(v))}
-              />
-            </Field>
+              <Field>
+                <FieldLabel id='invitation-ttl-label'>
+                  {t('invitations.ttlLabel')}
+                </FieldLabel>
+                <ToggleGroup
+                  aria-labelledby='invitation-ttl-label'
+                  className='flex flex-wrap gap-2'
+                  id='invitation-ttl-picker'
+                  value={[String(ttlHours)]}
+                  onValueChange={(values) => {
+                    const v = values[0]
+                    if (v) setTtlHours(parseInvitationTtlHours(v))
+                  }}>
+                  {ttlOptions.map((option) => (
+                    <ToggleGroupItem key={option.value} value={option.value}>
+                      {option.label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </Field>
+            </FieldGroup>
 
             <div className='mt-4 flex gap-2'>
               <TmaHapticButton
@@ -171,14 +187,14 @@ export const InviteHouseholdDialog = ({
           </>
         ) : (
           <>
-            <p className='m-0 text-sm text-foreground'>
-              {t('invitations.linkReady')}
-            </p>
-
-            <div className='mt-2 rounded-2xl border border-border bg-border p-3'>
-              <p className='m-0 line-clamp-1 font-mono text-xs break-all text-muted-foreground'>
-                {inviteLink}
+            <div className='grid gap-2'>
+              <p className='m-0 text-sm text-foreground'>
+                {t('invitations.linkReady')}
               </p>
+
+              <CardDescription className='font-mono text-xs break-all'>
+                {inviteLink}
+              </CardDescription>
             </div>
 
             <div className='mt-4 flex gap-2'>

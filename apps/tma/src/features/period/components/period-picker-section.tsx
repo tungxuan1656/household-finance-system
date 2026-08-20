@@ -1,10 +1,15 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DatePicker } from '@/components/shared/date-picker'
-import { CalendarIcon } from '@/components/shared/tma-icons'
 import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   createCustomPeriodSelection,
@@ -19,70 +24,6 @@ import {
   type ReportingPeriodPreset,
 } from '@/lib/period'
 import { selection } from '@/lib/telegram/haptics'
-import { cn } from '@/lib/utils'
-
-const PeriodTimelineDateButton = ({
-  inputLabel,
-  label,
-  onChange,
-  inputValue,
-}: {
-  inputLabel: string
-  label: string
-  onChange: (value: string) => void
-  inputValue: string
-}) => (
-  <DatePicker
-    fullWidth
-    aria-label={inputLabel}
-    placeholder={label}
-    value={inputValue}
-    onChange={onChange}
-  />
-)
-
-const PeriodRangeTimeline = ({
-  candidate,
-  onFromChange,
-  onToChange,
-  t,
-}: {
-  candidate: PeriodSelection
-  onFromChange: (value: string) => void
-  onToChange: (value: string) => void
-  t: (key: string) => string
-}) => (
-  <div className='grid grid-cols-[1fr_auto_1fr] items-stretch gap-2.5'>
-    <PeriodTimelineDateButton
-      inputLabel={t('period.fieldFromPlaceholder')}
-      inputValue={formatPeriodDateInputValue(candidate.dateFrom)}
-      label={t('period.fieldFrom')}
-      onChange={onFromChange}
-    />
-    <div
-      aria-hidden='true'
-      className='grid place-items-center text-muted-foreground'>
-      <svg
-        fill='none'
-        height='14'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='2'
-        viewBox='0 0 24 24'
-        width='14'>
-        <path d='M5 12h14' />
-        <path d='m13 6 6 6-6 6' />
-      </svg>
-    </div>
-    <PeriodTimelineDateButton
-      inputLabel={t('period.fieldToPlaceholder')}
-      inputValue={formatPeriodDateInputValue(candidate.dateTo - 1)}
-      label={t('period.fieldTo')}
-      onChange={onToChange}
-    />
-  </div>
-)
 
 export interface PeriodPickerSectionProps {
   value: PeriodSelection | null
@@ -101,6 +42,14 @@ export const PeriodPickerSection = ({
       dateTo: 0,
     },
   )
+
+  useEffect(() => {
+    if (value) {
+      setCandidate(value)
+    } else {
+      setCandidate({ granularity: 'custom', dateFrom: 0, dateTo: 0 })
+    }
+  }, [value])
 
   const activePreset = useMemo(
     () =>
@@ -147,7 +96,6 @@ export const PeriodPickerSection = ({
       </h2>
       <ToggleGroup
         className='flex w-full flex-wrap gap-2'
-        spacing={0}
         value={activePreset ? [activePreset] : []}
         onValueChange={(values) => {
           const value = values[0]
@@ -159,45 +107,75 @@ export const PeriodPickerSection = ({
           }
         }}>
         {REPORTING_PERIOD_PRESETS.map((preset) => (
-          <ToggleGroupItem
-            key={preset}
-            className='min-h-10 rounded-full border border-black/6 bg-white/75 pr-3 pl-2 text-sm shadow-sm data-[state=on]:border-primary data-[state=on]:bg-primary/12 data-[state=on]:text-primary'
-            type='button'
-            value={preset}>
-            <CalendarIcon
-              aria-hidden='true'
-              className='size-4 text-neutral-700'
-            />
+          <ToggleGroupItem key={preset} type='button' value={preset}>
             {getReportingPeriodPresetLabel(preset, t)}
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
 
-      <Card
-        className={cn(
-          'mt-3 grid gap-3 p-4',
-          activePreset
-            ? 'border-primary/30 bg-primary/[0.07]'
-            : 'border-amber-400/35 bg-[#fff9e6]',
-        )}>
-        <div className='flex flex-wrap items-center gap-2'>
-          <Badge variant={activePreset ? 'default' : 'secondary'}>
-            {activePreset
-              ? getReportingPeriodPresetLabel(activePreset, t)
-              : t('period.sectionCustom')}
-          </Badge>
+      <Card className='mt-3'>
+        <CardHeader>
+          <div className='flex flex-wrap items-center gap-2'>
+            <Badge variant={activePreset ? 'default' : 'secondary'}>
+              {activePreset
+                ? getReportingPeriodPresetLabel(activePreset, t)
+                : t('period.sectionCustom')}
+            </Badge>
+          </div>
           {!activePreset && candidate.dateFrom > 0 && candidate.dateTo > 0 && (
-            <span className='text-xs text-muted-foreground'>
+            <CardDescription>
               {formatPeriodSelectionRangeLabel(candidate)}
-            </span>
+            </CardDescription>
           )}
-        </div>
-        <PeriodRangeTimeline
-          candidate={candidate}
-          t={t}
-          onFromChange={handleFromChange}
-          onToChange={handleToChange}
-        />
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <div className='grid grid-cols-[1fr_auto_1fr] items-stretch gap-2.5'>
+              <Field>
+                <FieldLabel htmlFor='period-from-picker'>
+                  {t('period.fieldFrom')}
+                </FieldLabel>
+                <DatePicker
+                  fullWidth
+                  aria-label={t('period.fieldFromPlaceholder')}
+                  id='period-from-picker'
+                  placeholder={t('period.fieldFrom')}
+                  value={formatPeriodDateInputValue(candidate.dateFrom)}
+                  onChange={handleFromChange}
+                />
+              </Field>
+              <div
+                aria-hidden='true'
+                className='grid place-items-center pt-6 text-muted-foreground'>
+                <svg
+                  fill='none'
+                  height='14'
+                  stroke='currentColor'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth='2'
+                  viewBox='0 0 24 24'
+                  width='14'>
+                  <path d='M5 12h14' />
+                  <path d='m13 6 6 6-6 6' />
+                </svg>
+              </div>
+              <Field>
+                <FieldLabel htmlFor='period-to-picker'>
+                  {t('period.fieldTo')}
+                </FieldLabel>
+                <DatePicker
+                  fullWidth
+                  aria-label={t('period.fieldToPlaceholder')}
+                  id='period-to-picker'
+                  placeholder={t('period.fieldTo')}
+                  value={formatPeriodDateInputValue(candidate.dateTo - 1)}
+                  onChange={handleToChange}
+                />
+              </Field>
+            </div>
+          </FieldGroup>
+        </CardContent>
       </Card>
     </section>
   )

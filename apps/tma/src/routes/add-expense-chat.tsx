@@ -4,7 +4,14 @@ import { useNavigate } from 'react-router-dom'
 
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Textarea } from '@/components/ui/textarea'
 import { useParseExpensesMutation } from '@/features/expenses/import-api'
 import { MAX_PARSE_TEXT_LENGTH } from '@/features/expenses/import-api'
@@ -55,32 +62,51 @@ export const AddExpenseChatPage = () => {
 
   return (
     <TmaPageShell title={t('expenses.add.aiImportTitle')}>
-      <Card className='mb-4 flex flex-col gap-1 p-4'>
-        <CardTitle>{t('expenses.add.aiImportDesc')}</CardTitle>
-        <CardDescription>{t('expenses.add.aiImportHint')}</CardDescription>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.add.aiImportDesc')}</CardTitle>
+          <CardDescription>{t('expenses.add.aiImportHint')}</CardDescription>
+        </CardHeader>
       </Card>
 
-      <Textarea
-        aria-label={t('expenses.add.aiInputLabel')}
-        className='max-h-[60vh] min-h-90'
-        disabled={parseMutation.isPending}
-        maxLength={MAX_PARSE_TEXT_LENGTH}
-        placeholder={t('expenses.add.aiInputPlaceholder')}
-        value={rawText}
-        onChange={(e) => setRawText(e.target.value)}
-      />
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.add.aiInputLabel')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor='add-expense-chat-input'>
+                {t('expenses.add.aiInputLabel')}
+              </FieldLabel>
+              <Textarea
+                aria-label={t('expenses.add.aiInputLabel')}
+                className='max-h-[60vh] min-h-90'
+                disabled={parseMutation.isPending}
+                id='add-expense-chat-input'
+                maxLength={MAX_PARSE_TEXT_LENGTH}
+                placeholder={t('expenses.add.aiInputPlaceholder')}
+                value={rawText}
+                onChange={(e) => setRawText(e.target.value)}
+              />
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
       {error ? (
-        <Card className='mt-3 border-destructive/20 bg-destructive/10 p-4'>
-          <CardDescription className='text-destructive'>
-            {error}
-          </CardDescription>
+        <Card>
+          <CardContent>
+            <CardDescription>{error}</CardDescription>
+          </CardContent>
         </Card>
       ) : null}
 
       {parseMutation.isPending ? (
-        <Card className='mt-3 p-4'>
-          <CardDescription>{t('expenses.add.parsing')}</CardDescription>
+        <Card>
+          <CardContent>
+            <CardDescription>{t('expenses.add.parsing')}</CardDescription>
+          </CardContent>
         </Card>
       ) : null}
 

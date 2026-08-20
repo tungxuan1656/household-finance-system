@@ -6,7 +6,13 @@ import { RecentExpenses } from '@/components/finance'
 import { DataState } from '@/components/shared/data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
@@ -80,9 +86,13 @@ export const GroupDetailPage = () => {
   if (!id) {
     return (
       <TmaPageShell title={t('groups.detail.title')}>
-        <Card className='p-4'>
-          <CardTitle>{t('groups.detail.invalidIdTitle')}</CardTitle>
-          <CardDescription>{t('groups.detail.invalidIdDesc')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('groups.detail.invalidIdTitle')}</CardTitle>
+            <CardDescription>
+              {t('groups.detail.invalidIdDesc')}
+            </CardDescription>
+          </CardHeader>
         </Card>
       </TmaPageShell>
     )
@@ -91,18 +101,17 @@ export const GroupDetailPage = () => {
   return (
     <TmaPageShell title={t('groups.detail.title')}>
       {feedback ? (
-        <Card
-          className={
-            feedback.tone === 'error'
-              ? 'mb-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'
-              : 'mb-3 border-emerald-500/20 bg-emerald-500/10 p-4'
-          }>
-          <CardDescription
-            className={
-              feedback.tone === 'error' ? 'text-[#d93838]' : 'text-[#2f9b44]'
-            }>
-            {feedback.message}
-          </CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription
+              className={
+                feedback.tone === 'error'
+                  ? 'text-destructive'
+                  : 'text-emerald-600'
+              }>
+              {feedback.message}
+            </CardDescription>
+          </CardHeader>
         </Card>
       ) : null}
 
@@ -119,34 +128,33 @@ export const GroupDetailPage = () => {
         retryAction={groupQuery.refetch}>
         {group ? (
           <>
-            <Card className='grid gap-4 p-5'>
-              <div className='flex items-start justify-between gap-3'>
-                <div className='min-w-0'>
-                  <span className='text-xs font-medium text-muted-foreground'>
-                    {contextLabel}
-                  </span>
-                  <h1 className='m-0 mt-1 text-2xl leading-tight font-extrabold text-foreground'>
-                    {group.name}
-                  </h1>
-                  {group.description ? (
-                    <CardDescription className='mt-2'>
-                      {group.description}
-                    </CardDescription>
-                  ) : null}
+            <Card>
+              <CardHeader>
+                <div className='flex items-start justify-between gap-3'>
+                  <div className='min-w-0'>
+                    <CardDescription>{contextLabel}</CardDescription>
+                    <CardTitle className='text-2xl leading-tight font-extrabold'>
+                      {group.name}
+                    </CardTitle>
+                    {group.description ? (
+                      <CardDescription className='mt-2'>
+                        {group.description}
+                      </CardDescription>
+                    ) : null}
+                  </div>
+                  <div className='flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+                    <GroupGlyph />
+                  </div>
                 </div>
-                <div className='flex size-10 items-center justify-center rounded-full bg-[#fff3e8] text-[#ff8a3d]'>
-                  <GroupGlyph />
-                </div>
-              </div>
-
-              <div className='flex flex-wrap gap-2'>
+              </CardHeader>
+              <CardContent className='flex flex-wrap gap-2'>
                 <Badge variant='secondary'>
                   {getGroupStatusLabel(group.status, t)}
                 </Badge>
                 <Badge variant='outline'>
                   {getGroupDateRangeLabel(group, t)}
                 </Badge>
-              </div>
+              </CardContent>
             </Card>
 
             <section className='grid gap-3'>
@@ -161,70 +169,72 @@ export const GroupDetailPage = () => {
                 loadingDescription={t('groups.detail.overviewLoadingDesc')}
                 loadingTitle={t('groups.detail.overviewLoadingTitle')}
                 retryAction={summaryQuery.refetch}>
-                <Card className='grid gap-4 p-4'>
-                  <div className='grid grid-cols-2 gap-2.5'>
-                    <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <span className='text-xs font-medium text-muted-foreground'>
-                        {t('groups.detail.statTotalSpent')}
-                      </span>
-                      <span className='text-base font-extrabold text-foreground'>
-                        {totalSpendMinor != null
-                          ? formatCurrencyMinor(totalSpendMinor, 'VND')
-                          : '-'}
-                      </span>
-                    </div>
-                    <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <span className='text-xs font-medium text-muted-foreground'>
-                        {t('groups.detail.statExpenseCount')}
-                      </span>
-                      <strong className='text-base text-foreground'>
-                        {summary?.expenseCount ?? 0}
-                      </strong>
-                    </div>
-                    <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <span className='text-xs font-medium text-muted-foreground'>
-                        {t('groups.detail.statBudget')}
-                      </span>
-                      <strong className='text-sm text-foreground'>
-                        {getGroupBudgetLabel(group, t)}
-                      </strong>
-                    </div>
-                    <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-                      <span className='text-xs font-medium text-muted-foreground'>
-                        {t('groups.detail.statRemaining')}
-                      </span>
-                      <span
-                        className={
-                          summary?.budgetRemainingMinor != null &&
-                          summary.budgetRemainingMinor < 0
-                            ? 'text-sm font-bold text-[#d93838]'
-                            : 'text-sm font-bold'
-                        }>
-                        {formatOptionalGroupMoney(
-                          summary?.budgetRemainingMinor ?? null,
-                        )}
-                      </span>
-                    </div>
-                  </div>
-
-                  {progress ? (
-                    <div className='grid gap-1.5'>
-                      <div className='flex items-center justify-between text-sm text-muted-foreground'>
-                        <span>{t('groups.detail.statProgress')}</span>
-                        <span>{progress.percentUsed}%</span>
+                <Card>
+                  <CardContent className='grid gap-4'>
+                    <div className='grid grid-cols-2 gap-2'>
+                      <div className='grid gap-1'>
+                        <CardDescription>
+                          {t('groups.detail.statTotalSpent')}
+                        </CardDescription>
+                        <span className='text-base font-extrabold text-foreground'>
+                          {totalSpendMinor != null
+                            ? formatCurrencyMinor(totalSpendMinor, 'VND')
+                            : '-'}
+                        </span>
                       </div>
-                      <div className='h-2 overflow-hidden rounded-full bg-black/6'>
-                        <div
+                      <div className='grid gap-1'>
+                        <CardDescription>
+                          {t('groups.detail.statExpenseCount')}
+                        </CardDescription>
+                        <p className='text-base font-semibold text-foreground'>
+                          {summary?.expenseCount ?? 0}
+                        </p>
+                      </div>
+                      <div className='grid gap-1'>
+                        <CardDescription>
+                          {t('groups.detail.statBudget')}
+                        </CardDescription>
+                        <p className='text-sm font-semibold text-foreground'>
+                          {getGroupBudgetLabel(group, t)}
+                        </p>
+                      </div>
+                      <div className='grid gap-1'>
+                        <CardDescription>
+                          {t('groups.detail.statRemaining')}
+                        </CardDescription>
+                        <span
                           className={
-                            progress.isOverBudget
-                              ? 'h-full rounded-full bg-[#d93838]'
-                              : 'h-full rounded-full bg-primary'
-                          }
-                          style={{ width: `${progress.widthPercent}%` }}
-                        />
+                            summary?.budgetRemainingMinor != null &&
+                            summary.budgetRemainingMinor < 0
+                              ? 'text-sm font-bold text-destructive'
+                              : 'text-sm font-bold text-foreground'
+                          }>
+                          {formatOptionalGroupMoney(
+                            summary?.budgetRemainingMinor ?? null,
+                          )}
+                        </span>
                       </div>
                     </div>
-                  ) : null}
+
+                    {progress ? (
+                      <div className='grid gap-1'>
+                        <div className='flex items-center justify-between text-sm text-muted-foreground'>
+                          <span>{t('groups.detail.statProgress')}</span>
+                          <span>{progress.percentUsed}%</span>
+                        </div>
+                        <div className='h-2 overflow-hidden rounded-full bg-black/6'>
+                          <div
+                            className={
+                              progress.isOverBudget
+                                ? 'h-full rounded-full bg-destructive'
+                                : 'h-full rounded-full bg-primary'
+                            }
+                            style={{ width: `${progress.widthPercent}%` }}
+                          />
+                        </div>
+                      </div>
+                    ) : null}
+                  </CardContent>
                 </Card>
               </DataState>
             </section>
@@ -234,27 +244,29 @@ export const GroupDetailPage = () => {
                 <h2 className='m-0 text-base font-bold'>
                   {t('groups.detail.sectionMembers')}
                 </h2>
-                <Card className='grid gap-2 p-4'>
-                  {summary.memberContributions.map((member) => (
-                    <article
-                      key={member.userId}
-                      className='flex items-center justify-between gap-3 rounded-[18px] bg-black/4 p-3'>
-                      <div className='min-w-0'>
-                        <h3 className='m-0 truncate text-sm font-bold text-foreground'>
-                          {member.displayName ??
-                            t('groups.detail.memberFallback')}
-                        </h3>
-                        <CardDescription>
-                          {t('statistics.expenseCount', {
-                            count: member.expenseCount,
-                          })}
-                        </CardDescription>
-                      </div>
-                      <span className='shrink-0 text-sm font-bold text-foreground'>
-                        {formatCurrencyMinor(member.totalSpendMinor, 'VND')}
-                      </span>
-                    </article>
-                  ))}
+                <Card>
+                  <CardContent className='grid gap-2'>
+                    {summary.memberContributions.map((member) => (
+                      <article
+                        key={member.userId}
+                        className='flex items-center justify-between gap-3'>
+                        <div className='min-w-0'>
+                          <h3 className='m-0 truncate text-sm font-bold text-foreground'>
+                            {member.displayName ??
+                              t('groups.detail.memberFallback')}
+                          </h3>
+                          <CardDescription>
+                            {t('statistics.expenseCount', {
+                              count: member.expenseCount,
+                            })}
+                          </CardDescription>
+                        </div>
+                        <span className='shrink-0 text-sm font-bold text-foreground'>
+                          {formatCurrencyMinor(member.totalSpendMinor, 'VND')}
+                        </span>
+                      </article>
+                    ))}
+                  </CardContent>
                 </Card>
               </section>
             ) : null}

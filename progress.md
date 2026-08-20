@@ -131,3 +131,59 @@
 **Evidence**: The replacement plan covers pinned CLI provenance, immutable generated output, external behavior wrappers, consumer migration groups, import/zero-reference gates, rollback points, verification, and real Telegram QA. No code, config, or generated files were changed in this scope reset.
 **Blockers**: Implementation and real Telegram iOS/Android QA remain pending under the replacement plan.
 **Next**: Execute Task 1 safe cleanup, then initialize/regenerate the exact preset through the pinned shadcn CLI.
+
+## 2026-08-20 - feat-128
+
+**State**: active
+**Done**: Completed Phase 2 Task 12 root/home/analytics Card recomposition and fix round. Corrected preset Card spacing, custom-day range mapping, shortcut title semantics, empty-card gaps, timeline headings, duplicate member display, and CTA haptic scope.
+**Evidence**: `pnpm --filter tma test -- src/test/home-presentation.test.ts src/test/expense-presentation.test.ts src/test/expense-list-api.test.ts` passed with 31 files and 162 tests; TMA typecheck passed; `git diff --check` passed; bridge and legacy-import audit was clean.
+**Blockers**: Tasks 13–18 and real Telegram iOS/Android QA remain pending; no Task 12 blocker.
+**Next**: Dispatch Task 13 for expense-filter and period-selection recomposition.
+
+## 2026-08-20 - feat-128
+
+**State**: active
+**Done**: Completed Phase 2 Task 13 filter and period recomposition. Added semantic Cards and Fields, preserved ToggleGroup and native picker behavior, synchronized controlled period state, and removed generic ToggleGroup spacing overrides.
+**Evidence**: Focused TMA verification passed with 31 files and 162 tests; typecheck, diff check, prohibited-spacing audit, and bridge/legacy-import audit passed. Three Oracle sessions errored without output; fallback independent review found stale controlled state and `spacing={0}`, both fixed and reverified.
+**Blockers**: Tasks 14–18 and real Telegram iOS/Android QA remain pending; no Task 13 implementation blocker.
+**Next**: Dispatch Task 14 for add-expense and add-income form recomposition.
+
+## 2026-08-20 - feat-128
+
+**State**: active
+**Done**: Completed Phase 2 Task 14 add-expense and add-income form recomposition. Added semantic Cards/Fields and linked labels, preserved source/category controls, route/store/mutation behavior, and removed the incorrect toggle state from category commit buttons.
+**Evidence**: Focused TMA verification passed with 31 files and 162 tests; typecheck, diff check, category commit-action aria audit, and bridge/legacy-import audit passed. Oracle session errored; fallback independent review found one accessibility issue, which was fixed and reverified.
+**Blockers**: Tasks 15–18 and real Telegram iOS/Android QA remain pending; no Task 14 implementation blocker.
+**Next**: Dispatch Task 15 for edit, import, and context form recomposition.
+
+## 2026-08-20 - feat-128
+
+**State**: active
+**Done**: Completed Phase 2 Task 15 edit, import, and context recomposition. Converted raw edit controls, grouped Cards and Fields, preserved native pickers and mutation flows, then fixed source ToggleGroup semantics, inter-card spacing, and import status presentation.
+**Evidence**: Focused TMA verification passed with 31 files and 162 tests; typecheck, diff check, override audit, and bridge/legacy-import audit passed. Oracle session errored; fallback independent review found four design issues, all fixed and reverified.
+**Blockers**: Tasks 16–18 and real Telegram iOS/Android QA remain pending; no Task 15 implementation blocker.
+**Next**: Dispatch Task 16 for household, group, budget, and invitation recomposition.
+
+## 2026-08-20 - feat-128
+
+**State**: active
+**Done**: Completed Phase 2 Task 16 household, group, budget, and invitation recomposition. Added semantic Cards/Fields, ToggleGroups for fixed scope/invitation choices, filtered-budget empty handling, avatar URL cleanup, and preset group glyph styling.
+**Evidence**: Feature verification passed with 31 files and 162 tests; typecheck, diff check, Task 16 fix audit, and bridge/legacy-import audit passed. Oracle session errored; fallback review found four issues, and literal source verification confirmed all four fixes.
+**Blockers**: Tasks 17–18 and real Telegram iOS/Android QA remain pending; no Task 16 implementation blocker.
+**Next**: Dispatch Task 17 for remaining raw controls, shell states, headers, Cards, and color audit.
+
+## 2026-08-20 - feat-128
+
+**State**: active
+**Done**: Completed Phase 2 Task 17 remaining-control and shell audit. Recomposed DataState loading/empty/error states, route errors, fatal launch, and not-found surfaces with semantic Card/Empty/Skeleton output; preserved platform-owned picker, haptic, shell, rail, and refresh code.
+**Evidence**: Focused TMA verification passed with 31 files and 162 tests; typecheck, diff check, bridge/legacy-import audit passed; raw matches were classified as intentional hidden native controls or shell glass/spinner chrome. Fallback independent review found no issues.
+**Blockers**: Task 18 automated verification and real Telegram iOS/Android QA remain pending; no Task 17 implementation blocker.
+**Next**: Run Task 18 complete automated verification and prepare the real-device QA matrix.
+
+## 2026-08-20 - feat-128
+
+**State**: active
+**Done**: Completed Task 18 automated verification. TMA lint passed with 0 errors and 15 existing `no-console` warnings; typecheck, all 31 test files/162 tests, build, `./init.sh`, diff check, provenance/config, generated-file, bridge, legacy-import, token, safe-area, and MainButton/BottomButton audits passed.
+**Evidence**: `pnpm --filter tma lint`, `typecheck`, `test`, `build`, `./init.sh`, and `git diff --check` passed on the final tree. Build retained the accepted static-route chunk advisories. Worker build was skipped by declared configuration.
+**Blockers**: Real Telegram iOS and Android QA in host light/dark settings is not executable in this environment and remains the only acceptance blocker.
+**Next**: Run the real-device matrix and attach pass/fail evidence; then complete the feature handoff. No commit requested.

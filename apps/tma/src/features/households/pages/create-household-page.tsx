@@ -4,8 +4,14 @@ import { useNavigate } from 'react-router-dom'
 
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 
@@ -86,55 +92,61 @@ export const CreateHouseholdPage = () => {
   return (
     <TmaPageShell title={t('households.createPage.title')}>
       {feedback ? (
-        <Card
-          className={
-            feedback.tone === 'error'
-              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'
-              : 'mt-3 border-emerald-500/20 bg-emerald-500/10 p-4'
-          }>
-          <CardDescription
-            className={
-              feedback.tone === 'error' ? 'text-[#d93838]' : 'text-[#2f9b44]'
-            }>
-            {feedback.message}
-          </CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription
+              className={
+                feedback.tone === 'error'
+                  ? 'text-destructive'
+                  : 'text-emerald-600'
+              }>
+              {feedback.message}
+            </CardDescription>
+          </CardHeader>
         </Card>
       ) : null}
 
-      <Card className='mt-3 grid gap-3 p-4'>
-        <HouseholdAvatarSection
-          canEdit
-          avatarUrl={avatarUrl}
-          helperText={t('households.createPage.imageHelp')}
-          householdName={
-            normalizedName || t('households.createPage.newHousehold')
-          }
-          isBusy={isBusy}
-          title={t('households.createPage.fieldAvatar')}
-          onAvatarUploaded={handleAvatarUploaded}
-        />
+      <Card>
+        <CardContent>
+          <HouseholdAvatarSection
+            canEdit
+            avatarUrl={avatarUrl}
+            helperText={t('households.createPage.imageHelp')}
+            householdName={
+              normalizedName || t('households.createPage.newHousehold')
+            }
+            isBusy={isBusy}
+            title={t('households.createPage.fieldAvatar')}
+            onAvatarUploaded={handleAvatarUploaded}
+          />
+        </CardContent>
       </Card>
 
-      <section className='mt-6'>
-        <Card className='p-4'>
-          <form className='grid gap-3.5' onSubmit={handleCreateHousehold}>
-            <Field>
-              <FieldLabel htmlFor='create-household-name'>
-                {t('households.createPage.fieldName')}
-              </FieldLabel>
-              <Input
-                disabled={isBusy}
-                id='create-household-name'
-                maxLength={120}
-                placeholder={t('households.createPage.namePlaceholder')}
-                type='text'
-                value={draftName}
-                onChange={(event) => {
-                  setDraftName(event.target.value)
-                  setFeedback(null)
-                }}
-              />
-            </Field>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('households.createPage.fieldName')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className='grid gap-3' onSubmit={handleCreateHousehold}>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor='create-household-name'>
+                  {t('households.createPage.fieldName')}
+                </FieldLabel>
+                <Input
+                  disabled={isBusy}
+                  id='create-household-name'
+                  maxLength={120}
+                  placeholder={t('households.createPage.namePlaceholder')}
+                  type='text'
+                  value={draftName}
+                  onChange={(event) => {
+                    setDraftName(event.target.value)
+                    setFeedback(null)
+                  }}
+                />
+              </Field>
+            </FieldGroup>
 
             <div className='flex flex-wrap justify-end gap-2.5'>
               <TmaHapticButton
@@ -157,8 +169,8 @@ export const CreateHouseholdPage = () => {
               </TmaHapticButton>
             </div>
           </form>
-        </Card>
-      </section>
+        </CardContent>
+      </Card>
     </TmaPageShell>
   )
 }

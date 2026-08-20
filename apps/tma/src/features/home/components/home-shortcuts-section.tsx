@@ -73,6 +73,7 @@ export const HomeShortcutsSection = () => {
 
   return (
     <section className='mt-6'>
+      {/* The section stays a plain layout wrapper; ShortcutItem owns each Card. */}
       <div className='grid grid-cols-2 gap-2.5'>
         {shortcutItems.map((item) => (
           <ShortcutItem

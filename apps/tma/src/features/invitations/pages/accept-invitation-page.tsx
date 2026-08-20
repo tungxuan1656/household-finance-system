@@ -10,6 +10,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardHeader,
   CardTitle,
 } from '@/components/ui/card'
 import { useAuth } from '@/features/auth/auth-provider'
@@ -88,9 +89,13 @@ export const AcceptInvitationPage = () => {
   if (!token) {
     return (
       <TmaPageShell title={t('invitations.acceptTitle')}>
-        <Card className='p-4'>
-          <CardTitle>{t('invitations.invalidTokenTitle')}</CardTitle>
-          <CardDescription>{t('invitations.invalidTokenDesc')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('invitations.invalidTokenTitle')}</CardTitle>
+            <CardDescription>
+              {t('invitations.invalidTokenDesc')}
+            </CardDescription>
+          </CardHeader>
         </Card>
       </TmaPageShell>
     )
@@ -110,11 +115,13 @@ export const AcceptInvitationPage = () => {
         loadingTitle={t('invitations.loading')}
         retryAction={previewQuery.refetch}>
         {preview ? (
-          <Card className='mt-3 p-4'>
-            <CardTitle>{t('invitations.acceptTitle')}</CardTitle>
-            <CardDescription>{t('invitations.acceptDesc')}</CardDescription>
+          <Card className='mt-3'>
+            <CardHeader>
+              <CardTitle>{t('invitations.acceptTitle')}</CardTitle>
+              <CardDescription>{t('invitations.acceptDesc')}</CardDescription>
+            </CardHeader>
 
-            <CardContent className='mt-3 px-0'>
+            <CardContent>
               <dl className='grid gap-3'>
                 <div className='flex flex-col gap-1'>
                   <dt className='text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>

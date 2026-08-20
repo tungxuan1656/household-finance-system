@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription } from '@/components/ui/card'
+import { Card, CardDescription, CardHeader } from '@/components/ui/card'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { confirmImport } from '@/features/expenses/import-confirm'
 import { useImportFlowStore } from '@/features/expenses/import-store'
@@ -148,8 +148,12 @@ export const AddExpenseImportPreviewPage = () => {
   if (!hasItems) {
     return (
       <TmaPageShell title={t('expenses.add.importPreviewTitle')}>
-        <Card className='p-4'>
-          <CardDescription>{t('expenses.add.importEmptyDesc')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription>
+              {t('expenses.add.importEmptyDesc')}
+            </CardDescription>
+          </CardHeader>
         </Card>
       </TmaPageShell>
     )
@@ -158,10 +162,12 @@ export const AddExpenseImportPreviewPage = () => {
   return (
     <TmaPageShell title={t('expenses.add.importPreviewTitle')}>
       {feedback ? (
-        <Card className='mb-3 border-destructive/20 bg-destructive/10 p-4'>
-          <CardDescription className='text-destructive'>
-            {feedback}
-          </CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription className='text-destructive'>
+              {feedback}
+            </CardDescription>
+          </CardHeader>
         </Card>
       ) : null}
 

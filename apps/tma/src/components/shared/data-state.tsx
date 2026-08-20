@@ -1,7 +1,22 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '@/components/ui/empty'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
 import { TmaHapticButton } from './tma-haptic-button'
@@ -82,23 +97,63 @@ export const DataState = ({
       : branch === 'error'
         ? resolvedErrorDescription
         : resolvedEmptyDescription
-  const action =
-    customAction ??
-    (branch === 'error' && retryAction ? (
+
+  const retryActionNode =
+    branch === 'error' && retryAction ? (
       <TmaHapticButton
-        variant='ghost'
+        variant='outline'
         onClick={() => {
           void retryAction()
         }}>
         {t('dataState.retry')}
       </TmaHapticButton>
-    ) : null)
+    ) : null
+
+  const action = customAction ?? retryActionNode
+
+  if (branch === 'loading') {
+    return (
+      <Card className={cn(className)}>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          {description ? (
+            <CardDescription>{description}</CardDescription>
+          ) : null}
+        </CardHeader>
+        <CardContent>
+          <div className='grid gap-2'>
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-5/6' />
+            <Skeleton className='h-4 w-2/3' />
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (branch === 'empty') {
+    return (
+      <Empty className={cn(className)}>
+        <EmptyHeader>
+          <EmptyTitle>{title}</EmptyTitle>
+          {description ? (
+            <EmptyDescription>{description}</EmptyDescription>
+          ) : null}
+        </EmptyHeader>
+        {action ? <EmptyContent>{action}</EmptyContent> : null}
+      </Empty>
+    )
+  }
 
   return (
-    <Card className={cn('grid gap-3', className)}>
-      <CardTitle>{title}</CardTitle>
-      {description ? <CardDescription>{description}</CardDescription> : null}
-      {action ? <div className='flex justify-end'>{action}</div> : null}
+    <Card className={cn(className)}>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        {description ? <CardDescription>{description}</CardDescription> : null}
+      </CardHeader>
+      {action ? (
+        <CardFooter className='justify-end'>{action}</CardFooter>
+      ) : null}
     </Card>
   )
 }

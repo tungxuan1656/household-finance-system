@@ -6,8 +6,14 @@ import { DatePicker } from '@/components/shared/date-picker'
 import { NativePicker } from '@/components/shared/native-picker'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { getBudgetDetailPath, TMA_PATHS } from '@/lib/constants/routes'
@@ -153,78 +159,80 @@ const CreateBudgetPage = () => {
   return (
     <TmaPageShell title={t('budgets.createPage.title')}>
       {feedback ? (
-        <Card
-          className={
-            feedback.tone === 'error'
-              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90 p-4'
-              : 'mt-3 border-emerald-500/20 bg-emerald-500/10 p-4'
-          }>
-          <CardDescription
-            className={
-              feedback.tone === 'error' ? 'text-[#d93838]' : 'text-[#2f9b44]'
-            }>
-            {feedback.message}
-          </CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription
+              className={
+                feedback.tone === 'error'
+                  ? 'text-destructive'
+                  : 'text-emerald-600'
+              }>
+              {feedback.message}
+            </CardDescription>
+          </CardHeader>
         </Card>
       ) : null}
 
-      <section className='mt-6'>
-        <CardTitle className='mb-3'>{t('budgets.createPage.header')}</CardTitle>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('budgets.createPage.header')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className='grid gap-3' onSubmit={handleSubmit}>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor='create-budget-scope'>
+                  {t('budgets.createPage.fieldScope')}
+                </FieldLabel>
+                <NativePicker
+                  fullWidth
+                  aria-label={t('budgets.createPage.scopePlaceholder')}
+                  disabled={isBusy || householdsQuery.isLoading}
+                  id='create-budget-scope'
+                  options={targetOptions}
+                  value={targetValue}
+                  onChange={(next) => {
+                    setTargetValue(next)
+                    setFeedback(null)
+                  }}
+                />
+              </Field>
 
-        <Card className='p-4'>
-          <form className='grid gap-3.5' onSubmit={handleSubmit}>
-            <Field>
-              <FieldLabel htmlFor='create-budget-scope'>
-                {t('budgets.createPage.fieldScope')}
-              </FieldLabel>
-              <NativePicker
-                fullWidth
-                aria-label={t('budgets.createPage.scopePlaceholder')}
-                disabled={isBusy || householdsQuery.isLoading}
-                id='create-budget-scope'
-                options={targetOptions}
-                value={targetValue}
-                onChange={(next) => {
-                  setTargetValue(next)
-                  setFeedback(null)
-                }}
-              />
-            </Field>
+              <Field>
+                <FieldLabel htmlFor='create-budget-period'>
+                  {t('budgets.createPage.fieldPeriod')}
+                </FieldLabel>
+                <DatePicker
+                  fullWidth
+                  aria-label={t('budgets.createPage.periodPlaceholder')}
+                  disabled={isBusy}
+                  id='create-budget-period'
+                  mode='month'
+                  value={period}
+                  onChange={(next) => {
+                    setPeriod(next)
+                    setFeedback(null)
+                  }}
+                />
+              </Field>
 
-            <Field>
-              <FieldLabel htmlFor='create-budget-period'>
-                {t('budgets.createPage.fieldPeriod')}
-              </FieldLabel>
-              <DatePicker
-                fullWidth
-                aria-label={t('budgets.createPage.periodPlaceholder')}
-                disabled={isBusy}
-                id='create-budget-period'
-                mode='month'
-                value={period}
-                onChange={(next) => {
-                  setPeriod(next)
-                  setFeedback(null)
-                }}
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor='create-budget-amount'>
-                {t('budgets.createPage.fieldAmount')}
-              </FieldLabel>
-              <Input
-                disabled={isBusy}
-                id='create-budget-amount'
-                inputMode='numeric'
-                placeholder={t('budgets.createPage.amountPlaceholder')}
-                value={totalLimitInput}
-                onChange={(event) => {
-                  setTotalLimitInput(formatAmountInput(event.target.value))
-                  setFeedback(null)
-                }}
-              />
-            </Field>
+              <Field>
+                <FieldLabel htmlFor='create-budget-amount'>
+                  {t('budgets.createPage.fieldAmount')}
+                </FieldLabel>
+                <Input
+                  disabled={isBusy}
+                  id='create-budget-amount'
+                  inputMode='numeric'
+                  placeholder={t('budgets.createPage.amountPlaceholder')}
+                  value={totalLimitInput}
+                  onChange={(event) => {
+                    setTotalLimitInput(formatAmountInput(event.target.value))
+                    setFeedback(null)
+                  }}
+                />
+              </Field>
+            </FieldGroup>
 
             <div className='flex flex-wrap justify-end gap-2.5'>
               <TmaHapticButton
@@ -246,8 +254,8 @@ const CreateBudgetPage = () => {
               </TmaHapticButton>
             </div>
           </form>
-        </Card>
-      </section>
+        </CardContent>
+      </Card>
     </TmaPageShell>
   )
 }

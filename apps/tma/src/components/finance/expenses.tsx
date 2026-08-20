@@ -6,6 +6,8 @@ import {
   TmaCategoryIconBadge,
   TmaInlineAction,
 } from '@/components/shared/tma-page-shell'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { ExpensesRouteState } from '@/features/expenses/filter-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import { useExpenseListQuery, useHouseholdsQuery } from '@/features/home/api'
@@ -40,7 +42,7 @@ export const ExpenseItem = ({
 
   return (
     <article
-      className='flex cursor-pointer items-center gap-3 rounded-3xl bg-card p-3.5 shadow-sm transition active:scale-[0.99]'
+      className='flex cursor-pointer items-center gap-3 p-3.5 transition active:scale-[0.99]'
       role='button'
       tabIndex={0}
       onClick={openDetail}
@@ -68,20 +70,16 @@ export const ExpenseItem = ({
         </div>
         {showHouseholdLabel && householdLabel ? (
           <div className='mt-2 flex flex-wrap gap-1.5'>
-            <span className='inline-flex min-h-6 max-w-full items-center gap-1.5 rounded-full bg-muted px-2 text-[11px] font-semibold text-foreground'>
+            <Badge className='max-w-full' variant='secondary'>
               <span className='truncate'>{householdLabel}</span>
-            </span>
+            </Badge>
             {groupLabel ? (
-              <span className='inline-flex min-h-6 items-center gap-1.5 rounded-full bg-muted px-2 text-[11px] font-semibold text-foreground'>
-                {groupLabel}
-              </span>
+              <Badge variant='secondary'>{groupLabel}</Badge>
             ) : null}
           </div>
         ) : groupLabel ? (
           <div className='mt-2 flex flex-wrap gap-1.5'>
-            <span className='inline-flex min-h-6 items-center gap-1.5 rounded-full bg-muted px-2 text-[11px] font-semibold text-foreground'>
-              {groupLabel}
-            </span>
+            <Badge variant='secondary'>{groupLabel}</Badge>
           </div>
         ) : null}
       </div>
@@ -153,20 +151,25 @@ export const RecentExpenses = ({
         loadingDescription={t('expensesList.loadingDesc')}
         loadingTitle={t('expensesList.loading')}
         retryAction={recentExpensesQuery.refetch}>
-        <div className='grid gap-2'>
-          {recentExpenses.map((expense) => (
-            <ExpenseItem
-              key={expense.id}
-              expense={expense}
-              householdLabel={
-                expense.householdId
-                  ? householdNameById.get(expense.householdId)
-                  : null
-              }
-              showHouseholdLabel={showHouseholdLabel}
-            />
-          ))}
-        </div>
+        <Card size='sm'>
+          <CardHeader>
+            <CardTitle>{title}</CardTitle>
+          </CardHeader>
+          <CardContent className='grid gap-2'>
+            {recentExpenses.map((expense) => (
+              <ExpenseItem
+                key={expense.id}
+                expense={expense}
+                householdLabel={
+                  expense.householdId
+                    ? householdNameById.get(expense.householdId)
+                    : null
+                }
+                showHouseholdLabel={showHouseholdLabel}
+              />
+            ))}
+          </CardContent>
+        </Card>
       </DataState>
     </section>
   )
@@ -189,23 +192,23 @@ export const ExpenseTimeline = ({
   return (
     <section className='grid gap-5'>
       {[...sections.entries()].map(([label, items]) => (
-        <div key={label} className='grid gap-2.5'>
-          <h2 className='m-0 px-1 text-base leading-tight font-bold text-foreground'>
-            {label}
-          </h2>
-          <div className='grid gap-2'>
-            {items.map((expense) => (
-              <ExpenseItem
-                key={expense.id}
-                expense={expense}
-                householdLabel={
-                  expense.householdId
-                    ? householdNameById.get(expense.householdId)
-                    : null
-                }
-              />
-            ))}
-          </div>
+        <div key={label} className='grid gap-2'>
+          <h2 className='px-1 text-sm font-bold text-foreground'>{label}</h2>
+          <Card size='sm'>
+            <CardContent className='grid gap-2'>
+              {items.map((expense) => (
+                <ExpenseItem
+                  key={expense.id}
+                  expense={expense}
+                  householdLabel={
+                    expense.householdId
+                      ? householdNameById.get(expense.householdId)
+                      : null
+                  }
+                />
+              ))}
+            </CardContent>
+          </Card>
         </div>
       ))}
     </section>

@@ -1,7 +1,13 @@
 import { useTranslation } from 'react-i18next'
 
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 type HouseholdAvatarDialogProps = {
   isUploading: boolean
@@ -46,26 +52,28 @@ export const HouseholdAvatarDialog = ({
         onClick={handleDismiss}
       />
 
-      <Card className='relative z-10 grid w-[min(100%,360px)] gap-4 bg-white/95 p-4 shadow-[0_24px_48px_rgba(17,24,39,0.18)]'>
-        <div>
-          <span className='text-xs font-medium text-muted-foreground'>
+      <Card className='relative z-10 w-[min(100%,360px)]'>
+        <CardHeader>
+          <CardDescription>
             {t('households.avatarDialog.previewEyebrow')}
-          </span>
+          </CardDescription>
           <CardTitle>{t('households.avatarDialog.applyTitle')}</CardTitle>
           <CardDescription>
             {t('households.avatarDialog.applyDesc')}
           </CardDescription>
-        </div>
+        </CardHeader>
 
         {previewUrl ? (
-          <img
-            alt={t('households.avatarDialog.previewAlt')}
-            className='aspect-square w-full rounded-3xl bg-black/4 object-cover'
-            src={previewUrl}
-          />
+          <CardContent>
+            <img
+              alt={t('households.avatarDialog.previewAlt')}
+              className='aspect-square w-full object-cover'
+              src={previewUrl}
+            />
+          </CardContent>
         ) : null}
 
-        <div className='flex justify-end gap-2.5'>
+        <CardContent className='flex justify-end gap-2.5'>
           <TmaHapticButton
             aria-busy={isUploading}
             disabled={isUploading}
@@ -83,7 +91,7 @@ export const HouseholdAvatarDialog = ({
               ? t('households.avatarDialog.uploading')
               : t('households.avatarDialog.applyAction')}
           </TmaHapticButton>
-        </div>
+        </CardContent>
       </Card>
     </div>
   )

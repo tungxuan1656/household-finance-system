@@ -6,6 +6,8 @@ import { LoadingPicker } from '@/components/shared/loading-picker'
 import { NativePicker } from '@/components/shared/native-picker'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   useHouseholdExpenseGroupQueries,
@@ -140,8 +142,7 @@ export const ExpenseFilterPage = () => {
 
   return (
     <TmaPageShell title={t('expenses.filter.title')}>
-      {/* Reset at top */}
-      <div className='flex justify-end px-1 pt-1 pb-2'>
+      <div className='flex justify-end'>
         <TmaHapticButton
           disabled={!isFilterActive}
           size='sm'
@@ -151,85 +152,122 @@ export const ExpenseFilterPage = () => {
         </TmaHapticButton>
       </div>
 
-      <section className='mt-0'>
-        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
-          {t('expenses.filter.sortTitle')}
-        </h2>
-        <ToggleGroup
-          className='grid w-full grid-cols-2 gap-1.5 rounded-[18px] bg-muted/70 p-1.5 shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--foreground),transparent_94%)]'
-          value={[filter.sort]}
-          onValueChange={(values) => {
-            const next = values[0]
-            if (next && next !== filter.sort) {
-              selection()
-              handleSortChange(next as typeof filter.sort)
-            }
-          }}>
-          {makeSortOptions(t).map((option) => (
-            <ToggleGroupItem
-              key={option.value}
-              className='min-h-9 rounded-[13px] px-2 text-xs font-bold text-muted-foreground transition-all outline-none focus-visible:ring-3 focus-visible:ring-ring/30 data-[state=on]:bg-primary/12 data-[state=on]:text-primary'
-              type='button'
-              value={option.value}>
-              {option.label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.filter.sortTitle')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ToggleGroup
+            className='grid w-full grid-cols-2 gap-2'
+            value={[filter.sort]}
+            onValueChange={(values) => {
+              const next = values[0]
+              if (next && next !== filter.sort) {
+                selection()
+                handleSortChange(next as typeof filter.sort)
+              }
+            }}>
+            {makeSortOptions(t).map((option) => (
+              <ToggleGroupItem key={option.value} value={option.value}>
+                {option.label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </CardContent>
+      </Card>
 
       <PeriodPickerSection value={periodValue} onChange={handlePeriodChange} />
 
-      <section className='mt-6'>
-        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
-          {t('expenses.filter.householdTitle')}
-        </h2>
-        {householdsQuery.isLoading ? (
-          <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
-        ) : (
-          <NativePicker
-            fullWidth
-            options={householdPickerOptions}
-            placeholder={t('expenses.filter.householdPlaceholder')}
-            value={filter.householdId ?? ALL_VALUE}
-            onChange={handleHouseholdChange}
-          />
-        )}
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.filter.householdTitle')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor='expense-filter-household-picker'>
+                {t('expenses.filter.householdTitle')}
+              </FieldLabel>
+              {householdsQuery.isLoading ? (
+                <LoadingPicker
+                  id='expense-filter-household-picker'
+                  loadingLabel={t('expenses.filter.householdLoading')}
+                />
+              ) : (
+                <NativePicker
+                  fullWidth
+                  id='expense-filter-household-picker'
+                  options={householdPickerOptions}
+                  placeholder={t('expenses.filter.householdPlaceholder')}
+                  value={filter.householdId ?? ALL_VALUE}
+                  onChange={handleHouseholdChange}
+                />
+              )}
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
-      <section className='mt-6'>
-        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
-          {t('expenses.filter.groupTitle')}
-        </h2>
-        {personalGroupsQuery.isLoading ||
-        householdGroupQueries.some((q) => q.isLoading) ? (
-          <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
-        ) : (
-          <NativePicker
-            fullWidth
-            options={groupPickerOptions}
-            placeholder={t('expenses.filter.groupTitle')}
-            value={filter.groupId ?? ALL_VALUE}
-            onChange={handleGroupChange}
-          />
-        )}
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.filter.groupTitle')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor='expense-filter-group-picker'>
+                {t('expenses.filter.groupTitle')}
+              </FieldLabel>
+              {personalGroupsQuery.isLoading ||
+              householdGroupQueries.some((q) => q.isLoading) ? (
+                <LoadingPicker
+                  id='expense-filter-group-picker'
+                  loadingLabel={t('expenses.filter.householdLoading')}
+                />
+              ) : (
+                <NativePicker
+                  fullWidth
+                  id='expense-filter-group-picker'
+                  options={groupPickerOptions}
+                  placeholder={t('expenses.filter.groupTitle')}
+                  value={filter.groupId ?? ALL_VALUE}
+                  onChange={handleGroupChange}
+                />
+              )}
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
-      <section className='mt-6'>
-        <h2 className='mb-3 text-base leading-tight font-semibold text-foreground'>
-          {t('expenses.filter.categoryAll')}
-        </h2>
-        {referenceCategoriesQuery.isLoading ? (
-          <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
-        ) : (
-          <NativePicker
-            fullWidth
-            options={categoryPickerOptions}
-            placeholder={t('expenses.filter.categoryAll')}
-            value={filter.categoryKey ?? ALL_VALUE}
-            onChange={handleCategoryChange}
-          />
-        )}
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expenses.filter.categoryAll')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor='expense-filter-category-picker'>
+                {t('expenses.filter.categoryAll')}
+              </FieldLabel>
+              {referenceCategoriesQuery.isLoading ? (
+                <LoadingPicker
+                  id='expense-filter-category-picker'
+                  loadingLabel={t('expenses.filter.householdLoading')}
+                />
+              ) : (
+                <NativePicker
+                  fullWidth
+                  id='expense-filter-category-picker'
+                  options={categoryPickerOptions}
+                  placeholder={t('expenses.filter.categoryAll')}
+                  value={filter.categoryKey ?? ALL_VALUE}
+                  onChange={handleCategoryChange}
+                />
+              )}
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
       <TmaHapticButton className='mt-5 mb-2 w-full' onClick={handleApply}>
         {t('expenses.filter.apply')}

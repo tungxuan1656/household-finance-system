@@ -5,7 +5,14 @@ import { Link } from 'react-router-dom'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { PlusIcon, TrashIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import {
   useDeleteIncomeMutation,
@@ -48,9 +55,11 @@ export const IncomesPage = () => {
   if (incomesQuery.isLoading) {
     return (
       <TmaPageShell title={t('incomes.title')}>
-        <Card className='p-4'>
-          <CardTitle>{t('incomes.loadingTitle')}</CardTitle>
-          <CardDescription>{t('incomes.loadingDesc')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('incomes.loadingTitle')}</CardTitle>
+            <CardDescription>{t('incomes.loadingDesc')}</CardDescription>
+          </CardHeader>
         </Card>
         <IncomesAddFab />
       </TmaPageShell>
@@ -60,24 +69,25 @@ export const IncomesPage = () => {
   return (
     <TmaPageShell title={t('incomes.title')}>
       {incomes.length === 0 ? (
-        <Card className='p-4'>
-          <CardTitle>{t('incomes.emptyTitle')}</CardTitle>
-          <CardDescription>{t('incomes.emptyDesc')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('incomes.emptyTitle')}</CardTitle>
+            <CardDescription>{t('incomes.emptyDesc')}</CardDescription>
+          </CardHeader>
         </Card>
       ) : (
         <div className='grid gap-2'>
           {incomes.map((income) => (
-            <Card key={income.id} className='p-4'>
-              <div className='flex items-center justify-between'>
-                <div className='grid gap-0.5'>
-                  <CardTitle>
-                    {formatDateLabel(new Date(income.occurredAt).toISOString())}
-                  </CardTitle>
-                  <CardDescription>
-                    {income.title || t('incomes.nameUnset')}
-                  </CardDescription>
-                </div>
-
+            <Card key={income.id} size='sm'>
+              <CardHeader>
+                <CardTitle>
+                  {formatDateLabel(new Date(income.occurredAt).toISOString())}
+                </CardTitle>
+                <CardDescription>
+                  {income.title || t('incomes.nameUnset')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='flex items-center justify-between gap-3'>
                 <div className='flex items-center gap-2'>
                   <span className='font-mono text-lg font-semibold text-green-600'>
                     +
@@ -107,15 +117,16 @@ export const IncomesPage = () => {
                       </TmaHapticButton>
                     </div>
                   ) : (
-                    <button
+                    <Button
                       aria-label={t('incomes.deleteAction')}
-                      className='grid size-8 place-items-center rounded-full text-muted-foreground transition active:scale-90 active:bg-black/10'
+                      size='icon-xs'
+                      variant='ghost'
                       onClick={() => handleDeleteStart(income.id)}>
                       <TrashIcon height='17' width='17' />
-                    </button>
+                    </Button>
                   )}
                 </div>
-              </div>
+              </CardContent>
             </Card>
           ))}
         </div>

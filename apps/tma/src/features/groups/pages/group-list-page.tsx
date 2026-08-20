@@ -6,7 +6,13 @@ import { DataState } from '@/components/shared/data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
-import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import type { HouseholdDTO } from '@/features/home/types'
@@ -68,69 +74,71 @@ const GroupListCard = ({
   )
 
   return (
-    <Link
-      className='grid gap-3 rounded-3xl bg-white p-4 shadow-md transition active:scale-[0.99]'
-      to={getGroupDetailPath(item.group.id)}>
-      <div className='flex items-start justify-between gap-3'>
-        <div className='flex size-10 items-center justify-center rounded-full bg-[#fff3e8] text-[#ff8a3d]'>
-          <GroupGlyph />
-        </div>
-        <Badge
-          variant={item.group.status === 'active' ? 'secondary' : 'outline'}>
-          {getGroupStatusLabel(item.group.status, t)}
-        </Badge>
-      </div>
-
-      <div className='min-w-0'>
-        <CardTitle className='truncate'>{item.group.name}</CardTitle>
-        <CardDescription className='mt-1 line-clamp-2'>
-          {item.group.description || getGroupContextLabel(item, t)}
-        </CardDescription>
-      </div>
-
-      <div className='grid grid-cols-2 gap-2.5'>
-        <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-          <span className='text-xs font-medium text-muted-foreground'>
-            {t('groups.statSpent')}
-          </span>
-          <span className='text-sm font-bold text-foreground'>
-            {formatCurrencyMinor(item.group.totalSpendMinor, 'VND')}
-          </span>
-        </div>
-        <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-          <span className='text-xs font-medium text-muted-foreground'>
-            {t('groups.statBudget')}
-          </span>
-          <strong className='text-sm text-foreground'>
-            {getGroupBudgetLabel(item.group, t)}
-          </strong>
-        </div>
-      </div>
-
-      {progress ? (
-        <div className='grid gap-1.5'>
-          <div className='h-2 overflow-hidden rounded-full bg-black/6'>
-            <div
-              className={
-                progress.isOverBudget
-                  ? 'h-full rounded-full bg-[#d93838]'
-                  : 'h-full rounded-full bg-primary'
-              }
-              style={{ width: `${progress.widthPercent}%` }}
-            />
+    <Link className='block' to={getGroupDetailPath(item.group.id)}>
+      <Card>
+        <CardHeader>
+          <div className='flex items-start justify-between gap-3'>
+            <div className='flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+              <GroupGlyph />
+            </div>
+            <Badge
+              variant={
+                item.group.status === 'active' ? 'secondary' : 'outline'
+              }>
+              {getGroupStatusLabel(item.group.status, t)}
+            </Badge>
           </div>
-          <CardDescription>
-            {t('groups.statBudgetUsedPct', { percent: progress.percentUsed })}
-          </CardDescription>
-        </div>
-      ) : null}
+          <div className='min-w-0'>
+            <CardTitle className='truncate'>{item.group.name}</CardTitle>
+            <CardDescription className='line-clamp-2'>
+              {item.group.description || getGroupContextLabel(item, t)}
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className='grid gap-3'>
+          <div className='grid grid-cols-2 gap-2'>
+            <div className='grid gap-1'>
+              <CardDescription>{t('groups.statSpent')}</CardDescription>
+              <span className='text-sm font-bold text-foreground'>
+                {formatCurrencyMinor(item.group.totalSpendMinor, 'VND')}
+              </span>
+            </div>
+            <div className='grid gap-1'>
+              <CardDescription>{t('groups.statBudget')}</CardDescription>
+              <p className='text-sm font-semibold text-foreground'>
+                {getGroupBudgetLabel(item.group, t)}
+              </p>
+            </div>
+          </div>
 
-      <div className='flex items-center justify-between gap-3 text-sm text-muted-foreground'>
-        <span className='truncate'>{getGroupContextLabel(item, t)}</span>
-        <span className='shrink-0'>
-          {getGroupDateRangeLabel(item.group, t)}
-        </span>
-      </div>
+          {progress ? (
+            <div className='grid gap-1'>
+              <div className='h-2 overflow-hidden rounded-full bg-black/6'>
+                <div
+                  className={
+                    progress.isOverBudget
+                      ? 'h-full rounded-full bg-destructive'
+                      : 'h-full rounded-full bg-primary'
+                  }
+                  style={{ width: `${progress.widthPercent}%` }}
+                />
+              </div>
+              <CardDescription>
+                {t('groups.statBudgetUsedPct', {
+                  percent: progress.percentUsed,
+                })}
+              </CardDescription>
+            </div>
+          ) : null}
+
+          <div className='flex items-center justify-between gap-3 text-sm text-muted-foreground'>
+            <span className='truncate'>{getGroupContextLabel(item, t)}</span>
+            <span className='shrink-0'>
+              {getGroupDateRangeLabel(item.group, t)}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
     </Link>
   )
 }
@@ -167,17 +175,20 @@ export const GroupListPage = () => {
 
   return (
     <TmaPageShell title={t('groups.title')}>
-      <Card className='grid gap-3 p-5'>
-        <div className='flex items-start justify-between gap-3'>
-          <div>
-            <strong className='mt-1 block text-[30px] leading-none font-extrabold text-foreground'>
-              {groupItems.length}
-            </strong>
+      <Card>
+        <CardHeader>
+          <div className='flex items-start justify-between gap-3'>
+            <div>
+              <CardDescription>{t('groups.title')}</CardDescription>
+              <CardTitle className='text-[30px] leading-none font-extrabold'>
+                {groupItems.length}
+              </CardTitle>
+            </div>
+            <div className='flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+              <GroupGlyph />
+            </div>
           </div>
-          <div className='flex size-10 items-center justify-center rounded-full bg-[#fff3e8] text-[#ff8a3d]'>
-            <GroupGlyph />
-          </div>
-        </div>
+        </CardHeader>
       </Card>
 
       <section className='grid gap-3'>

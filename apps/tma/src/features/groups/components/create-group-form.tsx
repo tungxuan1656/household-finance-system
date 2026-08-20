@@ -6,8 +6,8 @@ import {
   type NativePickerOption,
 } from '@/components/shared/native-picker'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { Card, CardTitle } from '@/components/ui/card'
-import { Field, FieldLabel } from '@/components/ui/field'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { formatAmountInput } from '@/lib/formatters'
@@ -54,67 +54,68 @@ export const CreateGroupForm = ({
   const { t } = useTranslation()
 
   return (
-    <section className='mt-6'>
-      <CardTitle className='mb-3'>{t('groups.createPage.header')}</CardTitle>
-
-      <Card className='p-4'>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('groups.createPage.header')}</CardTitle>
+      </CardHeader>
+      <CardContent>
         <form
-          className='grid gap-3.5'
+          className='grid gap-3'
           onSubmit={(event) => {
             event.preventDefault()
             onSubmit()
           }}>
-          <Field>
-            <FieldLabel htmlFor='create-group-name'>
-              {t('groups.createPage.fieldName')}
-            </FieldLabel>
-            <Input
-              disabled={isBusy}
-              id='create-group-name'
-              maxLength={200}
-              placeholder={t('groups.createPage.namePlaceholder')}
-              type='text'
-              value={name}
-              onChange={(event) => {
-                onNameChange(event.target.value)
-              }}
-            />
-          </Field>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor='create-group-name'>
+                {t('groups.createPage.fieldName')}
+              </FieldLabel>
+              <Input
+                disabled={isBusy}
+                id='create-group-name'
+                maxLength={200}
+                placeholder={t('groups.createPage.namePlaceholder')}
+                type='text'
+                value={name}
+                onChange={(event) => {
+                  onNameChange(event.target.value)
+                }}
+              />
+            </Field>
 
-          <Field>
-            <FieldLabel htmlFor='create-group-context'>
-              {t('groups.createPage.fieldContext')}
-            </FieldLabel>
-            <NativePicker
-              fullWidth
-              aria-label={t('groups.createPage.contextPlaceholder')}
-              disabled={isBusy || isHouseholdsLoading}
-              id='create-group-context'
-              options={contextOptions}
-              value={contextValue}
-              onChange={(next) => {
-                onContextChange(next)
-              }}
-            />
-          </Field>
+            <Field>
+              <FieldLabel htmlFor='create-group-context'>
+                {t('groups.createPage.fieldContext')}
+              </FieldLabel>
+              <NativePicker
+                fullWidth
+                aria-label={t('groups.createPage.contextPlaceholder')}
+                disabled={isBusy || isHouseholdsLoading}
+                id='create-group-context'
+                options={contextOptions}
+                value={contextValue}
+                onChange={(next) => {
+                  onContextChange(next)
+                }}
+              />
+            </Field>
 
-          <Field>
-            <FieldLabel htmlFor='create-group-description'>
-              {t('groups.createPage.fieldDescription')}
-            </FieldLabel>
-            <Textarea
-              disabled={isBusy}
-              id='create-group-description'
-              maxLength={1000}
-              placeholder={t('groups.createPage.descriptionHelp')}
-              value={description}
-              onChange={(event) => {
-                onDescriptionChange(event.target.value)
-              }}
-            />
-          </Field>
+            <Field>
+              <FieldLabel htmlFor='create-group-description'>
+                {t('groups.createPage.fieldDescription')}
+              </FieldLabel>
+              <Textarea
+                disabled={isBusy}
+                id='create-group-description'
+                maxLength={1000}
+                placeholder={t('groups.createPage.descriptionHelp')}
+                value={description}
+                onChange={(event) => {
+                  onDescriptionChange(event.target.value)
+                }}
+              />
+            </Field>
 
-          <div className='grid gap-3.5'>
             <Field>
               <FieldLabel htmlFor='create-group-start-date'>
                 {t('groups.createPage.fieldStartDate')}
@@ -146,23 +147,23 @@ export const CreateGroupForm = ({
                 }}
               />
             </Field>
-          </div>
 
-          <Field>
-            <FieldLabel htmlFor='create-group-budget'>
-              {t('groups.createPage.fieldBudget')}
-            </FieldLabel>
-            <Input
-              disabled={isBusy}
-              id='create-group-budget'
-              inputMode='numeric'
-              placeholder={t('groups.createPage.budgetPlaceholder')}
-              value={budgetInput}
-              onChange={(event) => {
-                onBudgetChange(formatAmountInput(event.target.value))
-              }}
-            />
-          </Field>
+            <Field>
+              <FieldLabel htmlFor='create-group-budget'>
+                {t('groups.createPage.fieldBudget')}
+              </FieldLabel>
+              <Input
+                disabled={isBusy}
+                id='create-group-budget'
+                inputMode='numeric'
+                placeholder={t('groups.createPage.budgetPlaceholder')}
+                value={budgetInput}
+                onChange={(event) => {
+                  onBudgetChange(formatAmountInput(event.target.value))
+                }}
+              />
+            </Field>
+          </FieldGroup>
           <div className='flex flex-wrap justify-end gap-2.5'>
             <TmaHapticButton
               aria-busy={isBusy}
@@ -184,7 +185,7 @@ export const CreateGroupForm = ({
             </TmaHapticButton>
           </div>
         </form>
-      </Card>
-    </section>
+      </CardContent>
+    </Card>
   )
 }

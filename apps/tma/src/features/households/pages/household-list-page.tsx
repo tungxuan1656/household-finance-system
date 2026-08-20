@@ -6,7 +6,12 @@ import { HouseholdItem } from '@/components/finance'
 import { DataState } from '@/components/shared/data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { buttonVariants } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { getHouseholdBudgetLabel } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {
@@ -71,17 +76,13 @@ export const HouseholdListPage = () => {
 
   return (
     <TmaPageShell title={t('households.title')}>
-      <Card className='grid gap-3 p-5'>
-        <div className='flex items-start justify-between gap-3'>
-          <div>
-            <span className='text-xs font-medium text-muted-foreground'>
-              {t('households.thisMonth')}
-            </span>
-            <strong className='mt-1 block text-[30px] leading-none font-extrabold text-foreground'>
-              {householdCards.length}
-            </strong>
-          </div>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardDescription>{t('households.thisMonth')}</CardDescription>
+          <CardTitle className='text-[30px] leading-none font-extrabold'>
+            {householdCards.length}
+          </CardTitle>
+        </CardHeader>
       </Card>
 
       <section className='grid gap-3'>

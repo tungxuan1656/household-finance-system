@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription } from '@/components/ui/card'
+import { Card, CardDescription, CardHeader } from '@/components/ui/card'
 import {
   useExpenseDetailQuery,
   useUpdateExpenseMutation,
@@ -156,8 +156,10 @@ export const ExpenseEditPage = () => {
   if (expenseQuery.isLoading || !draft) {
     return (
       <TmaPageShell title={t('expenses.edit.title')}>
-        <Card className='p-4'>
-          <CardDescription>{t('expenses.edit.loading')}</CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription>{t('expenses.edit.loading')}</CardDescription>
+          </CardHeader>
         </Card>
       </TmaPageShell>
     )

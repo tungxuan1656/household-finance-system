@@ -41,7 +41,6 @@ export const HomePage = () => {
   return (
     <TmaPageShell title={t('homePage.title')}>
       <TmaPageHeader title={userName} trailing={<PeriodChipLink />} />
-
       <FinanceSummaryCard showBudgetPeriodContext showPeriodChip={false} />
       <HomeShortcutsSection />
       <HouseholdPreviewCarousel />
