@@ -24,6 +24,12 @@ Allow users to group expenses into events or projects to track event-level budge
 - Create dialog allows zero or one group selection per expense in MVP.
 - Group aggregates update correctly when linked expenses change.
 
+## AI Recognition
+
+- AI may suggest `groupNames` only when text explicitly mentions whitelisted group names (case-insensitive, NFD + `đ→d` normalized).
+- Whitelist is capped at 15 most-recent groups across household + personal; hallucinated names are dropped to `[]`.
+- Server maps names to `groupIds` via normalized keys and deduplicates; see household context spec for household side.
+
 ## Failure States
 
 - Group creation error: show validation and allow retry.
@@ -33,3 +39,4 @@ Allow users to group expenses into events or projects to track event-level budge
 
 Notes:
 - Groups are a core MVP feature for event-based tracking.
+- Parser details live in `lib/ai/expense-parser.ts` and `handlers/expenses/parse-expense.ts`; this spec owns product truth only.

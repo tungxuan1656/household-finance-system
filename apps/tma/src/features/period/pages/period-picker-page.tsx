@@ -2,15 +2,11 @@ import { useEffect, useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import { PeriodPickerSection } from '@/features/period/components/period-picker-section'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { type PeriodSelection } from '@/lib/period'
-import {
-  hideBottomButton,
-  setBottomButton,
-  updateBottomButton,
-} from '@/lib/telegram/bottom-button'
 
 import { usePeriodStore } from '../store'
 
@@ -71,32 +67,17 @@ export const PeriodPickerPage = () => {
     navigate(backTo, { replace: true })
   })
 
-  useEffect(() => {
-    const cleanup = setBottomButton({
-      text: t('period.pickerConfirm'),
-      enabled: true,
-      showProgress: false,
-      onClick: () => {
-        handleApply()
-      },
-    })
-
-    return () => {
-      cleanup()
-      hideBottomButton()
-    }
-  }, [])
-
-  useEffect(() => {
-    updateBottomButton({
-      text: t('period.pickerConfirm'),
-      enabled: true,
-      showProgress: false,
-    })
-  }, [candidate])
-
   return (
-    <TmaPageShell reserveBottomButton title={t('period.pickerTitle')}>
+    <TmaPageShell
+      contentClassName='gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton className='flex-1' onClick={handleApply}>
+            {t('period.pickerConfirm')}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('period.pickerTitle')}>
       <PeriodPickerSection
         value={candidate}
         onChange={(next) => {

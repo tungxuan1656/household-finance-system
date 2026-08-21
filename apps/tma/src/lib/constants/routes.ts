@@ -43,6 +43,15 @@ export const getBudgetDetailPath = (budgetId: string): string =>
 export const getInvitationAcceptPath = (token: string): string =>
   `${TMA_PATHS.invitations}/${token}`
 
+/** Root tab screens do not render an app-owned Telegram BackButton. */
+export const isRootTabPathname = (pathname: string): boolean =>
+  pathname === TMA_PATHS.root || pathname === TMA_PATHS.statistics
+
+/** Invitation acceptance is a deep-link entry and owns its close handler. */
+export const isInvitationAcceptPathname = (pathname: string): boolean =>
+  pathname === TMA_PATHS.invitations ||
+  pathname.startsWith(`${TMA_PATHS.invitations}/`)
+
 /**
  * Returns `true` when `pathname` follows the expense-edit flow pattern
  * `/expenses/:id/edit` (with or without a trailing sub‑path).

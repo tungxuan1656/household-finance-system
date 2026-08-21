@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { type FormEvent, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription } from '@/components/ui'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
+import { Card, CardDescription, CardHeader } from '@/components/ui/card'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { getGroupDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 
@@ -51,7 +52,9 @@ export const CreateGroupPage = () => {
   const normalizedName = name.trim()
   const normalizedDescription = description.trim()
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event?: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault()
+
     const parsedStartDate = parseOptionalDateInput(startDate)
     const parsedEndDate = parseOptionalDateInput(endDate)
     const parsedBudget = parseBudgetInputToMinor(budgetInput)
@@ -104,20 +107,42 @@ export const CreateGroupPage = () => {
   }
 
   return (
-    <TmaPageShell title={t('groups.createPage.title')}>
+    <TmaPageShell
+      contentClassName='flex flex-col gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton
+            aria-busy={isBusy}
+            disabled={isBusy}
+            type='button'
+            variant='secondary'
+            onClick={() => navigate(TMA_PATHS.groups)}>
+            {t('common.cancel')}
+          </TmaHapticButton>
+          <TmaHapticButton
+            aria-busy={isBusy}
+            disabled={isBusy}
+            form='create-group-form'
+            type='submit'>
+            {isBusy
+              ? t('groups.createPage.submitting')
+              : t('groups.createPage.title')}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('groups.createPage.title')}>
       {feedback ? (
-        <Card
-          className={
-            feedback.tone === 'error'
-              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mt-3 border-tma-positive/20 bg-tma-positive/10'
-          }>
-          <CardDescription
-            className={
-              feedback.tone === 'error' ? 'text-[#d93838]' : 'text-[#2f9b44]'
-            }>
-            {feedback.message}
-          </CardDescription>
+        <Card size='sm'>
+          <CardHeader>
+            <CardDescription
+              className={
+                feedback.tone === 'error'
+                  ? 'text-destructive'
+                  : 'text-emerald-600'
+              }>
+              {feedback.message}
+            </CardDescription>
+          </CardHeader>
         </Card>
       ) : null}
 
@@ -135,7 +160,6 @@ export const CreateGroupPage = () => {
           setBudgetInput(v)
           setFeedback(null)
         }}
-        onCancel={() => navigate(TMA_PATHS.groups)}
         onContextChange={(v) => {
           setContextValue(v)
           setFeedback(null)

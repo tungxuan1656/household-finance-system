@@ -2,7 +2,6 @@ import {
   backButton,
   init,
   initData,
-  mainButton,
   miniApp,
   swipeBehavior,
   themeParams,
@@ -10,8 +9,8 @@ import {
 } from '@tma.js/sdk'
 
 import {
-  bindTheme,
   DEFAULT_TMA_BG,
+  initializeFixedLightPlatform,
   resetTheme,
   syncViewportInsets,
 } from '@/lib/telegram/theme'
@@ -38,27 +37,22 @@ export const initTelegram = (): (() => void) => {
     acceptCustomStyles: true,
   })
 
-  // 2. Mount themeParams first — required by miniApp and mainButton
+  // 2. Mount themeParams first — required by miniApp
   themeParams.mount()
 
   // 3. Mount miniApp (requires themeParams to be mounted first)
   miniApp.mount()
 
-  // 3b. Mount backButton and mainButton up-front so components only
-  // toggle visibility and swap onClick handlers. Mounting per-component
-  // forces a re-register against the native bridge on every page mount.
+  // 3b. Mount backButton up-front so components only toggle visibility.
   if (backButton.isSupported()) {
     backButton.mount()
   }
-  if (!mainButton.isMounted()) {
-    mainButton.mount()
-  }
 
-  // 4. Bind Telegram theme to CSS variables (must come AFTER mount)
-  bindTheme(DEFAULT_TMA_BG)
+  // 4. Initialize the fixed-light app base and viewport safe-area CSS vars.
+  initializeFixedLightPlatform(DEFAULT_TMA_BG)
 
   // 4b. Set the native background so route transitions never flash black.
-  // Must run after miniApp.mount() and after themeParams are bound.
+  // Must run after miniApp.mount() so Telegram chrome uses the same light base.
   miniApp.setBgColor.ifAvailable(DEFAULT_TMA_BG)
   miniApp.setHeaderColor.ifAvailable(DEFAULT_TMA_BG)
   miniApp.setBottomBarColor.ifAvailable(DEFAULT_TMA_BG)

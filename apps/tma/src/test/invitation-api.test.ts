@@ -20,7 +20,7 @@ vi.mock('@/lib/telegram/haptics', () => ({
   notification: notificationMock,
 }))
 
-const loadInvitationApi = () => import('@/features/invitations/api/invitation')
+const loadInvitationApi = () => import('@/features/invitations/api')
 
 describe('invitation API fetchers', () => {
   beforeEach(() => {

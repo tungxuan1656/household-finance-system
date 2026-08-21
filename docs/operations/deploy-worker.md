@@ -74,7 +74,7 @@ Note: `INVITATION_TOKEN_PEPPER` is a new secret added in the post-review fix. If
 
 ### 4. Set Non-Secret Vars
 
-`APP_ENV`, `AUTH_ISSUER`, `AUTH_AUDIENCE`, `ACCESS_TOKEN_TTL_SECONDS`, `REFRESH_TOKEN_TTL_SECONDS`, `AUTH_ALLOW_INSECURE_TEST_TOKENS`, `CLOUDINARY_CLOUD_NAME` can be set via:
+Public vars belong in `wrangler.jsonc` `vars` (not secrets). This includes `APP_ENV`, `AUTH_ISSUER`, `AUTH_AUDIENCE`, `ACCESS_TOKEN_TTL_SECONDS`, `REFRESH_TOKEN_TTL_SECONDS`, `AUTH_ALLOW_INSECURE_TEST_TOKENS`, `CLOUDINARY_CLOUD_NAME`, `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_MODEL`. Secrets only go in `.dev.vars` or `wrangler secret put`. `.dev.vars.example` no longer duplicates public vars; it lists secrets and local overrides only. To override a public var locally, add it manually to `.dev.vars`.
 
 ```bash
 pnpm exec wrangler secret put APP_ENV
@@ -97,9 +97,15 @@ pnpm exec wrangler secret put REFRESH_TOKEN_TTL_SECONDS
 
 pnpm exec wrangler secret put CLOUDINARY_CLOUD_NAME
 # value: <cloudinary-cloud-name>
+
+pnpm exec wrangler secret put OPENAI_COMPAT_BASE_URL
+# value: https://api.openai.com/v1/chat/completions
+
+pnpm exec wrangler secret put OPENAI_COMPAT_MODEL
+# value: gpt-4o-mini
 ```
 
-Or use the `vars` block in `wrangler.jsonc` for non-secrets. NEVER put secrets in `vars`.
+Prefer the `vars` block in `wrangler.jsonc` for non-secrets (centralized). NEVER put secrets in `vars`. `.dev.vars` is for secrets and local overrides only.
 
 ## Per-Deploy Steps
 

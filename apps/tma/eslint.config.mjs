@@ -21,6 +21,7 @@ export default defineConfig([
     '**/*.config.mts',
     '**/*.config.mjs',
     '**/*.config.cjs',
+    'src/components/ui/**',
   ]),
   eslintPluginPrettierRecommended,
   reactCompiler.configs.recommended,

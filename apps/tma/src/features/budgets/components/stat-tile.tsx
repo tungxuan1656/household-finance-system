@@ -1,4 +1,3 @@
-import { Eyebrow } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
 export const StatTile = ({
@@ -10,12 +9,12 @@ export const StatTile = ({
   tone?: 'default' | 'warning'
   value: string
 }) => (
-  <div className='grid gap-1 rounded-[18px] bg-black/4 p-3'>
-    <Eyebrow>{label}</Eyebrow>
+  <div className='grid gap-1'>
+    <span className='text-xs font-medium text-muted-foreground'>{label}</span>
     <strong
       className={cn(
         'text-base font-extrabold',
-        tone === 'warning' ? 'text-[#d93838]' : 'text-tma-text-strong',
+        tone === 'warning' ? 'text-destructive' : 'text-foreground',
       )}>
       {value}
     </strong>

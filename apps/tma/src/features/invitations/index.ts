@@ -1,2 +1,2 @@
-export * from './api/invitation'
-export * from './types/invitation'
+export * from './api'
+export * from './types'

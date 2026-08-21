@@ -42,6 +42,8 @@ export const parsedExpenseItemSchema = z
     occurredAt: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format'),
+    householdId: z.string().min(1).nullable().optional(),
+    groupIds: z.array(z.string().min(1)).optional(),
   })
   .strict()
   .refine(

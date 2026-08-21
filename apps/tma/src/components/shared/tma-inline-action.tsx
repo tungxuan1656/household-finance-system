@@ -14,7 +14,7 @@ export const TmaInlineAction = ({
   state?: unknown
 }) => (
   <Link
-    className='inline-flex items-center gap-1 text-xs font-bold text-tma-primary'
+    className='inline-flex items-center gap-1 text-xs font-bold text-primary'
     state={state}
     to={href}
     onClick={() => selection()}>

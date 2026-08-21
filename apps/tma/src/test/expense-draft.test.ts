@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { createEditExpenseDraft } from '@/features/expenses/draft'
+import { createEditExpenseDraft } from '@/features/expenses/model/draft'
 
 describe('createEditExpenseDraft', () => {
   it('maps an expense DTO into the edit-flow draft shape', () => {

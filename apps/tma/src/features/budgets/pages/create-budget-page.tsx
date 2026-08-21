@@ -2,18 +2,19 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { DatePicker } from '@/components/shared/date-picker'
+import { NativePicker } from '@/components/shared/native-picker'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
-  Button,
   Card,
+  CardContent,
   CardDescription,
+  CardHeader,
   CardTitle,
-  DatePicker,
-  Field,
-  FieldLabel,
-  Input,
-  NativePicker,
-} from '@/components/ui'
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { getBudgetDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 import { formatAmountInput } from '@/lib/formatters'
@@ -26,11 +27,27 @@ import {
   isValidBudgetPeriod,
   parseBudgetAmountInputToMinor,
 } from '../presentation'
-import type { CreateBudgetRequest } from '../types'
-import type { BudgetFeedback } from '../types/feedback'
+import type { BudgetFeedback, CreateBudgetRequest } from '../types'
 
 const DEFAULT_CURRENCY_CODE = 'VND'
 const PERSONAL_TARGET_VALUE = 'personal'
+
+// ── dumb feedback (no outer margin, parent gap owns spacing) ──
+
+function BudgetCreateFeedback({ feedback }: { feedback: BudgetFeedback }) {
+  return (
+    <Card size='sm'>
+      <CardHeader>
+        <CardDescription
+          className={
+            feedback.tone === 'error' ? 'text-destructive' : 'text-emerald-600'
+          }>
+          {feedback.message}
+        </CardDescription>
+      </CardHeader>
+    </Card>
+  )
+}
 
 const CreateBudgetPage = () => {
   const navigate = useNavigate()
@@ -156,89 +173,101 @@ const CreateBudgetPage = () => {
   }
 
   return (
-    <TmaPageShell title={t('budgets.createPage.title')}>
-      {feedback ? (
-        <Card
-          className={
-            feedback.tone === 'error'
-              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mt-3 border-tma-positive/20 bg-tma-positive/10'
-          }>
-          <CardDescription
-            className={
-              feedback.tone === 'error' ? 'text-[#d93838]' : 'text-[#2f9b44]'
-            }>
-            {feedback.message}
-          </CardDescription>
-        </Card>
-      ) : null}
+    <TmaPageShell
+      contentClassName='flex flex-col gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton
+            aria-busy={isBusy}
+            disabled={isBusy}
+            type='button'
+            variant='secondary'
+            onClick={() => navigate(TMA_PATHS.budgets)}>
+            {t('common.cancel')}
+          </TmaHapticButton>
+          <TmaHapticButton
+            aria-busy={isBusy}
+            disabled={isBusy}
+            form='create-budget-form'
+            type='submit'>
+            {isBusy
+              ? t('budgets.createPage.submitting')
+              : t('budgets.createPage.title')}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('budgets.createPage.title')}
+      onRefresh={async () => {
+        await householdsQuery.refetch()
+      }}>
+      {feedback ? <BudgetCreateFeedback feedback={feedback} /> : null}
 
-      <section className='mt-6'>
-        <CardTitle className='mb-3'>{t('budgets.createPage.header')}</CardTitle>
+      <Card size='sm'>
+        <CardHeader>
+          <CardTitle>{t('budgets.createPage.header')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form
+            className='grid gap-4'
+            id='create-budget-form'
+            onSubmit={handleSubmit}>
+            <FieldGroup className='gap-4'>
+              <Field>
+                <FieldLabel htmlFor='create-budget-scope'>
+                  {t('budgets.createPage.fieldScope')}
+                </FieldLabel>
+                <NativePicker
+                  fullWidth
+                  aria-label={t('budgets.createPage.scopePlaceholder')}
+                  disabled={isBusy || householdsQuery.isLoading}
+                  id='create-budget-scope'
+                  options={targetOptions}
+                  value={targetValue}
+                  onChange={(next) => {
+                    setTargetValue(next)
+                    setFeedback(null)
+                  }}
+                />
+              </Field>
 
-        <Card>
-          <form className='grid gap-3.5' onSubmit={handleSubmit}>
-            <Field>
-              <FieldLabel>{t('budgets.createPage.fieldScope')}</FieldLabel>
-              <NativePicker
-                fullWidth
-                aria-label={t('budgets.createPage.scopePlaceholder')}
-                disabled={isBusy || householdsQuery.isLoading}
-                options={targetOptions}
-                value={targetValue}
-                onChange={(next) => {
-                  setTargetValue(next)
-                  setFeedback(null)
-                }}
-              />
-            </Field>
+              <Field>
+                <FieldLabel htmlFor='create-budget-period'>
+                  {t('budgets.createPage.fieldPeriod')}
+                </FieldLabel>
+                <DatePicker
+                  fullWidth
+                  aria-label={t('budgets.createPage.periodPlaceholder')}
+                  disabled={isBusy}
+                  id='create-budget-period'
+                  mode='month'
+                  value={period}
+                  onChange={(next) => {
+                    setPeriod(next)
+                    setFeedback(null)
+                  }}
+                />
+              </Field>
 
-            <Field>
-              <FieldLabel>{t('budgets.createPage.fieldPeriod')}</FieldLabel>
-              <DatePicker
-                fullWidth
-                aria-label={t('budgets.createPage.periodPlaceholder')}
-                disabled={isBusy}
-                mode='month'
-                value={period}
-                onChange={(next) => {
-                  setPeriod(next)
-                  setFeedback(null)
-                }}
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel>{t('budgets.createPage.fieldAmount')}</FieldLabel>
-              <Input
-                disabled={isBusy}
-                inputMode='numeric'
-                placeholder={t('budgets.createPage.amountPlaceholder')}
-                value={totalLimitInput}
-                onChange={(event) => {
-                  setTotalLimitInput(formatAmountInput(event.target.value))
-                  setFeedback(null)
-                }}
-              />
-            </Field>
-
-            <div className='flex flex-wrap justify-end gap-2.5'>
-              <Button
-                disabled={isBusy}
-                type='button'
-                variant='ghost'
-                onClick={() => navigate(TMA_PATHS.budgets)}>
-                {t('common.cancel')}
-              </Button>
-              <Button disabled={isBusy} type='submit' variant='secondary'>
-                {isBusy
-                  ? t('budgets.createPage.submitting')
-                  : t('budgets.createPage.title')}
-              </Button>
-            </div>
+              <Field>
+                <FieldLabel htmlFor='create-budget-amount'>
+                  {t('budgets.createPage.fieldAmount')}
+                </FieldLabel>
+                <Input
+                  disabled={isBusy}
+                  id='create-budget-amount'
+                  inputMode='numeric'
+                  placeholder={t('budgets.createPage.amountPlaceholder')}
+                  value={totalLimitInput}
+                  onChange={(event) => {
+                    setTotalLimitInput(formatAmountInput(event.target.value))
+                    setFeedback(null)
+                  }}
+                />
+              </Field>
+            </FieldGroup>
           </form>
-        </Card>
-      </section>
+        </CardContent>
+      </Card>
     </TmaPageShell>
   )
 }

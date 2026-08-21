@@ -2,22 +2,21 @@ import { shareURL } from '@tma.js/sdk'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
+  CardHeader,
   CardTitle,
-  Field,
-  FieldLabel,
-  NativePicker,
-  type NativePickerOption,
-} from '@/components/ui'
-import { useCreateInvitationMutation } from '@/features/invitations/api/invitation'
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { useCreateInvitationMutation } from '@/features/invitations/api'
 import type {
   InvitationRoleDTO,
   InvitationTtlHours,
-} from '@/features/invitations/types/invitation'
+} from '@/features/invitations/types'
 import { impact, notification } from '@/lib/telegram/haptics'
 
 type InviteHouseholdDialogProps = {
@@ -55,15 +54,15 @@ export const InviteHouseholdDialog = ({
   const [inviteLink, setInviteLink] = useState<string | null>(null)
   const createMutation = useCreateInvitationMutation()
 
-  const roleOptions: NativePickerOption[] = [
-    { label: t('invitations.roleMember'), value: 'member' },
-    { label: t('invitations.roleAdmin'), value: 'admin' },
+  const roleOptions = [
+    { label: t('invitations.roleMember'), value: 'member' as const },
+    { label: t('invitations.roleAdmin'), value: 'admin' as const },
   ]
 
-  const ttlOptions: NativePickerOption[] = [
-    { label: t('invitations.ttl24h'), value: '24' },
-    { label: t('invitations.ttl72h'), value: '72' },
-    { label: t('invitations.ttl7d'), value: '168' },
+  const ttlOptions = [
+    { label: t('invitations.ttl24h'), value: '24' as const },
+    { label: t('invitations.ttl72h'), value: '72' as const },
+    { label: t('invitations.ttl7d'), value: '168' as const },
   ]
 
   const handleCreate = async () => {
@@ -89,7 +88,6 @@ export const InviteHouseholdDialog = ({
   // button is the user-visible fallback for sharing.
   const handleShareViaTelegram = () => {
     if (!inviteLink) return
-    impact('light')
     shareURL(inviteLink, t('invitations.shareText', { householdName }))
   }
 
@@ -97,7 +95,6 @@ export const InviteHouseholdDialog = ({
     if (!inviteLink) return
     try {
       await navigator.clipboard.writeText(inviteLink)
-      impact('light')
       notification('success')
     } catch {
       notification('error')
@@ -105,93 +102,123 @@ export const InviteHouseholdDialog = ({
   }
 
   const handleClose = () => {
-    impact('light')
     onClose()
   }
 
   return (
-    <Card className='mt-3'>
-      <CardTitle>{t('invitations.inviteTitle')}</CardTitle>
-      <CardDescription>
-        {t('invitations.inviteDesc', { householdName })}
-      </CardDescription>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('invitations.inviteTitle')}</CardTitle>
+        <CardDescription>
+          {t('invitations.inviteDesc', { householdName })}
+        </CardDescription>
+      </CardHeader>
 
-      <CardContent className='mt-3'>
+      <CardContent className='grid gap-3'>
         {!inviteLink ? (
           <>
-            <Field>
-              <FieldLabel>{t('invitations.roleLabel')}</FieldLabel>
-              <NativePicker
-                aria-label={t('invitations.roleLabel')}
-                options={roleOptions}
-                value={role}
-                onChange={(v) => {
-                  if (isInvitationRole(v)) setRole(v)
-                }}
-              />
-              {role === 'admin' ? (
-                <p className='mt-1 text-xs font-semibold text-tma-warning'>
-                  {t('invitations.adminRoleWarning')}
-                </p>
-              ) : null}
-            </Field>
+            <FieldGroup>
+              <Field>
+                <FieldLabel id='invitation-role-label'>
+                  {t('invitations.roleLabel')}
+                </FieldLabel>
+                <ToggleGroup
+                  aria-labelledby='invitation-role-label'
+                  className='flex flex-wrap gap-2'
+                  id='invitation-role-picker'
+                  value={[role]}
+                  onValueChange={(values) => {
+                    const v = values[0]
+                    if (v && isInvitationRole(v)) setRole(v)
+                  }}>
+                  {roleOptions.map((option) => (
+                    <ToggleGroupItem key={option.value} value={option.value}>
+                      {option.label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+                {role === 'admin' ? (
+                  <p className='mt-1 text-xs font-semibold text-amber-700'>
+                    {t('invitations.adminRoleWarning')}
+                  </p>
+                ) : null}
+              </Field>
 
-            <Field className='mt-3'>
-              <FieldLabel>{t('invitations.ttlLabel')}</FieldLabel>
-              <NativePicker
-                aria-label={t('invitations.ttlLabel')}
-                options={ttlOptions}
-                value={String(ttlHours)}
-                onChange={(v) => setTtlHours(parseInvitationTtlHours(v))}
-              />
-            </Field>
+              <Field>
+                <FieldLabel id='invitation-ttl-label'>
+                  {t('invitations.ttlLabel')}
+                </FieldLabel>
+                <ToggleGroup
+                  aria-labelledby='invitation-ttl-label'
+                  className='flex flex-wrap gap-2'
+                  id='invitation-ttl-picker'
+                  value={[String(ttlHours)]}
+                  onValueChange={(values) => {
+                    const v = values[0]
+                    if (v) setTtlHours(parseInvitationTtlHours(v))
+                  }}>
+                  {ttlOptions.map((option) => (
+                    <ToggleGroupItem key={option.value} value={option.value}>
+                      {option.label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </Field>
+            </FieldGroup>
 
             <div className='mt-4 flex gap-2'>
-              <Button
+              <TmaHapticButton
+                aria-busy={createMutation.isPending}
                 disabled={createMutation.isPending}
-                size='md'
-                variant='primary'
+                size='default'
+                variant='default'
                 onClick={handleCreate}>
                 {createMutation.isPending
                   ? t('invitations.creating')
                   : t('invitations.createInvite')}
-              </Button>
-              <Button size='md' variant='ghost' onClick={handleClose}>
+              </TmaHapticButton>
+              <TmaHapticButton
+                size='default'
+                variant='ghost'
+                onClick={handleClose}>
                 {t('common.cancel')}
-              </Button>
+              </TmaHapticButton>
             </div>
           </>
         ) : (
           <>
-            <p className='m-0 text-sm text-tma-text-strong'>
-              {t('invitations.linkReady')}
-            </p>
-
-            <div className='mt-2 rounded-2xl border border-tma-line bg-tma-line p-3'>
-              <p className='m-0 line-clamp-1 font-mono text-xs break-all text-tma-text-muted'>
-                {inviteLink}
+            <div className='grid gap-2'>
+              <p className='m-0 text-sm text-foreground'>
+                {t('invitations.linkReady')}
               </p>
+
+              <CardDescription className='font-mono text-xs break-all'>
+                {inviteLink}
+              </CardDescription>
             </div>
 
             <div className='mt-4 flex gap-2'>
-              <Button
-                size='md'
-                variant='primary'
+              <TmaHapticButton
+                size='default'
+                variant='default'
                 onClick={handleShareViaTelegram}>
                 {t('invitations.shareViaTelegram')}
-              </Button>
-              <Button size='md' variant='outline' onClick={handleCopyLink}>
+              </TmaHapticButton>
+              <TmaHapticButton
+                size='default'
+                variant='outline'
+                onClick={handleCopyLink}>
                 {t('invitations.copyLink')}
-              </Button>
+              </TmaHapticButton>
             </div>
 
-            <Button
+            <TmaHapticButton
               className='mt-2'
               size='sm'
               variant='ghost'
               onClick={handleClose}>
               {t('common.close')}
-            </Button>
+            </TmaHapticButton>
           </>
         )}
       </CardContent>

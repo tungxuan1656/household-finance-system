@@ -1,9 +1,16 @@
-import { NativePicker } from '@/components/ui/native-picker'
+import { NativePicker } from '@/components/shared/native-picker'
 
-export const LoadingPicker = ({ loadingLabel }: { loadingLabel: string }) => (
+export const LoadingPicker = ({
+  id,
+  loadingLabel,
+}: {
+  id?: string
+  loadingLabel: string
+}) => (
   <NativePicker
     disabled
     fullWidth
+    id={id}
     options={[{ label: loadingLabel, value: '' }]}
     value=''
     onChange={() => {}}

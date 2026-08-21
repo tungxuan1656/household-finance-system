@@ -2,6 +2,7 @@
 set -o pipefail
 
 # Add only commands supported by repository evidence.
+# Keep at least one BUILD_TASKS or TEST_TASKS entry when a build/test exists; otherwise keep an explicit commented SKIP with evidence.
 # Set HARNESS_JOBS to limit concurrent build and test tasks.
 MAX_JOBS="${HARNESS_JOBS:-4}"
 STATUS=0
@@ -24,6 +25,15 @@ TEST_TASKS=(
 
 if ! [[ "$MAX_JOBS" =~ ^[1-9][0-9]*$ ]]; then
   echo "FAIL HARNESS_JOBS must be a positive integer" >&2
+  exit 2
+fi
+
+# Guard: require at least one BUILD or TEST task when repo has evidence.
+# If repository truly has no suite, keep explicit commented example with SKIP evidence
+# (e.g. # "pnpm run test" # SKIP explicit: no test dir). Silent all-empty is a harness misconfiguration.
+if [ "${#BUILD_TASKS[@]}" -eq 0 ] && [ "${#TEST_TASKS[@]}" -eq 0 ]; then
+  echo "FAIL init.sh not configured: no BUILD/TEST tasks (see SKILL.md#Write init.sh from evidence)" >&2
+  echo "Hint: add BUILD_TASKS/TEST_TASKS from package.json scripts, or keep explicit commented SKIP with evidence" >&2
   exit 2
 fi
 

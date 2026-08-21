@@ -1,14 +1,10 @@
-import { miniApp, themeParams, viewport } from '@tma.js/sdk'
+import { viewport } from '@tma.js/sdk'
 
 const ROOT = document.documentElement
 export const DEFAULT_TMA_BG = '#f5f7fb'
 
-const THEME_VARS = ['--tma-base-bg']
-const TG_THEME_PREFIX = '--tg-theme-'
 const SAFE_AREA_PREFIXES = ['--tma-safe', '--tma-content-safe'] as const
 
-let unsubscribeMiniApp: (() => void) | null = null
-let unsubscribeTheme: (() => void) | null = null
 let unsubscribeViewport: (() => void) | null = null
 
 const getViewportCssVarName = (key: string): string | null => {
@@ -42,57 +38,29 @@ export const syncViewportInsets = (): void => {
   unsubscribeViewport = viewport.bindCssVars(getViewportCssVarName)
 }
 
-const clearThemeVars = () => {
-  for (const name of THEME_VARS) {
-    ROOT.style.removeProperty(name)
-  }
-
+const clearViewportVars = () => {
   for (const prefix of SAFE_AREA_PREFIXES) {
     ROOT.style.removeProperty(`${prefix}-top`)
     ROOT.style.removeProperty(`${prefix}-right`)
     ROOT.style.removeProperty(`${prefix}-bottom`)
     ROOT.style.removeProperty(`${prefix}-left`)
   }
-
-  const known = [
-    'bg-color',
-    'text-color',
-    'hint-color',
-    'link-color',
-    'button-color',
-    'button-text-color',
-    'secondary-bg-color',
-    'header-bg-color',
-  ]
-  for (const name of known) {
-    ROOT.style.removeProperty(`${TG_THEME_PREFIX}${name}`)
-  }
 }
 
 const applyBaseBackground = (backgroundColor: string): void => {
-  ROOT.style.setProperty('--tma-base-bg', backgroundColor)
+  ROOT.style.setProperty('--background', backgroundColor)
 }
 
-export const bindTheme = (backgroundColor: string = DEFAULT_TMA_BG): void => {
-  // themeParams and miniApp should already be mounted by initTelegram
-  if (!unsubscribeMiniApp && miniApp.bindCssVars.isAvailable()) {
-    unsubscribeMiniApp = miniApp.bindCssVars()
-  }
-
-  if (!unsubscribeTheme && themeParams.isMounted()) {
-    unsubscribeTheme = themeParams.bindCssVars()
-  }
-
+export const initializeFixedLightPlatform = (
+  backgroundColor: string = DEFAULT_TMA_BG,
+): void => {
+  // Set the fixed light app base and initialize viewport safe-area variables.
   applyBaseBackground(backgroundColor)
   syncViewportInsets()
 }
 
 export const resetTheme = (): void => {
-  unsubscribeMiniApp?.()
-  unsubscribeMiniApp = null
-  unsubscribeTheme?.()
-  unsubscribeTheme = null
   unsubscribeViewport?.()
   unsubscribeViewport = null
-  clearThemeVars()
+  clearViewportVars()
 }

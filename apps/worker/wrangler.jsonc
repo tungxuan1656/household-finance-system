@@ -9,6 +9,15 @@
   "compatibility_date": "2026-03-10",
   "observability": {
     "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    }
   },
   "workers_dev": true,
   "preview_urls": false,
@@ -47,6 +56,8 @@
     "AUTH_ALLOW_INSECURE_TEST_TOKENS": "false",
     "AUTH_AUDIENCE": "household-finance-api",
     "AUTH_ISSUER": "https://household-finance.local",
+    "OPENAI_COMPAT_BASE_URL": "https://9router.tungxuan.io.vn/v1/chat/completions",
+    "OPENAI_COMPAT_MODEL": "ocg/muse-spark-1.2-contributor",
     "RATE_LIMIT_ENABLED": "false",
     "RATE_LIMIT_MAX_REQUESTS": "10",
     "REFRESH_TOKEN_TTL_SECONDS": "2592000",

@@ -1,3 +1,14 @@
+/**
+ * Period feature store — UI-only seam.
+ *
+ * Source of truth for period types/format/selectors/vietnam-time lives in
+ * `src/lib/period/*` (re-exported via `src/lib/period.ts`). This file owns
+ * only the Zustand selection state and imports `PeriodSelection` +
+ * `createCurrentMonthPeriodSelection` from `lib/period`. No duplicate type
+ * definitions are kept here; if a future need adds period logic, add it to
+ * `lib/period` and re-export, keeping `features/period` as UI (components/
+ * pages/store) only. Consolidation is complete — no file deletion needed.
+ */
 import { create } from 'zustand'
 
 import {

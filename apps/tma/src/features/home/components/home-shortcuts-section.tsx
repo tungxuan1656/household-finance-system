@@ -1,7 +1,6 @@
 import type { ReactElement, SVGProps } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ShortcutItem } from '@/components/finance'
 import {
   BudgetIcon,
   GroupIcon,
@@ -10,8 +9,8 @@ import {
   SparkIcon,
   TrendUpIcon,
 } from '@/components/shared/tma-icons'
-import { Section } from '@/components/ui'
-import { useImportFlowStore } from '@/features/expenses/import-store'
+import { useImportFlowStore } from '@/features/expenses/model/import-store'
+import { ShortcutItem } from '@/features/home/components/shortcuts'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
 export const HomeShortcutsSection = () => {
@@ -73,8 +72,10 @@ export const HomeShortcutsSection = () => {
   }>
 
   return (
-    <Section>
-      <div className='grid grid-cols-2 gap-2.5'>
+    // No external margin: parent gap owns spacing. Plain wrapper for consistent rhythm.
+    <section
+      aria-label={t('home.shortcuts.title', { defaultValue: 'Shortcuts' })}>
+      <div className='grid grid-cols-2 gap-3'>
         {shortcutItems.map((item) => (
           <ShortcutItem
             key={item.title}
@@ -87,6 +88,6 @@ export const HomeShortcutsSection = () => {
           />
         ))}
       </div>
-    </Section>
+    </section>
   )
 }

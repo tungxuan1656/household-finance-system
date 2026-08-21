@@ -2,34 +2,29 @@ import { useEffect, useEffectEvent, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { LoadingPicker } from '@/components/shared/loading-picker'
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Button,
-  NativePicker,
-  Section,
-  SectionHeader,
-  SegmentedControl,
-} from '@/components/ui'
-import {
-  useHouseholdExpenseGroupQueries,
-  usePersonalExpenseGroupListQuery,
-} from '@/features/groups/api'
+import { NativePicker } from '@/components/shared/native-picker'
+import { QueryState } from '@/components/shared/query-state'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { useExpenseGroupAggregateQuery } from '@/features/groups/api'
 import {
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
 import { PeriodPickerSection } from '@/features/period/components/period-picker-section'
 import { TMA_PATHS } from '@/lib/constants/routes'
-import { type PeriodSelection } from '@/lib/period'
 import {
-  hideBottomButton,
-  setBottomButton,
-  updateBottomButton,
-} from '@/lib/telegram/bottom-button'
+  createReportingPeriodPresetSelection,
+  getMatchingReportingPeriodPreset,
+  type PeriodSelection,
+} from '@/lib/period'
+import { selection } from '@/lib/telegram/haptics'
 
-import { useExpenseListFilterStore } from '../filter-store'
 import { useExpenseFilterOptions } from '../hooks/use-expense-filter-options'
+import { useExpenseListFilterStore } from '../model/filter-store'
 
 const ALL_VALUE = '__all__'
 
@@ -55,30 +50,23 @@ export const ExpenseFilterPage = () => {
     [householdsQuery.data?.items],
   )
 
-  // Group queries
-  const personalGroupsQuery = usePersonalExpenseGroupListQuery()
-  const householdGroupQueries = useHouseholdExpenseGroupQueries(households)
+  const groupsQuery = useExpenseGroupAggregateQuery(households)
 
-  const allGroups = useMemo(() => {
-    const groups = [...(personalGroupsQuery.data?.items ?? [])]
-
-    householdGroupQueries.forEach((query) => {
-      if (query.data?.items) {
-        groups.push(...query.data.items)
-      }
-    })
-
-    return groups
-  }, [personalGroupsQuery.data, householdGroupQueries])
+  const allGroups = useMemo(
+    () => groupsQuery.data?.items ?? [],
+    [groupsQuery.data],
+  )
 
   useEffect(() => {
     const state = location.state as FilterReturnState | null
 
     if (state?.appliedPeriod) {
+      const matched = getMatchingReportingPeriodPreset(state.appliedPeriod)
+
       setFilter({
         dateFrom: state.appliedPeriod.dateFrom,
         dateTo: state.appliedPeriod.dateTo,
-        periodPreset: 'custom',
+        periodPreset: matched === 'thisMonth' ? 'thisMonth' : 'custom',
       })
     }
   }, [location.state, setFilter])
@@ -91,10 +79,12 @@ export const ExpenseFilterPage = () => {
         return
       }
 
+      const matched = getMatchingReportingPeriodPreset(period)
+
       setFilter({
         dateFrom: period.dateFrom,
         dateTo: period.dateTo,
-        periodPreset: 'custom',
+        periodPreset: matched === 'thisMonth' ? 'thisMonth' : 'custom',
       })
     },
   )
@@ -108,30 +98,6 @@ export const ExpenseFilterPage = () => {
 
     navigate(TMA_PATHS.expenses, { replace: true })
   })
-
-  useEffect(() => {
-    const cleanup = setBottomButton({
-      text: t('expenses.filter.apply'),
-      enabled: true,
-      showProgress: false,
-      onClick: () => {
-        handleApply()
-      },
-    })
-
-    return () => {
-      cleanup()
-      hideBottomButton()
-    }
-  }, [t])
-
-  useEffect(() => {
-    updateBottomButton({
-      text: t('expenses.filter.apply'),
-      enabled: true,
-      showProgress: false,
-    })
-  }, [filter])
 
   const {
     makeSortOptions,
@@ -153,11 +119,23 @@ export const ExpenseFilterPage = () => {
 
   const periodValue: PeriodSelection | null = useMemo(() => {
     if (filter.dateFrom != null && filter.dateTo != null) {
-      return {
+      const temp: PeriodSelection = {
         granularity: 'custom',
         dateFrom: filter.dateFrom,
         dateTo: filter.dateTo,
       }
+      const matched = getMatchingReportingPeriodPreset(temp)
+      if (matched) {
+        const presetSelection = createReportingPeriodPresetSelection(matched)
+
+        return {
+          granularity: presetSelection.granularity,
+          dateFrom: filter.dateFrom,
+          dateTo: filter.dateTo,
+        }
+      }
+
+      return temp
     }
 
     return null
@@ -171,74 +149,119 @@ export const ExpenseFilterPage = () => {
     filter.categoryKey != null
 
   return (
-    <TmaPageShell reserveBottomButton title={t('expenses.filter.title')}>
-      {/* Reset at top */}
-      <div className='flex justify-end px-1 pt-1 pb-2'>
-        <Button
-          disabled={!isFilterActive}
-          size='sm'
-          variant='ghost'
-          onClick={handleReset}>
-          {t('expenses.filter.reset')}
-        </Button>
-      </div>
-
-      <Section className='mt-0'>
-        <SectionHeader title={t('expenses.filter.sortTitle')} />
-        <SegmentedControl
-          options={makeSortOptions(t)}
-          value={filter.sort}
-          onChange={handleSortChange}
-        />
-      </Section>
+    <TmaPageShell
+      contentClassName='gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton
+            disabled={!isFilterActive}
+            variant='outline'
+            onClick={() => {
+              selection()
+              handleReset()
+            }}>
+            {t('expenses.filter.reset')}
+          </TmaHapticButton>
+          <TmaHapticButton onClick={handleApply}>
+            {t('expenses.filter.apply')}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('expenses.filter.title')}>
+      <Card size='sm'>
+        <CardHeader className='pb-2'>
+          <CardTitle className='text-sm tracking-normal normal-case'>
+            {t('expenses.filter.sortTitle')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ToggleGroup
+            className='grid w-full grid-cols-2 gap-2'
+            value={[filter.sort]}
+            onValueChange={(values) => {
+              const next = values[0]
+              if (next && next !== filter.sort) {
+                selection()
+                handleSortChange(next as typeof filter.sort)
+              }
+            }}>
+            {makeSortOptions(t).map((option) => (
+              <ToggleGroupItem key={option.value} value={option.value}>
+                {option.label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </CardContent>
+      </Card>
 
       <PeriodPickerSection value={periodValue} onChange={handlePeriodChange} />
 
-      <Section>
-        <SectionHeader title={t('expenses.filter.householdTitle')} />
-        {householdsQuery.isLoading ? (
-          <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
-        ) : (
-          <NativePicker
-            fullWidth
-            options={householdPickerOptions}
-            placeholder={t('expenses.filter.householdPlaceholder')}
-            value={filter.householdId ?? ALL_VALUE}
-            onChange={handleHouseholdChange}
-          />
-        )}
-      </Section>
+      <Card size='sm'>
+        <CardHeader className='pb-2'>
+          <CardTitle className='text-sm tracking-normal normal-case'>
+            {t('expenses.filter.detailsTitle', {
+              defaultValue: 'Bộ lọc chi tiết',
+            })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup className='gap-4'>
+            <Field>
+              <FieldLabel htmlFor='expense-filter-household-picker'>
+                {t('expenses.filter.householdTitle')}
+              </FieldLabel>
+              <QueryState query={householdsQuery} variant='plain'>
+                {() => (
+                  <NativePicker
+                    fullWidth
+                    id='expense-filter-household-picker'
+                    options={householdPickerOptions}
+                    placeholder={t('expenses.filter.householdPlaceholder')}
+                    value={filter.householdId ?? ALL_VALUE}
+                    onChange={handleHouseholdChange}
+                  />
+                )}
+              </QueryState>
+            </Field>
 
-      <Section>
-        <SectionHeader title={t('expenses.filter.groupTitle')} />
-        {personalGroupsQuery.isLoading ||
-        householdGroupQueries.some((q) => q.isLoading) ? (
-          <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
-        ) : (
-          <NativePicker
-            fullWidth
-            options={groupPickerOptions}
-            placeholder={t('expenses.filter.groupTitle')}
-            value={filter.groupId ?? ALL_VALUE}
-            onChange={handleGroupChange}
-          />
-        )}
-      </Section>
+            <Field>
+              <FieldLabel htmlFor='expense-filter-group-picker'>
+                {t('expenses.filter.groupTitle')}
+              </FieldLabel>
+              <QueryState query={groupsQuery} variant='plain'>
+                {() => (
+                  <NativePicker
+                    fullWidth
+                    id='expense-filter-group-picker'
+                    options={groupPickerOptions}
+                    placeholder={t('expenses.filter.groupTitle')}
+                    value={filter.groupId ?? ALL_VALUE}
+                    onChange={handleGroupChange}
+                  />
+                )}
+              </QueryState>
+            </Field>
 
-      <Section>
-        <SectionHeader title={t('expenses.filter.categoryAll')} />
-        {referenceCategoriesQuery.isLoading ? (
-          <LoadingPicker loadingLabel={t('expenses.filter.householdLoading')} />
-        ) : (
-          <NativePicker
-            fullWidth
-            options={categoryPickerOptions}
-            placeholder={t('expenses.filter.categoryAll')}
-            value={filter.categoryKey ?? ALL_VALUE}
-            onChange={handleCategoryChange}
-          />
-        )}
-      </Section>
+            <Field>
+              <FieldLabel htmlFor='expense-filter-category-picker'>
+                {t('expenses.filter.categoryAll')}
+              </FieldLabel>
+              <QueryState query={referenceCategoriesQuery} variant='plain'>
+                {() => (
+                  <NativePicker
+                    fullWidth
+                    id='expense-filter-category-picker'
+                    options={categoryPickerOptions}
+                    placeholder={t('expenses.filter.categoryAll')}
+                    value={filter.categoryKey ?? ALL_VALUE}
+                    onChange={handleCategoryChange}
+                  />
+                )}
+              </QueryState>
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
     </TmaPageShell>
   )
 }

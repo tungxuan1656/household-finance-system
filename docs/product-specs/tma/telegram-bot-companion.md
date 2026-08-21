@@ -128,6 +128,11 @@ Bot returns a structured full preview with all parsed fields:
 
 No compact mode. All previews are always full.
 
+#### AI Household/Group Recognition
+
+- Parser uses whitelist recognition (householdName/groupNames) when available; see `shared/expense-household-context.md` and `expense-grouping.md`.
+- `/add` preview path may show mapped household/group; natural-input direct-create ignores AI household/group and stays `personal` with post-create `🏠 Chọn household` picker.
+
 ### Required Actions
 
 Preview shows:

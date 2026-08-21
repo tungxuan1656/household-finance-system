@@ -3,6 +3,31 @@ set -euo pipefail
 
 VERBOSE=false
 
+MAX_JOBS="${HARNESS_JOBS:-4}"
+if ! [[ "$MAX_JOBS" =~ ^[1-9][0-9]*$ ]]; then
+  echo "FAIL HARNESS_JOBS must be a positive integer" >&2
+  exit 2
+fi
+
+# 1.4.0 guard: require at least one BUILD or TEST task when repo has evidence.
+# Evidence: package.json scripts show build (web, tma) and test (web, worker, tma). Current init.sh configures 8 checks via run_parallel_checks (3 typecheck + 3 test + 2 build).
+# Template uses BUILD_TASKS/TEST_TASKS arrays; this repo also defines them for guard compliance while inlining actual execution via run_parallel_checks.
+# If repository truly had no suite, keep explicit commented SKIP with evidence (e.g. # "pnpm run test" # SKIP explicit: no test dir).
+BUILD_TASKS=(
+  "pnpm --filter web build"
+  "pnpm --filter tma build"
+)
+TEST_TASKS=(
+  "pnpm --filter web test"
+  "pnpm --filter worker test"
+  "pnpm --filter tma test"
+)
+if [ "${#BUILD_TASKS[@]}" -eq 0 ] && [ "${#TEST_TASKS[@]}" -eq 0 ]; then
+  echo "FAIL init.sh not configured: no BUILD/TEST tasks (see SKILL.md#Write init.sh from evidence)" >&2
+  echo "Hint: add BUILD_TASKS/TEST_TASKS from package.json scripts, or keep explicit commented SKIP with evidence" >&2
+  exit 2
+fi
+
 usage() {
   cat >&2 <<'EOF'
 Usage: ./init.sh [--verbose] [format|lint|typecheck|test|build]

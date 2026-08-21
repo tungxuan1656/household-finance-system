@@ -6,13 +6,15 @@ Status: current
 
 Provide a TMA-first expense-create flow optimized for Telegram WebView speed and clarity.
 
+For TMA UI and CTA ownership rules, see [native UI and navigation pattern](../../references/frontend/tma/native-ui-and-navigation-pattern.md) and [TMA Design](../../apps/tma/DESIGN.md).
+
 ## User Flow
 
 1. User starts expense capture from the floating add action or another supported entry point.
 2. Step 1: choose date and category.
 3. Step 2: enter amount, source, and note.
 4. Step 3: choose optional household and group, then review preview state.
-5. User saves through Telegram `BottomButton`.
+5. User saves through an in-page shadcn `Button` CTA.
 
 ## Acceptance Criteria
 

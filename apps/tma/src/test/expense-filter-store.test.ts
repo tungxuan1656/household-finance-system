@@ -5,7 +5,7 @@ import {
   buildInitialExpenseListFilter,
   countActiveExpenseListFilters,
   useExpenseListFilterStore,
-} from '@/features/expenses/filter-store'
+} from '@/features/expenses/model/filter-store'
 
 const getState = () => useExpenseListFilterStore.getState()
 

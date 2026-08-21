@@ -1,4 +1,9 @@
 {
+  "_harness": {
+    "skill": "harness-slim",
+    "version": "1.4.0",
+    "generatedAt": "2026-08-21"
+  },
   "features": [
     {
       "id": "feat-126",
@@ -9,7 +14,49 @@
     {
       "id": "feat-127",
       "title": "TMA eager route loading",
-      "status": "active",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-128",
+      "title": "TMA shadcn UI migration",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-129",
+      "title": "TMA directory tree deep-modules refactor",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-130",
+      "title": "AI expense parser household/group recognition by name",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-131",
+      "title": "Migrate TMA DataState to QueryState (statistics-page)",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-132",
+      "title": "Telegram bot AI household/group recognition by name",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-133",
+      "title": "AI expenses polish: shared context, group-household sync, preview",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-134",
+      "title": "Unblock push: split long files to satisfy check_ts_length",
+      "status": "done",
       "depends_on": []
     }
   ]

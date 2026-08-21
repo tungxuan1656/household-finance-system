@@ -1,16 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const bindTheme = vi.fn()
+const initializeFixedLightPlatform = vi.fn()
 const resetTheme = vi.fn()
 const syncViewportInsets = vi.fn()
 
 const init = vi.fn()
 const miniAppReady = vi.fn()
+const themeParamsMount = vi.fn()
 const viewportMount = vi.fn(async () => undefined)
 
 vi.mock('@/lib/telegram/theme', () => ({
-  bindTheme,
   DEFAULT_TMA_BG: '#f5f7fb',
+  initializeFixedLightPlatform,
   resetTheme,
   syncViewportInsets,
 }))
@@ -24,10 +25,6 @@ vi.mock('@tma.js/sdk', () => ({
   initData: {
     restore: vi.fn(),
   },
-  mainButton: {
-    isMounted: vi.fn(() => false),
-    mount: vi.fn(),
-  },
   miniApp: {
     mount: vi.fn(),
     ready: { ifAvailable: miniAppReady },
@@ -40,7 +37,7 @@ vi.mock('@tma.js/sdk', () => ({
     disableVertical: { ifAvailable: vi.fn() },
   },
   themeParams: {
-    mount: vi.fn(),
+    mount: themeParamsMount,
   },
   viewport: {
     mount: viewportMount,
@@ -51,11 +48,12 @@ vi.mock('@tma.js/sdk', () => ({
 }))
 
 beforeEach(() => {
-  bindTheme.mockReset()
+  initializeFixedLightPlatform.mockReset()
   resetTheme.mockReset()
   syncViewportInsets.mockReset()
   init.mockReset()
   miniAppReady.mockReset()
+  themeParamsMount.mockReset()
   viewportMount.mockReset()
 })
 
@@ -96,7 +94,8 @@ describe('initTelegramSafely', () => {
     await Promise.resolve()
 
     expect(result.error).toBeNull()
-    expect(bindTheme).toHaveBeenCalledWith(DEFAULT_TMA_BG)
+    expect(themeParamsMount).toHaveBeenCalledTimes(1)
+    expect(initializeFixedLightPlatform).toHaveBeenCalledWith(DEFAULT_TMA_BG)
     expect(miniAppReady).toHaveBeenCalledTimes(1)
 
     if (!viewportMountResolver.current) {

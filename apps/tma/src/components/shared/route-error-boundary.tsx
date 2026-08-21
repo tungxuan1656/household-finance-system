@@ -1,9 +1,16 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 
+import { NotFoundPage } from '@/app/router/not-found-page'
 import { AppShell } from '@/components/shared/app-shell'
-import { Button, CardDescription, CardTitle } from '@/components/ui'
-import { NotFoundPage } from '@/routes/not-found'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 // ── Route-level error element (function component – can use hooks) ──
 // Used as errorElement in createBrowserRouter.
@@ -25,16 +32,18 @@ export const RootErrorElement = () => {
 
   return (
     <AppShell>
-      <main className='grid min-h-0 flex-1 place-items-center p-6 text-center'>
-        <div className='grid max-w-sm gap-3'>
-          <CardTitle>Something went wrong</CardTitle>
-          <CardDescription>{message}</CardDescription>
-          <Button
-            className='justify-self-center'
-            onClick={() => window.location.reload()}>
-            Try again
-          </Button>
-        </div>
+      <main className='grid min-h-0 flex-1 place-items-center p-6'>
+        <Card className='w-full max-w-sm'>
+          <CardHeader className='text-center'>
+            <CardTitle>Something went wrong</CardTitle>
+            <CardDescription>{message}</CardDescription>
+          </CardHeader>
+          <CardFooter className='justify-center'>
+            <TmaHapticButton onClick={() => window.location.reload()}>
+              Try again
+            </TmaHapticButton>
+          </CardFooter>
+        </Card>
       </main>
     </AppShell>
   )
@@ -81,16 +90,18 @@ export class RouteErrorBoundary extends Component<
 
       return (
         <AppShell>
-          <main className='grid min-h-0 flex-1 place-items-center p-6 text-center'>
-            <div className='grid max-w-sm gap-3'>
-              <CardTitle>Something went wrong</CardTitle>
-              <CardDescription>{message}</CardDescription>
-              <Button
-                className='justify-self-center'
-                onClick={this.handleRetry}>
-                Try again
-              </Button>
-            </div>
+          <main className='grid min-h-0 flex-1 place-items-center p-6'>
+            <Card className='w-full max-w-sm'>
+              <CardHeader className='text-center'>
+                <CardTitle>Something went wrong</CardTitle>
+                <CardDescription>{message}</CardDescription>
+              </CardHeader>
+              <CardFooter className='justify-center'>
+                <TmaHapticButton onClick={this.handleRetry}>
+                  Try again
+                </TmaHapticButton>
+              </CardFooter>
+            </Card>
           </main>
         </AppShell>
       )

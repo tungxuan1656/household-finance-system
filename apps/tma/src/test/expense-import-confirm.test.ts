@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import type { CreateExpenseRequest } from '@/features/expenses/api'
 import { confirmImport } from '@/features/expenses/import-confirm'
-import type { ImportItemDraft } from '@/features/expenses/import-store'
+import type { ImportItemDraft } from '@/features/expenses/model/import-store'
 import type { ExpenseDTO } from '@/features/home/types'
 
 describe('confirmImport', () => {

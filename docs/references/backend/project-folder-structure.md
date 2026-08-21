@@ -12,6 +12,7 @@ src/
   middlewares/
     auth.ts
     request-context.ts
+    request-logger.ts
   db/
     repositories/
       feature*-repository.ts
@@ -24,6 +25,8 @@ src/
     index.ts
   lib/
     auth/
+    logger.ts
+    ai/expense-parser.ts
     response.ts
     validation.ts
     env.ts
@@ -35,7 +38,7 @@ src/
     webhook-security.ts
     account-linking.ts
     types.ts
-    commands/           # one file per command: start, help, settings, stats, top, budget, ai-expense, confirm-expense, household-select, read-scope
+    commands/           # one file per command: start, help, settings, stats, top, budget, ai-expense-*, confirm-expense, household-select, read-scope
     renderers/          # Vietnamese text + Telegram keyboard builders
     lib/                # pure helpers used by commands/renderers (e.g. amount detector, patterns)
     notifications/      # scheduled sends: budget alerts, household activity, weekly digest
@@ -52,8 +55,11 @@ src/
 - `contracts/`: API request/response schemas and transport contracts.
 - `types/`: runtime-only internal types, not HTTP transport contracts.
 - `lib/auth/`: auth/security infrastructure, including Firebase verification, JWT issue/verify, token hashing.
+- `lib/logger.ts`: structured JSON-line logger; all request and AI logging goes here.
+- `lib/ai/expense-parser.ts`: OpenAI-compatible expense parser with whitelist household/group context.
 - `lib/`: cross-cutting runtime helpers shared by multiple features.
 - `utils/`: small pure helpers with no framework or request-context dependency.
+- `db/repositories/expense-group-repository.ts`: includes `listExpenseGroupsByHouseholdIds` for single IN query.
 - `bot/`: Telegram bot companion surface. `service.ts` is the only webhook entry; `telegram-client.ts` is the only module allowed to call Telegram Bot API. `commands/` and `renderers/` only consume contracts and shared services — they never talk to Telegram directly and never write to D1 directly. Pure helpers under `bot/lib/` may not depend on Hono context or fetch globals.
 
 ## Placement rules

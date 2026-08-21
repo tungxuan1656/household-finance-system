@@ -5,7 +5,9 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
+import { useMemo } from 'react'
 
+import type { QueryLike } from '@/components/shared/query-state'
 import type { HouseholdDTO } from '@/features/home/types'
 import { get, post } from '@/lib/api/client'
 import { notification } from '@/lib/telegram/haptics'
@@ -67,6 +69,68 @@ export const useHouseholdExpenseGroupQueries = (households: HouseholdDTO[]) =>
       expenseGroupListQueryOptions(household.id),
     ),
   })
+
+export const useExpenseGroupAggregateQuery = (
+  households: HouseholdDTO[],
+): QueryLike<ListExpenseGroupsResponse> => {
+  const personalGroupsQuery = usePersonalExpenseGroupListQuery()
+  const householdGroupQueries = useHouseholdExpenseGroupQueries(households)
+
+  const allGroups = useMemo(() => {
+    const groups = [...(personalGroupsQuery.data?.items ?? [])]
+
+    householdGroupQueries.forEach((query) => {
+      if (query.data?.items) {
+        groups.push(...query.data.items)
+      }
+    })
+
+    return groups
+  }, [personalGroupsQuery.data, householdGroupQueries])
+
+  return useMemo<QueryLike<ListExpenseGroupsResponse>>(() => {
+    const queries = [
+      personalGroupsQuery,
+      ...householdGroupQueries,
+    ] as unknown as QueryLike<unknown>[]
+    const isPending = queries.some((q) => q.status === 'pending')
+    const hasError = queries.some((q) => q.status === 'error')
+    const isFetching = queries.some((q) => q.fetchStatus === 'fetching')
+
+    const refetch = () => {
+      void personalGroupsQuery.refetch?.()
+
+      householdGroupQueries.forEach((q) => {
+        void (q.refetch as (() => unknown) | undefined)?.()
+      })
+    }
+
+    if (isPending) {
+      return {
+        status: 'pending',
+        fetchStatus: 'fetching',
+        data: undefined,
+        refetch,
+      }
+    }
+
+    if (hasError) {
+      return {
+        status: 'error',
+        fetchStatus: isFetching ? 'fetching' : 'idle',
+        data: undefined,
+        refetch,
+      }
+    }
+
+    return {
+      status: 'success',
+      fetchStatus: isFetching ? 'fetching' : 'idle',
+      data: { items: allGroups },
+      refetch,
+    }
+  }, [personalGroupsQuery, householdGroupQueries, allGroups])
+}
 
 export const useExpenseGroupDetailQuery = (groupId: string | undefined) =>
   useQuery({

@@ -1,12 +1,16 @@
 import { BudgetIcon } from '@/components/shared/tma-icons'
-import { Card, Chip, Eyebrow, IconBadge, MoneyLabel } from '@/components/ui'
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import type { HouseholdDTO } from '@/features/home/types'
 
 import { formatBudgetPeriodLabel, getBudgetScopeLabel } from '../presentation'
 import type { BudgetDTO, BudgetStatusDTO } from '../types'
-
-const budgetAccent = { background: '#fff6d9', foreground: '#b48800' }
 
 type BudgetHeroCardProps = {
   budget: BudgetDTO
@@ -21,32 +25,27 @@ export const BudgetHeroCard = ({
   household,
   t,
 }: BudgetHeroCardProps) => (
-  <Card className='grid gap-4 p-5'>
-    <div className='flex items-start justify-between gap-3'>
-      <div className='flex flex-wrap gap-1.5'>
-        <Chip tone='primary'>{formatBudgetPeriodLabel(budget.period, t)}</Chip>
-        <Chip
-          className={
-            budget.scope === 'personal'
-              ? 'bg-tma-warning/20 text-[#8a6800]'
-              : undefined
-          }
-          tone={budget.scope === 'personal' ? 'warning' : 'muted'}>
-          {getBudgetScopeLabel(budget.scope, household, t)}
-        </Chip>
+  <Card>
+    <CardHeader>
+      <div className='flex items-start justify-between gap-3'>
+        <div className='flex flex-wrap gap-1.5'>
+          <Badge>{formatBudgetPeriodLabel(budget.period, t)}</Badge>
+          <Badge
+            variant={budget.scope === 'personal' ? 'secondary' : 'outline'}>
+            {getBudgetScopeLabel(budget.scope, household, t)}
+          </Badge>
+        </div>
+        <div className='flex size-10 items-center justify-center rounded-full bg-[#fff6d9] text-[#b48800]'>
+          <BudgetIcon height={20} strokeWidth={2} width={20} />
+        </div>
       </div>
-      <IconBadge accent={budgetAccent}>
-        <BudgetIcon height={20} strokeWidth={2} width={20} />
-      </IconBadge>
-    </div>
-    <div>
-      <Eyebrow>{t('budgets.detail.statLimit')}</Eyebrow>
-      <MoneyLabel className='text-[28px] leading-tight font-extrabold'>
+      <CardDescription>{t('budgets.detail.statLimit')}</CardDescription>
+      <CardTitle className='text-[28px] leading-tight font-extrabold'>
         {formatCurrencyMinor(
           status?.totalPlannedMinor ?? budget.totalLimitMinor,
           budget.currencyCode,
         )}
-      </MoneyLabel>
-    </div>
+      </CardTitle>
+    </CardHeader>
   </Card>
 )

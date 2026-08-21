@@ -2,15 +2,17 @@ import { type FormEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
-  Button,
   Card,
+  CardContent,
   CardDescription,
-  Field,
-  FieldLabel,
-  Input,
-} from '@/components/ui'
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 import { getHouseholdDetailPath, TMA_PATHS } from '@/lib/constants/routes'
 
 import { useCreateHouseholdMutation, useUpdateHouseholdMutation } from '../api'
@@ -90,71 +92,84 @@ export const CreateHouseholdPage = () => {
   return (
     <TmaPageShell title={t('households.createPage.title')}>
       {feedback ? (
-        <Card
-          className={
-            feedback.tone === 'error'
-              ? 'mt-3 border-[#d93838]/20 bg-[#ffeded]/90'
-              : 'mt-3 border-tma-positive/20 bg-tma-positive/10'
-          }>
-          <CardDescription
-            className={
-              feedback.tone === 'error' ? 'text-[#d93838]' : 'text-[#2f9b44]'
-            }>
-            {feedback.message}
-          </CardDescription>
+        <Card>
+          <CardHeader>
+            <CardDescription
+              className={
+                feedback.tone === 'error'
+                  ? 'text-destructive'
+                  : 'text-emerald-600'
+              }>
+              {feedback.message}
+            </CardDescription>
+          </CardHeader>
         </Card>
       ) : null}
 
-      <Card className='mt-3 grid gap-3'>
-        <HouseholdAvatarSection
-          canEdit
-          avatarUrl={avatarUrl}
-          helperText={t('households.createPage.imageHelp')}
-          householdName={
-            normalizedName || t('households.createPage.newHousehold')
-          }
-          isBusy={isBusy}
-          title={t('households.createPage.fieldAvatar')}
-          onAvatarUploaded={handleAvatarUploaded}
-        />
+      <Card>
+        <CardContent>
+          <HouseholdAvatarSection
+            canEdit
+            avatarUrl={avatarUrl}
+            helperText={t('households.createPage.imageHelp')}
+            householdName={
+              normalizedName || t('households.createPage.newHousehold')
+            }
+            isBusy={isBusy}
+            title={t('households.createPage.fieldAvatar')}
+            onAvatarUploaded={handleAvatarUploaded}
+          />
+        </CardContent>
       </Card>
 
-      <section className='mt-6'>
-        <Card>
-          <form className='grid gap-3.5' onSubmit={handleCreateHousehold}>
-            <Field>
-              <FieldLabel>{t('households.createPage.fieldName')}</FieldLabel>
-              <Input
-                disabled={isBusy}
-                maxLength={120}
-                placeholder={t('households.createPage.namePlaceholder')}
-                type='text'
-                value={draftName}
-                onChange={(event) => {
-                  setDraftName(event.target.value)
-                  setFeedback(null)
-                }}
-              />
-            </Field>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('households.createPage.fieldName')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className='grid gap-3' onSubmit={handleCreateHousehold}>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor='create-household-name'>
+                  {t('households.createPage.fieldName')}
+                </FieldLabel>
+                <Input
+                  disabled={isBusy}
+                  id='create-household-name'
+                  maxLength={120}
+                  placeholder={t('households.createPage.namePlaceholder')}
+                  type='text'
+                  value={draftName}
+                  onChange={(event) => {
+                    setDraftName(event.target.value)
+                    setFeedback(null)
+                  }}
+                />
+              </Field>
+            </FieldGroup>
 
             <div className='flex flex-wrap justify-end gap-2.5'>
-              <Button
+              <TmaHapticButton
+                aria-busy={isBusy}
                 disabled={isBusy}
                 type='button'
-                variant='ghost'
+                variant='secondary'
                 onClick={() => navigate(TMA_PATHS.households)}>
                 {t('common.cancel')}
-              </Button>
+              </TmaHapticButton>
 
-              <Button disabled={isBusy} type='submit' variant='secondary'>
+              <TmaHapticButton
+                aria-busy={isBusy}
+                disabled={isBusy}
+                type='submit'>
                 {isBusy
                   ? t('households.createPage.submitting')
                   : t('households.create')}
-              </Button>
+              </TmaHapticButton>
             </div>
           </form>
-        </Card>
-      </section>
+        </CardContent>
+      </Card>
     </TmaPageShell>
   )
 }

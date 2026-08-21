@@ -1,19 +1,15 @@
+import { type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Button,
-  Card,
-  CardTitle,
-  Field,
-  FieldLabel,
-  Input,
-  Textarea,
-} from '@/components/ui'
-import { DatePicker } from '@/components/ui/date-picker'
+import { DatePicker } from '@/components/shared/date-picker'
 import {
   NativePicker,
   type NativePickerOption,
-} from '@/components/ui/native-picker'
+} from '@/components/shared/native-picker'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { formatAmountInput } from '@/lib/formatters'
 
 export type CreateGroupFormProps = {
@@ -27,13 +23,12 @@ export type CreateGroupFormProps = {
   name: string
   startDate: string
   onBudgetChange: (v: string) => void
-  onCancel: () => void
   onContextChange: (v: string) => void
   onDescriptionChange: (v: string) => void
   onEndDateChange: (v: string) => void
   onNameChange: (v: string) => void
   onStartDateChange: (v: string) => void
-  onSubmit: () => void
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void
 }
 
 export const CreateGroupForm = ({
@@ -47,7 +42,6 @@ export const CreateGroupForm = ({
   name,
   startDate,
   onBudgetChange,
-  onCancel,
   onContextChange,
   onDescriptionChange,
   onEndDateChange,
@@ -56,66 +50,95 @@ export const CreateGroupForm = ({
   onSubmit,
 }: CreateGroupFormProps) => {
   const { t } = useTranslation()
+  const rawScheduleTitle = t('groups.createPage.sectionSchedule')
+  const scheduleTitle =
+    rawScheduleTitle === 'groups.createPage.sectionSchedule'
+      ? 'Lịch & Ngân sách'
+      : rawScheduleTitle
 
   return (
-    <section className='mt-6'>
-      <CardTitle className='mb-3'>{t('groups.createPage.header')}</CardTitle>
-
-      <Card>
-        <form
-          className='grid gap-3.5'
-          onSubmit={(event) => {
-            event.preventDefault()
-            onSubmit()
-          }}>
-          <Field>
-            <FieldLabel>{t('groups.createPage.fieldName')}</FieldLabel>
-            <Input
-              disabled={isBusy}
-              maxLength={200}
-              placeholder={t('groups.createPage.namePlaceholder')}
-              type='text'
-              value={name}
-              onChange={(event) => {
-                onNameChange(event.target.value)
-              }}
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel>{t('groups.createPage.fieldContext')}</FieldLabel>
-            <NativePicker
-              fullWidth
-              aria-label={t('groups.createPage.contextPlaceholder')}
-              disabled={isBusy || isHouseholdsLoading}
-              options={contextOptions}
-              value={contextValue}
-              onChange={(next) => {
-                onContextChange(next)
-              }}
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel>{t('groups.createPage.fieldDescription')}</FieldLabel>
-            <Textarea
-              disabled={isBusy}
-              maxLength={1000}
-              placeholder={t('groups.createPage.descriptionHelp')}
-              value={description}
-              onChange={(event) => {
-                onDescriptionChange(event.target.value)
-              }}
-            />
-          </Field>
-
-          <div className='grid gap-3.5'>
+    <form
+      className='flex flex-col gap-4'
+      id='create-group-form'
+      onSubmit={onSubmit}>
+      <Card size='sm'>
+        <CardHeader>
+          <CardTitle className='text-sm font-bold tracking-tight'>
+            {t('groups.createPage.header')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup className='gap-4'>
             <Field>
-              <FieldLabel>{t('groups.createPage.fieldStartDate')}</FieldLabel>
+              <FieldLabel htmlFor='create-group-name'>
+                {t('groups.createPage.fieldName')}
+              </FieldLabel>
+              <Input
+                disabled={isBusy}
+                id='create-group-name'
+                maxLength={200}
+                placeholder={t('groups.createPage.namePlaceholder')}
+                type='text'
+                value={name}
+                onChange={(event) => {
+                  onNameChange(event.target.value)
+                }}
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor='create-group-context'>
+                {t('groups.createPage.fieldContext')}
+              </FieldLabel>
+              <NativePicker
+                fullWidth
+                aria-label={t('groups.createPage.contextPlaceholder')}
+                disabled={isBusy || isHouseholdsLoading}
+                id='create-group-context'
+                options={contextOptions}
+                value={contextValue}
+                onChange={(next) => {
+                  onContextChange(next)
+                }}
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor='create-group-description'>
+                {t('groups.createPage.fieldDescription')}
+              </FieldLabel>
+              <Textarea
+                disabled={isBusy}
+                id='create-group-description'
+                maxLength={1000}
+                placeholder={t('groups.createPage.descriptionHelp')}
+                value={description}
+                onChange={(event) => {
+                  onDescriptionChange(event.target.value)
+                }}
+              />
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
+
+      <Card size='sm'>
+        <CardHeader>
+          <CardTitle className='text-sm font-bold tracking-tight'>
+            {scheduleTitle}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup className='gap-4'>
+            <Field>
+              <FieldLabel htmlFor='create-group-start-date'>
+                {t('groups.createPage.fieldStartDate')}
+              </FieldLabel>
               <DatePicker
                 fullWidth
                 aria-label={t('groups.createPage.startDatePlaceholder')}
                 disabled={isBusy}
+                id='create-group-start-date'
                 value={startDate}
                 onChange={(next) => {
                   onStartDateChange(next)
@@ -124,48 +147,39 @@ export const CreateGroupForm = ({
             </Field>
 
             <Field>
-              <FieldLabel>{t('groups.createPage.fieldEndDate')}</FieldLabel>
+              <FieldLabel htmlFor='create-group-end-date'>
+                {t('groups.createPage.fieldEndDate')}
+              </FieldLabel>
               <DatePicker
                 fullWidth
                 aria-label={t('groups.createPage.endDatePlaceholder')}
                 disabled={isBusy}
+                id='create-group-end-date'
                 value={endDate}
                 onChange={(next) => {
                   onEndDateChange(next)
                 }}
               />
             </Field>
-          </div>
 
-          <Field>
-            <FieldLabel>{t('groups.createPage.fieldBudget')}</FieldLabel>
-            <Input
-              disabled={isBusy}
-              inputMode='numeric'
-              placeholder={t('groups.createPage.budgetPlaceholder')}
-              value={budgetInput}
-              onChange={(event) => {
-                onBudgetChange(formatAmountInput(event.target.value))
-              }}
-            />
-          </Field>
-          <div className='flex flex-wrap justify-end gap-2.5'>
-            <Button
-              disabled={isBusy}
-              type='button'
-              variant='ghost'
-              onClick={onCancel}>
-              {t('common.cancel')}
-            </Button>
-
-            <Button disabled={isBusy} type='submit' variant='secondary'>
-              {isBusy
-                ? t('groups.createPage.submitting')
-                : t('groups.createPage.title')}
-            </Button>
-          </div>
-        </form>
+            <Field>
+              <FieldLabel htmlFor='create-group-budget'>
+                {t('groups.createPage.fieldBudget')}
+              </FieldLabel>
+              <Input
+                disabled={isBusy}
+                id='create-group-budget'
+                inputMode='numeric'
+                placeholder={t('groups.createPage.budgetPlaceholder')}
+                value={budgetInput}
+                onChange={(event) => {
+                  onBudgetChange(formatAmountInput(event.target.value))
+                }}
+              />
+            </Field>
+          </FieldGroup>
+        </CardContent>
       </Card>
-    </section>
+    </form>
   )
 }

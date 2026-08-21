@@ -20,3 +20,11 @@
 
 - Log enough context for debugging.
 - Do not log tokens, secrets, or sensitive personal content.
+- Use `lib/logger.ts` for all logging; it emits JSON-line output.
+- Sanitize fields and truncate long strings; `apiKey` is always `[REDACTED]`.
+- Never log raw user text; log `textChars` / `promptChars` counts instead.
+- Propagate `requestId` / `correlationId` as first arg to `logger.info|warn|error`.
+- Redact upstream host via `getBaseUrlHost`; never log full URLs.
+- Include `durationMs`, `status`, and truncated `errorMessage` (max 500).
+- Use `middlewares/request-logger.ts` with try/finally to log duration and echo `x-request-id`.
+- See also `lib/logger.ts` and `middlewares/request-logger.ts` as canonical.

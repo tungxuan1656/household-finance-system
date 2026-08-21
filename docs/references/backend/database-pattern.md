@@ -23,3 +23,6 @@
 - Limit list queries and enforce pagination.
 - Avoid repeated queries inside loops when batch queries can be used.
 - Document indexing needs when adding heavy queries.
+- For AI context, fetch household groups with single `IN` query (`listExpenseGroupsByHouseholdIds`), not N+1 per household.
+- Sort globally by recency then cap 15 households and 15 groups each.
+- Log normalized-key collisions via `parse_expense_name_collision` and drop duplicates (keep first).

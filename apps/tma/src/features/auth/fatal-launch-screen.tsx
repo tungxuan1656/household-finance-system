@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 
 import { AppShell } from '@/components/shared/app-shell'
 import { AppVersionLabel } from '@/components/shared/app-version-label'
-import { Button, CardDescription, CardTitle } from '@/components/ui'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import { CardDescription, CardTitle } from '@/components/ui/card'
 import { closeMiniApp } from '@/lib/telegram/back-button'
 import {
   getContentSafeAreaInsets,
@@ -11,7 +12,7 @@ import {
   mergeSafeAreaInsets,
 } from '@/lib/telegram/safe-area'
 
-import type { AuthError } from './store'
+import type { AuthError } from './model/store'
 
 export interface FatalLaunchScreenProps {
   error?: AuthError | null
@@ -50,16 +51,18 @@ export const FatalLaunchScreen = ({ error }: FatalLaunchScreenProps) => {
           <CardDescription>{t(bodyKey)}</CardDescription>
           <div className='flex justify-center gap-3'>
             {isCloseAvailable && (
-              <Button className='justify-self-center' onClick={closeMiniApp}>
+              <TmaHapticButton
+                className='justify-self-center'
+                onClick={closeMiniApp}>
                 {t('fatal.close')}
-              </Button>
+              </TmaHapticButton>
             )}
-            <Button
+            <TmaHapticButton
               className='justify-self-center'
-              variant={isCloseAvailable ? 'outline' : 'primary'}
+              variant={isCloseAvailable ? 'outline' : 'default'}
               onClick={() => window.location.reload()}>
               {t('dataState.retry')}
-            </Button>
+            </TmaHapticButton>
           </div>
         </div>
         <div className='mt-8'>

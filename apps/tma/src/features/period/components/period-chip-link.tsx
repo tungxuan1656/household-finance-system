@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 
-import { Chip } from '@/components/ui'
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
+import { Badge } from '@/components/ui/badge'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatPeriodSelectionLabel } from '@/lib/period'
 import { selection } from '@/lib/telegram/haptics'
@@ -18,13 +19,17 @@ export const PeriodChipLink = ({
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
 
   return (
-    <Link
-      state={{ backTo: location.pathname }}
-      to={TMA_PATHS.period}
-      onClick={() => {
-        selection()
-      }}>
-      <Chip tone={tone}>{formatPeriodSelectionLabel(selectedPeriod, t)}</Chip>
-    </Link>
+    <TmaHapticButton className='h-8 px-2.5 py-0' size='sm' variant='secondary'>
+      <Link
+        state={{ backTo: location.pathname }}
+        to={TMA_PATHS.period}
+        onClick={() => {
+          selection()
+        }}>
+        <Badge variant={tone === 'primary' ? 'default' : 'secondary'}>
+          {formatPeriodSelectionLabel(selectedPeriod, t)}
+        </Badge>
+      </Link>
+    </TmaHapticButton>
   )
 }

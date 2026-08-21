@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import {
-  Button,
   Card,
+  CardContent,
   CardDescription,
+  CardHeader,
   CardTitle,
-  Eyebrow,
-} from '@/components/ui'
+} from '@/components/ui/card'
 
 type HouseholdAvatarDialogProps = {
   isUploading: boolean
@@ -46,45 +47,51 @@ export const HouseholdAvatarDialog = ({
       role='dialog'>
       <button
         aria-label={t('households.avatarDialog.closePreview')}
-        className='absolute inset-0 bg-tma-text-strong/30'
+        className='absolute inset-0 bg-foreground/30'
         type='button'
         onClick={handleDismiss}
       />
 
-      <Card className='relative z-10 grid w-[min(100%,360px)] gap-4 bg-white/95 shadow-[0_24px_48px_rgba(17,24,39,0.18)]'>
-        <div>
-          <Eyebrow>{t('households.avatarDialog.previewEyebrow')}</Eyebrow>
+      <Card className='relative z-10 w-[min(100%,360px)]'>
+        <CardHeader>
+          <CardDescription>
+            {t('households.avatarDialog.previewEyebrow')}
+          </CardDescription>
           <CardTitle>{t('households.avatarDialog.applyTitle')}</CardTitle>
           <CardDescription>
             {t('households.avatarDialog.applyDesc')}
           </CardDescription>
-        </div>
+        </CardHeader>
 
         {previewUrl ? (
-          <img
-            alt={t('households.avatarDialog.previewAlt')}
-            className='aspect-square w-full rounded-3xl bg-black/4 object-cover'
-            src={previewUrl}
-          />
+          <CardContent>
+            <img
+              alt={t('households.avatarDialog.previewAlt')}
+              className='aspect-square w-full object-cover'
+              src={previewUrl}
+            />
+          </CardContent>
         ) : null}
 
-        <div className='flex justify-end gap-2.5'>
-          <Button
+        <CardContent className='flex justify-end gap-2.5'>
+          <TmaHapticButton
+            aria-busy={isUploading}
             disabled={isUploading}
             variant='ghost'
             onClick={handleDismiss}>
             {t('common.cancel')}
-          </Button>
+          </TmaHapticButton>
 
-          <Button
+          <TmaHapticButton
+            aria-busy={isUploading}
             disabled={isUploading}
             variant='secondary'
             onClick={() => void onApply()}>
             {isUploading
               ? t('households.avatarDialog.uploading')
               : t('households.avatarDialog.applyAction')}
-          </Button>
-        </div>
+          </TmaHapticButton>
+        </CardContent>
       </Card>
     </div>
   )

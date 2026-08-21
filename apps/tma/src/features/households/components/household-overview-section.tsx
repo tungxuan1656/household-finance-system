@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { FinanceSummaryCard } from '@/components/finance'
+import { FinanceSummaryCard } from '@/features/home/components/finance-summary-card'
 
 type HouseholdOverviewSectionProps = {
   householdId: string

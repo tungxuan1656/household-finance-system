@@ -8,6 +8,8 @@ export interface ParsedPreviewData {
   householdId?: string
   householdName?: string
   groupName?: string
+  groupIds?: string[]
+  groupNames?: string[]
 }
 
 export type BudgetStatusLabel = 'ok' | 'warning' | 'exceeded'

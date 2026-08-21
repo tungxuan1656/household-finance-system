@@ -4,10 +4,10 @@ import type { ExpenseGroupDTO } from '@/features/groups/types'
 import { getCategoryLabel } from '@/features/home/presentation'
 import type { CategoryKey } from '@/features/home/types'
 import type { HouseholdDTO, ReferenceCategoryDTO } from '@/features/home/types'
-import { impact, selection } from '@/lib/telegram/haptics'
+import { selection } from '@/lib/telegram/haptics'
 
-import type { ExpenseListSort } from '../filter-store'
-import { useExpenseListFilterStore } from '../filter-store'
+import type { ExpenseListSort } from '../model/filter-store'
+import { useExpenseListFilterStore } from '../model/filter-store'
 
 const ALL_VALUE = '__all__'
 
@@ -122,12 +122,10 @@ export const useExpenseFilterOptions = (
   }
 
   const handleReset = () => {
-    impact('light')
     reset()
   }
 
   const handleSortChange = (next: ExpenseListSort) => {
-    selection()
     setFilter({ sort: next })
   }
 

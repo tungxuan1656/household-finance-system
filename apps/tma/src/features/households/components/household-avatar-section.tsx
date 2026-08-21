@@ -1,14 +1,11 @@
-import { type ChangeEvent, useMemo, useRef, useState } from 'react'
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { CameraIcon } from '@/components/shared/tma-icons'
-import {
-  Avatar,
-  Button,
-  CardDescription,
-  CardTitle,
-  FieldError,
-} from '@/components/ui'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { CardDescription, CardTitle } from '@/components/ui/card'
+import { FieldError } from '@/components/ui/field'
 import { ApiClientError } from '@/lib/api/client'
 import {
   isAvatarImageFile,
@@ -16,7 +13,6 @@ import {
 } from '@/lib/media/avatar-image'
 import { uploadMediaViaCloudinary } from '@/lib/media/cloudinary-upload'
 import { MAX_AVATAR_SIZE_BYTES } from '@/lib/media/constants'
-import { impact } from '@/lib/telegram/haptics'
 
 import { getHouseholdAvatarFallback } from '../presentation'
 import { HouseholdAvatarDialog } from './household-avatar-dialog'
@@ -24,6 +20,7 @@ import { HouseholdAvatarDialog } from './household-avatar-dialog'
 type HouseholdAvatarSectionProps = {
   avatarUrl: string | null
   canEdit: boolean
+  compact?: boolean
   description?: string
   helperText: string
   isBusy: boolean
@@ -37,6 +34,7 @@ type HouseholdAvatarSectionProps = {
 export const HouseholdAvatarSection = ({
   avatarUrl,
   canEdit,
+  compact = false,
   description,
   helperText,
   householdName,
@@ -63,6 +61,20 @@ export const HouseholdAvatarSection = ({
         : (avatarUrl ?? undefined),
     [avatarDialogOpen, avatarPreviewUrl, avatarUrl],
   )
+
+  const avatarPreviewUrlRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    avatarPreviewUrlRef.current = avatarPreviewUrl
+  }, [avatarPreviewUrl])
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreviewUrlRef.current) {
+        URL.revokeObjectURL(avatarPreviewUrlRef.current)
+      }
+    }
+  }, [])
 
   const clearAvatarCandidate = () => {
     if (avatarPreviewUrl) {
@@ -147,22 +159,26 @@ export const HouseholdAvatarSection = ({
     householdName.trim() || t('households.createPage.newHousehold')
 
   return (
-    <>
-      <div>
-        <CardTitle>{title}</CardTitle>
-        {description ? <CardDescription>{description}</CardDescription> : null}
-      </div>
+    <div className='flex flex-col gap-3'>
+      {compact ? null : (
+        <div>
+          <CardTitle>{title}</CardTitle>
+          {description ? (
+            <CardDescription>{description}</CardDescription>
+          ) : null}
+        </div>
+      )}
 
-      <div className='flex items-center gap-3.5'>
-        <Avatar
-          alt={displayName}
-          fallback={getHouseholdAvatarFallback(displayName)}
-          size='xl'
-          src={currentAvatarSrc}
-        />
+      <div className='flex items-center gap-4'>
+        <Avatar className='size-16'>
+          <AvatarImage alt={displayName} src={currentAvatarSrc} />
+          <AvatarFallback className='text-lg font-semibold'>
+            {getHouseholdAvatarFallback(displayName)}
+          </AvatarFallback>
+        </Avatar>
 
         <div className='grid gap-1.5'>
-          <strong className='text-base font-semibold text-tma-text-strong'>
+          <strong className='text-base font-semibold text-foreground'>
             {displayName}
           </strong>
           {summaryText ? (
@@ -173,12 +189,12 @@ export const HouseholdAvatarSection = ({
 
       {canEdit ? (
         <div className='flex flex-wrap gap-2.5'>
-          <Button
+          <TmaHapticButton
+            aria-busy={isBusy || isUploadingAvatar}
             disabled={isBusy || isUploadingAvatar}
             type='button'
             variant='outline'
             onClick={() => {
-              impact('light')
               fileInputRef.current?.click()
             }}>
             <CameraIcon height='14' width='14' />
@@ -187,7 +203,7 @@ export const HouseholdAvatarSection = ({
                 ? t('households.avatarSection.changeImage')
                 : t('households.avatarSection.addImage')}
             </span>
-          </Button>
+          </TmaHapticButton>
 
           <input
             ref={fileInputRef}
@@ -198,11 +214,11 @@ export const HouseholdAvatarSection = ({
             onChange={handleAvatarFileChange}
           />
         </div>
-      ) : (
+      ) : compact ? null : (
         <CardDescription>{readOnlyMessage}</CardDescription>
       )}
 
-      <CardDescription>{helperText}</CardDescription>
+      {compact ? null : <CardDescription>{helperText}</CardDescription>}
       {avatarError ? <FieldError>{avatarError}</FieldError> : null}
 
       <HouseholdAvatarDialog
@@ -213,6 +229,6 @@ export const HouseholdAvatarSection = ({
         onCancel={clearAvatarCandidate}
         onOpenChange={setAvatarDialogOpen}
       />
-    </>
+    </div>
   )
 }

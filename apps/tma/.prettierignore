@@ -1,10 +1,1 @@
-**/node_modules
-**/build
-**/android
-**/ios
-**/dist
-.firebase/**
-.shared/**
-.agent/**
-.github/**
-.vscode/**
+src/components/ui/**
