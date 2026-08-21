@@ -96,15 +96,6 @@ export const PeriodPickerSection = ({
         <h2 className='text-sm font-semibold tracking-tight text-foreground'>
           {t('period.sectionTime')}
         </h2>
-        <span className='text-xs font-medium text-muted-foreground'>
-          {activePreset
-            ? t('period.hintPreset', { defaultValue: 'Đã chọn nhanh' })
-            : hasValidCustomRange
-              ? t('period.hintCustom', { defaultValue: 'Tùy chỉnh' })
-              : t('period.hintChoose', {
-                  defaultValue: 'Chọn khoảng thời gian',
-                })}
-        </span>
       </div>
 
       <ToggleGroup

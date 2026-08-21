@@ -161,7 +161,7 @@ export const TmaPageShell = ({
               'fixed inset-x-0 bottom-0 z-20 border-t border-zinc-200/60 bg-white/85 shadow-[0_-8px_32px_rgba(17,24,39,0.08)] backdrop-blur-xl supports-backdrop-filter:bg-white/75 dark:border-zinc-800 dark:bg-zinc-900/85 dark:supports-backdrop-filter:bg-zinc-900/75',
               footerClassName,
             )}>
-            <div className='px-4 pt-3 pb-[calc(24px+var(--tma-content-safe-bottom))] md:px-6'>
+            <div className='px-4 pt-2 pb-[calc(20px+var(--tma-content-safe-bottom))] md:px-6'>
               {footer}
             </div>
           </div>
