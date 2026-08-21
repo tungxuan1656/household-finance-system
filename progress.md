@@ -227,3 +227,19 @@
 **Evidence**: `pnpm --filter worker typecheck` 0 errors; `pnpm --filter worker test` 106 files / 665 tests pass (32.37s); `pnpm --filter worker lint` pass after --fix; `git diff --check` clean; `expenses-parse.spec.ts` adjusted for extra context fields. Feature file and progress updated; `feature_index.json` marks feat-130 done.
 **Blockers**: none
 **Next**: none — ready for manual `POST /expenses/parse` smoke with real household/group names.
+
+## 2026-08-21 - feat-131
+
+**State**: active
+**Done**: Created tracker for TMA DataState -> QueryState migration (statistics-page). Inline plan covers single-page migration + layout fix + nested query split into 4 child components.
+**Evidence**: `feature_index.json` lists feat-131 as active (feat-130 done); `features/feat-131.md` contains Goal/Scope/Acceptance/5-step inline plan.
+**Blockers**: none
+**Next**: Execute Step 1-4 via @fixer (inventory -> split components -> refactor page -> verify).
+
+## 2026-08-21 - feat-131
+
+**State**: done
+**Done**: Migrated `statistics-page.tsx` từ `DataState` (@deprecated) sang `QueryState` + fix layout mobile-first + tách 4 components con. `TmaPageShell contentClassName='flex flex-col gap-4'` (bỏ mb-3/mt-6/section), `QueryState query={overviewQuery} isEmpty={(d)=>d.expenseCount===0} pending/empty/error` với `PeriodChipLink` action; 4 components `statistics-total-card.tsx` (hero + Skeleton cho comparison), `statistics-period-toggle.tsx` (flex gap-3), `category-breakdown-card.tsx` (pie + nested QueryState variant plain cho categories), `statistics-meta-card.tsx` (grid-cols-2). Nested queries cô lập không block toàn page.
+**Evidence**: `pnpm --filter tma typecheck` pass (0 errors); `lint` 0 errors 15 warnings (no-console pre-existing); `test` 31 files 162 tests pass; `build` 2226 modules 217.52kB gzip pass; `grep -r DataState apps/tma/src/features` 0; `git diff --check` clean. `feature_index.json` marks feat-131 done.
+**Blockers**: none
+**Next**: none — giữ `data-state.tsx` deprecated, web không ảnh hưởng.

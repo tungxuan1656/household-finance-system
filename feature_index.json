@@ -30,8 +30,8 @@
       "depends_on": []
     },
     {
-      "id": "feat-130",
-      "title": "AI expense parser household/group recognition by name",
+      "id": "feat-131",
+      "title": "Migrate TMA DataState to QueryState (statistics-page)",
       "status": "done",
       "depends_on": []
     }
