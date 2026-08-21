@@ -275,3 +275,19 @@
 **Evidence**: `typecheck` 0, `test` 106 files 665 tests pass, `diff --check` clean (29.5s). `feature_index.json` marks feat-133 done.
 **Blockers**: none
 **Next**: none — feat-134 sẽ xử lý phần deferred nếu cần.
+
+## 2026-08-21 - feat-134
+
+**State**: active
+**Done**: Created tracker to unblock push (8 files >300). Inline plan covers worker 3 files + TMA 5 pages.
+**Evidence**: `feature_index.json` lists feat-134 as active; `features/feat-134.md` contains inline plan.
+**Blockers**: none
+**Next**: Execute worker+TMA splits via @fixer/@designer.
+
+## 2026-08-21 - feat-134
+
+**State**: done
+**Done**: Split 8 files: worker `expense-parser.ts` 404→12 + 3 modules (<274), `natural-expense.ts` 375→240 + helpers 203, `ai-expense-shared.ts` 348→79 + `ai-draft.ts` 261 + `ai-dedupe.ts` 15; TMA 5 pages 401/361/324/348/338 → 143/87/141/138/101 + 10 components/hooks 17-153. All <300.
+**Evidence**: `bash scripts/check_ts_length.sh` Errors 8→0 ✅, `typecheck` worker+tma pass, `test` worker 665 + tma 158 pass, `diff --check` clean. `feature_index.json` marks feat-134 done.
+**Blockers**: none
+**Next**: none — ready for push.

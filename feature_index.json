@@ -52,6 +52,12 @@
       "title": "AI expenses polish: shared context, group-household sync, preview",
       "status": "done",
       "depends_on": []
+    },
+    {
+      "id": "feat-134",
+      "title": "Unblock push: split long files to satisfy check_ts_length",
+      "status": "done",
+      "depends_on": []
     }
   ]
 }
