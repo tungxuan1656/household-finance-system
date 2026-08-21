@@ -184,10 +184,10 @@ export const AddExpenseDetailsPage = () => {
                     setAmountInput(formatAmountInput(event.target.value))
                   }}
                 />
-                <span className='shrink-0 pb-1 font-mono text-xl font-semibold text-foreground/80 sm:text-2xl'>
+                <span className='mb-1 shrink-0 font-mono text-2xl font-semibold text-foreground/80 sm:text-2xl'>
                   .000
                 </span>
-                <span className='shrink-0 pb-1.5 text-xs font-semibold text-muted-foreground'>
+                <span className='mb-4 shrink-0 text-xs font-semibold text-foreground/80'>
                   {currencyDisplaySymbol('VND')}
                 </span>
               </div>

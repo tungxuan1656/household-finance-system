@@ -69,10 +69,10 @@ export const ExpenseEditForm = ({
                   value={amountInput}
                   onChange={(event) => onAmountChange(event.target.value)}
                 />
-                <span className='shrink-0 font-mono text-2xl font-semibold text-foreground/80 sm:text-3xl'>
+                <span className='mb-1 shrink-0 font-mono text-2xl font-semibold text-foreground/80 sm:text-3xl'>
                   .000
                 </span>
-                <span className='shrink-0 text-xs font-semibold text-muted-foreground'>
+                <span className='mb-4 shrink-0 text-xs font-semibold text-foreground/80'>
                   {currencyDisplaySymbol(currencyCode)}
                 </span>
               </div>

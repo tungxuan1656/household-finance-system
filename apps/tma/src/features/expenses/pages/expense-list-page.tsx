@@ -87,7 +87,7 @@ export const ExpensesPage = () => {
   return (
     <TmaPageShell contentClassName='gap-4' title={t('expenses.title')}>
       <ExpenseSummaryCard summary={summaryQuery.data} />
-      <div className='flex flex-wrap items-center justify-between gap-2 px-1'>
+      <div className='flex flex-wrap items-center justify-between gap-2'>
         <TmaHapticButton
           size='sm'
           onClick={() => {
@@ -99,6 +99,7 @@ export const ExpensesPage = () => {
         </TmaHapticButton>
         <TmaHapticButton
           aria-label={t('expenses.openFilterAria')}
+          className={activeFilterCount === 0 ? 'bg-white' : ''}
           size='sm'
           variant={activeFilterCount > 0 ? 'default' : 'outline'}
           onClick={() => {
