@@ -1,10 +1,10 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
+import { QueryState } from '@/components/shared/query-state'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription, CardHeader } from '@/components/ui/card'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   useExpenseDetailQuery,
   useUpdateExpenseMutation,
@@ -12,11 +12,7 @@ import {
 import { createEditExpenseDraft } from '@/features/expenses/model/draft'
 import { useEditExpenseStore } from '@/features/expenses/model/store'
 import { getSourceOptions } from '@/features/expenses/presentation'
-import {
-  useHouseholdExpenseGroupQueries,
-  usePersonalExpenseGroupListQuery,
-} from '@/features/groups/api'
-import type { GroupListItem } from '@/features/groups/types'
+import { useExpenseGroupAggregateQuery } from '@/features/groups/api'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { useCategoryPresentation } from '@/features/home/presentation'
 import {
@@ -30,20 +26,24 @@ import {
 } from '@/lib/formatters'
 import { notification } from '@/lib/telegram/haptics'
 
-import { ExpenseEditForm } from './expense-edit-form'
+import { ExpenseEditForm } from '../components/expense-edit-form'
 
 export const ExpenseEditPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { t } = useTranslation()
   const expenseId = id ?? 'unknown'
   const expenseQuery = useExpenseDetailQuery(expenseId, {
     enabled: expenseId !== 'unknown',
   })
   const householdsQuery = useHouseholdsQuery()
-  const personalGroupsQuery = usePersonalExpenseGroupListQuery()
   const expense = expenseQuery.data
-  const households = householdsQuery.data?.items ?? []
+  const households = useMemo(
+    () => householdsQuery.data?.items ?? [],
+    [householdsQuery.data?.items],
+  )
+  const groupsQuery = useExpenseGroupAggregateQuery(households)
   const draft = useEditExpenseStore((state) => state.draft)
   const setDraft = useEditExpenseStore((state) => state.setDraft)
   const updateDraft = useEditExpenseStore((state) => state.updateDraft)
@@ -69,11 +69,11 @@ export const ExpenseEditPage = () => {
   // redirects away (breaking the BackButton as well).
   useEffect(() => {
     return () => {
-      if (!isExpenseEditFlowPathname(window.location.pathname, id)) {
+      if (!isExpenseEditFlowPathname(location.pathname, id)) {
         resetStore()
       }
     }
-  }, [resetStore, id])
+  }, [resetStore, id, location.pathname])
 
   const handleAmountChange = (value: string) => {
     const formatted = formatAmountInput(value)
@@ -89,21 +89,10 @@ export const ExpenseEditPage = () => {
     draft && draft.title.trim().length > 0 && draft.amount > 0,
   )
 
-  const householdGroupQueries = useHouseholdExpenseGroupQueries(households)
-
-  const groupItems = useMemo<GroupListItem[]>(() => {
-    const personalGroups = personalGroupsQuery.data?.items ?? []
-
-    return [
-      ...personalGroups.map((group) => ({ group, household: null })),
-      ...households.flatMap((household, index) => {
-        const query = householdGroupQueries[index]
-        const groups = query?.data?.items ?? []
-
-        return groups.map((group) => ({ group, household }))
-      }),
-    ].sort((left, right) => right.group.createdAt - left.group.createdAt)
-  }, [householdGroupQueries, households, personalGroupsQuery.data?.items])
+  const groupItems = useMemo(
+    () => groupsQuery.data?.items ?? [],
+    [groupsQuery.data],
+  )
 
   const householdPickerOptions = useMemo(
     () => [
@@ -122,8 +111,8 @@ export const ExpenseEditPage = () => {
     () => [
       { value: '', label: t('expenses.edit.optionUngrouped') },
       ...groupItems.map((item) => ({
-        value: item.group.id,
-        label: item.group.name,
+        value: item.id,
+        label: item.name,
       })),
     ],
     [groupItems, t],
@@ -154,44 +143,61 @@ export const ExpenseEditPage = () => {
     }
   })
 
-  if (expenseQuery.isLoading || !draft) {
-    return (
-      <TmaPageShell title={t('expenses.edit.title')}>
-        <Card>
-          <CardHeader>
-            <CardDescription>{t('expenses.edit.loading')}</CardDescription>
-          </CardHeader>
-        </Card>
-      </TmaPageShell>
-    )
-  }
-
   return (
-    <TmaPageShell title={t('expenses.edit.title')}>
-      <ExpenseEditForm
-        activeCategory={activeCategory}
-        amountInput={amountInput}
-        currencyCode={expense?.currencyCode ?? 'VND'}
-        draft={draft}
-        expenseId={expenseId}
-        groupPickerOptions={groupPickerOptions}
-        householdPickerOptions={householdPickerOptions}
-        isGroupLoading={personalGroupsQuery.isLoading}
-        isHouseholdLoading={householdsQuery.isLoading}
-        sourcePickerOptions={sourcePickerOptions}
-        onAmountChange={handleAmountChange}
-      />
-      <TmaHapticButton
-        aria-busy={updateMutation.isPending}
-        className='mt-5 mb-2 w-full'
-        disabled={!isValid || updateMutation.isPending}
-        onClick={() => {
-          void handleSave()
-        }}>
-        {updateMutation.isPending
-          ? t('expenses.add.saving')
-          : t('expenses.edit.save')}
-      </TmaHapticButton>
+    <TmaPageShell
+      contentClassName='gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton
+            variant='ghost'
+            onClick={() => {
+              resetStore()
+              navigate(-1)
+            }}>
+            {t('common.cancel')}
+          </TmaHapticButton>
+          <TmaHapticButton
+            aria-busy={updateMutation.isPending}
+            disabled={!isValid || updateMutation.isPending}
+            onClick={() => {
+              void handleSave()
+            }}>
+            {updateMutation.isPending
+              ? t('expenses.add.saving')
+              : t('expenses.edit.save')}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('expenses.edit.title')}>
+      <QueryState
+        error={{
+          description: t('dataState.errorDescription'),
+          title: t('dataState.errorTitle'),
+        }}
+        pending={{
+          description: '',
+          title: t('expenses.edit.loading'),
+        }}
+        query={expenseQuery}
+        variant='card'>
+        {() => {
+          if (!draft) return null
+
+          return (
+            <ExpenseEditForm
+              activeCategory={activeCategory}
+              amountInput={amountInput}
+              currencyCode={expense?.currencyCode ?? 'VND'}
+              draft={draft}
+              expenseId={expenseId}
+              groupPickerOptions={groupPickerOptions}
+              householdPickerOptions={householdPickerOptions}
+              sourcePickerOptions={sourcePickerOptions}
+              onAmountChange={handleAmountChange}
+            />
+          )
+        }}
+      </QueryState>
     </TmaPageShell>
   )
 }

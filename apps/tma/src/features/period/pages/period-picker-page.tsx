@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import { PeriodPickerSection } from '@/features/period/components/period-picker-section'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { type PeriodSelection } from '@/lib/period'
@@ -68,7 +68,16 @@ export const PeriodPickerPage = () => {
   })
 
   return (
-    <TmaPageShell title={t('period.pickerTitle')}>
+    <TmaPageShell
+      contentClassName='gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton className='flex-1' onClick={handleApply}>
+            {t('period.pickerConfirm')}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('period.pickerTitle')}>
       <PeriodPickerSection
         value={candidate}
         onChange={(next) => {
@@ -77,9 +86,6 @@ export const PeriodPickerPage = () => {
           }
         }}
       />
-      <TmaHapticButton className='mt-5 mb-2 w-full' onClick={handleApply}>
-        {t('period.pickerConfirm')}
-      </TmaHapticButton>
     </TmaPageShell>
   )
 }

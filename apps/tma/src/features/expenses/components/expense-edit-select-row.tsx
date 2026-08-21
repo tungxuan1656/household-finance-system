@@ -15,13 +15,13 @@ export const EditSelectRow = ({
   value: string
 }) => (
   <Button
-    className='flex w-full items-center justify-between gap-3'
+    className='flex h-auto min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left'
     type='button'
     variant='ghost'
     onClick={onClick}>
-    <div className='flex min-w-0 items-center gap-3'>
+    <div className='flex min-w-0 flex-1 items-center gap-3'>
       {children}
-      <div className='min-w-0 text-left'>
+      <div className='min-w-0 flex-1 text-left'>
         <p className='m-0 text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
           {label}
         </p>

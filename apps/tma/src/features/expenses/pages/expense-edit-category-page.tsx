@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { DataState } from '@/components/shared/data-state'
+import { QueryState } from '@/components/shared/query-state'
 import {
   TmaCategoryIconBadge,
   TmaPageShell,
@@ -38,61 +38,68 @@ export const ExpenseEditCategoryPage = () => {
   if (!draft) return null
 
   return (
-    <TmaPageShell title={t('expenses.edit.categoryPicker')}>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('expenses.edit.sectionCategory')}</CardTitle>
+    <TmaPageShell
+      contentClassName='gap-4'
+      title={t('expenses.edit.categoryPicker')}>
+      <Card size='sm'>
+        <CardHeader className='pb-2'>
+          <CardTitle className='text-sm tracking-normal normal-case'>
+            {t('expenses.edit.sectionCategory')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <DataState
-            emptyDescription={t('expenses.edit.emptyDescription')}
-            emptyTitle={t('expenses.edit.emptyTitle')}
-            errorDescription={t('expenses.edit.loadErrorDesc')}
-            errorTitle={t('expenses.edit.loadError')}
-            isEmpty={
-              !categoriesQuery.isLoading &&
-              !categoriesQuery.isError &&
-              categoryOptions.length === 0
-            }
-            isError={categoriesQuery.isError && categoryOptions.length === 0}
-            isLoading={
-              categoriesQuery.isLoading && categoryOptions.length === 0
-            }
-            loadingDescription={t('expenses.edit.loadErrorDesc')}
-            loadingTitle={t('expenses.edit.loadingCategory')}
-            retryAction={categoriesQuery.refetch}>
-            <div className='grid grid-cols-3 gap-2'>
-              {categoryOptions.map((category) => {
-                const isActive = draft.categoryKey === category.id
+          <QueryState
+            empty={{
+              description: t('expenses.edit.emptyDescription'),
+              title: t('expenses.edit.emptyTitle'),
+            }}
+            error={{
+              description: t('expenses.edit.loadErrorDesc'),
+              title: t('expenses.edit.loadError'),
+            }}
+            isEmpty={categoryOptions.length === 0}
+            pending={{
+              description: '',
+              title: t('expenses.edit.loadingCategory'),
+            }}
+            query={categoriesQuery}
+            variant='plain'>
+            {() => (
+              <div className='grid grid-cols-3 gap-2.5 sm:grid-cols-4'>
+                {categoryOptions.map((category) => {
+                  const isActive = draft.categoryKey === category.id
 
-                return (
-                  <Button
-                    key={category.id}
-                    aria-pressed={isActive}
-                    className={cn(
-                      'grid min-h-20 content-start gap-1 text-left',
-                      isActive && 'ring-2 ring-primary',
-                    )}
-                    type='button'
-                    variant='outline'
-                    onClick={() => {
-                      selection()
-                      updateDraft({ categoryKey: category.id })
-                      navigate(-1)
-                    }}>
-                    <TmaCategoryIconBadge
-                      accent={category.accent}
-                      iconUrl={category.iconUrl}
-                      symbol={category.symbol}
-                    />
-                    <span className='text-xs font-semibold'>
-                      {category.label}
-                    </span>
-                  </Button>
-                )
-              })}
-            </div>
-          </DataState>
+                  return (
+                    <Button
+                      key={category.id}
+                      aria-pressed={isActive}
+                      className={cn(
+                        'grid min-h-20 content-start gap-1 p-2.5 text-center text-left',
+                        isActive &&
+                          'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2 ring-offset-card',
+                      )}
+                      data-state={isActive ? 'on' : 'off'}
+                      type='button'
+                      variant='outline'
+                      onClick={() => {
+                        selection()
+                        updateDraft({ categoryKey: category.id })
+                        navigate(-1)
+                      }}>
+                      <TmaCategoryIconBadge
+                        accent={category.accent}
+                        iconUrl={category.iconUrl}
+                        symbol={category.symbol}
+                      />
+                      <span className='line-clamp-2 text-center text-xs leading-tight font-semibold text-balance break-words'>
+                        {category.label}
+                      </span>
+                    </Button>
+                  )
+                })}
+              </div>
+            )}
+          </QueryState>
         </CardContent>
       </Card>
     </TmaPageShell>

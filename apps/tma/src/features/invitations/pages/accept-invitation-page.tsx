@@ -1,11 +1,12 @@
 import { backButton, miniApp } from '@tma.js/sdk'
+import { AlertTriangle, Clock3, ShieldCheck, UsersRound } from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { DataState } from '@/components/shared/data-state'
+import { QueryState } from '@/components/shared/query-state'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   Card,
   CardContent,
@@ -18,9 +19,125 @@ import {
   useAcceptInvitationMutation,
   useInvitationPreviewQuery,
 } from '@/features/invitations/api'
+import type { InvitationPreviewResponse } from '@/features/invitations/types'
 import { getHouseholdDetailPath } from '@/lib/constants/routes'
 import { formatDateLabel } from '@/lib/formatters'
 import { impact, notification } from '@/lib/telegram/haptics'
+import { cn } from '@/lib/utils'
+
+// ---------------------------------------------------------------------------
+// Dumb preview card — no outer margin, parent gap owns spacing
+// ---------------------------------------------------------------------------
+
+function InvitationPreviewCard({
+  isAuthenticated,
+  preview,
+}: {
+  isAuthenticated: boolean
+  preview: InvitationPreviewResponse
+}) {
+  const { t } = useTranslation()
+
+  const roleLabel =
+    preview.invitedRole === 'admin'
+      ? t('invitations.roleAdmin')
+      : t('invitations.roleMember')
+
+  const expiresLabel = formatDateLabel(
+    new Date(preview.expiresAt).toISOString(),
+  )
+
+  return (
+    <Card size='sm'>
+      <CardHeader>
+        <div className='flex items-start gap-3'>
+          <span className='flex size-10 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900'>
+            <UsersRound aria-hidden className='size-5' />
+          </span>
+          <div className='min-w-0 flex-1'>
+            <CardTitle>{t('invitations.acceptTitle')}</CardTitle>
+            <CardDescription className='mt-1'>
+              {t('invitations.acceptDesc')}
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className='grid gap-0 divide-y divide-border/60'>
+        <div className='grid gap-1 py-3 first:pt-0'>
+          <span className='flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted-foreground'>
+            <UsersRound aria-hidden className='size-3.5 opacity-60' />
+            {t('invitations.householdName')}
+          </span>
+          <p className='truncate text-[15px] leading-tight font-semibold wrap-break-word'>
+            {preview.household.name}
+          </p>
+        </div>
+
+        <div className='flex items-center justify-between gap-3 py-3'>
+          <div className='grid gap-1'>
+            <span className='flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted-foreground'>
+              <ShieldCheck aria-hidden className='size-3.5 opacity-60' />
+              {t('invitations.roleLabel')}
+            </span>
+            <p className='text-sm font-semibold'>{roleLabel}</p>
+          </div>
+          <span
+            className={cn(
+              'inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase',
+              preview.invitedRole === 'admin'
+                ? 'border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900'
+                : 'border-border bg-muted text-muted-foreground',
+            )}>
+            {roleLabel}
+          </span>
+        </div>
+
+        <div className='grid gap-1 py-3 last:pb-0'>
+          <span className='flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted-foreground'>
+            <Clock3 aria-hidden className='size-3.5 opacity-60' />
+            {t('invitations.expiresAt')}
+          </span>
+          <p className='text-sm font-semibold tabular-nums'>{expiresLabel}</p>
+        </div>
+      </CardContent>
+
+      {!isAuthenticated ? (
+        <div className='border-t border-border/60 px-(--card-spacing) pt-(--card-spacing)'>
+          <p className='rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm leading-relaxed text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200'>
+            {t('invitations.requiresAuth')}
+          </p>
+        </div>
+      ) : null}
+    </Card>
+  )
+}
+
+function InvalidTokenCard() {
+  const { t } = useTranslation()
+
+  return (
+    <Card size='sm'>
+      <CardHeader>
+        <div className='flex items-start gap-3'>
+          <span className='flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground'>
+            <AlertTriangle aria-hidden className='size-5' />
+          </span>
+          <div className='min-w-0 flex-1'>
+            <CardTitle>{t('invitations.invalidTokenTitle')}</CardTitle>
+            <CardDescription className='mt-1'>
+              {t('invitations.invalidTokenDesc')}
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+    </Card>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Page — smart shell (query + mutation + navigation + footer)
+// ---------------------------------------------------------------------------
 
 export const AcceptInvitationPage = () => {
   const { token } = useParams<{ token: string }>()
@@ -34,12 +151,6 @@ export const AcceptInvitationPage = () => {
   const [acceptedHouseholdId, setAcceptedHouseholdId] = useState<string | null>(
     null,
   )
-
-  const preview = previewQuery.data
-  const isPreviewLoading = previewQuery.isLoading && !preview
-  const isPreviewError = previewQuery.isError && !preview
-  const isPreviewEmpty =
-    !previewQuery.isLoading && !previewQuery.isError && !preview
 
   useEffect(() => {
     if (acceptedHouseholdId) {
@@ -58,8 +169,6 @@ export const AcceptInvitationPage = () => {
       notification('error')
     }
   })
-
-  const canShowAcceptCta = Boolean(token) && isAuthenticated && Boolean(preview)
 
   // Own the Telegram BackButton on this route. AcceptInvitationPage is a
   // deep-link entry point (?startapp=<token>), so there is no in-app
@@ -83,96 +192,61 @@ export const AcceptInvitationPage = () => {
     }
   }, [])
 
-  const toRoleLabel = (role: 'admin' | 'member'): string =>
-    role === 'admin' ? t('invitations.roleAdmin') : t('invitations.roleMember')
-
   if (!token) {
     return (
-      <TmaPageShell title={t('invitations.acceptTitle')}>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('invitations.invalidTokenTitle')}</CardTitle>
-            <CardDescription>
-              {t('invitations.invalidTokenDesc')}
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <TmaPageShell
+        contentClassName='gap-4'
+        title={t('invitations.acceptTitle')}>
+        <InvalidTokenCard />
       </TmaPageShell>
     )
   }
 
+  const canShowAcceptCta =
+    Boolean(token) && isAuthenticated && Boolean(previewQuery.data)
+  const isBusy = acceptMutation.isPending
+
+  const footer = canShowAcceptCta ? (
+    <TmaPageFooter>
+      <TmaHapticButton
+        aria-busy={isBusy}
+        disabled={isBusy}
+        onClick={() => {
+          void handleAccept()
+        }}>
+        {isBusy ? t('invitations.accepting') : t('invitations.acceptAction')}
+      </TmaHapticButton>
+    </TmaPageFooter>
+  ) : undefined
+
   return (
-    <TmaPageShell title={t('invitations.acceptTitle')}>
-      <DataState
-        emptyDescription={t('invitations.notFoundDesc')}
-        emptyTitle={t('invitations.notFoundTitle')}
-        errorDescription={t('invitations.loadErrorDesc')}
-        errorTitle={t('invitations.loadError')}
-        isEmpty={isPreviewEmpty}
-        isError={isPreviewError}
-        isLoading={isPreviewLoading}
-        loadingDescription={t('invitations.loadingDesc')}
-        loadingTitle={t('invitations.loading')}
-        retryAction={previewQuery.refetch}>
-        {preview ? (
-          <Card className='mt-3'>
-            <CardHeader>
-              <CardTitle>{t('invitations.acceptTitle')}</CardTitle>
-              <CardDescription>{t('invitations.acceptDesc')}</CardDescription>
-            </CardHeader>
-
-            <CardContent>
-              <dl className='grid gap-3'>
-                <div className='flex flex-col gap-1'>
-                  <dt className='text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-                    {t('invitations.householdName')}
-                  </dt>
-                  <dd className='m-0 text-sm font-semibold text-foreground'>
-                    {preview.household.name}
-                  </dd>
-                </div>
-                <div className='flex flex-col gap-1'>
-                  <dt className='text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-                    {t('invitations.roleLabel')}
-                  </dt>
-                  <dd className='m-0 text-sm font-semibold text-foreground'>
-                    {toRoleLabel(preview.invitedRole)}
-                  </dd>
-                </div>
-                <div className='flex flex-col gap-1'>
-                  <dt className='text-[11px] font-bold tracking-[0.04em] text-muted-foreground uppercase'>
-                    {t('invitations.expiresAt')}
-                  </dt>
-                  <dd className='m-0 text-sm font-semibold text-foreground'>
-                    {formatDateLabel(new Date(preview.expiresAt).toISOString())}
-                  </dd>
-                </div>
-              </dl>
-
-              {!isAuthenticated ? (
-                <div className='mt-4'>
-                  <p className='m-0 text-sm text-muted-foreground'>
-                    {t('invitations.requiresAuth')}
-                  </p>
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
-        ) : null}
-      </DataState>
-      {canShowAcceptCta ? (
-        <TmaHapticButton
-          aria-busy={acceptMutation.isPending}
-          className='mt-4 mb-2 w-full'
-          disabled={acceptMutation.isPending}
-          onClick={() => {
-            void handleAccept()
-          }}>
-          {acceptMutation.isPending
-            ? t('invitations.accepting')
-            : t('invitations.acceptAction')}
-        </TmaHapticButton>
-      ) : null}
+    <TmaPageShell
+      contentClassName='gap-4'
+      footer={footer}
+      title={t('invitations.acceptTitle')}>
+      <QueryState
+        empty={{
+          title: t('invitations.notFoundTitle'),
+          description: t('invitations.notFoundDesc'),
+        }}
+        error={{
+          title: t('invitations.loadError'),
+          description: t('invitations.loadErrorDesc'),
+        }}
+        isEmpty={(data: InvitationPreviewResponse | undefined) => !data}
+        pending={{
+          title: t('invitations.loading'),
+          description: t('invitations.loadingDesc'),
+        }}
+        query={previewQuery}
+        variant='card'>
+        {(preview) => (
+          <InvitationPreviewCard
+            isAuthenticated={isAuthenticated}
+            preview={preview}
+          />
+        )}
+      </QueryState>
     </TmaPageShell>
   )
 }

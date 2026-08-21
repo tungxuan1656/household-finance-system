@@ -21,7 +21,7 @@ import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { notification } from '@/lib/telegram/haptics'
 
-import { ImportPreviewItemCard } from './add-expense-import-preview-item-card'
+import { ImportPreviewItemCard } from '../components/add-expense-import-preview-item-card'
 
 export const AddExpenseImportPreviewPage = () => {
   const navigate = useNavigate()
