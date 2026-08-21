@@ -4,6 +4,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import type { ErrorCode } from '@/lib/errors'
 import { AppError, internalError } from '@/lib/errors'
 import { defaultLocale, type SupportedLocale } from '@/lib/i18n'
+import { logger, truncateErrorMessage, truncateStack } from '@/lib/logger'
 import type { AppBindings } from '@/types'
 
 export type ApiMeta = {
@@ -97,9 +98,26 @@ export const fromUnknownError = (
     return errorResponse(ctx, error)
   }
 
-  console.error('Unhandled worker error', {
-    requestId: getRequestId(ctx),
-    error,
+  const requestId = getRequestId(ctx)
+  let path: string | undefined
+  try {
+    path = ctx.req.path
+  } catch {
+    path = undefined
+  }
+
+  const errorName = error instanceof Error ? error.name : 'UnknownError'
+  const errorMessage =
+    error instanceof Error
+      ? truncateErrorMessage(error.message)
+      : truncateErrorMessage(String(error))
+  const stack = error instanceof Error ? truncateStack(error.stack) : undefined
+
+  logger.error(requestId, 'unhandled_error', {
+    path,
+    errorName,
+    errorMessage,
+    stack,
   })
 
   return errorResponse(ctx, internalError(getLocale(ctx)))

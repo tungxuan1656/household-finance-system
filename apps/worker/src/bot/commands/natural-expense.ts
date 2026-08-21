@@ -27,6 +27,7 @@ import {
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
 import { getMinorUnits } from '@/lib/currency'
+import { logger, truncateErrorMessage } from '@/lib/logger'
 import { newId } from '@/utils/id'
 
 import type { BotServiceDeps } from '../callback-dispatcher'
@@ -69,6 +70,14 @@ export const runNaturalExpenseCreate = async (
   const loaderMsgId = await client.sendMessage(message.chat.id, LOADER_TEXT)
 
   const defaultDate = new Date().toISOString().slice(0, 10)
+  const correlationId = newId()
+
+  logger.info(correlationId, 'bot_natural_expense_start', {
+    textChars: text.length,
+    messageId: message.message_id,
+    chatId: message.chat.id,
+    appUserId,
+  })
 
   let rawItems: Array<{
     amount: number
@@ -86,10 +95,37 @@ export const runNaturalExpenseCreate = async (
         apiKey: deps.env.OPENAI_COMPAT_API_KEY,
         model: deps.env.OPENAI_COMPAT_MODEL,
       },
-      { defaultOccurredAt: defaultDate },
+      { defaultOccurredAt: defaultDate, correlationId },
     )
+
+    logger.info(correlationId, 'bot_natural_expense_ai_success', {
+      textChars: text.length,
+      rawItemsCount: rawItems.length,
+    })
   } catch (error) {
     if (error instanceof AiUpstreamError) {
+      logger.error(correlationId, 'bot_natural_expense_ai_upstream_failure', {
+        textChars: text.length,
+      })
+
+      await client.editMessageText(
+        message.chat.id,
+        loaderMsgId,
+        AI_UNAVAILABLE_TEXT,
+        {
+          parseMode: 'HTML',
+        },
+      )
+    } else {
+      logger.error(correlationId, 'bot_natural_expense_ai_error', {
+        textChars: text.length,
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        errorMessage:
+          error instanceof Error
+            ? truncateErrorMessage(error.message)
+            : truncateErrorMessage(String(error)),
+      })
+
       await client.editMessageText(
         message.chat.id,
         loaderMsgId,
@@ -187,7 +223,12 @@ export const runNaturalExpenseCreate = async (
           rawText: text,
         }),
       }).catch((err: unknown) => {
-        console.error('natural-expense: audit log write failed', err)
+        logger.error(correlationId, 'natural_expense_audit_log_failed', {
+          error:
+            err instanceof Error
+              ? truncateErrorMessage(err.message)
+              : truncateErrorMessage(String(err)),
+        })
       })
 
       const summary = renderExpenseSummaryLine({
@@ -202,7 +243,12 @@ export const runNaturalExpenseCreate = async (
 
       created.push({ expenseId: expense.id, summary, input })
     } catch (err) {
-      console.error('natural-expense: createExpense failed', err)
+      logger.error(correlationId, 'natural_expense_create_failed', {
+        error:
+          err instanceof Error
+            ? truncateErrorMessage(err.message)
+            : truncateErrorMessage(String(err)),
+      })
     }
   }
 

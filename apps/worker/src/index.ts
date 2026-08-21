@@ -7,8 +7,10 @@ import { TelegramClient } from '@/bot/telegram-client'
 import { resolveCorsOrigin } from '@/lib/cors'
 import { readConfig } from '@/lib/env'
 import { notFound } from '@/lib/errors'
+import { logger } from '@/lib/logger'
 import { fromUnknownError } from '@/lib/response'
 import { requestContextMiddleware } from '@/middlewares/request-context'
+import { requestLoggerMiddleware } from '@/middlewares/request-logger'
 import { securityHeadersMiddleware } from '@/middlewares/security-headers'
 import { analyticsRoutes } from '@/routes/analytics'
 import { authRoutes } from '@/routes/auth'
@@ -30,6 +32,7 @@ import type { AppBindings } from '@/types'
 const app = new Hono<AppBindings>()
 
 app.use('*', requestContextMiddleware)
+app.use('*', requestLoggerMiddleware)
 app.use('*', securityHeadersMiddleware)
 
 app.use(
@@ -84,7 +87,10 @@ const scheduled: ExportedHandler<Env>['scheduled'] = async (
     // Weekly digest — run on Monday (cron expression handles frequency)
     await runWeeklyDigest(db, client, config.telegramBotDeepLinkUrl)
   } catch (error) {
-    console.error('scheduled: notification jobs failed', error)
+    logger.error(undefined, 'scheduled: notification jobs failed', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack?.slice(0, 2000) : undefined,
+    })
   }
 }
 

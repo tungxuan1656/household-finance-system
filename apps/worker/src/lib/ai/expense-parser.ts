@@ -1,3 +1,5 @@
+import { getBaseUrlHost, logger, truncateErrorMessage } from '@/lib/logger'
+
 /**
  * OpenAI-compatible chat completions client for expense parsing.
  *
@@ -22,6 +24,8 @@ export interface RawAiItem {
 
 export interface ParseExpensesWithAiOptions {
   defaultOccurredAt?: string
+  requestId?: string
+  correlationId?: string
 }
 
 /**
@@ -141,9 +145,16 @@ export const parseExpensesWithAi = async (
 ): Promise<RawAiItem[]> => {
   const baseUrl = config.baseUrl.replace(/\/+$/, '')
   const url = `${baseUrl}`
+  const correlationId = options.requestId ?? options.correlationId
+  const baseUrlHost = getBaseUrlHost(baseUrl)
+  const promptChars = text.length
 
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), AI_TIMEOUT_MS)
+  const start =
+    typeof performance !== 'undefined' && typeof performance.now === 'function'
+      ? performance.now()
+      : Date.now()
 
   try {
     const response = await fetch(url, {
@@ -156,7 +167,33 @@ export const parseExpensesWithAi = async (
       signal: controller.signal,
     })
 
+    const durationMs = Math.round(
+      (typeof performance !== 'undefined' &&
+      typeof performance.now === 'function'
+        ? performance.now()
+        : Date.now()) - start,
+    )
+
     if (!response.ok) {
+      let errorSnippet: string | undefined
+      try {
+        const raw = await response.clone().text()
+        if (raw) errorSnippet = raw.slice(0, 500)
+      } catch {
+        errorSnippet = undefined
+      }
+
+      logger.error(correlationId, 'ai_call', {
+        provider: 'openai-compat',
+        model: config.model,
+        baseUrlHost,
+        promptChars,
+        defaultOccurredAt: options.defaultOccurredAt,
+        status: response.status,
+        durationMs,
+        errorSnippet,
+      })
+
       // Upstream failure — do not expose the upstream error body
       throw new AiUpstreamError()
     }
@@ -167,6 +204,17 @@ export const parseExpensesWithAi = async (
 
     const content = body?.choices?.[0]?.message?.content
     if (!content || content.length === 0) {
+      logger.info(correlationId, 'ai_call', {
+        provider: 'openai-compat',
+        model: config.model,
+        baseUrlHost,
+        promptChars,
+        defaultOccurredAt: options.defaultOccurredAt,
+        status: response.status,
+        durationMs,
+        responseItemsCount: 0,
+      })
+
       return []
     }
 
@@ -174,6 +222,17 @@ export const parseExpensesWithAi = async (
     try {
       parsed = JSON.parse(content)
     } catch {
+      logger.info(correlationId, 'ai_call', {
+        provider: 'openai-compat',
+        model: config.model,
+        baseUrlHost,
+        promptChars,
+        defaultOccurredAt: options.defaultOccurredAt,
+        status: response.status,
+        durationMs,
+        responseItemsCount: 0,
+      })
+
       return []
     }
 
@@ -183,11 +242,22 @@ export const parseExpensesWithAi = async (
       : ((parsed as Record<string, unknown>)?.expenses ?? [])
 
     if (!Array.isArray(items)) {
+      logger.info(correlationId, 'ai_call', {
+        provider: 'openai-compat',
+        model: config.model,
+        baseUrlHost,
+        promptChars,
+        defaultOccurredAt: options.defaultOccurredAt,
+        status: response.status,
+        durationMs,
+        responseItemsCount: 0,
+      })
+
       return []
     }
 
     // Return weakly-typed items; the handler validates/normalises them
-    return items.map((item: unknown) => {
+    const mapped = items.map((item: unknown) => {
       const raw = item as Record<string, unknown>
 
       return {
@@ -203,8 +273,49 @@ export const parseExpensesWithAi = async (
             : undefined,
       }
     })
+
+    logger.info(correlationId, 'ai_call', {
+      provider: 'openai-compat',
+      model: config.model,
+      baseUrlHost,
+      promptChars,
+      defaultOccurredAt: options.defaultOccurredAt,
+      status: response.status,
+      durationMs,
+      responseItemsCount: mapped.length,
+    })
+
+    return mapped
   } catch (error) {
     if (error instanceof AiUpstreamError) throw error
+
+    const durationMs = Math.round(
+      (typeof performance !== 'undefined' &&
+      typeof performance.now === 'function'
+        ? performance.now()
+        : Date.now()) - start,
+    )
+    const isTimeout =
+      (error instanceof DOMException && error.name === 'AbortError') ||
+      (error instanceof Error && error.name === 'AbortError')
+    const errorName = error instanceof Error ? error.name : 'UnknownError'
+    const errorMessage =
+      error instanceof Error
+        ? truncateErrorMessage(error.message)
+        : truncateErrorMessage(String(error))
+
+    logger.error(correlationId, 'ai_call', {
+      provider: 'openai-compat',
+      model: config.model,
+      baseUrlHost,
+      promptChars,
+      defaultOccurredAt: options.defaultOccurredAt,
+      durationMs,
+      errorName,
+      errorMessage,
+      isTimeout,
+    })
+
     // Network errors, aborts → upstream failure
     throw new AiUpstreamError()
   } finally {

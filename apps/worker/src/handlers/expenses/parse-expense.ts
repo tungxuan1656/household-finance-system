@@ -13,6 +13,7 @@ import type { RawAiItem } from '@/lib/ai/expense-parser'
 import { AiUpstreamError } from '@/lib/ai/expense-parser'
 import { parseExpensesWithAi } from '@/lib/ai/expense-parser'
 import { badGateway, internalError } from '@/lib/errors'
+import { logger, truncateErrorMessage } from '@/lib/logger'
 import { readJsonBody } from '@/lib/validation'
 import type { AppBindings } from '@/types'
 
@@ -33,6 +34,7 @@ export const parseExpenseHandler = async (
   ctx: Context<AppBindings>,
 ): Promise<ParseExpensesResponse> => {
   const locale = ctx.get('locale')
+  const requestId = ctx.get('requestId')
 
   // 1. Validate request body (text + defaultOccurredAt)
   const body = await readJsonBody(
@@ -40,6 +42,11 @@ export const parseExpenseHandler = async (
     parseExpensesRequestSchema(),
     locale,
   )
+
+  logger.info(requestId, 'parse_expense_start', {
+    textChars: body.text.length,
+    defaultOccurredAt: body.defaultOccurredAt,
+  })
 
   // 2. Read AI config from environment — fail fast if missing
   const baseUrl = ctx.env.OPENAI_COMPAT_BASE_URL
@@ -60,12 +67,26 @@ export const parseExpenseHandler = async (
         apiKey,
         model,
       },
-      { defaultOccurredAt: body.defaultOccurredAt },
+      { defaultOccurredAt: body.defaultOccurredAt, requestId },
     )
   } catch (error) {
     if (error instanceof AiUpstreamError) {
+      logger.error(requestId, 'parse_expense_ai_upstream_failure', {
+        textChars: body.text.length,
+      })
+
       throw badGateway(locale, 'errors.aiUpstreamFailure')
     }
+
+    logger.error(requestId, 'parse_expense_error', {
+      textChars: body.text.length,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+      errorMessage:
+        error instanceof Error
+          ? truncateErrorMessage(error.message)
+          : truncateErrorMessage(String(error)),
+    })
+
     throw error
   }
 
@@ -105,6 +126,13 @@ export const parseExpenseHandler = async (
     expenses,
     ...(droppedCount > 0 ? { droppedCount } : {}),
   }
+
+  logger.info(requestId, 'parse_expense_success', {
+    textChars: body.text.length,
+    rawItemsCount: rawItems.length,
+    expensesCount: expenses.length,
+    droppedCount,
+  })
 
   // Output validation — throws if response shape is ever invalid
   return parseExpensesResponseSchema.parse(response)

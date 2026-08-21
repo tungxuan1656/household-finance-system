@@ -1,4 +1,6 @@
 import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
+import { logger } from '@/lib/logger'
+import { newId } from '@/utils/id'
 
 import { openAppKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
@@ -90,6 +92,16 @@ export const parseAiCommandInput = async (
     }
   }
 
+  const correlationId = newId()
+  const defaultDate = new Date().toISOString().slice(0, 10)
+
+  logger.info(correlationId, 'bot_ai_preflight_start', {
+    textChars: expenseText.length,
+    userId: ctx.userId,
+    chatId: ctx.chatId,
+    hasScopeArg,
+  })
+
   try {
     const rawItems = await parseExpensesWithAi(
       expenseText,
@@ -98,8 +110,13 @@ export const parseAiCommandInput = async (
         apiKey: ctx.env.OPENAI_COMPAT_API_KEY,
         model: ctx.env.OPENAI_COMPAT_MODEL,
       },
-      { defaultOccurredAt: new Date().toISOString().slice(0, 10) },
+      { defaultOccurredAt: defaultDate, correlationId },
     )
+
+    logger.info(correlationId, 'bot_ai_preflight_success', {
+      textChars: expenseText.length,
+      rawItemsCount: rawItems.length,
+    })
 
     return {
       kind: 'input',
@@ -107,12 +124,16 @@ export const parseAiCommandInput = async (
         expenseText,
         hasScopeArg,
         scopeToken,
-        defaultDate: new Date().toISOString().slice(0, 10),
+        defaultDate,
         rawItems,
       },
     }
   } catch (error) {
     if (error instanceof AiUpstreamError) {
+      logger.error(correlationId, 'bot_ai_preflight_upstream_failure', {
+        textChars: expenseText.length,
+      })
+
       return {
         kind: 'response',
         response: {
@@ -121,6 +142,16 @@ export const parseAiCommandInput = async (
         },
       }
     }
+
+    logger.error(correlationId, 'bot_ai_preflight_error', {
+      textChars: expenseText.length,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+      errorMessage:
+        error instanceof Error
+          ? error.message.slice(0, 500)
+          : String(error).slice(0, 500),
+    })
+
     throw error
   }
 }
