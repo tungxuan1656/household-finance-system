@@ -5,6 +5,8 @@ import { parsedExpenseItemSchema } from '@/contracts/expense-parse-schemas'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
 import { createDraftFromPreview } from '@/db/repositories/telegram-bot-expense-draft-repository'
+import { mapAiNamesToIds } from '@/handlers/expenses/parse-expense'
+import type { RawAiItem } from '@/lib/ai/expense-parser'
 import { getMinorUnits } from '@/lib/currency'
 
 import { expensePreviewKeyboard } from '../renderers/keyboards'
@@ -16,7 +18,10 @@ const YYYY_MM_DD_RE = /^\d{4}-\d{2}-\d{2}$/
 /**
  * Pure normalization of a raw AI item into a ParsedExpenseItem (no Hono context).
  * Mirrors the logic in parse-expense.ts handler but as a pure function.
- * bot ignores household/group by design — parse-only (whitelist mapping lives in HTTP parse handler).
+ * Whitelist household/group mapping lives in handlers/expenses/parse-expense.ts
+ * (fetchAiContext + mapAiNamesToIds) and is reused by bot preflight/natural flows.
+ * This helper stays household-agnostic for backwards compat; use
+ * normalizeAiItemWithContext when you need household/group mapping.
  */
 export const normalizeAiItem = (
   item: {
@@ -45,6 +50,30 @@ export const normalizeAiItem = (
 }
 
 /**
+ * Normalize + whitelist-map a RawAiItem. Keeps normalizeAiItem backwards compat
+ * but also returns householdId/groupIds via mapAiNamesToIds (NFD+đ, collision warn).
+ * Caller can inject counters for count-only logging (mappedHouseholdCount/groupCount).
+ */
+export const normalizeAiItemWithContext = (
+  item: RawAiItem,
+  defaultOccurredAt: string,
+  maps: {
+    householdNameToId: Map<string, string>
+    groupNameToId: Map<string, string>
+  },
+  counters?: { mappedHouseholdCount: number; mappedGroupCount: number },
+): {
+  parsed: ParsedExpenseItem | null
+  householdId: string | null
+  groupIds: string[]
+} => {
+  const parsed = normalizeAiItem(item, defaultOccurredAt)
+  const { householdId, groupIds } = mapAiNamesToIds(item, maps, counters)
+
+  return { parsed, householdId, groupIds }
+}
+
+/**
  * Build preview data + draft from a validated ParsedExpenseItem.
  *
  * Handles scope resolution, currency lookups, draft creation, and dedupe
@@ -62,6 +91,8 @@ export const buildDraftFromItem = async (
     defaultDate: string
     scopeArg?: string
     overrideAmountMinor?: number
+    aiHouseholdId?: string | null
+    aiGroupIds?: string[]
   },
 ): Promise<
   | {
@@ -102,12 +133,44 @@ export const buildDraftFromItem = async (
         }
       }
     }
+  } else if (options.aiHouseholdId) {
+    // AI whitelist mapping takes precedence when no explicit scopeArg
+    const householdIds = await listActiveHouseholdIdsForUser(db, ctx.appUserId!)
+    if (householdIds.includes(options.aiHouseholdId)) {
+      const hh = await findHouseholdById(db, options.aiHouseholdId)
+      if (hh) {
+        scope = 'household'
+        householdId = hh.id
+        householdName = hh.name
+        currencyCode = hh.defaultCurrencyCode ?? 'VND'
+      }
+    }
+  } else if (
+    (validItem as ParsedExpenseItem & { householdId?: string | null })
+      .householdId
+  ) {
+    // Fallback: validItem already carries householdId from pre-mapping (e.g., caller injected)
+    const mappedId = (
+      validItem as ParsedExpenseItem & { householdId?: string | null }
+    ).householdId!
+    const householdIds = await listActiveHouseholdIdsForUser(db, ctx.appUserId!)
+    if (householdIds.includes(mappedId)) {
+      const hh = await findHouseholdById(db, mappedId)
+      if (hh) {
+        scope = 'household'
+        householdId = hh.id
+        householdName = hh.name
+        currencyCode = hh.defaultCurrencyCode ?? 'VND'
+      }
+    }
   }
 
   const amountMinor =
     options.overrideAmountMinor !== undefined
       ? options.overrideAmountMinor
       : getMinorUnits(validItem.amount, currencyCode)
+
+  const aiGroupIds = options.aiGroupIds ?? validItem.groupIds ?? []
 
   const preview: ParsedPreviewData = {
     amountMinor,
@@ -118,6 +181,7 @@ export const buildDraftFromItem = async (
     scope,
     householdId: scope === 'household' ? householdId : undefined,
     householdName: scope === 'household' ? householdName : undefined,
+    ...(aiGroupIds.length > 0 ? { groupIds: aiGroupIds } : {}),
   }
 
   // Create draft for confirm/cancel tracking
@@ -224,6 +288,7 @@ export const buildDraftsFromItems = async (
     rawText: string
     defaultDate: string
     scopeArg?: string
+    aiMappings?: Array<{ householdId: string | null; groupIds: string[] }>
   },
 ): Promise<BatchBuildResult> => {
   const result: BatchBuildResult = {
@@ -242,9 +307,13 @@ export const buildDraftsFromItems = async (
     // one D1 row (symptoms: "đã thêm trước đó" on later items, expenses
     // duplicating, household-select editing the wrong preview).
     const itemRawText = `${i}|${item.title}|${item.amount}|${item.occurredAt}`
+    const mapping = options.aiMappings?.[i]
     const built = await buildDraftFromItem(ctx, item, {
       ...options,
       rawText: itemRawText,
+      ...(mapping
+        ? { aiHouseholdId: mapping.householdId, aiGroupIds: mapping.groupIds }
+        : {}),
     })
 
     if ('status' in built) {

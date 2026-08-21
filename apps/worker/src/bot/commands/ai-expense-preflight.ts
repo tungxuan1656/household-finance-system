@@ -1,4 +1,9 @@
-import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
+import { fetchAiContext } from '@/handlers/expenses/parse-expense'
+import {
+  AiUpstreamError,
+  parseExpensesWithAi,
+  type RawAiItem,
+} from '@/lib/ai/expense-parser'
 import { logger } from '@/lib/logger'
 import { newId } from '@/utils/id'
 
@@ -16,13 +21,13 @@ export interface ParsedAiCommandInput {
   hasScopeArg: boolean
   scopeToken: string
   defaultDate: string
-  rawItems: Array<{
-    amount: number
-    categoryKey: string
-    sourceKey?: string
-    title: string
-    occurredAt?: string
-  }>
+  rawItems: RawAiItem[]
+  aiContext?: {
+    availableHouseholds: { id: string; name: string }[]
+    availableGroups: { id: string; name: string; householdId: string | null }[]
+    householdNameToId: Map<string, string>
+    groupNameToId: Map<string, string>
+  }
 }
 
 /**
@@ -102,6 +107,47 @@ export const parseAiCommandInput = async (
     hasScopeArg,
   })
 
+  // Fetch whitelist context for AI prompt (reuse feat-130 logic). Count-only logging.
+  let aiContext:
+    | {
+        availableHouseholds: { id: string; name: string }[]
+        availableGroups: {
+          id: string
+          name: string
+          householdId: string | null
+        }[]
+        householdNameToId: Map<string, string>
+        groupNameToId: Map<string, string>
+      }
+    | undefined
+  let promptContext:
+    | {
+        households: { id: string; name: string }[]
+        groups: { id: string; name: string; householdId?: string | null }[]
+      }
+    | undefined
+
+  if (ctx.appUserId) {
+    try {
+      const fetched = await fetchAiContext(ctx.db, ctx.appUserId, correlationId)
+      aiContext = fetched
+
+      promptContext = {
+        households: fetched.availableHouseholds,
+        groups: fetched.availableGroups,
+      }
+
+      logger.info(correlationId, 'bot_ai_context_fetched', {
+        textChars: expenseText.length,
+        householdCount: fetched.availableHouseholds.length,
+        groupCount: fetched.availableGroups.length,
+      })
+    } catch {
+      // fetchAiContext already swallows inner errors; outer catch is defense-in-depth
+      promptContext = undefined
+    }
+  }
+
   try {
     const rawItems = await parseExpensesWithAi(
       expenseText,
@@ -110,7 +156,11 @@ export const parseAiCommandInput = async (
         apiKey: ctx.env.OPENAI_COMPAT_API_KEY,
         model: ctx.env.OPENAI_COMPAT_MODEL,
       },
-      { defaultOccurredAt: defaultDate, correlationId },
+      {
+        defaultOccurredAt: defaultDate,
+        correlationId,
+        context: promptContext,
+      },
     )
 
     logger.info(correlationId, 'bot_ai_preflight_success', {
@@ -126,6 +176,7 @@ export const parseAiCommandInput = async (
         scopeToken,
         defaultDate,
         rawItems,
+        ...(aiContext ? { aiContext } : {}),
       },
     }
   } catch (error) {

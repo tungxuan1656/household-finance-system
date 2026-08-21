@@ -4,6 +4,9 @@ import {
   unrecognizedCommandText,
 } from '@/bot/format'
 import type { ParsedExpenseItem } from '@/contracts/expense-parse-schemas'
+import { mapAiNamesToIds } from '@/handlers/expenses/parse-expense'
+import { logger } from '@/lib/logger'
+import { newId } from '@/utils/id'
 
 import { expensePreviewKeyboard } from '../renderers/keyboards'
 import type { BotResponse, CommandContext } from '../types'
@@ -66,8 +69,14 @@ export const handleAddExpenseCommand = async (
     return { kind: 'single', response: pre.response }
   }
 
-  const { expenseText, hasScopeArg, scopeToken, defaultDate, rawItems } =
-    pre.input
+  const {
+    expenseText,
+    hasScopeArg,
+    scopeToken,
+    defaultDate,
+    rawItems,
+    aiContext,
+  } = pre.input
 
   if (rawItems.length === 0) {
     return {
@@ -85,11 +94,43 @@ export const handleAddExpenseCommand = async (
     truncatedCount > 0 ? rawItems.slice(0, MAX_BATCH_SIZE) : rawItems
 
   // Normalize all items. Drop ones that fail validation (missing fields).
+  // Also map householdName/groupNames via whitelist (feat-130 reuse).
   const validItems: ParsedExpenseItem[] = []
+  const aiMappings: Array<{ householdId: string | null; groupIds: string[] }> =
+    []
+  const counters = { mappedHouseholdCount: 0, mappedGroupCount: 0 }
+  const maps = aiContext
+    ? {
+        householdNameToId: aiContext.householdNameToId,
+        groupNameToId: aiContext.groupNameToId,
+      }
+    : {
+        householdNameToId: new Map<string, string>(),
+        groupNameToId: new Map<string, string>(),
+      }
 
   for (const raw of cappedRawItems) {
+    const { householdId, groupIds } = aiContext
+      ? mapAiNamesToIds(raw, maps, counters)
+      : { householdId: null as string | null, groupIds: [] as string[] }
     const normalized = normalizeAiItem(raw, defaultDate)
-    if (normalized) validItems.push(normalized)
+    if (normalized) {
+      validItems.push(normalized)
+      aiMappings.push({ householdId, groupIds })
+    }
+  }
+
+  // Count-only logging for whitelist mapping
+  if (aiContext) {
+    const correlationId = newId()
+
+    logger.info(correlationId, 'bot_add_expense_mapping', {
+      textChars: expenseText.length,
+      rawItemsCount: cappedRawItems.length,
+      validItemsCount: validItems.length,
+      mappedHouseholdCount: counters.mappedHouseholdCount,
+      mappedGroupCount: counters.mappedGroupCount,
+    })
   }
 
   if (validItems.length === 0) {
@@ -107,10 +148,13 @@ export const handleAddExpenseCommand = async (
   // message" via the batch path.
   if (validItems.length === 1) {
     const single = validItems[0]!
+    const singleMapping = aiMappings[0]
     const built = await buildDraftFromItem(ctx, single, {
       rawText: expenseText,
       defaultDate,
       scopeArg: hasScopeArg ? scopeToken : undefined,
+      aiHouseholdId: singleMapping?.householdId ?? null,
+      aiGroupIds: singleMapping?.groupIds ?? [],
     })
 
     if ('status' in built) {
@@ -141,6 +185,7 @@ export const handleAddExpenseCommand = async (
     rawText: expenseText,
     defaultDate,
     scopeArg: hasScopeArg ? scopeToken : undefined,
+    aiMappings,
   })
 
   // Append the truncation note (if any) — used in the first preview text

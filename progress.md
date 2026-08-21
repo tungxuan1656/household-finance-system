@@ -243,3 +243,19 @@
 **Evidence**: `pnpm --filter tma typecheck` pass (0 errors); `lint` 0 errors 15 warnings (no-console pre-existing); `test` 31 files 162 tests pass; `build` 2226 modules 217.52kB gzip pass; `grep -r DataState apps/tma/src/features` 0; `git diff --check` clean. `feature_index.json` marks feat-131 done.
 **Blockers**: none
 **Next**: none — giữ `data-state.tsx` deprecated, web không ảnh hưởng.
+
+## 2026-08-21 - feat-132
+
+**State**: active
+**Done**: Created tracker for Telegram bot AI household/group recognition by name. Reuses feat-130 whitelist helpers for /add and natural-input flows.
+**Evidence**: `feature_index.json` lists feat-132 as active (feat-130/131 done); `features/feat-132.md` contains inline plan (inventory -> shared helpers -> bot preflight/add -> natural -> verify).
+**Blockers**: none
+**Next**: Execute Step 1-5 via @fixer.
+
+## 2026-08-21 - feat-132
+
+**State**: done
+**Done**: Applied whitelist household/group to Telegram webhook: `ai-expense-preflight.ts` + `natural-expense.ts` fetch `AiContext` via `fetchAiContext` and pass `context` to `parseExpensesWithAi` (skip when `appUserId` null); `ai-expense-shared.ts` added `normalizeAiItemWithContext`, `buildDraftFromItem`/`buildDraftsFromItems` now handle `aiHouseholdId/aiGroupIds` with `hh:` scope priority and store `groupIds`; `ai-expense.ts` maps each raw via `mapAiNamesToIds` (NFD+đ, Set dedup) and logs `mappedHouseholdCount/mappedGroupCount`; `natural-expense.ts` creates expense with mapped `householdId` and links groups via `replaceExpenseGroupAssignments`, also `confirm-expense.ts` links `preview.groupIds`.
+**Evidence**: `pnpm --filter worker typecheck` 0 errors; `lint` 0; `test` 106 files / 665 tests pass; `git diff --check` clean. Reused helpers `fetchAiContext`/`mapAiNamesToIds`/`AI_CONTEXT_MAX_ITEMS`/`normalizeNameKey` (IN query, global sort, collision warn). `feature_index.json` marks feat-132 done.
+**Blockers**: none
+**Next**: none — manual smoke `/add` + natural text with real household/group names.

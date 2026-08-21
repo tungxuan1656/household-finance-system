@@ -1,5 +1,6 @@
 import { renderExpenseSummaryLine } from '@/bot/format'
 import { createAuditLogEntry } from '@/db/repositories/audit-log-repository'
+import { replaceExpenseGroupAssignments } from '@/db/repositories/expense-group-assignment-repository'
 import { createExpense } from '@/db/repositories/expense-repository'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
@@ -156,6 +157,18 @@ export const handleConfirmExpense = async (
     note: `Tạo qua Telegram bot`,
     createdViaBot: 1,
   })
+
+  // Link expense to groups if AI pre-mapped them (feat-132)
+  if (preview.groupIds && preview.groupIds.length > 0) {
+    await replaceExpenseGroupAssignments(
+      db,
+      expense.id,
+      preview.groupIds,
+      ctx.appUserId,
+    ).catch((err: unknown) => {
+      console.error('confirm-expense: group assign failed', err)
+    })
+  }
 
   // Mark draft confirmed
   await markDraftConfirmed(db, draft.id, expense.id)

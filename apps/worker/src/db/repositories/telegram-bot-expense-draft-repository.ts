@@ -278,6 +278,8 @@ export interface PreviewData {
   householdId?: string
   householdName?: string
   groupName?: string
+  groupIds?: string[]
+  groupNames?: string[]
 }
 
 export interface CreateDraftFromPreviewOptions {

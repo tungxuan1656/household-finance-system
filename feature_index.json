@@ -30,8 +30,20 @@
       "depends_on": []
     },
     {
+      "id": "feat-130",
+      "title": "AI expense parser household/group recognition by name",
+      "status": "done",
+      "depends_on": []
+    },
+    {
       "id": "feat-131",
       "title": "Migrate TMA DataState to QueryState (statistics-page)",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-132",
+      "title": "Telegram bot AI household/group recognition by name",
       "status": "done",
       "depends_on": []
     }

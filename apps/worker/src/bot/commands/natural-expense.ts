@@ -20,12 +20,21 @@ import {
 } from '@/bot/format'
 import type { ParsedExpenseItem } from '@/contracts/expense-parse-schemas'
 import { createAuditLogEntry } from '@/db/repositories/audit-log-repository'
+import { replaceExpenseGroupAssignments } from '@/db/repositories/expense-group-assignment-repository'
 import {
   createExpense,
   type CreateExpenseInput,
 } from '@/db/repositories/expense-repository'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
-import { AiUpstreamError, parseExpensesWithAi } from '@/lib/ai/expense-parser'
+import {
+  fetchAiContext,
+  mapAiNamesToIds,
+} from '@/handlers/expenses/parse-expense'
+import {
+  AiUpstreamError,
+  parseExpensesWithAi,
+  type RawAiItem,
+} from '@/lib/ai/expense-parser'
 import { getMinorUnits } from '@/lib/currency'
 import { logger, truncateErrorMessage } from '@/lib/logger'
 import { newId } from '@/utils/id'
@@ -79,13 +88,33 @@ export const runNaturalExpenseCreate = async (
     appUserId,
   })
 
-  let rawItems: Array<{
-    amount: number
-    categoryKey: string
-    sourceKey?: string
-    title: string
-    occurredAt?: string
-  }>
+  // Fetch whitelist context for AI prompt (reuse feat-130)
+  let aiContext: Awaited<ReturnType<typeof fetchAiContext>> | null = null
+  let promptContext:
+    | {
+        households: { id: string; name: string }[]
+        groups: { id: string; name: string; householdId?: string | null }[]
+      }
+    | undefined
+  try {
+    const fetched = await fetchAiContext(deps.db, appUserId, correlationId)
+    aiContext = fetched
+
+    promptContext = {
+      households: fetched.availableHouseholds,
+      groups: fetched.availableGroups,
+    }
+
+    logger.info(correlationId, 'bot_natural_context_fetched', {
+      textChars: text.length,
+      householdCount: fetched.availableHouseholds.length,
+      groupCount: fetched.availableGroups.length,
+    })
+  } catch {
+    promptContext = undefined
+  }
+
+  let rawItems: RawAiItem[]
 
   try {
     rawItems = await parseExpensesWithAi(
@@ -95,7 +124,7 @@ export const runNaturalExpenseCreate = async (
         apiKey: deps.env.OPENAI_COMPAT_API_KEY,
         model: deps.env.OPENAI_COMPAT_MODEL,
       },
-      { defaultOccurredAt: defaultDate, correlationId },
+      { defaultOccurredAt: defaultDate, correlationId, context: promptContext },
     )
 
     logger.info(correlationId, 'bot_natural_expense_ai_success', {
@@ -143,12 +172,40 @@ export const runNaturalExpenseCreate = async (
   // detector for the amount (override AI's amount with it) and use the AI for
   // the other fields. For multi-item natural input the detector only proves the
   // message contains an expense-like amount, so each created expense must keep
-  // its own AI-parsed amount.
+  // its own AI-parsed amount. Also map householdName/groupNames via whitelist.
   const validItems: ParsedExpenseItem[] = []
+  const aiMappings: Array<{ householdId: string | null; groupIds: string[] }> =
+    []
+  const counters = { mappedHouseholdCount: 0, mappedGroupCount: 0 }
+  const maps = aiContext
+    ? {
+        householdNameToId: aiContext.householdNameToId,
+        groupNameToId: aiContext.groupNameToId,
+      }
+    : {
+        householdNameToId: new Map<string, string>(),
+        groupNameToId: new Map<string, string>(),
+      }
 
   for (const raw of rawItems) {
+    const { householdId, groupIds } = aiContext
+      ? mapAiNamesToIds(raw as RawAiItem, maps, counters)
+      : { householdId: null as string | null, groupIds: [] as string[] }
     const normalized = normalizeAiItem(raw, defaultDate)
-    if (normalized) validItems.push(normalized)
+    if (normalized) {
+      validItems.push(normalized)
+      aiMappings.push({ householdId, groupIds })
+    }
+  }
+
+  if (aiContext) {
+    logger.info(correlationId, 'bot_natural_mapping', {
+      textChars: text.length,
+      rawItemsCount: rawItems.length,
+      validItemsCount: validItems.length,
+      mappedHouseholdCount: counters.mappedHouseholdCount,
+      mappedGroupCount: counters.mappedGroupCount,
+    })
   }
 
   if (validItems.length === 0) {
@@ -185,15 +242,18 @@ export const runNaturalExpenseCreate = async (
     input: CreateExpenseInput
   }> = []
 
-  for (const item of validItems) {
+  for (let idx = 0; idx < validItems.length; idx++) {
+    const item = validItems[idx]!
+    const mapping = aiMappings[idx] ?? { householdId: null, groupIds: [] }
     const amountVnd =
       validItems.length === 1 ? amountResult.amountVnd : item.amount
     const amountMinor = getMinorUnits(amountVnd, 'VND')
     const occurredAtMs = Date.parse(item.occurredAt)
+    const resolvedHouseholdId = mapping.householdId
 
     const input: CreateExpenseInput = {
       id: newId(),
-      householdId: null, // personal by default; reassigned via the post-create button
+      householdId: resolvedHouseholdId,
       spentByUserId: appUserId,
       categoryKey: item.categoryKey,
       sourceKey: item.sourceKey,
@@ -208,10 +268,26 @@ export const runNaturalExpenseCreate = async (
     try {
       const expense = await createExpense(deps.db, input)
 
+      if (mapping.groupIds.length > 0) {
+        await replaceExpenseGroupAssignments(
+          deps.db,
+          expense.id,
+          mapping.groupIds,
+          appUserId,
+        ).catch((err: unknown) => {
+          logger.error(correlationId, 'natural_expense_group_assign_failed', {
+            error:
+              err instanceof Error
+                ? truncateErrorMessage(err.message)
+                : truncateErrorMessage(String(err)),
+          })
+        })
+      }
+
       // Audit log — natural input write (used by the post-create handlers
       // to attribute delete/household-change events to the same source).
       await createAuditLogEntry(deps.db, {
-        householdId: null,
+        householdId: resolvedHouseholdId,
         actorUserId: appUserId,
         actionType: 'expense.created',
         targetType: 'expense',
@@ -221,6 +297,8 @@ export const runNaturalExpenseCreate = async (
           expenseId: expense.id,
           naturalInput: true,
           rawText: text,
+          householdId: resolvedHouseholdId,
+          groupIds: mapping.groupIds,
         }),
       }).catch((err: unknown) => {
         logger.error(correlationId, 'natural_expense_audit_log_failed', {
@@ -237,8 +315,10 @@ export const runNaturalExpenseCreate = async (
         categoryKey: item.categoryKey,
         title: item.title,
         sourceKey: item.sourceKey,
-        scope: 'personal',
+        scope: resolvedHouseholdId ? 'household' : 'personal',
         currencyCode: 'VND',
+        ...(resolvedHouseholdId ? { householdId: resolvedHouseholdId } : {}),
+        ...(mapping.groupIds.length > 0 ? { groupIds: mapping.groupIds } : {}),
       })
 
       created.push({ expenseId: expense.id, summary, input })
