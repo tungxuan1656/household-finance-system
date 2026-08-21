@@ -31,7 +31,7 @@ Read least docs that fully cover the task.
 | Backend work | `docs/BACKEND.md` → exact `docs/references/backend/*` needed |
 | Shared type/API naming | `docs/references/shared/type-naming-pattern.md` |
 | Product behavior | `docs/product-specs/index.md` → exact shared or surface spec |
-| Plan creation/update | Feature plans are inline by default; create `docs/plans/feat-<id>.md` only for substantial active work when actually needed |
+| Plan creation/update | Decide with tracking table: No feature / Inline (`features/feat-<id>.md`) / External (`docs/plans/feat-<id>.md` needs >=2 signals). Default inline |
 | UI durable design decision | `docs/design-docs/index.md` → exact design doc |
 | Security-sensitive work | `docs/SECURITY.md` + exact backend/frontend refs |
 | Reliability/runtime health | `docs/RELIABILITY.md` |
@@ -48,7 +48,15 @@ Do not read broad folders by default. Use indexes to choose exact leaf docs.
 - Use no feature or progress state for read-only or lightweight work. Create state only for material tracked work.
 - Activate a feature only after every feature in its `depends_on` list is `done`.
 - Legacy state is Git-only history. Do not maintain an active legacy product feature.
-- Feature plans are inline by default. `docs/plans/feat-<id>.md` exists only for substantial active work when actually created; do not archive completed plans.
+- Decide feature tracking with this table. Default to inline. Use an external plan only when >=2 conditions in the third column apply.
+
+  | Mode | Use when | Signals for external plan |
+  |---|---|---|
+  | No feature | <20 lines, 1 file, no API/DB/complexity change | — |
+  | Inline plan (`features/feat-<id>.md`) | 1-3 files, 1 workspace, <200 lines, single concern, <1 day | — |
+  | External plan (`docs/plans/feat-<id>.md`) | Substantial work | >=4 files or >=2 workspaces, DB migration or breaking API, needs phases/rollback, or needs multi-agent file ownership |
+
+- Do not create `docs/plans/feat-<id>.md` for bounded work. `docs/plans/feat-<id>.md` exists only for substantial active work when actually created; do not archive completed plans.
 - The feature `Handoff` section owns recovery. Do not create a separate session-handoff file.
 - Append progress only below the template marker, and record material feature state only.
 - Product specs retain current/proposed roadmap status labels.
@@ -85,3 +93,5 @@ Done means:
 - Evidence is recorded in the relevant feature Handoff and progress entry.
 - The repository restart and verification path remains usable.
 - Changes are committed only when explicitly requested.
+
+<!-- harness-slim 1.4.0 · generated 2026-08-21 · managed sections above; check drift with skill CHANGELOG.md -->

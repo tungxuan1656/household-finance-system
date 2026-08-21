@@ -1,4 +1,4 @@
-# {{FEATURE_ID}} - {{FEATURE_TITLE}}
+# {{FEATURE_ID}} — {{FEATURE_TITLE}}
 
 ## Goal
 
@@ -22,7 +22,7 @@
 
 ## Plan
 
-<!-- Keep bounded tracked work here. For substantial active work only, use `docs/plans/{{FEATURE_ID}}.md`; do not archive completed plans. -->
+<!-- Bounded (default): 1-3 files, 1 workspace, <200 lines. Substantial: >=4 files or >=2 workspaces, DB migration/breaking API, or needs phases/rollback -> use docs/plans/{{FEATURE_ID}}.md (needs >=2 substantial signals). -->
 
 1. <Step.>
 2. <Step.>
@@ -38,3 +38,5 @@
 - Evidence: -
 - Blockers: none
 - Next: <One action.>
+
+<!-- harness-slim 1.4.0 · generated 2026-08-21 -->
