@@ -28,6 +28,12 @@
       "title": "TMA directory tree deep-modules refactor",
       "status": "done",
       "depends_on": []
+    },
+    {
+      "id": "feat-130",
+      "title": "AI expense parser household/group recognition by name",
+      "status": "done",
+      "depends_on": []
     }
   ]
 }

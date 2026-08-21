@@ -211,3 +211,19 @@
 **Evidence**: 18 routes moved to features/*/pages (app-router now imports only from features, grep from '@/routes 0); components/finance dissolved to features/home/expenses components (grep finance 0, ls routes/finance gone). Skeleton: households api kept as documented >400-line exception, invitations api/types flattened, budgets feedback merged, expenses model/ 4 files + barrel created (12 importers updated), auth model/ shim created. Verification: lint 0 errors/15 warnings, typecheck 0, test 31 files/162 tests pass, build 708.51 kB gzip 216.02 kB pass with 5 expected eager warnings, ./init.sh pass, git diff --check 0.
 **Blockers**: none
 **Next**: none
+
+## 2026-08-21 - feat-130
+
+**State**: active
+**Done**: Created tracker for AI expense parser household/group recognition by name with inline plan.
+**Evidence**: `feature_index.json` lists feat-130 as active (feat-129 done); `features/feat-130.md` contains Goal, Confirmed scope, Non-goals, 4 Acceptance items, and 4-step inline plan (inventory -> expand parser -> handler+schema -> tests/verify). Risks accepted per user.
+**Blockers**: none
+**Next**: Execute inline plan Step 1 inventory & Step 2 parser expansion.
+
+## 2026-08-21 - feat-130
+
+**State**: done
+**Done**: Implemented whitelist-based household/group recognition in AI parse. `lib/ai/expense-parser.ts` -> `AiContext` + `householdName/groupNames` + `buildSystemPrompt(ctx)` capped 15+15 with hallucination guard; `contracts/expense-parse-schemas.ts` -> `householdId` nullable + `groupIds`; `handlers/expenses/parse-expense.ts` -> parallel household/group fetch, NFD-normalized name->id map, context injection, whitelist drop, count-only logging.
+**Evidence**: `pnpm --filter worker typecheck` 0 errors; `pnpm --filter worker test` 106 files / 665 tests pass (32.37s); `pnpm --filter worker lint` pass after --fix; `git diff --check` clean; `expenses-parse.spec.ts` adjusted for extra context fields. Feature file and progress updated; `feature_index.json` marks feat-130 done.
+**Blockers**: none
+**Next**: none — ready for manual `POST /expenses/parse` smoke with real household/group names.

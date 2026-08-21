@@ -162,6 +162,32 @@ export const listExpenseGroupsByHousehold = async (
   return result.results.map((row) => mapRow(row))
 }
 
+export const listExpenseGroupsByHouseholdIds = async (
+  db: D1Database,
+  householdIds: string[],
+): Promise<StoredExpenseGroup[]> => {
+  if (householdIds.length === 0) return []
+
+  const placeholders = householdIds.map(() => '?').join(', ')
+  const result = await db
+    .prepare(
+      `SELECT ${BASE_COLUMNS},
+              COALESCE(SUM(e.amount_minor), 0) AS total_spend_minor
+         FROM expense_groups eg
+         LEFT JOIN expense_group_items egi ON egi.group_id = eg.id
+         LEFT JOIN expenses e ON e.id = egi.expense_id AND e.deleted_at IS NULL
+        WHERE eg.household_id IN (${placeholders})
+          AND eg.status = 'active'
+          AND eg.archived_at IS NULL
+        GROUP BY eg.id
+        ORDER BY eg.created_at DESC`,
+    )
+    .bind(...householdIds)
+    .all<ExpenseGroupRow>()
+
+  return result.results.map((row) => mapRow(row))
+}
+
 export const listExpenseGroupsByOwner = async (
   db: D1Database,
   userId: string,

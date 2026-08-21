@@ -20,12 +20,20 @@ export interface RawAiItem {
   sourceKey?: string
   title: string
   occurredAt?: string
+  householdName?: string | null
+  groupNames?: string[]
+}
+
+export interface AiContext {
+  households: { id: string; name: string }[]
+  groups: { id: string; name: string; householdId?: string | null }[]
 }
 
 export interface ParseExpensesWithAiOptions {
   defaultOccurredAt?: string
   requestId?: string
   correlationId?: string
+  context?: AiContext
 }
 
 /**
@@ -40,11 +48,19 @@ export class AiUpstreamError extends Error {
   }
 }
 
+export const AI_CONTEXT_MAX_ITEMS = 15
+
 // 20s timeout — feature assumes Workers paid-plan 30s wall
 const AI_TIMEOUT_MS = 20_000
 
-const buildSystemPrompt = (defaultOccurredAt?: string): string =>
-  [
+const sanitizePromptName = (value: string): string =>
+  value.replace(/[\r\n\t]/g, ' ').slice(0, 50)
+
+export const buildSystemPrompt = (
+  defaultOccurredAt?: string,
+  ctx?: AiContext,
+): string => {
+  const base = [
     'You are an expense parser for a personal finance app. Extract expenses from Vietnamese text.',
     'Respond with a JSON object containing an "expenses" array.',
     'Only extract expenses (money spent). Do not include income, money received, salary, gifts received, lending, borrowing, debt repayment, or transfers between own accounts.',
@@ -55,6 +71,8 @@ const buildSystemPrompt = (defaultOccurredAt?: string): string =>
     '- sourceKey (string — pick from the allowed list below; if unsure, use bank-transfer)',
     '- title (string, short description of the expense)',
     '- occurredAt (string, YYYY-MM-DD format — infer from text and current date)',
+    '- householdName (string | null — see Available households rule below)',
+    '- groupNames (string[] — see Available groups rule below)',
     '',
     'Date rules:',
     `- The current client-local date is ${defaultOccurredAt ?? 'not provided'}. Treat this as today/current time for all date inference.`,
@@ -91,7 +109,47 @@ const buildSystemPrompt = (defaultOccurredAt?: string): string =>
     'Allowed sourceKey values: cash, bank-transfer, card, momo, zalo-pay, shopee-pay, other',
     '',
     'Return ONLY the JSON object, no markdown, no explanation.',
-  ].join('\n')
+  ]
+
+  const cap = AI_CONTEXT_MAX_ITEMS
+  const households = (ctx?.households ?? []).slice(0, cap)
+  const groups = (ctx?.groups ?? []).slice(0, cap)
+
+  if (households.length > 0 || groups.length > 0) {
+    base.push('')
+
+    base.push(
+      'Available households/groups (whitelist — only suggest when the user text explicitly mentions the name):',
+    )
+
+    if (households.length > 0) {
+      base.push(
+        `Available households: ${JSON.stringify(households.map((h) => sanitizePromptName(h.name)))}`,
+      )
+    } else {
+      base.push('Available households: []')
+    }
+    if (groups.length > 0) {
+      base.push(
+        `Available expense groups: ${JSON.stringify(groups.map((g) => sanitizePromptName(g.name)))}`,
+      )
+    } else {
+      base.push('Available expense groups: []')
+    }
+
+    base.push(
+      'Rules for householdName/groupNames: Return householdName only if the expense text explicitly mentions a household name from the Available households list (exact name, case-insensitive). Otherwise return null. Return groupNames only with names that are explicitly mentioned and are from the Available expense groups list (exact names, case-insensitive); otherwise return []. Do not hallucinate names outside the allowed lists. Do not invent household/group names. If multiple groups are mentioned, include all matching names in groupNames.',
+    )
+  } else {
+    base.push('')
+
+    base.push(
+      'Household/group rules: No available households/groups for this user. Always return householdName as null and groupNames as [].',
+    )
+  }
+
+  return base.join('\n')
+}
 
 const buildRequestBody = (
   model: string,
@@ -100,7 +158,10 @@ const buildRequestBody = (
 ): unknown => ({
   model,
   messages: [
-    { role: 'system', content: buildSystemPrompt(options.defaultOccurredAt) },
+    {
+      role: 'system',
+      content: buildSystemPrompt(options.defaultOccurredAt, options.context),
+    },
     { role: 'user', content: text },
   ],
   response_format: { type: 'json_object' } as const,
@@ -260,6 +321,23 @@ export const parseExpensesWithAi = async (
     const mapped = items.map((item: unknown) => {
       const raw = item as Record<string, unknown>
 
+      const householdName =
+        typeof raw.householdName === 'string'
+          ? raw.householdName.trim() || null
+          : raw.householdName === null
+            ? null
+            : undefined
+
+      const groupNamesRaw = raw.groupNames
+      let groupNames: string[] | undefined
+      if (Array.isArray(groupNamesRaw)) {
+        const coerced = groupNamesRaw
+          .filter((v): v is string => typeof v === 'string')
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0)
+        groupNames = coerced
+      }
+
       return {
         amount: coerceAmount(raw.amount) ?? 0,
         categoryKey:
@@ -271,6 +349,8 @@ export const parseExpensesWithAi = async (
           typeof raw.occurredAt === 'string'
             ? raw.occurredAt.trim()
             : undefined,
+        householdName: householdName ?? null,
+        groupNames,
       }
     })
 

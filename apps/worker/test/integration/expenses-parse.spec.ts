@@ -132,7 +132,13 @@ describe('POST /api/v1/expenses/parse', () => {
         baseUrl: expect.any(String),
         model: expect.any(String),
       }),
-      { defaultOccurredAt },
+      expect.objectContaining({
+        defaultOccurredAt,
+        context: expect.objectContaining({
+          households: expect.any(Array),
+          groups: expect.any(Array),
+        }),
+      }),
     )
   })
 

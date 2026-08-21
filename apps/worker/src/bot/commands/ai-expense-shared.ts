@@ -15,7 +15,8 @@ const YYYY_MM_DD_RE = /^\d{4}-\d{2}-\d{2}$/
 
 /**
  * Pure normalization of a raw AI item into a ParsedExpenseItem (no Hono context).
- * Mirrors the logic in parse-expense.ts handler lines ~76-101 but as a pure function.
+ * Mirrors the logic in parse-expense.ts handler but as a pure function.
+ * bot ignores household/group by design — parse-only (whitelist mapping lives in HTTP parse handler).
  */
 export const normalizeAiItem = (
   item: {
