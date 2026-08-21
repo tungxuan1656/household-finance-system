@@ -1,23 +1,19 @@
 # Copy this file to .dev.vars for local worker runtime.
 # Do not commit .dev.vars.
+# Public vars are defined in wrangler.jsonc `vars` and do not need to be duplicated here:
+#  ACCESS_TOKEN_TTL_SECONDS, APP_ENV, AUTH_ALLOW_INSECURE_TEST_TOKENS, AUTH_AUDIENCE,
+#  AUTH_ISSUER, OPENAI_COMPAT_BASE_URL, OPENAI_COMPAT_MODEL, RATE_LIMIT_ENABLED,
+#  RATE_LIMIT_MAX_REQUESTS, REFRESH_TOKEN_TTL_SECONDS, TELEGRAM_BOT_DEEP_LINK_URL,
+#  TELEGRAM_BOT_TMA_URL
+# This file only contains secrets and bindings not in wrangler vars.
+# To override any public var locally (e.g. APP_ENV=local), add it to your .dev.vars.
 
 # Internal API key for admin/internal migration routes
 INTERNAL_API_KEY="replace-with-internal-api-key"
 
-# Core auth settings
-AUTH_ISSUER="https://household-finance.local"
-AUTH_AUDIENCE="household-finance-api"
-ACCESS_TOKEN_TTL_SECONDS="86400"
-REFRESH_TOKEN_TTL_SECONDS="2592000"
-
-# Rate limit (auth endpoints). Set RATE_LIMIT_ENABLED="true" to re-enable.
-# RATE_LIMIT_ENABLED="false"
-# RATE_LIMIT_MAX_REQUESTS="10"
-
 # Firebase identity provider settings
 FIREBASE_PROJECT_ID="household-finance-local"
 FIREBASE_JWKS_URL="https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"
-AUTH_ALLOW_INSECURE_TEST_TOKENS="false"
 
 # Telegram identity provider settings
 TELEGRAM_BOT_TOKEN="replace-with-telegram-bot-token"
@@ -25,11 +21,6 @@ TELEGRAM_BOT_TOKEN="replace-with-telegram-bot-token"
 # TELEGRAM_FRESHNESS_WINDOW_SECONDS="3600"
 # Required webhook secret for Telegram bot (X-Telegram-Bot-Api-Secret-Token verification)
 TELEGRAM_BOT_WEBHOOK_SECRET="replace-with-webhook-secret"
-# Telegram bot URLs.
-# TELEGRAM_BOT_DEEP_LINK_URL should be a Telegram Mini App deep link
-# (e.g. https://t.me/<bot_username>/<app_short_name> or https://t.me/<bot_username>?startapp=...).
-TELEGRAM_BOT_TMA_URL="https://phofis-tma.pages.dev/"
-TELEGRAM_BOT_DEEP_LINK_URL="https://t.me/phofis_bot"
 
 # Secrets
 AUTH_JWT_SECRET="replace-with-local-secret"
@@ -37,7 +28,6 @@ AUTH_REFRESH_TOKEN_PEPPER="replace-with-local-pepper"
 INVITATION_TOKEN_PEPPER="replace-with-invitation-pepper"
 
 # Cloudinary upload signing
-APP_ENV="local"
 CLOUDINARY_CLOUD_NAME=""
 CLOUDINARY_API_KEY=""
 CLOUDINARY_API_SECRET=""
@@ -47,7 +37,5 @@ CLOUDINARY_API_SECRET=""
 # CLOUDINARY_ALLOWED_IMAGE_MIME_TYPES="image/jpeg,image/png,image/webp"
 # CLOUDINARY_ALLOWED_VIDEO_MIME_TYPES="video/mp4,video/webm"
 
-# OpenAI-compatible AI expense parser
-OPENAI_COMPAT_BASE_URL="https://api.openai.com/v1"
+# OpenAI-compatible AI expense parser (secret)
 OPENAI_COMPAT_API_KEY="replace-with-your-api-key"
-OPENAI_COMPAT_MODEL="gpt-4o-mini"
