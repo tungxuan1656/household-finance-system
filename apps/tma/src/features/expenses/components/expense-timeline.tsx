@@ -42,7 +42,7 @@ export const ExpenseItem = ({
 
   return (
     <article
-      className='flex cursor-pointer items-center gap-3 p-3.5 transition active:scale-[0.99]'
+      className='flex cursor-pointer items-center gap-3 px-4 py-2 transition active:scale-[0.99]'
       role='button'
       tabIndex={0}
       onClick={openDetail}

@@ -2,20 +2,14 @@ import { useEffect, useEffectEvent, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import {
-  NativePicker,
-  type NativePickerOption,
-} from '@/components/shared/native-picker'
-import { type QueryLike, QueryState } from '@/components/shared/query-state'
+import { NativePicker } from '@/components/shared/native-picker'
+import { QueryState } from '@/components/shared/query-state'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import {
-  useHouseholdExpenseGroupQueries,
-  usePersonalExpenseGroupListQuery,
-} from '@/features/groups/api'
+import { useExpenseGroupAggregateQuery } from '@/features/groups/api'
 import {
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
@@ -38,31 +32,6 @@ interface FilterReturnState {
   appliedPeriod?: PeriodSelection
 }
 
-interface ExpenseFilterPickerFieldProps {
-  id: string
-  value: string
-  placeholder?: string
-  options: NativePickerOption[]
-  onChange: (value: string) => void
-}
-
-const ExpenseFilterPickerField = ({
-  id,
-  options,
-  placeholder,
-  value,
-  onChange,
-}: ExpenseFilterPickerFieldProps) => (
-  <NativePicker
-    fullWidth
-    id={id}
-    options={options}
-    placeholder={placeholder}
-    value={value}
-    onChange={onChange}
-  />
-)
-
 export const ExpenseFilterPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -81,67 +50,12 @@ export const ExpenseFilterPage = () => {
     [householdsQuery.data?.items],
   )
 
-  // Group queries
-  const personalGroupsQuery = usePersonalExpenseGroupListQuery()
-  const householdGroupQueries = useHouseholdExpenseGroupQueries(households)
+  const groupsQuery = useExpenseGroupAggregateQuery(households)
 
-  const allGroups = useMemo(() => {
-    const groups = [...(personalGroupsQuery.data?.items ?? [])]
-
-    householdGroupQueries.forEach((query) => {
-      if (query.data?.items) {
-        groups.push(...query.data.items)
-      }
-    })
-
-    return groups
-  }, [personalGroupsQuery.data, householdGroupQueries])
-
-  const groupsQuery = useMemo<QueryLike<unknown>>(() => {
-    const queries = [
-      personalGroupsQuery,
-      ...householdGroupQueries,
-    ] as QueryLike<unknown>[]
-    const hasError = queries.some((q) => q.status === 'error')
-    const isPending = queries.some((q) => q.status === 'pending')
-    const isFetching = queries.some((q) => q.fetchStatus === 'fetching')
-
-    if (hasError) {
-      return {
-        status: 'error',
-        fetchStatus: isFetching ? 'fetching' : 'idle',
-        data: undefined,
-        refetch: () => {
-          void personalGroupsQuery.refetch?.()
-
-          householdGroupQueries.forEach((q) => {
-            void (q.refetch as (() => unknown) | undefined)?.()
-          })
-        },
-      }
-    }
-
-    if (isPending) {
-      return {
-        status: 'pending',
-        fetchStatus: 'fetching',
-        data: undefined,
-      }
-    }
-
-    return {
-      status: 'success',
-      fetchStatus: isFetching ? 'fetching' : 'idle',
-      data: { items: allGroups },
-      refetch: () => {
-        void personalGroupsQuery.refetch?.()
-
-        householdGroupQueries.forEach((q) => {
-          void (q.refetch as (() => unknown) | undefined)?.()
-        })
-      },
-    }
-  }, [personalGroupsQuery, householdGroupQueries, allGroups])
+  const allGroups = useMemo(
+    () => groupsQuery.data?.items ?? [],
+    [groupsQuery.data],
+  )
 
   useEffect(() => {
     const state = location.state as FilterReturnState | null
@@ -236,7 +150,7 @@ export const ExpenseFilterPage = () => {
 
   return (
     <TmaPageShell
-      contentClassName='gap-5'
+      contentClassName='gap-4'
       footer={
         <TmaPageFooter>
           <TmaHapticButton
@@ -254,15 +168,15 @@ export const ExpenseFilterPage = () => {
         </TmaPageFooter>
       }
       title={t('expenses.filter.title')}>
-      <Card>
-        <CardHeader className='pb-3'>
-          <CardTitle className='text-sm'>
+      <Card size='sm'>
+        <CardHeader className='pb-2'>
+          <CardTitle className='text-sm tracking-normal normal-case'>
             {t('expenses.filter.sortTitle')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <ToggleGroup
-            className='flex w-full gap-2 *:flex-1 *:justify-center'
+            className='grid w-full grid-cols-2 gap-2'
             value={[filter.sort]}
             onValueChange={(values) => {
               const next = values[0]
@@ -282,9 +196,9 @@ export const ExpenseFilterPage = () => {
 
       <PeriodPickerSection value={periodValue} onChange={handlePeriodChange} />
 
-      <Card>
-        <CardHeader className='pb-3'>
-          <CardTitle className='text-sm'>
+      <Card size='sm'>
+        <CardHeader className='pb-2'>
+          <CardTitle className='text-sm tracking-normal normal-case'>
             {t('expenses.filter.detailsTitle', {
               defaultValue: 'Bộ lọc chi tiết',
             })}
@@ -298,7 +212,8 @@ export const ExpenseFilterPage = () => {
               </FieldLabel>
               <QueryState query={householdsQuery} variant='plain'>
                 {() => (
-                  <ExpenseFilterPickerField
+                  <NativePicker
+                    fullWidth
                     id='expense-filter-household-picker'
                     options={householdPickerOptions}
                     placeholder={t('expenses.filter.householdPlaceholder')}
@@ -315,7 +230,8 @@ export const ExpenseFilterPage = () => {
               </FieldLabel>
               <QueryState query={groupsQuery} variant='plain'>
                 {() => (
-                  <ExpenseFilterPickerField
+                  <NativePicker
+                    fullWidth
                     id='expense-filter-group-picker'
                     options={groupPickerOptions}
                     placeholder={t('expenses.filter.groupTitle')}
@@ -332,7 +248,8 @@ export const ExpenseFilterPage = () => {
               </FieldLabel>
               <QueryState query={referenceCategoriesQuery} variant='plain'>
                 {() => (
-                  <ExpenseFilterPickerField
+                  <NativePicker
+                    fullWidth
                     id='expense-filter-category-picker'
                     options={categoryPickerOptions}
                     placeholder={t('expenses.filter.categoryAll')}

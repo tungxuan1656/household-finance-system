@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { DatePicker } from '@/components/shared/date-picker'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { TmaPageHeader, TmaPageShell } from '@/components/shared/tma-page-shell'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -79,15 +79,33 @@ export const AddIncomePage = () => {
   }, [])
 
   return (
-    <TmaPageShell title={t('incomes.addTitle')}>
-      <TmaPageHeader title={t('incomes.addTitle')} />
-
+    <TmaPageShell
+      contentClassName='flex flex-col gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton
+            aria-busy={isSaving}
+            disabled={!isValid || isSaving}
+            variant='default'
+            onClick={handleSave}>
+            {isSaving
+              ? t('incomes.saving')
+              : amount > 0
+                ? t('incomes.saveWithAmount', {
+                    amount: formatAmountInput(String(amount)),
+                  })
+                : t('incomes.saveAction')}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('incomes.addTitle')}>
+      {/* Card 1 Hero: Date + Amount */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('incomes.fieldDate')}</CardTitle>
+          <CardTitle>{t('incomes.fieldAmount')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <FieldGroup>
+          <FieldGroup className='gap-4'>
             <Field>
               <FieldLabel htmlFor='add-income-date'>
                 {t('incomes.fieldDate')}
@@ -102,25 +120,15 @@ export const AddIncomePage = () => {
                 }}
               />
             </Field>
-          </FieldGroup>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('incomes.fieldAmount')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
             <Field>
               <FieldLabel htmlFor='add-income-amount'>
                 {t('incomes.fieldAmount')}
               </FieldLabel>
-              <div className='flex items-end gap-2'>
+              <div className='flex min-w-0 items-end gap-2'>
                 <Input
                   ref={amountInputRef}
                   autoFocus={true}
-                  className='text-right font-mono text-3xl font-semibold'
+                  className='min-w-0 flex-1 text-right font-mono text-3xl font-semibold'
                   id='add-income-amount'
                   inputMode='numeric'
                   placeholder='0'
@@ -130,10 +138,10 @@ export const AddIncomePage = () => {
                     setAmountInput(formatAmountInput(event.target.value))
                   }}
                 />
-                <span className='font-mono text-3xl font-semibold text-foreground/80'>
+                <span className='shrink-0 font-mono text-3xl font-semibold text-foreground/80'>
                   .000
                 </span>
-                <span className='text-xs font-semibold text-muted-foreground'>
+                <span className='shrink-0 pb-2 text-xs font-semibold text-muted-foreground'>
                   {currencyDisplaySymbol('VND')}
                 </span>
               </div>
@@ -142,12 +150,15 @@ export const AddIncomePage = () => {
         </CardContent>
       </Card>
 
+      {/* Card 2 Details: Name + Note */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('incomes.fieldName')}</CardTitle>
+          <CardTitle>
+            {t('incomes.details', { defaultValue: t('incomes.fieldName') })}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <FieldGroup>
+          <FieldGroup className='gap-4'>
             <Field>
               <FieldLabel htmlFor='add-income-title'>
                 {t('incomes.fieldName')}
@@ -169,16 +180,6 @@ export const AddIncomePage = () => {
                 }}
               />
             </Field>
-          </FieldGroup>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('incomes.fieldNote')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
             <Field>
               <FieldLabel htmlFor='add-income-note'>
                 {t('incomes.fieldNote')}
@@ -195,6 +196,7 @@ export const AddIncomePage = () => {
         </CardContent>
       </Card>
 
+      {/* Card 3 Source */}
       <Card>
         <CardHeader>
           <CardTitle>{t('incomes.source')}</CardTitle>
@@ -211,27 +213,17 @@ export const AddIncomePage = () => {
               }
             }}>
             {getSourceOptions(t).map((source) => (
-              <ToggleGroupItem key={source.id} type='button' value={source.id}>
+              <ToggleGroupItem
+                key={source.id}
+                className='min-w-0 truncate text-xs'
+                type='button'
+                value={source.id}>
                 {source.label}
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
         </CardContent>
       </Card>
-
-      <TmaHapticButton
-        aria-busy={isSaving}
-        className='mt-5 mb-2 w-full'
-        disabled={!isValid || isSaving}
-        onClick={handleSave}>
-        {isSaving
-          ? t('incomes.saving')
-          : amount > 0
-            ? t('incomes.saveWithAmount', {
-                amount: formatAmountInput(String(amount)),
-              })
-            : t('incomes.saveAction')}
-      </TmaHapticButton>
     </TmaPageShell>
   )
 }

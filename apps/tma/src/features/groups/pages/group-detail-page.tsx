@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { DataState } from '@/components/shared/data-state'
+import { QueryState } from '@/components/shared/query-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -25,14 +25,21 @@ import {
   getGroupProgress,
   getGroupStatusLabel,
 } from '../presentation'
+import type {
+  ExpenseGroupDTO,
+  GroupSummaryDTO,
+  MemberContributionDTO,
+} from '../types'
 
 type GroupPageFeedback = {
   message: string
   tone: 'error' | 'success'
 }
 
+// ── glyph (compact, reuse across list/detail) ────────────────────────
 const GroupGlyph = () => (
   <svg
+    aria-hidden
     fill='none'
     height='20'
     stroke='currentColor'
@@ -48,6 +55,161 @@ const GroupGlyph = () => (
   </svg>
 )
 
+// ── dumb: hero ───────────────────────────────────────────────────────
+const GroupHeroCard = ({
+  group,
+  contextLabel,
+}: {
+  group: ExpenseGroupDTO
+  contextLabel: string
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <Card size='sm'>
+      <CardHeader className='gap-3'>
+        <div className='flex items-start justify-between gap-3'>
+          <div className='grid min-w-0 gap-1'>
+            <CardDescription className='truncate text-xs'>
+              {contextLabel}
+            </CardDescription>
+            <CardTitle className='text-xl leading-tight font-extrabold tracking-tight normal-case'>
+              {group.name}
+            </CardTitle>
+            {group.description ? (
+              <CardDescription className='mt-1 line-clamp-2 text-sm'>
+                {group.description}
+              </CardDescription>
+            ) : null}
+          </div>
+          <div className='flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+            <GroupGlyph />
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className='flex flex-wrap gap-2'>
+        <Badge variant='secondary'>
+          {getGroupStatusLabel(group.status, t)}
+        </Badge>
+        <Badge variant='outline'>{getGroupDateRangeLabel(group, t)}</Badge>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ── dumb: overview 2x2 + progress ────────────────────────────────────
+const GroupOverviewCard = ({
+  group,
+  summary,
+}: {
+  group: ExpenseGroupDTO
+  summary: GroupSummaryDTO
+}) => {
+  const { t } = useTranslation()
+  const totalSpendMinor = summary.totalSpendMinor ?? group.totalSpendMinor ?? 0
+  const progress = getGroupProgress(totalSpendMinor, group.eventBudgetMinor)
+
+  return (
+    <Card size='sm'>
+      <CardContent className='grid gap-4'>
+        <div className='grid grid-cols-2 gap-3'>
+          <div className='grid gap-1'>
+            <span className='text-xs text-muted-foreground'>
+              {t('groups.detail.statTotalSpent')}
+            </span>
+            <span className='text-sm font-bold text-foreground tabular-nums'>
+              {formatCurrencyMinor(totalSpendMinor, 'VND')}
+            </span>
+          </div>
+          <div className='grid gap-1'>
+            <span className='text-xs text-muted-foreground'>
+              {t('groups.detail.statExpenseCount')}
+            </span>
+            <span className='text-sm font-bold text-foreground tabular-nums'>
+              {summary.expenseCount}
+            </span>
+          </div>
+          <div className='grid gap-1'>
+            <span className='text-xs text-muted-foreground'>
+              {t('groups.detail.statBudget')}
+            </span>
+            <span className='text-sm font-bold text-foreground tabular-nums'>
+              {getGroupBudgetLabel(group, t)}
+            </span>
+          </div>
+          <div className='grid gap-1'>
+            <span className='text-xs text-muted-foreground'>
+              {t('groups.detail.statRemaining')}
+            </span>
+            <span
+              className={
+                summary.budgetRemainingMinor != null &&
+                summary.budgetRemainingMinor < 0
+                  ? 'text-sm font-bold text-destructive tabular-nums'
+                  : 'text-sm font-bold text-foreground tabular-nums'
+              }>
+              {formatOptionalGroupMoney(summary.budgetRemainingMinor ?? null)}
+            </span>
+          </div>
+        </div>
+
+        {progress ? (
+          <div className='grid gap-1.5'>
+            <div className='flex items-center justify-between text-xs text-muted-foreground'>
+              <span>{t('groups.detail.statProgress')}</span>
+              <span className='tabular-nums'>{progress.percentUsed}%</span>
+            </div>
+            <div className='h-2 overflow-hidden rounded-full bg-muted'>
+              <div
+                className={
+                  progress.isOverBudget
+                    ? 'h-full rounded-full bg-destructive'
+                    : 'h-full rounded-full bg-primary'
+                }
+                style={{ width: `${progress.widthPercent}%` }}
+              />
+            </div>
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ── dumb: member list with dividers ──────────────────────────────────
+const GroupMemberList = ({ members }: { members: MemberContributionDTO[] }) => {
+  const { t } = useTranslation()
+
+  return (
+    <Card size='sm'>
+      <CardContent className='p-0'>
+        <div className='divide-y divide-border'>
+          {members.map((member) => (
+            <article
+              key={member.userId}
+              className='flex items-center justify-between gap-3 px-(--card-spacing) py-2.5'>
+              <div className='min-w-0'>
+                <h3 className='m-0 truncate text-sm font-bold tracking-tight text-foreground'>
+                  {member.displayName ?? t('groups.detail.memberFallback')}
+                </h3>
+                <p className='m-0 text-xs text-muted-foreground'>
+                  {t('statistics.expenseCount', {
+                    count: member.expenseCount,
+                  })}
+                </p>
+              </div>
+              <span className='shrink-0 text-sm font-bold text-foreground tabular-nums'>
+                {formatCurrencyMinor(member.totalSpendMinor, 'VND')}
+              </span>
+            </article>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ── page (smart: orchestrate queries + layout) ───────────────────────
 export const GroupDetailPage = () => {
   const { id } = useParams<{ id: string }>()
   const location = useLocation()
@@ -61,8 +223,6 @@ export const GroupDetailPage = () => {
       null,
   )
 
-  const group = groupQuery.data
-  const summary = summaryQuery.data
   const householdNameById = useMemo(
     () =>
       new Map(
@@ -73,22 +233,17 @@ export const GroupDetailPage = () => {
       ),
     [householdsQuery.data?.items],
   )
-  const contextLabel = group?.householdId
-    ? (householdNameById.get(group.householdId) ?? t('groups.contextHousehold'))
-    : t('groups.contextPersonal')
-  const totalSpendMinor =
-    summary?.totalSpendMinor ?? group?.totalSpendMinor ?? null
-  const progress = group
-    ? getGroupProgress(totalSpendMinor ?? 0, group.eventBudgetMinor)
-    : null
-  const isGroupMissing = !groupQuery.isLoading && !groupQuery.isError && !group
 
   if (!id) {
     return (
-      <TmaPageShell title={t('groups.detail.title')}>
-        <Card>
+      <TmaPageShell
+        contentClassName='flex flex-col gap-4'
+        title={t('groups.detail.title')}>
+        <Card size='sm'>
           <CardHeader>
-            <CardTitle>{t('groups.detail.invalidIdTitle')}</CardTitle>
+            <CardTitle className='text-base font-bold normal-case'>
+              {t('groups.detail.invalidIdTitle')}
+            </CardTitle>
             <CardDescription>
               {t('groups.detail.invalidIdDesc')}
             </CardDescription>
@@ -99,10 +254,12 @@ export const GroupDetailPage = () => {
   }
 
   return (
-    <TmaPageShell title={t('groups.detail.title')}>
+    <TmaPageShell
+      contentClassName='flex flex-col gap-4'
+      title={t('groups.detail.title')}>
       {feedback ? (
-        <Card>
-          <CardHeader>
+        <Card size='sm'>
+          <CardHeader className='gap-1.5'>
             <CardDescription
               className={
                 feedback.tone === 'error'
@@ -115,173 +272,77 @@ export const GroupDetailPage = () => {
         </Card>
       ) : null}
 
-      <DataState
-        emptyDescription={t('groups.detail.notFoundDesc')}
-        emptyTitle={t('groups.detail.notFoundTitle')}
-        errorDescription={t('groups.detail.loadErrorDesc')}
-        errorTitle={t('groups.detail.loadError')}
-        isEmpty={isGroupMissing}
-        isError={groupQuery.isError && !group}
-        isLoading={groupQuery.isLoading && !group}
-        loadingDescription={t('groups.detail.loadingDesc')}
-        loadingTitle={t('groups.detail.loading')}
-        retryAction={groupQuery.refetch}>
-        {group ? (
-          <>
-            <Card>
-              <CardHeader>
-                <div className='flex items-start justify-between gap-3'>
-                  <div className='min-w-0'>
-                    <CardDescription>{contextLabel}</CardDescription>
-                    <CardTitle className='text-2xl leading-tight font-extrabold'>
-                      {group.name}
-                    </CardTitle>
-                    {group.description ? (
-                      <CardDescription className='mt-2'>
-                        {group.description}
-                      </CardDescription>
+      <QueryState
+        empty={{
+          title: t('groups.detail.notFoundTitle'),
+          description: t('groups.detail.notFoundDesc'),
+        }}
+        error={{
+          title: t('groups.detail.loadError'),
+          description: t('groups.detail.loadErrorDesc'),
+        }}
+        isEmpty={(data) => !data}
+        pending={{
+          title: t('groups.detail.loading'),
+          description: t('groups.detail.loadingDesc'),
+        }}
+        query={groupQuery}>
+        {(group) => {
+          const contextLabel = group.householdId
+            ? (householdNameById.get(group.householdId) ??
+              t('groups.contextHousehold'))
+            : t('groups.contextPersonal')
+
+          return (
+            <>
+              <GroupHeroCard contextLabel={contextLabel} group={group} />
+
+              <QueryState
+                error={{
+                  title: t('groups.detail.overviewErrorTitle'),
+                  description: t('groups.detail.overviewErrorDesc'),
+                }}
+                pending={{
+                  title: t('groups.detail.overviewLoadingTitle'),
+                  description: t('groups.detail.overviewLoadingDesc'),
+                }}
+                query={summaryQuery}
+                variant='card'>
+                {(summary) => (
+                  <>
+                    <section className='flex flex-col gap-3'>
+                      <h2 className='text-sm font-bold tracking-tight'>
+                        {t('groups.detail.sectionOverview')}
+                      </h2>
+                      <GroupOverviewCard group={group} summary={summary} />
+                    </section>
+
+                    {summary.memberContributions.length ? (
+                      <section className='flex flex-col gap-3'>
+                        <h2 className='text-sm font-bold tracking-tight'>
+                          {t('groups.detail.sectionMembers')}
+                        </h2>
+                        <GroupMemberList
+                          members={summary.memberContributions}
+                        />
+                      </section>
                     ) : null}
-                  </div>
-                  <div className='flex size-10 items-center justify-center rounded-full bg-muted text-muted-foreground'>
-                    <GroupGlyph />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className='flex flex-wrap gap-2'>
-                <Badge variant='secondary'>
-                  {getGroupStatusLabel(group.status, t)}
-                </Badge>
-                <Badge variant='outline'>
-                  {getGroupDateRangeLabel(group, t)}
-                </Badge>
-              </CardContent>
-            </Card>
+                  </>
+                )}
+              </QueryState>
 
-            <section className='grid gap-3'>
-              <h2 className='m-0 text-base font-bold'>
-                {t('groups.detail.sectionOverview')}
-              </h2>
-              <DataState
-                errorDescription={t('groups.detail.overviewErrorDesc')}
-                errorTitle={t('groups.detail.overviewErrorTitle')}
-                isError={summaryQuery.isError && !summary}
-                isLoading={summaryQuery.isLoading && !summary}
-                loadingDescription={t('groups.detail.overviewLoadingDesc')}
-                loadingTitle={t('groups.detail.overviewLoadingTitle')}
-                retryAction={summaryQuery.refetch}>
-                <Card>
-                  <CardContent className='grid gap-4'>
-                    <div className='grid grid-cols-2 gap-2'>
-                      <div className='grid gap-1'>
-                        <CardDescription>
-                          {t('groups.detail.statTotalSpent')}
-                        </CardDescription>
-                        <span className='text-base font-extrabold text-foreground'>
-                          {totalSpendMinor != null
-                            ? formatCurrencyMinor(totalSpendMinor, 'VND')
-                            : '-'}
-                        </span>
-                      </div>
-                      <div className='grid gap-1'>
-                        <CardDescription>
-                          {t('groups.detail.statExpenseCount')}
-                        </CardDescription>
-                        <p className='text-base font-semibold text-foreground'>
-                          {summary?.expenseCount ?? 0}
-                        </p>
-                      </div>
-                      <div className='grid gap-1'>
-                        <CardDescription>
-                          {t('groups.detail.statBudget')}
-                        </CardDescription>
-                        <p className='text-sm font-semibold text-foreground'>
-                          {getGroupBudgetLabel(group, t)}
-                        </p>
-                      </div>
-                      <div className='grid gap-1'>
-                        <CardDescription>
-                          {t('groups.detail.statRemaining')}
-                        </CardDescription>
-                        <span
-                          className={
-                            summary?.budgetRemainingMinor != null &&
-                            summary.budgetRemainingMinor < 0
-                              ? 'text-sm font-bold text-destructive'
-                              : 'text-sm font-bold text-foreground'
-                          }>
-                          {formatOptionalGroupMoney(
-                            summary?.budgetRemainingMinor ?? null,
-                          )}
-                        </span>
-                      </div>
-                    </div>
-
-                    {progress ? (
-                      <div className='grid gap-1'>
-                        <div className='flex items-center justify-between text-sm text-muted-foreground'>
-                          <span>{t('groups.detail.statProgress')}</span>
-                          <span>{progress.percentUsed}%</span>
-                        </div>
-                        <div className='h-2 overflow-hidden rounded-full bg-black/6'>
-                          <div
-                            className={
-                              progress.isOverBudget
-                                ? 'h-full rounded-full bg-destructive'
-                                : 'h-full rounded-full bg-primary'
-                            }
-                            style={{ width: `${progress.widthPercent}%` }}
-                          />
-                        </div>
-                      </div>
-                    ) : null}
-                  </CardContent>
-                </Card>
-              </DataState>
-            </section>
-
-            {summary?.memberContributions.length ? (
-              <section className='grid gap-3'>
-                <h2 className='m-0 text-base font-bold'>
-                  {t('groups.detail.sectionMembers')}
-                </h2>
-                <Card>
-                  <CardContent className='grid gap-2'>
-                    {summary.memberContributions.map((member) => (
-                      <article
-                        key={member.userId}
-                        className='flex items-center justify-between gap-3'>
-                        <div className='min-w-0'>
-                          <h3 className='m-0 truncate text-sm font-bold text-foreground'>
-                            {member.displayName ??
-                              t('groups.detail.memberFallback')}
-                          </h3>
-                          <CardDescription>
-                            {t('statistics.expenseCount', {
-                              count: member.expenseCount,
-                            })}
-                          </CardDescription>
-                        </div>
-                        <span className='shrink-0 text-sm font-bold text-foreground'>
-                          {formatCurrencyMinor(member.totalSpendMinor, 'VND')}
-                        </span>
-                      </article>
-                    ))}
-                  </CardContent>
-                </Card>
-              </section>
-            ) : null}
-
-            <RecentExpenses
-              groupId={group.id}
-              householdId={group.householdId ?? undefined}
-              showHouseholdLabel={group.householdId == null}
-              title={t('groups.detail.sectionExpenses')}
-              viewAllHref={TMA_PATHS.expenses}
-              viewAllState={{ appliedGroupId: group.id }}
-            />
-          </>
-        ) : null}
-      </DataState>
+              <RecentExpenses
+                groupId={group.id}
+                householdId={group.householdId ?? undefined}
+                showHouseholdLabel={group.householdId == null}
+                title={t('groups.detail.sectionExpenses')}
+                viewAllHref={TMA_PATHS.expenses}
+                viewAllState={{ appliedGroupId: group.id }}
+              />
+            </>
+          )
+        }}
+      </QueryState>
     </TmaPageShell>
   )
 }

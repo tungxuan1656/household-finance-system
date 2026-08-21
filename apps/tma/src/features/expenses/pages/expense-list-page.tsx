@@ -2,15 +2,10 @@ import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
+import { QueryState } from '@/components/shared/query-state'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { FilterIcon, PlusIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { ExpenseSummaryCard } from '@/features/expenses/components/expense-summary-card'
 import { ExpenseTimeline } from '@/features/expenses/components/expense-timeline'
 import {
@@ -25,7 +20,6 @@ import {
   useExpenseListInfiniteQuery,
   useExpenseSummaryQuery,
   useHouseholdsQuery,
-  useReferenceCategoriesQuery,
 } from '@/features/home/api'
 import type { ExpenseListParams } from '@/features/home/types'
 import { TMA_PATHS } from '@/lib/constants/routes'
@@ -83,37 +77,17 @@ export const ExpensesPage = () => {
 
   const expensesQuery = useExpenseListInfiniteQuery(queryParams)
   const summaryQuery = useExpenseSummaryQuery(summaryParams)
-  const referenceCategoriesQuery = useReferenceCategoriesQuery()
   const householdsQuery = useHouseholdsQuery()
-
-  const expenses = useMemo(
-    () => expensesQuery.data?.pages.flatMap((page) => page.items) ?? [],
-    [expensesQuery.data?.pages],
-  )
 
   const householdNameMap = useMemo(
     () => buildHouseholdNameMap(householdsQuery.data?.items ?? []),
     [householdsQuery.data?.items],
   )
 
-  if (expensesQuery.isLoading || referenceCategoriesQuery.isLoading) {
-    return (
-      <TmaPageShell title={t('expenses.title')}>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('expenses.loadingTitle')}</CardTitle>
-            <CardDescription>{t('expenses.loadingDesc')}</CardDescription>
-          </CardHeader>
-        </Card>
-        <ExpensesAddFab />
-      </TmaPageShell>
-    )
-  }
-
   return (
-    <TmaPageShell title={t('expenses.title')}>
+    <TmaPageShell contentClassName='gap-4' title={t('expenses.title')}>
       <ExpenseSummaryCard summary={summaryQuery.data} />
-      <div className='mb-2 flex justify-between px-1 py-4'>
+      <div className='flex flex-wrap items-center justify-between gap-2 px-1'>
         <TmaHapticButton
           size='sm'
           onClick={() => {
@@ -139,36 +113,50 @@ export const ExpensesPage = () => {
         </TmaHapticButton>
       </div>
 
-      {expenses.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('expenses.emptyTitle')}</CardTitle>
-            <CardDescription>{t('expenses.emptyDesc')}</CardDescription>
-          </CardHeader>
-        </Card>
-      ) : (
-        <>
-          <ExpenseTimeline
-            expenses={expenses}
-            householdNameById={householdNameMap}
-          />
-          {expensesQuery.hasNextPage && (
-            <div className='mt-4 flex justify-center'>
-              <TmaHapticButton
-                disabled={expensesQuery.isFetchingNextPage}
-                size='sm'
-                variant='outline'
-                onClick={() => {
-                  void expensesQuery.fetchNextPage()
-                }}>
-                {expensesQuery.isFetchingNextPage
-                  ? t('expenses.loadingMore')
-                  : t('expenses.loadMore')}
-              </TmaHapticButton>
-            </div>
-          )}
-        </>
-      )}
+      <QueryState
+        empty={{
+          title: t('expenses.emptyTitle'),
+          description: t('expenses.emptyDesc'),
+        }}
+        error={{
+          title: t('dataState.errorTitle'),
+          description: t('dataState.errorDescription'),
+        }}
+        isEmpty={(data) => data.pages.every((page) => page.items.length === 0)}
+        pending={{
+          title: t('expenses.loadingTitle'),
+          description: t('expenses.loadingDesc'),
+        }}
+        query={expensesQuery}
+        variant='card'>
+        {(data) => {
+          const expenses = data.pages.flatMap((page) => page.items)
+
+          return (
+            <>
+              <ExpenseTimeline
+                expenses={expenses}
+                householdNameById={householdNameMap}
+              />
+              {expensesQuery.hasNextPage && (
+                <div className='flex justify-center'>
+                  <TmaHapticButton
+                    disabled={expensesQuery.isFetchingNextPage}
+                    size='sm'
+                    variant='outline'
+                    onClick={() => {
+                      void expensesQuery.fetchNextPage()
+                    }}>
+                    {expensesQuery.isFetchingNextPage
+                      ? t('expenses.loadingMore')
+                      : t('expenses.loadMore')}
+                  </TmaHapticButton>
+                </div>
+              )}
+            </>
+          )
+        }}
+      </QueryState>
       <ExpensesAddFab />
     </TmaPageShell>
   )
@@ -184,17 +172,15 @@ const ExpensesAddFab = () => {
 
   return (
     <div className='pointer-events-none fixed inset-x-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] z-30 flex justify-center px-4'>
-      <TmaHapticButton size='sm' variant='secondary'>
-        <Link
-          aria-label={t('shell.addExpenseAria')}
-          className='pointer-events-auto grid size-13.5 place-items-center rounded-full bg-linear-to-br from-[#2a3a5c] to-foreground text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
-          to={TMA_PATHS.expensesNewCategory}
-          onClick={() => {
-            impact('medium')
-          }}>
-          <PlusIcon height='24' width='24' />
-        </Link>
-      </TmaHapticButton>
+      <Link
+        aria-label={t('shell.addExpenseAria')}
+        className='pointer-events-auto grid size-14 place-items-center rounded-full bg-linear-to-br from-[#2a3a5c] to-foreground text-white shadow-[0_8px_20px_rgba(17,24,39,0.16),inset_0_1px_0_rgba(255,255,255,0.18),0_0_0_4px_rgba(255,255,255,0.55)] transition active:scale-95'
+        to={TMA_PATHS.expensesNewCategory}
+        onClick={() => {
+          impact('medium')
+        }}>
+        <PlusIcon height='24' width='24' />
+      </Link>
     </div>
   )
 }

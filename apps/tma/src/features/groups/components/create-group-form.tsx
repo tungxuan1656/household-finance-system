@@ -1,3 +1,4 @@
+import { type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DatePicker } from '@/components/shared/date-picker'
@@ -5,7 +6,6 @@ import {
   NativePicker,
   type NativePickerOption,
 } from '@/components/shared/native-picker'
-import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -23,13 +23,12 @@ export type CreateGroupFormProps = {
   name: string
   startDate: string
   onBudgetChange: (v: string) => void
-  onCancel: () => void
   onContextChange: (v: string) => void
   onDescriptionChange: (v: string) => void
   onEndDateChange: (v: string) => void
   onNameChange: (v: string) => void
   onStartDateChange: (v: string) => void
-  onSubmit: () => void
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void
 }
 
 export const CreateGroupForm = ({
@@ -43,7 +42,6 @@ export const CreateGroupForm = ({
   name,
   startDate,
   onBudgetChange,
-  onCancel,
   onContextChange,
   onDescriptionChange,
   onEndDateChange,
@@ -52,20 +50,25 @@ export const CreateGroupForm = ({
   onSubmit,
 }: CreateGroupFormProps) => {
   const { t } = useTranslation()
+  const rawScheduleTitle = t('groups.createPage.sectionSchedule')
+  const scheduleTitle =
+    rawScheduleTitle === 'groups.createPage.sectionSchedule'
+      ? 'Lịch & Ngân sách'
+      : rawScheduleTitle
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('groups.createPage.header')}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form
-          className='grid gap-3'
-          onSubmit={(event) => {
-            event.preventDefault()
-            onSubmit()
-          }}>
-          <FieldGroup>
+    <form
+      className='flex flex-col gap-4'
+      id='create-group-form'
+      onSubmit={onSubmit}>
+      <Card size='sm'>
+        <CardHeader>
+          <CardTitle className='text-sm font-bold tracking-tight'>
+            {t('groups.createPage.header')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup className='gap-4'>
             <Field>
               <FieldLabel htmlFor='create-group-name'>
                 {t('groups.createPage.fieldName')}
@@ -115,7 +118,18 @@ export const CreateGroupForm = ({
                 }}
               />
             </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
 
+      <Card size='sm'>
+        <CardHeader>
+          <CardTitle className='text-sm font-bold tracking-tight'>
+            {scheduleTitle}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup className='gap-4'>
             <Field>
               <FieldLabel htmlFor='create-group-start-date'>
                 {t('groups.createPage.fieldStartDate')}
@@ -164,24 +178,8 @@ export const CreateGroupForm = ({
               />
             </Field>
           </FieldGroup>
-          <div className='flex flex-wrap justify-end gap-2.5'>
-            <TmaHapticButton
-              aria-busy={isBusy}
-              disabled={isBusy}
-              type='button'
-              variant='secondary'
-              onClick={onCancel}>
-              {t('common.cancel')}
-            </TmaHapticButton>
-
-            <TmaHapticButton aria-busy={isBusy} disabled={isBusy} type='submit'>
-              {isBusy
-                ? t('groups.createPage.submitting')
-                : t('groups.createPage.title')}
-            </TmaHapticButton>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </form>
   )
 }
