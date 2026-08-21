@@ -23,9 +23,9 @@ Build a Telegram Mini App that feels:
 - All shadcn files under `src/components/ui` remain CLI-only generated output and unmodified. They contain no TMA props, defaults, haptics, classes, or behavior.
 - TMA UI is fixed light-only and does not sync its visual theme to Telegram.
 - Every route uses in-page shadcn `Button` CTAs; Telegram `BottomButton` and `MainButton` are not used. `TmaHapticButton`, outside `components/ui`, composes the pristine Button when a CTA needs haptic feedback.
-- Generated Button has no haptic behavior. `NativePicker`, `DatePicker`, and `DataState` live outside `components/ui` and retain their behavior; layout and finance semantics stay at the consumer or screen level.
+- Generated Button has no haptic behavior. `NativePicker`, `DatePicker`, and `QueryState` live outside `components/ui` and retain their behavior; layout and finance semantics stay at the consumer or screen level.
 - Preserve the tab rail, one scroll root per screen, native-picker/date-picker interaction, and existing haptics.
-- Preserve `DataState` behavior while composing shadcn primitives for its presentation.
+- Preserve `QueryState` behavior while composing shadcn primitives for its presentation.
 - Do not apply a dark root class or dark token override, and do not alter generated dark branches.
 - Legacy `--tma-*` UI tokens are transitional only and are removed after all consumers migrate.
 - Bottom navigation has 3 positions: `Home`, a centered `+` action, and `Statistics`.
