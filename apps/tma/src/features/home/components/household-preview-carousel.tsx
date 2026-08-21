@@ -259,7 +259,7 @@ export const HouseholdPreviewCarousel = () => {
               {households.map((household) => (
                 <div
                   key={household.id}
-                  className='w-[78%] max-w-[300px] min-w-[220px] shrink-0 snap-start'>
+                  className='w-[78%] max-w-75 min-w-55 shrink-0 snap-start'>
                   <HouseholdPreviewCard household={household} />
                 </div>
               ))}

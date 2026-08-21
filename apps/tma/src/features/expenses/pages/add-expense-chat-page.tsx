@@ -100,7 +100,7 @@ export const AddExpenseChatPage = () => {
           <Textarea
             aria-invalid={Boolean(error)}
             aria-label={t('expenses.add.aiInputLabel')}
-            className='max-h-[50vh] min-h-[200px] resize-y text-base md:text-sm'
+            className='max-h-[50vh] min-h-50 resize-y text-base md:text-sm'
             disabled={isPending}
             id='add-expense-chat-input'
             maxLength={MAX_PARSE_TEXT_LENGTH}

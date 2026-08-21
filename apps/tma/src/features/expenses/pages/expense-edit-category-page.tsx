@@ -74,7 +74,7 @@ export const ExpenseEditCategoryPage = () => {
                       key={category.id}
                       aria-pressed={isActive}
                       className={cn(
-                        'grid min-h-20 content-start gap-1 p-2.5 text-center text-left',
+                        'grid min-h-20 content-start gap-1 p-2.5 text-center',
                         isActive &&
                           'border-primary bg-primary/5 ring-2 ring-primary ring-offset-2 ring-offset-card',
                       )}
@@ -91,7 +91,7 @@ export const ExpenseEditCategoryPage = () => {
                         iconUrl={category.iconUrl}
                         symbol={category.symbol}
                       />
-                      <span className='line-clamp-2 text-center text-xs leading-tight font-semibold text-balance break-words'>
+                      <span className='line-clamp-2 text-center text-xs leading-tight font-semibold text-balance wrap-break-word'>
                         {category.label}
                       </span>
                     </Button>

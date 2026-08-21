@@ -69,16 +69,16 @@ export interface ExpensesRouteState {
 }
 
 /**
- * Pure mapping from a navigation `location.state` to the partial filter
- * update that should be applied to the expenses filter store.
+ * Pure mapping from a navigation `location.state`to the partial filter
+ * update that should be applied to the expenses store.
  *
- * Mirrors the cross-clearing contract of the manual filter picker: when a
- * household scope is applied, any pre-existing `groupId` is cleared (and
+ * Mirrors the cross-clearing contract of the manual picker: when a
+ * household scope is applied, any pre-existing`groupId` is cleared (and
  * vice versa). Without this, a stale `groupId` from a previous filter
  * session would AND with the new `householdId` on the API and return zero
  * rows.
  *
- * Returns `null` when no scope dimension is present in the state — the
+ * Returns `null`when no scope dimension is present in the state — the
  * caller should leave the existing filter untouched.
  */
 export const applyExpensesRouteState = (
@@ -90,7 +90,7 @@ export const applyExpensesRouteState = (
 
   if (state.appliedHouseholdId != null) {
     partial.householdId = state.appliedHouseholdId
-    // Drop any leftover group filter — the new household scope must not
+    // Drop any leftover group — the new household scope must not
     // be combined with a group from a different household. The picker
     // has access to allGroups to validate compatibility; navigation
     // does not, so we always clear to stay consistent with the scope

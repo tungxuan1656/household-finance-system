@@ -17,7 +17,7 @@ export const EditSelectRow = ({
   <Button
     // Keep ghost for tappable card affordance; differs from NativePicker underline (h-10 border-b-input)
     // but intentionally uses rounded-xl card style for category row. If design converges to underline,
-    // swap to border-b border-b-input rounded-none px-0 h-10 to match NativePicker chrome.
+    // swap to border-b border-b-input px-0 h-10 to match NativePicker chrome.
     className='flex h-auto min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 py-3 text-left'
     type='button'
     variant='ghost'

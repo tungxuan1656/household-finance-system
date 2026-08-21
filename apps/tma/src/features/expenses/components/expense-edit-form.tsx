@@ -151,7 +151,7 @@ export const ExpenseEditForm = ({
                 {sourcePickerOptions.map((option) => (
                   <ToggleGroupItem
                     key={option.value}
-                    className='min-h-11 px-2 text-xs leading-tight break-words whitespace-normal'
+                    className='min-h-11 px-2 text-xs leading-tight wrap-break-word whitespace-normal'
                     type='button'
                     value={option.value}>
                     {option.label}
