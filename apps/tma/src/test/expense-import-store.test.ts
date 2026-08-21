@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import type { ParsedExpenseItem } from '@/features/expenses/import-api'
-import { useImportFlowStore } from '@/features/expenses/import-store'
+import { useImportFlowStore } from '@/features/expenses/model/import-store'
 
 describe('useImportFlowStore', () => {
   beforeEach(() => {

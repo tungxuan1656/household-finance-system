@@ -7,7 +7,7 @@ import type {
 import { AuthApiError } from '@/lib/auth/api'
 import type { StoredSession } from '@/lib/storage/adapter'
 
-import { type AuthErrorCode, useAuthStore } from './store'
+import { type AuthErrorCode, useAuthStore } from './model/store'
 
 const ACCESS_TOKEN_BUFFER_MS = 60_000
 const UNKNOWN_TELEGRAM_USER_ID = 0

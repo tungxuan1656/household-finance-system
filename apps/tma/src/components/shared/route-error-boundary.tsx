@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 
+import { NotFoundPage } from '@/app/router/not-found-page'
 import { AppShell } from '@/components/shared/app-shell'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import {
@@ -10,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { NotFoundPage } from '@/routes/not-found'
 
 // ── Route-level error element (function component – can use hooks) ──
 // Used as errorElement in createBrowserRouter.

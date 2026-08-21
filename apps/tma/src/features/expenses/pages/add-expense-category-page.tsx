@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { useAddExpenseFlowStore } from '@/features/expenses/store'
+import { useAddExpenseFlowStore } from '@/features/expenses/model/store'
 import { useReferenceCategoriesQuery } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'

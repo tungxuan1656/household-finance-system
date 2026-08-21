@@ -12,11 +12,11 @@ import {
 } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { useCreateInvitationMutation } from '@/features/invitations/api/invitation'
+import { useCreateInvitationMutation } from '@/features/invitations/api'
 import type {
   InvitationRoleDTO,
   InvitationTtlHours,
-} from '@/features/invitations/types/invitation'
+} from '@/features/invitations/types'
 import { impact, notification } from '@/lib/telegram/haptics'
 
 type InviteHouseholdDialogProps = {

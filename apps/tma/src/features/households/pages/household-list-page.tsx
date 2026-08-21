@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
-import { HouseholdItem } from '@/components/finance'
 import { QueryState } from '@/components/shared/query-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { buttonVariants } from '@/components/ui/button'
@@ -12,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { HouseholdItem } from '@/features/home/components/household-preview-carousel'
 import { getHouseholdBudgetLabel } from '@/features/home/presentation'
 import { usePeriodStore } from '@/features/period/store'
 import { TMA_PATHS } from '@/lib/constants/routes'

@@ -21,8 +21,8 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Separator } from '@/components/ui/separator'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { useAddExpenseContextActions } from '@/features/expenses/hooks/use-add-expense-context-actions'
+import { useAddExpenseFlowStore } from '@/features/expenses/model/store'
 import { getSourceOptions } from '@/features/expenses/presentation'
-import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import {
   useHouseholdExpenseGroupQueries,
   usePersonalExpenseGroupListQuery,

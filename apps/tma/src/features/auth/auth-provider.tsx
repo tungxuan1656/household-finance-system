@@ -2,7 +2,7 @@ import { createContext, type ReactNode, useContext, useMemo } from 'react'
 
 import type { AuthenticatedUser } from '@/lib/auth/api'
 
-import { type AuthStatus, useAuthStore } from './store'
+import { type AuthStatus, useAuthStore } from './model/store'
 
 export interface AuthContextValue {
   status: 'idle' | 'bootstrapping' | 'authenticated' | 'error'

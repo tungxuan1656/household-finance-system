@@ -9,7 +9,7 @@ import {
 } from '@/components/shared/tma-page-shell'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useEditExpenseStore } from '@/features/expenses/store'
+import { useEditExpenseStore } from '@/features/expenses/model/store'
 import { useReferenceCategoriesQuery } from '@/features/home/api'
 import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   type ExpenseCategorySelection,
   useAddExpenseFlowStore,
-} from '@/features/expenses/store'
+} from '@/features/expenses/model/store'
 
 const categoryOptions: ExpenseCategorySelection[] = [
   {

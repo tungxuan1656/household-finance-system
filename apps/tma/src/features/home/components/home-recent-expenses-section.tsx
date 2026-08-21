@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
-import { RecentExpenses } from '@/components/finance'
-import type { ExpensesRouteState } from '@/features/expenses/filter-store'
+import { RecentExpenses } from '@/features/expenses/components/expense-timeline'
+import type { ExpensesRouteState } from '@/features/expenses/model/filter-store'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
 type HomeRecentExpensesSectionProps = {

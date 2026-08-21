@@ -1,33 +1,16 @@
-import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  FinanceSummaryCard,
-  HouseholdPreviewCarousel,
-} from '@/components/finance'
 import { AppVersionLabel } from '@/components/shared/app-version-label'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { FinanceSummaryCard } from '@/features/home/components/finance-summary-card'
 import { HomeRecentExpensesSection } from '@/features/home/components/home-recent-expenses-section'
 import { HomeShortcutsSection } from '@/features/home/components/home-shortcuts-section'
+import { HouseholdPreviewCarousel } from '@/features/home/components/household-preview-carousel'
 import { usePeriodStore } from '@/features/period/store'
 
 export const HomePage = () => {
   const { t } = useTranslation()
   const selectedPeriod = usePeriodStore((state) => state.selectedPeriod)
-
-  // Idle prefetch: after the home page is interactive, start loading chunks
-  // for the most likely next routes so navigation feels instant.
-  useEffect(() => {
-    const id = setTimeout(() => {
-      // Dynamic import triggers Vite to load the lazy chunk in the background.
-      // Errors are swallowed — prefetch is a best-effort optimisation.
-      void import('@/routes/statistics').catch(() => undefined)
-      void import('@/routes/expenses').catch(() => undefined)
-      void import('@/routes/incomes').catch(() => undefined)
-    }, 2_000)
-
-    return () => clearTimeout(id)
-  }, [])
 
   return (
     <TmaPageShell title={t('homePage.title')}>

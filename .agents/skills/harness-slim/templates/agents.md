@@ -33,8 +33,8 @@ If baseline verification fails, record the failure. Fix it only when the current
 
 ## Plans
 
-- Keep the plan inside `features/feat-<id>.md` for bounded tracked work.
-- Create `docs/plans/feat-<id>.md` only for substantial work that needs durable phases, coordination, recovery, or risk control.
+- Keep the plan inside `features/feat-<id>.md` for bounded tracked work (1-3 files, 1 workspace, <200 lines).
+- Create `docs/plans/feat-<id>.md` only for substantial work (>=4 files or >=2 workspaces, DB migration/breaking API, or needs phases/rollback — requires >=2 signals). Default to inline.
 - Link the external plan from the feature file.
 - Define agent and file ownership before parallel work starts.
 
@@ -61,3 +61,5 @@ A feature is done only when:
 ## Verification
 
 - Full: `./init.sh`
+
+<!-- harness-slim {{HARNESS_VERSION}} · generated {{GENERATED_AT}} · managed sections above; check drift with skill CHANGELOG.md -->

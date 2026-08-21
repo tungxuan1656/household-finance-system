@@ -3,8 +3,8 @@ import { type ReactNode, useEffect, useRef } from 'react'
 import type { AuthApiClient } from '@/lib/auth/api'
 import type { AuthStorage } from '@/lib/storage/adapter'
 
+import { useAuthStore } from './model/store'
 import { RefreshInterceptor } from './refresh-interceptor'
-import { useAuthStore } from './store'
 
 const PROACTIVE_REFRESH_LEAD_MS = 60_000
 const PROACTIVE_REFRESH_INTERVAL_MS = 30_000

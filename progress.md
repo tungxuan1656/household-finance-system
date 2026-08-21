@@ -187,3 +187,27 @@
 **Evidence**: `pnpm --filter tma lint`, `typecheck`, `test`, `build`, `./init.sh`, and `git diff --check` passed on the final tree. Build retained the accepted static-route chunk advisories. Worker build was skipped by declared configuration.
 **Blockers**: Real Telegram iOS and Android QA in host light/dark settings is not executable in this environment and remains the only acceptance blocker.
 **Next**: Run the real-device matrix and attach pass/fail evidence; then complete the feature handoff. No commit requested.
+
+## 2026-08-21 - feat-128
+
+**State**: done
+**Done**: Closed per user confirmation of successful real-device QA on iOS and Android (host light/dark).
+**Evidence**: `feature_index.json` marks feat-128 done; `features/feat-128.md` Handoff updated to done with all 7 acceptance checkboxes marked x; Task 18 verification remains passing (lint 0 errors/15 warnings, typecheck, 31 files/162 tests, build, ./init.sh). Real-device Telegram QA confirmed by user.
+**Blockers**: none
+**Next**: none
+
+## 2026-08-21 - feat-129
+
+**State**: active
+**Done**: Created tracker for TMA directory tree deep-modules refactor with inline plan (no separate docs/plans file per user request).
+**Evidence**: `feature_index.json` lists feat-129 as active (feat-128 done); `features/feat-129.md` contains Goal, Confirmed scope, Non-goals, 6 Acceptance items, and 6-step inline plan (inventory -> move routes -> dissolve finance -> standardize skeleton -> fix seams -> verify).
+**Blockers**: none
+**Next**: Execute inline plan Step 1 inventory & map.
+
+## 2026-08-21 - feat-129
+
+**State**: done
+**Done**: Unified routes/finance seam and standardized skeleton per deep-modules plan.
+**Evidence**: 18 routes moved to features/*/pages (app-router now imports only from features, grep from '@/routes 0); components/finance dissolved to features/home/expenses components (grep finance 0, ls routes/finance gone). Skeleton: households api kept as documented >400-line exception, invitations api/types flattened, budgets feedback merged, expenses model/ 4 files + barrel created (12 importers updated), auth model/ shim created. Verification: lint 0 errors/15 warnings, typecheck 0, test 31 files/162 tests pass, build 708.51 kB gzip 216.02 kB pass with 5 expected eager warnings, ./init.sh pass, git diff --check 0.
+**Blockers**: none
+**Next**: none

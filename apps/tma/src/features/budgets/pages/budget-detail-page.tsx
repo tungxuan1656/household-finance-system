@@ -34,8 +34,7 @@ import {
   getBudgetProgress,
   parseBudgetAmountInputToMinor,
 } from '../presentation'
-import type { BudgetDTO, BudgetStatusDTO } from '../types'
-import type { BudgetFeedback } from '../types/feedback'
+import type { BudgetDTO, BudgetFeedback, BudgetStatusDTO } from '../types'
 
 // ── dumb components (no outer margin, parent gap owns spacing) ──
 

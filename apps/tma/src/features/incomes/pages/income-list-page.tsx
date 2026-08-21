@@ -156,10 +156,6 @@ export const IncomesPage = () => {
 const IncomesAddFab = () => {
   const { t } = useTranslation()
 
-  const prefetchAddIncome = () => {
-    void import('@/routes/add-income').catch(() => undefined)
-  }
-
   return (
     <div className='pointer-events-none fixed inset-x-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] z-30 flex justify-center px-4'>
       <TmaHapticButton size='sm' variant='secondary'>
@@ -169,9 +165,7 @@ const IncomesAddFab = () => {
           to={TMA_PATHS.incomesNew}
           onClick={() => {
             impact('medium')
-          }}
-          onMouseEnter={prefetchAddIncome}
-          onTouchStart={prefetchAddIncome}>
+          }}>
           <PlusIcon height='24' width='24' />
         </Link>
       </TmaHapticButton>

@@ -1,7 +1,7 @@
 import type { CategoryKey, SourceKey } from '@/features/home/types'
 
 import type { CreateExpenseRequest } from './api'
-import type { ImportItemDraft } from './import-store'
+import type { ImportItemDraft } from './model/import-store'
 
 export interface ConfirmImportResult {
   succeeded: string[]

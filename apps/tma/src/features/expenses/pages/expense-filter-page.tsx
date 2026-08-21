@@ -29,8 +29,8 @@ import {
 } from '@/lib/period'
 import { selection } from '@/lib/telegram/haptics'
 
-import { useExpenseListFilterStore } from '../filter-store'
 import { useExpenseFilterOptions } from '../hooks/use-expense-filter-options'
+import { useExpenseListFilterStore } from '../model/filter-store'
 
 const ALL_VALUE = '__all__'
 

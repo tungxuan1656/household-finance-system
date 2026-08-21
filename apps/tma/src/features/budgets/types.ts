@@ -83,3 +83,8 @@ export type ListBudgetsParams = {
   scope?: 'household' | 'personal'
   period?: string
 }
+
+export type BudgetFeedback = {
+  message: string
+  tone: 'error' | 'success'
+}

@@ -49,7 +49,35 @@ When a harness already exists:
 - Update the smallest source of truth that needs the new rule.
 - Do not overwrite a managed file without explicit user approval.
 
+### Version check (detect drift from installed repo)
+
+When the repository already contains harness artifacts (`AGENTS.md`, `feature_index.json`, `init.sh`, or `progress.md`):
+
+1. Read the provenance marker: `AGENTS.md` footer `<!-- harness-slim ... -->` or `feature_index.json` field `_harness.version`. If no marker, treat as `unknown` (legacy repo).
+2. Read skill version from `metadata.json` (`version`).
+3. If repo marker equals skill version: no drift — skip changelog.
+4. If repo marker is older or `unknown`: read `CHANGELOG.md` entries strictly between repo version and skill version (lazy read).
+5. For each entry, classify `Type` and act surgically with user approval:
+   - `non-breaking-doc`: no repo change (e.g. `references/gotchas.md`).
+   - `additive`: add missing marker/field/section.
+   - `breaking-rules`: surgical section replace in `AGENTS.md` per entry's Update action.
+   - `breaking-script`: surgical block edit in `init.sh` (never touch `FORMAT/LINT/BUILD/TEST` task arrays).
+6. Show diff preview per file, ask for approval. If target region has user customizations that conflict, ask instead of overwriting.
+7. After applying, update provenance markers to the new skill version (`{{HARNESS_VERSION}}` / `{{GENERATED_AT}}`). Do not write `progress.md` for harness maintenance; mention the update in the session summary only.
+
+Legacy repos (no marker): show the full changelog and ask the user before updating.
+
 Keep zero or one feature `active`. Do not activate `todo` work without user scope. Do not require a feature merely because the harness provides feature artifacts.
+
+Decide feature tracking with this table. Default to inline. Use an external plan only when >=2 conditions in the third column apply.
+
+| Mode | Use when | Signals for external plan |
+|---|---|---|
+| No feature | <20 lines, 1 file, no API/DB/complexity change | — |
+| Inline plan (`features/feat-<id>.md`) | 1-3 files, 1 workspace, <200 lines, single concern, <1 day | — |
+| External plan (`docs/plans/feat-<id>.md`) | Substantial work | >=4 files or >=2 workspaces, DB migration or breaking API, needs phases/rollback, or needs multi-agent file ownership |
+
+Do not create `docs/plans/feat-<id>.md` for bounded work.
 
 Create `features/feat-template.md` from `templates/feat-template.md`. Create or update a feature only when project scale, task complexity, and impact justify durable tracking. Keep the plan inline for bounded tracked work.
 
@@ -89,11 +117,13 @@ Run format and lint before build and test because they can modify files. Run ind
 
 Do not install dependencies, infer package scripts at runtime, or modify source files outside formatter and linter fixes. Update `init.sh` when commands, tools, or workspace modules change.
 
+`init.sh` must configure at least one `BUILD_TASKS` or `TEST_TASKS` entry when repository evidence shows a build or test exists. If no suite exists, add an explicit commented-out entry with evidence (e.g. `# "pnpm run test" # SKIP explicit: no test dir, no test script in package.json`). Do not leave all four task arrays silently empty.
+
 For non-Node repositories, write equivalent Bash commands only when their tools and configuration exist in the repository.
 
 ## Finish
 
-1. Run the relevant commands from `init.sh`.
+1. Run the relevant commands from `init.sh`. Fail the harness if `init.sh` has no BUILD/TEST tasks while evidence shows a build or test exists, or if all four task arrays are silently empty.
 2. For feature work, record evidence in the feature file and record progress only when execution state materially changed.
 3. Keep unknowns and blockers explicit.
 4. Explain which repository evidence determined the harness.
@@ -105,4 +135,5 @@ Read only when the current task needs it:
 - Session memory → [Memory persistence](references/memory-persistence-pattern.md)
 - Context pressure → [Context engineering](references/context-engineering-pattern.md)
 - Parallel agents → [Multi-agent coordination](references/multi-agent-pattern.md)
-- Failure modes → [Gotchas](references/gotchas.md)
+- Failure modes (slim core) → [Gotchas](references/gotchas.md)
+- Full runtime gotchas → [Gotchas Full](references/gotchas-full.md) — only when hacking the harness engine itself

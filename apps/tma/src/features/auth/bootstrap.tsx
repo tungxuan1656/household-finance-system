@@ -8,7 +8,7 @@ import {
   runAuthBootstrap,
 } from './bootstrap-deps'
 import { FatalLaunchScreen } from './fatal-launch-screen'
-import { useAuthStore } from './store'
+import { useAuthStore } from './model/store'
 
 const BOOTSTRAP_TIMEOUT_MS = 15_000
 

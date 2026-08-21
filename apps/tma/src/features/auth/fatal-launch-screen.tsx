@@ -12,7 +12,7 @@ import {
   mergeSafeAreaInsets,
 } from '@/lib/telegram/safe-area'
 
-import type { AuthError } from './store'
+import type { AuthError } from './model/store'
 
 export interface FatalLaunchScreenProps {
   error?: AuthError | null

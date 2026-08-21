@@ -19,8 +19,8 @@ import {
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { useAddExpenseFlowStore } from '@/features/expenses/model/store'
 import { getSourceOptions } from '@/features/expenses/presentation'
-import { useAddExpenseFlowStore } from '@/features/expenses/store'
 import type { SourceKey } from '@/features/home/types'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import {

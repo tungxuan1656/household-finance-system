@@ -8,7 +8,7 @@ import {
 } from '@/components/shared/tma-page-shell'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import type { ExpensesRouteState } from '@/features/expenses/filter-store'
+import type { ExpensesRouteState } from '@/features/expenses/model/filter-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import { useExpenseListQuery, useHouseholdsQuery } from '@/features/home/api'
 import {

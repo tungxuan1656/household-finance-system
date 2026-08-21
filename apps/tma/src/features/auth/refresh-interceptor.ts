@@ -1,7 +1,7 @@
 import type { AuthApiClient, AuthenticatedUser } from '@/lib/auth/api'
 import type { AuthStorage, StoredSession } from '@/lib/storage/adapter'
 
-import { useAuthStore } from './store'
+import { useAuthStore } from './model/store'
 
 export interface RefreshInterceptorOptions {
   api: AuthApiClient

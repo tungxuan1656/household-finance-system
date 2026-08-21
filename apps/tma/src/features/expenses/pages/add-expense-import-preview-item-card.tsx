@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
-import type { ImportItemDraft } from '@/features/expenses/import-store'
+import type { ImportItemDraft } from '@/features/expenses/model/import-store'
 import { getSourceLabel } from '@/features/expenses/presentation'
 import { normalizeCategoryKey } from '@/features/home/category-key'
 import { useCategoryPresentation } from '@/features/home/presentation'

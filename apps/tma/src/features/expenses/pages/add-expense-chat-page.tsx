@@ -15,7 +15,7 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Textarea } from '@/components/ui/textarea'
 import { useParseExpensesMutation } from '@/features/expenses/import-api'
 import { MAX_PARSE_TEXT_LENGTH } from '@/features/expenses/import-api'
-import { useImportFlowStore } from '@/features/expenses/import-store'
+import { useImportFlowStore } from '@/features/expenses/model/import-store'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { notification } from '@/lib/telegram/haptics'
 

@@ -9,9 +9,9 @@ import {
   useExpenseDetailQuery,
   useUpdateExpenseMutation,
 } from '@/features/expenses/api'
-import { createEditExpenseDraft } from '@/features/expenses/draft'
+import { createEditExpenseDraft } from '@/features/expenses/model/draft'
+import { useEditExpenseStore } from '@/features/expenses/model/store'
 import { getSourceOptions } from '@/features/expenses/presentation'
-import { useEditExpenseStore } from '@/features/expenses/store'
 import {
   useHouseholdExpenseGroupQueries,
   usePersonalExpenseGroupListQuery,
@@ -29,7 +29,8 @@ import {
   parseAmountInput,
 } from '@/lib/formatters'
 import { notification } from '@/lib/telegram/haptics'
-import { ExpenseEditForm } from '@/routes/expense-edit-form'
+
+import { ExpenseEditForm } from './expense-edit-form'
 
 export const ExpenseEditPage = () => {
   const { id } = useParams<{ id: string }>()

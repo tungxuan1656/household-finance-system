@@ -9,13 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import type { EditExpenseDraft } from '@/features/expenses/store'
-import { useEditExpenseStore } from '@/features/expenses/store'
+import type { EditExpenseDraft } from '@/features/expenses/model/store'
+import { useEditExpenseStore } from '@/features/expenses/model/store'
 import type { SourceKey } from '@/features/home/types'
 import { getExpenseEditCategoryPath } from '@/lib/constants/routes'
 import { currencyDisplaySymbol } from '@/lib/formatters'
 import { selection } from '@/lib/telegram/haptics'
-import { EditSelectRow } from '@/routes/expense-edit-select-row'
+
+import { EditSelectRow } from './expense-edit-select-row'
 
 interface ExpenseEditFormProps {
   draft: EditExpenseDraft

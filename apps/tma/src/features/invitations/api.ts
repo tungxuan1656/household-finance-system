@@ -17,7 +17,7 @@ import type {
   CreateInvitationRequest,
   InvitationCreateResponse,
   InvitationPreviewResponse,
-} from '../types'
+} from './types'
 
 // ---------------------------------------------------------------------------
 // Fetchers

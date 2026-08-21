@@ -2,7 +2,6 @@ import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-import { ExpenseSummaryCard, ExpenseTimeline } from '@/components/finance'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import { FilterIcon, PlusIcon } from '@/components/shared/tma-icons'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
@@ -12,13 +11,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { ExpenseSummaryCard } from '@/features/expenses/components/expense-summary-card'
+import { ExpenseTimeline } from '@/features/expenses/components/expense-timeline'
 import {
   applyExpensesRouteState,
   countActiveExpenseListFilters,
   type ExpensesRouteState,
   useExpenseListFilterStore,
-} from '@/features/expenses/filter-store'
-import { useImportFlowStore } from '@/features/expenses/import-store'
+} from '@/features/expenses/model/filter-store'
+import { useImportFlowStore } from '@/features/expenses/model/import-store'
 import { buildHouseholdNameMap } from '@/features/expenses/presentation'
 import {
   useExpenseListInfiniteQuery,
@@ -181,10 +182,6 @@ export const ExpensesPage = () => {
 const ExpensesAddFab = () => {
   const { t } = useTranslation()
 
-  const prefetchAddExpense = () => {
-    void import('@/routes/add-expense-category').catch(() => undefined)
-  }
-
   return (
     <div className='pointer-events-none fixed inset-x-0 bottom-[calc(14px+var(--tma-content-safe-bottom))] z-30 flex justify-center px-4'>
       <TmaHapticButton size='sm' variant='secondary'>
@@ -194,9 +191,7 @@ const ExpensesAddFab = () => {
           to={TMA_PATHS.expensesNewCategory}
           onClick={() => {
             impact('medium')
-          }}
-          onMouseEnter={prefetchAddExpense}
-          onTouchStart={prefetchAddExpense}>
+          }}>
           <PlusIcon height='24' width='24' />
         </Link>
       </TmaHapticButton>

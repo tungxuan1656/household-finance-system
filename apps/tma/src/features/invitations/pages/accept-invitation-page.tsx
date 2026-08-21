@@ -17,7 +17,7 @@ import { useAuth } from '@/features/auth/auth-provider'
 import {
   useAcceptInvitationMutation,
   useInvitationPreviewQuery,
-} from '@/features/invitations/api/invitation'
+} from '@/features/invitations/api'
 import { getHouseholdDetailPath } from '@/lib/constants/routes'
 import { formatDateLabel } from '@/lib/formatters'
 import { impact, notification } from '@/lib/telegram/haptics'

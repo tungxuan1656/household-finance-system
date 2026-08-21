@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { RecentExpenses } from '@/components/finance'
 import { DataState } from '@/components/shared/data-state'
 import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Badge } from '@/components/ui/badge'
@@ -13,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { RecentExpenses } from '@/features/expenses/components/expense-timeline'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { formatCurrencyMinor } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'

@@ -6,8 +6,8 @@ import type { CategoryKey } from '@/features/home/types'
 import type { HouseholdDTO, ReferenceCategoryDTO } from '@/features/home/types'
 import { selection } from '@/lib/telegram/haptics'
 
-import type { ExpenseListSort } from '../filter-store'
-import { useExpenseListFilterStore } from '../filter-store'
+import type { ExpenseListSort } from '../model/filter-store'
+import { useExpenseListFilterStore } from '../model/filter-store'
 
 const ALL_VALUE = '__all__'
 

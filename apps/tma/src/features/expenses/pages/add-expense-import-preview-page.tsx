@@ -7,7 +7,7 @@ import { TmaPageShell } from '@/components/shared/tma-page-shell'
 import { Card, CardDescription, CardHeader } from '@/components/ui/card'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { confirmImport } from '@/features/expenses/import-confirm'
-import { useImportFlowStore } from '@/features/expenses/import-store'
+import { useImportFlowStore } from '@/features/expenses/model/import-store'
 import {
   useHouseholdExpenseGroupQueries,
   usePersonalExpenseGroupListQuery,

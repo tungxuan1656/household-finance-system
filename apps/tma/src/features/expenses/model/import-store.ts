@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { normalizeCategoryKey } from '@/features/home/category-key'
 import { generateId } from '@/lib/generate-id'
 
-import type { ParsedExpenseItem } from './import-api'
+import type { ParsedExpenseItem } from '../import-api'
 
 export interface ImportItemDraft {
   id: string

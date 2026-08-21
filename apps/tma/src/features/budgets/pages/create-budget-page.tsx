@@ -27,8 +27,7 @@ import {
   isValidBudgetPeriod,
   parseBudgetAmountInputToMinor,
 } from '../presentation'
-import type { CreateBudgetRequest } from '../types'
-import type { BudgetFeedback } from '../types/feedback'
+import type { BudgetFeedback, CreateBudgetRequest } from '../types'
 
 const DEFAULT_CURRENCY_CODE = 'VND'
 const PERSONAL_TARGET_VALUE = 'personal'

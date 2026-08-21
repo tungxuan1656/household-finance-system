@@ -1,7 +1,6 @@
 import type { ReactElement, SVGProps } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ShortcutItem } from '@/components/finance'
 import {
   BudgetIcon,
   GroupIcon,
@@ -10,7 +9,8 @@ import {
   SparkIcon,
   TrendUpIcon,
 } from '@/components/shared/tma-icons'
-import { useImportFlowStore } from '@/features/expenses/import-store'
+import { useImportFlowStore } from '@/features/expenses/model/import-store'
+import { ShortcutItem } from '@/features/home/components/shortcuts'
 import { TMA_PATHS } from '@/lib/constants/routes'
 
 export const HomeShortcutsSection = () => {

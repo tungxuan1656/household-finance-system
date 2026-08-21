@@ -15,7 +15,13 @@
     {
       "id": "feat-128",
       "title": "TMA shadcn UI migration",
-      "status": "active",
+      "status": "done",
+      "depends_on": []
+    },
+    {
+      "id": "feat-129",
+      "title": "TMA directory tree deep-modules refactor",
+      "status": "done",
       "depends_on": []
     }
   ]
