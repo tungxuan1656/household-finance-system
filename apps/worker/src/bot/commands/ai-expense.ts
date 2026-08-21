@@ -4,7 +4,7 @@ import {
   unrecognizedCommandText,
 } from '@/bot/format'
 import type { ParsedExpenseItem } from '@/contracts/expense-parse-schemas'
-import { mapAiNamesToIds } from '@/handlers/expenses/parse-expense'
+import { mapAiNamesToIds } from '@/lib/ai/household-context'
 import { logger } from '@/lib/logger'
 import { newId } from '@/utils/id'
 
@@ -103,15 +103,19 @@ export const handleAddExpenseCommand = async (
     ? {
         householdNameToId: aiContext.householdNameToId,
         groupNameToId: aiContext.groupNameToId,
+        groupIdToHouseholdId: aiContext.groupIdToHouseholdId,
       }
     : {
         householdNameToId: new Map<string, string>(),
         groupNameToId: new Map<string, string>(),
+        groupIdToHouseholdId: new Map<string, string | null>(),
       }
 
   for (const raw of cappedRawItems) {
     const { householdId, groupIds } = aiContext
-      ? mapAiNamesToIds(raw, maps, counters)
+      ? mapAiNamesToIds(raw, maps, counters, {
+          filterGroupByHousehold: true,
+        })
       : { householdId: null as string | null, groupIds: [] as string[] }
     const normalized = normalizeAiItem(raw, defaultDate)
     if (normalized) {

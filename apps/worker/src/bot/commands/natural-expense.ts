@@ -27,14 +27,11 @@ import {
 } from '@/db/repositories/expense-repository'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import {
-  fetchAiContext,
-  mapAiNamesToIds,
-} from '@/handlers/expenses/parse-expense'
-import {
   AiUpstreamError,
   parseExpensesWithAi,
   type RawAiItem,
 } from '@/lib/ai/expense-parser'
+import { fetchAiContext, mapAiNamesToIds } from '@/lib/ai/household-context'
 import { getMinorUnits } from '@/lib/currency'
 import { logger, truncateErrorMessage } from '@/lib/logger'
 import { newId } from '@/utils/id'
@@ -181,15 +178,19 @@ export const runNaturalExpenseCreate = async (
     ? {
         householdNameToId: aiContext.householdNameToId,
         groupNameToId: aiContext.groupNameToId,
+        groupIdToHouseholdId: aiContext.groupIdToHouseholdId,
       }
     : {
         householdNameToId: new Map<string, string>(),
         groupNameToId: new Map<string, string>(),
+        groupIdToHouseholdId: new Map<string, string | null>(),
       }
 
   for (const raw of rawItems) {
     const { householdId, groupIds } = aiContext
-      ? mapAiNamesToIds(raw as RawAiItem, maps, counters)
+      ? mapAiNamesToIds(raw as RawAiItem, maps, counters, {
+          filterGroupByHousehold: true,
+        })
       : { householdId: null as string | null, groupIds: [] as string[] }
     const normalized = normalizeAiItem(raw, defaultDate)
     if (normalized) {

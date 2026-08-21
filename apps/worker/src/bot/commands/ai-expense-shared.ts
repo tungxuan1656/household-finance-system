@@ -5,8 +5,8 @@ import { parsedExpenseItemSchema } from '@/contracts/expense-parse-schemas'
 import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
 import { createDraftFromPreview } from '@/db/repositories/telegram-bot-expense-draft-repository'
-import { mapAiNamesToIds } from '@/handlers/expenses/parse-expense'
 import type { RawAiItem } from '@/lib/ai/expense-parser'
+import { mapAiNamesToIds } from '@/lib/ai/household-context'
 import { getMinorUnits } from '@/lib/currency'
 
 import { expensePreviewKeyboard } from '../renderers/keyboards'
@@ -60,15 +60,25 @@ export const normalizeAiItemWithContext = (
   maps: {
     householdNameToId: Map<string, string>
     groupNameToId: Map<string, string>
+    groupIdToHouseholdId: Map<string, string | null>
   },
   counters?: { mappedHouseholdCount: number; mappedGroupCount: number },
+  options?: {
+    requestId?: string
+    filterGroupByHousehold?: boolean
+    householdId?: string | null
+  },
 ): {
   parsed: ParsedExpenseItem | null
   householdId: string | null
   groupIds: string[]
 } => {
   const parsed = normalizeAiItem(item, defaultOccurredAt)
-  const { householdId, groupIds } = mapAiNamesToIds(item, maps, counters)
+  const { householdId, groupIds } = mapAiNamesToIds(item, maps, counters, {
+    requestId: options?.requestId,
+    filterGroupByHousehold: options?.filterGroupByHousehold,
+    householdId: options?.householdId,
+  })
 
   return { parsed, householdId, groupIds }
 }

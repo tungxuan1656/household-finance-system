@@ -1,9 +1,9 @@
-import { fetchAiContext } from '@/handlers/expenses/parse-expense'
 import {
   AiUpstreamError,
   parseExpensesWithAi,
   type RawAiItem,
 } from '@/lib/ai/expense-parser'
+import { fetchAiContext } from '@/lib/ai/household-context'
 import { logger } from '@/lib/logger'
 import { newId } from '@/utils/id'
 
@@ -27,6 +27,7 @@ export interface ParsedAiCommandInput {
     availableGroups: { id: string; name: string; householdId: string | null }[]
     householdNameToId: Map<string, string>
     groupNameToId: Map<string, string>
+    groupIdToHouseholdId: Map<string, string | null>
   }
 }
 
@@ -118,6 +119,7 @@ export const parseAiCommandInput = async (
         }[]
         householdNameToId: Map<string, string>
         groupNameToId: Map<string, string>
+        groupIdToHouseholdId: Map<string, string | null>
       }
     | undefined
   let promptContext:

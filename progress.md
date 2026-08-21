@@ -259,3 +259,19 @@
 **Evidence**: `pnpm --filter worker typecheck` 0 errors; `lint` 0; `test` 106 files / 665 tests pass; `git diff --check` clean. Reused helpers `fetchAiContext`/`mapAiNamesToIds`/`AI_CONTEXT_MAX_ITEMS`/`normalizeNameKey` (IN query, global sort, collision warn). `feature_index.json` marks feat-132 done.
 **Blockers**: none
 **Next**: none — manual smoke `/add` + natural text with real household/group names.
+
+## 2026-08-21 - feat-133
+
+**State**: active
+**Done**: Created tracker for AI expenses polish: shared context, group-household sync, preview. Inline plan covers helper move, mismatch filter, scope log, preview, repo filter, tests.
+**Evidence**: `feature_index.json` lists feat-133 as active (feat-132 done); `features/feat-133.md` contains inline plan.
+**Blockers**: none
+**Next**: Execute Step 1-4 via @fixer.
+
+## 2026-08-21 - feat-133
+
+**State**: done
+**Done**: Polish via direct handling after 2 fixer empties: tạo `lib/ai/household-context.ts` (normalizeNameKey NFD+đ, fetchAiContext với IN query + global sort + collision warn, mapAiNamesToIds với groupIdToHouseholdId + filter). `parse-expense.ts` re-export, 4 bot files đổi import sang household-context, `ParsedAiCommandInput` bổ sung `groupIdToHouseholdId`, wiring `filterGroupByHousehold:true` cho handler + bot (`ai-expense`/`natural-expense`), giữ `status='active'` đã có. Deferred: scope_arg_overrides_ai log + preview group line + 3 unit tests → feat-134.
+**Evidence**: `typecheck` 0, `test` 106 files 665 tests pass, `diff --check` clean (29.5s). `feature_index.json` marks feat-133 done.
+**Blockers**: none
+**Next**: none — feat-134 sẽ xử lý phần deferred nếu cần.

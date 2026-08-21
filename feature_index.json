@@ -46,6 +46,12 @@
       "title": "Telegram bot AI household/group recognition by name",
       "status": "done",
       "depends_on": []
+    },
+    {
+      "id": "feat-133",
+      "title": "AI expenses polish: shared context, group-household sync, preview",
+      "status": "done",
+      "depends_on": []
     }
   ]
 }
