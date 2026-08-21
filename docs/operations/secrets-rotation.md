@@ -28,6 +28,8 @@ Non-secrets (can go in `wrangler.jsonc` `vars`):
 | `REFRESH_TOKEN_TTL_SECONDS` | Default 2592000 (30 days) |
 | `AUTH_ALLOW_INSECURE_TEST_TOKENS` | MUST be `false` in production |
 | `CLOUDINARY_CLOUD_NAME` | Stable |
+| `OPENAI_COMPAT_BASE_URL` | Public URL for OpenAI-compatible API, belongs in `wrangler.jsonc` `vars` |
+| `OPENAI_COMPAT_MODEL` | Public model name, belongs in `wrangler.jsonc` `vars` |
 
 ## Rotation Procedure
 

@@ -33,6 +33,13 @@ https://developers.cloudflare.com/workers/runtime-apis/nodejs/
 Retrieve API references and limits from:
 `/kv/` · `/r2/` · `/d1/` · `/durable-objects/` · `/queues/` · `/vectorize/` · `/workers-ai/` · `/agents/`
 
+## Vars and Secrets
+
+- Public vars belong in `wrangler.jsonc` `vars`: `APP_ENV`, `AUTH_ISSUER`, `AUTH_AUDIENCE`, `ACCESS_TOKEN_TTL_SECONDS`, `REFRESH_TOKEN_TTL_SECONDS`, `AUTH_ALLOW_INSECURE_TEST_TOKENS`, `CLOUDINARY_CLOUD_NAME`, `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_MODEL`.
+- Secrets belong in `wrangler secret put` and local `.dev.vars` (gitignored).
+- `.dev.vars` is for secrets and local overrides only; `.dev.vars.example` lists secrets plus comments for public vars.
+- Never put secrets in `vars` and never commit `.dev.vars`.
+
 ## Best Practices (conditional)
 
 If the application uses Durable Objects or Workflows, refer to the relevant best practices:

@@ -17,7 +17,7 @@ TMA router. Read this for `apps/tma` work, then read only exact TMA leaf docs ne
 | TMA product behavior | `docs/product-specs/tma/index.md` |
 | Shared product behavior | `docs/product-specs/shared/index.md` |
 | App placement, package boundary, router shell, UI defaults | `docs/references/frontend/tma/app-structure-and-client-rules.md` |
-| Native navigation, BackButton/BottomButton, motion, safe area, keyboard | `docs/references/frontend/tma/native-ui-and-navigation-pattern.md` |
+| Native navigation, BackButton, in-page Button CTAs, motion, safe area, keyboard | `docs/references/frontend/tma/native-ui-and-navigation-pattern.md` |
 | Query/store ownership, bootstrap state, SecureStorage/DeviceStorage fallback | `docs/references/frontend/tma/state-and-storage-pattern.md` |
 | Worker auth, startapp, invite payloads, bot boundary | `docs/references/frontend/tma/auth-and-bot-pattern.md` |
 | Local dev, Telegram test env, debugging, hardening QA | `docs/references/frontend/tma/development-and-hardening-pattern.md` |

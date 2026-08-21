@@ -30,6 +30,12 @@ Define how an expense becomes a household expense in Product V2.
 - Household feeds show all expenses attached to that household.
 - Personal views show the current user's own expenses, including their own household-attached expenses when the personal view is aggregating the user's spending.
 
+## AI Recognition
+
+- AI may suggest `householdName` only when text explicitly mentions a whitelisted household name (case-insensitive, NFD + `đ→d` normalized).
+- Whitelist is capped at 15 most-recent households; hallucinated names map to `null`.
+- Server re-validates membership before attaching; personal remains default.
+
 ## Failure States
 
 - User selects a household they do not belong to: reject request.
@@ -39,3 +45,4 @@ Define how an expense becomes a household expense in Product V2.
 
 Notes:
 - Category and group assignment are independent from household attachment.
+- Whitelist mapping lives in `lib/ai/expense-parser.ts` and `handlers/expenses/parse-expense.ts`; this spec owns product truth only.
