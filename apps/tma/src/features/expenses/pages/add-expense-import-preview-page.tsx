@@ -1,10 +1,9 @@
-import { useEffectEvent, useMemo, useState } from 'react'
+import { useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
-import { Card, CardDescription, CardHeader } from '@/components/ui/card'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { confirmImport } from '@/features/expenses/import-confirm'
 import { useImportFlowStore } from '@/features/expenses/model/import-store'
@@ -12,114 +11,72 @@ import {
   useHouseholdExpenseGroupQueries,
   usePersonalExpenseGroupListQuery,
 } from '@/features/groups/api'
-import type { GroupListItem } from '@/features/groups/types'
 import {
   useHouseholdsQuery,
   useReferenceCategoriesQuery,
 } from '@/features/home/api'
-import { getCategoryPresentation } from '@/features/home/presentation'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { notification } from '@/lib/telegram/haptics'
 
 import { ImportPreviewItemCard } from '../components/add-expense-import-preview-item-card'
+import {
+  ImportPreviewEmpty,
+  ImportPreviewHeader,
+  useImportGroupItems,
+  useImportPickerLoading,
+  useImportPreviewPickerOptions,
+} from '../components/import-preview-support'
 
 export const AddExpenseImportPreviewPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
-
-  const items = useImportFlowStore((state) => state.items)
-  const toggleInclude = useImportFlowStore((state) => state.toggleInclude)
-  const setItemCategory = useImportFlowStore((state) => state.setItemCategory)
-  const setItemContext = useImportFlowStore((state) => state.setItemContext)
-  const setItemStatus = useImportFlowStore((state) => state.setItemStatus)
-  const reset = useImportFlowStore((state) => state.reset)
-
+  const items = useImportFlowStore((s) => s.items)
+  const toggleInclude = useImportFlowStore((s) => s.toggleInclude)
+  const setItemCategory = useImportFlowStore((s) => s.setItemCategory)
+  const setItemContext = useImportFlowStore((s) => s.setItemContext)
+  const setItemStatus = useImportFlowStore((s) => s.setItemStatus)
+  const reset = useImportFlowStore((s) => s.reset)
   const createExpenseMutation = useCreateExpenseMutation()
   const householdsQuery = useHouseholdsQuery()
   const personalGroupsQuery = usePersonalExpenseGroupListQuery()
   const categoriesQuery = useReferenceCategoriesQuery()
   const [feedback, setFeedback] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
-
   const households = householdsQuery.data?.items ?? []
   const householdGroupQueries = useHouseholdExpenseGroupQueries(households)
-
-  const groupItems = useMemo<GroupListItem[]>(() => {
-    const personalGroups = personalGroupsQuery.data?.items ?? []
-
-    return [
-      ...personalGroups.map((group) => ({ group, household: null })),
-      ...households.flatMap((household, index) => {
-        const query = householdGroupQueries[index]
-        const groups = query?.data?.items ?? []
-
-        return groups.map((group) => ({ group, household }))
-      }),
-    ].sort((left, right) => right.group.createdAt - left.group.createdAt)
-  }, [householdGroupQueries, households, personalGroupsQuery.data?.items])
-
-  const householdPickerOptions = useMemo(
-    () => [
-      { value: '', label: t('expenses.add.contextPersonal') },
-      ...households.map((h) => ({ value: h.id, label: h.name })),
-    ],
-    [households, t],
+  const groupItems = useImportGroupItems(
+    households,
+    householdGroupQueries,
+    personalGroupsQuery,
   )
-
-  const groupPickerOptions = useMemo(
-    () => [
-      { value: '', label: t('expenses.edit.optionUngrouped') },
-      ...groupItems.map((item) => ({
-        value: item.group.id,
-        label: item.group.name,
-      })),
-    ],
-    [groupItems, t],
-  )
-
   const referenceCategories = categoriesQuery.data?.items ?? []
-  const categoryPickerOptions = useMemo(() => {
-    const expenseCats = referenceCategories.filter(
-      (cat) => cat.kind === 'expense',
-    )
-    const hasOther = expenseCats.some((cat) => cat.key === 'other')
-    const fallback = hasOther
-      ? []
-      : [{ value: 'other' as const, label: t('categories.other') }]
-
-    return [
-      ...fallback,
-      ...expenseCats.map((cat) => ({
-        value: cat.key,
-        label: getCategoryPresentation(cat.key, t, referenceCategories).label,
-      })),
-    ]
-  }, [referenceCategories, t])
-
+  const pickerOptions = useImportPreviewPickerOptions(
+    households,
+    groupItems,
+    referenceCategories,
+    t,
+  )
+  const pickerLoading = useImportPickerLoading(
+    householdsQuery.isLoading,
+    personalGroupsQuery.isLoading,
+    householdGroupQueries.some((q) => q.isLoading),
+    categoriesQuery.isLoading,
+  )
   const selectedCount = items.filter(
     (i) => i.include && i.status !== 'success',
   ).length
   const hasItems = items.length > 0
-
   const handleSave = useEffectEvent(async () => {
     if (!hasItems || isSaving) return
-
     setFeedback(null)
     setIsSaving(true)
-
     try {
-      const result = await confirmImport(items, (payload) =>
-        createExpenseMutation.mutateAsync(payload),
+      const result = await confirmImport(items, (p) =>
+        createExpenseMutation.mutateAsync(p),
       )
-
-      for (const id of result.succeeded) {
-        setItemStatus(id, 'success')
-      }
-
-      for (const { id, error } of result.failed) {
+      for (const id of result.succeeded) setItemStatus(id, 'success')
+      for (const { id, error } of result.failed)
         setItemStatus(id, 'error', error)
-      }
-
       if (result.failed.length > 0) {
         notification('error')
 
@@ -144,68 +101,48 @@ export const AddExpenseImportPreviewPage = () => {
       setIsSaving(false)
     }
   })
-
   if (!hasItems) {
     return (
-      <TmaPageShell title={t('expenses.add.importPreviewTitle')}>
-        <Card>
-          <CardHeader>
-            <CardDescription>
-              {t('expenses.add.importEmptyDesc')}
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <TmaPageShell
+        contentClassName='gap-4'
+        title={t('expenses.add.importPreviewTitle')}>
+        <ImportPreviewEmpty />
       </TmaPageShell>
     )
   }
 
   return (
-    <TmaPageShell title={t('expenses.add.importPreviewTitle')}>
-      {feedback ? (
-        <Card>
-          <CardHeader>
-            <CardDescription className='text-destructive'>
-              {feedback}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      ) : null}
-
-      <div className='mb-2 text-sm font-semibold text-muted-foreground'>
-        {t('expenses.add.importItemCount', { count: items.length })}
-      </div>
-
+    <TmaPageShell
+      contentClassName='gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton
+            aria-busy={isSaving}
+            disabled={isSaving || selectedCount === 0}
+            onClick={() => void handleSave()}>
+            {isSaving
+              ? t('expenses.add.saving')
+              : t('expenses.add.importAction', { count: selectedCount })}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('expenses.add.importPreviewTitle')}>
+      <ImportPreviewHeader count={items.length} feedback={feedback} />
       <div className='grid gap-3'>
         {items.map((item, index) => (
           <ImportPreviewItemCard
             key={item.id}
-            categoriesLoading={categoriesQuery.isLoading}
-            categoryPickerOptions={categoryPickerOptions}
-            groupPickerOptions={groupPickerOptions}
-            groupsLoading={personalGroupsQuery.isLoading}
-            householdPickerOptions={householdPickerOptions}
-            householdsLoading={householdsQuery.isLoading}
             index={index}
             isSaving={isSaving}
             item={item}
+            pickerLoading={pickerLoading}
+            pickerOptions={pickerOptions}
             onSetItemCategory={setItemCategory}
             onSetItemContext={setItemContext}
             onToggleInclude={toggleInclude}
           />
         ))}
       </div>
-
-      <TmaHapticButton
-        aria-busy={isSaving}
-        className='mt-5 mb-2 w-full'
-        disabled={isSaving}
-        onClick={() => {
-          void handleSave()
-        }}>
-        {isSaving
-          ? t('expenses.add.saving')
-          : t('expenses.add.importAction', { count: selectedCount })}
-      </TmaHapticButton>
     </TmaPageShell>
   )
 }

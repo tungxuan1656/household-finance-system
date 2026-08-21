@@ -19,16 +19,22 @@ import { useCategoryPresentation } from '@/features/home/presentation'
 import { formatVnd } from '@/lib/formatters'
 import { cn } from '@/lib/utils'
 
+type PickerOption = { value: string; label: string }
+
 type Props = {
   item: ImportItemDraft
   index: number
   isSaving: boolean
-  categoryPickerOptions: { value: string; label: string }[]
-  categoriesLoading: boolean
-  householdPickerOptions: { value: string; label: string }[]
-  groupPickerOptions: { value: string; label: string }[]
-  householdsLoading: boolean
-  groupsLoading: boolean
+  pickerOptions: {
+    categories: PickerOption[]
+    households: PickerOption[]
+    groups: PickerOption[]
+  }
+  pickerLoading: {
+    categories: boolean
+    households: boolean
+    groups: boolean
+  }
   onToggleInclude: (id: string) => void
   onSetItemCategory: (id: string, categoryKey: string) => void
   onSetItemContext: (
@@ -41,12 +47,8 @@ export const ImportPreviewItemCard = ({
   item,
   index,
   isSaving,
-  categoryPickerOptions,
-  categoriesLoading,
-  householdPickerOptions,
-  groupPickerOptions,
-  householdsLoading,
-  groupsLoading,
+  pickerOptions,
+  pickerLoading,
   onToggleInclude,
   onSetItemCategory,
   onSetItemContext,
@@ -74,14 +76,12 @@ export const ImportPreviewItemCard = ({
               onChange={() => onToggleInclude(item.id)}
             />
           </label>
-
           <TmaCategoryIconBadge
             accent={presentation.accent}
             iconUrl={presentation.iconUrl}
             size='sm'
             symbol={presentation.symbol}
           />
-
           <div className='min-w-0 flex-1'>
             <FieldGroup>
               <Field>
@@ -94,10 +94,12 @@ export const ImportPreviewItemCard = ({
                   fullWidth
                   aria-label={t('expenses.add.chooseCategory')}
                   disabled={
-                    item.status === 'success' || isSaving || categoriesLoading
+                    item.status === 'success' ||
+                    isSaving ||
+                    pickerLoading.categories
                   }
                   id={`import-category-${item.id}`}
-                  options={categoryPickerOptions}
+                  options={pickerOptions.categories}
                   showIcon={false}
                   size='sm'
                   value={item.parsed.categoryKey}
@@ -109,7 +111,6 @@ export const ImportPreviewItemCard = ({
               {item.parsed.title}
             </CardTitle>
           </div>
-
           <div className='shrink-0 text-right'>
             <span className='font-mono text-lg font-semibold text-foreground [font-variant-numeric:tabular-nums]'>
               {formatVnd(item.parsed.amount)}
@@ -117,8 +118,7 @@ export const ImportPreviewItemCard = ({
           </div>
         </div>
       </CardHeader>
-
-      <CardContent className='grid gap-3 pl-8'>
+      <CardContent className='ml-8 grid gap-3'>
         <div className='grid grid-cols-2 gap-3'>
           <div className='grid gap-0.5'>
             <CardDescription>{t('expenses.add.dateLabel')}</CardDescription>
@@ -131,7 +131,6 @@ export const ImportPreviewItemCard = ({
             <span className='text-sm text-foreground'>{sourceLabel}</span>
           </div>
         </div>
-
         {item.status !== 'success' ? (
           <FieldGroup>
             <Field>
@@ -141,14 +140,12 @@ export const ImportPreviewItemCard = ({
               <NativePicker
                 fullWidth
                 aria-label={t('expenses.add.chooseHousehold')}
-                disabled={householdsLoading || isSaving}
+                disabled={pickerLoading.households || isSaving}
                 id={`import-household-${item.id}`}
-                options={householdPickerOptions}
+                options={pickerOptions.households}
                 value={item.householdId ?? ''}
                 onChange={(next) =>
-                  onSetItemContext(item.id, {
-                    householdId: next || null,
-                  })
+                  onSetItemContext(item.id, { householdId: next || null })
                 }
               />
             </Field>
@@ -159,21 +156,18 @@ export const ImportPreviewItemCard = ({
               <NativePicker
                 fullWidth
                 aria-label={t('expenses.add.chooseGroup')}
-                disabled={groupsLoading || isSaving}
+                disabled={pickerLoading.groups || isSaving}
                 id={`import-group-${item.id}`}
-                options={groupPickerOptions}
+                options={pickerOptions.groups}
                 value={item.groupId ?? ''}
                 onChange={(next) =>
-                  onSetItemContext(item.id, {
-                    groupId: next || null,
-                  })
+                  onSetItemContext(item.id, { groupId: next || null })
                 }
               />
             </Field>
           </FieldGroup>
         ) : null}
       </CardContent>
-
       {item.status === 'success' || (item.status === 'error' && item.error) ? (
         <CardFooter className='flex flex-wrap items-center gap-2'>
           {item.status === 'success' ? (

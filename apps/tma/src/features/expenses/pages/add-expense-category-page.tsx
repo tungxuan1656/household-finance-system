@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
-import { DataState } from '@/components/shared/data-state'
 import { DatePicker } from '@/components/shared/date-picker'
+import { QueryState } from '@/components/shared/query-state'
 import {
   TmaCategoryIconBadge,
+  TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
 import { Button } from '@/components/ui/button'
@@ -23,22 +24,22 @@ export const AddExpenseCategoryPage = () => {
   const setDate = useAddExpenseFlowStore((state) => state.setDate)
   const selectCategory = useAddExpenseFlowStore((state) => state.selectCategory)
   const categoriesQuery = useReferenceCategoriesQuery()
-  const referenceCategories = categoriesQuery.data?.items ?? []
-  const categoryOptions = referenceCategories
-    .filter((category) => category.kind === 'expense')
-    .map((category) => ({
-      id: category.key,
-      ...getCategoryPresentation(category.key, t, referenceCategories),
-    }))
+
+  const categoryHint = t('expenses.add.categoryHint', {
+    defaultValue: '',
+  })
 
   return (
-    <TmaPageShell title={t('expenses.add.title')}>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('expenses.add.dateLabel')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
+    <TmaPageShell contentClassName='gap-4' title={t('expenses.add.title')}>
+      <TmaPageHeader
+        eyebrow={t('expenses.add.step', { current: '1', total: '3' })}
+        subtitle={categoryHint || undefined}
+        title={t('expenses.add.sectionCategory')}
+      />
+
+      <Card size='sm'>
+        <CardContent className='pt-5'>
+          <FieldGroup className='gap-4'>
             <Field>
               <FieldLabel htmlFor='add-expense-date'>
                 {t('expenses.add.dateLabel')}
@@ -60,55 +61,68 @@ export const AddExpenseCategoryPage = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card size='sm'>
         <CardHeader>
           <CardTitle>{t('expenses.add.sectionCategory')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataState
-            emptyDescription={t('expenses.add.emptyDesc')}
-            emptyTitle={t('expenses.add.emptyTitle')}
-            errorDescription={t('expenses.add.loadErrorDesc')}
-            errorTitle={t('expenses.add.loadError')}
-            isEmpty={
-              !categoriesQuery.isLoading &&
-              !categoriesQuery.isError &&
-              categoryOptions.length === 0
+          <QueryState
+            empty={{
+              description: t('expenses.add.emptyDesc'),
+              title: t('expenses.add.emptyTitle'),
+            }}
+            error={{
+              description: t('expenses.add.loadErrorDesc'),
+              title: t('expenses.add.loadError'),
+            }}
+            isEmpty={(data) =>
+              (data?.items ?? []).filter((c) => c.kind === 'expense').length ===
+              0
             }
-            isError={categoriesQuery.isError && categoryOptions.length === 0}
-            isLoading={
-              categoriesQuery.isLoading && categoryOptions.length === 0
-            }
-            loadingDescription={t('expenses.add.loadingCategory')}
-            loadingTitle={t('expenses.add.loadingCategory')}
-            retryAction={categoriesQuery.refetch}>
-            <div className='grid grid-cols-3 gap-2'>
-              {categoryOptions.map((category) => (
-                <Button
-                  key={category.id}
-                  className='grid min-h-20 content-start gap-1 text-left'
-                  type='button'
-                  variant='outline'
-                  onClick={() => {
-                    selection()
-                    selectCategory(category)
+            pending={{
+              description: t('expenses.add.loadingCategory'),
+              title: t('expenses.add.loadingCategory'),
+            }}
+            query={categoriesQuery}
+            variant='plain'>
+            {(data) => {
+              const categoryOptions = (data.items ?? [])
+                .filter((category) => category.kind === 'expense')
+                .map((category) => ({
+                  id: category.key,
+                  ...getCategoryPresentation(category.key, t, data.items ?? []),
+                }))
 
-                    navigate(TMA_PATHS.expensesNewDetails, {
-                      flushSync: true,
-                    })
-                  }}>
-                  <TmaCategoryIconBadge
-                    accent={category.accent}
-                    iconUrl={category.iconUrl}
-                    symbol={category.symbol}
-                  />
-                  <span className='text-xs font-semibold'>
-                    {category.label}
-                  </span>
-                </Button>
-              ))}
-            </div>
-          </DataState>
+              return (
+                <div className='grid grid-cols-3 gap-2.5'>
+                  {categoryOptions.map((category) => (
+                    <Button
+                      key={category.id}
+                      className='flex min-h-24 flex-col items-center justify-start gap-2 p-3 text-center'
+                      type='button'
+                      variant='outline'
+                      onClick={() => {
+                        selection()
+                        selectCategory(category)
+
+                        navigate(TMA_PATHS.expensesNewDetails, {
+                          flushSync: true,
+                        })
+                      }}>
+                      <TmaCategoryIconBadge
+                        accent={category.accent}
+                        iconUrl={category.iconUrl}
+                        symbol={category.symbol}
+                      />
+                      <span className='line-clamp-2 text-xs leading-tight font-semibold'>
+                        {category.label}
+                      </span>
+                    </Button>
+                  ))}
+                </div>
+              )
+            }}
+          </QueryState>
         </CardContent>
       </Card>
     </TmaPageShell>

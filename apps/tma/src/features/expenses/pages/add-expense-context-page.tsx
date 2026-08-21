@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { NativePicker } from '@/components/shared/native-picker'
+import { QueryState } from '@/components/shared/query-state'
 import { SummaryRow } from '@/components/shared/summary-row'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import {
   TmaCategoryIconBadge,
+  TmaPageFooter,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
@@ -23,12 +25,8 @@ import { useCreateExpenseMutation } from '@/features/expenses/api'
 import { useAddExpenseContextActions } from '@/features/expenses/hooks/use-add-expense-context-actions'
 import { useAddExpenseFlowStore } from '@/features/expenses/model/store'
 import { getSourceOptions } from '@/features/expenses/presentation'
-import {
-  useHouseholdExpenseGroupQueries,
-  usePersonalExpenseGroupListQuery,
-} from '@/features/groups/api'
+import { useExpenseGroupAggregateQuery } from '@/features/groups/api'
 import { getGroupContextLabel } from '@/features/groups/presentation'
-import type { GroupListItem } from '@/features/groups/types'
 import { useHouseholdsQuery } from '@/features/home/api'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { formatDateLabel, formatVnd } from '@/lib/formatters'
@@ -46,34 +44,36 @@ export const AddExpenseContextPage = () => {
   const setContext = useAddExpenseFlowStore((state) => state.setContext)
   const reset = useAddExpenseFlowStore((state) => state.reset)
   const householdsQuery = useHouseholdsQuery()
-  const personalGroupsQuery = usePersonalExpenseGroupListQuery()
   const createExpenseMutation = useCreateExpenseMutation()
   const [feedback, setFeedback] = useState<string | null>(null)
 
-  const households = householdsQuery.data?.items ?? []
-  const householdGroupQueries = useHouseholdExpenseGroupQueries(households)
+  const households = useMemo(
+    () => householdsQuery.data?.items ?? [],
+    [householdsQuery.data?.items],
+  )
+  const groupsQuery = useExpenseGroupAggregateQuery(households)
 
-  const groupItems = useMemo<GroupListItem[]>(() => {
-    const personalGroups = personalGroupsQuery.data?.items ?? []
+  const groupItems = useMemo(() => {
+    const items = groupsQuery.data?.items ?? []
 
-    return [
-      ...personalGroups.map((group) => ({ group, household: null })),
-      ...households.flatMap((household, index) => {
-        const query = householdGroupQueries[index]
-        const groups = query?.data?.items ?? []
-
-        return groups.map((group) => ({ group, household }))
-      }),
-    ].sort((left, right) => right.group.createdAt - left.group.createdAt)
-  }, [householdGroupQueries, households, personalGroupsQuery.data?.items])
+    return [...items].sort((a, b) => b.createdAt - a.createdAt)
+  }, [groupsQuery.data])
 
   const selectedSource =
     getSourceOptions(t).find((source) => source.id === sourceId) ?? null
   const selectedHousehold = households.find(
     (household) => household.id === householdId,
   )
-  const selectedGroupItem =
-    groupItems.find((item) => item.group.id === groupId) ?? null
+  const selectedGroup = groupItems.find((g) => g.id === groupId) ?? null
+  const selectedGroupHousehold = selectedGroup?.householdId
+    ? (households.find((h) => h.id === selectedGroup.householdId) ?? null)
+    : null
+  const selectedGroupLabel = selectedGroup
+    ? getGroupContextLabel(
+        { group: selectedGroup, household: selectedGroupHousehold },
+        t,
+      )
+    : null
   const isReady = category !== null && amount > 0 && sourceId !== null
 
   const householdPickerOptions = useMemo(
@@ -88,8 +88,8 @@ export const AddExpenseContextPage = () => {
     () => [
       { value: '', label: t('expenses.edit.optionUngrouped') },
       ...groupItems.map((item) => ({
-        value: item.group.id,
-        label: item.group.name,
+        value: item.id,
+        label: item.name,
       })),
     ],
     [groupItems, t],
@@ -112,12 +112,17 @@ export const AddExpenseContextPage = () => {
 
   if (!isReady || !category) {
     return (
-      <TmaPageShell title={t('expenses.add.title')}>
+      <TmaPageShell contentClassName='gap-4' title={t('expenses.add.title')}>
         <TmaPageHeader
           eyebrow={t('expenses.add.step', { current: '3', total: '3' })}
-          title={t('expenses.add.backToStep2')}
+          subtitle={t('expenses.add.contextHint', {
+            defaultValue: 'Chọn nơi lưu khoản chi này',
+          })}
+          title={t('expenses.add.contextTitle', {
+            defaultValue: 'Bối cảnh',
+          })}
         />
-        <Card>
+        <Card size='sm'>
           <CardHeader>
             <CardTitle>{t('expenses.add.previewMissingTitle')}</CardTitle>
             <CardDescription>
@@ -125,10 +130,11 @@ export const AddExpenseContextPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <TmaHapticButton size='sm' variant='secondary'>
-              <Link to={TMA_PATHS.expensesNewDetails}>
-                {t('expenses.add.backToStep2Action')}
-              </Link>
+            <TmaHapticButton
+              size='sm'
+              variant='secondary'
+              onClick={() => navigate(TMA_PATHS.expensesNewDetails)}>
+              {t('expenses.add.backToStep2Action')}
             </TmaHapticButton>
           </CardContent>
         </Card>
@@ -137,9 +143,36 @@ export const AddExpenseContextPage = () => {
   }
 
   return (
-    <TmaPageShell title={t('expenses.add.title')}>
+    <TmaPageShell
+      contentClassName='gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton
+            aria-busy={createExpenseMutation.isPending}
+            className='w-full'
+            disabled={createExpenseMutation.isPending}
+            onClick={() => {
+              void handleSave()
+            }}>
+            {createExpenseMutation.isPending
+              ? t('expenses.add.saving')
+              : t('expenses.add.saveWithAmount', { amount: formatVnd(amount) })}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('expenses.add.title')}>
+      <TmaPageHeader
+        eyebrow={t('expenses.add.step', { current: '3', total: '3' })}
+        subtitle={t('expenses.add.contextHint', {
+          defaultValue: 'Chọn nơi lưu khoản chi này',
+        })}
+        title={t('expenses.add.contextTitle', {
+          defaultValue: 'Bối cảnh',
+        })}
+      />
+
       {feedback ? (
-        <Card>
+        <Card className='border-destructive/30' role='alert' size='sm'>
           <CardHeader>
             <CardDescription className='text-destructive'>
               {feedback}
@@ -148,122 +181,144 @@ export const AddExpenseContextPage = () => {
         </Card>
       ) : null}
 
-      <div className='grid gap-3'>
-        <Card>
-          <CardHeader>
-            <div className='flex items-center gap-3'>
-              <TmaCategoryIconBadge
-                accent={category.accent}
-                iconUrl={category.iconUrl}
-                symbol={category.symbol}
-              />
-              <div className='min-w-0 flex-1'>
-                <CardTitle className='truncate'>{category.label}</CardTitle>
-                <CardDescription>
-                  {formatDateLabel(date)} ·{' '}
-                  <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
-                    {formatVnd(amount)}
-                  </span>
-                </CardDescription>
-              </div>
+      <Card size='sm'>
+        <CardHeader className='pb-3'>
+          <div className='flex items-center gap-3'>
+            <TmaCategoryIconBadge
+              accent={category.accent}
+              iconUrl={category.iconUrl}
+              symbol={category.symbol}
+            />
+            <div className='min-w-0 flex-1'>
+              <CardTitle className='truncate'>{category.label}</CardTitle>
+              <CardDescription className='truncate'>
+                {formatDateLabel(date)} ·{' '}
+                <span className='font-mono text-foreground [font-variant-numeric:tabular-nums]'>
+                  {formatVnd(amount)}
+                </span>
+              </CardDescription>
             </div>
-          </CardHeader>
-          <CardContent className='grid gap-2.5'>
-            <Separator />
-            <div className='grid gap-1'>
-              <CardDescription>{t('expenses.add.expenseName')}</CardDescription>
-              <p className='truncate text-base font-semibold text-foreground'>
-                {title.trim() || t('expenses.add.nameUnset')}
-              </p>
-            </div>
-            <div className='grid grid-cols-2 gap-3'>
+          </div>
+        </CardHeader>
+        <CardContent className='grid gap-2.5'>
+          <Separator />
+          <div className='grid min-w-0 gap-1'>
+            <CardDescription>{t('expenses.add.expenseName')}</CardDescription>
+            <p className='truncate text-base font-semibold text-foreground'>
+              {title.trim() || t('expenses.add.nameUnset')}
+            </p>
+          </div>
+          <div className='grid grid-cols-2 gap-3'>
+            <div className='min-w-0 [&_strong]:block [&_strong]:truncate'>
               <SummaryRow
                 label={t('expenses.add.source')}
                 value={selectedSource?.label ?? t('expenses.add.sourceUnset')}
               />
+            </div>
+            <div className='min-w-0 [&_strong]:block [&_strong]:truncate'>
               <SummaryRow
                 label={t('expenses.add.contextHousehold')}
                 value={
                   selectedHousehold?.name ?? t('expenses.add.contextPersonal')
                 }
               />
+            </div>
+            <div className='min-w-0 [&_strong]:block [&_strong]:truncate'>
               <SummaryRow
                 label={t('expenses.add.contextGroup')}
                 value={
-                  selectedGroupItem
-                    ? selectedGroupItem.group.name
+                  selectedGroup
+                    ? selectedGroup.name
                     : t('expenses.edit.optionUngrouped')
                 }
               />
+            </div>
+            <div className='min-w-0 [&_strong]:block [&_strong]:truncate'>
               <SummaryRow
                 label={t('expenses.add.contextGroupLabel')}
-                value={
-                  selectedGroupItem
-                    ? getGroupContextLabel(selectedGroupItem, t)
-                    : t('expenses.add.contextPersonal')
-                }
+                value={selectedGroupLabel ?? t('expenses.add.contextPersonal')}
               />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardContent className='grid gap-3'>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor='add-expense-household-picker'>
-                  {t('expenses.add.contextHousehold')}
-                </FieldLabel>
-                <NativePicker
-                  fullWidth
-                  aria-label={t('expenses.add.chooseHousehold')}
-                  disabled={householdsQuery.isLoading}
-                  id='add-expense-household-picker'
-                  options={householdPickerOptions}
-                  value={householdId ?? ''}
-                  onChange={(next) => {
-                    setContext({
-                      householdId: next || null,
-                      groupId,
-                    })
-                  }}
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor='add-expense-group-picker'>
-                  {t('expenses.add.contextGroup')}
-                </FieldLabel>
-                <NativePicker
-                  fullWidth
-                  aria-label={t('expenses.add.chooseGroup')}
-                  disabled={personalGroupsQuery.isLoading}
-                  id='add-expense-group-picker'
-                  options={groupPickerOptions}
-                  value={groupId ?? ''}
-                  onChange={(next) => {
-                    setContext({
-                      householdId,
-                      groupId: next || null,
-                    })
-                  }}
-                />
-              </Field>
-            </FieldGroup>
-          </CardContent>
-        </Card>
-      </div>
+      <Card size='sm'>
+        <CardHeader className='pb-3'>
+          <CardTitle className='text-sm tracking-normal normal-case'>
+            {t('expenses.add.contextSectionTitle', {
+              defaultValue: 'Bối cảnh lưu trữ',
+            })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup className='gap-5'>
+            <QueryState
+              error={{
+                title: t('dataState.errorTitle'),
+                description: t('dataState.errorDescription'),
+              }}
+              isEmpty={false}
+              pending={{ title: t('common.loading') }}
+              query={householdsQuery}
+              retryAction={() => void householdsQuery.refetch()}
+              variant='plain'>
+              {() => (
+                <Field>
+                  <FieldLabel htmlFor='add-expense-household-picker'>
+                    {t('expenses.add.contextHousehold')}
+                  </FieldLabel>
+                  <NativePicker
+                    fullWidth
+                    aria-label={t('expenses.add.chooseHousehold')}
+                    id='add-expense-household-picker'
+                    options={householdPickerOptions}
+                    value={householdId ?? ''}
+                    onChange={(next) => {
+                      setContext({
+                        householdId: next || null,
+                        groupId,
+                      })
+                    }}
+                  />
+                </Field>
+              )}
+            </QueryState>
 
-      <TmaHapticButton
-        aria-busy={createExpenseMutation.isPending}
-        className='mt-5 mb-2 w-full'
-        disabled={createExpenseMutation.isPending}
-        onClick={() => {
-          void handleSave()
-        }}>
-        {createExpenseMutation.isPending
-          ? t('expenses.add.saving')
-          : t('expenses.add.saveWithAmount', { amount: formatVnd(amount) })}
-      </TmaHapticButton>
+            <QueryState
+              error={{
+                title: t('dataState.errorTitle'),
+                description: t('dataState.errorDescription'),
+              }}
+              isEmpty={false}
+              pending={{ title: t('common.loading') }}
+              query={groupsQuery}
+              retryAction={() => void groupsQuery.refetch?.()}
+              variant='plain'>
+              {() => (
+                <Field>
+                  <FieldLabel htmlFor='add-expense-group-picker'>
+                    {t('expenses.add.contextGroup')}
+                  </FieldLabel>
+                  <NativePicker
+                    fullWidth
+                    aria-label={t('expenses.add.chooseGroup')}
+                    id='add-expense-group-picker'
+                    options={groupPickerOptions}
+                    value={groupId ?? ''}
+                    onChange={(next) => {
+                      setContext({
+                        householdId,
+                        groupId: next || null,
+                      })
+                    }}
+                  />
+                </Field>
+              )}
+            </QueryState>
+          </FieldGroup>
+        </CardContent>
+      </Card>
     </TmaPageShell>
   )
 }

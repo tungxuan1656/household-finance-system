@@ -6,9 +6,11 @@ import { DatePicker } from '@/components/shared/date-picker'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
 import {
   TmaCategoryIconBadge,
+  TmaPageFooter,
   TmaPageHeader,
   TmaPageShell,
 } from '@/components/shared/tma-page-shell'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -26,6 +28,7 @@ import { TMA_PATHS } from '@/lib/constants/routes'
 import {
   currencyDisplaySymbol,
   formatAmountInput,
+  formatDateLabel,
   minorFromRaw,
   parseAmountInput,
   rawFromMinor,
@@ -71,7 +74,7 @@ export const AddExpenseDetailsPage = () => {
 
   if (!category) {
     return (
-      <TmaPageShell title={t('expenses.add.title')}>
+      <TmaPageShell contentClassName='gap-4' title={t('expenses.add.title')}>
         <TmaPageHeader
           eyebrow={t('expenses.add.step', { current: '2', total: '3' })}
           title={t('expenses.add.previousStepMissing')}
@@ -84,11 +87,12 @@ export const AddExpenseDetailsPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <TmaHapticButton size='sm' variant='secondary'>
-              <Link to={TMA_PATHS.expensesNewCategory}>
-                {t('expenses.add.backToStep1')}
-              </Link>
-            </TmaHapticButton>
+            <Button
+              render={<Link to={TMA_PATHS.expensesNewCategory} />}
+              size='sm'
+              variant='secondary'>
+              {t('expenses.add.backToStep1')}
+            </Button>
           </CardContent>
         </Card>
       </TmaPageShell>
@@ -96,26 +100,54 @@ export const AddExpenseDetailsPage = () => {
   }
 
   return (
-    <TmaPageShell title={t('expenses.add.title')}>
-      <Card>
-        <CardHeader>
-          <div className='flex items-center gap-3'>
-            <TmaCategoryIconBadge
-              accent={category.accent}
-              iconUrl={category.iconUrl}
-              symbol={category.symbol}
-            />
-            <CardTitle>{category.label}</CardTitle>
+    <TmaPageShell
+      contentClassName='gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton
+            className='w-full'
+            disabled={!isValid}
+            onClick={handleContinue}>
+            {t('expenses.add.continue')}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('expenses.add.title')}>
+      <TmaPageHeader
+        eyebrow={t('expenses.add.step', { current: '2', total: '3' })}
+        subtitle={formatDateLabel(date)}
+        title={t('expenses.add.detailsTitle', {
+          defaultValue: t('expenses.add.title'),
+        })}
+      />
+
+      <Card size='sm'>
+        <CardContent className='flex items-center gap-3 py-3'>
+          <TmaCategoryIconBadge
+            accent={category.accent}
+            iconUrl={category.iconUrl}
+            symbol={category.symbol}
+          />
+          <div className='min-w-0 flex-1'>
+            <p className='truncate text-sm font-semibold'>{category.label}</p>
+            <p className='text-xs text-muted-foreground'>
+              {formatDateLabel(date)}
+            </p>
           </div>
-        </CardHeader>
+        </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('expenses.add.dateLabel')}</CardTitle>
+          <CardTitle className='text-base'>
+            {t('expenses.add.detailsTitle', {
+              defaultValue: t('expenses.add.title'),
+            })}
+          </CardTitle>
+          <CardDescription>{formatDateLabel(date)}</CardDescription>
         </CardHeader>
         <CardContent>
-          <FieldGroup>
+          <FieldGroup className='gap-5'>
             <Field>
               <FieldLabel htmlFor='add-expense-date'>
                 {t('expenses.add.dateLabel')}
@@ -133,25 +165,16 @@ export const AddExpenseDetailsPage = () => {
                 }}
               />
             </Field>
-          </FieldGroup>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('expenses.edit.fieldAmount')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
             <Field>
               <FieldLabel htmlFor='add-expense-amount'>
                 {t('expenses.edit.fieldAmount')}
               </FieldLabel>
-              <div className='flex items-end gap-2'>
+              <div className='flex min-w-0 items-end gap-2'>
                 <Input
                   ref={amountInputRef}
                   autoFocus={true}
-                  className='text-right font-mono text-3xl font-semibold'
+                  className='min-w-0 flex-1 text-right font-mono text-2xl font-semibold tabular-nums sm:text-3xl'
                   id='add-expense-amount'
                   inputMode='numeric'
                   placeholder='0'
@@ -161,24 +184,15 @@ export const AddExpenseDetailsPage = () => {
                     setAmountInput(formatAmountInput(event.target.value))
                   }}
                 />
-                <span className='font-mono text-3xl font-semibold text-foreground/80'>
+                <span className='shrink-0 pb-1 font-mono text-xl font-semibold text-foreground/80 sm:text-2xl'>
                   .000
                 </span>
-                <span className='text-xs font-semibold text-muted-foreground'>
+                <span className='shrink-0 pb-1.5 text-xs font-semibold text-muted-foreground'>
                   {currencyDisplaySymbol('VND')}
                 </span>
               </div>
             </Field>
-          </FieldGroup>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('expenses.add.nameLabel')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
             <Field>
               <FieldLabel htmlFor='add-expense-title'>
                 {t('expenses.add.nameLabel')}
@@ -200,40 +214,36 @@ export const AddExpenseDetailsPage = () => {
                 }}
               />
             </Field>
+
+            <Field>
+              <FieldLabel id='add-expense-source-label'>
+                {t('expenses.add.source')}
+              </FieldLabel>
+              <ToggleGroup
+                aria-labelledby='add-expense-source-label'
+                className='grid w-full grid-cols-3 gap-2.5'
+                value={sourceId ? [sourceId] : []}
+                onValueChange={(values) => {
+                  const value = values[0]
+                  if (value) {
+                    selection()
+                    setSourceId(value as SourceKey)
+                  }
+                }}>
+                {getSourceOptions(t).map((source) => (
+                  <ToggleGroupItem
+                    key={source.id}
+                    className='min-h-11 px-2 text-xs leading-tight break-words whitespace-normal'
+                    type='button'
+                    value={source.id}>
+                    {source.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </Field>
           </FieldGroup>
         </CardContent>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('expenses.add.source')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ToggleGroup
-            className='grid w-full grid-cols-3 gap-2'
-            value={sourceId ? [sourceId] : []}
-            onValueChange={(values) => {
-              const value = values[0]
-              if (value) {
-                selection()
-                setSourceId(value as SourceKey)
-              }
-            }}>
-            {getSourceOptions(t).map((source) => (
-              <ToggleGroupItem key={source.id} type='button' value={source.id}>
-                {source.label}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-        </CardContent>
-      </Card>
-
-      <TmaHapticButton
-        className='mt-5 mb-2 w-full'
-        disabled={!isValid}
-        onClick={handleContinue}>
-        {t('expenses.add.continue')}
-      </TmaHapticButton>
     </TmaPageShell>
   )
 }
