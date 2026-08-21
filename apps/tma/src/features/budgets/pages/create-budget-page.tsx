@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { DatePicker } from '@/components/shared/date-picker'
 import { NativePicker } from '@/components/shared/native-picker'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   Card,
   CardContent,
@@ -32,6 +32,23 @@ import type { BudgetFeedback } from '../types/feedback'
 
 const DEFAULT_CURRENCY_CODE = 'VND'
 const PERSONAL_TARGET_VALUE = 'personal'
+
+// ── dumb feedback (no outer margin, parent gap owns spacing) ──
+
+function BudgetCreateFeedback({ feedback }: { feedback: BudgetFeedback }) {
+  return (
+    <Card size='sm'>
+      <CardHeader>
+        <CardDescription
+          className={
+            feedback.tone === 'error' ? 'text-destructive' : 'text-emerald-600'
+          }>
+          {feedback.message}
+        </CardDescription>
+      </CardHeader>
+    </Card>
+  )
+}
 
 const CreateBudgetPage = () => {
   const navigate = useNavigate()
@@ -157,29 +174,45 @@ const CreateBudgetPage = () => {
   }
 
   return (
-    <TmaPageShell title={t('budgets.createPage.title')}>
-      {feedback ? (
-        <Card>
-          <CardHeader>
-            <CardDescription
-              className={
-                feedback.tone === 'error'
-                  ? 'text-destructive'
-                  : 'text-emerald-600'
-              }>
-              {feedback.message}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      ) : null}
+    <TmaPageShell
+      contentClassName='flex flex-col gap-4'
+      footer={
+        <TmaPageFooter>
+          <TmaHapticButton
+            aria-busy={isBusy}
+            disabled={isBusy}
+            type='button'
+            variant='secondary'
+            onClick={() => navigate(TMA_PATHS.budgets)}>
+            {t('common.cancel')}
+          </TmaHapticButton>
+          <TmaHapticButton
+            aria-busy={isBusy}
+            disabled={isBusy}
+            form='create-budget-form'
+            type='submit'>
+            {isBusy
+              ? t('budgets.createPage.submitting')
+              : t('budgets.createPage.title')}
+          </TmaHapticButton>
+        </TmaPageFooter>
+      }
+      title={t('budgets.createPage.title')}
+      onRefresh={async () => {
+        await householdsQuery.refetch()
+      }}>
+      {feedback ? <BudgetCreateFeedback feedback={feedback} /> : null}
 
-      <Card>
+      <Card size='sm'>
         <CardHeader>
           <CardTitle>{t('budgets.createPage.header')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form className='grid gap-3' onSubmit={handleSubmit}>
-            <FieldGroup>
+          <form
+            className='grid gap-4'
+            id='create-budget-form'
+            onSubmit={handleSubmit}>
+            <FieldGroup className='gap-4'>
               <Field>
                 <FieldLabel htmlFor='create-budget-scope'>
                   {t('budgets.createPage.fieldScope')}
@@ -233,25 +266,6 @@ const CreateBudgetPage = () => {
                 />
               </Field>
             </FieldGroup>
-
-            <div className='flex flex-wrap justify-end gap-2.5'>
-              <TmaHapticButton
-                aria-busy={isBusy}
-                disabled={isBusy}
-                type='button'
-                variant='secondary'
-                onClick={() => navigate(TMA_PATHS.budgets)}>
-                {t('common.cancel')}
-              </TmaHapticButton>
-              <TmaHapticButton
-                aria-busy={isBusy}
-                disabled={isBusy}
-                type='submit'>
-                {isBusy
-                  ? t('budgets.createPage.submitting')
-                  : t('budgets.createPage.title')}
-              </TmaHapticButton>
-            </div>
           </form>
         </CardContent>
       </Card>

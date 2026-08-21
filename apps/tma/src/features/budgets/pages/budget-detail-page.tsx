@@ -2,9 +2,9 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
-import { DataState } from '@/components/shared/data-state'
+import { QueryState } from '@/components/shared/query-state'
 import { TmaHapticButton } from '@/components/shared/tma-haptic-button'
-import { TmaPageShell } from '@/components/shared/tma-page-shell'
+import { TmaPageFooter, TmaPageShell } from '@/components/shared/tma-page-shell'
 import {
   Card,
   CardContent,
@@ -34,7 +34,153 @@ import {
   getBudgetProgress,
   parseBudgetAmountInputToMinor,
 } from '../presentation'
+import type { BudgetDTO, BudgetStatusDTO } from '../types'
 import type { BudgetFeedback } from '../types/feedback'
+
+// ── dumb components (no outer margin, parent gap owns spacing) ──
+
+function BudgetFeedbackCard({ feedback }: { feedback: BudgetFeedback }) {
+  return (
+    <Card size='sm'>
+      <CardHeader>
+        <CardDescription
+          className={
+            feedback.tone === 'error' ? 'text-destructive' : 'text-emerald-600'
+          }>
+          {feedback.message}
+        </CardDescription>
+      </CardHeader>
+    </Card>
+  )
+}
+
+function BudgetStatusBlock({
+  statusQuery,
+  t,
+}: {
+  statusQuery: ReturnType<typeof useBudgetStatusQuery>
+  t: (key: string, options?: Record<string, unknown>) => string
+}) {
+  return (
+    <QueryState
+      error={{
+        title: t('budgets.detail.loadError'),
+        description: t('budgets.detail.loadErrorDesc'),
+      }}
+      isEmpty={(data: BudgetStatusDTO) => !data}
+      pending={{
+        title: t('budgets.detail.loading'),
+        description: t('budgets.detail.loadingDesc'),
+      }}
+      query={statusQuery}
+      retryAction={() => void statusQuery.refetch()}
+      variant='card'>
+      {(status: BudgetStatusDTO) => {
+        const progress = getBudgetProgress(
+          status.totalActualMinor,
+          status.totalPlannedMinor,
+        )
+        const isOver = status.totalRemainingMinor < 0
+
+        return (
+          <BudgetProgressSection
+            isOver={isOver}
+            progress={progress}
+            status={status}
+            t={t}
+          />
+        )
+      }}
+    </QueryState>
+  )
+}
+
+function BudgetManageCard({
+  isEditing,
+  totalLimitInput,
+  onTotalLimitChange,
+  onSubmit,
+  onStartEdit,
+  onCancelEdit,
+  onDelete,
+  isUpdatePending,
+  isDeletePending,
+  t,
+}: {
+  isEditing: boolean
+  totalLimitInput: string
+  onTotalLimitChange: (value: string) => void
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void
+  onStartEdit: () => void
+  onCancelEdit: () => void
+  onDelete: () => void
+  isUpdatePending: boolean
+  isDeletePending: boolean
+  t: (key: string, options?: Record<string, unknown>) => string
+}) {
+  return (
+    <Card size='sm'>
+      <CardHeader>
+        <CardTitle>{t('budgets.detail.sectionManage')}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {/* form owns its own gap; footer handles edit CTAs when isEditing */}
+        <form className='grid gap-4' id='budget-edit-form' onSubmit={onSubmit}>
+          <FieldGroup className='gap-4'>
+            <Field>
+              <FieldLabel htmlFor='budget-detail-limit'>
+                {t('budgets.detail.manageLimit')}
+              </FieldLabel>
+              <Input
+                disabled={!isEditing || isUpdatePending}
+                id='budget-detail-limit'
+                inputMode='numeric'
+                value={totalLimitInput}
+                onChange={(event) =>
+                  onTotalLimitChange(formatAmountInput(event.target.value))
+                }
+              />
+            </Field>
+          </FieldGroup>
+
+          {/* Non-editing row stays inside card for thumb reach without footer */}
+          {!isEditing ? (
+            <div className='flex justify-end gap-2'>
+              <TmaHapticButton
+                type='button'
+                variant='secondary'
+                onClick={onStartEdit}>
+                {t('budgets.detail.editAction')}
+              </TmaHapticButton>
+              <TmaHapticButton
+                aria-busy={isDeletePending}
+                disabled={isDeletePending}
+                type='button'
+                variant='destructive'
+                onClick={onDelete}>
+                {isDeletePending
+                  ? t('budgets.detail.deleting')
+                  : t('budgets.detail.deleteAction')}
+              </TmaHapticButton>
+            </div>
+          ) : (
+            /* Mobile editing: keep a lightweight inline cancel for non-footer fallback; footer is primary */
+            <div className='hidden'>
+              <TmaHapticButton
+                type='button'
+                variant='secondary'
+                onClick={onCancelEdit}>
+                {t('common.cancel')}
+              </TmaHapticButton>
+            </div>
+          )}
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ── page ─────────────────────────────────────────────────────────
 
 export const BudgetDetailPage = () => {
   const { id } = useParams<{ id: string }>()
@@ -85,6 +231,14 @@ export const BudgetDetailPage = () => {
     return false
   }, [budget, currentUserId])
 
+  const handleRefresh = async () => {
+    await Promise.all([
+      detailQuery.refetch(),
+      statusQuery.refetch(),
+      householdsQuery.refetch(),
+    ])
+  }
+
   const handleUpdate = async (values: BudgetMutationFormValues) => {
     try {
       await updateMutation.mutateAsync({
@@ -126,7 +280,7 @@ export const BudgetDetailPage = () => {
     const totalLimitMinor = parseBudgetAmountInputToMinor(totalLimitInput)
     if (!totalLimitMinor || totalLimitMinor <= 0) return
 
-    handleUpdate({
+    void handleUpdate({
       mode: 'edit',
       period: budget!.period,
       scope: budget!.scope,
@@ -134,10 +288,19 @@ export const BudgetDetailPage = () => {
     })
   }
 
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    if (budget) {
+      setTotalLimitInput(formatAmountInput(String(budget.totalLimitMinor)))
+    }
+  }
+
   if (!id) {
     return (
-      <TmaPageShell title={t('budgets.detail.title')}>
-        <Card>
+      <TmaPageShell
+        contentClassName='flex flex-col gap-4'
+        title={t('budgets.detail.title')}>
+        <Card size='sm'>
           <CardHeader>
             <CardTitle>{t('budgets.detail.invalidIdTitle')}</CardTitle>
             <CardDescription>
@@ -149,145 +312,91 @@ export const BudgetDetailPage = () => {
     )
   }
 
-  const isBudgetMissing =
-    !detailQuery.isLoading && !detailQuery.isError && !budget
-
-  const progress = status
-    ? getBudgetProgress(status.totalActualMinor, status.totalPlannedMinor)
-    : null
-  const isOver = status ? status.totalRemainingMinor < 0 : false
+  const showEditFooter = Boolean(canEdit && isEditing && budget)
 
   return (
-    <TmaPageShell title={t('budgets.detail.title')}>
-      {feedback ? (
-        <Card>
-          <CardHeader>
-            <CardDescription
-              className={
-                feedback.tone === 'error'
-                  ? 'text-destructive'
-                  : 'text-emerald-600'
-              }>
-              {feedback.message}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      ) : null}
+    <TmaPageShell
+      contentClassName='flex flex-col gap-4'
+      footer={
+        showEditFooter ? (
+          <TmaPageFooter>
+            <TmaHapticButton
+              disabled={updateMutation.isPending}
+              type='button'
+              variant='secondary'
+              onClick={handleCancelEdit}>
+              {t('common.cancel')}
+            </TmaHapticButton>
+            <TmaHapticButton
+              aria-busy={updateMutation.isPending}
+              disabled={updateMutation.isPending}
+              form='budget-edit-form'
+              type='submit'>
+              {updateMutation.isPending
+                ? t('budgets.detail.editing')
+                : t('budgets.detail.save')}
+            </TmaHapticButton>
+          </TmaPageFooter>
+        ) : undefined
+      }
+      title={t('budgets.detail.title')}
+      onRefresh={handleRefresh}>
+      <QueryState
+        empty={{
+          title: t('budgets.detail.notFoundTitle'),
+          description: t('budgets.detail.notFoundDesc'),
+        }}
+        error={{
+          title: t('budgets.detail.loadError'),
+          description: t('budgets.detail.loadErrorDesc'),
+        }}
+        isEmpty={(data: BudgetDTO) => !data}
+        pending={{
+          title: t('budgets.detail.loading'),
+          description: t('budgets.detail.loadingDesc'),
+        }}
+        query={detailQuery}
+        retryAction={() => void detailQuery.refetch()}
+        variant='card'>
+        {(loadedBudget: BudgetDTO) => {
+          // Derive household inline (non-blocking, no extra QueryState)
+          const resolvedHousehold =
+            households.find((entry) => entry.id === loadedBudget.householdId) ??
+            household ??
+            undefined
 
-      <DataState
-        emptyDescription={t('budgets.detail.notFoundDesc')}
-        emptyTitle={t('budgets.detail.notFoundTitle')}
-        errorDescription={t('budgets.detail.loadErrorDesc')}
-        errorTitle={t('budgets.detail.loadError')}
-        isEmpty={isBudgetMissing}
-        isError={detailQuery.isError && !budget}
-        isLoading={detailQuery.isLoading && !budget}
-        loadingDescription={t('budgets.detail.loadingDesc')}
-        loadingTitle={t('budgets.detail.loading')}
-        retryAction={detailQuery.refetch}>
-        {budget ? (
-          <>
-            <BudgetHeroCard
-              budget={budget}
-              household={household ?? undefined}
-              status={status ?? undefined}
-              t={t}
-            />
+          return (
+            <div className='flex flex-col gap-4'>
+              {feedback ? <BudgetFeedbackCard feedback={feedback} /> : null}
 
-            {status && progress ? (
-              <BudgetProgressSection
-                isOver={isOver}
-                progress={progress}
-                status={status}
+              <BudgetHeroCard
+                budget={loadedBudget}
+                household={resolvedHousehold}
+                status={status ?? undefined}
                 t={t}
               />
-            ) : null}
 
-            {canEdit ? (
-              <section className='grid gap-3'>
-                <h2 className='m-0 text-base font-bold'>
-                  {t('budgets.detail.sectionManage')}
-                </h2>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('budgets.detail.sectionManage')}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <form className='grid gap-3' onSubmit={handleSubmit}>
-                      <FieldGroup>
-                        <Field>
-                          <FieldLabel htmlFor='budget-detail-limit'>
-                            {t('budgets.detail.manageLimit')}
-                          </FieldLabel>
-                          <Input
-                            disabled={!isEditing || updateMutation.isPending}
-                            id='budget-detail-limit'
-                            inputMode='numeric'
-                            value={totalLimitInput}
-                            onChange={(event) =>
-                              setTotalLimitInput(
-                                formatAmountInput(event.target.value),
-                              )
-                            }
-                          />
-                        </Field>
-                      </FieldGroup>
+              {/* Status is secondary — own QueryState so it never blocks hero */}
+              <BudgetStatusBlock statusQuery={statusQuery} t={t} />
 
-                      {isEditing ? (
-                        <div className='flex justify-end gap-2'>
-                          <TmaHapticButton
-                            aria-busy={updateMutation.isPending}
-                            disabled={updateMutation.isPending}
-                            type='button'
-                            variant='secondary'
-                            onClick={() => {
-                              setIsEditing(false)
-
-                              setTotalLimitInput(
-                                formatAmountInput(
-                                  String(budget.totalLimitMinor),
-                                ),
-                              )
-                            }}>
-                            {t('common.cancel')}
-                          </TmaHapticButton>
-                          <TmaHapticButton
-                            aria-busy={updateMutation.isPending}
-                            disabled={updateMutation.isPending}
-                            type='submit'>
-                            {updateMutation.isPending
-                              ? t('budgets.detail.editing')
-                              : t('budgets.detail.save')}
-                          </TmaHapticButton>
-                        </div>
-                      ) : (
-                        <div className='flex justify-end gap-2'>
-                          <TmaHapticButton
-                            type='button'
-                            variant='secondary'
-                            onClick={() => setIsEditing(true)}>
-                            {t('budgets.detail.editAction')}
-                          </TmaHapticButton>
-                          <TmaHapticButton
-                            aria-busy={deleteMutation.isPending}
-                            disabled={deleteMutation.isPending}
-                            type='button'
-                            variant='destructive'
-                            onClick={handleDelete}>
-                            {deleteMutation.isPending
-                              ? t('budgets.detail.deleting')
-                              : t('budgets.detail.deleteAction')}
-                          </TmaHapticButton>
-                        </div>
-                      )}
-                    </form>
-                  </CardContent>
-                </Card>
-              </section>
-            ) : null}
-          </>
-        ) : null}
-      </DataState>
+              {canEdit ? (
+                <BudgetManageCard
+                  isDeletePending={deleteMutation.isPending}
+                  isEditing={isEditing}
+                  isUpdatePending={updateMutation.isPending}
+                  t={t}
+                  totalLimitInput={totalLimitInput}
+                  onCancelEdit={handleCancelEdit}
+                  onDelete={() => void handleDelete()}
+                  onStartEdit={() => setIsEditing(true)}
+                  onSubmit={handleSubmit}
+                  onTotalLimitChange={setTotalLimitInput}
+                />
+              ) : null}
+            </div>
+          )
+        }}
+      </QueryState>
     </TmaPageShell>
   )
 }
