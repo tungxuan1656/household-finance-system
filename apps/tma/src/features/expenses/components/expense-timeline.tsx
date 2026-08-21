@@ -74,12 +74,16 @@ export const ExpenseItem = ({
               <span className='truncate'>{householdLabel}</span>
             </Badge>
             {groupLabel ? (
-              <Badge variant='secondary'>{groupLabel}</Badge>
+              <Badge className='max-w-full' variant='secondary'>
+                <span className='truncate'>{groupLabel}</span>
+              </Badge>
             ) : null}
           </div>
         ) : groupLabel ? (
           <div className='mt-2 flex flex-wrap gap-1.5'>
-            <Badge variant='secondary'>{groupLabel}</Badge>
+            <Badge className='max-w-full' variant='secondary'>
+              <span className='truncate'>{groupLabel}</span>
+            </Badge>
           </div>
         ) : null}
       </div>
@@ -122,10 +126,14 @@ export const RecentExpenses = ({
   const householdNameById = buildHouseholdNameMap(
     householdsQuery.data?.items ?? [],
   )
+  const handleRetry = () => {
+    void recentExpensesQuery.refetch()
+    void householdsQuery.refetch()
+  }
 
   return (
     // No external margin: parent gap owns spacing. Single header, no duplicate CardTitle.
-    <section className='flex flex-col gap-3'>
+    <section className='flex flex-col gap-4'>
       <div className='flex items-end justify-between gap-3 px-1'>
         <h2 className='m-0 min-w-0 text-base leading-tight font-semibold text-foreground'>
           {title}
@@ -147,7 +155,7 @@ export const RecentExpenses = ({
         }}
         isEmpty={(data) => (data?.items?.length ?? 0) === 0}
         query={recentExpensesQuery}
-        retryAction={recentExpensesQuery.refetch}
+        retryAction={handleRetry}
         variant='card'>
         {(data) => {
           const items = data.items
@@ -155,7 +163,7 @@ export const RecentExpenses = ({
           return (
             <Card size='sm'>
               {/* No CardHeader duplication: outer h2 already is the title */}
-              <CardContent className='grid gap-2 p-0'>
+              <CardContent className='grid divide-y divide-border/60 p-0'>
                 {items.map((expense) => (
                   <ExpenseItem
                     key={expense.id}
@@ -177,6 +185,7 @@ export const RecentExpenses = ({
   )
 }
 
+// ExpenseTimeline renders grouped expenses; parent gap owns outer rhythm.
 export const ExpenseTimeline = ({
   expenses,
   householdNameById,
@@ -192,12 +201,14 @@ export const ExpenseTimeline = ({
   }
 
   return (
-    <section className='grid gap-5'>
+    <section className='grid gap-4'>
       {[...sections.entries()].map(([label, items]) => (
         <div key={label} className='grid gap-2'>
-          <h2 className='px-1 text-sm font-bold text-foreground'>{label}</h2>
+          <h2 className='px-1 text-xs font-bold tracking-widest text-muted-foreground uppercase'>
+            {label}
+          </h2>
           <Card size='sm'>
-            <CardContent className='grid gap-2 p-0'>
+            <CardContent className='grid divide-y divide-border/60 p-0'>
               {items.map((expense) => (
                 <ExpenseItem
                   key={expense.id}

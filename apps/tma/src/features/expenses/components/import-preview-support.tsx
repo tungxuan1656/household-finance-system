@@ -1,3 +1,4 @@
+// TODO: Move hooks (useImportGroupItems, useImportPreviewPickerOptions, useImportPickerLoading) to features/expenses/hooks/ to avoid hooks-in-components folder churn; kept here for now to minimize diff.
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -101,8 +102,8 @@ export function ImportPreviewEmpty() {
   const { t } = useTranslation()
 
   return (
-    <Card>
-      <Empty className='py-10'>
+    <Card size='sm'>
+      <Empty className='py-8'>
         <EmptyHeader>
           <EmptyTitle>{t('expenses.add.importEmptyTitle')}</EmptyTitle>
           <EmptyDescription>
@@ -126,7 +127,10 @@ export function ImportPreviewHeader({
   return (
     <div className='flex flex-col gap-3'>
       {feedback ? (
-        <Card className='border-destructive/20 bg-destructive/5'>
+        <Card
+          className='border-destructive/20 bg-destructive/5'
+          role='alert'
+          size='sm'>
           <CardHeader className='py-3'>
             <CardDescription className='leading-snug font-medium text-destructive'>
               {feedback}
@@ -134,7 +138,7 @@ export function ImportPreviewHeader({
           </CardHeader>
         </Card>
       ) : null}
-      <p className='text-sm text-muted-foreground'>
+      <p className='px-1 text-sm text-muted-foreground'>
         {t('expenses.add.importItemCount', { count })}
       </p>
     </div>

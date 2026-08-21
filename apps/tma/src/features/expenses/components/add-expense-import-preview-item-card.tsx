@@ -9,7 +9,6 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import type { ImportItemDraft } from '@/features/expenses/model/import-store'
@@ -45,7 +44,7 @@ type Props = {
 
 export const ImportPreviewItemCard = ({
   item,
-  index,
+  index: _index,
   isSaving,
   pickerOptions,
   pickerLoading,
@@ -53,6 +52,8 @@ export const ImportPreviewItemCard = ({
   onSetItemCategory,
   onSetItemContext,
 }: Props) => {
+  void _index
+
   const { t } = useTranslation()
   const presentation = useCategoryPresentation(
     normalizeCategoryKey(item.parsed.categoryKey),
@@ -60,17 +61,14 @@ export const ImportPreviewItemCard = ({
   const sourceLabel = getSourceLabel(item.parsed.sourceKey, t)
 
   return (
-    <Card
-      className={cn(!item.include && 'opacity-50')}
-      size='sm'
-      style={{ animationDelay: `${index * 40}ms` }}>
+    <Card className={cn(!item.include && 'opacity-50')} size='sm'>
       <CardHeader>
         <div className='flex items-start gap-3'>
-          <label className='mt-2 flex shrink-0 cursor-pointer items-center'>
+          <label className='-my-1 -ml-2 flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center p-2'>
             <input
               aria-label={t('expenses.add.includeItem')}
               checked={item.include}
-              className='size-5.5 accent-primary'
+              className='size-5 accent-primary'
               disabled={item.status === 'success' || isSaving}
               type='checkbox'
               onChange={() => onToggleInclude(item.id)}
@@ -83,7 +81,7 @@ export const ImportPreviewItemCard = ({
             symbol={presentation.symbol}
           />
           <div className='min-w-0 flex-1'>
-            <FieldGroup>
+            <FieldGroup className='gap-4'>
               <Field>
                 <FieldLabel
                   className='sr-only'
@@ -107,32 +105,34 @@ export const ImportPreviewItemCard = ({
                 />
               </Field>
             </FieldGroup>
-            <CardTitle className='mt-1 text-sm font-semibold wrap-break-word'>
+            <p className='mt-1 text-sm font-semibold wrap-break-word'>
               {item.parsed.title}
-            </CardTitle>
+            </p>
           </div>
-          <div className='shrink-0 text-right'>
-            <span className='font-mono text-lg font-semibold text-foreground [font-variant-numeric:tabular-nums]'>
+          <div className='min-w-0 shrink-0 text-right'>
+            <span className='font-mono text-sm font-semibold wrap-break-word text-foreground [font-variant-numeric:tabular-nums] sm:text-lg'>
               {formatVnd(item.parsed.amount)}
             </span>
           </div>
         </div>
       </CardHeader>
-      <CardContent className='ml-8 grid gap-3'>
+      <CardContent className='grid gap-3'>
         <div className='grid grid-cols-2 gap-3'>
-          <div className='grid gap-0.5'>
+          <div className='grid min-w-0 gap-0.5'>
             <CardDescription>{t('expenses.add.dateLabel')}</CardDescription>
-            <span className='text-sm text-foreground'>
+            <span className='truncate text-sm text-foreground'>
               {item.parsed.occurredAt}
             </span>
           </div>
-          <div className='grid gap-0.5'>
+          <div className='grid min-w-0 gap-0.5'>
             <CardDescription>{t('expenses.add.source')}</CardDescription>
-            <span className='text-sm text-foreground'>{sourceLabel}</span>
+            <span className='truncate text-sm text-foreground'>
+              {sourceLabel}
+            </span>
           </div>
         </div>
         {item.status !== 'success' ? (
-          <FieldGroup>
+          <FieldGroup className='gap-4'>
             <Field>
               <FieldLabel htmlFor={`import-household-${item.id}`}>
                 {t('expenses.add.contextHousehold')}

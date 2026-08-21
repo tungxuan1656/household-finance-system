@@ -20,12 +20,14 @@ export const ExpenseSummaryCard = ({ summary }: ExpenseSummaryCardProps) => {
   if (!summary || summary.expenseCount === 0) return null
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('expenses.summary.title')}</CardTitle>
+    <Card size='sm'>
+      <CardHeader className='pb-2'>
+        <CardTitle className='text-sm font-semibold tracking-normal normal-case'>
+          {t('expenses.summary.title')}
+        </CardTitle>
       </CardHeader>
       <CardContent className='grid gap-1'>
-        <span className='block font-mono text-[28px] leading-none font-extrabold tracking-normal text-foreground [font-variant-numeric:tabular-nums]'>
+        <span className='block font-mono text-[28px] leading-none font-extrabold tracking-normal text-foreground tabular-nums [font-variant-numeric:tabular-nums]'>
           {formatCurrencyMinor(summary.totalSpendMinor, summary.currencyCode)}
         </span>
         <CardDescription>

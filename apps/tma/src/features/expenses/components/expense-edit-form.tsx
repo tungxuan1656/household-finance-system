@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { DatePicker } from '@/components/shared/date-picker'
 import { NativePicker } from '@/components/shared/native-picker'
 import { TmaCategoryIconBadge } from '@/components/shared/tma-page-shell'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -51,30 +51,24 @@ export const ExpenseEditForm = ({
 
   return (
     <>
+      {/* Hero card: Amount + Title — no CardHeader duplication, FieldLabel only for a11y */}
       <Card size='sm'>
-        <CardHeader className='pb-2'>
-          <CardTitle className='text-sm tracking-normal normal-case'>
-            {t('expenses.edit.fieldAmount')}
-          </CardTitle>
-        </CardHeader>
         <CardContent>
-          <FieldGroup className='gap-4'>
+          <FieldGroup className='gap-5'>
             <Field>
               <FieldLabel htmlFor='edit-expense-amount'>
                 {t('expenses.edit.fieldAmount')}
               </FieldLabel>
-              <div className='flex items-end gap-2'>
-                <div className='min-w-0 flex-1'>
-                  <Input
-                    className='text-right font-mono text-2xl font-semibold sm:text-3xl'
-                    id='edit-expense-amount'
-                    inputMode='numeric'
-                    placeholder='0'
-                    type='text'
-                    value={amountInput}
-                    onChange={(event) => onAmountChange(event.target.value)}
-                  />
-                </div>
+              <div className='flex min-w-0 items-end gap-2'>
+                <Input
+                  className='min-w-0 flex-1 text-right font-mono text-2xl font-semibold sm:text-3xl'
+                  id='edit-expense-amount'
+                  inputMode='numeric'
+                  placeholder='0'
+                  type='text'
+                  value={amountInput}
+                  onChange={(event) => onAmountChange(event.target.value)}
+                />
                 <span className='shrink-0 font-mono text-2xl font-semibold text-foreground/80 sm:text-3xl'>
                   .000
                 </span>
@@ -98,14 +92,10 @@ export const ExpenseEditForm = ({
         </CardContent>
       </Card>
 
+      {/* Context card: Date + Category + Source + Household + Group — single card, FieldLabel only */}
       <Card size='sm'>
-        <CardHeader className='pb-2'>
-          <CardTitle className='text-sm tracking-normal normal-case'>
-            {t('expenses.edit.fieldDate')}
-          </CardTitle>
-        </CardHeader>
         <CardContent>
-          <FieldGroup className='gap-4'>
+          <FieldGroup className='gap-5'>
             <Field>
               <FieldLabel htmlFor='edit-expense-date'>
                 {t('expenses.edit.fieldDate')}
@@ -148,7 +138,7 @@ export const ExpenseEditForm = ({
               </FieldLabel>
               <ToggleGroup
                 aria-labelledby='edit-expense-source-label'
-                className='grid w-full grid-cols-3 gap-2'
+                className='grid w-full grid-cols-3 gap-2.5'
                 id='edit-expense-source'
                 value={draft.sourceKey ? [draft.sourceKey] : []}
                 onValueChange={(values) => {
@@ -161,7 +151,7 @@ export const ExpenseEditForm = ({
                 {sourcePickerOptions.map((option) => (
                   <ToggleGroupItem
                     key={option.value}
-                    className='min-h-11'
+                    className='min-h-11 px-2 text-xs leading-tight break-words whitespace-normal'
                     type='button'
                     value={option.value}>
                     {option.label}
@@ -169,18 +159,6 @@ export const ExpenseEditForm = ({
                 ))}
               </ToggleGroup>
             </Field>
-          </FieldGroup>
-        </CardContent>
-      </Card>
-
-      <Card size='sm'>
-        <CardHeader className='pb-2'>
-          <CardTitle className='text-sm tracking-normal normal-case'>
-            {t('expenses.edit.fieldHousehold')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup className='gap-4'>
             <Field>
               <FieldLabel htmlFor='edit-expense-household-picker'>
                 {t('expenses.edit.fieldHousehold')}
