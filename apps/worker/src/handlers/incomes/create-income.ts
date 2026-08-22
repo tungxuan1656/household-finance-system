@@ -6,6 +6,7 @@ import {
   createIncome,
   type CreateIncomeInput,
 } from '@/db/repositories/income-repository'
+import { getMinorUnits } from '@/lib/currency'
 import { invalidInput } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
 import { readJsonBody } from '@/lib/validation'
@@ -13,26 +14,6 @@ import type { AppBindings } from '@/types'
 import { newId } from '@/utils/id'
 
 type CreateIncomeHandlerCtx = Context<AppBindings>
-
-const getCurrencyFractionDigits = (currencyCode: string): number => {
-  try {
-    return (
-      new Intl.NumberFormat('en', {
-        style: 'currency',
-        currency: currencyCode,
-      }).resolvedOptions().maximumFractionDigits ?? 2
-    )
-  } catch {
-    return 2
-  }
-}
-
-const getMinorUnits = (amount: number, currencyCode: string): number => {
-  const decimals = getCurrencyFractionDigits(currencyCode)
-  const factor = 10 ** decimals
-
-  return Math.round(amount * factor)
-}
 
 export const createIncomeHandler = async (
   ctx: CreateIncomeHandlerCtx,

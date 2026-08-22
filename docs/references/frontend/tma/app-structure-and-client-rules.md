@@ -20,7 +20,7 @@ For canonical TMA UI and navigation rules, see [native UI and navigation pattern
 - Use React Router for in-app history.
 - Use TanStack Query for server state.
 - Use Zustand for small client-local workflow state.
-- Use Framer Motion for screen, sheet, and high-touch interaction motion.
+- Use Tailwind CSS transitions (`transform`/`opacity`, `transition`/`active:scale-*`) for screen, sheet, and high-touch interaction motion.
 
 ## SDK package-line rule
 
@@ -68,10 +68,10 @@ apps/tma/
 
 Rules:
 
-- Do not add TMA runtime code under `apps/web`.
-- Do not import feature or UI code from `apps/web/src`.
-- Reuse only shared DTOs, extracted pure helpers, and worker API contracts.
-- Do not fork domain rules between web and TMA.
+- Do not add TMA runtime code under `apps/web` and do not add web runtime code under `apps/tma`.
+- Do not import code between `apps/web/src` and `apps/tma/src` in either direction. Verify with `grep -R "apps/web" apps/tma` and `grep -R "apps/tma" apps/web` (expect 0 hits).
+- Each app owns its helpers, types, and UI (`cn`, currency/format, date, `ApiClientError`). Do not create a shared package and do not deduplicate by importing from the sibling app. Duplication is intentional isolation.
+- Worker API + D1 truth is the only shared runtime contract (via HTTP). Do not import `apps/worker/src` from web/tma. Do not fork domain rules between web and TMA.
 
 ## Import direction
 
