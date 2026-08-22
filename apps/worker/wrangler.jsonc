@@ -58,6 +58,7 @@
     "AUTH_ISSUER": "https://household-finance.local",
     "OPENAI_COMPAT_BASE_URL": "https://9router.tungxuan.io.vn/v1/chat/completions",
     "OPENAI_COMPAT_MODEL": "ocg/muse-spark-1.2-contributor",
+    "OPENAI_COMPAT_TIMEOUT_MS": "60000",
     "RATE_LIMIT_ENABLED": "false",
     "RATE_LIMIT_MAX_REQUESTS": "10",
     "REFRESH_TOKEN_TTL_SECONDS": "2592000",

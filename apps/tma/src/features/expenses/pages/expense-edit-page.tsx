@@ -48,17 +48,23 @@ export const ExpenseEditPage = () => {
   const setDraft = useEditExpenseStore((state) => state.setDraft)
   const updateDraft = useEditExpenseStore((state) => state.updateDraft)
   const resetStore = useEditExpenseStore((state) => state.reset)
-  const [amountInput, setAmountInput] = useState('')
+  const [amountInput, setAmountInput] = useState(() =>
+    draft ? formatAmountInput(String(draft.amount)) : '',
+  )
 
   useEffect(() => {
-    if (expense && !draft) {
+    if (!expense) return
+
+    if (!draft || draft.id !== expense.id) {
       const editDraft = createEditExpenseDraft(expense)
 
       setDraft(editDraft)
 
       setAmountInput(formatAmountInput(String(editDraft.amount)))
+    } else if (amountInput === '') {
+      setAmountInput(formatAmountInput(String(draft.amount)))
     }
-  }, [expense, draft, setDraft])
+  }, [expense, draft, setDraft, amountInput])
 
   // Reset edit draft store when leaving the page so a fresh visit hydrates
   // the amount input from the expense instead of reusing a stale draft.

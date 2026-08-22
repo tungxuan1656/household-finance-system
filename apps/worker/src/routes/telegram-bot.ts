@@ -59,7 +59,7 @@ telegramBotRoutes.post('/telegram/webhook', async (ctx) => {
 
   const client = new TelegramClient(config.telegramBotToken)
 
-  await handleUpdate(update, {
+  const handleUpdatePromise = handleUpdate(update, {
     db: ctx.env.DB,
     config,
     telegramClient: client,
@@ -68,10 +68,23 @@ telegramBotRoutes.post('/telegram/webhook', async (ctx) => {
       OPENAI_COMPAT_BASE_URL: ctx.env.OPENAI_COMPAT_BASE_URL,
       OPENAI_COMPAT_API_KEY: ctx.env.OPENAI_COMPAT_API_KEY,
       OPENAI_COMPAT_MODEL: ctx.env.OPENAI_COMPAT_MODEL,
+      OPENAI_COMPAT_TIMEOUT_MS: ctx.env.OPENAI_COMPAT_TIMEOUT_MS,
     },
   }).catch((err: unknown) => {
     console.error('telegram-webhook: handler error', err)
   })
+
+  // Decouple long-running handleUpdate (AI 20-23s) from webhook response
+  // via Cloudflare waitUntil so Telegram gets 200 immediately.
+  // Webhook may use 60s AI timeout because waitUntil decouples from response.
+  const executionCtx = (ctx as unknown as { executionCtx?: ExecutionContext })
+    .executionCtx
+
+  if (executionCtx?.waitUntil) {
+    executionCtx.waitUntil(handleUpdatePromise)
+  } else {
+    await handleUpdatePromise
+  }
 
   return success(ctx, { ok: true })
 })

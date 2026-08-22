@@ -39,3 +39,5 @@ CLOUDINARY_API_SECRET=""
 
 # OpenAI-compatible AI expense parser (secret)
 OPENAI_COMPAT_API_KEY="replace-with-your-api-key"
+# Optional AI parser timeout in ms (default 60000 = 60s) — configurable via OPENAI_COMPAT_TIMEOUT_MS
+OPENAI_COMPAT_TIMEOUT_MS="60000"

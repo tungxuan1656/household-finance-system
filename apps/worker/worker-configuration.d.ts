@@ -26,6 +26,7 @@ interface __BaseEnv_Env {
 	OPENAI_COMPAT_BASE_URL: string;
 	OPENAI_COMPAT_API_KEY: string;
 	OPENAI_COMPAT_MODEL: string;
+	OPENAI_COMPAT_TIMEOUT_MS?: string;
 }
 declare namespace Cloudflare {
 	interface GlobalProps {
