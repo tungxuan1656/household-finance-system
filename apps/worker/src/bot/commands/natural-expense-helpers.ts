@@ -201,6 +201,15 @@ export const sendPostCreateMessages = async (
   // Cap 4096 without splitting HTML entity
   if (text.length > 4096) {
     let cut = 4095
+    // back off low surrogates so we never split an emoji pair (e.g. 🏠 U+1F3E0)
+    while (
+      cut > 0 &&
+      text.charCodeAt(cut) >= 0xdc00 &&
+      text.charCodeAt(cut) <= 0xdfff
+    ) {
+      cut--
+    }
+
     const lastAmp = text.lastIndexOf('&', cut)
     if (lastAmp !== -1 && lastAmp > cut - 10) {
       const semi = text.indexOf(';', lastAmp)

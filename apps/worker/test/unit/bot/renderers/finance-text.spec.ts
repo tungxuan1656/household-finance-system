@@ -339,5 +339,68 @@ describe('format', () => {
       expect(result).toContain('today')
       expect(result).not.toContain('undefined')
     })
+
+    it('appends household suffix when scope is household with name', () => {
+      const result = renderExpenseSummaryLine({
+        amountMinor: 5000000,
+        occurredAt: '2026-06-24',
+        categoryKey: 'food',
+        title: 'ăn sáng',
+        sourceKey: 'cash',
+        scope: 'household',
+        householdId: 'hh-1',
+        householdName: 'Gia đình tôi',
+        currencyCode: 'VND',
+      })
+      expect(result).toMatch(/· 🏠 Gia đình tôi$/)
+      expect(result).toContain('🍜')
+    })
+
+    it('escapes household name for HTML', () => {
+      const result = renderExpenseSummaryLine({
+        amountMinor: 1000000,
+        occurredAt: '2026-06-24',
+        categoryKey: 'food',
+        title: 'test',
+        sourceKey: 'cash',
+        scope: 'household',
+        householdId: 'hh-1',
+        householdName: 'A & B <C> "D"',
+        currencyCode: 'VND',
+      })
+      expect(result).toContain('A &amp; B')
+      expect(result).toContain('&lt;C&gt;')
+      expect(result).toContain('&quot;D&quot;')
+      expect(result).not.toMatch(/A & B <C> "D"/)
+    })
+
+    it('does not append suffix when household scope but no name', () => {
+      const result = renderExpenseSummaryLine({
+        amountMinor: 1000000,
+        occurredAt: '2026-06-24',
+        categoryKey: 'food',
+        title: 'test',
+        sourceKey: 'cash',
+        scope: 'household',
+        householdId: 'hh-1',
+        currencyCode: 'VND',
+      })
+      expect(result).not.toContain('🏠')
+    })
+
+    it('does not append suffix when scope is personal even if householdName present', () => {
+      const result = renderExpenseSummaryLine({
+        amountMinor: 1000000,
+        occurredAt: '2026-06-24',
+        categoryKey: 'food',
+        title: 'test',
+        sourceKey: 'cash',
+        scope: 'personal',
+        // @ts-expect-error defensive: householdName should not leak in personal scope
+        householdName: 'Gia đình tôi',
+        currencyCode: 'VND',
+      })
+      expect(result).not.toContain('🏠')
+    })
   })
 })

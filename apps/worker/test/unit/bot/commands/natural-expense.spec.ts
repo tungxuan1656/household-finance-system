@@ -434,4 +434,30 @@ describe('runNaturalExpenseCreate (feat-135)', () => {
     expect(handled).toBe(0)
     expect(mockSendMessage).not.toHaveBeenCalled()
   })
+
+  describe('household suffix integration', () => {
+    it('createNaturalExpenses includes 🏠 when householdNameById provided', async () => {
+      const { createNaturalExpenses } =
+        await import('@/bot/commands/natural-expense-helpers')
+      const result = await createNaturalExpenses({
+        db: {} as D1Database,
+        appUserId: 'u1',
+        validItems: [
+          {
+            amount: 50000,
+            categoryKey: 'food',
+            sourceKey: 'cash',
+            title: 'test title',
+            occurredAt: '2026-06-24',
+          } as never,
+        ],
+        aiMappings: [{ householdId: 'hh-1', groupIds: [] }],
+        amountResult: { amountVnd: 50000, matched: '50k' },
+        correlationId: 'test',
+        text: 'test 50k',
+        householdNameById: new Map([['hh-1', 'Gia đình tôi']]),
+      })
+      expect(result[0]?.summary).toContain('🏠 Gia đình tôi')
+    })
+  })
 })
