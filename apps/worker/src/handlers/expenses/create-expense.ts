@@ -12,6 +12,7 @@ import {
 } from '@/db/repositories/expense-repository'
 import { findActiveHouseholdMembership } from '@/db/repositories/household-membership-repository'
 import { findHouseholdById } from '@/db/repositories/household-repository'
+import { getMinorUnits } from '@/lib/currency'
 import { conflict, forbidden, invalidInput, notFound } from '@/lib/errors'
 import { defaultLocale } from '@/lib/i18n'
 import { canCreateExpense } from '@/lib/permissions/household-policy'
@@ -20,28 +21,6 @@ import type { AppBindings } from '@/types'
 import { newId } from '@/utils/id'
 
 type CreateExpenseHandlerCtx = Context<AppBindings>
-
-const getCurrencyFractionDigits = (currencyCode: string): number => {
-  try {
-    return (
-      new Intl.NumberFormat('en', {
-        style: 'currency',
-        currency: currencyCode,
-      }).resolvedOptions().maximumFractionDigits ?? 2
-    )
-  } catch {
-    return 2
-  }
-}
-
-const getMinorUnits = (amount: number, currencyCode: string): number => {
-  const decimals = getCurrencyFractionDigits(currencyCode)
-  const factor = 10 ** decimals
-
-  return Math.round(amount * factor)
-}
-
-// Note: helper to build repository input removed to keep logic local
 
 export const createExpenseHandler = async (
   ctx: CreateExpenseHandlerCtx,

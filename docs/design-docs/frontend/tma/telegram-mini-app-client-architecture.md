@@ -66,7 +66,7 @@ Rules:
 - React Router for in-app history.
 - TanStack Query for server state.
 - Zustand for small client-local workflow state.
-- Framer Motion for screen transitions and high-touch interactions.
+- Tailwind CSS transitions (`transform`/`opacity`, `transition`/`active:scale-*`) for screen transitions and high-touch interactions.
 
 ### Package policy
 

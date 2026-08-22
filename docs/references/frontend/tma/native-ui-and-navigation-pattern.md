@@ -52,7 +52,7 @@ Prefer these inputs for layout decisions:
 
 - Animate `transform` and `opacity` only.
 - Avoid `width`, `height`, `top`, `left`, `margin`, and layout-heavy filters in motion.
-- Use spring motion for sheets, route transitions, and high-touch controls.
+- Use Tailwind CSS transitions (`transition`, `duration-300 ease-out`, `active:scale-*`) for sheets, route transitions, and high-touch controls.
 - Keep expensive charts and long lists out of the same animated layer when possible.
 
 ## Touch and gesture rules
