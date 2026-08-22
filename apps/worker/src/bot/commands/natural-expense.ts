@@ -198,6 +198,7 @@ export const runNaturalExpenseCreate = async (
     languageCode: message.from.language_code,
   })
 
+  // Derived from same capped availableHouseholds as householdNameToId; missing id → graceful no-suffix (no DB fallback needed)
   const householdNameById = aiContext
     ? new Map(aiContext.availableHouseholds.map((h) => [h.id, h.name]))
     : undefined
