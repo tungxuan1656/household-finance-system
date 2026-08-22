@@ -47,7 +47,7 @@ The bot helps users act from chat. It does not replace the TMA.
 
 ### Auto-detect
 
-In private chat, a linked user can send a short expense message (e.g. `ăn bún 30k 15/6`). Bot auto-detects, sends a single loader `⏳ Phân tích...`, then creates expenses immediately and edits the loader into one grouped summary. The delete button provides 1-tap undo. `/start` echoes the direct-send hint.
+In private chat, a linked user can send a short expense message (e.g. `ăn bún 30k 15/6`). Bot auto-detects, sends a single loader `⏳ Phân tích...`, then creates expenses immediately and edits the loader into one grouped summary (pure text, no keyboard). `/start` echoes the direct-send hint.
 
 #### Natural Input Direct Create (feat-121 → feat-135 native-only)
 
@@ -59,14 +59,14 @@ Flow:
 2. AI parser returns zero or more valid items. Batch is capped to `MAX_BATCH_SIZE = 10`; items beyond 10 are dropped. When truncated, `truncatedNote = "\nℹ️ Chỉ lấy 10 khoản đầu (N khoản bị bỏ qua)"` is appended to the summary.
 3. For each valid item, the bot creates the expense directly with `created_via_bot=1`. Scope is resolved from AI household/group whitelist (personal by default; see AI Household/Group Recognition below). Titles are truncated to 60 chars per line for the summary.
 4. Bot edits the loader into the single grouped summary `✅ Đã thêm N khoản:\n1. [emoji] [label] · title · amount₫ · dd/MM\n2. ...` using `parseMode HTML` and `escapeHtml` (no Markdown). Final `text` is capped to 4096 chars with trailing `…` if needed.
-5. Keyboard is stacked `🗑 Xoá` buttons — one per expense (`callback_data ch_delete:<expenseId>`). There is no `🏠 Chọn gia đình` / `🏠 Chọn household` button and no `householdSelectKeyboard` / `household picker`.
-6. Tapping `🗑 Xoá` soft-deletes that expense and re-edits the same grouped message to `🗑 Đã xoá — <summary>` (no buttons for the deleted row). Delete is the only post-create action.
-7. The bot never sends a separate success/cancel bubble and never loops `sendMessage` per expense — `sendMessage` is called only for the loader; the grouped result is a single `editMessageText`.
-8. When the user has zero households, the flow is identical (still grouped summary + 🗑 Xoá per expense).
+5. No keyboard at all — native chat is pure text. The `editMessageText` call has no `replyMarkup`. There is no `🗑 Xoá` (`ch_delete:<expenseId>`) and no `🏠 Chọn gia đình` / `🏠 Chọn household` button and no `householdSelectKeyboard` / `household picker`.
+6. There is no post-create undo in chat. Editing or deleting an expense is done in the TMA. The grouped message stays as pure text.
+7. The bot never sends a separate success/cancel bubble and never loops `sendMessage` per expense — `sendMessage` is called only for the loader; the grouped result is a single `editMessageText` with no keyboard.
+8. When the user has zero households, the flow is identical (still grouped summary, pure text).
 
 ### Auto-detect Spec Compatibility
 
-The acceptance criteria in this spec cover only the natural-input direct-create grouped flow. Explicit user confirmation is replaced with the post-create `🗑 Xoá` stacked buttons (1-tap undo). There is no `/add` preview/confirm flow, no `pending`/`confirming` draft states, and no `truncatedNote` for `/add`.
+The acceptance criteria in this spec cover only the natural-input direct-create grouped flow. There is no explicit user confirmation and no post-create undo keyboard — the grouped message is pure text. There is no `/add` preview/confirm flow, no `pending`/`confirming` draft states, and no `truncatedNote` for `/add`.
 
 ## Message Hygiene
 
@@ -131,24 +131,22 @@ Summary format per line: `[emoji] [label] · title · amount₫ · dd/MM` (via `
 
 ### Required Actions
 
-Post-create grouped message shows only stacked delete buttons:
+Post-create grouped message shows no keyboard at all (pure text).
 
-- `🗑 Xoá` — one per created expense (`ch_delete:<expenseId>`)
-
-There is no `✅ Thêm chi tiêu`, no `🏠 Chọn gia đình` / `🏠 Chọn household`, and no `❌ Hủy`. There is no scope chooser (`👤 Cá nhân` / per-household buttons). Household selection was removed in feat-135.
+There is no `🗑 Xoá` (`ch_delete:<expenseId>`), no `✅ Thêm chi tiêu`, no `🏠 Chọn gia đình` / `🏠 Chọn household`, and no `❌ Hủy`. There is no scope chooser (`👤 Cá nhân` / per-household buttons) and no inline buttons of any kind. Household selection was removed in feat-135; delete undo was removed in the feat-135 follow-up (pure text).
 
 ### Acceptance Criteria
 
-- Bot creates expenses from free-form natural text without explicit user confirmation; `🗑 Xoá` stacked buttons provide 1-tap undo on the same grouped message.
-- Bot edits the loader `⏳ Phân tích...` into a single grouped summary `✅ Đã thêm N khoản:\n1. ...\n2. ...` with `parseMode HTML`, `escapeHtml`, title cut to 60 chars, batch cap 10 with `truncatedNote` (`ℹ️ Chỉ lấy 10 khoản đầu (N khoản bị bỏ qua)`), and final text truncated to 4096 chars with `…`. No per-expense `sendMessage` loop.
+- Bot creates expenses from free-form natural text without explicit user confirmation; the grouped message is pure text with no keyboard.
+- Bot edits the loader `⏳ Phân tích...` into a single grouped summary `✅ Đã thêm N khoản:\n1. ...\n2. ...` with `parseMode HTML`, `escapeHtml`, title cut to 60 chars, batch cap 10 with `truncatedNote` (`ℹ️ Chỉ lấy 10 khoản đầu (N khoản bị bỏ qua)`), and final text truncated to 4096 chars with `…`. No per-expense `sendMessage` loop and no `replyMarkup`.
 - If required fields are missing (no valid items), bot edits the loader to `Không nhận diện được. Thử lại.` (`INPUT_UNRECOGNIZED_TEXT`) with `parseMode HTML`.
 - If AI is unavailable, bot edits the loader to `AI tạm không khả dụng. Thử lại sau.` (`AI_UNAVAILABLE_TEXT`).
 - Low confidence is acceptable when the bot can still create an expense from a valid parsed item (AI parser + household-context whitelist).
 - Bot may auto-assign household/group via whitelist; it does not show a household picker after create. User edits household/group in the TMA if needed.
 - Bot never creates an expense without going through the natural-input direct-create path (no `/add` draft path exists).
-- Duplicate taps on `🗑 Xoá` must not crash; old callbacks (`household:xxx`, `confirm:xxx`, `ch_household`, `ch_apply`, `hhselect`, `retry`, `cancel` etc.) return `Nút đã hết hạn, vui lòng gửi lại` via fallback and do not crash (only `ch_delete`, `pref`, `settings`, `stats`, `budget`, `add_expense` are active).
+- Old callbacks (`ch_delete:xxx`, `household:xxx`, `confirm:xxx`, `ch_household`, `ch_apply`, `hhselect`, `retry`, `cancel` etc.) return `Nút đã hết hạn, vui lòng gửi lại` via fallback and do not crash (only `pref`, `settings`, `stats`, `budget`, `add_expense` are active).
 - Bot-created expenses are visible in audit/history as created through Telegram bot (`created_via_bot=1`, `expense.created` audit with `source: telegram_bot`).
-- Bot does not edit expenses (only soft-deletes expenses the bot itself created through `ch_delete` on the grouped message).
+- Bot does not edit or delete expenses from chat; editing and deletion are done in the TMA.
 
 ## Statistics Flow
 
@@ -322,7 +320,7 @@ Bot may notify about invite and membership changes later if product need is clea
 ### MVP
 
 - `/start` menu.
-- Natural-input grouped expense create (1 loader → 1 grouped summary, cap 10 + truncatedNote, 4096 limit, HTML, stacked 🗑 Xoá; no household picker).
+- Natural-input grouped expense create (1 loader → 1 grouped summary, cap 10 + truncatedNote, 4096 limit, HTML, pure text no keyboard; no household picker, no delete button).
 - `/stats` guided personal/household summary.
 - `/budget` status view.
 - `/top` top categories.
@@ -341,8 +339,8 @@ Bot may notify about invite and membership changes later if product need is clea
 
 ## Rules
 
-- Bot flows must prefer buttons over open-ended text.
-- Bot write scope is create-expense only (direct-create via natural input; delete via `ch_delete` undo).
+- Bot flows must prefer buttons over open-ended text (natural-input summary is the exception: pure text, no keyboard).
+- Bot write scope is create-expense only (direct-create via natural input). There is no chat delete; deletion is done in the TMA.
 - Bot should send users to the TMA for any task that needs careful review.
 - Bot edits the original message when the reply is a follow-up; it does not post a new bubble just to show the next state.
 - Bot reads amount patterns only inside the natural-input path and creates expenses directly without any draft / preview / confirm pipeline.

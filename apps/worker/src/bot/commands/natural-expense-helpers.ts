@@ -197,13 +197,7 @@ export const sendPostCreateMessages = async (
     text = text.slice(0, 4095) + '…'
   }
 
-  // Stacked delete keyboards (one per expense, no household button)
-  const inline_keyboard = created.map((e) => [
-    { text: '🗑 Xoá', callback_data: `ch_delete:${e.expenseId}` },
-  ])
-
   await client.editMessageText(chatId, loaderMsgId, text, {
     parseMode: 'HTML',
-    replyMarkup: inline_keyboard.length > 0 ? { inline_keyboard } : undefined,
   })
 }

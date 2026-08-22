@@ -52,13 +52,7 @@ export const budgetKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
 })
 
 /**
- * Post-create keyboard — single delete button (undo).
- * Stacked per-expense when grouped; no household picker.
+ * Post-create keyboard removed — native chat is pure text with no keyboard.
+ * Kept as stub returning undefined for backwards compatibility.
  */
-export const postCreateKeyboard = (
-  expenseId: string,
-): InlineKeyboardMarkup => ({
-  inline_keyboard: [
-    [{ text: '🗑 Xoá', callback_data: `ch_delete:${expenseId}` }],
-  ],
-})
+export const postCreateKeyboard = (): undefined => undefined

@@ -1,123 +1,197 @@
 /**
- * Unit tests for the post-create handler (feat-135).
+ * Unit tests for post-create pure text (feat-135 follow-up).
  *
- * Only ch_delete remains: native single-message grouped summary with stacked
- * 🗑 Xoá buttons. Household picker (ch_household / ch_apply) was removed.
+ * Native chat is pure text with no keyboard. ch_delete removed;
+ * old callbacks expire via fallback. No inline_keyboard on summary.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-// ── Hoisted mocks ─────────────────────────────────────────────────────────────
 const {
-  mockFindExpenseByIdRaw,
-  mockSoftDeleteExpense,
-  mockCreateAuditLogEntry,
+  mockFindAppUserIdByTelegramId,
+  mockHandleBudgetCommand,
+  mockHandlePreferenceToggle,
+  mockHandleSettingsCommand,
+  mockHandleStatsCommand,
 } = vi.hoisted(() => ({
-  mockFindExpenseByIdRaw: vi.fn(),
-  mockSoftDeleteExpense: vi.fn(),
-  mockCreateAuditLogEntry: vi.fn(),
+  mockFindAppUserIdByTelegramId: vi.fn(),
+  mockHandleBudgetCommand: vi.fn(),
+  mockHandlePreferenceToggle: vi.fn(),
+  mockHandleSettingsCommand: vi.fn(),
+  mockHandleStatsCommand: vi.fn(),
 }))
 
-vi.mock('@/db/repositories/expense-repository', () => ({
-  findExpenseByIdRaw: mockFindExpenseByIdRaw,
-  softDeleteExpense: mockSoftDeleteExpense,
+vi.mock('@/bot/account-linking', () => ({
+  findAppUserIdByTelegramId: mockFindAppUserIdByTelegramId,
 }))
 
-vi.mock('@/db/repositories/audit-log-repository', () => ({
-  createAuditLogEntry: mockCreateAuditLogEntry,
+vi.mock('@/bot/commands/budget', () => ({
+  handleBudgetCommand: mockHandleBudgetCommand,
 }))
 
-// ── Imports under test ───────────────────────────────────────────────────────
-import { handlePostCreateDelete } from '@/bot/commands/post-create-delete'
-import type { CommandContext } from '@/bot/types'
+vi.mock('@/bot/commands/settings', () => ({
+  handlePreferenceToggle: mockHandlePreferenceToggle,
+  handleSettingsCommand: mockHandleSettingsCommand,
+}))
+
+vi.mock('@/bot/commands/stats', () => ({
+  handleStatsCommand: mockHandleStatsCommand,
+}))
+
+import { handleCallbackQuery } from '@/bot/callback-dispatcher'
+import type { BotServiceDeps } from '@/bot/callback-dispatcher'
+import type { TelegramClient } from '@/bot/telegram-client'
+import { sendPostCreateMessages } from '@/bot/commands/natural-expense-helpers'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-const buildCtx = (appUserId: string | null = 'app-user-1'): CommandContext =>
+const buildDeps = (
+  resolvedAppUserId: string | null = 'app-user-1',
+): BotServiceDeps =>
   ({
-    userId: 200,
-    chatId: 100,
-    userDisplayName: 'Tùng',
-    text: 'callback-data',
-    appUserId,
-    locale: 'vi',
     db: {} as D1Database,
-    telegramBotTmaUrl: 'https://tma.example.com',
-    telegramBotDeepLinkUrl: 'https://t.me/bot',
-  }) as CommandContext
+    config: {
+      telegramBotToken: 'test',
+      telegramBotTmaUrl: 'https://tma.example.com',
+      telegramBotDeepLinkUrl: 'https://t.me/bot',
+    },
+    resolvedAppUserId,
+  }) as BotServiceDeps
 
-const buildExpense = (
-  overrides: Partial<{
-    id: string
-    spentByUserId: string
-    householdId: string | null
-    categoryKey: string
-    sourceKey: string
-    title: string
-    amountMinor: number
-    currencyCode: string
-    occurredAt: number
-  }> = {},
-) => ({
-  id: overrides.id ?? 'exp-1',
-  spentByUserId: overrides.spentByUserId ?? 'app-user-1',
-  householdId: overrides.householdId ?? null,
-  categoryKey: overrides.categoryKey ?? 'food',
-  sourceKey: overrides.sourceKey ?? 'cash',
-  categoryId: null,
-  amountMinor: overrides.amountMinor ?? 30_000_000,
-  currencyCode: overrides.currencyCode ?? 'VND',
-  occurredAt: overrides.occurredAt ?? Date.parse('2026-06-25T00:00:00Z'),
-  title: overrides.title ?? 'ăn bún',
-  note: null,
-  deletedAt: null,
-  createdViaBot: 1,
-  createdAt: Date.now(),
-  updatedAt: Date.now(),
-})
+const buildClient = () => {
+  const answerCallbackQuery = vi.fn().mockResolvedValue(undefined)
+  const sendMessage = vi.fn().mockResolvedValue(1)
+  const editMessageText = vi.fn().mockResolvedValue({} as Response)
 
-// ── Suite ────────────────────────────────────────────────────────────────────
+  return {
+    answerCallbackQuery,
+    sendMessage,
+    editMessageText,
+  } as unknown as TelegramClient & {
+    answerCallbackQuery: ReturnType<typeof vi.fn>
+    sendMessage: ReturnType<typeof vi.fn>
+    editMessageText: ReturnType<typeof vi.fn>
+  }
+}
 
-describe('handlePostCreateDelete', () => {
+// ── Suite: ch_delete expired ─────────────────────────────────────────────────
+describe('post-create pure text: ch_delete expired (no delete keyboard)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockSoftDeleteExpense.mockResolvedValue(true)
-    mockCreateAuditLogEntry.mockResolvedValue(undefined)
+    mockFindAppUserIdByTelegramId.mockResolvedValue('app-user-1')
   })
 
-  it('soft-deletes and edits the message to "Đã xoá — <summary>"', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
+  it('treats ch_delete as expired callback (no handler, fallback message)', async () => {
+    const client = buildClient()
+    const deps = buildDeps()
 
-    const result = await handlePostCreateDelete(buildCtx(), 'exp-1', 42)
+    const cq = {
+      id: 'cq-1',
+      data: 'ch_delete:exp-1',
+      from: { id: 200, is_bot: false, first_name: 'Tùng' },
+      message: { chat: { id: 100 }, message_id: 42 },
+    } as unknown as NonNullable<
+      import('@/bot/types').TelegramUpdate['callback_query']
+    >
 
-    expect(mockSoftDeleteExpense).toHaveBeenCalledWith({}, 'exp-1')
-    expect(result.mode).toBe('edit')
-    expect(result.text).toMatch(/^🗑 Đã xoá — /)
-    expect(result.replyMarkup).toBeUndefined()
-  })
+    const result = await handleCallbackQuery(cq, deps, client)
 
-  it('rejects the tap when the expense belongs to a different user', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(
-      buildExpense({ spentByUserId: 'attacker' }),
+    expect(result).toBe(0)
+    expect(client.answerCallbackQuery).toHaveBeenCalledWith(
+      'cq-1',
+      'Nút đã hết hạn, vui lòng gửi lại',
     )
-
-    const result = await handlePostCreateDelete(buildCtx(), 'exp-1', 42)
-
-    expect(mockSoftDeleteExpense).not.toHaveBeenCalled()
-    expect(result.text).toMatch(/Không tìm thấy/)
   })
 
-  it('writes an expense.deleted audit log with naturalInputUndo:true', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
+  it('also expires ch_household and household callbacks', async () => {
+    const client = buildClient()
+    const deps = buildDeps()
 
-    await handlePostCreateDelete(buildCtx(), 'exp-1', 42)
+    for (const data of [
+      'ch_household:exp-1',
+      'household:exp-1:hh-1',
+      'confirm:abc',
+    ]) {
+      vi.clearAllMocks()
+      const cq = {
+        id: 'cq-x',
+        data,
+        from: { id: 200, is_bot: false, first_name: 'Tùng' },
+        message: { chat: { id: 100 }, message_id: 42 },
+      } as unknown as NonNullable<
+        import('@/bot/types').TelegramUpdate['callback_query']
+      >
 
-    expect(mockCreateAuditLogEntry).toHaveBeenCalledTimes(1)
-    const payload = JSON.parse(
-      (mockCreateAuditLogEntry.mock.calls[0]![1] as { payloadJson: string })
-        .payloadJson,
-    )
-    expect(payload).toMatchObject({
-      source: 'telegram_bot',
-      naturalInputUndo: true,
+      const result = await handleCallbackQuery(cq, deps, client)
+      expect(result).toBe(0)
+      expect(client.answerCallbackQuery).toHaveBeenCalledWith(
+        'cq-x',
+        'Nút đã hết hạn, vui lòng gửi lại',
+      )
+    }
+  })
+
+  it('keeps pref/settings dispatch alive (not expired)', async () => {
+    const client = buildClient()
+    const deps = buildDeps()
+
+    // pref should not be treated as expired - it should dispatch to handler
+    // We mock the handler to return a simple response; verify it does not return 0 via fallback
+    mockHandlePreferenceToggle.mockResolvedValueOnce({
+      text: 'ok',
+      parseMode: 'HTML' as const,
     })
+
+    const cq = {
+      id: 'cq-pref',
+      data: 'pref:budgetAlerts',
+      from: { id: 200, is_bot: false, first_name: 'Tùng' },
+      message: { chat: { id: 100 }, message_id: 42 },
+    } as unknown as NonNullable<
+      import('@/bot/types').TelegramUpdate['callback_query']
+    >
+
+    const result = await handleCallbackQuery(cq, deps, client)
+    expect(result).toBe(1)
+    // fallback not called for pref; instead answerCallbackQuery with no message
+    expect(client.answerCallbackQuery).toHaveBeenCalledWith('cq-pref')
+  })
+})
+
+// ── Suite: sendPostCreateMessages pure text ──────────────────────────────────
+describe('sendPostCreateMessages pure text (no inline_keyboard)', () => {
+  it('edits loader with pure text, parseMode HTML, no replyMarkup', async () => {
+    const client = buildClient()
+
+    await sendPostCreateMessages(client, 100, 500, [
+      { expenseId: 'exp-1', summary: '🍚 Ăn · ăn bún · 30.000₫ · 25/06' },
+      { expenseId: 'exp-2', summary: '☕ Ăn · cà phê · 25.000₫ · 25/06' },
+    ])
+
+    expect(client.editMessageText).toHaveBeenCalledTimes(1)
+    const call = vi.mocked(client.editMessageText).mock.calls[0]!
+    expect(call[0]).toBe(100)
+    expect(call[1]).toBe(500)
+    expect(call[2]).toMatch(/^✅ Đã thêm 2 khoản/)
+    const opts = call[3] as { parseMode?: string; replyMarkup?: unknown }
+    expect(opts.parseMode).toBe('HTML')
+    expect(opts.replyMarkup).toBeUndefined()
+    const serialized = JSON.stringify(call[2] + JSON.stringify(opts))
+    expect(serialized).not.toContain('ch_delete')
+    expect(serialized).not.toContain('inline_keyboard')
+  })
+
+  it('caps 4096 chars and keeps pure text invariants (60-char title is done upstream)', async () => {
+    const client = buildClient()
+    const longSummary = 'a'.repeat(5000)
+    await sendPostCreateMessages(client, 100, 500, [
+      { expenseId: 'exp-1', summary: longSummary },
+    ])
+
+    const text = vi.mocked(client.editMessageText).mock.calls[0]![2] as string
+    expect(text.length).toBeLessThanOrEqual(4096)
+    expect(text.endsWith('…')).toBe(true)
+    const opts = vi.mocked(client.editMessageText).mock.calls[0]![3] as {
+      replyMarkup?: unknown
+    }
+    expect(opts.replyMarkup).toBeUndefined()
   })
 })

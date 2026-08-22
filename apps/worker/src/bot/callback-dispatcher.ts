@@ -3,7 +3,6 @@ import type { AppConfig } from '@/types'
 
 import { findAppUserIdByTelegramId } from './account-linking'
 import { handleBudgetCommand } from './commands/budget'
-import { handlePostCreateDelete } from './commands/post-create-delete'
 import {
   handlePreferenceToggle,
   handleSettingsCommand,
@@ -107,10 +106,6 @@ const processCallbackAction = async (
   let result!: BotResponse
 
   switch (action) {
-    case 'ch_delete': {
-      result = await handlePostCreateDelete(ctx, draftId, messageId)
-      break
-    }
     case 'pref': {
       result = await handlePreferenceToggle(ctx, draftId, {
         mode: 'edit',

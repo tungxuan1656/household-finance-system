@@ -1,8 +1,8 @@
 /**
  * Unit tests for the natural-input direct-create flow (feat-121, feat-135).
  *
- * feat-135: single grouped summary edit (loader → ✅ Đã thêm N khoản) with
- * stacked 🗑 Xoá keyboards (no 🏠 Chọn gia đình). Batch capped to 10.
+ * feat-135 follow-up: single grouped summary edit (loader → ✅ Đã thêm N khoản)
+ * pure text, no keyboard. Batch capped to 10.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -184,16 +184,15 @@ describe('runNaturalExpenseCreate (feat-135)', () => {
     )
     const editCall = mockEditMessageText.mock.calls[0]!
     expect(editCall[2]).toMatch(/^✅ Đã thêm 1 khoản/)
-    // stacked delete keyboard, no household
+    // pure text: no keyboard
     const opts = editCall[3] as {
+      parseMode?: string
       replyMarkup?: {
         inline_keyboard: Array<Array<{ text: string; callback_data: string }>>
       }
     }
-    const labels =
-      opts.replyMarkup?.inline_keyboard.flat().map((b) => b.text) ?? []
-    expect(labels).toContain('🗑 Xoá')
-    expect(labels).not.toContain('🏠 Chọn gia đình')
+    expect(opts.parseMode).toBe('HTML')
+    expect(opts.replyMarkup).toBeUndefined()
   })
 
   it('creates N expenses and edits loader once with grouped summary (feat-135)', async () => {
@@ -236,15 +235,13 @@ describe('runNaturalExpenseCreate (feat-135)', () => {
     const editCall = mockEditMessageText.mock.calls[0]!
     expect(editCall[2]).toMatch(/^✅ Đã thêm 3 khoản/)
     const opts = editCall[3] as {
+      parseMode?: string
       replyMarkup?: {
         inline_keyboard: Array<Array<{ text: string; callback_data: string }>>
       }
     }
-    expect(opts.replyMarkup?.inline_keyboard).toHaveLength(3)
-    const callbacks =
-      opts.replyMarkup?.inline_keyboard.flat().map((b) => b.callback_data) ?? []
-    callbacks.forEach((cb) => expect(cb).toMatch(/^ch_delete:/))
-    expect(callbacks.join(' ')).not.toContain('ch_household')
+    expect(opts.parseMode).toBe('HTML')
+    expect(opts.replyMarkup).toBeUndefined()
   })
 
   it('uses each parsed item amount when creating multiple natural expenses', async () => {
@@ -363,7 +360,7 @@ describe('runNaturalExpenseCreate (feat-135)', () => {
     )
   })
 
-  it('renders only delete buttons, no household picker (feat-135)', async () => {
+  it('renders pure text with no keyboard (feat-135 follow-up)', async () => {
     mockParseExpensesWithAi.mockResolvedValue([
       {
         amount: 30000,
@@ -383,14 +380,13 @@ describe('runNaturalExpenseCreate (feat-135)', () => {
 
     const editCall = mockEditMessageText.mock.calls[0]!
     const opts = editCall[3] as {
+      parseMode?: string
       replyMarkup?: {
         inline_keyboard: Array<Array<{ text: string; callback_data: string }>>
       }
     }
-    const callbacks =
-      opts.replyMarkup?.inline_keyboard.flat().map((b) => b.callback_data) ?? []
-    expect(callbacks[0]).toMatch(/^ch_delete:/)
-    expect(callbacks.join(' ')).not.toContain('ch_household')
+    expect(opts.parseMode).toBe('HTML')
+    expect(opts.replyMarkup).toBeUndefined()
   })
 
   it('writes an expense.created audit log with naturalInput:true', async () => {
