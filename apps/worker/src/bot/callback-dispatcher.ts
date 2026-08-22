@@ -3,15 +3,7 @@ import type { AppConfig } from '@/types'
 
 import { findAppUserIdByTelegramId } from './account-linking'
 import { handleBudgetCommand } from './commands/budget'
-import {
-  handleCancelExpense,
-  handleConfirmExpense,
-  handleRetryExpense,
-} from './commands/confirm-expense'
-import { handleHouseholdSelect } from './commands/household-select'
-import { handlePostCreateApply } from './commands/post-create-apply'
 import { handlePostCreateDelete } from './commands/post-create-delete'
-import { handlePostCreateHousehold } from './commands/post-create-household'
 import {
   handlePreferenceToggle,
   handleSettingsCommand,
@@ -111,36 +103,10 @@ const processCallbackAction = async (
   const parts = data.split(':')
   const action = parts[0]
   const draftId = parts[1]
-  const payload = parts.slice(2).join(':')
 
   let result!: BotResponse
 
   switch (action) {
-    case 'confirm': {
-      result = await handleConfirmExpense(ctx, draftId, messageId)
-      break
-    }
-    case 'cancel': {
-      result = await handleCancelExpense(ctx, draftId, messageId)
-      break
-    }
-    case 'retry': {
-      result = await handleRetryExpense(ctx, draftId, messageId)
-      break
-    }
-    case 'household':
-    case 'hhselect': {
-      result = await handleHouseholdSelect(ctx, draftId, payload, messageId)
-      break
-    }
-    case 'ch_household': {
-      result = await handlePostCreateHousehold(ctx, draftId, messageId)
-      break
-    }
-    case 'ch_apply': {
-      result = await handlePostCreateApply(ctx, draftId, payload, messageId)
-      break
-    }
     case 'ch_delete': {
       result = await handlePostCreateDelete(ctx, draftId, messageId)
       break
@@ -180,9 +146,11 @@ const processCallbackAction = async (
       break
     }
     default: {
-      // Quietly answer unknown callback
       try {
-        await client.answerCallbackQuery(cqId)
+        await client.answerCallbackQuery(
+          cqId,
+          'Nút đã hết hạn, vui lòng gửi lại',
+        )
       } catch {
         /* non-critical */
       }

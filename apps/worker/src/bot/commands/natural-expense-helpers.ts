@@ -12,7 +12,6 @@ import { getMinorUnits } from '@/lib/currency'
 import { logger, truncateErrorMessage } from '@/lib/logger'
 import { newId } from '@/utils/id'
 
-import { postCreateKeyboard } from '../renderers/keyboards'
 import type { TelegramClient } from '../telegram-client'
 import { normalizeAiItem } from './ai-expense-shared'
 
@@ -129,8 +128,7 @@ export const createNaturalExpenses = async (params: {
         })
       }
 
-      // Audit log — natural input write (used by the post-create handlers
-      // to attribute delete/household-change events to the same source).
+      // Audit log — natural input write
       await createAuditLogEntry(db, {
         householdId: resolvedHouseholdId,
         actorUserId: appUserId,
@@ -154,11 +152,15 @@ export const createNaturalExpenses = async (params: {
         })
       })
 
+      // Truncate title 60 chars for summary line to keep single message bounded
+      const truncatedTitle =
+        item.title.length > 60 ? item.title.slice(0, 60) + '…' : item.title
+
       const summary = renderExpenseSummaryLine({
         amountMinor,
         occurredAt: item.occurredAt,
         categoryKey: item.categoryKey,
-        title: item.title,
+        title: truncatedTitle,
         sourceKey: item.sourceKey,
         scope: resolvedHouseholdId ? 'household' : 'personal',
         currencyCode: 'VND',
@@ -185,21 +187,23 @@ export const sendPostCreateMessages = async (
   chatId: number,
   loaderMsgId: number,
   created: Array<{ expenseId: string; summary: string }>,
-  hasHouseholds: boolean,
+  truncatedNote = '',
 ): Promise<void> => {
-  const first = created[0]!
+  const lines = created.map((e, i) => `${i + 1}. ${e.summary}`).join('\n')
+  let text = `✅ Đã thêm ${created.length} khoản:\n${lines}${truncatedNote}`
 
-  await client.editMessageText(chatId, loaderMsgId, `✅ ${first.summary}`, {
-    parseMode: 'HTML',
-    replyMarkup: postCreateKeyboard(first.expenseId, hasHouseholds),
-  })
-
-  for (let i = 1; i < created.length; i++) {
-    const item = created[i]!
-
-    await client.sendMessage(chatId, `✅ ${item.summary}`, {
-      parseMode: 'HTML',
-      replyMarkup: postCreateKeyboard(item.expenseId, hasHouseholds),
-    })
+  // Cap 4096 chars with ellipsis
+  if (text.length > 4096) {
+    text = text.slice(0, 4095) + '…'
   }
+
+  // Stacked delete keyboards (one per expense, no household button)
+  const inline_keyboard = created.map((e) => [
+    { text: '🗑 Xoá', callback_data: `ch_delete:${e.expenseId}` },
+  ])
+
+  await client.editMessageText(chatId, loaderMsgId, text, {
+    parseMode: 'HTML',
+    replyMarkup: inline_keyboard.length > 0 ? { inline_keyboard } : undefined,
+  })
 }

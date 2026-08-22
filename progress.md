@@ -291,3 +291,19 @@
 **Evidence**: `bash scripts/check_ts_length.sh` Errors 8→0 ✅, `typecheck` worker+tma pass, `test` worker 665 + tma 158 pass, `diff --check` clean. `feature_index.json` marks feat-134 done.
 **Blockers**: none
 **Next**: none — ready for push.
+
+## 2026-08-22 - feat-135
+
+**State**: active
+**Done**: Created tracker and inline plan for remove /add preview flow, native single-message grouping. Branch `feat/135-remove-add-preview-native-only` checked out from `chore/centralize-currency-remove-unused-deps`.
+**Evidence**: `feature_index.json` lists feat-135 active; `features/feat-135.md` 101 lines with Goal/Confirmed scope/Acceptance/4-step inline plan (delete 9 /add files + 7 callback cases + 4 keyboards + natural single edit + doc update). `git rev-parse --abbrev-ref HEAD` == feat/135-remove-add-preview-native-only.
+**Blockers**: none
+**Next**: Execute Step 1-2 via @fixer (bot delete + natural grouping), Step 3 docs, Step 4 verify.
+
+## 2026-08-22 - feat-135
+
+**State**: done
+**Done**: Removed /add preview flow entirely, kept native single-message grouping. `fix-2` deleted 9 files + trimmed 5 bot files (service/help/keyboards/dispatcher/ai-shared/natural*), added cap 10/truncatedNote/4096/HTML/stacked 🗑 Xoá; `fix-3` rewrote telegram-bot-companion.md native-only; `fix-4` fixed 4 test files. Manual verification done.
+**Evidence**: `pnpm --filter worker typecheck` 0, `lint` 0, `test` 106 files/654 pass, `pnpm --filter tma typecheck` 0, `test` 30 files/158 pass, `bash scripts/check_ts_length.sh` 0 ✅, `git diff --check` 0. `feature_index.json` marks feat-135 done; `features/feat-135.md` Handoff done. Branch feat/135-remove-add-preview-native-only.
+**Blockers**: none
+**Next**: none — manual private chat QA (cafe 30k single/batch) + PR; `telegram_bot_expense_drafts` table kept (no DROP).

@@ -1,23 +1,13 @@
 /**
- * Natural-input expense direct-create flow (feat-121).
+ * Natural-input expense direct-create flow (feat-121, feat-135).
  *
- * Unlike `/add`, the natural (non-command) chat path skips
- * the preview/confirm step. When the amount detector + AI parser produce
- * at least one valid expense, the bot creates each expense immediately
- * and sends one Telegram message per created expense. Each message carries
- * a `postCreateKeyboard` (`🏠 Chọn gia đình`) so the user can reassign
- * a freshly-created personal expense to a household with 1 tap.
- *
- * No dedupe. No drafts. No scope-arg resolution. The default scope is
- * personal — the user reassigns household through the post-create button
- * when needed.
+ * Direct-create: loader -> single grouped summary edit. Batch capped to 10.
  */
 import {
   AI_UNAVAILABLE_TEXT,
   INPUT_UNRECOGNIZED_TEXT,
   LOADER_TEXT,
 } from '@/bot/format'
-import { listActiveHouseholdIdsForUser } from '@/db/repositories/household-membership-repository'
 import {
   AiUpstreamError,
   parseExpensesWithAi,
@@ -40,10 +30,7 @@ import {
 
 /**
  * Run the natural-input direct-create flow for a single private chat
- * message. Returns the number of Telegram messages the bot sent
- * (1 loader + N per-expense messages). Returns 0 when the message is
- * not a natural expense, the user is unlinked, or the AI cannot parse
- * a single valid item — the caller should treat 0 as "not handled".
+ * message. Returns 1 when handled (single loader edit), 0 otherwise.
  */
 export const runNaturalExpenseCreate = async (
   deps: BotServiceDeps,
@@ -159,8 +146,16 @@ export const runNaturalExpenseCreate = async (
     return 1
   }
 
+  // Cap batch to 10 with truncated note
+  const truncatedCount = rawItems.length > 10 ? rawItems.length - 10 : 0
+  const cappedRawItems = truncatedCount > 0 ? rawItems.slice(0, 10) : rawItems
+  const truncatedNote =
+    truncatedCount > 0
+      ? `\nℹ️ Chỉ lấy 10 khoản đầu (${truncatedCount} khoản bị bỏ qua)`
+      : ''
+
   const { validItems, aiMappings, counters } = normalizeNaturalItems(
-    rawItems,
+    cappedRawItems,
     aiContext,
     defaultDate,
   )
@@ -185,11 +180,6 @@ export const runNaturalExpenseCreate = async (
 
     return 1
   }
-
-  // Does the user have any households? If yes, show the household button
-  // on every per-expense message; otherwise hide it.
-  const householdIds = await listActiveHouseholdIdsForUser(deps.db, appUserId)
-  const hasHouseholds = householdIds.length > 0
 
   const ctx = buildCtx({
     userId: message.from.id,
@@ -228,12 +218,12 @@ export const runNaturalExpenseCreate = async (
     message.chat.id,
     loaderMsgId,
     created,
-    hasHouseholds,
+    truncatedNote,
   )
 
   // ctx is built above for consistency with the rest of the bot code;
   // a future slice may need it for rate limiting / locale-specific copy.
   void ctx
 
-  return 1 + (created.length - 1)
+  return 1
 }

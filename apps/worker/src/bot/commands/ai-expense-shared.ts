@@ -3,24 +3,12 @@ import { parsedExpenseItemSchema } from '@/contracts/expense-parse-schemas'
 import type { RawAiItem } from '@/lib/ai/expense-parser'
 import { mapAiNamesToIds } from '@/lib/ai/household-context'
 
-// Re-export draft/dedupe helpers for backwards compat — keep public API unchanged
-export { computeDedupeKey } from './ai-dedupe'
-export type { BatchBuildResult, BatchPreviewItem } from './ai-draft'
-export {
-  buildDraftFromItem,
-  buildDraftsFromItems,
-  MAX_BATCH_SIZE,
-} from './ai-draft'
-
 const YYYY_MM_DD_RE = /^\d{4}-\d{2}-\d{2}$/
 
 /**
  * Pure normalization of a raw AI item into a ParsedExpenseItem (no Hono context).
- * Mirrors the logic in parse-expense.ts handler but as a pure function.
  * Whitelist household/group mapping lives in handlers/expenses/parse-expense.ts
- * (fetchAiContext + mapAiNamesToIds) and is reused by bot preflight/natural flows.
- * This helper stays household-agnostic for backwards compat; use
- * normalizeAiItemWithContext when you need household/group mapping.
+ * (fetchAiContext + mapAiNamesToIds) and is reused by bot natural flow.
  */
 export const normalizeAiItem = (
   item: {
