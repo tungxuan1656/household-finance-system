@@ -90,7 +90,13 @@ export function renderExpenseSummaryLine(
   const emoji = getCategoryEmoji(options.categoryKey)
   const label = getCategoryLabel(options.categoryKey)
 
-  return `${emoji} ${escapeHtml(label)} · ${escapeHtml(options.title)} · <code>${amountWithCurrency}</code> · ${shortDate}`
+  const base = `${emoji} ${escapeHtml(label)} · ${escapeHtml(options.title)} · <code>${amountWithCurrency}</code> · ${shortDate}`
+
+  if (options.scope === 'household' && options.householdName) {
+    return `${base} · 🏠 ${escapeHtml(options.householdName)}`
+  }
+
+  return base
 }
 
 /** Render a single budget status line. */

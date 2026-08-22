@@ -198,6 +198,10 @@ export const runNaturalExpenseCreate = async (
     languageCode: message.from.language_code,
   })
 
+  const householdNameById = aiContext
+    ? new Map(aiContext.availableHouseholds.map((h) => [h.id, h.name]))
+    : undefined
+
   const created = await createNaturalExpenses({
     db: deps.db,
     appUserId,
@@ -206,6 +210,7 @@ export const runNaturalExpenseCreate = async (
     amountResult,
     correlationId,
     text,
+    householdNameById,
   })
 
   if (created.length === 0) {
