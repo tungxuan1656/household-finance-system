@@ -13,6 +13,7 @@ import type { RawAiItem } from '@/lib/ai/expense-parser'
 import { AiUpstreamError } from '@/lib/ai/expense-parser'
 import { parseExpensesWithAi } from '@/lib/ai/expense-parser'
 import { fetchAiContext, mapAiNamesToIds } from '@/lib/ai/household-context'
+import { DEFAULT_API_AI_TIMEOUT_MS, getAiTimeoutMs } from '@/lib/env'
 import { badGateway, internalError } from '@/lib/errors'
 import { logger, truncateErrorMessage } from '@/lib/logger'
 import { readJsonBody } from '@/lib/validation'
@@ -60,6 +61,13 @@ export const parseExpenseHandler = async (
   const baseUrl = ctx.env.OPENAI_COMPAT_BASE_URL
   const apiKey = ctx.env.OPENAI_COMPAT_API_KEY
   const model = ctx.env.OPENAI_COMPAT_MODEL
+  // Workers kill sync subrequests at ~30s (1102); cap API parse to 25s to
+  // return controlled 502 via AiUpstreamError instead of unhandled 500/1102.
+  // Webhook path keeps 60s via waitUntil (decoupled).
+  const timeoutMs = Math.min(
+    getAiTimeoutMs(ctx.env, DEFAULT_API_AI_TIMEOUT_MS),
+    DEFAULT_API_AI_TIMEOUT_MS,
+  )
 
   if (!baseUrl || !apiKey || !model) {
     throw internalError(locale, 'errors.workerConfigurationInvalid')
@@ -86,6 +94,7 @@ export const parseExpenseHandler = async (
         baseUrl,
         apiKey,
         model,
+        timeoutMs,
       },
       {
         defaultOccurredAt: body.defaultOccurredAt,

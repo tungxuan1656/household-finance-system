@@ -22,6 +22,8 @@ const DEFAULT_CLOUDINARY_ALLOWED_VIDEO_MIME_TYPES = [
   'video/webm',
   'video/x-matroska',
 ]
+export const DEFAULT_AI_TIMEOUT_MS = 60_000
+export const DEFAULT_API_AI_TIMEOUT_MS = 25_000
 
 const toBoolean = (value: string | undefined): boolean =>
   value?.toLowerCase() === 'true'
@@ -138,6 +140,28 @@ export const readConfig = (env: Env): AppConfig => {
     ),
   }
 }
+
+export const getAiTimeoutMs = (
+  env: Env,
+  fallback: number = DEFAULT_AI_TIMEOUT_MS,
+): number => {
+  const raw = readOptional(env, 'OPENAI_COMPAT_TIMEOUT_MS')
+
+  if (raw === undefined) return fallback
+
+  const n = Number(raw)
+
+  return Number.isFinite(n) && n > 0 ? n : fallback
+}
+
+export const readAiConfig = (
+  env: Env,
+): { baseUrl: string; apiKey: string; model: string; timeoutMs: number } => ({
+  baseUrl: readRequired(env, 'OPENAI_COMPAT_BASE_URL'),
+  apiKey: readRequired(env, 'OPENAI_COMPAT_API_KEY'),
+  model: readRequired(env, 'OPENAI_COMPAT_MODEL'),
+  timeoutMs: getAiTimeoutMs(env),
+})
 
 export const readCloudinaryConfig = (env: Env): CloudinaryConfig => {
   assertDatabaseBinding(env)

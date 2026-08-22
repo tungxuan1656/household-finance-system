@@ -14,6 +14,7 @@ import {
   type RawAiItem,
 } from '@/lib/ai/expense-parser'
 import { fetchAiContext } from '@/lib/ai/household-context'
+import { DEFAULT_AI_TIMEOUT_MS, getAiTimeoutMs } from '@/lib/env'
 import { logger, truncateErrorMessage } from '@/lib/logger'
 import { newId } from '@/utils/id'
 
@@ -93,6 +94,10 @@ export const runNaturalExpenseCreate = async (
   }
 
   let rawItems: RawAiItem[]
+  const timeoutMs = getAiTimeoutMs(
+    deps.env as unknown as Env,
+    DEFAULT_AI_TIMEOUT_MS,
+  )
 
   try {
     rawItems = await parseExpensesWithAi(
@@ -101,6 +106,7 @@ export const runNaturalExpenseCreate = async (
         baseUrl: deps.env.OPENAI_COMPAT_BASE_URL,
         apiKey: deps.env.OPENAI_COMPAT_API_KEY,
         model: deps.env.OPENAI_COMPAT_MODEL,
+        timeoutMs,
       },
       { defaultOccurredAt: defaultDate, correlationId, context: promptContext },
     )

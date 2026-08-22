@@ -1,3 +1,4 @@
+import { DEFAULT_AI_TIMEOUT_MS } from '@/lib/env'
 import { getBaseUrlHost, logger, truncateErrorMessage } from '@/lib/logger'
 
 import { coerceAmount } from './expense-coerce'
@@ -9,6 +10,7 @@ export interface AiParserConfig {
   baseUrl: string
   apiKey: string
   model: string
+  timeoutMs?: number
 }
 
 export interface RawAiItem {
@@ -40,8 +42,8 @@ export class AiUpstreamError extends Error {
   }
 }
 
-// 20s timeout — feature assumes Workers paid-plan 30s wall
-const AI_TIMEOUT_MS = 20_000
+// Re-export single source from env; webhook default 60s
+export { DEFAULT_AI_TIMEOUT_MS }
 
 const buildRequestBody = (
   model: string,
@@ -80,8 +82,14 @@ export const parseExpensesWithAi = async (
   const baseUrlHost = getBaseUrlHost(baseUrl)
   const promptChars = text.length
 
+  const resolvedTimeoutMs =
+    typeof config.timeoutMs === 'number' &&
+    Number.isFinite(config.timeoutMs) &&
+    config.timeoutMs > 0
+      ? config.timeoutMs
+      : DEFAULT_AI_TIMEOUT_MS
   const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), AI_TIMEOUT_MS)
+  const timer = setTimeout(() => controller.abort(), resolvedTimeoutMs)
   const start =
     typeof performance !== 'undefined' && typeof performance.now === 'function'
       ? performance.now()
@@ -122,6 +130,7 @@ export const parseExpensesWithAi = async (
         defaultOccurredAt: options.defaultOccurredAt,
         status: response.status,
         durationMs,
+        timeoutMs: resolvedTimeoutMs,
         errorSnippet,
       })
 
@@ -232,6 +241,7 @@ export const parseExpensesWithAi = async (
       defaultOccurredAt: options.defaultOccurredAt,
       status: response.status,
       durationMs,
+      timeoutMs: resolvedTimeoutMs,
       responseItemsCount: mapped.length,
     })
 
@@ -261,6 +271,7 @@ export const parseExpensesWithAi = async (
       promptChars,
       defaultOccurredAt: options.defaultOccurredAt,
       durationMs,
+      timeoutMs: resolvedTimeoutMs,
       errorName,
       errorMessage,
       isTimeout,
