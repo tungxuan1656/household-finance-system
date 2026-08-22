@@ -192,9 +192,15 @@ export const sendPostCreateMessages = async (
   const lines = created.map((e, i) => `${i + 1}. ${e.summary}`).join('\n')
   let text = `✅ Đã thêm ${created.length} khoản:\n${lines}${truncatedNote}`
 
-  // Cap 4096 chars with ellipsis
+  // Cap 4096 without splitting HTML entity
   if (text.length > 4096) {
-    text = text.slice(0, 4095) + '…'
+    let cut = 4095
+    const lastAmp = text.lastIndexOf('&', cut)
+    if (lastAmp !== -1 && lastAmp > cut - 10) {
+      const semi = text.indexOf(';', lastAmp)
+      if (semi === -1 || semi > cut) cut = lastAmp
+    }
+    text = text.slice(0, cut) + '…'
   }
 
   await client.editMessageText(chatId, loaderMsgId, text, {

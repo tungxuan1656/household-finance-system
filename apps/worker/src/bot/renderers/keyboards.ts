@@ -51,8 +51,5 @@ export const budgetKeyboard = (tmaUrl: string): InlineKeyboardMarkup => ({
   inline_keyboard: [[{ text: '💸 Xem chi tiết', web_app: { url: tmaUrl } }]],
 })
 
-/**
- * Post-create keyboard removed — native chat is pure text with no keyboard.
- * Kept as stub returning undefined for backwards compatibility.
- */
+/** @deprecated feat-135 — native chat is pure text, no keyboard. Kept for backwards compat, always returns undefined. */
 export const postCreateKeyboard = (): undefined => undefined

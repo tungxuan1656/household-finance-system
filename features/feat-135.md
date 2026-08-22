@@ -2,21 +2,21 @@
 
 ## Goal
 
-Xóa toàn bộ flow `/add` + preview/draft, chỉ giữ `native chat` direct-create: tất cả chi tiêu AI parse từ 1 tin nhắn gộp vào **duy nhất 1 tin nhắn trả về**, loại bỏ button chọn gia đình, đơn giản hóa thành 1 `send(⏳ Phân tích...)` + 1 `edit(✅ grouped list)` không lưu `message_id` tạm ngoài `loaderMsgId` transient.
+Xóa toàn bộ flow `/add` + preview/draft, chỉ giữ `native chat` direct-create: tất cả chi tiêu AI parse từ 1 tin nhắn gộp vào **duy nhất 1 tin nhắn trả về**, loại bỏ button chọn gia đình, đơn giản hóa thành 1 `send(⏳ Phân tích...)` + 1 `edit(✅ grouped list)` pure text no keyboard (không `🗑 Xoá`, không `replyMarkup` — edit/delete trong TMA) không lưu `message_id` tạm ngoài `loaderMsgId` transient.
 
 ## Confirmed scope
 
 - Worker bot - xóa flow `/add` (đã review `orc-1`):
   - `apps/worker/src/bot/service.ts:96` xóa nhánh `command==='add'` (`runAddExpenseCommand`) và import
-  - Delete: `bot/commands/ai-expense.ts`, `ai-expense-preflight.ts`, `ai-expense-service.ts`, `ai-draft.ts`, `ai-dedupe.ts`, `confirm-expense.ts`, `household-select.ts`, `post-create-household.ts`, `post-create-apply.ts`, `post-create-delete.ts` (verify tồn tại)
+  - Delete (10 files): `bot/commands/ai-expense.ts`, `ai-expense-preflight.ts`, `ai-expense-service.ts`, `ai-draft.ts`, `ai-dedupe.ts`, `confirm-expense.ts`, `household-select.ts`, `post-create-household.ts`, `post-create-apply.ts`, `post-create-delete.ts` (verify tồn tại)
   - Trim `bot/commands/ai-expense-shared.ts`: giữ `normalizeAiItem`/`normalizeAiItemWithContext` nếu `natural-helpers` còn dùng, xóa phần scope `hh:` draft-only
-  - `bot/renderers/keyboards.ts:60,75,108` xóa `expensePreviewKeyboard`/`householdSelectKeyboard`, sửa `postCreateKeyboard` chỉ giữ `🗑 Xoá` (bỏ `🏠 Chọn gia đình`), xóa `postCreateHouseholdPickerKeyboard` nếu còn; không xóa toàn bộ keyboard để giữ 1-tap undo bù cho mất confirm (review #1)
-  - `bot/callback-dispatcher.ts:84-213` xóa 7 case `confirm/cancel/retry/household/hhselect/ch_household/ch_apply/ch_delete` (giữ `pref/settings` nếu có; giữ `ch_delete` nếu giữ nút Xoá ở trên thì chỉ xóa household path), fallback `answerCallbackQuery("Nút đã hết hạn, vui lòng gửi lại")` cho callback cũ
+  - `bot/renderers/keyboards.ts:60,75,108` xóa `expensePreviewKeyboard`/`householdSelectKeyboard`, xóa `postCreateKeyboard` buttons stub returns `undefined` — native pure text no keyboard (deprecated feat-135 follow-up `d51cff1`), xóa `postCreateHouseholdPickerKeyboard`; không còn keyboard nào sau create
+  - `bot/callback-dispatcher.ts:84-213` xóa tất cả `ch_*` including `ch_delete` + 7 case `confirm/cancel/retry/household/hhselect/ch_household/ch_apply` (giữ `pref/settings` nếu có), fallback `answerCallbackQuery("Nút đã hết hạn, vui lòng gửi lại")` cho tất cả callback cũ
   - `bot/commands/help.ts` xóa đoạn hướng dẫn `/add` (review #4)
-  - `bot/commands/natural-expense.ts:70,131,149,179,191` + `natural-expense-helpers.ts:183` gộp `sendPostCreateMessages` thành `sendSingleSummaryMessage`: `edit(loaderMsgId -> ✅ Đã thêm N khoản:\n1. ...\n2. ...)` duy nhất, không loop `sendMessage` per expense; cap batch `slice(0,10)` + `truncatedNote` + cắt `title` 60 chars + truncate final `text` 4096 với `…` (review #2); dùng `parseMode HTML` và `escapeHtml` (không Markdown) (review #3); xóa dead query `listActiveHouseholdIdsForUser`/`hasHouseholds` khi bỏ picker; keyboard chỉ kèm `🗑 Xoá` per expense stacked nếu giữ
+  - `bot/commands/natural-expense.ts:70,131,149,179,191` + `natural-expense-helpers.ts:183` gộp `sendPostCreateMessages` thành `sendSingleSummaryMessage`: `edit(loaderMsgId -> ✅ Đã thêm N khoản:\n1. ...\n2. ...)` duy nhất, không loop `sendMessage` per expense; cap batch `slice(0,10)` + `truncatedNote` + cắt `title` 60 chars + entity-aware truncate final `text` 4096 với `…` (review #2); dùng `parseMode HTML` và `escapeHtml` (không Markdown), `no replyMarkup` — pure text no keyboard (review #3); xóa dead query `listActiveHouseholdIdsForUser`/`hasHouseholds` (`hasHouseholds` query removed) khi bỏ picker
   - Giữ `lib/ai/household-context.ts`, `expense-parser.ts`/`expense-prompt.ts`/`expense-client.ts` cho `natural` AI mapping (household/group whitelist)
 - DB: không `DROP TABLE` `telegram_bot_expense_drafts` trong feat này (giữ table cho draft cũ expire 10m TTL, chỉ ngừng ghi). Xóa repo usage, giữ migration.
-- Docs: `docs/product-specs/tma/telegram-bot-companion.md:39,140-182` cập nhật spec `/add` deprecated, natural là single-message direct-create (giữ Xoá, xóa Required Actions chọn gia đình)
+- Docs: `docs/product-specs/tma/telegram-bot-companion.md:39,140-182` cập nhật spec `/add` deprecated, natural là single-message direct-create pure text no keyboard (không `🗑 Xoá`, không `🏠 Chọn gia đình` — edit/delete trong TMA)
 
 ## Non-goals
 
@@ -28,17 +28,17 @@ Xóa toàn bộ flow `/add` + preview/draft, chỉ giữ `native chat` direct-cr
 ## Acceptance
 
 - [ ] Gõ `/add ...` trả về unknown/instruction (không tạo draft, không gọi AI qua `/add`) — xóa help text `/add` trong `help.ts`
-- [ ] Private chat thường: 1 tin nhắn `cafe 30k` -> 1 `⏳ Phân tích...` -> 1 `✅ Đã thêm: 1. cafe ...` kèm `🗑 Xoá` (giữ 1-tap undo, bỏ `🏠 Chọn gia đình`)
-- [ ] Private chat batch: `cafe 30k, taxi 50k 22/08` -> 1 loader -> 1 edit chứa `1. cafe` `2. taxi` (N dòng, cap 10 + truncatedNote, cắt 4096 chars), không `N` message, không `🏠 Chọn gia đình` nhưng giữ `🗑 Xoá` per expense nếu có
-- [ ] Callback cũ `household:xxx`/`confirm:xxx`/`ch_household` trả `Nút đã hết hạn` không crash (giữ `ch_delete` nếu giữ nút Xoá)
+- [ ] Private chat thường: 1 tin nhắn `cafe 30k` -> 1 `⏳ Phân tích...` -> 1 `✅ Đã thêm 1 khoản: 1. cafe ...` pure text no keyboard (no `🗑 Xoá`, edit/delete in TMA)
+- [ ] Private chat batch: `cafe 30k, taxi 50k 22/08` -> 1 loader -> 1 edit chứa `1. cafe` `2. taxi` (N dòng, cap 10 + truncatedNote, entity-aware 4096 chars), không `N` message, không `🏠 Chọn gia đình`, không `🗑 Xoá`
+- [ ] Callback cũ `household:xxx`/`confirm:xxx`/`ch_household`/`ch_delete`/`ch_apply` đều trả `Nút đã hết hạn` không crash
 - [ ] `pnpm --filter worker typecheck` `lint` `test` `pnpm --filter tma typecheck/test` `bash scripts/check_ts_length.sh` `git diff --check` pass
-- [ ] `docs/product-specs/tma/telegram-bot-companion.md` đã cập nhật (deprecated /add, ghi rõ mất household picker, giữ Xoá)
+- [ ] `docs/product-specs/tma/telegram-bot-companion.md` đã cập nhật (deprecated /add, pure text no keyboard — không household picker, không Xoá, edit/delete trong TMA)
 
 ## Handoff
 
 - State: done
 - Plan: inline — see below
-- Evidence: `fix-2` deleted 9 /add files, trimmed 5 bot files, grouped native to 1 HTML edit (cap 10 + truncatedNote, 4096, title 60, stacked 🗑 Xoá); `fix-3` rewrote telegram-bot-companion.md native-only; `fix-4` fixed 4 test files (keyboards/natural/ai-shared/post-create) to delete-only. Verify: `pnpm --filter worker typecheck` 0, `lint` 0, `test` 106 files/654 pass, `pnpm --filter tma typecheck` 0, `test` 30 files/158 pass, `bash scripts/check_ts_length.sh` 0 errors ✅, `git diff --check` 0. Branch `feat/135-remove-add-preview-native-only`.
+- Evidence: `fix-2` deleted 10 /add files (including `ai-dedupe.ts`), trimmed 5 bot files, grouped native to 1 HTML edit pure text no keyboard (HTML, no replyMarkup, entity-aware 4096 truncation, cap 10 + truncatedNote, title 60); `fix-3` rewrote telegram-bot-companion.md native-only pure text; `fix-4` fixed 4 test files (keyboards/natural/ai-shared/post-create) to pure-text no-keyboard; `d51cff1` removed delete button — native pure text no keyboard at all. Verify: `pnpm --filter worker typecheck` 0, `lint` 0, `test` 106 files/654 pass, `pnpm --filter tma typecheck` 0, `test` 30 files/158 pass, `bash scripts/check_ts_length.sh` 0 errors ✅, `git diff --check` 0. Branch `feat/135-remove-add-preview-native-only`.
 - Blockers: none
 - Next: none — ready for manual private chat QA (cafe 30k single/batch) + PR
 
@@ -51,8 +51,8 @@ Xóa toàn bộ flow `/add` + preview/draft, chỉ giữ `native chat` direct-cr
 - Delete: `apps/worker/src/bot/commands/ai-expense.ts`, `ai-expense-preflight.ts`, `ai-expense-service.ts`, `ai-draft.ts`, `ai-dedupe.ts`, `confirm-expense.ts`, `household-select.ts`, `post-create-household.ts`, `post-create-apply.ts`, `post-create-delete.ts` (check exists via ls)
 - Modify: `apps/worker/src/bot/commands/ai-expense-shared.ts` - chỉ giữ `normalizeAiItem` nếu `natural-helpers` import, xóa `buildDraft*` re-export
 - Modify: `apps/worker/src/bot/commands/help.ts` - xóa dòng hướng dẫn `/add` (review #4)
-- Modify: `apps/worker/src/bot/renderers/keyboards.ts:60-123` - xóa `expensePreviewKeyboard`/`householdSelectKeyboard`, sửa `postCreateKeyboard` chỉ giữ `🗑 Xoá` (bỏ `🏠 Chọn gia đình`), xóa `postCreateHouseholdPickerKeyboard` nếu còn
-- Modify: `apps/worker/src/bot/callback-dispatcher.ts:84-213` - xóa case `confirm/cancel/retry/household/hhselect/ch_household/ch_apply` (giữ `ch_delete` nếu giữ nút Xoá), giữ `pref/settings`, thêm fallback `answerCallbackQuery("Nút đã hết hạn, vui lòng gửi lại")`
+- Modify: `apps/worker/src/bot/renderers/keyboards.ts:60-123` - xóa `expensePreviewKeyboard`/`householdSelectKeyboard`, xóa `postCreateKeyboard` buttons stub returns `undefined` — native pure text no keyboard (`d51cff1` deprecated feat-135 follow-up), xóa `postCreateHouseholdPickerKeyboard`
+- Modify: `apps/worker/src/bot/callback-dispatcher.ts:84-213` - xóa tất cả `ch_*` including `ch_delete` + case `confirm/cancel/retry/household/hhselect/ch_household/ch_apply` (giữ `pref/settings`), thêm fallback `answerCallbackQuery("Nút đã hết hạn, vui lòng gửi lại")` cho tất cả callback cũ
 - Verify: `grep -r "ai-expense|ai-draft|confirm-expense|household-select|post-create-household|post-create-apply" apps/worker/src --include="*.ts" | grep -v ".spec" | grep -v "household-context"` == 0; `grep -r "expensePreviewKeyboard|householdSelectKeyboard" apps/worker/src` == 0
 
 **Interfaces:**
@@ -66,8 +66,8 @@ Xóa toàn bộ flow `/add` + preview/draft, chỉ giữ `native chat` direct-cr
 ### Step 2 — Gộp native chat thành single-message — fix review #2, #3
 
 **Files:**
-- Modify: `apps/worker/src/bot/commands/natural-expense.ts:70-216` - giữ `loaderMsgId = sendMessage(LOADER_TEXT)` -> `editMessageText(loaderMsgId, summary)` duy nhất; xóa dead query `listActiveHouseholdIdsForUser`/`hasHouseholds` (review #3); cap `rawItems.slice(0,10)` + `truncatedCount` + `truncatedNote = "\nℹ️ Chỉ lấy 10 khoản đầu..."` (review #2)
-- Modify: `apps/worker/src/bot/commands/natural-expense-helpers.ts:19,64,183` - `normalizeNaturalItems` giữ, `createNaturalExpenses` giữ, thay `sendPostCreateMessages(chatId,loaderMsgId,created)` từ `edit+loop send` thành `editSingleSummary`: build `lines = created.map((e,i)=>\`${i+1}. ${renderExpenseSummaryLine(e)}\`).join("\n")` cắt `title` 60 chars, `text = ✅ Đã thêm ${N} khoản:\n${lines}${truncatedNote}` kiểm tra `text.length>4096` thì truncate với `…`, `await client.editMessageText(chatId, loaderMsgId, text, {parseMode:"HTML"})` (HTML không Markdown, review #3); keyboard chỉ kèm `🗑 Xoá` per expense stacked (giữ undo) — không kèm `🏠 Chọn gia đình`
+- Modify: `apps/worker/src/bot/commands/natural-expense.ts:70-216` - giữ `loaderMsgId = sendMessage(LOADER_TEXT)` -> `editMessageText(loaderMsgId, summary)` duy nhất; xóa dead query `listActiveHouseholdIdsForUser`/`hasHouseholds` (review #3, `hasHouseholds` query removed); cap `rawItems.slice(0,10)` + `truncatedCount` + `truncatedNote = "\nℹ️ Chỉ lấy 10 khoản đầu..."` (review #2); pure text no keyboard
+- Modify: `apps/worker/src/bot/commands/natural-expense-helpers.ts:19,64,183` - `normalizeNaturalItems` giữ, `createNaturalExpenses` giữ, thay `sendPostCreateMessages(chatId,loaderMsgId,created)` từ `edit+loop send` thành `editSingleSummary`: build `lines = created.map((e,i)=>\`${i+1}. ${renderExpenseSummaryLine(e)}\`).join("\n")` cắt `title` 60 chars, `text = ✅ Đã thêm ${N} khoản:\n${lines}${truncatedNote}` entity-aware truncate `text` 4096 với `…`, `await client.editMessageText(chatId, loaderMsgId, text, {parseMode:"HTML"})` (HTML không Markdown, no replyMarkup — pure text no keyboard, review #3)
 - Modify: `apps/worker/src/bot/format/renderers.ts:52` dùng `renderExpenseSummaryLine` (đã `escapeHtml`) cho mỗi dòng
 
 **Interfaces:**
