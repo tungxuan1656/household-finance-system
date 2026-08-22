@@ -1,336 +1,197 @@
 /**
- * Unit tests for the post-create handlers (feat-121).
+ * Unit tests for post-create pure text (feat-135 follow-up).
  *
- * Covers:
- * - `handlePostCreateHousehold` — renders the household picker on the same message
- * - `handlePostCreateApply`     — assigns a household (or resets to personal)
- * - `handlePostCreateDelete`    — soft-deletes and edits to "Đã xoá"
- *
- * Each handler re-loads the expense and verifies `spent_by_user_id`
- * matches the calling app user, so a stolen expenseId cannot mutate
- * someone else's row. The tests assert that ownership check fires.
+ * Native chat is pure text with no keyboard. ch_delete removed;
+ * old callbacks expire via fallback. No inline_keyboard on summary.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-// ── Hoisted mocks ─────────────────────────────────────────────────────────────
 const {
-  mockFindExpenseByIdRaw,
-  mockUpdateExpenseHousehold,
-  mockSoftDeleteExpense,
-  mockListActiveHouseholdIdsForUser,
-  mockFindHouseholdById,
-  mockCreateAuditLogEntry,
+  mockFindAppUserIdByTelegramId,
+  mockHandleBudgetCommand,
+  mockHandlePreferenceToggle,
+  mockHandleSettingsCommand,
+  mockHandleStatsCommand,
 } = vi.hoisted(() => ({
-  mockFindExpenseByIdRaw: vi.fn(),
-  mockUpdateExpenseHousehold: vi.fn(),
-  mockSoftDeleteExpense: vi.fn(),
-  mockListActiveHouseholdIdsForUser: vi.fn(),
-  mockFindHouseholdById: vi.fn(),
-  mockCreateAuditLogEntry: vi.fn(),
+  mockFindAppUserIdByTelegramId: vi.fn(),
+  mockHandleBudgetCommand: vi.fn(),
+  mockHandlePreferenceToggle: vi.fn(),
+  mockHandleSettingsCommand: vi.fn(),
+  mockHandleStatsCommand: vi.fn(),
 }))
 
-vi.mock('@/db/repositories/expense-repository', () => ({
-  findExpenseByIdRaw: mockFindExpenseByIdRaw,
-  updateExpenseHousehold: mockUpdateExpenseHousehold,
-  softDeleteExpense: mockSoftDeleteExpense,
+vi.mock('@/bot/account-linking', () => ({
+  findAppUserIdByTelegramId: mockFindAppUserIdByTelegramId,
 }))
 
-vi.mock('@/db/repositories/household-membership-repository', () => ({
-  listActiveHouseholdIdsForUser: mockListActiveHouseholdIdsForUser,
+vi.mock('@/bot/commands/budget', () => ({
+  handleBudgetCommand: mockHandleBudgetCommand,
 }))
 
-vi.mock('@/db/repositories/household-repository', () => ({
-  findHouseholdById: mockFindHouseholdById,
+vi.mock('@/bot/commands/settings', () => ({
+  handlePreferenceToggle: mockHandlePreferenceToggle,
+  handleSettingsCommand: mockHandleSettingsCommand,
 }))
 
-vi.mock('@/db/repositories/audit-log-repository', () => ({
-  createAuditLogEntry: mockCreateAuditLogEntry,
+vi.mock('@/bot/commands/stats', () => ({
+  handleStatsCommand: mockHandleStatsCommand,
 }))
 
-// ── Imports under test ───────────────────────────────────────────────────────
-import { handlePostCreateApply } from '@/bot/commands/post-create-apply'
-import { handlePostCreateDelete } from '@/bot/commands/post-create-delete'
-import { handlePostCreateHousehold } from '@/bot/commands/post-create-household'
-import type { CommandContext } from '@/bot/types'
+import { handleCallbackQuery } from '@/bot/callback-dispatcher'
+import type { BotServiceDeps } from '@/bot/callback-dispatcher'
+import type { TelegramClient } from '@/bot/telegram-client'
+import { sendPostCreateMessages } from '@/bot/commands/natural-expense-helpers'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-const buildCtx = (appUserId: string | null = 'app-user-1'): CommandContext =>
+const buildDeps = (
+  resolvedAppUserId: string | null = 'app-user-1',
+): BotServiceDeps =>
   ({
-    userId: 200,
-    chatId: 100,
-    userDisplayName: 'Tùng',
-    text: 'callback-data',
-    appUserId,
-    locale: 'vi',
     db: {} as D1Database,
-    telegramBotTmaUrl: 'https://tma.example.com',
-    telegramBotDeepLinkUrl: 'https://t.me/bot',
-  }) as CommandContext
+    config: {
+      telegramBotToken: 'test',
+      telegramBotTmaUrl: 'https://tma.example.com',
+      telegramBotDeepLinkUrl: 'https://t.me/bot',
+    },
+    resolvedAppUserId,
+  }) as BotServiceDeps
 
-const buildExpense = (
-  overrides: Partial<{
-    id: string
-    spentByUserId: string
-    householdId: string | null
-    categoryKey: string
-    sourceKey: string
-    title: string
-    amountMinor: number
-    currencyCode: string
-    occurredAt: number
-  }> = {},
-) => ({
-  id: overrides.id ?? 'exp-1',
-  spentByUserId: overrides.spentByUserId ?? 'app-user-1',
-  householdId: overrides.householdId ?? null,
-  categoryKey: overrides.categoryKey ?? 'food',
-  sourceKey: overrides.sourceKey ?? 'cash',
-  categoryId: null,
-  amountMinor: overrides.amountMinor ?? 30_000_000,
-  currencyCode: overrides.currencyCode ?? 'VND',
-  occurredAt: overrides.occurredAt ?? Date.parse('2026-06-25T00:00:00Z'),
-  title: overrides.title ?? 'ăn bún',
-  note: null,
-  deletedAt: null,
-  createdViaBot: 1,
-  createdAt: Date.now(),
-  updatedAt: Date.now(),
-})
+const buildClient = () => {
+  const answerCallbackQuery = vi.fn().mockResolvedValue(undefined)
+  const sendMessage = vi.fn().mockResolvedValue(1)
+  const editMessageText = vi.fn().mockResolvedValue({} as Response)
 
-// ── Suite ────────────────────────────────────────────────────────────────────
+  return {
+    answerCallbackQuery,
+    sendMessage,
+    editMessageText,
+  } as unknown as TelegramClient & {
+    answerCallbackQuery: ReturnType<typeof vi.fn>
+    sendMessage: ReturnType<typeof vi.fn>
+    editMessageText: ReturnType<typeof vi.fn>
+  }
+}
 
-describe('handlePostCreateHousehold', () => {
+// ── Suite: ch_delete expired ─────────────────────────────────────────────────
+describe('post-create pure text: ch_delete expired (no delete keyboard)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockListActiveHouseholdIdsForUser.mockResolvedValue(['hh-1', 'hh-2'])
-    mockFindHouseholdById.mockImplementation(async (_db, id: string) =>
-      id === 'hh-1'
-        ? { id: 'hh-1', name: 'Gia đình A' }
-        : id === 'hh-2'
-          ? { id: 'hh-2', name: 'Gia đình B' }
-          : null,
+    mockFindAppUserIdByTelegramId.mockResolvedValue('app-user-1')
+  })
+
+  it('treats ch_delete as expired callback (no handler, fallback message)', async () => {
+    const client = buildClient()
+    const deps = buildDeps()
+
+    const cq = {
+      id: 'cq-1',
+      data: 'ch_delete:exp-1',
+      from: { id: 200, is_bot: false, first_name: 'Tùng' },
+      message: { chat: { id: 100 }, message_id: 42 },
+    } as unknown as NonNullable<
+      import('@/bot/types').TelegramUpdate['callback_query']
+    >
+
+    const result = await handleCallbackQuery(cq, deps, client)
+
+    expect(result).toBe(0)
+    expect(client.answerCallbackQuery).toHaveBeenCalledWith(
+      'cq-1',
+      'Nút đã hết hạn, vui lòng gửi lại',
     )
-    mockCreateAuditLogEntry.mockResolvedValue(undefined)
   })
 
-  it('returns a no-access error when appUserId is missing', async () => {
-    const result = await handlePostCreateHousehold(buildCtx(null), 'exp-1', 42)
+  it('also expires ch_household and household callbacks', async () => {
+    const client = buildClient()
+    const deps = buildDeps()
 
-    expect(result.mode).toBe('edit')
-    expect(result.text).toMatch(/hết/)
+    for (const data of [
+      'ch_household:exp-1',
+      'household:exp-1:hh-1',
+      'confirm:abc',
+    ]) {
+      vi.clearAllMocks()
+      const cq = {
+        id: 'cq-x',
+        data,
+        from: { id: 200, is_bot: false, first_name: 'Tùng' },
+        message: { chat: { id: 100 }, message_id: 42 },
+      } as unknown as NonNullable<
+        import('@/bot/types').TelegramUpdate['callback_query']
+      >
+
+      const result = await handleCallbackQuery(cq, deps, client)
+      expect(result).toBe(0)
+      expect(client.answerCallbackQuery).toHaveBeenCalledWith(
+        'cq-x',
+        'Nút đã hết hạn, vui lòng gửi lại',
+      )
+    }
   })
 
-  it('rejects the tap when the expense does not exist', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(null)
+  it('keeps pref/settings dispatch alive (not expired)', async () => {
+    const client = buildClient()
+    const deps = buildDeps()
 
-    const result = await handlePostCreateHousehold(buildCtx(), 'exp-1', 42)
-
-    expect(result.mode).toBe('edit')
-    expect(result.text).toMatch(/Không tìm thấy/)
-  })
-
-  it('rejects the tap when the expense belongs to a different user', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(
-      buildExpense({ spentByUserId: 'attacker' }),
-    )
-
-    const result = await handlePostCreateHousehold(buildCtx(), 'exp-1', 42)
-
-    expect(result.mode).toBe('edit')
-    expect(result.text).toMatch(/Không tìm thấy/)
-  })
-
-  it('returns a friendly note when the user has zero households', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
-    mockListActiveHouseholdIdsForUser.mockResolvedValueOnce([])
-
-    const result = await handlePostCreateHousehold(buildCtx(), 'exp-1', 42)
-
-    expect(result.mode).toBe('edit')
-    expect(result.text).toMatch(/cá nhân/)
-  })
-
-  it('edits the message in place to a household picker', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
-
-    const result = await handlePostCreateHousehold(buildCtx(), 'exp-1', 42)
-
-    expect(result.mode).toBe('edit')
-    expect(result.targetMessageId).toBe(42)
-    expect(result.text).toMatch(/Chọn phạm vi/)
-    const rows = (result.replyMarkup as { inline_keyboard: unknown[][] })
-      .inline_keyboard
-    const labels = rows.flat().map((b) => (b as { text: string }).text)
-    expect(labels).toContain('👤 Cá nhân')
-    expect(labels).toContain('🏠 Gia đình A')
-    expect(labels).toContain('🏠 Gia đình B')
-    const callbacks = rows
-      .flat()
-      .map((b) => (b as { callback_data?: string }).callback_data)
-    expect(callbacks).toContain('ch_apply:exp-1:personal')
-    expect(callbacks).toContain('ch_apply:exp-1:hh-1')
-    expect(callbacks).toContain('ch_apply:exp-1:hh-2')
-  })
-})
-
-describe('handlePostCreateApply', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    mockListActiveHouseholdIdsForUser.mockResolvedValue(['hh-1'])
-    mockFindHouseholdById.mockResolvedValue({
-      id: 'hh-1',
-      name: 'Gia đình A',
-      defaultCurrencyCode: 'VND',
+    // pref should not be treated as expired - it should dispatch to handler
+    // We mock the handler to return a simple response; verify it does not return 0 via fallback
+    mockHandlePreferenceToggle.mockResolvedValueOnce({
+      text: 'ok',
+      parseMode: 'HTML' as const,
     })
-    mockUpdateExpenseHousehold.mockImplementation(
-      async (_db, _id, householdId, currencyCode) =>
-        buildExpense({ householdId, currencyCode }),
-    )
-    mockCreateAuditLogEntry.mockResolvedValue(undefined)
-  })
 
-  it('assigns the household and edits the message to the full preview', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
+    const cq = {
+      id: 'cq-pref',
+      data: 'pref:budgetAlerts',
+      from: { id: 200, is_bot: false, first_name: 'Tùng' },
+      message: { chat: { id: 100 }, message_id: 42 },
+    } as unknown as NonNullable<
+      import('@/bot/types').TelegramUpdate['callback_query']
+    >
 
-    const result = await handlePostCreateApply(buildCtx(), 'exp-1', 'hh-1', 42)
-
-    expect(mockUpdateExpenseHousehold).toHaveBeenCalledWith(
-      {},
-      'exp-1',
-      'hh-1',
-      'VND',
-    )
-    expect(result.mode).toBe('edit')
-    expect(result.text).toMatch(/Gia đình A/)
-  })
-
-  it('rejects the tap when the user is not a member of the household', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
-    mockListActiveHouseholdIdsForUser.mockResolvedValueOnce([])
-
-    const result = await handlePostCreateApply(buildCtx(), 'exp-1', 'hh-1', 42)
-
-    expect(mockUpdateExpenseHousehold).not.toHaveBeenCalled()
-    expect(result.text).toMatch(/quyền/)
-  })
-
-  it('falls back to personal + ✅ summary when the user picks "personal"', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(
-      buildExpense({ householdId: 'hh-1' }),
-    )
-    mockUpdateExpenseHousehold.mockResolvedValueOnce(
-      buildExpense({ householdId: null }),
-    )
-
-    const result = await handlePostCreateApply(
-      buildCtx(),
-      'exp-1',
-      'personal',
-      42,
-    )
-
-    expect(mockUpdateExpenseHousehold).toHaveBeenCalledWith(
-      {},
-      'exp-1',
-      null,
-      'VND',
-    )
-    expect(result.text).toMatch(/^✅ /)
-  })
-
-  it('writes an expense.updated audit log with naturalInput:true', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
-    mockUpdateExpenseHousehold.mockResolvedValueOnce(
-      buildExpense({ householdId: 'hh-1' }),
-    )
-
-    await handlePostCreateApply(buildCtx(), 'exp-1', 'hh-1', 42)
-
-    expect(mockCreateAuditLogEntry).toHaveBeenCalledTimes(1)
-    const payload = JSON.parse(
-      (mockCreateAuditLogEntry.mock.calls[0]![1] as { payloadJson: string })
-        .payloadJson,
-    )
-    expect(payload).toMatchObject({
-      source: 'telegram_bot',
-      naturalInput: true,
-      field: 'household_id',
-      nextHouseholdId: 'hh-1',
-    })
-  })
-
-  // Regression: bot natural-input amounts are always parsed as VND and
-  // stored in VND minor units. When the target household defaults to a
-  // non-VND currency, we must not flip currency_code to that default
-  // — the amount_minor would then be misinterpreted (e.g. 30_000_000
-  // minor units read as $300,000.00 instead of 30,000 VND). Without an
-  // FX rate the safe behavior is to keep currency_code = 'VND'.
-  it('keeps currency_code = VND when the household default is non-VND', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
-    mockFindHouseholdById.mockResolvedValueOnce({
-      id: 'hh-1',
-      name: 'Family Trip',
-      defaultCurrencyCode: 'USD',
-    })
-    mockUpdateExpenseHousehold.mockResolvedValueOnce(
-      buildExpense({ householdId: 'hh-1', currencyCode: 'VND' }),
-    )
-
-    const result = await handlePostCreateApply(buildCtx(), 'exp-1', 'hh-1', 42)
-
-    expect(mockUpdateExpenseHousehold).toHaveBeenCalledWith(
-      {},
-      'exp-1',
-      'hh-1',
-      'VND',
-    )
-    expect(result.text).toMatch(/Family Trip/)
-    expect(result.text).not.toMatch(/USD|\$/)
+    const result = await handleCallbackQuery(cq, deps, client)
+    expect(result).toBe(1)
+    // fallback not called for pref; instead answerCallbackQuery with no message
+    expect(client.answerCallbackQuery).toHaveBeenCalledWith('cq-pref')
   })
 })
 
-describe('handlePostCreateDelete', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    mockSoftDeleteExpense.mockResolvedValue(true)
-    mockCreateAuditLogEntry.mockResolvedValue(undefined)
+// ── Suite: sendPostCreateMessages pure text ──────────────────────────────────
+describe('sendPostCreateMessages pure text (no inline_keyboard)', () => {
+  it('edits loader with pure text, parseMode HTML, no replyMarkup', async () => {
+    const client = buildClient()
+
+    await sendPostCreateMessages(client, 100, 500, [
+      { expenseId: 'exp-1', summary: '🍚 Ăn · ăn bún · 30.000₫ · 25/06' },
+      { expenseId: 'exp-2', summary: '☕ Ăn · cà phê · 25.000₫ · 25/06' },
+    ])
+
+    expect(client.editMessageText).toHaveBeenCalledTimes(1)
+    const call = vi.mocked(client.editMessageText).mock.calls[0]!
+    expect(call[0]).toBe(100)
+    expect(call[1]).toBe(500)
+    expect(call[2]).toMatch(/^✅ Đã thêm 2 khoản/)
+    const opts = call[3] as { parseMode?: string; replyMarkup?: unknown }
+    expect(opts.parseMode).toBe('HTML')
+    expect(opts.replyMarkup).toBeUndefined()
+    const serialized = JSON.stringify(call[2] + JSON.stringify(opts))
+    expect(serialized).not.toContain('ch_delete')
+    expect(serialized).not.toContain('inline_keyboard')
   })
 
-  it('soft-deletes and edits the message to "Đã xoá — <summary>"', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
+  it('caps 4096 chars and keeps pure text invariants (60-char title is done upstream)', async () => {
+    const client = buildClient()
+    const longSummary = 'a'.repeat(5000)
+    await sendPostCreateMessages(client, 100, 500, [
+      { expenseId: 'exp-1', summary: longSummary },
+    ])
 
-    const result = await handlePostCreateDelete(buildCtx(), 'exp-1', 42)
-
-    expect(mockSoftDeleteExpense).toHaveBeenCalledWith({}, 'exp-1')
-    expect(result.mode).toBe('edit')
-    expect(result.text).toMatch(/^🗑 Đã xoá — /)
-    expect(result.replyMarkup).toBeUndefined()
-  })
-
-  it('rejects the tap when the expense belongs to a different user', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(
-      buildExpense({ spentByUserId: 'attacker' }),
-    )
-
-    const result = await handlePostCreateDelete(buildCtx(), 'exp-1', 42)
-
-    expect(mockSoftDeleteExpense).not.toHaveBeenCalled()
-    expect(result.text).toMatch(/Không tìm thấy/)
-  })
-
-  it('writes an expense.deleted audit log with naturalInputUndo:true', async () => {
-    mockFindExpenseByIdRaw.mockResolvedValueOnce(buildExpense())
-
-    await handlePostCreateDelete(buildCtx(), 'exp-1', 42)
-
-    expect(mockCreateAuditLogEntry).toHaveBeenCalledTimes(1)
-    const payload = JSON.parse(
-      (mockCreateAuditLogEntry.mock.calls[0]![1] as { payloadJson: string })
-        .payloadJson,
-    )
-    expect(payload).toMatchObject({
-      source: 'telegram_bot',
-      naturalInputUndo: true,
-    })
+    const text = vi.mocked(client.editMessageText).mock.calls[0]![2] as string
+    expect(text.length).toBeLessThanOrEqual(4096)
+    expect(text.endsWith('…')).toBe(true)
+    const opts = vi.mocked(client.editMessageText).mock.calls[0]![3] as {
+      replyMarkup?: unknown
+    }
+    expect(opts.replyMarkup).toBeUndefined()
   })
 })

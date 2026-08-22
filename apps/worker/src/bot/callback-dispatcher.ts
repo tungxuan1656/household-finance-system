@@ -4,15 +4,6 @@ import type { AppConfig } from '@/types'
 import { findAppUserIdByTelegramId } from './account-linking'
 import { handleBudgetCommand } from './commands/budget'
 import {
-  handleCancelExpense,
-  handleConfirmExpense,
-  handleRetryExpense,
-} from './commands/confirm-expense'
-import { handleHouseholdSelect } from './commands/household-select'
-import { handlePostCreateApply } from './commands/post-create-apply'
-import { handlePostCreateDelete } from './commands/post-create-delete'
-import { handlePostCreateHousehold } from './commands/post-create-household'
-import {
   handlePreferenceToggle,
   handleSettingsCommand,
 } from './commands/settings'
@@ -111,40 +102,10 @@ const processCallbackAction = async (
   const parts = data.split(':')
   const action = parts[0]
   const draftId = parts[1]
-  const payload = parts.slice(2).join(':')
 
   let result!: BotResponse
 
   switch (action) {
-    case 'confirm': {
-      result = await handleConfirmExpense(ctx, draftId, messageId)
-      break
-    }
-    case 'cancel': {
-      result = await handleCancelExpense(ctx, draftId, messageId)
-      break
-    }
-    case 'retry': {
-      result = await handleRetryExpense(ctx, draftId, messageId)
-      break
-    }
-    case 'household':
-    case 'hhselect': {
-      result = await handleHouseholdSelect(ctx, draftId, payload, messageId)
-      break
-    }
-    case 'ch_household': {
-      result = await handlePostCreateHousehold(ctx, draftId, messageId)
-      break
-    }
-    case 'ch_apply': {
-      result = await handlePostCreateApply(ctx, draftId, payload, messageId)
-      break
-    }
-    case 'ch_delete': {
-      result = await handlePostCreateDelete(ctx, draftId, messageId)
-      break
-    }
     case 'pref': {
       result = await handlePreferenceToggle(ctx, draftId, {
         mode: 'edit',
@@ -172,17 +133,19 @@ const processCallbackAction = async (
     case 'add_expense': {
       result = {
         text:
-          'Vui lòng nhập nội dung chi tiêu bằng lệnh /add.\n\n' +
-          'Ví dụ: <code>/add ăn bún 30k 15/6</code>',
+          'Gửi thẳng chi tiêu (vd: <code>cafe 30k</code> hoặc <code>ăn bún 30k 15/6</code>).\n\n' +
+          'Bot sẽ phân tích và gộp vào 1 tin nhắn.',
         parseMode: 'HTML' as const,
       }
 
       break
     }
     default: {
-      // Quietly answer unknown callback
       try {
-        await client.answerCallbackQuery(cqId)
+        await client.answerCallbackQuery(
+          cqId,
+          'Nút đã hết hạn, vui lòng gửi lại',
+        )
       } catch {
         /* non-critical */
       }

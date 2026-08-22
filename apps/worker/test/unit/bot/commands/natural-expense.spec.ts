@@ -1,16 +1,8 @@
 /**
- * Unit tests for the natural-input direct-create flow (feat-121).
+ * Unit tests for the natural-input direct-create flow (feat-121, feat-135).
  *
- * `runNaturalExpenseCreate` orchestrates a sequence of side effects:
- * - amount detector
- * - AI parser
- * - household-membership lookup (to decide whether to show the 🏠 button)
- * - per-item expense creation + audit log
- * - Telegram sendMessage / editMessageText
- *
- * All external collaborators are mocked so the test focuses on the
- * control flow: how many expenses are created, what the messages look
- * like, and what happens on edge cases.
+ * feat-135 follow-up: single grouped summary edit (loader → ✅ Đã thêm N khoản)
+ * pure text, no keyboard. Batch capped to 10.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -19,23 +11,23 @@ const {
   mockParseExpensesWithAi,
   mockCreateExpense,
   mockCreateAuditLogEntry,
-  mockListActiveHouseholdIdsForUser,
   mockSendMessage,
   mockEditMessageText,
   mockGetMinorUnits,
-  mockPostCreateKeyboard,
+  mockFetchAiContext,
 } = vi.hoisted(() => ({
   mockParseExpensesWithAi: vi.fn(),
   mockCreateExpense: vi.fn(),
   mockCreateAuditLogEntry: vi.fn(),
-  mockListActiveHouseholdIdsForUser: vi.fn(),
   mockSendMessage: vi.fn(),
   mockEditMessageText: vi.fn(),
   mockGetMinorUnits: vi.fn().mockReturnValue(30_000_000), // 30,000₫ in VND = 30_000_000 minor
-  mockPostCreateKeyboard: vi.fn().mockReturnValue({
-    // Mirrors the real `postCreateKeyboard` shape with no buttons — the
-    // default `showHouseholdButton=false` case (user has no households).
-    inline_keyboard: [],
+  mockFetchAiContext: vi.fn().mockResolvedValue({
+    availableHouseholds: [],
+    availableGroups: [],
+    householdNameToId: new Map(),
+    groupNameToId: new Map(),
+    groupIdToHouseholdId: new Map(),
   }),
 }))
 
@@ -57,8 +49,14 @@ vi.mock('@/db/repositories/audit-log-repository', () => ({
   createAuditLogEntry: mockCreateAuditLogEntry,
 }))
 
-vi.mock('@/db/repositories/household-membership-repository', () => ({
-  listActiveHouseholdIdsForUser: mockListActiveHouseholdIdsForUser,
+vi.mock('@/lib/ai/household-context', () => ({
+  fetchAiContext: mockFetchAiContext,
+  mapAiNamesToIds: (
+    _raw: unknown,
+    _maps: unknown,
+    _counters: unknown,
+    _opts?: unknown,
+  ) => ({ householdId: null, groupIds: [] }),
 }))
 
 vi.mock('@/lib/currency', async (importOriginal) => {
@@ -68,17 +66,6 @@ vi.mock('@/lib/currency', async (importOriginal) => {
   return {
     ...actual,
     getMinorUnits: mockGetMinorUnits,
-  }
-})
-
-vi.mock('@/bot/renderers/keyboards', async () => {
-  const actual = await vi.importActual<
-    typeof import('@/bot/renderers/keyboards')
-  >('@/bot/renderers/keyboards')
-
-  return {
-    ...actual,
-    postCreateKeyboard: mockPostCreateKeyboard,
   }
 })
 
@@ -122,12 +109,17 @@ const buildMessage = (text: string): TelegramMessage & { from: TelegramUser } =>
 
 // ── Suite ────────────────────────────────────────────────────────────────────
 
-describe('runNaturalExpenseCreate (feat-121)', () => {
+describe('runNaturalExpenseCreate (feat-135)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetMinorUnits.mockReturnValue(30_000_000)
-    mockPostCreateKeyboard.mockReturnValue({ inline_keyboard: [] })
-    mockListActiveHouseholdIdsForUser.mockResolvedValue([])
+    mockFetchAiContext.mockResolvedValue({
+      availableHouseholds: [],
+      availableGroups: [],
+      householdNameToId: new Map(),
+      groupNameToId: new Map(),
+      groupIdToHouseholdId: new Map(),
+    })
     mockCreateExpense.mockImplementation(async (_db, input) => ({
       id: input.id,
       householdId: input.householdId,
@@ -174,7 +166,6 @@ describe('runNaturalExpenseCreate (feat-121)', () => {
         occurredAt: '2026-06-25',
       },
     ])
-    mockListActiveHouseholdIdsForUser.mockResolvedValue(['hh-1'])
 
     const handled = await runNaturalExpenseCreate(
       buildDeps(),
@@ -186,16 +177,25 @@ describe('runNaturalExpenseCreate (feat-121)', () => {
     expect(handled).toBe(1)
     expect(mockCreateExpense).toHaveBeenCalledTimes(1)
     expect(mockSendMessage).toHaveBeenCalledTimes(1) // loader
-    expect(mockEditMessageText).toHaveBeenCalledTimes(1) // loader → ✅ summary
+    expect(mockEditMessageText).toHaveBeenCalledTimes(1) // loader → ✅ grouped summary
     expect(mockSendMessage).toHaveBeenCalledWith(
       100,
       expect.stringContaining('Phân tích'),
     )
     const editCall = mockEditMessageText.mock.calls[0]!
-    expect(editCall[2]).toMatch(/^✅ /)
+    expect(editCall[2]).toMatch(/^✅ Đã thêm 1 khoản/)
+    // pure text: no keyboard
+    const opts = editCall[3] as {
+      parseMode?: string
+      replyMarkup?: {
+        inline_keyboard: Array<Array<{ text: string; callback_data: string }>>
+      }
+    }
+    expect(opts.parseMode).toBe('HTML')
+    expect(opts.replyMarkup).toBeUndefined()
   })
 
-  it('creates N expenses and sends one message per item when AI returns N valid items', async () => {
+  it('creates N expenses and edits loader once with grouped summary (feat-135)', async () => {
     mockParseExpensesWithAi.mockResolvedValue([
       {
         amount: 30000,
@@ -227,11 +227,21 @@ describe('runNaturalExpenseCreate (feat-121)', () => {
       'app-user-1',
     )
 
-    // loader (1) + 2 extra messages for items 2 and 3
-    expect(handled).toBe(3)
+    // feat-135: single grouped edit, no per-item messages
+    expect(handled).toBe(1)
     expect(mockCreateExpense).toHaveBeenCalledTimes(3)
-    expect(mockSendMessage).toHaveBeenCalledTimes(1 + 2)
+    expect(mockSendMessage).toHaveBeenCalledTimes(1) // only loader
     expect(mockEditMessageText).toHaveBeenCalledTimes(1)
+    const editCall = mockEditMessageText.mock.calls[0]!
+    expect(editCall[2]).toMatch(/^✅ Đã thêm 3 khoản/)
+    const opts = editCall[3] as {
+      parseMode?: string
+      replyMarkup?: {
+        inline_keyboard: Array<Array<{ text: string; callback_data: string }>>
+      }
+    }
+    expect(opts.parseMode).toBe('HTML')
+    expect(opts.replyMarkup).toBeUndefined()
   })
 
   it('uses each parsed item amount when creating multiple natural expenses', async () => {
@@ -350,7 +360,7 @@ describe('runNaturalExpenseCreate (feat-121)', () => {
     )
   })
 
-  it('shows the household button when the user has households', async () => {
+  it('renders pure text with no keyboard (feat-135 follow-up)', async () => {
     mockParseExpensesWithAi.mockResolvedValue([
       {
         amount: 30000,
@@ -360,7 +370,6 @@ describe('runNaturalExpenseCreate (feat-121)', () => {
         occurredAt: '2026-06-25',
       },
     ])
-    mockListActiveHouseholdIdsForUser.mockResolvedValue(['hh-1', 'hh-2'])
 
     await runNaturalExpenseCreate(
       buildDeps(),
@@ -369,35 +378,15 @@ describe('runNaturalExpenseCreate (feat-121)', () => {
       'app-user-1',
     )
 
-    expect(mockPostCreateKeyboard).toHaveBeenCalledWith(
-      expect.any(String),
-      true,
-    )
-  })
-
-  it('hides the household button when the user has zero households', async () => {
-    mockParseExpensesWithAi.mockResolvedValue([
-      {
-        amount: 30000,
-        categoryKey: 'food',
-        sourceKey: 'cash',
-        title: 'ăn bún',
-        occurredAt: '2026-06-25',
-      },
-    ])
-    mockListActiveHouseholdIdsForUser.mockResolvedValue([])
-
-    await runNaturalExpenseCreate(
-      buildDeps(),
-      buildClient(),
-      buildMessage('ăn bún 30k'),
-      'app-user-1',
-    )
-
-    expect(mockPostCreateKeyboard).toHaveBeenCalledWith(
-      expect.any(String),
-      false,
-    )
+    const editCall = mockEditMessageText.mock.calls[0]!
+    const opts = editCall[3] as {
+      parseMode?: string
+      replyMarkup?: {
+        inline_keyboard: Array<Array<{ text: string; callback_data: string }>>
+      }
+    }
+    expect(opts.parseMode).toBe('HTML')
+    expect(opts.replyMarkup).toBeUndefined()
   })
 
   it('writes an expense.created audit log with naturalInput:true', async () => {

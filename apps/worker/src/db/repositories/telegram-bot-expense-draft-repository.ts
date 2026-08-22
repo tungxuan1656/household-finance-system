@@ -1,5 +1,7 @@
 import { newId } from '@/utils/id'
 
+/** @deprecated feat-135 — no writers after /add removal; table kept for TTL expiry only, no DROP this feat. Safe to DROP in future cleanup. */
+
 const DRAFT_EXPIRY_MS = 10 * 60 * 1000 // 10 minutes
 
 export type DraftStatus = 'pending' | 'confirmed' | 'expired' | 'cancelled'

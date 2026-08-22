@@ -1,86 +1,65 @@
 import { describe, expect, it } from 'vitest'
 
-import {
-  expensePreviewKeyboard,
-  householdSelectKeyboard,
-  postCreateKeyboard,
-  recentsKeyboard,
-} from '@/bot/renderers/keyboards'
+import * as keyboards from '@/bot/renderers/keyboards'
+import { postCreateKeyboard, recentsKeyboard } from '@/bot/renderers/keyboards'
 
-describe('expensePreviewKeyboard', () => {
-  it('shows confirm, household, and cancel buttons (no retry)', () => {
-    const kb = expensePreviewKeyboard('draft-1')
+describe('postCreateKeyboard (feat-135 follow-up pure text - no keyboard)', () => {
+  it('returns undefined or empty keyboard (pure text, no buttons)', () => {
+    const kb = postCreateKeyboard('exp-1') as unknown as
+      | { inline_keyboard: unknown[] }
+      | undefined
+
+    if (kb === undefined) {
+      expect(kb).toBeUndefined()
+    } else {
+      expect(kb.inline_keyboard).toBeDefined()
+      expect(kb.inline_keyboard).toHaveLength(0)
+    }
+
+    const serialized = JSON.stringify(kb ?? '')
+    expect(serialized).not.toContain('ch_delete')
+    expect(serialized).not.toContain('ch_household')
+    expect(serialized).not.toContain('🗑')
+  })
+
+  it('does not expose ch_delete export', () => {
+    const maybe = (keyboards as unknown as Record<string, unknown>)
+      .postCreateKeyboard
+    if (maybe === undefined) {
+      expect(maybe).toBeUndefined()
+      return
+    }
+
+    expect(typeof maybe).toBe('function')
+    const kb = (maybe as (id: string) => unknown)('exp-99') as unknown as string
+    const serialized = JSON.stringify(kb ?? '')
+    expect(serialized).not.toContain('ch_delete')
+  })
+
+  it('is pure text: no inline_keyboard with delete or household buttons', () => {
+    const kb = postCreateKeyboard('exp-99') as unknown as
+      | {
+          inline_keyboard: Array<
+            Array<{ text: string; callback_data?: string }>
+          >
+        }
+      | undefined
+
+    if (kb === undefined) {
+      expect(kb).toBeUndefined()
+      return
+    }
 
     const labels = kb.inline_keyboard.flat().map((b) => b.text)
-
-    expect(labels).toContain('✅ Thêm chi tiêu')
-    expect(labels).toContain('🏠 Chọn gia đình')
-    expect(labels).toContain('❌ Hủy')
-    // Retry was removed; users can simply send a new expense message.
-    expect(labels).not.toContain('🔁 Nhập lại')
-  })
-
-  it('wires the buttons to the right callbacks', () => {
-    const kb = expensePreviewKeyboard('draft-1')
-
-    const callbacks = kb.inline_keyboard.flat().map((b) => b.callback_data)
-
-    expect(callbacks).toContain('confirm:draft-1')
-    expect(callbacks).toContain('household:draft-1')
-    expect(callbacks).toContain('cancel:draft-1')
-  })
-})
-
-describe('householdSelectKeyboard', () => {
-  it('lists personal and one button per household', () => {
-    const kb = householdSelectKeyboard('draft-1', [
-      { id: 'hh-1', name: 'Gia đình A' },
-      { id: 'hh-2', name: 'Gia đình B' },
-    ])
-
-    const rows = kb.inline_keyboard
-
-    expect(rows).toHaveLength(3)
-    expect(rows[0]?.[0]?.text).toBe('👤 Cá nhân')
-    expect(rows[1]?.[0]?.text).toBe('🏠 Gia đình A')
-    expect(rows[2]?.[0]?.text).toBe('🏠 Gia đình B')
-  })
-})
-
-describe('postCreateKeyboard (feat-121 natural-input direct-create)', () => {
-  it('shows the household button when the caller asks for it', () => {
-    const kb = postCreateKeyboard('exp-1', true)
-    const labels = kb.inline_keyboard.flat().map((b) => b.text)
-
-    expect(labels).toContain('🏠 Chọn gia đình')
-  })
-
-  it('hides the household button when the caller asks to hide it', () => {
-    const kb = postCreateKeyboard('exp-1', false)
-    const labels = kb.inline_keyboard.flat().map((b) => b.text)
-
+    expect(labels).not.toContain('🗑 Xoá')
     expect(labels).not.toContain('🏠 Chọn gia đình')
-    expect(kb.inline_keyboard).toHaveLength(0)
-  })
 
-  it('does not render the delete button (removed)', () => {
-    const kbWithHousehold = postCreateKeyboard('exp-1', true)
-    const kbWithoutHousehold = postCreateKeyboard('exp-1', false)
-
-    const allLabels = [
-      ...kbWithHousehold.inline_keyboard.flat(),
-      ...kbWithoutHousehold.inline_keyboard.flat(),
-    ].map((b) => b.text)
-
-    expect(allLabels).not.toContain('🗑 Xoá')
-  })
-
-  it('wires the household button to the ch_household callback', () => {
-    const kb = postCreateKeyboard('exp-99', true)
-    const callbacks = kb.inline_keyboard.flat().map((b) => b.callback_data)
-
-    expect(callbacks).toContain('ch_household:exp-99')
-    expect(callbacks).not.toContain('ch_delete:exp-99')
+    const callbacks = kb.inline_keyboard
+      .flat()
+      .map((b) => b.callback_data)
+      .filter(Boolean)
+    expect(callbacks.join(' ')).not.toContain('ch_delete')
+    expect(callbacks.join(' ')).not.toContain('ch_household')
   })
 })
 

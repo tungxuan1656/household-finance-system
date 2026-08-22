@@ -72,7 +72,7 @@ export function renderExpensePreviewText(
   return text
 }
 
-/** Render a compact one-line expense summary. Used in confirm/household-select. */
+/** Render a compact one-line expense summary. */
 export function renderExpenseSummaryLine(
   options: ExpensePreviewOptions,
 ): string {
