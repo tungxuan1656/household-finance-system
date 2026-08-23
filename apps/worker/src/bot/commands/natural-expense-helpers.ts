@@ -68,6 +68,7 @@ export const createNaturalExpenses = async (params: {
   amountResult: { amountVnd: number; matched: string }
   correlationId: string
   text: string
+  householdNameById?: Map<string, string>
 }): Promise<
   Array<{ expenseId: string; summary: string; input: CreateExpenseInput }>
 > => {
@@ -156,6 +157,10 @@ export const createNaturalExpenses = async (params: {
       const truncatedTitle =
         item.title.length > 60 ? item.title.slice(0, 60) + '…' : item.title
 
+      const householdName = resolvedHouseholdId
+        ? params.householdNameById?.get(resolvedHouseholdId)
+        : undefined
+
       const summary = renderExpenseSummaryLine({
         amountMinor,
         occurredAt: item.occurredAt,
@@ -165,6 +170,7 @@ export const createNaturalExpenses = async (params: {
         scope: resolvedHouseholdId ? 'household' : 'personal',
         currencyCode: 'VND',
         ...(resolvedHouseholdId ? { householdId: resolvedHouseholdId } : {}),
+        ...(householdName ? { householdName } : {}),
         ...(mapping.groupIds.length > 0 ? { groupIds: mapping.groupIds } : {}),
       })
 
@@ -195,6 +201,15 @@ export const sendPostCreateMessages = async (
   // Cap 4096 without splitting HTML entity
   if (text.length > 4096) {
     let cut = 4095
+    // back off low surrogates so we never split an emoji pair (e.g. 🏠 U+1F3E0)
+    while (
+      cut > 0 &&
+      text.charCodeAt(cut) >= 0xdc00 &&
+      text.charCodeAt(cut) <= 0xdfff
+    ) {
+      cut--
+    }
+
     const lastAmp = text.lastIndexOf('&', cut)
     if (lastAmp !== -1 && lastAmp > cut - 10) {
       const semi = text.indexOf(';', lastAmp)
