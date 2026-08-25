@@ -66,6 +66,7 @@ export const AddExpenseChatPage = () => {
               'Yêu cầu quá thời gian, AI phản hồi chậm. Vui lòng thử lại.',
           })
         } else if (err.code === 'BAD_GATEWAY' || err.status === 502) {
+          // worker may return JSON {code: BAD_GATEWAY} or plain 502 HTTP_ERROR; both mean AI upstream failure
           message = t('errors.aiUpstreamFailure', {
             defaultValue:
               'Dịch vụ AI tạm thời không khả dụng, vui lòng thử lại sau.',

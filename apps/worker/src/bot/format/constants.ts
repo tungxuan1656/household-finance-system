@@ -1,6 +1,7 @@
 export const LOADER_TEXT = '⏳ Phân tích...'
 export const AI_UNAVAILABLE_TEXT = 'AI tạm không khả dụng. Thử lại sau.'
 export const INPUT_UNRECOGNIZED_TEXT = 'Không nhận diện được. Thử lại.'
+export const INTERNAL_ERROR_TEXT = 'Đã có lỗi xảy ra, vui lòng thử lại.'
 
 /**
  * Build an "unrecognized command" error message with an example.

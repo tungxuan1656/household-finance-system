@@ -103,7 +103,18 @@ export class RefreshInterceptor {
     }
     retryHeaders.set('authorization', `Bearer ${refreshed}`)
 
-    return fetchImpl(input, { ...init, headers: retryHeaders })
+    // Don't reuse aborted signal for 401 retry; original timeout may have elapsed, give fresh 10s for retry
+    const retryInit: RequestInit = { ...init, headers: retryHeaders }
+    if (retryInit.signal) {
+      const sig = retryInit.signal as AbortSignal
+      if (sig.aborted) {
+        // original timed out — give retry a fresh short timeout instead of immediate abort
+        retryInit.signal = AbortSignal.timeout(10_000)
+      }
+      // else keep original signal; it still has remaining time
+    }
+
+    return fetchImpl(input, retryInit)
   }
 
   private async runRefresh(): Promise<string | null> {

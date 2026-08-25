@@ -1,9 +1,4 @@
-/**
- * Unit tests for the natural-input direct-create flow (feat-121, feat-135).
- *
- * feat-135 follow-up: single grouped summary edit (loader → ✅ Đã thêm N khoản)
- * pure text, no keyboard. Batch capped to 10.
- */
+/** feat-121/135 natural-input direct-create (loader → ✅ grouped summary) */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────────
@@ -458,6 +453,119 @@ describe('runNaturalExpenseCreate (feat-135)', () => {
         householdNameById: new Map([['hh-1', 'Gia đình tôi']]),
       })
       expect(result[0]?.summary).toContain('🏠 Gia đình tôi')
+    })
+  })
+
+  describe('createSafeEdit retriable logic', () => {
+    it('retries once on 429 then succeeds', async () => {
+      vi.useFakeTimers()
+      const { createSafeEdit } =
+        await import('@/bot/commands/natural-expense-safe-edit')
+      const edit = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('429 Too Many Requests'))
+        .mockResolvedValueOnce({} as Response)
+      const send = vi.fn().mockResolvedValue(1)
+      const client = {
+        editMessageText: edit,
+        sendMessage: send,
+      } as unknown as TelegramClient
+      const p = createSafeEdit(client, 'cid-429')(100, 500, 'hello 429')
+      await vi.advanceTimersByTimeAsync(500)
+      await p
+      expect(edit).toHaveBeenCalledTimes(2)
+      expect(send).not.toHaveBeenCalled()
+      vi.useRealTimers()
+    })
+    it('fallback immediately on 400 Bad Request without retry', async () => {
+      const { createSafeEdit } =
+        await import('@/bot/commands/natural-expense-safe-edit')
+      const edit = vi
+        .fn()
+        .mockRejectedValueOnce(
+          new Error('400 Bad Request: message is not modified'),
+        )
+      const send = vi.fn().mockResolvedValue(1)
+      const client = {
+        editMessageText: edit,
+        sendMessage: send,
+      } as unknown as TelegramClient
+      await createSafeEdit(client, 'cid-400')(100, 500, 'hello 400')
+      expect(edit).toHaveBeenCalledTimes(1)
+      expect(send).toHaveBeenCalledTimes(1)
+      expect(send).toHaveBeenCalledWith(100, 'hello 400', { parseMode: 'HTML' })
+    })
+    it('fallback to sendMessage after two retriable failures', async () => {
+      vi.useFakeTimers()
+      const { createSafeEdit } =
+        await import('@/bot/commands/natural-expense-safe-edit')
+      const edit = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('503 Service Unavailable'))
+        .mockRejectedValueOnce(new Error('503 Service Unavailable'))
+      const send = vi.fn().mockResolvedValue(1)
+      const client = {
+        editMessageText: edit,
+        sendMessage: send,
+      } as unknown as TelegramClient
+      const p = createSafeEdit(client, 'cid-503')(100, 500, 'hello 503')
+      await vi.advanceTimersByTimeAsync(500)
+      await p
+      expect(edit).toHaveBeenCalledTimes(2)
+      expect(send).toHaveBeenCalledTimes(1)
+      vi.useRealTimers()
+    })
+    it('logs fallback_send_failed when sendMessage also fails', async () => {
+      vi.useFakeTimers()
+      const { createSafeEdit } =
+        await import('@/bot/commands/natural-expense-safe-edit')
+      const edit = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('503 Service Unavailable'))
+        .mockRejectedValueOnce(new Error('503 Service Unavailable'))
+      const send = vi.fn().mockRejectedValueOnce(new Error('send failed'))
+      const client = {
+        editMessageText: edit,
+        sendMessage: send,
+      } as unknown as TelegramClient
+      const p = createSafeEdit(client, 'cid-fail')(100, 500, 'hello fail')
+      await vi.advanceTimersByTimeAsync(500)
+      await expect(p).resolves.toBeUndefined()
+      expect(edit).toHaveBeenCalledTimes(2)
+      expect(send).toHaveBeenCalledTimes(1)
+      vi.useRealTimers()
+    })
+  })
+  describe('post-AI D1 failure uses INTERNAL_ERROR_TEXT', () => {
+    it('uses INTERNAL_ERROR_TEXT when post-AI throws (D1 failure)', async () => {
+      mockParseExpensesWithAi.mockResolvedValue([
+        {
+          amount: 30000,
+          categoryKey: 'food',
+          sourceKey: 'cash',
+          title: 'ăn bún',
+          occurredAt: '2026-06-25',
+        },
+      ])
+      mockGetMinorUnits.mockImplementation(() => {
+        throw new Error('D1 boom')
+      })
+      const h = await runNaturalExpenseCreate(
+        buildDeps(),
+        buildClient(),
+        buildMessage('ăn bún 30k'),
+        'app-user-1',
+      )
+      expect(h).toBe(1)
+      expect(mockEditMessageText).toHaveBeenCalledWith(
+        100,
+        500,
+        expect.stringContaining('Đã có lỗi xảy ra'),
+        { parseMode: 'HTML' },
+      )
+      const t = mockEditMessageText.mock.calls[0]?.[2] as string
+      expect(t).toContain('Đã có lỗi xảy ra')
+      expect(t).not.toContain('AI tạm')
     })
   })
 })

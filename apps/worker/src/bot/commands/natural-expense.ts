@@ -6,6 +6,7 @@
 import {
   AI_UNAVAILABLE_TEXT,
   INPUT_UNRECOGNIZED_TEXT,
+  INTERNAL_ERROR_TEXT,
   LOADER_TEXT,
 } from '@/bot/format'
 import {
@@ -25,10 +26,10 @@ import { type TelegramClient } from '../telegram-client'
 import type { TelegramMessage, TelegramUser } from '../types'
 import {
   createNaturalExpenses,
-  createSafeEdit,
   normalizeNaturalItems,
   sendPostCreateMessages,
 } from './natural-expense-helpers'
+import { createSafeEdit } from './natural-expense-safe-edit'
 
 /**
  * Run the natural-input direct-create flow for a single private chat
@@ -230,7 +231,8 @@ export const runNaturalExpenseCreate = async (
           : truncateErrorMessage(String(postError)),
     })
 
-    await safeEdit(message.chat.id, loaderMsgId, AI_UNAVAILABLE_TEXT)
+    // D1 / post-create failure is not AI upstream; use generic internal error text
+    await safeEdit(message.chat.id, loaderMsgId, INTERNAL_ERROR_TEXT)
 
     return 1
   }
