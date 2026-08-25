@@ -6,6 +6,7 @@
 import {
   AI_UNAVAILABLE_TEXT,
   INPUT_UNRECOGNIZED_TEXT,
+  INTERNAL_ERROR_TEXT,
   LOADER_TEXT,
 } from '@/bot/format'
 import {
@@ -28,6 +29,7 @@ import {
   normalizeNaturalItems,
   sendPostCreateMessages,
 } from './natural-expense-helpers'
+import { createSafeEdit } from './natural-expense-safe-edit'
 
 /**
  * Run the natural-input direct-create flow for a single private chat
@@ -66,6 +68,8 @@ export const runNaturalExpenseCreate = async (
     chatId: message.chat.id,
     appUserId,
   })
+
+  const safeEdit = createSafeEdit(client, correlationId)
 
   // Fetch whitelist context for AI prompt (reuse feat-130)
   let aiContext: Awaited<ReturnType<typeof fetchAiContext>> | null = null
@@ -121,14 +125,7 @@ export const runNaturalExpenseCreate = async (
         textChars: text.length,
       })
 
-      await client.editMessageText(
-        message.chat.id,
-        loaderMsgId,
-        AI_UNAVAILABLE_TEXT,
-        {
-          parseMode: 'HTML',
-        },
-      )
+      await safeEdit(message.chat.id, loaderMsgId, AI_UNAVAILABLE_TEXT)
     } else {
       logger.error(correlationId, 'bot_natural_expense_ai_error', {
         textChars: text.length,
@@ -139,103 +136,104 @@ export const runNaturalExpenseCreate = async (
             : truncateErrorMessage(String(error)),
       })
 
-      await client.editMessageText(
-        message.chat.id,
-        loaderMsgId,
-        AI_UNAVAILABLE_TEXT,
-        {
-          parseMode: 'HTML',
-        },
-      )
+      await safeEdit(message.chat.id, loaderMsgId, AI_UNAVAILABLE_TEXT)
     }
 
     return 1
   }
 
-  // Cap batch to 10 with truncated note
-  const truncatedCount = rawItems.length > 10 ? rawItems.length - 10 : 0
-  const cappedRawItems = truncatedCount > 0 ? rawItems.slice(0, 10) : rawItems
-  const truncatedNote =
-    truncatedCount > 0
-      ? `\nℹ️ Chỉ lấy 10 khoản đầu (${truncatedCount} khoản bị bỏ qua)`
-      : ''
+  // Post-AI section is wrapped so D1 / sendPostCreateMessages / Telegram timeout
+  // never leaves loader stuck at "phân tích".
+  try {
+    // Cap batch to 10 with truncated note
+    const truncatedCount = rawItems.length > 10 ? rawItems.length - 10 : 0
+    const cappedRawItems = truncatedCount > 0 ? rawItems.slice(0, 10) : rawItems
+    const truncatedNote =
+      truncatedCount > 0
+        ? `\nℹ️ Chỉ lấy 10 khoản đầu (${truncatedCount} khoản bị bỏ qua)`
+        : ''
 
-  const { validItems, aiMappings, counters } = normalizeNaturalItems(
-    cappedRawItems,
-    aiContext,
-    defaultDate,
-  )
+    const { validItems, aiMappings, counters } = normalizeNaturalItems(
+      cappedRawItems,
+      aiContext,
+      defaultDate,
+    )
 
-  if (aiContext) {
-    logger.info(correlationId, 'bot_natural_mapping', {
-      textChars: text.length,
-      rawItemsCount: rawItems.length,
-      validItemsCount: validItems.length,
-      mappedHouseholdCount: counters.mappedHouseholdCount,
-      mappedGroupCount: counters.mappedGroupCount,
+    if (aiContext) {
+      logger.info(correlationId, 'bot_natural_mapping', {
+        textChars: text.length,
+        rawItemsCount: rawItems.length,
+        validItemsCount: validItems.length,
+        mappedHouseholdCount: counters.mappedHouseholdCount,
+        mappedGroupCount: counters.mappedGroupCount,
+      })
+    }
+
+    if (validItems.length === 0) {
+      await safeEdit(message.chat.id, loaderMsgId, INPUT_UNRECOGNIZED_TEXT)
+
+      return 1
+    }
+
+    const ctx = buildCtx({
+      userId: message.from.id,
+      chatId: message.chat.id,
+      text,
+      appUserId,
+      deps,
+      firstName: message.from.first_name,
+      lastName: message.from.last_name,
+      languageCode: message.from.language_code,
     })
-  }
 
-  if (validItems.length === 0) {
-    await client.editMessageText(
+    // Derived from same capped availableHouseholds as householdNameToId; missing id → graceful no-suffix (no DB fallback needed)
+    const householdNameById = aiContext
+      ? new Map(aiContext.availableHouseholds.map((h) => [h.id, h.name]))
+      : undefined
+
+    const created = await createNaturalExpenses({
+      db: deps.db,
+      appUserId,
+      validItems,
+      aiMappings,
+      amountResult,
+      correlationId,
+      text,
+      householdNameById,
+    })
+
+    if (created.length === 0) {
+      await safeEdit(message.chat.id, loaderMsgId, INPUT_UNRECOGNIZED_TEXT)
+
+      return 1
+    }
+
+    await sendPostCreateMessages(
+      client,
       message.chat.id,
       loaderMsgId,
-      INPUT_UNRECOGNIZED_TEXT,
-      { parseMode: 'HTML' },
+      created,
+      truncatedNote,
     )
+
+    // ctx is built above for consistency with the rest of the bot code;
+    // a future slice may need it for rate limiting / locale-specific copy.
+    void ctx
+
+    return 1
+  } catch (postError) {
+    logger.error(correlationId, 'bot_natural_expense_post_ai_error', {
+      textChars: text.length,
+      errorName: postError instanceof Error ? postError.name : 'UnknownError',
+      errorMessage:
+        postError instanceof Error
+          ? truncateErrorMessage(postError.message)
+          : truncateErrorMessage(String(postError)),
+    })
+
+    // D1 / post-create failure is not AI upstream; use generic internal error text
+    await safeEdit(message.chat.id, loaderMsgId, INTERNAL_ERROR_TEXT)
 
     return 1
   }
-
-  const ctx = buildCtx({
-    userId: message.from.id,
-    chatId: message.chat.id,
-    text,
-    appUserId,
-    deps,
-    firstName: message.from.first_name,
-    lastName: message.from.last_name,
-    languageCode: message.from.language_code,
-  })
-
-  // Derived from same capped availableHouseholds as householdNameToId; missing id → graceful no-suffix (no DB fallback needed)
-  const householdNameById = aiContext
-    ? new Map(aiContext.availableHouseholds.map((h) => [h.id, h.name]))
-    : undefined
-
-  const created = await createNaturalExpenses({
-    db: deps.db,
-    appUserId,
-    validItems,
-    aiMappings,
-    amountResult,
-    correlationId,
-    text,
-    householdNameById,
-  })
-
-  if (created.length === 0) {
-    await client.editMessageText(
-      message.chat.id,
-      loaderMsgId,
-      INPUT_UNRECOGNIZED_TEXT,
-      { parseMode: 'HTML' },
-    )
-
-    return 1
-  }
-
-  await sendPostCreateMessages(
-    client,
-    message.chat.id,
-    loaderMsgId,
-    created,
-    truncatedNote,
-  )
-
-  // ctx is built above for consistency with the rest of the bot code;
-  // a future slice may need it for rate limiting / locale-specific copy.
-  void ctx
-
-  return 1
 }

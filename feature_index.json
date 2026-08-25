@@ -64,6 +64,12 @@
       "title": "Remove /add preview flow, native chat single-message grouped expenses",
       "status": "done",
       "depends_on": []
+    },
+    {
+      "id": "feat-136",
+      "title": "Worker D1 read latency optimization (replication + batch)",
+      "status": "active",
+      "depends_on": []
     }
   ]
 }

@@ -1,9 +1,4 @@
-/**
- * Unit tests for the natural-input direct-create flow (feat-121, feat-135).
- *
- * feat-135 follow-up: single grouped summary edit (loader → ✅ Đã thêm N khoản)
- * pure text, no keyboard. Batch capped to 10.
- */
+/** feat-121/135 natural-input direct-create (loader → ✅ grouped summary) */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────────
@@ -458,6 +453,39 @@ describe('runNaturalExpenseCreate (feat-135)', () => {
         householdNameById: new Map([['hh-1', 'Gia đình tôi']]),
       })
       expect(result[0]?.summary).toContain('🏠 Gia đình tôi')
+    })
+  })
+
+  describe('post-AI D1 failure uses INTERNAL_ERROR_TEXT', () => {
+    it('uses INTERNAL_ERROR_TEXT when post-AI throws (D1 failure)', async () => {
+      mockParseExpensesWithAi.mockResolvedValue([
+        {
+          amount: 30000,
+          categoryKey: 'food',
+          sourceKey: 'cash',
+          title: 'ăn bún',
+          occurredAt: '2026-06-25',
+        },
+      ])
+      mockGetMinorUnits.mockImplementation(() => {
+        throw new Error('D1 boom')
+      })
+      const h = await runNaturalExpenseCreate(
+        buildDeps(),
+        buildClient(),
+        buildMessage('ăn bún 30k'),
+        'app-user-1',
+      )
+      expect(h).toBe(1)
+      expect(mockEditMessageText).toHaveBeenCalledWith(
+        100,
+        500,
+        expect.stringContaining('Đã có lỗi xảy ra'),
+        { parseMode: 'HTML' },
+      )
+      const t = mockEditMessageText.mock.calls[0]?.[2] as string
+      expect(t).toContain('Đã có lỗi xảy ra')
+      expect(t).not.toContain('AI tạm')
     })
   })
 })
