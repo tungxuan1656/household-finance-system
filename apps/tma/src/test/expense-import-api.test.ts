@@ -4,6 +4,8 @@ const postMock = vi.fn()
 
 vi.mock('@/lib/api/client', () => ({
   post: postMock,
+  PARSE_TIMEOUT_MS: 30000,
+  DEFAULT_TIMEOUT_MS: 20000,
 }))
 
 const loadImportApi = () => import('@/features/expenses/import-api')
@@ -27,10 +29,14 @@ describe('parseExpenses API', () => {
 
     expect(postMock).toHaveBeenCalledTimes(1)
 
-    expect(postMock).toHaveBeenCalledWith('/expenses/parse', {
-      text: 'ăn sáng 35k, đi xe ôm 50k',
-      defaultOccurredAt: '2026-06-19',
-    })
+    expect(postMock).toHaveBeenCalledWith(
+      '/expenses/parse',
+      {
+        text: 'ăn sáng 35k, đi xe ôm 50k',
+        defaultOccurredAt: '2026-06-19',
+      },
+      { timeoutMs: 30000 },
+    )
   })
 
   it('returns parsed expenses array from response', async () => {
