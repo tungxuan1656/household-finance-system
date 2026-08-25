@@ -17,6 +17,7 @@ import {
   useParseExpensesMutation,
 } from '@/features/expenses/import-api'
 import { useImportFlowStore } from '@/features/expenses/model/import-store'
+import { ApiClientError } from '@/lib/api/client'
 import { TMA_PATHS } from '@/lib/constants/routes'
 import { notification } from '@/lib/telegram/haptics'
 import { cn } from '@/lib/utils'
@@ -56,11 +57,32 @@ export const AddExpenseChatPage = () => {
     } catch (err) {
       notification('error')
 
-      setError(
-        err instanceof Error && err.message
-          ? err.message
-          : t('expenses.add.parseError'),
-      )
+      let message: string | null = null
+
+      if (err instanceof ApiClientError) {
+        if (err.code === 'TIMEOUT') {
+          message = t('errors.timeout', {
+            defaultValue:
+              'Yêu cầu quá thời gian, AI phản hồi chậm. Vui lòng thử lại.',
+          })
+        } else if (err.code === 'BAD_GATEWAY' || err.status === 502) {
+          message = t('errors.aiUpstreamFailure', {
+            defaultValue:
+              'Dịch vụ AI tạm thời không khả dụng, vui lòng thử lại sau.',
+          })
+        } else if (err.code === 'NETWORK_ERROR') {
+          message = t('errors.networkError', {
+            defaultValue:
+              'Không thể kết nối máy chủ, kiểm tra mạng và thử lại.',
+          })
+        } else if (err.message) {
+          message = err.message
+        }
+      } else if (err instanceof Error && err.message) {
+        message = err.message
+      }
+
+      setError(message ?? t('expenses.add.parseError'))
     }
   })
 

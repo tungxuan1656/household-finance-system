@@ -15,6 +15,79 @@ import { newId } from '@/utils/id'
 import type { TelegramClient } from '../telegram-client'
 import { normalizeAiItem } from './ai-expense-shared'
 
+export const createSafeEdit =
+  (client: TelegramClient, correlationId: string) =>
+  async (
+    chatId: number | string,
+    msgId: number,
+    editText: string,
+  ): Promise<void> => {
+    try {
+      await client.editMessageText(chatId, msgId, editText, {
+        parseMode: 'HTML',
+      })
+
+      return
+    } catch (firstError) {
+      logger.error(
+        correlationId,
+        'bot_natural_expense_safe_edit_first_failed',
+        {
+          chatId,
+          msgId,
+          errorName:
+            firstError instanceof Error ? firstError.name : 'UnknownError',
+          errorMessage:
+            firstError instanceof Error
+              ? truncateErrorMessage(firstError.message)
+              : truncateErrorMessage(String(firstError)),
+        },
+      )
+
+      await new Promise<void>((resolve) => setTimeout(resolve, 500))
+      try {
+        await client.editMessageText(chatId, msgId, editText, {
+          parseMode: 'HTML',
+        })
+
+        return
+      } catch (secondError) {
+        logger.error(
+          correlationId,
+          'bot_natural_expense_safe_edit_retry_failed',
+          {
+            chatId,
+            msgId,
+            errorName:
+              secondError instanceof Error ? secondError.name : 'UnknownError',
+            errorMessage:
+              secondError instanceof Error
+                ? truncateErrorMessage(secondError.message)
+                : truncateErrorMessage(String(secondError)),
+          },
+        )
+
+        try {
+          await client.sendMessage(chatId, editText, { parseMode: 'HTML' })
+        } catch (sendError) {
+          logger.error(
+            correlationId,
+            'bot_natural_expense_safe_edit_fallback_send_failed',
+            {
+              chatId,
+              errorName:
+                sendError instanceof Error ? sendError.name : 'UnknownError',
+              errorMessage:
+                sendError instanceof Error
+                  ? truncateErrorMessage(sendError.message)
+                  : truncateErrorMessage(String(sendError)),
+            },
+          )
+        }
+      }
+    }
+  }
+
 export const normalizeNaturalItems = (
   rawItems: RawAiItem[],
   aiContext: {

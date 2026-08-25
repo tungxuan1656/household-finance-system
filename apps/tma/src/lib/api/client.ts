@@ -6,7 +6,8 @@ const API_BASE_PATH = (import.meta.env.VITE_WORKER_URL ?? '/api/v1').replace(
   '',
 )
 
-const DEFAULT_TIMEOUT_MS = 20_000
+export const DEFAULT_TIMEOUT_MS = 20_000
+export const PARSE_TIMEOUT_MS = 30_000
 
 type ApiEnvelope<T> =
   | {
@@ -55,6 +56,7 @@ export interface RequestOptions {
   body?: unknown
   method?: 'DELETE' | 'GET' | 'PATCH' | 'POST'
   params?: Record<string, PrimitiveParam>
+  timeoutMs?: number
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -141,7 +143,10 @@ export const request = async <TResponse>(
   }
 
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS)
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+  )
 
   let response: Response
 

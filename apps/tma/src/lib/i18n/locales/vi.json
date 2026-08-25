@@ -14,6 +14,11 @@
     "all": "Tất cả",
     "you": "Bạn"
   },
+  "errors": {
+    "aiUpstreamFailure": "Dịch vụ AI tạm thời không khả dụng, vui lòng thử lại sau.",
+    "timeout": "Yêu cầu quá thời gian, AI phản hồi chậm. Vui lòng thử lại.",
+    "networkError": "Không thể kết nối máy chủ, kiểm tra mạng và thử lại."
+  },
   "fatal": {
     "title": "Không thể mở Mini App",
     "body": "Vui lòng mở lại Mini App từ Telegram.",

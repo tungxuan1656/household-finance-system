@@ -307,3 +307,11 @@
 **Evidence**: `pnpm --filter worker typecheck` 0, `lint` 0, `test` 106 files/654 pass, `pnpm --filter tma typecheck` 0, `test` 30 files/158 pass, `bash scripts/check_ts_length.sh` 0 ✅, `git diff --check` 0. `feature_index.json` marks feat-135 done; `features/feat-135.md` Handoff done. Branch feat/135-remove-add-preview-native-only.
 **Blockers**: none
 **Next**: none — manual private chat QA (cafe 30k single/batch) + PR; `telegram_bot_expense_drafts` table kept (no DROP).
+
+## 2026-08-25 - feat-136
+
+**State**: active
+**Done**: Brainstormed SLO P95<150ms + Hybrid C design + created tracker `features/feat-136.md` + external plan `docs/plans/feat-136.md` (8 tasks, 3 layers: session/bookmark + cache + batch/bulk) via brainstorming + writing-plans skills.
+**Evidence**: `feature_index.json` lists feat-136 active (feat-135 done); `features/feat-136.md` Goal/Scope/Acceptance 7 items done; `docs/plans/feat-136.md` header + Global Constraints + File Structure + Tasks 1-8 with exact code blocks; `wrangler.jsonc` APAC replication docced.
+**Blockers**: none
+**Next**: User reviews `features/feat-136.md` + `docs/plans/feat-136.md`, choose execution approach (subagent-driven vs inline), then Task 1 foundation.
